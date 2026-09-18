@@ -58,7 +58,8 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
     let _ = codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3;
     let _ = codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<TestFence>::consume;
-    let _ = codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<TestFence>::reconcile_pending;
+    let _ =
+        codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<TestFence>::reconcile_pending;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::consume;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::from_snapshot;

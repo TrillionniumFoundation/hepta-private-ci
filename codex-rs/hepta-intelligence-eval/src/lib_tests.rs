@@ -49,7 +49,10 @@ fn eligible_is_not_promotion() {
 fn self_evaluation_is_rejected() {
     let mut value = request();
     value.evaluator_id = value.candidate_producer_id.clone();
-    assert_eq!(evaluate_legacy_inprocess_v1(value), Err(Error::SelfEvaluation));
+    assert_eq!(
+        evaluate_legacy_inprocess_v1(value),
+        Err(Error::SelfEvaluation)
+    );
 }
 
 #[test]
@@ -57,7 +60,10 @@ fn hard_regression_is_rejected() {
     let mut value = request();
     value.comparisons[0].candidate = FixedQ32::ONE;
     value.comparisons[0].baseline = FixedQ32::ZERO;
-    assert_eq!(must(evaluate_legacy_inprocess_v1(value)).disposition, Disposition::Ineligible);
+    assert_eq!(
+        must(evaluate_legacy_inprocess_v1(value)).disposition,
+        Disposition::Ineligible
+    );
 }
 
 #[test]

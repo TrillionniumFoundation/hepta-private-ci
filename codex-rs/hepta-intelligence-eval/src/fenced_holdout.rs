@@ -134,12 +134,15 @@ impl<S: HoldoutFenceStoreV1> FencedFinalHoldoutOwnerV1<S> {
         }
 
         let current = self.fence.load()?;
-        if !current.pending_plan_digest.is_zero() || current.committed_anchor != self.journal.anchor()
+        if !current.pending_plan_digest.is_zero()
+            || current.committed_anchor != self.journal.anchor()
         {
             return Err(DurableHoldoutError::Conflict);
         }
 
-        let preview = self.journal.preview_consume(current.committed_anchor, plan)?;
+        let preview = self
+            .journal
+            .preview_consume(current.committed_anchor, plan)?;
         if preview.disposition == HoldoutUseDispositionV1::IdempotentReplay {
             return Ok(preview);
         }

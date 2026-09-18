@@ -5,18 +5,18 @@ use codex_hepta_bellman_operator::evaluate_bellman_reference;
 use codex_hepta_bellman_operator::fit_transition_model;
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
 use codex_hepta_intelligence_eval::CrossFoldPlanV1;
+use codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1;
+use codex_hepta_intelligence_eval::DurableHoldoutError;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
 use codex_hepta_intelligence_eval::EvaluationDirectionV1;
 use codex_hepta_intelligence_eval::EvaluationIntervalV1;
+use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
+use codex_hepta_intelligence_eval::HoldoutFenceStateV1;
+use codex_hepta_intelligence_eval::HoldoutFenceStoreV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
 use codex_hepta_intelligence_eval::MetricGateV1;
-use codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1;
-use codex_hepta_intelligence_eval::DurableHoldoutError;
-use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
-use codex_hepta_intelligence_eval::HoldoutFenceStateV1;
-use codex_hepta_intelligence_eval::HoldoutFenceStoreV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
 use codex_hepta_intelligence_eval::MetricRoleV2;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
@@ -36,10 +36,10 @@ use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::CreditAllocationBatchV1;
 use codex_hepta_learning_ledger::CreditAllocationV1;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
-use codex_hepta_learning_ledger::OutcomeTerminalityV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::OutcomeTerminalityV1;
 use codex_hepta_learning_ledger::OutcomeWatermarkV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
@@ -503,16 +503,11 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         generator_plan,
         evaluator_bundle,
     };
-    let evaluation = match decide_with_signed_evidence_v2(
-        bundle,
-        metric_roles,
-        &evidence,
-        &verifier,
-        50,
-    ) {
-        Ok(decision) => decision,
-        Err(error) => panic!("signed independent evaluation failed: {error}"),
-    };
+    let evaluation =
+        match decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, &verifier, 50) {
+            Ok(decision) => decision,
+            Err(error) => panic!("signed independent evaluation failed: {error}"),
+        };
     assert_eq!(
         evaluation.decision.disposition,
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
