@@ -25,10 +25,18 @@ fn probability_ppm(ppm: u64) -> ProbabilityQ32 {
     .unwrap()
 }
 
-fn fixture() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
+fn fixture() -> (
+    CalibratedDecisionRequestV1,
+    CanonicalPolicyProfileV1,
+    ScoringCommitmentV1,
+) {
     let policy = digest("qualified-policy");
+    let model = digest("qualified-model-artifact");
     let calibration = digest("qualified-calibration");
     let ood = digest("qualified-ood");
+    let subgroup = digest("subgroup");
+    let detector = digest("detector");
+    let ood_support = digest("ood-support");
     let candidates = vec![CalibratedActionCandidateV1 {
         candidate_id: id("candidate:a"),
         legal: true,
@@ -72,13 +80,13 @@ fn fixture() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
             valid_from_sequence: 1,
             expires_after_sequence: 100,
             measured_ece_ppm: 10_000,
-            subgroup_audit_digest: digest("subgroup"),
+            subgroup_audit_digest: subgroup,
         },
         ood: OodArtifactV1 {
             artifact_digest: ood,
             policy_digest: policy,
-            detector_digest: digest("detector"),
-            support_digest: digest("ood-support"),
+            detector_digest: detector,
+            support_digest: ood_support,
             generation: 9,
             valid_from_sequence: 1,
             expires_after_sequence: 100,
@@ -101,7 +109,7 @@ fn fixture() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
         maximum_in_domain_score: probability_ppm(500_000),
         risk_rule: CanonicalRiskRuleV1::HighOnlySlowPath,
         scorer: LearnedScorerContractV1 {
-            model_digest: policy,
+            model_digest: model,
             feature_schema_digest: digest("features-v1"),
             output_schema_digest: digest("outputs-v1"),
             score_semantics_digest: digest("semantics-v1"),
@@ -110,14 +118,31 @@ fn fixture() -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
         calibration_dataset_digest: digest("calibration-data"),
         ood_dataset_digest: digest("ood-data"),
         calibration_artifact_digest: calibration,
+        calibration_measured_ece_ppm: 10_000,
+        calibration_subgroup_audit_digest: subgroup,
         ood_artifact_digest: ood,
+        ood_measured_false_acceptance_ppm: 1_000,
+        ood_detector_digest: detector,
+        ood_support_digest: ood_support,
     };
-    (request, profile)
+    let scoring = ScoringCommitmentV1 {
+        decision_id: request.decision_id.clone(),
+        model_artifact_digest: model,
+        feature_schema_digest: profile.scorer.feature_schema_digest,
+        feature_snapshot_digest: digest("feature-snapshot"),
+        scorer_contract_digest: profile.scorer.scorer_contract_digest,
+        candidate_set_digest,
+        scored_candidates_digest: canonical_scored_candidates_digest_v1(&request).unwrap(),
+        policy_digest: policy,
+        policy_generation: 9,
+        sequence: 20,
+    };
+    (request, profile, scoring)
 }
 
 #[test]
 fn current_v2_rejects_any_omitted_candidate_bound() {
-    let (mut request, _) = fixture();
+    let (mut request, _, _) = fixture();
     request.completeness.omitted_count_bound = 1;
     assert_eq!(
         decide_calibrated_v2(request),
@@ -126,8 +151,20 @@ fn current_v2_rejects_any_omitted_candidate_bound() {
 }
 
 #[test]
-fn v3_rejects_request_threshold_drift_from_canonical_profile() {
-    let (mut request, profile) = fixture();
+fn v3_keeps_policy_model_and_scorer_identities_distinct() {
+    let (request, profile, scoring) = fixture();
+    assert_ne!(profile.policy_digest, profile.scorer.model_digest);
+    assert_ne!(
+        profile.scorer.model_digest,
+        profile.scorer.scorer_contract_digest
+    );
+    assert!(canonical_scoring_commitment_digest_v1(&request, &profile, &scoring).is_ok());
+    assert!(decide_calibrated_v3(request, &profile).is_ok());
+}
+
+#[test]
+fn v3_rejects_request_threshold_or_artifact_metadata_drift() {
+    let (mut request, profile, _) = fixture();
     request.maximum_ece_ppm += 1;
     assert_eq!(
         decide_calibrated_v3(request, &profile),
@@ -135,11 +172,20 @@ fn v3_rejects_request_threshold_drift_from_canonical_profile() {
             "maximum ece"
         ))
     );
+
+    let (mut request, profile, _) = fixture();
+    request.calibration.measured_ece_ppm += 1;
+    assert_eq!(
+        decide_calibrated_v3(request, &profile),
+        Err(QualifiedCalibratedError::ProfileArtifactMetadataMismatch(
+            "calibration"
+        ))
+    );
 }
 
 #[test]
 fn v3_can_tighten_risk_routing_from_the_authenticated_profile() {
-    let (mut request, mut profile) = fixture();
+    let (mut request, mut profile, _) = fixture();
     request.risk_class = RiskClass::Elevated;
     profile.risk_rule = CanonicalRiskRuleV1::ElevatedAndHighSlowPath;
     let receipt = decide_calibrated_v3(request, &profile).unwrap();
@@ -150,25 +196,43 @@ fn v3_can_tighten_risk_routing_from_the_authenticated_profile() {
 }
 
 #[test]
-fn evidence_payloads_change_when_profile_or_candidate_set_changes() {
-    let (request, profile) = fixture();
-    let completeness = canonical_completeness_evidence_payload_v1(&request).unwrap();
-    let qualification = canonical_qualification_evidence_payload_v1(&request, &profile).unwrap();
+fn scoring_commitment_detects_score_or_model_substitution() {
+    let (mut request, profile, scoring) = fixture();
+    let original =
+        canonical_scoring_evidence_payload_v1(&request, &profile, &scoring).unwrap();
 
-    let mut changed_request = request.clone();
-    changed_request.candidates[0].utility = FixedQ32::from_raw(2);
-    changed_request.completeness.candidate_set_digest =
-        canonical_candidate_set_digest_v1(&changed_request.candidates).unwrap();
-    assert_ne!(
-        canonical_completeness_evidence_payload_v1(&changed_request).unwrap(),
-        completeness
+    request.candidates[0].utility = FixedQ32::from_raw(2);
+    request.completeness.candidate_set_digest =
+        canonical_candidate_set_digest_v1(&request.candidates).unwrap();
+    let mut changed = scoring.clone();
+    changed.candidate_set_digest = request.completeness.candidate_set_digest;
+    assert_eq!(
+        canonical_scoring_commitment_digest_v1(&request, &profile, &changed),
+        Err(QualifiedCalibratedError::ScoringCommitmentMismatch("scores"))
     );
 
-    let mut changed_profile = profile;
-    changed_profile.maximum_ece_ppm += 1;
-    changed_request.maximum_ece_ppm = changed_profile.maximum_ece_ppm;
-    assert_ne!(
-        canonical_qualification_evidence_payload_v1(&changed_request, &changed_profile).unwrap(),
-        qualification
+    let (request, profile, mut scoring) = fixture();
+    scoring.model_artifact_digest = digest("other-model");
+    assert_eq!(
+        canonical_scoring_commitment_digest_v1(&request, &profile, &scoring),
+        Err(QualifiedCalibratedError::ScoringCommitmentMismatch("model"))
     );
+    assert!(!original.is_empty());
+}
+
+#[test]
+fn assignment_commitment_binds_stream_sequence_and_draw() {
+    let (mut request, _, _) = fixture();
+    request.candidates[0].assignment_probability = ProbabilityQ32::ONE;
+    request.completeness.candidate_set_digest =
+        canonical_candidate_set_digest_v1(&request.candidates).unwrap();
+    request.assignment = AssignmentModeV1::CounterBased {
+        random_stream_digest: digest("random-stream-manifest"),
+        draw: ProbabilityQ32::ZERO,
+        abstain_probability: ProbabilityQ32::ZERO,
+    };
+    let first = canonical_assignment_evidence_payload_v1(&request).unwrap();
+    request.sequence += 1;
+    let second = canonical_assignment_evidence_payload_v1(&request).unwrap();
+    assert_ne!(first, second);
 }
