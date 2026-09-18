@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "6530dd0472509ee127acff3039b6a44c7be401d0",
+    "tree": "51590b4c1424ac4db0963cf7d951202eeb4258aa"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -13,6 +13,15 @@
   "declaredRoots": [
     "codex-rs/hepta-bellman-operator"
   ],
+  "boundPackageRoots": [
+    "codex-rs/hepta-bellman-operator",
+    "codex-rs/hepta-operator-acceptance"
+  ],
+  "effectiveSourceRoots": [
+    "codex-rs/hepta-bellman-operator",
+    "codex-rs/hepta-operator-acceptance"
+  ],
+  "sourceFreshnessPolicy": "bound_roots_unchanged_since_source_base",
   "resolvedRoots": [
     "codex-rs/hepta-bellman-operator"
   ],
@@ -27,9 +36,70 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "deterministic_and_canonical",
+        "terminal_transition_has_no_bootstrap",
+        "invalid_gamma_fails_closed",
+        "duplicate_sample_fails"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_targets",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "validate_applicability_certificate",
+      "nativeSymbol": "validate_applicability_certificate",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "op_02_applicability_rejects_degenerate_diffusion"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_applicability_certificate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_sensor_core",
+      "nativeSymbol": "build_sensor_core",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "op_01_farthest_point_sensor_core_is_deterministic"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "build_sensor_core",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "evaluate_bellman_reference",
+      "nativeSymbol": "evaluate_bellman_reference",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "op_01_tabular_reference_produces_exact_targets_and_gaps"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "evaluate_bellman_reference",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_operator_regularity",
+      "nativeSymbol": "admit_operator_regularity",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_operator_regularity",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -39,9 +109,58 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/learned.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "op_05_tabular_operator_fits_complete_grid_deterministically",
+        "op_05_tabular_operator_rejects_missing_or_underfilled_cells",
+        "op_05_tabular_operator_rejects_relabelled_duplicate_evidence"
+      ],
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "fit_tabular_operator_strict_v2",
+      "nativeSymbol": "fit_tabular_operator_strict_v2",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "op_05_strict_fit_rejects_relabelled_duplicate_evidence"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "fit_tabular_operator_strict_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "load_tabular_operator",
+      "nativeSymbol": "LoadedTabularOperatorV1::from_pinned_payload",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "actual_fit_serializes_and_predicts_with_no_mutable_loaded_surface",
+        "independent_pin_and_all_truncations_are_checked",
+        "loaded_process_predicts_only_the_host_pinned_candidate",
+        "distinct_process_load_changes_prediction_and_rolls_back_without_retraining"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "load_tabular_operator",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "predict_loaded_tabular_operator",
+      "nativeSymbol": "LoadedTabularOperatorV1::predict",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "actual_fit_serializes_and_predicts_with_no_mutable_loaded_surface"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "predict_loaded_tabular_operator",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -51,21 +170,158 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "op_04_transition_model_is_action_conditioned_and_probability_exact",
+        "world_model_rejects_duplicate_samples_evidence_and_invalid_outcomes"
+      ],
       "sourcePathExists": true,
       "designOperation": "fit_transition_model",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "digest_world_model_payload",
+      "nativeSymbol": "world_model_payload_digest_v1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "loaded_world_model_requires_complete_host_pin"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "digest_world_model_payload",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "load_world_model",
+      "nativeSymbol": "LoadedTabularWorldModelV1::from_pinned_model",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "loaded_world_model_requires_complete_host_pin"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "load_world_model",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "predict_loaded_world_model",
+      "nativeSymbol": "LoadedTabularWorldModelV1::predict",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "loaded_world_model_requires_complete_host_pin",
+        "op_04_prediction_is_synthetic_and_unsupported_pairs_abstain"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "predict_loaded_world_model",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "require_formal_acceptance_environment",
+      "nativeSymbol": "require_formal_environment",
+      "sourcePath": "codex-rs/hepta-operator-acceptance/src/preflight.rs",
+      "state": "source_implemented_qualification_only_not_product_composed",
+      "authority": "qualification_evidence_only",
+      "tests": [
+        "read_only_lock_never_creates_missing_state"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "require_formal_acceptance_environment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepare_operator_acceptance",
+      "nativeSymbol": "prepare",
+      "sourcePath": "codex-rs/hepta-operator-acceptance/src/lib.rs",
+      "state": "source_implemented_qualification_only_not_product_composed",
+      "authority": "qualification_evidence_only",
+      "tests": [
+        "exact_challenge_boundary_accepts_only_operator_acceptance",
+        "validity_window_is_half_open_and_policy_bounded",
+        "durable_time_watermark_rejects_clock_rollback"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_operator_acceptance",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_and_seal_operator_acceptance",
+      "nativeSymbol": "verify_and_seal",
+      "sourcePath": "codex-rs/hepta-operator-acceptance/src/lib.rs",
+      "state": "source_implemented_qualification_only_not_product_composed",
+      "authority": "qualification_evidence_only",
+      "tests": [
+        "final_consumption_at_expiry_creates_no_claim_or_receipt",
+        "exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+        "receipt_repeated_authority_must_match_exact_boundary"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_and_seal_operator_acceptance",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_operator_acceptance_receipt",
+      "nativeSymbol": "verify_receipt",
+      "sourcePath": "codex-rs/hepta-operator-acceptance/src/lib.rs",
+      "state": "source_implemented_qualification_only_not_product_composed",
+      "authority": "qualification_evidence_only",
+      "tests": [
+        "unknown_or_noncanonical_stored_json_is_rejected",
+        "exact_replay_returns_same_receipt_and_conflicting_claim_fails"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_operator_acceptance_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepare_g5_challenge",
+      "nativeSymbol": "prepare_g5_challenge",
+      "sourcePath": "codex-rs/hepta-operator-acceptance/src/g5_trust.rs",
+      "state": "source_implemented_qualification_only_not_product_composed",
+      "authority": "qualification_evidence_only",
+      "tests": [
+        "fresh_head_scoped_challenge_reaches_ready_without_authority"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_g5_challenge",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "assess_g5_challenge",
+      "nativeSymbol": "assess_g5_challenge",
+      "sourcePath": "codex-rs/hepta-operator-acceptance/src/g5_trust.rs",
+      "state": "source_implemented_qualification_only_not_product_composed",
+      "authority": "qualification_evidence_only",
+      "tests": [
+        "fresh_head_scoped_challenge_reaches_ready_without_authority"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "assess_g5_challenge",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind loaded operator/world-model prediction surfaces to authenticated product consumer callsites and owner stores.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
+    "Refresh this map through the migration tool after any declared or Cargo-bound source root changes."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "independent semantic and mathematical review",
     "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "future-time calibration, retention and live-world transition evidence",
+    "independent operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
