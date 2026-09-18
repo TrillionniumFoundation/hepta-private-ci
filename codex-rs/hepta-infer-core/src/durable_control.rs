@@ -13,6 +13,10 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+use codex_hepta_types::Digest32;
+use serde::Deserialize;
+use serde::Serialize;
+
 #[path = "native_control.rs"]
 pub mod native;
 
@@ -20,8 +24,10 @@ const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_TOKENS: u32 = 1_000_000;
+const LEGACY_CHECKPOINT_PREFIX: &str = "checkpoint-legacy-v1|";
+const ARCHIVE_SUFFIX_PREFIX: &str = "archive-";
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RequestState {
     Pending,
     Reserved,
@@ -69,7 +75,7 @@ impl RequestState {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct InferenceRequest {
     pub request_id: String,
     pub principal_id: String,
@@ -80,7 +86,7 @@ pub struct InferenceRequest {
     pub semantic_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Reservation {
     pub reservation_id: String,
     pub quota_units: u64,
@@ -89,14 +95,14 @@ pub struct Reservation {
     pub valid_until_ms: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct Assignment {
     pub worker_id: String,
     pub worker_generation: u64,
     pub assignment_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct TerminalObservation {
     pub request_id: String,
     pub reservation_id: String,
@@ -111,7 +117,7 @@ pub struct TerminalObservation {
     pub usage_units: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Eq, PartialEq)]
 pub struct RequestRecord {
     pub request: InferenceRequest,
     pub revision: u64,
@@ -195,12 +201,9 @@ impl DurableInferenceControl {
             options.mode(0o600);
         }
         let file = options.open(&path)?;
-        // Lock only while replaying the authoritative cut. Long-running model
-        // execution must never hold the journal writer fence.
-        let lock_file = OpenOptions::new().read(true).write(true).open(&path)?;
-        lock_file
-            .try_lock()
-            .map_err(|_| Error::WriterUnavailable)?;
+        // A stable sidecar lock survives journal compaction/rename. Lock only
+        // while replaying or mutating; model/provider execution never holds it.
+        let lock_file = acquire_writer_lock(&path)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(lock_file.try_clone()?);
@@ -230,7 +233,16 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+            if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
+                let record: RequestRecord = serde_json::from_str(json)
+                    .map_err(|_| Error::CorruptJournal("legacy checkpoint decode"))?;
+                validate_checkpoint_record(&record)?;
+                if records.insert(record.request.request_id.clone(), record).is_some() {
+                    return Err(Error::CorruptJournal("duplicate legacy checkpoint"));
+                }
+            } else if let Some(json) = line.strip_prefix(native::CHECKPOINT_PREFIX) {
+                native.replay_checkpoint(json)?;
+            } else if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
@@ -441,13 +453,7 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        let lock_file = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open(&self.path)?;
-        lock_file
-            .try_lock()
-            .map_err(|_| Error::WriterUnavailable)?;
+        let lock_file = acquire_writer_lock(&self.path)?;
 
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
@@ -477,7 +483,16 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+            if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
+                let record: RequestRecord = serde_json::from_str(json)
+                    .map_err(|_| Error::CorruptJournal("legacy checkpoint decode"))?;
+                validate_checkpoint_record(&record)?;
+                if records.insert(record.request.request_id.clone(), record).is_some() {
+                    return Err(Error::CorruptJournal("duplicate legacy checkpoint"));
+                }
+            } else if let Some(json) = line.strip_prefix(native::CHECKPOINT_PREFIX) {
+                native.replay_checkpoint(json)?;
+            } else if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
@@ -492,6 +507,78 @@ impl DurableInferenceControl {
         self.native = native;
         self.journal_bytes = journal_bytes;
         Ok(lock_file)
+    }
+
+    /// Rewrite the active journal to one canonical checkpoint per current
+    /// request while preserving the complete pre-compaction event stream in a
+    /// content-addressed sibling archive. Indeterminate/in-flight records stay
+    /// in the compacted active journal, so compaction never makes them
+    /// replayable or releases their capacity.
+    pub fn compact_with_archive(&mut self) -> Result<PathBuf, Error> {
+        let _writer_fence = self.reload_locked()?;
+
+        let original = fs::read(&self.path)?;
+        let archive = archive_path(&self.path, &original)?;
+        if !archive.exists() {
+            let archive_tmp = sibling_temp_path(&archive, "tmp");
+            let mut archived = OpenOptions::new()
+                .create_new(true)
+                .write(true)
+                .open(&archive_tmp)?;
+            archived.write_all(&original)?;
+            archived.flush()?;
+            archived.sync_all()?;
+            fs::rename(&archive_tmp, &archive)?;
+        }
+
+        let mut compacted = Vec::new();
+        for record in self.records.values() {
+            let json = serde_json::to_string(record)
+                .map_err(|_| Error::CorruptJournal("legacy checkpoint encode"))?;
+            let line = format!("{LEGACY_CHECKPOINT_PREFIX}{json}\n");
+            if line.len() > MAX_JOURNAL_LINE_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
+            compacted.extend_from_slice(line.as_bytes());
+        }
+        for line in self.native.checkpoint_lines()? {
+            if line.len() > MAX_JOURNAL_LINE_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
+            compacted.extend_from_slice(line.as_bytes());
+        }
+        if compacted.len() as u64 > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+
+        let tmp = sibling_temp_path(&self.path, "compact");
+        let mut compact_file = OpenOptions::new()
+            .create(true)
+            .truncate(true)
+            .write(true)
+            .open(&tmp)?;
+        compact_file.write_all(&compacted)?;
+        compact_file.flush()?;
+        compact_file.sync_all()?;
+        fs::rename(&tmp, &self.path)?;
+        let parent = self
+            .path
+            .parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        File::open(parent)?.sync_all()?;
+
+        let mut options = OpenOptions::new();
+        options.create(true).append(true).read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        self.file = options.open(&self.path)?;
+        self.journal_bytes = compacted.len() as u64;
+        self.poisoned = false;
+        Ok(archive)
     }
 
     fn commit(&mut self, event: Event) -> Result<ControlReceipt, Error> {
@@ -536,6 +623,70 @@ impl DurableInferenceControl {
         self.journal_bytes = next_bytes;
         Ok(())
     }
+}
+
+fn acquire_writer_lock(path: &Path) -> Result<File, Error> {
+    let lock_path = sibling_temp_path(path, "writer.lock");
+    let mut options = OpenOptions::new();
+    options.create(true).read(true).write(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let lock = options.open(lock_path)?;
+    lock.try_lock().map_err(|_| Error::WriterUnavailable)?;
+    Ok(lock)
+}
+
+fn sibling_temp_path(path: &Path, suffix: &str) -> PathBuf {
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or("inference.journal");
+    path.with_file_name(format!("{file_name}.{suffix}"))
+}
+
+fn archive_path(path: &Path, bytes: &[u8]) -> Result<PathBuf, Error> {
+    let digest = Digest32::of_bytes(bytes);
+    let mut hex = String::with_capacity(64);
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    for byte in digest.as_array() {
+        hex.push(HEX[(byte >> 4) as usize] as char);
+        hex.push(HEX[(byte & 0x0f) as usize] as char);
+    }
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or(Error::InvalidIdentity("journal path"))?;
+    Ok(path.with_file_name(format!("{file_name}.{ARCHIVE_SUFFIX_PREFIX}{hex}")))
+}
+
+fn validate_checkpoint_record(record: &RequestRecord) -> Result<(), Error> {
+    validate_request(0, &record.request)?;
+    if record.revision == 0 {
+        return Err(Error::CorruptJournal("checkpoint revision"));
+    }
+    if let Some(reservation) = &record.reservation {
+        validate_identity(&reservation.reservation_id, "reservation")?;
+        if reservation.quota_units == 0
+            || reservation.maximum_tokens == 0
+            || reservation.maximum_tokens > MAX_TOKENS
+            || reservation.authority_epoch == 0
+        {
+            return Err(Error::CorruptJournal("checkpoint reservation"));
+        }
+    }
+    if let Some(assignment) = &record.assignment {
+        validate_assignment(assignment)?;
+    }
+    if let Some(digest) = &record.terminal_observation_digest {
+        validate_digest(digest, "observation")?;
+    }
+    if record.consumed_tokens > MAX_TOKENS {
+        return Err(Error::UsageExceeded);
+    }
+    Ok(())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
