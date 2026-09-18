@@ -3692,6 +3692,7 @@ dependencies = [
 name = "codex-hepta-infer-core"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
  "serde",
  "serde_json",
@@ -3708,6 +3709,7 @@ dependencies = [
  "codex-hepta-infer-core",
  "codex-hepta-types",
  "codex-utils-absolute-path",
+ "serde",
  "serde_json",
  "sha2 0.10.9",
  "tokio",
