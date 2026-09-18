@@ -121,8 +121,14 @@ fn exact_retry_replays_outcome_and_credit_without_new_records() {
     let second = append_outcome_and_credit_v3(&mut ledger, request).expect("retry");
 
     assert_eq!(ledger.records().expect("records").len(), 3);
-    assert_eq!(second.outcome.disposition, AppendDisposition::IdempotentReplay);
-    assert_eq!(second.credit.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(
+        second.outcome.disposition,
+        AppendDisposition::IdempotentReplay
+    );
+    assert_eq!(
+        second.credit.disposition,
+        AppendDisposition::IdempotentReplay
+    );
     assert_eq!(second.closure_digest, first.closure_digest);
 }
 
