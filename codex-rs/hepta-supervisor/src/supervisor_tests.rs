@@ -1359,25 +1359,36 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     crate::signed_intent::write_intent(record.layout.run_root(), &intent)
         .expect("persist unresolved intent");
 
-    let error = match Supervisor::recover(
+    let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
         FakeControl::default().driver(),
         config(),
         Instant::now(),
-    ) {
-        Ok(_) => panic!("matching target must not infer a signed commit"),
-        Err(error) => error,
-    };
-    assert!(matches!(
-        error,
-        SupervisorError::SignedIntentRecoveryRequired(agent_id) if agent_id == fleet.first
-    ));
+    )?;
+    assert!(
+        report.faults.iter().any(|fault| {
+            fault.agent_id == fleet.first
+                && fault.message.contains("signed supervisor intent requires recovery")
+        }),
+        "matching target must be quarantined instead of inferred committed"
+    );
+    assert!(!recovered.snapshot(&fleet.first).expect("snapshot").healthy);
     assert_eq!(
         crate::signed_intent::read_intent(record.layout.run_root())
             .expect("read unresolved intent")
             .expect("intent remains durable")
             .status,
-        crate::signed_intent::SignedIntentStatus::Queued
+        crate::signed_intent::SignedIntentStatus::RecoveryRequired
+    );
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
     );
     Ok(())
 }
