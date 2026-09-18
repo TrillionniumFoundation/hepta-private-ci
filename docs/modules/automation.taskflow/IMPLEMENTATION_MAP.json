@@ -54,7 +54,8 @@
           "role": "durable_occurrence_materializer",
           "path": "codex-rs/hepta-automation/src/store.rs",
           "symbol": "pub async fn claim_due(",
-          "buildTarget": "codex-hepta-automation"
+          "buildTarget": "codex-hepta-automation",
+          "ownerModule": "automation.taskflow"
         }
       ],
       "tests": [
@@ -107,19 +108,22 @@
           "role": "durable_step_outbox",
           "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
           "symbol": "pub async fn prepare_taskflow_step(",
-          "buildTarget": "codex-hepta-automation"
+          "buildTarget": "codex-hepta-automation",
+          "ownerModule": "automation.taskflow"
         },
         {
           "role": "final_use_authority",
           "path": "codex-rs/hepta-automation/src/authority.rs",
           "symbol": "pub async fn verify_final_use_authority",
-          "buildTarget": "codex-hepta-automation"
+          "buildTarget": "codex-hepta-automation",
+          "ownerModule": "automation.taskflow"
         },
         {
           "role": "provider_observation",
           "path": "codex-rs/hepta-automation/src/causal_chain.rs",
           "symbol": "pub async fn record_provider_observation(",
-          "buildTarget": "codex-hepta-automation"
+          "buildTarget": "codex-hepta-automation",
+          "ownerModule": "automation.taskflow"
         }
       ],
       "tests": [
