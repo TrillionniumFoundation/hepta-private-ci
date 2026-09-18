@@ -71,6 +71,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        slot.automatic_restart_attempt = 0;
+        slot.automatic_restart_retry_at = None;
+        slot.automatic_restart_window_started_at = None;
+        slot.healthy_since = None;
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
             return Ok(());
         }
@@ -97,6 +101,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        slot.automatic_restart_attempt = 0;
+        slot.automatic_restart_retry_at = None;
+        slot.automatic_restart_window_started_at = None;
+        slot.healthy_since = None;
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
@@ -122,6 +130,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
+        // An explicit operator restart starts a fresh recovery window and
+        // supersedes any queued automatic retry.
+        slot.automatic_restart_attempt = 0;
+        slot.automatic_restart_retry_at = None;
+        slot.automatic_restart_window_started_at = None;
+        slot.healthy_since = None;
         let release = slot.active_release.clone().or_else(|| {
             slot.last_command
                 .clone()
