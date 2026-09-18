@@ -46,8 +46,9 @@ A production qualification is admitted only after all of the following:
 5. Require distinct generator and evaluator principals, credentials, signing
    keys and controller identities. Verify signatures over the exact production
    signing payload.
-6. For `SystemLongitudinal`, additionally verify the independent observer and
-   real observed-time window evidence through the V4 durable-longitudinal path.
+6. For `SystemLongitudinal`, additionally verify an observer that is independent
+   of **both** the generator and evaluator, plus real observed-time window evidence
+   through the V4 durable-longitudinal path.
 7. Preserve the decision, trust digest, authentication digest, durable holdout
    proof digest and exact candidate/source identity as audit evidence.
 8. Pass the evidence to a separate selector/operator/release authority. An
