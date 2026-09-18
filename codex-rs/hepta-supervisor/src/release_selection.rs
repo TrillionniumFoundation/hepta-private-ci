@@ -25,6 +25,7 @@ use crate::SupervisorError;
 pub const RELEASE_SELECTION_SCHEMA_VERSION: u32 = 1;
 pub(crate) const RELEASE_SELECTION_FILE: &str = "supervisor-release-selection.json";
 const SELECTION_DOMAIN: &[u8] = b"hepta-supervisor:release-selection:v1";
+const RECOVERY_SELECTION_DOMAIN: &[u8] = b"hepta-supervisor:release-selection-recovery:v1";
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -61,6 +62,8 @@ pub struct ReleaseSelectionSnapshot {
     pub control_revision: u64,
     pub lifecycle_generation: u64,
     pub status: ReleaseSelectionStatus,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recovery_decision_sha256: Option<Sha256Digest>,
     pub selection_sha256: Sha256Digest,
 }
 
@@ -82,6 +85,7 @@ impl ReleaseSelectionSnapshot {
             control_revision: self.control_revision,
             lifecycle_generation: self.lifecycle_generation,
             status: self.status,
+            recovery_decision_sha256: self.recovery_decision_sha256.clone(),
             selection_sha256: self.selection_sha256.clone(),
         }
         .validate()
@@ -106,8 +110,10 @@ pub(crate) struct ReleaseSelectionRecord {
     pub control_revision: u64,
     pub lifecycle_generation: u64,
     pub status: ReleaseSelectionStatus,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub recovery_decision_sha256: Option<Sha256Digest>,
     pub selection_sha256: Sha256Digest,
-}
+
 
 impl ReleaseSelectionRecord {
     pub(crate) fn snapshot(&self) -> ReleaseSelectionSnapshot {
@@ -127,6 +133,7 @@ impl ReleaseSelectionRecord {
             control_revision: self.control_revision,
             lifecycle_generation: self.lifecycle_generation,
             status: self.status,
+            recovery_decision_sha256: self.recovery_decision_sha256.clone(),
             selection_sha256: self.selection_sha256.clone(),
         }
     }
@@ -152,6 +159,7 @@ impl ReleaseSelectionRecord {
             control_revision,
             lifecycle_generation,
             status: ReleaseSelectionStatus::Prepared,
+            recovery_decision_sha256: None,
             selection_sha256: Sha256Digest::for_bytes(b"pending"),
         };
         value.selection_sha256 = value.compute_digest()?;
@@ -165,6 +173,26 @@ impl ReleaseSelectionRecord {
     ) -> Result<Self, SupervisorError> {
         let mut value = Self {
             status,
+            ..self.clone()
+        };
+        value.selection_sha256 = value.compute_digest()?;
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub(crate) fn with_recovery_status(
+        &self,
+        status: ReleaseSelectionStatus,
+        recovery_decision_sha256: Sha256Digest,
+    ) -> Result<Self, SupervisorError> {
+        if !matches!(status, ReleaseSelectionStatus::Committed | ReleaseSelectionStatus::RolledBack) {
+            return Err(SupervisorError::Invalid(
+                "recovery decision may only terminalize a release selection".to_string(),
+            ));
+        }
+        let mut value = Self {
+            status,
+            recovery_decision_sha256: Some(recovery_decision_sha256),
             ..self.clone()
         };
         value.selection_sha256 = value.compute_digest()?;
@@ -202,6 +230,18 @@ impl ReleaseSelectionRecord {
                 SupervisorError::Invalid(format!("release selection {label} digest is malformed"))
             })?;
         }
+        if let Some(digest) = self.recovery_decision_sha256.as_ref() {
+            Sha256Digest::parse(digest.as_str().to_string()).map_err(|_| {
+                SupervisorError::Invalid(
+                    "release selection recovery decision digest is malformed".to_string(),
+                )
+            })?;
+            if !self.status.terminal() {
+                return Err(SupervisorError::Invalid(
+                    "non-terminal release selection cannot bind a recovery decision".to_string(),
+                ));
+            }
+        }
         Sha256Digest::parse(self.selection_sha256.as_str().to_string())
             .map_err(|_| SupervisorError::Invalid("release selection digest is malformed".to_string()))?;
         if self.selection_sha256 != self.compute_digest()? {
@@ -231,9 +271,18 @@ impl ReleaseSelectionRecord {
             self.status,
         ))
         .map_err(|error| SupervisorError::Invalid(format!("encode release selection: {error}")))?;
-        Ok(Sha256Digest::from_sha256_output(Sha256::digest(
+        let base = Sha256Digest::from_sha256_output(Sha256::digest(
             [SELECTION_DOMAIN, payload.as_slice()].concat(),
-        )))
+        ));
+        let Some(recovery_decision_sha256) = self.recovery_decision_sha256.as_ref() else {
+            return Ok(base);
+        };
+        Ok(Sha256Digest::from_sha256_output(Sha256::digest([
+            RECOVERY_SELECTION_DOMAIN,
+            base.as_str().as_bytes(),
+            recovery_decision_sha256.as_str().as_bytes(),
+        ]
+        .concat())))
     }
 }
 
