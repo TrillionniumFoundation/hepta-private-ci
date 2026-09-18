@@ -683,7 +683,7 @@ fn derive_v2_delta(
         .iter()
         .filter_map(|(node_id, node)| match predecessor_nodes.get(node_id) {
             Some(previous) if *previous == *node => None,
-            _ => Some((*node).clone()),
+            _ => Some((**node).clone()),
         })
         .collect();
     let remove_edge_identities = predecessor_edges
@@ -695,7 +695,7 @@ fn derive_v2_delta(
         .iter()
         .filter_map(|(identity, edge)| match predecessor_edges.get(identity) {
             Some(previous) if *previous == *edge => None,
-            _ => Some((*edge).clone()),
+            _ => Some((**edge).clone()),
         })
         .collect();
 
