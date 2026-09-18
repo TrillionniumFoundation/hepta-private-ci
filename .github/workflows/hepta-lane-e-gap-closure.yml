@@ -30,9 +30,6 @@ env:
 
 jobs:
   rust-closure:
-    permissions:
-      contents: read
-      id-token: write
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -168,6 +165,63 @@ jobs:
             --actor-id "${GITHUB_ACTOR_ID}" \
             --stress-iterations 8 \
             --output "${evidence_dir}/learning-eval-evidence.json"
+
+      - name: Retain unsigned learning.eval evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-evidence-unsigned-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-learning-eval-evidence/learning-eval-evidence.json
+          if-no-files-found: error
+          retention-days: 7
+
+  sign-evidence:
+    if: github.event_name == 'push'
+    needs: rust-closure
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Bind exact trusted branch source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          python3 scripts/hepta-lane-e-closure.py verify
+
+      - name: Download unsigned learning.eval evidence
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: learning-eval-evidence-unsigned-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-learning-eval-evidence
+
+      - name: Verify evidence source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'hepta-learning-eval-evidence' / 'learning-eval-evidence.json'
+          evidence = json.loads(path.read_text(encoding='utf-8'))
+          assert evidence['source']['commitSha'] == os.environ['SOURCE_SHA']
+          tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          assert evidence['source']['treeSha'] == tree
+          assert evidence['workflow']['runId'] == os.environ['GITHUB_RUN_ID']
+          assert evidence['externalCapabilityGatesRemainOpen'] is True
+          assert evidence['authorityDelta'] == 'none'
+          PY
 
       - name: Sign learning.eval evidence
         uses: ./.github/actions/linux-code-sign
