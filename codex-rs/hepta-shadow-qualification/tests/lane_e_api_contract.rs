@@ -20,11 +20,14 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_bellman_operator::evaluate_bellman_reference;
     let _ = codex_hepta_bellman_operator::admit_operator_regularity;
     let _ = codex_hepta_bellman_operator::fit_transition_model;
-    let _ = codex_hepta_bellman_operator::predict_transition;
+    let _ = codex_hepta_bellman_operator::world_model_payload_digest_v1;
+    let _ = codex_hepta_bellman_operator::LoadedTabularWorldModelV1::from_pinned_model;
+    let _ = codex_hepta_bellman_operator::LoadedTabularWorldModelV1::predict;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator;
-    let _ = codex_hepta_bellman_operator::predict_tabular_operator;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
-    let _ = codex_hepta_bellman_operator::predict_tabular_operator_indexed_v2;
+    let _ = codex_hepta_bellman_operator::encode_tabular_payload_v1;
+    let _ = codex_hepta_bellman_operator::LoadedTabularOperatorV1::from_pinned_payload;
+    let _ = codex_hepta_bellman_operator::LoadedTabularOperatorV1::predict;
 
     let _ = codex_hepta_intelligence_eval::estimate_ope;
     let _ = codex_hepta_intelligence_eval::estimate_cluster_intervals;
