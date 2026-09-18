@@ -18,6 +18,9 @@ fn request(id: &str) -> NativeRequest {
         worker_generation: 4,
         model: "actual-model".to_string(),
         payload_digest: "a".repeat(64),
+        maximum_output_tokens: 0,
+        maximum_budget_units: 0,
+        admission: None,
     }
 }
 
@@ -26,6 +29,7 @@ fn dispatch() -> NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
+        final_use: None,
     }
 }
 
@@ -41,6 +45,7 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         observed_output_tokens: tokens,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        final_use_authority: NativeFinalUseAuthority::Unverified,
     }
 }
 
@@ -375,6 +380,7 @@ fn authorized_request(id: &str, maximum_output_tokens: u64) -> NativeRequest {
         model: "actual-model".to_string(),
         payload_digest: "c".repeat(64),
         maximum_output_tokens,
+        maximum_budget_units: 1,
         admission: Some(NativeAdmissionBinding {
             quota: NativeQuotaBinding {
                 reservation_id: "quota-1".to_string(),
@@ -382,6 +388,7 @@ fn authorized_request(id: &str, maximum_output_tokens: u64) -> NativeRequest {
                 reserved_requests: 3,
                 reserved_tokens: 15,
                 reserved_concurrency: 1,
+                reserved_day_budget: 2,
                 authority_epoch: 9,
                 expires_at_unix_seconds: u64::MAX,
             },
@@ -466,6 +473,43 @@ fn authorized_dispatch_requires_exact_provider_and_final_use_witness() {
         Err(Error::AssignmentMismatch)
     );
     control.dispatch_native("r1", authorized_dispatch()).unwrap();
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn authorized_economic_budget_remains_consumed_after_possible_provider_effect() {
+    let path = path("authorized-budget");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut first = authorized_request("r1", 5);
+    first
+        .admission
+        .as_mut()
+        .unwrap()
+        .quota
+        .reserved_day_budget = 1;
+    control.reserve_native(first, 4).unwrap();
+    control.dispatch_native("r1", authorized_dispatch()).unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+    let mut terminal = output(NativeRunStatus::Completed, Some(1));
+    terminal.final_use_authority = NativeFinalUseAuthority::Claimed {
+        grant_id: "grant-1".to_string(),
+        authority_epoch: 9,
+    };
+    control.settle_native("r1", terminal).unwrap();
+
+    let mut second = authorized_request("r2", 1);
+    second
+        .admission
+        .as_mut()
+        .unwrap()
+        .quota
+        .reserved_day_budget = 1;
+    assert_eq!(
+        control.reserve_native(second, 4),
+        Err(Error::CapacityExceeded),
+        "without authenticated billing reconciliation the full economic hold stays consumed"
+    );
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
