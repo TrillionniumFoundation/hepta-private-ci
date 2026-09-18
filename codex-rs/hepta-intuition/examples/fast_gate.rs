@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used, clippy::expect_used)]
+
 use std::alloc::GlobalAlloc;
 use std::alloc::Layout;
 use std::alloc::System;
