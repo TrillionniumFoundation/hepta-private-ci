@@ -252,3 +252,55 @@ fn hex_value(byte: u8) -> Option<u8> {
         _ => None,
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use codex_hepta_contracts::FinalUseGrant;
+    use codex_hepta_contracts::SignedFinalUseGrant;
+    use crate::runtime::SessionFence;
+
+    fn unsigned_grant() -> SignedFinalUseGrant {
+        SignedFinalUseGrant {
+            grant: FinalUseGrant {
+                schema_version: 1,
+                signer_id: "issuer.1".to_string(),
+                authority_epoch: 1,
+                grant_id: "grant.1".to_string(),
+                nonce: [1_u8; 32],
+                binding: FinalUseBinding {
+                    subject_id: "operation.1".to_string(),
+                    destination_id: "ui.native/copy_text".to_string(),
+                    request_sha256: [1_u8; 32],
+                    scope_sha256: [2_u8; 32],
+                    payload_sha256: [3_u8; 32],
+                },
+                not_before_unix_ms: 1,
+                expires_at_unix_ms: 2,
+            },
+            signature: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn missing_authority_rejects_before_platform_effect() -> Result<(), NativeError> {
+        let mut adapter = SecurePlatformAdapter::new(None);
+        let request = PlatformRequest {
+            session: SessionFence {
+                session_id: "session.1".to_string(),
+                generation: 1,
+            },
+            operation_id: "operation.1".to_string(),
+            displayed_revision: 1,
+            action: PlatformAction::CopyText {
+                text: "must-not-reach-clipboard".to_string(),
+            },
+            grant: unsigned_grant(),
+        };
+        let observation = adapter.dispatch(&request)?;
+        assert_eq!(observation.status, OperationStatus::Rejected);
+        assert!(observation.outcome_digest.is_some());
+        Ok(())
+    }
+}
