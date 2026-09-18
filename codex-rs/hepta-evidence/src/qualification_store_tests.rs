@@ -9,6 +9,7 @@ use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
 
 use crate::AuthenticatedEvidenceIssuerV1;
+use crate::canonical::canonical_json;
 use crate::EvidenceDisposition;
 use crate::EvidenceError;
 use crate::EvidenceId;
@@ -220,7 +221,7 @@ async fn target_api_appends_queries_verifies_and_survives_reopen() {
 }
 
 #[tokio::test]
-async fn evid_01_same_controller_cannot_satisfy_independent_roles() {
+async fn evid_01_same_principal_cannot_satisfy_independent_roles() {
     let temp = TempDir::new().expect("temp dir");
     let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
         .await
@@ -235,8 +236,8 @@ async fn evid_01_same_controller_cannot_satisfy_independent_roles() {
     );
     let (evaluator_key, evaluator) = issuer(
         22,
-        "principal:evaluator",
-        "controller:shared",
+        "principal:generator",
+        "controller:evaluator",
         vec![QualificationEvidenceRoleV1::Evaluator],
         now,
     );
@@ -376,6 +377,162 @@ async fn evid_03_corrupted_payload_fails_integrity_on_reopen() {
     .execute(&raw)
     .await
     .expect("corrupt payload");
+    sqlx::query(
+        "CREATE TRIGGER qualification_evidence_no_update
+         BEFORE UPDATE ON qualification_evidence
+         BEGIN
+             SELECT RAISE(ABORT, 'qualification evidence is immutable');
+         END",
+    )
+    .execute(&raw)
+    .await
+    .expect("restore immutable trigger");
+    raw.close().await;
+
+    assert!(matches!(
+        HeptaEvidenceStore::open(&sqlite).await,
+        Err(EvidenceError::Corrupt(_))
+    ));
+}
+
+#[tokio::test]
+async fn evid_02_expired_evidence_is_unavailable() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+        .await
+        .expect("open");
+    let now = now_ms();
+    let (key, evaluator) = issuer(
+        32,
+        "principal:evaluator-expiry",
+        "controller:evaluator-expiry",
+        vec![QualificationEvidenceRoleV1::Evaluator],
+        now,
+    );
+    let evaluation = receipt(
+        &key,
+        &evaluator,
+        "evidence:expiring",
+        QualificationClaimClassV1::CandidateEvaluation,
+        QualificationEvidenceRoleV1::Evaluator,
+        None,
+        now,
+    );
+    store
+        .qualification()
+        .append_receipt(&evaluation, &evaluator)
+        .await
+        .expect("append");
+
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(
+                &candidate(),
+                &[QualificationEvidenceRoleV1::Evaluator],
+                evaluation.expires_unix_ms + 1,
+            )
+            .await
+            .expect("verify after expiry"),
+        EvidenceDisposition::Expired { .. }
+    ));
+}
+
+#[tokio::test]
+async fn evid_03_broken_predecessor_fails_integrity_on_reopen() {
+    let temp = TempDir::new().expect("temp dir");
+    let sqlite = sqlite_config(&temp);
+    let store = HeptaEvidenceStore::open(&sqlite).await.expect("open");
+    let now = now_ms();
+    let (key, evaluator) = issuer(
+        42,
+        "principal:evaluator-lineage",
+        "controller:evaluator-lineage",
+        vec![QualificationEvidenceRoleV1::Evaluator],
+        now,
+    );
+    let root = receipt(
+        &key,
+        &evaluator,
+        "evidence:lineage-root",
+        QualificationClaimClassV1::CandidateEvaluation,
+        QualificationEvidenceRoleV1::Evaluator,
+        None,
+        now,
+    );
+    let child = receipt(
+        &key,
+        &evaluator,
+        "evidence:lineage-child",
+        QualificationClaimClassV1::CandidateEvaluation,
+        QualificationEvidenceRoleV1::Evaluator,
+        Some(root.evidence_id.clone()),
+        now + 1,
+    );
+    store
+        .qualification()
+        .append_receipt(&root, &evaluator)
+        .await
+        .expect("append root");
+    store
+        .qualification()
+        .append_receipt(&child, &evaluator)
+        .await
+        .expect("append child");
+    let path = store.path().to_path_buf();
+    drop(store);
+
+    let mut broken = child.clone();
+    broken.predecessor_evidence_id =
+        Some(EvidenceId::parse("evidence:missing-predecessor").expect("missing id"));
+    broken.detached_signature_hex =
+        hex(&key.sign(&broken.signing_bytes().expect("sign broken lineage")).to_bytes());
+    let payload = canonical_json(&broken).expect("canonical broken lineage");
+    let payload_json = String::from_utf8(payload.clone()).expect("UTF-8");
+    let record_sha256 = Sha256Digest::for_bytes(&payload);
+
+    let raw = sqlite
+        .open_durable_evidence_pool(&path)
+        .await
+        .expect("raw pool");
+    let mut connection = raw.acquire().await.expect("raw connection");
+    sqlx::query("PRAGMA foreign_keys = OFF")
+        .execute(&mut *connection)
+        .await
+        .expect("disable foreign keys for corruption fixture");
+    sqlx::query("DROP TRIGGER qualification_evidence_no_update")
+        .execute(&mut *connection)
+        .await
+        .expect("drop trigger for corruption fixture");
+    sqlx::query(
+        "UPDATE qualification_evidence
+         SET predecessor_evidence_id = ?, payload_json = ?, record_sha256 = ?
+         WHERE evidence_id = ?",
+    )
+    .bind(
+        broken
+            .predecessor_evidence_id
+            .as_ref()
+            .expect("broken predecessor")
+            .as_str(),
+    )
+    .bind(&payload_json)
+    .bind(record_sha256.as_str())
+    .bind(broken.evidence_id.as_str())
+    .execute(&mut *connection)
+    .await
+    .expect("write broken lineage");
+    sqlx::query(
+        "CREATE TRIGGER qualification_evidence_no_update
+         BEFORE UPDATE ON qualification_evidence
+         BEGIN
+             SELECT RAISE(ABORT, 'qualification evidence is immutable');
+         END",
+    )
+    .execute(&mut *connection)
+    .await
+    .expect("restore immutable trigger");
+    drop(connection);
     raw.close().await;
 
     assert!(matches!(

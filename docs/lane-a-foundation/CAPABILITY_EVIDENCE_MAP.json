@@ -625,8 +625,10 @@
         {
           "path": "codex-rs/hepta-evidence/src/qualification_store_tests.rs",
           "mustContain": [
-            "evid_01_same_controller_cannot_satisfy_independent_roles",
+            "evid_01_same_principal_cannot_satisfy_independent_roles",
             "evid_02_different_tree_is_unavailable",
+            "evid_02_expired_evidence_is_unavailable",
+            "evid_03_broken_predecessor_fails_integrity_on_reopen",
             "evid_03_corrupted_payload_fails_integrity_on_reopen",
             "evid_04_claim_class_substitution_is_rejected_by_query",
             "changed_payload_under_reused_identity_conflicts"

@@ -942,8 +942,8 @@ fn decode_qualification_row(row: &SqliteRow) -> Result<StoredQualificationEviden
     let payload_json: String = row.try_get("payload_json").map_err(classify_sqlx_error)?;
     let envelope: QualificationEvidenceEnvelopeV1 = serde_json::from_str(&payload_json)
         .map_err(|error| EvidenceError::Corrupt(format!("invalid qualification receipt JSON: {error}")))?;
-    validate_envelope_shape(&envelope)?;
-    verify_embedded_signature(&envelope)?;
+    validate_envelope_shape(&envelope).map_err(stored_validation_error)?;
+    verify_embedded_signature(&envelope).map_err(stored_validation_error)?;
     let canonical = canonical_json(&envelope)?;
     if canonical.as_slice() != payload_json.as_bytes() {
         return Err(EvidenceError::Corrupt(
@@ -1149,6 +1149,15 @@ fn decode_hex_array<const N: usize>(
             .map_err(|_| invalid(format!("{label} contains invalid hexadecimal")))?;
     }
     Ok(output)
+}
+
+fn stored_validation_error(error: EvidenceError) -> EvidenceError {
+    match error {
+        EvidenceError::Corrupt(_) => error,
+        other => EvidenceError::Corrupt(format!(
+            "invalid stored qualification receipt: {other}"
+        )),
+    }
 }
 
 fn invalid(message: impl Into<String>) -> EvidenceError {
