@@ -311,8 +311,8 @@ fn signed_grant(
 }
 
 #[tokio::test]
-async fn issue_is_durable_before_secret_delivery_and_duplicate_never_redispatches(
-) -> Result<(), TestError> {
+async fn issue_is_durable_before_secret_delivery_and_duplicate_never_redispatches()
+-> Result<(), TestError> {
     let root = tempfile::tempdir()?;
     let state_dir = root.path().join("leases");
     let provider = FakeProvider::supported();
@@ -334,7 +334,9 @@ async fn issue_is_durable_before_secret_delivery_and_duplicate_never_redispatche
         .request_secret_lease(&authority, &grant, &request, payload, |bytes| {
             consumed = bytes == SECRET;
             durable_before_delivery = std::fs::read_to_string(&journal_path)
-                .map(|journal| journal.contains("lease-1") && !journal.contains("fixture-dynamic-secret"))
+                .map(|journal| {
+                    journal.contains("lease-1") && !journal.contains("fixture-dynamic-secret")
+                })
                 .unwrap_or(false);
             Ok(())
         })
@@ -381,8 +383,7 @@ async fn issue_is_durable_before_secret_delivery_and_duplicate_never_redispatche
 }
 
 #[tokio::test]
-async fn unknown_issue_survives_restart_and_reconciles_without_reissue(
-) -> Result<(), TestError> {
+async fn unknown_issue_survives_restart_and_reconciles_without_reissue() -> Result<(), TestError> {
     let root = tempfile::tempdir()?;
     let state_dir = root.path().join("leases");
     let provider = FakeProvider::supported();
@@ -437,7 +438,10 @@ async fn unknown_issue_survives_restart_and_reconciles_without_reissue(
     assert_eq!(provider.dispatches(), 1);
     assert_eq!(provider.lookups(), 1);
     assert_eq!(
-        reconciled.lease.as_ref().map(|lease| lease.lease_id.as_str()),
+        reconciled
+            .lease
+            .as_ref()
+            .map(|lease| lease.lease_id.as_str()),
         Some("lease-reconciled")
     );
     Ok(())
@@ -460,13 +464,7 @@ async fn renew_and_revoke_are_generation_bound_and_deduplicated() -> Result<(), 
         coordinator.binding(&BaoLeaseRequest::Issue(issue.clone()), issue_payload)?;
     let issue_grant = signed_grant(issue_binding, 21, "grant-life-issue")?;
     coordinator
-        .request_secret_lease(
-            &authority,
-            &issue_grant,
-            &issue,
-            issue_payload,
-            |_| Ok(()),
-        )
+        .request_secret_lease(&authority, &issue_grant, &issue, issue_payload, |_| Ok(()))
         .await?;
 
     let renew = BaoLeaseRenewRequest {
@@ -529,15 +527,9 @@ async fn renew_and_revoke_are_generation_bound_and_deduplicated() -> Result<(), 
 
     let duplicate_revoke_binding =
         coordinator.binding(&BaoLeaseRequest::Revoke(revoke.clone()), revoke_payload)?;
-    let duplicate_revoke_grant =
-        signed_grant(duplicate_revoke_binding, 25, "grant-life-revoke-2")?;
+    let duplicate_revoke_grant = signed_grant(duplicate_revoke_binding, 25, "grant-life-revoke-2")?;
     let duplicate_revoke = coordinator
-        .revoke(
-            &authority,
-            &duplicate_revoke_grant,
-            &revoke,
-            revoke_payload,
-        )
+        .revoke(&authority, &duplicate_revoke_grant, &revoke, revoke_payload)
         .await?;
     assert_eq!(duplicate_revoke.state, ProviderEffectState::Completed);
     assert!(!duplicate_revoke.physical_dispatch_attempted);
@@ -587,8 +579,7 @@ async fn unsupported_provider_is_rejected_before_dispatch() -> Result<(), TestEr
     let root = tempfile::tempdir()?;
     let provider = FakeProvider::unsupported();
     let authority = authority(root.path())?;
-    let mut coordinator =
-        BaoLeaseCoordinator::open(provider.clone(), &root.path().join("leases"))?;
+    let mut coordinator = BaoLeaseCoordinator::open(provider.clone(), &root.path().join("leases"))?;
     let request = issue_request("unsupported-provider");
     let payload = b"issue";
     let binding = coordinator.binding(&BaoLeaseRequest::Issue(request.clone()), payload)?;
@@ -605,13 +596,13 @@ async fn unsupported_provider_is_rejected_before_dispatch() -> Result<(), TestEr
 }
 
 #[tokio::test]
-async fn accepted_status_reconciles_to_completed_without_second_dispatch() -> Result<(), TestError> {
+async fn accepted_status_reconciles_to_completed_without_second_dispatch() -> Result<(), TestError>
+{
     let root = tempfile::tempdir()?;
     let provider = FakeProvider::supported();
     provider.set_dispatch(DispatchPlan::Accepted);
     let authority = authority(root.path())?;
-    let mut coordinator =
-        BaoLeaseCoordinator::open(provider.clone(), &root.path().join("leases"))?;
+    let mut coordinator = BaoLeaseCoordinator::open(provider.clone(), &root.path().join("leases"))?;
     let request = issue_request("accepted-provider");
     let payload = b"issue";
     let binding = coordinator.binding(&BaoLeaseRequest::Issue(request.clone()), payload)?;
@@ -633,7 +624,9 @@ async fn accepted_status_reconciles_to_completed_without_second_dispatch() -> Re
     };
     let binding = coordinator.reconcile_binding(&reconcile)?;
     let grant = signed_grant(binding, 52, "grant-accepted-reconcile")?;
-    let completed = coordinator.reconcile(&authority, &grant, &reconcile).await?;
+    let completed = coordinator
+        .reconcile(&authority, &grant, &reconcile)
+        .await?;
     assert_eq!(completed.state, ProviderEffectState::Completed);
     assert_eq!(provider.dispatches(), 1);
     assert_eq!(provider.lookups(), 1);
