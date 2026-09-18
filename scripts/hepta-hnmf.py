@@ -55,6 +55,128 @@ PROTOCOLS = [
     "ForgetPropagationReceiptV1",
 ]
 
+PROTOCOL_REQUIRED_FIELDS = {
+    "ModalitySpanRefV1": [
+        "spanId",
+        "modality",
+        "assetSha256",
+        "range",
+        "preprocessorManifestSha256",
+        "uncertaintyPpm",
+        "privacyClass",
+    ],
+    "MemoryEventV1": [
+        "eventId",
+        "episodeId",
+        "scope",
+        "observedInterval",
+        "modalitySpans",
+        "crossModalBindings",
+        "semanticKeys",
+        "provenance",
+        "verification",
+        "retentionPolicy",
+        "objectiveDigest",
+        "nduStateDigest",
+        "lifecycle",
+    ],
+    "CrossModalBindingV1": [
+        "bindingId",
+        "eventId",
+        "spanRefs",
+        "alignmentKind",
+        "confidencePpm",
+        "producerManifestSha256",
+    ],
+    "EngramNodeV1": [
+        "nodeId",
+        "population",
+        "modalityMask",
+        "supportManifestSha256",
+        "thresholdQ16",
+        "targetActivityPpm",
+        "confidencePpm",
+        "snapshotGeneration",
+    ],
+    "SynapseV1": [
+        "sourceNodeId",
+        "targetNodeId",
+        "relation",
+        "weightQ16",
+        "delaySteps",
+        "plasticityClass",
+        "supportManifestSha256",
+        "snapshotGeneration",
+    ],
+    "MemoryCueV1": [
+        "cueId",
+        "objectiveDigest",
+        "nduStateDigest",
+        "modalities",
+        "semanticKeys",
+        "seedNodeIds",
+        "nowUnixMs",
+        "resourceBudget",
+    ],
+    "RecallPacketV1": [
+        "cueDigest",
+        "eventSnapshotDigest",
+        "engramSnapshotDigest",
+        "selectedEvents",
+        "activeNodes",
+        "activationPaths",
+        "contradictions",
+        "coveragePpm",
+        "confidencePpm",
+        "oodPpm",
+        "abstain",
+        "resourceReceipt",
+    ],
+    "OutcomeSignalV1": [
+        "episodeId",
+        "utilityDeltaPpm",
+        "predictionErrorPpm",
+        "noveltyPpm",
+        "riskPpm",
+        "oodPpm",
+        "observerDigest",
+    ],
+    "ReplaySelectionReceiptV1": [
+        "candidateSetDigest",
+        "selectedEventIds",
+        "sourceBucketCounts",
+        "selectionPolicyDigest",
+        "resourceReceipt",
+    ],
+    "PlasticityBatchV1": [
+        "predecessorGeneration",
+        "nextGeneration",
+        "outcomeSignalDigest",
+        "weightProposals",
+        "thresholdProposals",
+        "currentSnapshotImmutable",
+        "productionActivationAllowed",
+    ],
+    "TopologyProposalV1": [
+        "predecessorGeneration",
+        "nextGeneration",
+        "operation",
+        "capabilityTyped",
+        "sandboxOnly",
+        "operatorAccepted",
+        "productionActivationAllowed",
+    ],
+    "ForgetPropagationReceiptV1": [
+        "eventId",
+        "predecessorGeneration",
+        "nextGeneration",
+        "retiredNodeIds",
+        "retiredSynapses",
+        "projectionRebuildRequired",
+        "artifactRevocationRequired",
+    ],
+}
+
 WORK_PACKAGES = [
     "HNM-0-MULTIMODAL-CONTRACTS",
     "HNM-1-IMMUTABLE-EVENT-LEDGER",
@@ -243,10 +365,17 @@ def verify() -> int:
         [item.get("id") for item in spec.get("populations", [])] == POPULATIONS,
         "population closure",
     )
+    protocol_rows = spec.get("protocols", [])
     need(
-        [item.get("id") for item in spec.get("protocols", [])] == PROTOCOLS,
+        [item.get("id") for item in protocol_rows] == PROTOCOLS,
         "protocol closure",
     )
+    for item in protocol_rows:
+        protocol_id = item["id"]
+        need(
+            item.get("requiredFields") == PROTOCOL_REQUIRED_FIELDS[protocol_id],
+            f"protocol required fields {protocol_id}",
+        )
     need(
         [item.get("id") for item in spec.get("workPackages", [])] == WORK_PACKAGES,
         "work-package closure",
