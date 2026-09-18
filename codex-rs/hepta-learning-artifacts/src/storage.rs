@@ -358,12 +358,7 @@ pub(crate) fn read_bounded_blob(
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     let expected_bytes =
         u64::try_from(expected_bytes).map_err(|_| ArtifactStorageError::Capacity)?;
-    read_bounded(
-        file,
-        limit,
-        expected_bytes,
-        ArtifactStorageError::Corrupt,
-    )
+    read_bounded(file, limit, expected_bytes, ArtifactStorageError::Corrupt)
 }
 
 fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
