@@ -258,6 +258,22 @@ async fn governance_product_host_composes_authenticated_writer_reader_and_termin
         Ok(store.clone()),
         revoked_authority,
     );
+    let stale_terminal = signed_receipt(
+        &observer_signing,
+        &observer,
+        "qe:product-terminal:stale",
+        EvidenceClaimClassV1::ProviderEffect,
+        b"must not append after external revocation",
+    );
+    let stale_error = revoked_state
+        .append_qualification_receipt(&stale_terminal, &observer)
+        .await
+        .expect_err("stale authenticated issuer must be revalidated against current revocations");
+    assert!(matches!(
+        stale_error,
+        codex_hepta_evidence::EvidenceError::InvalidRecord(_)
+    ));
+
     let revoked_refs = revoked_state
         .query_qualification_claim(&candidate(), EvidenceClaimClassV1::ProviderEffect)
         .await

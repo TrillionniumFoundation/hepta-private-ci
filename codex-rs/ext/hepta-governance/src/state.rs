@@ -123,9 +123,9 @@ impl GovernanceState {
         issuer: &AuthenticatedEvidenceIssuerV1,
     ) -> Result<EvidenceId, EvidenceError> {
         let store = self.qualification_store()?;
-        store
-            .verify_qualification_trust(self.qualification_authority()?)
-            .await?;
+        let authority = self.qualification_authority()?;
+        authority.revalidate_authenticated(issuer, signed.envelope.observed_unix_ms)?;
+        store.verify_qualification_trust(authority).await?;
         store.append_receipt(signed, issuer).await
     }
 
@@ -136,9 +136,9 @@ impl GovernanceState {
         decision: &IndependentDecisionReceiptV1,
     ) -> Result<AppendDisposition, EvidenceError> {
         let store = self.qualification_store()?;
-        store
-            .verify_qualification_trust(self.qualification_authority()?)
-            .await?;
+        let authority = self.qualification_authority()?;
+        authority.revalidate_authenticated(issuer, signed.envelope.observed_unix_ms)?;
+        store.verify_qualification_trust(authority).await?;
         store
             .append_independent_decision_receipt(signed, issuer, decision)
             .await
@@ -150,8 +150,11 @@ impl GovernanceState {
         authority: &AuthenticatedEvidenceIssuerV1,
     ) -> Result<AppendDisposition, EvidenceError> {
         let store = self.qualification_store()?;
+        let qualification_authority = self.qualification_authority()?;
+        qualification_authority
+            .revalidate_authenticated(authority, signed.revocation.observed_unix_ms)?;
         store
-            .verify_qualification_trust(self.qualification_authority()?)
+            .verify_qualification_trust(qualification_authority)
             .await?;
         store.append_issuer_key_revocation(signed, authority).await
     }

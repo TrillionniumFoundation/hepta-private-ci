@@ -357,6 +357,20 @@ impl EvidenceIssuerAuthorityV1 {
         authenticate_evidence_issuer(&self.root, &self.revocations, signed, now_unix_ms)
     }
 
+    pub fn revalidate_authenticated(
+        &self,
+        issuer: &AuthenticatedEvidenceIssuerV1,
+        now_unix_ms: u64,
+    ) -> Result<(), EvidenceError> {
+        authenticate_evidence_issuer(
+            &self.root,
+            &self.revocations,
+            issuer.signed_certificate.clone(),
+            now_unix_ms,
+        )
+        .map(|_| ())
+    }
+
     fn verify_certificate_signature(
         &self,
         signed: &SignedEvidenceIssuerCertificateV1,
@@ -1631,6 +1645,7 @@ fn verify_qualification_row(row: &sqlx::sqlite::SqliteRow) -> Result<(), Evidenc
         || certificate.principal_id != envelope.issuer_principal
         || certificate.key_id != envelope.issuer_key_id
         || certificate.role != envelope.issuer_role
+        || certificate.not_before_unix_ms > envelope.observed_unix_ms
         || certificate.expires_unix_ms < envelope.expires_unix_ms
         || certificate_sha256.as_str()
             != row
@@ -1737,12 +1752,26 @@ async fn verify_independent_decision_row(
             "independent decision row projection is invalid".to_string(),
         ));
     }
-    let envelope_json: String =
-        sqlx::query_scalar("SELECT envelope_json FROM qualification_evidence WHERE receipt_id = ?")
-            .bind(&receipt_id)
-            .fetch_one(pool)
-            .await
-            .map_err(classify_sqlx_error)?;
+    let evidence_row = sqlx::query(
+        "SELECT envelope_json, issuer_verifying_key
+         FROM qualification_evidence WHERE receipt_id = ?",
+    )
+    .bind(&receipt_id)
+    .fetch_one(pool)
+    .await
+    .map_err(classify_sqlx_error)?;
+    let envelope_json: String = evidence_row
+        .try_get("envelope_json")
+        .map_err(classify_sqlx_error)?;
+    let issuer_key_bytes: Vec<u8> = evidence_row
+        .try_get("issuer_verifying_key")
+        .map_err(classify_sqlx_error)?;
+    let issuer_key: [u8; 32] = issuer_key_bytes.try_into().map_err(|_| {
+        EvidenceError::Corrupt(
+            "independent decision issuer verifying key has invalid length".to_string(),
+        )
+    })?;
+    let signing_identity_digest = Sha256Digest::for_bytes(&issuer_key);
     let envelope: QualificationEvidenceEnvelopeV1 =
         serde_json::from_str(&envelope_json).map_err(|error| {
             EvidenceError::Corrupt(format!(
@@ -1753,6 +1782,8 @@ async fn verify_independent_decision_row(
         || envelope.candidate.candidate_id != decision.candidate_id
         || envelope.issuer_role.as_str() != decision.role
         || envelope.issuer_principal != decision.principal_id
+        || decision.signing_identity_digest != signing_identity_digest
+        || decision.expires_unix_ms > envelope.expires_unix_ms
         || envelope.payload_sha256 != digest
     {
         return Err(EvidenceError::Corrupt(
