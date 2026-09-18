@@ -27,7 +27,21 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn q32_ratio(numerator: i64, denominator: i64) -> i64 {
-    ((i128::from(numerator) << 32) / i128::from(denominator)) as i64
+    let raw = (i128::from(numerator) << 32) / i128::from(denominator);
+    match i64::try_from(raw) {
+        Ok(value) => value,
+        Err(_) => panic!("fixture ratio must fit Q32"),
+    }
+}
+
+fn q32_ratio_ceil(numerator: i64, denominator: i64) -> i64 {
+    let scaled = i128::from(numerator) << 32;
+    let divisor = i128::from(denominator);
+    let raw = (scaled + divisor - 1) / divisor;
+    match i64::try_from(raw) {
+        Ok(value) => value,
+        Err(_) => panic!("fixture ratio must fit Q32"),
+    }
 }
 
 fn evidence() -> NduConvergenceEvidenceV1 {
@@ -87,7 +101,7 @@ fn stale_objective_or_failed_numeric_gate_rejects() {
     );
 
     let mut spectral = evidence();
-    spectral.spectral_radius_upper95_q32 = q32_ratio(95, 100);
+    spectral.spectral_radius_upper95_q32 = q32_ratio_ceil(95, 100);
     assert_eq!(
         must(evaluate_ndu_convergence_v1(&spectral)).decision,
         NduConvergenceDecisionV1::Rejected
