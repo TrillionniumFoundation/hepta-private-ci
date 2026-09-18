@@ -190,6 +190,60 @@ class OrchestrationTests(unittest.TestCase):
         self.assertEqual(plan.assignments, ())
         self.assertTrue(plan.blocked)
 
+    def test_path_conflict_does_not_consume_worker_ci_or_review_capacity(self):
+        blocked = EngineeringWorkPackage(
+            0,
+            "blocked",
+            (),
+            ("src/blocked",),
+            ("python",),
+            1,
+            1,
+            ("architecture_reviewer",),
+            100,
+            100,
+            0,
+        )
+        ready = EngineeringWorkPackage(
+            1,
+            "ready",
+            (),
+            ("src/ready",),
+            ("python",),
+            1,
+            1,
+            ("architecture_reviewer",),
+            1,
+            1,
+            0,
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "db.sqlite3") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                store.acquire_path_lease(
+                    "lease",
+                    self.envelope.envelope_id,
+                    "other-worker",
+                    ("src/blocked",),
+                    authority_epoch=1,
+                    expires_unix_ns=1000,
+                    now_ns=self.now,
+                )
+                plan = schedule_engineering_work(
+                    store,
+                    self.envelope,
+                    (blocked, ready),
+                    (WorkerCapacity("worker", ("python",), 1, 1),),
+                    (ReviewCapacity("architecture_reviewer", 1),),
+                    ci_capacity_units=1,
+                    completion_receipts=(),
+                    verifier=self.trust,
+                    generation_id="generation-path",
+                    now_ns=self.now,
+                )
+        self.assertEqual(plan.integration_order, ("ready",))
+        self.assertIn(("blocked", "active_path_lease"), plan.blocked)
+
     def test_authenticated_source_receipt_binds_envelope_before_persistence(self):
         source = CanonicalSourceReceipt(
             "TrillionniumFoundation/hepta-private-ci",
