@@ -117,6 +117,7 @@ impl DurablePromptRegistry {
         if decoded.migrated {
             host.persist_registry(&host.registry)?;
         }
+        host.cleanup_verified_backup()?;
         Ok(host)
     }
 
@@ -195,6 +196,15 @@ impl DurablePromptRegistry {
         Ok(receipt)
     }
 
+    fn cleanup_verified_backup(&self) -> Result<(), PromptRegistryStoreError> {
+        let backup = self.directory.join(BACKUP_FILE);
+        if backup.exists() {
+            remove_file_if_exists(&backup)?;
+            sync_directory(&self.directory)?;
+        }
+        Ok(())
+    }
+
     fn ensure_persisted_generation_matches_current(
         &self,
     ) -> Result<(), PromptRegistryStoreError> {
@@ -247,8 +257,11 @@ fn recover_interrupted_commit(directory: &Path) -> Result<(), PromptRegistryStor
     let backup = directory.join(BACKUP_FILE);
 
     if destination.exists() {
+        // Keep a predecessor until the current image has been decoded and its
+        // registry integrity verified. A corrupt current image must fail closed
+        // without silently rolling back, but the last known predecessor remains
+        // available for diagnosis or explicit operator recovery.
         remove_file_if_exists(&temporary)?;
-        remove_file_if_exists(&backup)?;
         return Ok(());
     }
 

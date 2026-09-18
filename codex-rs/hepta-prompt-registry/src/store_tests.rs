@@ -114,6 +114,25 @@ fn durable_admission_consumes_scope_bound_authority_before_publication() {
 }
 
 #[test]
+fn corrupt_current_fails_closed_without_destroying_predecessor_backup() {
+    let directory = tempfile::tempdir().expect("store temp dir");
+    {
+        let mut store =
+            DurablePromptRegistry::open_or_create(directory.path(), 64).expect("create store");
+        store
+            .register_factor(factor_with_id("factor:1", FactorSource::GovernedInternal))
+            .expect("register factor");
+    }
+    let current = directory.path().join(STATE_FILE);
+    let backup = directory.path().join(BACKUP_FILE);
+    std::fs::copy(&current, &backup).expect("preserve predecessor");
+    std::fs::write(&current, b"{\"corrupt\":true}").expect("corrupt current");
+
+    assert!(DurablePromptRegistry::open(directory.path()).is_err());
+    assert!(backup.exists());
+}
+
+#[test]
 fn tampered_durable_state_fails_closed_on_reopen() {
     let directory = tempfile::tempdir().expect("store temp dir");
     {
