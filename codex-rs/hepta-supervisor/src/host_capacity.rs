@@ -6,6 +6,7 @@ use codex_hepta_fleet::lease_ledger::HostObservation;
 
 use crate::SupervisorError;
 
+#[cfg(target_os = "macos")]
 const MIB: u64 = 1024 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
