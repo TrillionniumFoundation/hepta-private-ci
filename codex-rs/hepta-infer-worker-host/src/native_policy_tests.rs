@@ -101,7 +101,9 @@ fn admission_binding_rejects_token_budget_exhaustion() {
 
     assert!(matches!(
         policy.admission_binding(now, "agent-inference", 7, "gpt-test", 1025, 100),
-        Err(NativePolicyError::Invalid("quota/resource authority mismatch"))
+        Err(NativePolicyError::Invalid(
+            "quota/resource authority mismatch"
+        ))
     ));
 }
 
@@ -156,6 +158,8 @@ fn admission_binding_rejects_economic_budget_exhaustion() {
 
     assert!(matches!(
         policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512, 1025),
-        Err(NativePolicyError::Invalid("quota/resource authority mismatch"))
+        Err(NativePolicyError::Invalid(
+            "quota/resource authority mismatch"
+        ))
     ));
 }
