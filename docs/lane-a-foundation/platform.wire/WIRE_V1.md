@@ -35,19 +35,22 @@ The codec is stateless and library-only. Successful decode is not transport
 acceptance, authorization, dispatch acknowledgement or external terminal
 success.
 
-## Target-only design
+## Compatibility status
 
-Version negotiation, streaming decode, multi-version adapters and an
-authenticated complete-envelope digest are target-only. A future version must
-use a new version value and frozen vectors; V1 bytes and meanings cannot be
-reinterpreted in place.
+V1 remains fixed and does not negotiate from inside `WireEnvelope::decode`.
+The module-level negotiation helper and bounded stream reader are separate
+wrappers and never reinterpret V1 bytes. HPTA V2 is defined independently in
+[`WIRE_V2.md`](WIRE_V2.md) with its own frozen vector.
+
+V1 bytes and meanings cannot be reinterpreted in place.
 
 ## Known limits and non-claims
 
 V1 has no authority token, encryption, compression, retry state or domain
-payload validation. Its embedded digest binds only payload bytes. Callers that
-need producer/schema/generation integrity must bind the complete frame in their
-own domain-separated operation or signature digest.
+payload validation. Its embedded digest binds only payload bytes. New
+integrations that require metadata-bound integrity should negotiate V2.
+Authentication remains a separate transport/session responsibility for both
+versions; an unkeyed digest must never be described as a signature or MAC.
 
 ## Verification
 
