@@ -26,8 +26,12 @@ use crate::cognitive_kg_store::MAX_SCOPE_NODES;
 use crate::cognitive_kg_store::ProjectionEdge;
 use crate::cognitive_kg_store::ProjectionHead;
 use crate::cognitive_kg_store::ProjectionNode;
+use crate::cognitive_kg_store::build_v2_generation;
+use crate::cognitive_kg_store::certify_current_v2_publications;
 use crate::cognitive_kg_store::input_heads_digest;
+use crate::cognitive_kg_store::load_persisted_projection_tx;
 use crate::cognitive_kg_store::output_digest;
+use crate::cognitive_kg_store::qualify_v2_transition;
 use crate::cognitive_model::COGNITIVE_SCHEMA_VERSION;
 use crate::cognitive_model::CognitiveAccess;
 use crate::cognitive_model::CognitiveScope;
@@ -98,6 +102,11 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("kg_projection_generation_receipts_no_update", "trigger"),
     ("kg_projection_generation_receipts_no_delete", "trigger"),
     ("kg_projection_generation_receipts_trigger_lookup", "index"),
+    ("kg_projection_v2_publications", "table"),
+    ("kg_projection_v2_publications_counts_match", "trigger"),
+    ("kg_projection_v2_publications_no_update", "trigger"),
+    ("kg_projection_v2_publications_no_delete", "trigger"),
+    ("kg_projection_v2_publications_digest_lookup", "index"),
     ("kg_projection_node_entities", "table"),
     ("kg_projection_node_entities_no_update", "trigger"),
     ("kg_projection_node_entities_no_delete", "trigger"),
@@ -220,6 +229,11 @@ impl CognitiveStore {
         .execute(&pool)
         .await
         .map_err(unavailable)?;
+        // Migration 0011 deliberately does not fabricate V2 receipts in SQL.
+        // Reconstruct and certify any pre-0011 current generation through the
+        // same canonical Rust semantics used by future writes before accepting
+        // the store as readable.
+        certify_current_v2_publications(&pool).await?;
         verify_store(&pool, layout.agent_id()).await?;
         Ok(Self {
             pool,
@@ -653,7 +667,11 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
          LEFT JOIN kg_projection_generation_receipts r
            ON r.projection_scope = p.projection_scope
           AND r.generation = p.generation
-         WHERE p.generation <= 0 OR r.projection_scope IS NULL",
+         LEFT JOIN kg_projection_v2_publications v
+           ON v.projection_scope = p.projection_scope
+          AND v.generation = p.generation
+         WHERE p.generation <= 0 OR r.projection_scope IS NULL
+            OR v.projection_scope IS NULL",
     )
     .fetch_one(pool)
     .await
@@ -719,10 +737,11 @@ async fn verify_migration_ledger(pool: &SqlitePool) -> Result<(), CognitiveStore
             (8, true),
             (9, true),
             (10, true),
+            (11, true),
         ]
     {
         return Err(CognitiveStoreError::Corrupt(format!(
-            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010 set: {migrations:?}"
+            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011 set: {migrations:?}"
         )));
     }
 
@@ -782,11 +801,18 @@ async fn verify_current_projection_contents(
     let mut transaction = pool.begin().await.map_err(unavailable)?;
     let current_rows = sqlx::query(
         "SELECT p.projection_scope, p.generation,
-                r.input_heads_sha256, r.output_sha256
+                r.input_heads_sha256, r.output_sha256,
+                v.source_snapshot_digest, v.generation_vector_digest,
+                v.graph_profile_digest, v.predecessor_generation,
+                v.predecessor_digest, v.generation_digest,
+                v.publication_digest
          FROM kg_projection p
          JOIN kg_projection_generation_receipts r
            ON r.projection_scope = p.projection_scope
           AND r.generation = p.generation
+         JOIN kg_projection_v2_publications v
+           ON v.projection_scope = p.projection_scope
+          AND v.generation = p.generation
          ORDER BY p.projection_scope LIMIT ?",
     )
     .bind(bounded_limit(MAX_PROJECTION_SCOPES)?)
@@ -1104,6 +1130,77 @@ async fn verify_current_projection_contents(
         if expected_output.as_str() != stored_output {
             return Err(CognitiveStoreError::Corrupt(format!(
                 "KG current projection `{projection_scope}` output digest failed canonical recomputation"
+            )));
+        }
+
+        // Rebuild the exact current source cut through the canonical V2 kernel
+        // and require every persisted semantic/publication digest to match.
+        let current_v2 = build_v2_generation(
+            generation,
+            &projection_scope,
+            &expected_input,
+            &expected_nodes,
+            &expected_edges,
+        )?;
+        let predecessor_v2 = if generation > 1 {
+            let previous_generation = generation - 1;
+            let (previous_input, previous_nodes, previous_edges) =
+                load_persisted_projection_tx(
+                    &mut transaction,
+                    &projection_scope,
+                    previous_generation,
+                )
+                .await?;
+            Some(build_v2_generation(
+                previous_generation,
+                &projection_scope,
+                &previous_input,
+                &previous_nodes,
+                &previous_edges,
+            )?)
+        } else {
+            None
+        };
+        let publication_v2 =
+            qualify_v2_transition(predecessor_v2.as_ref(), &current_v2)?;
+
+        let stored_source_snapshot: String = current
+            .try_get("source_snapshot_digest")
+            .map_err(unavailable)?;
+        let stored_generation_vector: String = current
+            .try_get("generation_vector_digest")
+            .map_err(unavailable)?;
+        let stored_graph_profile: String = current
+            .try_get("graph_profile_digest")
+            .map_err(unavailable)?;
+        let stored_generation_digest: String = current
+            .try_get("generation_digest")
+            .map_err(unavailable)?;
+        let stored_publication_digest: String = current
+            .try_get("publication_digest")
+            .map_err(unavailable)?;
+        let stored_predecessor_generation: Option<i64> = current
+            .try_get("predecessor_generation")
+            .map_err(unavailable)?;
+        let stored_predecessor_digest: Option<String> = current
+            .try_get("predecessor_digest")
+            .map_err(unavailable)?;
+
+        let expected_predecessor_generation = publication_v2
+            .predecessor_generation
+            .map(|value| i64::try_from(value.get()).unwrap_or(i64::MAX));
+        let expected_predecessor_digest =
+            publication_v2.predecessor_digest.map(|value| value.to_string());
+        if stored_source_snapshot != current_v2.source_snapshot_digest.to_string()
+            || stored_generation_vector != current_v2.generation_vector_digest.to_string()
+            || stored_graph_profile != current_v2.graph_profile_digest.to_string()
+            || stored_generation_digest != current_v2.generation_digest.to_string()
+            || stored_publication_digest != publication_v2.publication_digest.to_string()
+            || stored_predecessor_generation != expected_predecessor_generation
+            || stored_predecessor_digest != expected_predecessor_digest
+        {
+            return Err(CognitiveStoreError::Corrupt(format!(
+                "KG current projection `{projection_scope}` failed canonical V2 reopen verification"
             )));
         }
     }
