@@ -1,5 +1,6 @@
 //! Private bounded journal encoding. Not a platform wire-protocol implementation.
 
+use codex_hepta_objective::MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
@@ -11,11 +12,12 @@ use crate::DurableLedgerError;
 use crate::EpisodeDecision;
 use crate::LedgerEvent;
 use crate::LedgerRecord;
+use crate::ObjectiveRunStartRecordV1;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
 use crate::Revocation;
 
-pub(crate) const MAX_EVENT: usize = 32 * 1024;
+pub(crate) const MAX_EVENT: usize = MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES + 1024;
 pub(crate) const FRAME_OVERHEAD: usize = 112;
 const DOMAIN: &[u8] = b"hepta.learning-ledger.event.v1";
 
@@ -96,6 +98,14 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             authority_id: reader.id()?,
             reason_digest: reader.digest()?,
         }),
+        4 => LedgerEvent::RunStart(ObjectiveRunStartRecordV1 {
+            record_id: reader.id()?,
+            run_id: reader.id()?,
+            objective_digest: reader.digest()?,
+            hard_constraint_digest: reader.digest()?,
+            publication_digest: reader.digest()?,
+            publication_bytes: reader.bytes(MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES)?,
+        }),
         _ => return Err(DurableLedgerError::Corrupt),
     };
     if !reader.0.is_empty() {
@@ -130,6 +140,18 @@ impl Reader<'_> {
 
     fn digest(&mut self) -> Result<Digest32, DurableLedgerError> {
         Ok(Digest32::from_array(self.take()?))
+    }
+
+    fn bytes(&mut self, maximum: usize) -> Result<Vec<u8>, DurableLedgerError> {
+        let length = u32::from_be_bytes(self.take()?) as usize;
+        if length == 0 || length > maximum {
+            return Err(DurableLedgerError::Corrupt);
+        }
+        let Some((bytes, remaining)) = self.0.split_at_checked(length) else {
+            return Err(DurableLedgerError::Corrupt);
+        };
+        self.0 = remaining;
+        Ok(bytes.to_vec())
     }
 
     fn byte(&mut self) -> Result<u8, DurableLedgerError> {

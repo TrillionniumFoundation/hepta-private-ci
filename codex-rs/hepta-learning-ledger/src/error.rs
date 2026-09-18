@@ -5,6 +5,7 @@ use std::fmt;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LedgerError {
     RecordLimitExceeded,
+    InvalidRunStartPublication,
     EmptyCandidateSet,
     CandidateLimitExceeded,
     IncompleteCandidateSet,
@@ -39,6 +40,7 @@ impl LedgerError {
     pub const fn code(&self) -> &'static str {
         match self {
             Self::RecordLimitExceeded
+            | Self::InvalidRunStartPublication
             | Self::EmptyCandidateSet
             | Self::CandidateLimitExceeded
             | Self::IncompleteCandidateSet => "LRN-E001",
@@ -69,6 +71,9 @@ impl LedgerError {
 impl fmt::Display for LedgerError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::InvalidRunStartPublication => {
+                formatter.write_str("invalid objective run-start publication")
+            }
             Self::RecordLimitExceeded => {
                 formatter.write_str("learning ledger record limit exceeded")
             }

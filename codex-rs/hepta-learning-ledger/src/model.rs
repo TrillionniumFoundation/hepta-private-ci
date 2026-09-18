@@ -75,6 +75,15 @@ pub struct CreditAssignment {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ObjectiveRunStartRecordV1 {
+    pub record_id: StableId,
+    pub run_id: StableId,
+    pub objective_digest: Digest32,
+    pub hard_constraint_digest: Digest32,
+    pub publication_digest: Digest32,
+    pub publication_bytes: Vec<u8>,
+}
+
 pub struct Revocation {
     pub record_id: StableId,
     pub target_record_id: StableId,
@@ -84,6 +93,7 @@ pub struct Revocation {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LedgerEvent {
+    RunStart(ObjectiveRunStartRecordV1),
     Decision(EpisodeDecision),
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
@@ -93,6 +103,7 @@ pub enum LedgerEvent {
 impl LedgerEvent {
     pub(crate) fn record_id(&self) -> &StableId {
         match self {
+            Self::RunStart(value) => &value.record_id,
             Self::Decision(value) => &value.record_id,
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
