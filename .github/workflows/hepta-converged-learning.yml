@@ -77,9 +77,15 @@ jobs:
             exit 0
           fi
           echo "::error::Cargo.lock differs from the exact candidate manifests"
+          set +e
           cargo metadata --offline --format-version=1 >/dev/null
+          offline_status=$?
+          set -e
           git diff -- Cargo.lock
           git checkout -- Cargo.lock
+          if [ "$offline_status" -ne 0 ]; then
+            echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
+          fi
           exit "$locked_status"
       - name: Original and added component regressions
         working-directory: codex-rs
