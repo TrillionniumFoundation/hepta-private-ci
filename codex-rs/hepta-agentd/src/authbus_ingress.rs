@@ -69,10 +69,6 @@ impl TextIngress {
     }
 
     async fn verify_trust(&self, trust: &TextTrust) -> Result<(), AgentdError> {
-        self.evidence
-            .observe_authbus_trust_head(&trust.trust_head()?)
-            .await
-            .map_err(|error| invalid(&error.to_string()))?;
         let embedded = trust.replay_checkpoint()?;
         let external = self
             .replay_checkpoint_file
@@ -88,6 +84,10 @@ impl TextIngress {
                 .await
                 .map_err(|error| invalid(&error.to_string()))?;
         }
+        self.evidence
+            .observe_authbus_trust_head(&trust.trust_head()?)
+            .await
+            .map_err(|error| invalid(&error.to_string()))?;
         Ok(())
     }
 
