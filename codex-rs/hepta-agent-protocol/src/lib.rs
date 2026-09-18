@@ -143,6 +143,7 @@ pub struct RunReceipt {
     pub terminal_observed: bool,
     pub idempotent: bool,
     pub cancel_reason: Option<String>,
+    pub cancellation_ack_deadline_ms: Option<u64>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -932,6 +933,7 @@ mod tests {
                 terminal_observed: false,
                 idempotent: false,
                 cancel_reason: Some("operator_requested".to_string()),
+                cancellation_ack_deadline_ms: Some(13_000),
             },
         };
         let payload_bytes = serde_json::to_vec(&payload).expect("serialize run payload");
