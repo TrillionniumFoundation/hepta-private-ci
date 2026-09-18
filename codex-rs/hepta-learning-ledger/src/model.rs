@@ -1,3 +1,6 @@
+use codex_hepta_objective::ObjectiveAdmissionReceiptV1;
+use codex_hepta_objective::ObjectiveCompileReceipt;
+use codex_hepta_objective::RunStartSnapshotV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::LogicalSequence;
@@ -82,8 +85,23 @@ pub struct Revocation {
     pub reason_digest: Digest32,
 }
 
+/// Atomic durable publication of the authenticated objective and exact run
+/// snapshot selected for one run. This is a fact record only; it carries no
+/// execution or effect authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RunStartPublicationV1 {
+    pub record_id: StableId,
+    /// Exact registered ObjectiveFunctionV1 canonical JSON bytes.
+    pub objective_v1_json: Vec<u8>,
+    pub objective_v1_digest: Digest32,
+    pub admission: ObjectiveAdmissionReceiptV1,
+    pub compile: ObjectiveCompileReceipt,
+    pub run_start: RunStartSnapshotV1,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LedgerEvent {
+    RunStart(RunStartPublicationV1),
     Decision(EpisodeDecision),
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
@@ -93,6 +111,7 @@ pub enum LedgerEvent {
 impl LedgerEvent {
     pub(crate) fn record_id(&self) -> &StableId {
         match self {
+            Self::RunStart(value) => &value.record_id,
             Self::Decision(value) => &value.record_id,
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
