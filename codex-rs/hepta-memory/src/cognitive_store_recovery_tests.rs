@@ -382,7 +382,7 @@ async fn hostile_file_identities_fail_closed_without_additional_mutation() {
 #[tokio::test]
 async fn byte_identical_rename_replacement_can_recover_only_with_current_witness() {
     let temp = TempDir::new().expect("temp dir");
-    let owner = agent_id(951);
+    let owner = agent_id(195);
     let (store, _, _) = seeded(&temp, &owner).await;
     let anchor = store.recovery_anchor().await.expect("current witness");
     let database = store.path().to_path_buf();
