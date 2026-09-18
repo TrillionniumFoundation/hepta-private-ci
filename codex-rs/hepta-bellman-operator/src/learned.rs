@@ -302,7 +302,6 @@ pub fn fit_tabular_operator(
 /// Callers loading persisted/untrusted candidates should use
 /// `LoadedTabularOperatorV1`; this compatibility path now still fails closed
 /// on non-canonical or malformed public artifacts before lookup.
-#[deprecated(note = "use LoadedTabularOperatorV1 for persisted candidates")]
 pub fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
