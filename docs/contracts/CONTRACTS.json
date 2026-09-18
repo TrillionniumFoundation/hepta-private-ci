@@ -1097,8 +1097,16 @@
       "transport": "typed_local_or_versioned_wire",
       "bounded": true,
       "authorityDelta": "none",
-      "payloadClass": "digest_bound_summary_or_request",
-      "compatibility": "backward_compatible_or_explicit_migration"
+      "payloadClass": "exact_registered_protocol_set",
+      "compatibility": "deny_unknown_critical_fields_and_explicit_version_migration",
+      "payloadSchemas": [
+        "ModalitySpanRefV1",
+        "MemoryEventV1",
+        "EngramNodeV1",
+        "SynapseV1",
+        "MemoryCueV1",
+        "RecallPacketV1"
+      ]
     },
     {
       "id": "ModulePort::cognitive.types::cognitive.store",
@@ -1111,8 +1119,13 @@
       "transport": "typed_local_or_versioned_wire",
       "bounded": true,
       "authorityDelta": "none",
-      "payloadClass": "digest_bound_summary_or_request",
-      "compatibility": "backward_compatible_or_explicit_migration"
+      "payloadClass": "exact_registered_protocol_set",
+      "compatibility": "deny_unknown_critical_fields_and_explicit_version_migration",
+      "payloadSchemas": [
+        "ModalitySpanRefV1",
+        "MemoryEventV1",
+        "ForgetPropagationReceiptV1"
+      ]
     },
     {
       "id": "ModulePort::cognitive.types::knowledge.graph",
@@ -1125,8 +1138,15 @@
       "transport": "typed_local_or_versioned_wire",
       "bounded": true,
       "authorityDelta": "none",
-      "payloadClass": "digest_bound_summary_or_request",
-      "compatibility": "backward_compatible_or_explicit_migration"
+      "payloadClass": "exact_registered_protocol_set",
+      "compatibility": "deny_unknown_critical_fields_and_explicit_version_migration",
+      "payloadSchemas": [
+        "MemoryEventV1",
+        "CrossModalBindingV1",
+        "EngramNodeV1",
+        "SynapseV1",
+        "ForgetPropagationReceiptV1"
+      ]
     },
     {
       "id": "ModulePort::cognitive.types::learning.ledger",
@@ -1139,8 +1159,17 @@
       "transport": "typed_local_or_versioned_wire",
       "bounded": true,
       "authorityDelta": "none",
-      "payloadClass": "digest_bound_summary_or_request",
-      "compatibility": "backward_compatible_or_explicit_migration"
+      "payloadClass": "exact_registered_protocol_set",
+      "compatibility": "deny_unknown_critical_fields_and_explicit_version_migration",
+      "payloadSchemas": [
+        "MemoryEventV1",
+        "RecallPacketV1",
+        "OutcomeSignalV1",
+        "ReplaySelectionReceiptV1",
+        "PlasticityBatchV1",
+        "TopologyProposalV1",
+        "ForgetPropagationReceiptV1"
+      ]
     },
     {
       "id": "ModulePort::context.compiler::intelligence.control",
@@ -2888,6 +2917,169 @@
         "learning.artifacts"
       ],
       "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "ModalitySpanRefV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.read",
+        "cognitive.store"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "MemoryEventV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.read",
+        "cognitive.store",
+        "knowledge.graph",
+        "learning.ledger"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "CrossModalBindingV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "knowledge.graph"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "EngramNodeV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.read",
+        "knowledge.graph"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "SynapseV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.read",
+        "knowledge.graph"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "MemoryCueV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.read"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "RecallPacketV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.read",
+        "learning.ledger"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "OutcomeSignalV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "learning.ledger"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "ReplaySelectionReceiptV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "learning.ledger"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "PlasticityBatchV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "learning.ledger"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "ForgetPropagationReceiptV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.store",
+        "knowledge.graph",
+        "learning.ledger"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
       "bounded": true,
       "authorityDelta": "none",
       "payloadClass": "contract_specific",
