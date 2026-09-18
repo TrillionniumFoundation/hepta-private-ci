@@ -35,7 +35,22 @@ fn intent() -> PreparedIntent {
 }
 
 async fn prepare(store: &DurableOperationStore) -> DurableOperationRecord {
-    store.prepare_intent(intent()).await.unwrap()
+    store.prepare_intent(intent(), b"payload".to_vec()).await.unwrap()
+}
+
+#[tokio::test]
+async fn prepare_rejects_payload_digest_drift_before_mutation() {
+    let temp = TempDir::new().unwrap();
+    let store = DurableOperationStore::open(&config(temp.path()))
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .prepare_intent(intent(), b"payload-drift".to_vec())
+            .await,
+        Err(OperationError::InvalidDigest("operation payload binding"))
+    );
+    assert!(store.get(&intent().operation_id).await.unwrap().is_none());
 }
 
 async fn claim(store: &DurableOperationStore, lease_ms: i64) -> DispatchLease {
@@ -63,7 +78,7 @@ async fn prepare_commits_ledger_and_outbox_atomically_and_reopens_idempotently()
     .execute(&store.pool)
     .await
     .unwrap();
-    assert!(store.prepare_intent(intent()).await.is_err());
+    assert!(store.prepare_intent(intent(), b"payload".to_vec()).await.is_err());
     let ledger_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM operation_ledger")
         .fetch_one(&store.pool)
         .await
@@ -85,7 +100,7 @@ async fn prepare_commits_ledger_and_outbox_atomically_and_reopens_idempotently()
     let mut drift = intent();
     drift.payload_digest = Digest32::of_bytes(b"changed");
     assert_eq!(
-        reopened.prepare_intent(drift).await,
+        reopened.prepare_intent(drift, b"changed".to_vec()).await,
         Err(OperationError::Conflict(intent().operation_id))
     );
 }
@@ -347,7 +362,7 @@ async fn terminal_outbox_compaction_preserves_ledger_identity_and_prevents_resur
     .await
     .unwrap();
     assert_eq!(store.compact_terminal_outbox().await.unwrap(), 1);
-    assert_eq!(store.prepare_intent(intent()).await.unwrap(), terminal);
+    assert_eq!(store.prepare_intent(intent(), b"payload".to_vec()).await.unwrap(), terminal);
     let outbox_count: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM cross_owner_outbox WHERE operation_id = ?",
     )
@@ -454,19 +469,22 @@ mod final_use_vertical_slice {
             }
         }
 
-        fn apply_once(&self, envelope: &DispatchEnvelope) -> EffectObservation {
+        fn apply_once(&self, envelope: &DispatchEnvelope, payload: &[u8]) -> EffectObservation {
+            assert_eq!(Digest32::of_bytes(payload), envelope.payload_digest);
             let path = self
                 .directory
                 .path()
                 .join(format!("{}.receipt", envelope.semantic_digest));
-            let payload = format!(
+            let receipt = format!(
                 "{}\n{}\n{}\n",
                 envelope.operation_id, envelope.semantic_digest, envelope.payload_digest
             );
-            let evidence = Digest32::of_bytes(payload.as_bytes());
+            let mut stored = receipt.into_bytes();
+            stored.extend_from_slice(payload);
+            let evidence = Digest32::of_bytes(&stored);
             match OpenOptions::new().write(true).create_new(true).open(&path) {
                 Ok(mut file) => {
-                    file.write_all(payload.as_bytes()).unwrap();
+                    file.write_all(&stored).unwrap();
                     file.sync_all().unwrap();
                     std::fs::File::open(self.directory.path())
                         .unwrap()
@@ -474,7 +492,7 @@ mod final_use_vertical_slice {
                         .unwrap();
                 }
                 Err(error) if error.kind() == ErrorKind::AlreadyExists => {
-                    assert_eq!(std::fs::read_to_string(&path).unwrap(), payload);
+                    assert_eq!(std::fs::read(&path).unwrap(), stored);
                 }
                 Err(error) => panic!("destination write failed: {error}"),
             }
@@ -549,7 +567,7 @@ mod final_use_vertical_slice {
                 Digest32::of_bytes(b"dispatch"),
                 &authority,
                 &grant,
-                |envelope| destination.apply_once(envelope),
+                |envelope, payload| destination.apply_once(envelope, payload),
             )
             .await
             .unwrap();
@@ -560,7 +578,7 @@ mod final_use_vertical_slice {
         // dispatch suppression: observing the same semantic identity again is
         // idempotent and does not create a second terminal effect.
         assert!(matches!(
-            destination.apply_once(lease.envelope()),
+            destination.apply_once(lease.envelope(), lease.payload()),
             EffectObservation::Terminal {
                 outcome: ReconciliationOutcome::Applied,
                 ..
