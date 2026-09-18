@@ -407,8 +407,11 @@ async fn production_read_fail_closes_when_owner_changes_after_authoritative_acqu
     ])
     .await;
     let access = CognitiveAccess::agent_private(owner.clone());
+    let first_item = items
+        .first()
+        .unwrap_or_else(|| panic!("stored candidate fixture must not be empty"));
     let memory_id = must(
-        StableMemoryId::parse(items[0].memory_id.clone()),
+        StableMemoryId::parse(first_item.memory_id.clone()),
         "parse memory id",
     );
     let head = must(
