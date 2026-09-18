@@ -28,6 +28,7 @@ mod prompt_pipeline;
 pub use prompt_pipeline::PreparedPromptContextV1;
 pub use prompt_pipeline::PreparedPromptDeliveryV1;
 pub use prompt_pipeline::PromptContextCompileRequestV1;
+pub use prompt_pipeline::PromptPayloadMaterializationV1;
 pub use prompt_pipeline::PromptDeliveryPrepareRequestV1;
 pub use prompt_pipeline::PromptPipelineErrorV1;
 pub use prompt_pipeline::compile_exercised_prompt_context_v1;

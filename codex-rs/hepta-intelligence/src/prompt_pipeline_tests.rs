@@ -41,7 +41,9 @@ fn profile() -> ContextModelProfileV2 {
     }
 }
 
-fn registry_and_binding() -> (PromptRegistry, PromptRealizationBindingV2) {
+fn registry_and_binding_with_payload(
+    register_payload: bool,
+) -> (PromptRegistry, PromptRealizationBindingV2) {
     let mut registry = PromptRegistry::new(64).expect("registry");
     registry
         .register_factor(PromptFactor {
@@ -57,6 +59,7 @@ fn registry_and_binding() -> (PromptRegistry, PromptRealizationBindingV2) {
         .admit_factor(&id("factor:a"), &id("reviewer:a"), digest("admission"))
         .expect("admit factor");
     let tuple = tuple();
+    let payload = b"payload:a".to_vec();
     let binding = PromptRealizationBindingV2 {
         realization_id: id("realization:a"),
         factor_id: id("factor:a"),
@@ -66,14 +69,24 @@ fn registry_and_binding() -> (PromptRegistry, PromptRealizationBindingV2) {
         tool_schema_digest: tuple.tool_schema_digest,
         locale_id: tuple.locale_id,
         role: PromptRoleV2::DeveloperInstruction,
-        payload_digest: digest("payload:a"),
+        payload_digest: Digest32::of_bytes(&payload),
         token_cost: 8,
         expires_unix_ms: Some(10_000),
     };
-    registry
-        .register_realization_v2(binding.clone())
-        .expect("register realization");
+    if register_payload {
+        registry
+            .register_realization_with_payload_v2(binding.clone(), payload)
+            .expect("register realization with payload");
+    } else {
+        registry
+            .register_realization_v2(binding.clone())
+            .expect("register realization");
+    }
     (registry, binding)
+}
+
+fn registry_and_binding() -> (PromptRegistry, PromptRealizationBindingV2) {
+    registry_and_binding_with_payload(true)
 }
 
 fn portfolio(binding: PromptRealizationBindingV2) -> SelectedPromptPortfolioV1 {
@@ -135,16 +148,22 @@ fn compile_request(now: u64) -> PromptContextCompileRequestV1 {
 fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
     let (registry, binding) = registry_and_binding();
     let portfolio = portfolio(binding);
-    let prepared =
-        compile_exercised_prompt_context_v1(&registry, &portfolio, compile_request(100))
-            .expect("compile exercised portfolio");
+    let prepared = compile_exercised_prompt_context_v1(&registry, &portfolio, compile_request(100))
+        .expect("compile exercised portfolio");
     assert_eq!(
         prepared.compiled.receipt.selected_item_ids,
         vec![id("realization:a")]
     );
     assert!(!prepared.compiled.receipt.authority.grants_any());
+    assert_eq!(prepared.materialization.payloads.len(), 1);
+    assert_eq!(
+        prepared.materialization.payloads[0].payload,
+        b"payload:a".to_vec()
+    );
+    assert!(!prepared.materialization.authority.grants_any());
 
-    let payload_digest = digest("actual-provider-payload");
+    let serialized_payload = b"actual-provider-payload".to_vec();
+    let payload_digest = Digest32::of_bytes(&serialized_payload);
     let delivery = prepare_prompt_delivery_v1(
         &registry,
         &portfolio,
@@ -152,11 +171,14 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
         PromptDeliveryPrepareRequestV1 {
             exercise: exercise(101),
             serialization_id: id("serialization:1"),
-            payload_digest,
+            serialized_payload: serialized_payload.clone(),
             attachment_id: id("attachment:1"),
         },
     )
     .expect("prepare delivery");
+    assert_eq!(delivery.serialized_payload, serialized_payload);
+    assert_eq!(delivery.materialization, prepared.materialization);
+    assert_eq!(delivery.serialization.payload_digest, payload_digest);
     assert!(!delivery.attachment.authority.grants_any());
 
     let observation = observe_prompt_delivery_v1(
@@ -176,9 +198,8 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
 fn revocation_after_compilation_blocks_attachment_preparation() {
     let (mut registry, binding) = registry_and_binding();
     let portfolio = portfolio(binding);
-    let prepared =
-        compile_exercised_prompt_context_v1(&registry, &portfolio, compile_request(100))
-            .expect("compile exercised portfolio");
+    let prepared = compile_exercised_prompt_context_v1(&registry, &portfolio, compile_request(100))
+        .expect("compile exercised portfolio");
 
     registry
         .revoke_factor(&id("factor:a"))
@@ -190,7 +211,7 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
         PromptDeliveryPrepareRequestV1 {
             exercise: exercise(101),
             serialization_id: id("serialization:stale"),
-            payload_digest: digest("payload:stale"),
+            serialized_payload: b"payload:stale".to_vec(),
             attachment_id: id("attachment:stale"),
         },
     )
@@ -201,4 +222,16 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
             codex_hepta_prompt_optimizer::canonical::PromptExerciseActionV1::RejectStale
         )
     );
+}
+
+#[test]
+fn selected_realization_without_registry_payload_fails_closed() {
+    let (registry, binding) = registry_and_binding_with_payload(false);
+    let portfolio = portfolio(binding);
+    let error = compile_exercised_prompt_context_v1(&registry, &portfolio, compile_request(100))
+        .expect_err("selected realization without exact payload must fail");
+    assert!(matches!(
+        error,
+        PromptPipelineErrorV1::Registry(message) if message.contains("PayloadMissing")
+    ));
 }
