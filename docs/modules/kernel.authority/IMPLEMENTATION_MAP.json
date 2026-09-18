@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "registered_bao_host_source_composed_no_selected_process",
+  "productCallerState": "not_composed",
   "productionWriterState": "authority_owner_source_implemented_not_activated",
   "operations": [
     {
@@ -149,5 +149,6 @@
   ],
   "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
-  "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md"
+  "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md",
+  "sourceCompositionState": "registered_bao_host_source_composed_no_selected_process"
 }
