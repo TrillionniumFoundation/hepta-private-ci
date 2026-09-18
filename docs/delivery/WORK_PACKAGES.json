@@ -4795,7 +4795,8 @@
       ],
       "coOwnerModules": [
         "intelligence.control",
-        "learning.ledger"
+        "learning.ledger",
+        "control.engineering"
       ],
       "consumesContracts": [
         "DomainRead::eligibility_trace_checkpointV1",
@@ -4837,9 +4838,9 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
-        "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxChangedPaths": 24,
+        "maxCiMinutes": 60,
+        "maxParallelAgents": 3
       },
       "rollback": {
         "required": true,
