@@ -5,6 +5,10 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrixd/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
@@ -19,6 +23,10 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrixd/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
@@ -87,6 +95,8 @@ jobs:
           cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
           cargo test -p codex-hepta-automation --lib
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
+          cargo test -p codex-hepta-matrix-store
+          cargo test -p codex-hepta-matrix-sdk
           cargo test -p codex-hepta-matrixd --lib
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cargo test -p codex-app-server --test all thread_start
@@ -130,6 +140,9 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
+          cargo test -p codex-hepta-matrix-store
+          cargo test -p codex-hepta-matrix-sdk
+          cargo test -p codex-hepta-matrixd --lib
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cd ..
           git diff --check

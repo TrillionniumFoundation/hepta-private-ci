@@ -59,7 +59,7 @@
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
+      "sourceSemantics": "Persists one stable Matrix transaction identity with payload/grant binding and authority scope before dispatch; unresolved capacity excludes terminal history.",
       "operation": "prepare_send",
       "nativeSymbol": "pub fn prepare_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
@@ -82,16 +82,14 @@
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",
+      "sourceSemantics": "Persists append-only transport/server observations; only a matching homeserver event can settle successful delivery, while redaction evidence remains separate from original send evidence.",
       "operation": "observe_send",
       "nativeSymbol": "pub fn observe_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "real enrolled homeserver/user/device/encryption identity",
     "live sync and send transport callsites",
@@ -101,7 +99,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,

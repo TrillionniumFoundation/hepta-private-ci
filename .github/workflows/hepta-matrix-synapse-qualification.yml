@@ -1,0 +1,123 @@
+name: Matrix real Synapse qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrixd/**"
+      - ".github/workflows/hepta-matrix-synapse-qualification.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrixd/**"
+      - ".github/workflows/hepta-matrix-synapse-qualification.yml"
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact repository commit to qualify; defaults to the triggering SHA
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matrix-real-synapse-${{ github.event.pull_request.number || inputs.candidate_sha || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  real-synapse:
+    name: Qualify exact Matrix candidate against real Synapse
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, macOS, ARM64, macbook]
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || inputs.candidate_sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source identity
+        id: source
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || inputs.candidate_sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          tree_sha="$(git rev-parse 'HEAD^{tree}')"
+          printf 'candidate_sha=%s\n' "$EXPECTED_SHA" >> "$GITHUB_OUTPUT"
+          printf 'tree_sha=%s\n' "$tree_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Execute hermetic real Synapse qualification
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ steps.source.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          artifacts="$RUNNER_TEMP/matrix-real-synapse-$CANDIDATE_SHA"
+          mkdir -p "$artifacts"
+          codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh \
+            --source-root "$GITHUB_WORKSPACE" \
+            --source-mode exact \
+            --artifacts-dir "$artifacts"
+          printf '%s\n' "$artifacts" > "$RUNNER_TEMP/matrix-real-synapse-artifact-path"
+
+      - name: Seal exact-candidate qualification receipt
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ steps.source.outputs.candidate_sha }}
+          TREE_SHA: ${{ steps.source.outputs.tree_sha }}
+        run: |
+          set -euo pipefail
+          artifacts="$(cat "$RUNNER_TEMP/matrix-real-synapse-artifact-path")"
+          export HEPTA_RECEIPT_PATH="$artifacts/exact-candidate-receipt.json"
+          /opt/homebrew/bin/python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["GITHUB_WORKSPACE"])
+          runner = root / "codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh"
+          receipt = {
+              "schema": "hepta.matrix-real-synapse-qualification.v1",
+              "schemaVersion": 1,
+              "candidateSha": os.environ["CANDIDATE_SHA"],
+              "candidateTreeSha": os.environ["TREE_SHA"],
+              "workflowRunId": os.environ["GITHUB_RUN_ID"],
+              "workflowRunAttempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "runnerName": os.environ.get("RUNNER_NAME"),
+              "test": "real_synapse_dual_agentd_dual_matrixd_restart_and_isolation",
+              "fixtureRunnerSha256": hashlib.sha256(runner.read_bytes()).hexdigest(),
+              "result": "passed",
+              "claimBoundary": {
+                  "exactCandidateSource": True,
+                  "realSynapseObserved": True,
+                  "promotion": False,
+                  "operatorAcceptance": False,
+                  "release": False,
+              },
+          }
+          Path(os.environ["HEPTA_RECEIPT_PATH"]).write_text(
+              json.dumps(receipt, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          test -s "$HEPTA_RECEIPT_PATH"
+
+      - name: Upload exact qualification evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-real-synapse-${{ steps.source.outputs.candidate_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-real-synapse-${{ steps.source.outputs.candidate_sha }}
+          if-no-files-found: error
+          retention-days: 30

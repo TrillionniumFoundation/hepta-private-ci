@@ -1,7 +1,7 @@
 # channel.matrix: implementation design
 
 Parent: `docs/modules/channel.matrix/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: durable Matrix runtime plus a separate send-observer component implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable Matrix runtime and dispatch ledger are integrated under MatrixDurableStore; remaining real-target qualification and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -16,7 +16,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 3. State records and transaction design
 
-`matrix_ingress_projection` keys homeserver+room+event ID and retains source digest, sync position, sender evidence, redaction/correction and scope. `matrix_dispatch_ledger` keys operation ID and Matrix transaction ID with payload, room/session generation, grant epoch and observed server event. Persist dedupe and sync-watermark advancement atomically or through a recoverable staged watermark.
+`matrix_ingress_projection` keys homeserver+room+event ID and retains source digest, sync position, sender evidence, redaction/correction and scope. `matrix_dispatch_ledger` keys operation ID and the canonical stable Matrix transaction ID with payload/grant digest, room/session generation, authority identity/epoch and separate transport, terminal-send and redaction evidence. Append-only homeserver observations settle successful egress in the same durable owner. Persist dedupe and sync-watermark advancement atomically or through a recoverable staged watermark.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -46,7 +46,7 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 ## 8. Current native implementation
 
 - **Implemented entrypoints:** `process_event` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); `recover_pending` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); `observe_send` in [codex-rs/hepta-matrixd/src/send_observer.rs](../../../codex-rs/hepta-matrixd/src/send_observer.rs). Durable Matrix runtime plus a separate send-observer component implemented.
-- **State and recovery:** MatrixRuntime uses MatrixDurableStore for inbox/thread/outbox recovery. The send-observer BTreeMap separately binds operation/transaction/server/session and keeps unknown sends indeterminate; its state is not a replacement durable sender.
+- **State and recovery:** MatrixRuntime and the send-observer facade use the same MatrixDurableStore. Stable transaction identity, dispatch/acceptance uncertainty, append-only homeserver observations, terminal send evidence and redaction evidence survive reopen under the single Matrix SQLite writer.
 - **Source tests:** [codex-rs/hepta-matrixd/src/runtime/tests.rs](../../../codex-rs/hepta-matrixd/src/runtime/tests.rs), [codex-rs/hepta-matrixd/src/send_observer_tests.rs](../../../codex-rs/hepta-matrixd/src/send_observer_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/modules/channel.matrix/IMPLEMENTATION_MAP.json](../../../docs/modules/channel.matrix/IMPLEMENTATION_MAP.json), [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../../docs/readiness/LANE_B_RUNTIME_COMPOSITION.md).
-- **Remaining work:** Integrate send-observer state with the canonical durable transaction identity, then qualify enrolled homeserver/device transport, encryption, reconnect/redaction and restore.
+- **Remaining work:** Repository-owned dispatch-ledger integration is closed. Qualify the exact candidate against an enrolled homeserver/device transport, encryption, rate limiting, reconnect/redaction and restore, then obtain independent acceptance.

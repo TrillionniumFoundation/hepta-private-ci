@@ -171,7 +171,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and stable send transaction identity in their existing durable owners; send_observer is a reusable state machine, not another sender. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
+Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Sync/dedupe, stable send transaction identity and the dispatch ledger share MatrixDurableStore; send_observer is now a thin durable facade, not another sender. Transport acceptance remains non-terminal until a matching homeserver event is committed by sync. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
 
 Current operating and state-format references:
 
@@ -266,5 +266,5 @@ This receipt records repository source bindings for the current documentation ca
 | `observe_send` | `pub fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- The native hepta-matrixd runner owns the SDK outbox sender; MatrixDurableStore now owns the corresponding dispatch ledger and append-only server-event observations.
+- Real-target qualification, independent acceptance, activation, and release remain false until their separate evidence gates pass.

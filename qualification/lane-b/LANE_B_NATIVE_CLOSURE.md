@@ -173,10 +173,6 @@ A homeserver event observation settles send terminality; App Server turn complet
 | `prepare_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn prepare_send(` |
 | `observe_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn observe_send(` |
 
-Remaining repository implementation gaps:
-
-- Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender.
-
 External evidence gates:
 
 - real enrolled homeserver/user/device/encryption identity
