@@ -17,6 +17,8 @@ use sqlx::SqlitePool;
 use sqlx::Transaction;
 
 use crate::EvidenceError;
+use crate::authbus_control_store::verify_authbus_control_rows;
+use crate::authbus_trust_store::verify_authbus_trust_rows;
 use crate::canonical::canonical_json;
 use crate::governance_store::decode_decision_row;
 use crate::governance_store::decode_receipt_row;
@@ -336,6 +338,8 @@ impl HeptaEvidenceStore {
 async fn verify_existing_store(pool: &SqlitePool) -> Result<(), EvidenceError> {
     verify_current_migration_ledger(pool).await?;
     verify_schema_manifest(pool).await?;
+    verify_authbus_control_rows(pool).await?;
+    verify_authbus_trust_rows(pool).await?;
     verify_provider_effect_ack_source_schema(pool).await?;
     verify_provider_host_bindings(pool).await?;
     verify_provider_ephemeral_input_projection(pool).await?;
