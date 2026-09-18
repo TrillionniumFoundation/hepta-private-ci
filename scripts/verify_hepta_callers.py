@@ -2,10 +2,20 @@
 """Verify the closed set of privileged Hepta product call sites.
 
 This is a source proof, not a runtime or production-authority receipt. It uses a
-small lexical Rust scanner so comments and string literals cannot manufacture a
-fake call site. The manifest intentionally distinguishes product code from
-examples and tests; ignored paths remain covered by ordinary compiler and test
-checks but cannot satisfy a product-caller requirement.
+small lexical Rust scanner so comments, string literals and cfg-test-only items
+cannot manufacture a product call site. The manifest intentionally distinguishes
+product code from examples and tests; ignored paths remain covered by ordinary
+compiler and test checks but cannot satisfy a product-caller requirement.
+
+B4 has two independent closed sets:
+1. every privileged boundary in the inventory must have a boundary row; and
+2. every non-ignored Rust call matching that row's lexical call pattern must be
+   one of the explicitly declared product callers.
+
+The optional ``call_pattern`` is a Python regular expression over Rust code with
+comments, literals and cfg-test items stripped. It exists for method syntax such
+as ``authority.claim(...)`` where a fully-qualified symbol does not appear at
+the call site. Rows without it retain the original exact-symbol behavior.
 """
 
 from __future__ import annotations
@@ -37,6 +47,7 @@ class Boundary:
     definition_markers: tuple[str, ...]
     product_callers: tuple[str, ...]
     caller_markers: tuple[str, ...]
+    call_pattern: str | None
 
 
 def _load_manifest(path: Path) -> dict[str, Any]:
@@ -81,6 +92,18 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
             raise VerificationFailure(f"duplicate boundary id: {identifier}")
         if symbol in symbols:
             raise VerificationFailure(f"duplicate boundary symbol: {symbol}")
+        call_pattern = row.get("call_pattern")
+        if call_pattern is not None:
+            if not isinstance(call_pattern, str) or not call_pattern:
+                raise VerificationFailure(
+                    f"{identifier}: call_pattern must be a non-empty string"
+                )
+            try:
+                re.compile(call_pattern)
+            except re.error as exc:
+                raise VerificationFailure(
+                    f"{identifier}: invalid call_pattern: {exc}"
+                ) from exc
         identifiers.add(identifier)
         symbols.add(symbol)
         boundaries.append(
@@ -91,6 +114,7 @@ def _boundary_rows(data: dict[str, Any]) -> tuple[Boundary, ...]:
                 definition_markers=_string_tuple(row, "definition_markers"),
                 product_callers=_string_tuple(row, "product_callers"),
                 caller_markers=_string_tuple(row, "caller_markers"),
+                call_pattern=call_pattern,
             )
         )
     return tuple(boundaries)
@@ -103,6 +127,27 @@ def _string_tuple(row: dict[str, Any], key: str) -> tuple[str, ...]:
     ):
         raise VerificationFailure(f"{key} must be a list of non-empty strings")
     return tuple(value)
+
+
+def _verify_privileged_inventory(
+    data: dict[str, Any], boundaries: tuple[Boundary, ...]
+) -> tuple[str, ...]:
+    inventory = data.get("privileged_inventory")
+    if not isinstance(inventory, dict):
+        raise VerificationFailure("CALLERS.toml requires [privileged_inventory]")
+    required = _string_tuple(inventory, "required_boundary_ids")
+    if len(required) != len(set(required)):
+        raise VerificationFailure("privileged inventory contains duplicate boundary ids")
+    declared = {boundary.identifier for boundary in boundaries}
+    required_set = set(required)
+    if declared != required_set:
+        missing = sorted(required_set - declared)
+        unclassified = sorted(declared - required_set)
+        raise VerificationFailure(
+            "privileged boundary inventory mismatch; "
+            f"missing={missing}, unclassified={unclassified}"
+        )
+    return tuple(sorted(required))
 
 
 def _strip_rust_non_code(source: str) -> str:
@@ -208,6 +253,99 @@ def _strip_rust_non_code(source: str) -> str:
     return "".join(output)
 
 
+def _strip_cfg_test_items(code: str) -> str:
+    """Blank Rust items guarded by a cfg expression containing the `test` atom.
+
+    The input has already had comments and literals blanked, so bracket/brace
+    matching cannot be confused by braces inside strings. Newlines are retained
+    to keep diagnostics stable. This intentionally removes both `cfg(test)` and
+    compound forms such as `cfg(all(test, unix))`.
+    """
+
+    output = list(code)
+    index = 0
+    while index < len(code):
+        start = code.find("#[", index)
+        if start < 0:
+            break
+        attr_end = _matching_delimiter(code, start + 1, "[", "]")
+        if attr_end is None:
+            break
+        attribute = code[start : attr_end + 1]
+        if re.search(r"\bcfg\b", attribute) is None or re.search(
+            r"\btest\b", attribute
+        ) is None:
+            index = attr_end + 1
+            continue
+
+        cursor = attr_end + 1
+        # Rust permits additional attributes between cfg(test) and the item.
+        while True:
+            cursor = _skip_space(code, cursor)
+            if not code.startswith("#[", cursor):
+                break
+            extra_end = _matching_delimiter(code, cursor + 1, "[", "]")
+            if extra_end is None:
+                return "".join(output)
+            cursor = extra_end + 1
+
+        item_end = _rust_item_end(code, cursor)
+        if item_end is None:
+            item_end = len(code) - 1
+        for offset in range(start, item_end + 1):
+            if output[offset] != "\n":
+                output[offset] = " "
+        index = item_end + 1
+    return "".join(output)
+
+
+def _matching_delimiter(
+    source: str, open_index: int, opener: str, closer: str
+) -> int | None:
+    if open_index >= len(source) or source[open_index] != opener:
+        return None
+    depth = 0
+    for index in range(open_index, len(source)):
+        char = source[index]
+        if char == opener:
+            depth += 1
+        elif char == closer:
+            depth -= 1
+            if depth == 0:
+                return index
+    return None
+
+
+def _skip_space(source: str, index: int) -> int:
+    while index < len(source) and source[index].isspace():
+        index += 1
+    return index
+
+
+def _rust_item_end(source: str, start: int) -> int | None:
+    """Find the end of one already-lexed Rust item conservatively."""
+
+    paren = 0
+    bracket = 0
+    index = start
+    while index < len(source):
+        char = source[index]
+        if char == "(":
+            paren += 1
+        elif char == ")" and paren:
+            paren -= 1
+        elif char == "[":
+            bracket += 1
+        elif char == "]" and bracket:
+            bracket -= 1
+        elif paren == 0 and bracket == 0 and char == ";":
+            return index
+        elif paren == 0 and bracket == 0 and char == "{":
+            return _matching_delimiter(source, index, "{", "}")
+        index += 1
+    return None
+
+
 def _looks_like_char_literal(source: str, index: int) -> bool:
     if index + 2 >= len(source):
         return False
@@ -255,14 +393,17 @@ def _verify_boundary(
                 f"{boundary.identifier}: missing definition marker {marker!r}"
             )
 
-    symbol_pattern = re.compile(re.escape(boundary.symbol) + r"\s*\(")
+    if boundary.call_pattern is None:
+        call_pattern = re.compile(re.escape(boundary.symbol) + r"\s*\(")
+    else:
+        call_pattern = re.compile(boundary.call_pattern)
     observed: set[str] = set()
     for relative, code in source_index.items():
         if relative == boundary.definition_path or _is_ignored(
             relative, ignored_fragments
         ):
             continue
-        if symbol_pattern.search(code):
+        if call_pattern.search(code):
             observed.add(relative)
     expected = set(boundary.product_callers)
     if observed != expected:
@@ -286,6 +427,7 @@ def _verify_boundary(
     return {
         "id": boundary.identifier,
         "symbol": boundary.symbol,
+        "callPattern": boundary.call_pattern,
         "productCallers": sorted(observed),
     }
 
@@ -324,23 +466,22 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
     ignored = _string_tuple(data, "ignored_path_fragments")
     files = _source_files(root, source_roots)
     boundaries = _boundary_rows(data)
-    symbols = tuple(boundary.symbol for boundary in boundaries)
+    inventory = _verify_privileged_inventory(data, boundaries)
     source_index: dict[str, str] = {}
     for source_path in files:
         raw = source_path.read_text(encoding="utf-8")
-        if any(symbol in raw for symbol in symbols):
-            source_index[source_path.relative_to(root).as_posix()] = (
-                _strip_rust_non_code(raw)
-            )
+        code = _strip_rust_non_code(raw)
+        source_index[source_path.relative_to(root).as_posix()] = _strip_cfg_test_items(code)
     results = [
         _verify_boundary(root, boundary, source_index, ignored)
         for boundary in boundaries
     ]
     protected = _verify_protected_files(root, data)
     return {
-        "schema": "hepta.caller-proof-receipt.v1",
+        "schema": "hepta.caller-proof-receipt.v2",
         "status": "PASS_HEPTA_CALLER_CLOSED_SET",
         "boundaries": results,
+        "privilegedInventory": list(inventory),
         "protectedFiles": protected,
         "rustFilesScanned": len(files),
         "authorityGranted": False,
@@ -361,6 +502,13 @@ def main() -> int:
         )
         if "Hidden::new" in code or "call" not in code or "real" not in code:
             raise VerificationFailure("lexical scanner self-test failed")
+        if re.search(r"authority\s*\.\s*claim\s*\(", "authority\n  .claim(x)") is None:
+            raise VerificationFailure("method call-pattern self-test failed")
+        cfg_code = _strip_cfg_test_items(
+            "#[cfg(all(test, unix))]\nmod tests { fn x() { authority.claim(x); } }\nauthority.claim(y);\n"
+        )
+        if cfg_code.count("authority.claim") != 1 or "authority.claim(y)" not in cfg_code:
+            raise VerificationFailure("cfg-test stripping self-test failed")
         print(
             json.dumps({"status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"}, sort_keys=True)
         )

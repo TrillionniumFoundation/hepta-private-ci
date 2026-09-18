@@ -19,35 +19,38 @@ SPEC.loader.exec_module(MODULE)
 
 
 class CallerProofTests(unittest.TestCase):
-    def make_fixture(self) -> Path:
+    def make_fixture(self, *, method_pattern: bool = False) -> Path:
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         root = Path(temporary.name)
         (root / "codex-rs/owner/src").mkdir(parents=True)
         (root / "codex-rs/caller/src").mkdir(parents=True)
         (root / "codex-rs/owner/src/lib.rs").write_text(
-            "pub struct Gate; impl Gate { pub fn enter() {} }\n", encoding="utf-8"
+            "pub struct Gate; impl Gate { pub fn enter(&self) {} }\n", encoding="utf-8"
         )
-        (root / "codex-rs/caller/src/lib.rs").write_text(
-            "fn use_gate() { Gate::enter(); }\n", encoding="utf-8"
-        )
+        caller = "fn use_gate(gate: &Gate) { gate.enter(); }\n" if method_pattern else "fn use_gate() { Gate::enter(); }\n"
+        (root / "codex-rs/caller/src/lib.rs").write_text(caller, encoding="utf-8")
+        pattern = 'call_pattern = "gate\\\\s*\\\\.\\\\s*enter\\\\s*\\\\("\n' if method_pattern else ""
+        caller_marker = "gate.enter" if method_pattern else "Gate::enter"
         (root / "CALLERS.toml").write_text(
             textwrap.dedent(
-                """
+                f"""
                 schema_version = 2
                 plan_id = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
                 source_roots = ["codex-rs"]
                 ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
+                [privileged_inventory]
+                required_boundary_ids = ["gate"]
                 [[boundary]]
                 id = "gate"
                 symbol = "Gate::enter"
-                definition_path = "codex-rs/owner/src/lib.rs"
+                {pattern}definition_path = "codex-rs/owner/src/lib.rs"
                 definition_markers = ["pub struct Gate", "pub fn enter"]
                 product_callers = ["codex-rs/caller/src/lib.rs"]
-                caller_markers = ["Gate::enter"]
+                caller_markers = ["{caller_marker}"]
                 [[protected_file]]
                 path = "codex-rs/caller/src/lib.rs"
-                required = ["Gate::enter"]
+                required = ["{caller_marker}"]
                 forbidden = ["Gate::bypass"]
                 [authority]
                 runtime_authority = false
@@ -62,6 +65,35 @@ class CallerProofTests(unittest.TestCase):
         root = self.make_fixture()
         receipt = MODULE.verify(root, root / "CALLERS.toml")
         self.assertEqual(receipt["status"], "PASS_HEPTA_CALLER_CLOSED_SET")
+
+    def test_method_call_pattern_passes(self) -> None:
+        root = self.make_fixture(method_pattern=True)
+        receipt = MODULE.verify(root, root / "CALLERS.toml")
+        self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
+
+    def test_cfg_test_callsite_does_not_manufacture_product_caller(self) -> None:
+        root = self.make_fixture()
+        extra = root / "codex-rs/extra/src"
+        extra.mkdir(parents=True)
+        (extra / "lib.rs").write_text(
+            "#[cfg(all(test, unix))]\nmod tests { fn only_test() { Gate::enter(); } }\n",
+            encoding="utf-8",
+        )
+        receipt = MODULE.verify(root, root / "CALLERS.toml")
+        self.assertEqual(receipt["boundaries"][0]["productCallers"], ["codex-rs/caller/src/lib.rs"])
+
+    def test_inventory_omission_fails(self) -> None:
+        root = self.make_fixture()
+        manifest = root / "CALLERS.toml"
+        manifest.write_text(
+            manifest.read_text(encoding="utf-8").replace(
+                'required_boundary_ids = ["gate"]',
+                'required_boundary_ids = ["gate", "missing_privileged_boundary"]',
+            ),
+            encoding="utf-8",
+        )
+        with self.assertRaises(MODULE.VerificationFailure):
+            MODULE.verify(root, manifest)
 
     def test_unexpected_product_caller_fails(self) -> None:
         root = self.make_fixture()
