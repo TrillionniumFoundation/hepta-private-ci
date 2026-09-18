@@ -100,7 +100,7 @@ fn admitted_registry(
     };
     let binding = PromptRealizationBindingV2 {
         realization_id: id("realization:verify"),
-        factor_id: factor.factor_id,
+        factor_id: factor.factor_id.clone(),
         model_digest: tuple.model_digest,
         tokenizer_digest: tuple.tokenizer_digest,
         template_digest: tuple.template_digest,
