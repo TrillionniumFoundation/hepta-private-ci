@@ -218,7 +218,8 @@ impl LedgerWriter {
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = decision_signing_payload_v2(&request)?;
         let verified = self
-            .verifier
+            .trust
+            .verifier()
             .verify(LearningEvidenceRoleV1::Generator, evidence, &payload, now)?;
         require_role(&verified, LearningEvidenceRoleV1::Generator)?;
         if request.objective_digest != self.trust.verifier().objective_digest()
@@ -261,7 +262,8 @@ impl LedgerWriter {
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = outcome_signing_payload_v2(&outcome);
         let verified = self
-            .verifier
+            .trust
+            .verifier()
             .verify(LearningEvidenceRoleV1::Observer, evidence, &payload, now)?;
         require_role(&verified, LearningEvidenceRoleV1::Observer)?;
         if verified.principal() != &outcome.observer {
