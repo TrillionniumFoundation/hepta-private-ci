@@ -138,9 +138,7 @@ impl BatchBuilder {
             generator_profile_digest: self.generator_profile_digest,
             generation_vector_digest,
             completeness: if self.truncated {
-                RetrievalChannelCompletenessV1::Truncated {
-                    omitted_at_least: 1,
-                }
+                RetrievalChannelCompletenessV1::BoundReached
             } else {
                 RetrievalChannelCompletenessV1::Exhausted
             },
