@@ -159,7 +159,12 @@ fn op_05_raw_prediction_rejects_noncanonical_public_artifact() {
     let mut artifact = fit_tabular_operator(plan(samples)).expect("fit");
     artifact.cells.swap(0, 1);
     assert_eq!(
-        predict_tabular_operator(&artifact, &artifact_pin(&artifact), &id("sensor-a"), &id("action-a")),
+        predict_tabular_operator(
+            &artifact,
+            &artifact_pin(&artifact),
+            &id("sensor-a"),
+            &id("action-a")
+        ),
         Err(LearnedOperatorError::InvalidGrid)
     );
 }
@@ -210,7 +215,12 @@ fn op_05_tabular_prediction_is_synthetic_and_domain_bounded() {
     assert!(prediction.synthetic);
     assert!(!prediction.authority.grants_any());
     assert_eq!(
-        predict_tabular_operator(&artifact, &artifact_pin(&artifact), &id("sensor-unknown"), &id("action-a")),
+        predict_tabular_operator(
+            &artifact,
+            &artifact_pin(&artifact),
+            &id("sensor-unknown"),
+            &id("action-a")
+        ),
         Err(LearnedOperatorError::UnsupportedCell)
     );
 }
