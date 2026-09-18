@@ -400,3 +400,204 @@ impl DurableObjectivePublicationStoreV1 {
         let frame = encode_frame(
             sequence,
             predecessor_chain_digest,
+
+            publication_digest,
+            chain_digest,
+            &payload,
+        )?;
+        let next_length = self
+            .durable_length
+            .checked_add(frame.len() as u64)
+            .ok_or(ObjectivePublicationStoreErrorV1::Capacity)?;
+        if next_length > MAX_STORE_BYTES {
+            return Err(ObjectivePublicationStoreErrorV1::Capacity);
+        }
+
+        self.poisoned = true;
+        if self.file.seek(SeekFrom::End(0))? != self.durable_length {
+            return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+        }
+        self.file
+            .write_all(&frame)
+            .and_then(|()| self.file.sync_all())
+            .map_err(|_| ObjectivePublicationStoreErrorV1::Indeterminate)?;
+
+        let publication = ObjectivePublicationV1 {
+            sequence,
+            predecessor_chain_digest,
+            admission,
+            objective,
+            run_start,
+            publication_digest,
+            chain_digest,
+        };
+        self.records.push(publication.clone());
+        self.durable_length = next_length;
+        self.poisoned = false;
+        Ok((publication, ObjectivePublicationDispositionV1::Appended))
+    }
+
+    pub fn records(
+        &self,
+    ) -> Result<&[ObjectivePublicationV1], ObjectivePublicationStoreErrorV1> {
+        if self.poisoned {
+            Err(ObjectivePublicationStoreErrorV1::Poisoned)
+        } else {
+            Ok(&self.records)
+        }
+    }
+
+    pub fn publication_for_run(
+        &self,
+        run_id: &StableId,
+    ) -> Result<Option<&ObjectivePublicationV1>, ObjectivePublicationStoreErrorV1> {
+        Ok(self
+            .records()?
+            .iter()
+            .find(|record| &record.run_start.run_id == run_id))
+    }
+
+    pub fn anchor(&self) -> Result<ObjectivePublicationAnchorV1, ObjectivePublicationStoreErrorV1> {
+        let records = self.records()?;
+        Ok(ObjectivePublicationAnchorV1 {
+            sequence: records.len() as u64,
+            chain_digest: records
+                .last()
+                .map_or(Digest32::ZERO, |record| record.chain_digest),
+        })
+    }
+}
+
+fn validate_run_bindings(run: &RunStartBindingsV1) -> Result<(), ObjectiveProductErrorV1> {
+    if run.run_id.as_str().is_empty() {
+        return Err(ObjectiveProductErrorV1::InvalidRunBinding("run id"));
+    }
+    for (name, digest) in [
+        ("preference state", run.preference_state_digest),
+        ("model tuple", run.model_tuple_digest),
+        ("prompt registry", run.prompt_registry_digest),
+        ("artifact set", run.artifact_set_digest),
+        ("fence", run.fence_digest),
+    ] {
+        if digest.is_zero() {
+            return Err(ObjectiveProductErrorV1::InvalidRunBinding(name));
+        }
+    }
+    if run.authority_epoch == 0 {
+        return Err(ObjectiveProductErrorV1::InvalidRunBinding("authority epoch"));
+    }
+    if run.generation == 0 {
+        return Err(ObjectiveProductErrorV1::InvalidRunBinding("generation"));
+    }
+    Ok(())
+}
+
+fn validate_publication_semantics(
+    admission: &ObjectiveAdmissionReceiptV1,
+    objective: &ObjectiveCompileReceipt,
+    run_start: &RunStartSnapshotV1,
+) -> Result<(), ObjectivePublicationStoreErrorV1> {
+    if admission.authority.grants_any()
+        || admission.profile_digest.is_zero()
+        || admission.intent_digest.is_zero()
+        || admission.admitted_source_digest.is_zero()
+        || objective.objective.semantic_digest.is_zero()
+        || objective.objective.hard_constraint_digest.is_zero()
+        || run_start.objective_digest != objective.objective.semantic_digest
+        || run_start.hard_constraint_digest != objective.objective.hard_constraint_digest
+        || run_start.preference_state_digest.is_zero()
+        || run_start.model_tuple_digest.is_zero()
+        || run_start.prompt_registry_digest.is_zero()
+        || run_start.artifact_set_digest.is_zero()
+        || run_start.fence_digest.is_zero()
+        || run_start.authority_epoch == 0
+        || run_start.generation == 0
+    {
+        return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+    }
+    Ok(())
+}
+
+fn validate_store_domain(
+    binding: Digest32,
+    max_records: usize,
+) -> Result<(), ObjectivePublicationStoreErrorV1> {
+    if binding.is_zero() {
+        return Err(ObjectivePublicationStoreErrorV1::InvalidBinding);
+    }
+    if !(1..=MAX_RECORDS).contains(&max_records) {
+        return Err(ObjectivePublicationStoreErrorV1::InvalidLimit);
+    }
+    Ok(())
+}
+
+fn validate_recovery(
+    recovery: ObjectivePublicationRecoveryV1,
+    max_records: usize,
+) -> Result<(), ObjectivePublicationStoreErrorV1> {
+    if let ObjectivePublicationRecoveryV1::Acknowledged(anchor) = recovery
+        && (anchor.sequence == 0
+            || anchor.sequence > max_records as u64
+            || anchor.chain_digest.is_zero())
+    {
+        return Err(ObjectivePublicationStoreErrorV1::InvalidAnchor);
+    }
+    Ok(())
+}
+
+fn validate_anchor(
+    records: &[ObjectivePublicationV1],
+    recovery: ObjectivePublicationRecoveryV1,
+) -> Result<(), ObjectivePublicationStoreErrorV1> {
+    let ObjectivePublicationRecoveryV1::Acknowledged(anchor) = recovery else {
+        return Ok(());
+    };
+    let record = records
+        .get((anchor.sequence - 1) as usize)
+        .ok_or(ObjectivePublicationStoreErrorV1::MissingAcknowledgedHistory)?;
+    if record.chain_digest != anchor.chain_digest {
+        return Err(ObjectivePublicationStoreErrorV1::AnchorMismatch);
+    }
+    Ok(())
+}
+
+fn replay(
+    file: &mut File,
+    binding: Digest32,
+    max_records: usize,
+) -> Result<(Vec<ObjectivePublicationV1>, u64, u64), ObjectivePublicationStoreErrorV1> {
+    let length = file.metadata()?.len();
+    if length < HEADER_BYTES as u64 {
+        return Err(ObjectivePublicationStoreErrorV1::MissingHeader);
+    }
+    if length > MAX_STORE_BYTES {
+        return Err(ObjectivePublicationStoreErrorV1::Capacity);
+    }
+    file.seek(SeekFrom::Start(0))?;
+    let mut header = [0_u8; HEADER_BYTES];
+    file.read_exact(&mut header)?;
+    if &header[..8] != MAGIC
+        || &header[8..40] != binding.as_array()
+        || &header[40..] != Digest32::of_bytes(&header[..40]).as_array()
+    {
+        return if &header[8..40] != binding.as_array() {
+            Err(ObjectivePublicationStoreErrorV1::BindingMismatch)
+        } else {
+            Err(ObjectivePublicationStoreErrorV1::Corrupt)
+        };
+    }
+
+    let mut records = Vec::new();
+    let mut cursor = HEADER_BYTES as u64;
+    let mut head = Digest32::ZERO;
+    while cursor < length {
+        if length - cursor < FRAME_FIXED_BYTES as u64 {
+            break;
+        }
+        let mut fixed = [0_u8; 48];
+        file.read_exact(&mut fixed)?;
+        let payload_len = u32::from_be_bytes(
+            fixed[..4]
+                .try_into()
+                .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?,
+        );
