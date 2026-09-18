@@ -11,7 +11,7 @@ This root contains the repository-owned `browser.servo` boundary. The current ca
 - `src/runtime-boundary.js` — bounded per-profile serialization queue plus safe abort settlement; an effect-capable driver timeout is not reported until the abort/containment path itself has settled.
 - `src/journal.js` — strict private durable operation journal with compaction and clean-generation retirement.
 - `src/worker-protocol.js` — canonical bounded private Browser/Servo frames.
-- `src/worker-driver.js` — exact-artifact subprocess driver, principal-bound fresh profile roots, response-request binding, stderr drain and Linux Bubblewrap source contract. If an abort races a private pipe write, the worker is contained and the request is not reported timed out while the write can still complete in background.
+- `src/worker-driver.js` — exact-artifact subprocess driver plus a bounded profile→worker pool, principal-bound fresh profile roots, response-request binding, stderr drain and Linux Bubblewrap source contract. Linux launch is wrapped by `prlimit` with explicit address-space, CPU-time, file-descriptor and process ceilings. If an abort races a private pipe write, the affected worker is contained and the request is not reported timed out while the write can still complete in background.
 - `src/agentd-protocol.js`, `src/agentd-service.js`, `src/agentd-service-main.js` — private Agentd parent handoff.
 - `servo-worker/` — Hepta-owned current-pin Servo worker source with one Servo / one WebView and fixed worker-owned semantic/action scripts.
 
@@ -28,6 +28,8 @@ The Browser service does not accept a reusable serialized `VerifiedUseToken`. Ag
 Typed actions are closed-world: `navigate`, `click`, `type`, `credential`, `upload`, `focus`, `scroll`, `wait`, `download`. Credential/upload actions carry references rather than raw secret bytes or ambient host paths. `type.text` exists only in the live action payload; the durable operation journal does **not** store `typedAction` or raw text. It stores the final payload digest plus immutable effect semantics.
 
 The file journal validates every hydrated field, rejects unknown fields, checks canonical checksum envelopes, fsyncs dispatch intent before the effect boundary, compacts atomically before the file ceiling and retires a fully terminal profile generation after clean close.
+
+The Agentd service uses `PooledSubprocessBrowserDriver`: one worker process per live profile generation, with `HEPTA_BROWSER_MAX_PROFILES` (default 16) bounding the global process pool. Linux process ceilings are configurable with `HEPTA_BROWSER_MAX_ADDRESS_SPACE_BYTES`, `HEPTA_BROWSER_MAX_CPU_SECONDS`, `HEPTA_BROWSER_MAX_OPEN_FILES`, and `HEPTA_BROWSER_MAX_PROCESSES`; defaults are 8 GiB virtual address space, 300 CPU seconds, 4096 FDs and 256 processes/threads per worker launch.
 
 Each worker generation receives a fresh random private profile directory and a mode-0600 `hepta.browser.profile-owner.v1` manifest binding profile ID, principal ID, generation, Browser manifest digest and profile grant digest. Stale profile bytes are not silently reopened for another principal.
 
