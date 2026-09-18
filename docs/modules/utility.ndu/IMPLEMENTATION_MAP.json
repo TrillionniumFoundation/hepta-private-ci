@@ -13,39 +13,9 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "source_composed_exact_head_qualification_pending",
+  "productionWriterState": "durable_writer_candidate_not_activated",
   "operations": [
-    {
-      "operation": "evaluate_candidates",
-      "nativeSymbol": "codex_hepta_ndu::evaluate_candidates",
-      "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
-      "inputs": [
-        "ContributionSet",
-        "UtilityProfile",
-        "optional ScalarizationProfile"
-      ],
-      "outputs": [
-        "NduEvaluationReceipt"
-      ],
-      "state": "source_implemented_compatibility_entry",
-      "authority": "none",
-      "semanticProfile": "legacy-sum-max-zero-tolerance-v1",
-      "tests": [
-        {
-          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-          "symbol": "hard_violation_is_filtered_before_utility"
-        },
-        {
-          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-          "symbol": "non_dominated_candidates_without_scalarization_require_slow_path"
-        }
-      ],
-      "designOperation": "evaluate_candidates",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
-    },
     {
       "operation": "evaluate_candidates_with_policy",
       "nativeSymbol": "codex_hepta_ndu::evaluate_candidates_with_policy",
@@ -89,6 +59,30 @@
       "sourcePathExists": true
     },
     {
+      "operation": "compatibility_evaluation_policy",
+      "nativeSymbol": "codex_hepta_ndu::compatibility_evaluation_policy",
+      "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
+      "inputs": [
+        "UtilityProfile"
+      ],
+      "outputs": [
+        "EvaluationPolicyV1"
+      ],
+      "state": "source_implemented_explicit_compatibility_policy",
+      "authority": "none",
+      "nonClaim": "not a second evaluator entrypoint",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "compatibility policy exercised through evaluate_candidates_with_policy"
+        }
+      ],
+      "designOperation": "compatibility_evaluation_policy",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
       "operation": "canonical_evaluation_policy_digest",
       "nativeSymbol": "codex_hepta_ndu::canonical_evaluation_policy_digest",
       "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
@@ -122,13 +116,11 @@
         "eta"
       ],
       "outputs": [
-        "PreferenceState",
-        "NduSolverTerminationReceipt",
-        "NduSolverIterationReceipt list"
+        "PreferenceSolveResult"
       ],
-      "state": "source_implemented_local_solver",
+      "state": "source_implemented_bounded_local_solver",
       "authority": "none",
-      "nonClaim": "local termination is not NduConvergenceCertificateV1",
+      "nonClaim": "unbound local receipts are not publishable; iteration exhaustion exposes no candidate state",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
@@ -155,7 +147,7 @@
       "outputs": [
         "owner-local NduIterationReceiptV1"
       ],
-      "state": "source_implemented_protocol_adapter",
+      "state": "source_implemented_context_rebinding_resistant_adapter",
       "authority": "deny_all",
       "tests": [
         {
@@ -207,9 +199,9 @@
         "bounded hash-chain journal bytes",
         "selected projection view"
       ],
-      "state": "source_implemented_owner_local_durability_reference",
+      "state": "source_implemented_owner_local_hash_chain_reference",
       "authority": "none",
-      "nonClaim": "not an activated production writer or fsync profile",
+      "nonClaim": "in-memory/reference bytes are not the durable production writer",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -228,6 +220,119 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
+    },
+    {
+      "operation": "solve_preference_target_with_context_digest",
+      "nativeSymbol": "codex_hepta_ndu::solve_preference_target_with_context_digest",
+      "sourcePath": "codex-rs/hepta-ndu/src/preference.rs",
+      "inputs": [
+        "PreferenceState",
+        "target AxisValue set",
+        "eta",
+        "canonical iteration context digest"
+      ],
+      "outputs": [
+        "PreferenceSolveResult"
+      ],
+      "state": "source_implemented_protocol_bound_solver",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "receipt_cannot_be_rebound_to_a_different_context"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "fabricated_or_unbound_local_receipt_cannot_be_published"
+        }
+      ],
+      "designOperation": "solve_preference_target_with_context_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "NduDurableProjectionJournalV1",
+      "nativeSymbol": "codex_hepta_ndu::NduDurableProjectionJournalV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/durable_projection.rs",
+      "inputs": [
+        "host-authorized locked File",
+        "store binding digest",
+        "independent recovery anchor"
+      ],
+      "outputs": [
+        "fsync-backed projection journal",
+        "current external anchor"
+      ],
+      "state": "source_implemented_durable_writer_candidate",
+      "authority": "none",
+      "nonClaim": "host selection, directory durability, backup/restore qualification and activation remain separate",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/durable_projection_tests.rs",
+          "symbol": "durable_projection_syncs_then_recovers_selected_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/durable_projection_tests.rs",
+          "symbol": "external_anchor_detects_wholesale_self_consistent_rewrite"
+        }
+      ],
+      "designOperation": "NduDurableProjectionJournalV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "convert_q32_to_q24",
+      "nativeSymbol": "codex_hepta_ndu::convert_q32_to_q24",
+      "sourcePath": "codex-rs/hepta-ndu/src/coordinate_conversion.rs",
+      "inputs": [
+        "Q32 vector",
+        "units/profile/source digests"
+      ],
+      "outputs": [
+        "Q24 vector",
+        "NduCoordinateConversionReceiptV1"
+      ],
+      "state": "source_implemented_conversion_evidence",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/coordinate_conversion_tests.rs",
+          "symbol": "q32_to_q24_uses_nearest_ties_even_and_binds_error"
+        }
+      ],
+      "designOperation": "convert_q32_to_q24",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "admit_stochastic_profile_v1",
+      "nativeSymbol": "codex_hepta_ndu::admit_stochastic_profile_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/stochastic_admission.rs",
+      "inputs": [
+        "coefficient/covariance/conversion/identification/well-posedness/convergence evidence digests"
+      ],
+      "outputs": [
+        "AdmittedNduStochasticProfileV1"
+      ],
+      "state": "source_implemented_fail_closed_stochastic_admission",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/stochastic_admission_tests.rs",
+          "symbol": "stochastic_admission_fails_closed_on_missing_independent_convergence"
+        },
+        {
+          "path": "codex-rs/hepta-shadow-qualification/src/ndu_adaptive_integration_tests.rs",
+          "symbol": "independent_convergence_digest_is_required_by_ndu_stochastic_admission"
+        }
+      ],
+      "designOperation": "admit_stochastic_profile_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -241,14 +346,17 @@
   },
   "completion": {
     "specification": "complete",
-    "deterministicKernel": "candidate_implemented",
+    "deterministicKernel": "candidate_implemented_hardened",
     "ownerLocalDurabilityReference": "candidate_implemented",
-    "canonicalExternalV2Admission": "not_established",
-    "productionWriter": "not_established",
-    "exactHeadQualification": "required",
-    "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
+    "canonicalExternalV2Admission": "owner_local_source_implemented_external_wire_admission_not_established",
+    "productionWriter": "candidate_implemented_host_selection_and_activation_not_established",
+    "exactHeadQualification": "pending_current_pr",
+    "independentConvergenceDecision": "learning.eval_source_implemented_independent_certificate_external_evidence_still_required",
     "activation": "not_established",
-    "release": "not_established"
+    "release": "not_established",
+    "durableWriterCandidate": "candidate_implemented_fsync_and_external_anchor",
+    "sourceProductComposition": "established",
+    "stochasticAdmission": "source_implemented_external_identification_and_well_posedness_evidence_required"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -266,19 +374,50 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "sourceProductCompositionPresent": true,
+    "durableWriterCandidatePresent": true,
+    "independentConvergenceGateImplemented": true
   },
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "171e9fa8d08797f6ad8bab7b56884963c350c631",
+    "tree": "c08bd4109dd1ae065aac6572f378864fc2b5e31b"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Complete exact-head and deterministic synthetic-merge qualification for this candidate.",
+    "Select the durable writer in a named host and qualify directory durability, retention and backup/restore.",
+    "Register/admit external V2 wire profiles for the new profile/conversion/admission semantics."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "independent conditional-identification and well-posedness evidence",
+    "independent semantic review and current learning.eval convergence evidence",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "symbol": "evaluate_prepared_plan_with_ndu",
+      "state": "source_composed",
+      "tests": [
+        "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "symbol": "plan_observed_context",
+      "state": "source_composed",
+      "tests": [
+        "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
+      ]
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/vertical.rs",
+      "symbol": "run_read_only_vertical",
+      "state": "source_composed_read_only",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+      ]
+    }
   ]
 }
