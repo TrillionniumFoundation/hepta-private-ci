@@ -429,10 +429,15 @@ impl HeptaEvidenceStore {
     pub async fn begin_authbus_effect(
         &self,
         reservation_id: &StableId,
+        expected_principal_id: &StableId,
+        expected_action_id: &StableId,
+        expected_scope_digest: Digest32,
         expected_effect_digest: Digest32,
     ) -> Result<Reservation, AuthBusControlError> {
-        if expected_effect_digest.is_zero() {
-            return Err(AuthBusControlError::Invalid("effect digest is empty"));
+        if expected_scope_digest.is_zero() || expected_effect_digest.is_zero() {
+            return Err(AuthBusControlError::Invalid(
+                "effect scope/digest is empty",
+            ));
         }
         let mut tx = self
             .pool
@@ -443,6 +448,9 @@ impl HeptaEvidenceStore {
         let now = clock(now_i64)?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
         if reservation.state != ReservationState::Active
+            || reservation.principal_id != *expected_principal_id
+            || reservation.action_id != *expected_action_id
+            || reservation.scope_digest != expected_scope_digest
             || reservation.effect_digest != expected_effect_digest
         {
             return Err(AuthBusControlError::InvalidTransition);

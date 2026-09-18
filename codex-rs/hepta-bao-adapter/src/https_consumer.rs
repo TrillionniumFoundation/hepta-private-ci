@@ -180,8 +180,8 @@ impl BaoClient {
         request: &BaoReadRequest,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoClientError> {
-        let effect_digest = match self.authbus_effect_digest(request) {
-            Ok(digest) => digest,
+        let binding = match self.binding(request) {
+            Ok(binding) => binding,
             Err(error @ BaoClientError::InvalidRequest) => {
                 authbus
                     .cancel_authbus_reservation(reservation_id)
@@ -191,9 +191,21 @@ impl BaoClient {
             }
             Err(error) => return Err(error),
         };
+        let effect_digest = self.authbus_effect_digest(request)?;
+        let principal_id = StableId::new(binding.subject_id.clone())
+            .map_err(|_| BaoClientError::InvalidRequest)?;
+        let action_id =
+            StableId::new("action:bao-read").map_err(|_| BaoClientError::AuthBusControl)?;
+        let scope_digest = Digest32::from_array(binding.scope_sha256);
 
         authbus
-            .begin_authbus_effect(reservation_id, effect_digest)
+            .begin_authbus_effect(
+                reservation_id,
+                &principal_id,
+                &action_id,
+                scope_digest,
+                effect_digest,
+            )
             .await
             .map_err(|_| BaoClientError::AuthBusControl)?;
 
