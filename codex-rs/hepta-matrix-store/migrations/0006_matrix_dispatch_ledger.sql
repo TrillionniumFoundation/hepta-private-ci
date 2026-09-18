@@ -119,12 +119,12 @@ INSERT INTO matrix_dispatch_ledger (
 )
 SELECT
     stable_txn_id,
-    logical_outbox_id,
+    'matrix-send:' || stable_txn_id,
     room_id,
     payload_sha256,
     binding_revision,
     generation,
-    printf('matrix-binding:%lld:%lld', binding_revision, generation),
+    printf('matrix-binding:%s:%lld:%lld', room_id, binding_revision, generation),
     NULL,
     NULL,
     CASE state
