@@ -189,3 +189,40 @@ fn valid_account(value: &str) -> bool {
             .bytes()
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
+
+
+/// Fail-closed store used when the OS credential backend is unavailable.
+///
+/// Read-only UI remains usable, but no effect can cross the durable-intent
+/// boundary because insert/update always fail.
+pub struct ReadOnlyOperationStore {
+    reason: String,
+}
+
+impl ReadOnlyOperationStore {
+    pub fn new(reason: impl Into<String>) -> Self {
+        Self {
+            reason: reason.into(),
+        }
+    }
+}
+
+impl OperationStore for ReadOnlyOperationStore {
+    fn load(&self) -> Result<Vec<OperationRecord>, NativeError> {
+        Ok(Vec::new())
+    }
+
+    fn insert_new(&self, _record: &OperationRecord) -> Result<(), NativeError> {
+        Err(NativeError::Journal(format!(
+            "secure operation persistence is unavailable; effect refused: {}",
+            self.reason
+        )))
+    }
+
+    fn update(&self, _record: &OperationRecord) -> Result<(), NativeError> {
+        Err(NativeError::Journal(format!(
+            "secure operation persistence is unavailable; journal update refused: {}",
+            self.reason
+        )))
+    }
+}
