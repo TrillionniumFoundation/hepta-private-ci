@@ -266,4 +266,3 @@ This receipt records repository source bindings for the current documentation ca
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain explicit follow-up evidence when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
-
