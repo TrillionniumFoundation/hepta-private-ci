@@ -298,6 +298,18 @@ async fn hepta_kg_and_sqlite_share_one_generation_oracle_across_reopen_and_tombs
     assert_eq!(first.projection.generation.get(), 1);
 
     let generation_one = current_kernel_generation(&store, &scope).await;
+    for node in &generation_one.nodes {
+        assert_eq!(node.supports.len(), 1);
+        assert_eq!(
+            node.supports[0].source_id.to_string(),
+            first.source.source_id.as_str()
+        );
+        assert_eq!(node.supports[0].source_revision.get(), first.source.revision);
+        assert_eq!(
+            node.supports[0].source_fact_digest.to_string(),
+            first.projection.fact_set_sha256.as_str()
+        );
+    }
     let persisted_one: String = sqlx::query_scalar(
         "SELECT generation_sha256 FROM kg_projection_kernel_receipts
          WHERE projection_scope = ? AND generation = 1",
