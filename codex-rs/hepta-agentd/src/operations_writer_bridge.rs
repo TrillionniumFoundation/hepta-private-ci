@@ -351,9 +351,9 @@ mod tests {
     use std::time::UNIX_EPOCH;
 
     use codex_hepta_contracts::AgentId;
-    use codex_hepta_contracts::ProductionAuthorityToken;
     use codex_hepta_memory::CognitiveStore;
     use codex_hepta_memory::ProductionAuthorityLease;
+    use codex_hepta_memory::ProductionAuthorityToken;
     use codex_hepta_memory::ProductionAuthorityVerifier;
     use codex_hepta_paths::HeptaFleetRoot;
     use codex_state::SqliteConfig;
