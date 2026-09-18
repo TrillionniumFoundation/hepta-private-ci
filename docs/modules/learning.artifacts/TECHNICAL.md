@@ -561,8 +561,18 @@ platform-specific environment:
   release.
 
 An empty or partial file left after a failed create-only write is never silently
-reused. Cleanup is a separately fenced host operation that must first prove the
-path is not referenced by any current or retained historical receipt.
+reused. `inspect_orphan_candidate` can hash and classify a caller-opened file
+against a bounded set of independently retained digests under a shared lock; it
+does not delete the file and does not turn absence from that digest set into
+deletion authority. Cleanup is a separately fenced host operation that must
+first prove the path/identity is not referenced by any current or retained
+historical receipt.
+
+`inspect_artifact_admin_state` is the crate's read-only operational surface for
+already-supplied registry, withdrawal and lifecycle objects. It reports chain
+heads, record counts, direct artifact states and eligibility counts and always
+returns `AuthorityPosture::DENY_ALL`. It neither discovers the latest state nor
+mutates, selects, activates, promotes or releases an artifact.
 
 ### 18.7 Qualification
 
