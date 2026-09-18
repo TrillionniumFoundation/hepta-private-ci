@@ -30,6 +30,17 @@ struct Fixture {
 
 impl Fixture {
     fn new(evaluator_controller_collision: bool) -> Self {
+        Self::new_with_collisions(evaluator_controller_collision, false)
+    }
+
+    fn new_with_observer_evaluator_collision() -> Self {
+        Self::new_with_collisions(false, true)
+    }
+
+    fn new_with_collisions(
+        evaluator_controller_collision: bool,
+        observer_evaluator_controller_collision: bool,
+    ) -> Self {
         let keys = [
             SigningKey::from_bytes(&[11; 32]),
             SigningKey::from_bytes(&[22; 32]),
@@ -60,6 +71,8 @@ impl Fixture {
                     principal: principal.clone(),
                     controller_id: if evaluator_controller_collision && index == 2 {
                         principals[0].principal_id.clone()
+                    } else if observer_evaluator_controller_collision && index == 2 {
+                        principals[1].principal_id.clone()
                     } else {
                         id(&format!("plasticity-controller-{index}"))
                     },
@@ -462,6 +475,30 @@ fn product_path_rejects_protected_parameter_even_with_valid_generator_bytes() {
 #[test]
 fn product_path_rejects_generator_evaluator_controller_collision() {
     let fixture = Fixture::new(true);
+    let mut writer = writer();
+    let mut anchor_committer = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let result = propose_authenticated_parameter_plasticity_v1(
+        fixture.request(),
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_committer,
+        50,
+    );
+    assert!(matches!(
+        result,
+        Err(ParameterPlasticityProductErrorV1::Evaluation(
+            SignedEvaluationError::Evidence(SignedEvidenceError::ControllerCollision)
+        ))
+    ));
+    assert_eq!(writer.record_count().expect("count"), 0);
+}
+
+#[test]
+fn product_path_rejects_observer_evaluator_controller_collision() {
+    let fixture = Fixture::new_with_observer_evaluator_collision();
     let mut writer = writer();
     let mut anchor_committer = AnchorCommitter {
         accept: true,
