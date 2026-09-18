@@ -24,6 +24,7 @@ use crate::RuntimeComposition;
 const RUN_LEDGER_SCHEMA_VERSION: u32 = 1;
 const RUN_LEDGER_FILE: &str = "agentd-run-lifecycle-v1.json";
 const MAX_RUN_LEDGER_BYTES: u64 = 4 * 1024 * 1024;
+const DEFAULT_CANCELLATION_ACK_TIMEOUT_MS: u64 = 5_000;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -156,12 +157,13 @@ impl RunLedger {
 
 fn runtime_composition(identity: &AgentdIdentity) -> RuntimeComposition {
     let configuration = format!(
-        "agentd-composition-v1\nagent={}\nspawn_generation={}\nworkspace={}\nhome={}\nrun={}\n",
+        "agentd-composition-v1\nagent={}\nspawn_generation={}\nworkspace={}\nhome={}\nrun={}\ncancellation_ack_timeout_ms={}\n",
         identity.agent_id,
         identity.spawn_generation,
         identity.workspace.display(),
         identity.home_root.display(),
         identity.run_root.display(),
+        DEFAULT_CANCELLATION_ACK_TIMEOUT_MS,
     );
     let ports = format!(
         "agentd-ports-v1\ncontrol={}\napp_server={}\nprotocol={}\n",
@@ -179,6 +181,7 @@ fn runtime_composition(identity: &AgentdIdentity) -> RuntimeComposition {
         ports_digest: Sha256Digest::for_bytes(ports.as_bytes())
             .as_str()
             .to_string(),
+        cancellation_ack_timeout_ms: DEFAULT_CANCELLATION_ACK_TIMEOUT_MS,
     }
 }
 
