@@ -188,7 +188,11 @@ impl LocalProcessDriver {
     ) -> Result<(), Error> {
         for (path, expected, label) in [
             (&artifacts.weights_path, &manifest.weights_digest, "weights"),
-            (&artifacts.tokenizer_path, &manifest.tokenizer_digest, "tokenizer"),
+            (
+                &artifacts.tokenizer_path,
+                &manifest.tokenizer_digest,
+                "tokenizer",
+            ),
             (
                 &artifacts.preprocessor_path,
                 &manifest.preprocessor_digest,
@@ -223,7 +227,9 @@ impl LocalProcessDriver {
         let metadata = symlink_metadata(&self.config.runtime_socket)
             .map_err(|error| failure(format!("local runtime socket unavailable: {error}")))?;
         if metadata.file_type().is_symlink() || !metadata.file_type().is_socket() {
-            return Err(failure("local runtime endpoint is not a direct Unix socket"));
+            return Err(failure(
+                "local runtime endpoint is not a direct Unix socket",
+            ));
         }
         let encoded = serde_json::to_vec(value)
             .map_err(|error| failure(format!("encode local runtime request: {error}")))?;
@@ -277,7 +283,11 @@ impl ModelDriver for LocalProcessDriver {
             return Err(runtime_error(response.error));
         }
         for (actual, expected, label) in [
-            (response.model_digest.as_deref(), manifest.model_digest.as_str(), "model"),
+            (
+                response.model_digest.as_deref(),
+                manifest.model_digest.as_str(),
+                "model",
+            ),
             (
                 response.weights_digest.as_deref(),
                 manifest.weights_digest.as_str(),
@@ -426,8 +436,8 @@ fn hash_regular_file(path: &Path) -> Result<String, Error> {
             path.display()
         )));
     }
-    let mut file = File::open(path)
-        .map_err(|error| failure(format!("open {}: {error}", path.display())))?;
+    let mut file =
+        File::open(path).map_err(|error| failure(format!("open {}: {error}", path.display())))?;
     let mut hasher = Sha256::new();
     let mut buffer = vec![0_u8; FILE_HASH_BUFFER_BYTES];
     loop {
