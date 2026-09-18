@@ -367,8 +367,8 @@ impl CognitiveStore {
             "INSERT INTO kg_projection_v2_generation_receipts (
                 projection_scope, generation, source_snapshot_sha256,
                 generation_digest, predecessor_generation,
-                predecessor_generation_digest, publication_digest
-             ) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                predecessor_generation_digest, disposition, publication_digest
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         )
         .bind(&projection_scope)
         .bind(next)
@@ -376,6 +376,10 @@ impl CognitiveStore {
         .bind(v2_generation.generation_digest.to_string())
         .bind(publication.predecessor_generation.map(|value| value.get()).map(|value| i64::try_from(value).unwrap_or(i64::MAX)))
         .bind(publication.predecessor_digest.map(|value| value.to_string()))
+        .bind(match publication.disposition {
+            codex_hepta_kg::KnowledgePublicationDispositionV2::Published => "published",
+            codex_hepta_kg::KnowledgePublicationDispositionV2::Unchanged => "unchanged",
+        })
         .bind(publication.publication_digest.to_string())
         .execute(&mut **transaction)
         .await
