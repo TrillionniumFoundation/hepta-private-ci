@@ -1,52 +1,190 @@
 # context.compiler: implementation design
 
-Parent: `docs/modules/context.compiler/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: source-aware compilation with mandatory groups and candidate-bound receipts implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Parent: docs/modules/context.compiler/TECHNICAL.md. Lane: LANE-C-MEMORY.
+Status: the V2 source candidate implements an admission-verified,
+exact-serialization, current-revalidation and provider-evidence proof chain.
+Product composition, target-host qualification and independent acceptance remain
+separate gates. Common requirements: ../EXECUTION_SEMANTICS.md and
+../TECHNICAL.md. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-context-compiler`.
-Packages: `CTX-1-CONTEXT-COMPILER`.
+Roots: codex-rs/hepta-context-compiler.
+Package: CTX-1-CONTEXT-COMPILER.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+The module remains stateless for authoritative domain facts. It owns no
+admission store, revocation store, tokenizer registry, provider socket, provider
+credentials or external-effect authority. It consumes owner-supplied verified
+adapters and emits deny-all receipts.
+
+V2 is normative for new integrations. V1 entrypoints remain compatibility-only
+and retain their historical semantics.
 
 ## 2. Public operations and contract details
 
-`compile_context(objective, validated_evidence, prompt_portfolio, model_profile, budget) -> ContextCompilationReceiptV1`; `revalidate_attachment(receipt, current_snapshot) -> ContextAttachment | Stale`. The compilation result binds actual payload/tokenizer/template/tool-schema digests, placement, truncation, source revisions and cost. Compilation alone is not delivery; the Codex consumer emits a separate observation.
+Implemented V2 operations are:
+
+- verify_context_candidate_v2(draft, bytes, admission_snapshot, tokenizer, time)
+  -> opaque ContextCandidateV2;
+- compile_v2(request) -> opaque CompiledContextV2;
+- serialize_context_exact(compiled, id, materialized_items, serializer,
+  tokenizer, time) -> opaque SerializedContextV2;
+- build_attachment(compiled, serialized, id, current_admission_snapshot,
+  tokenizer, time) -> opaque ContextAttachmentV2;
+- observe_delivery(attachment, id, provider_receipt,
+  independent_delivery_verifier, time) -> ContextDeliveryReceiptV2.
+
+Compatibility operations remain compile, compile_with_requirements,
+compile_candidate_bound and compile_candidate_bound_with_requirements.
+
+The V2 chain is:
+
+admission verification
+-> exact candidate tokenization
+-> deterministic compilation
+-> exact byte materialization
+-> registered serialization
+-> exact final-payload tokenization
+-> current admission/revocation revalidation
+-> attachment
+-> validated provider receipt
+-> independent provider-delivery evidence
+-> delivery receipt.
+
+Compilation is never provider authority and a delivery receipt is never a
+success/quality label for learning.
 
 ## 3. State records and transaction design
 
-No authoritative store or model-call handle. The local compilation object contains immutable references to selected evidence and admitted prompt realizations, plus bounded structured payload and omission metadata. Raw assets are attached only through the owner-approved redaction/purpose gate. Cache keys include every source and model/template generation and current revocation cutoff.
+There is no authoritative context.compiler store.
+
+ContextCandidateV2 is opaque outside the crate and contains a private
+ContextAdmissionReceiptV2. The receipt binds item, role, content/source digest,
+generation vector, admission verifier, admission snapshot, revocation frontier,
+source admission, verification time and expiry.
+
+ContextCompilationReceiptV2 additionally binds objective, prompt portfolio,
+exact model profile, candidate set, canonical mandatory-group policy, selected
+and omitted IDs, compilation budget/time and context digest.
+
+ContextSerializationReceiptV2 binds the exact materialization, serializer,
+template, tool schema, tokenizer, final payload digest, final payload token
+count and serialization time.
+
+ContextAttachmentV2 binds the current admission snapshot/revocation frontier,
+provider/model profile, exact final payload and attachment time.
+
+ContextDeliveryReceiptV2 binds provider request/attempt/terminal evidence and a
+separate evidence-verifier result. All receipts are deny-all authority.
+
+Raw context bytes exist only in the explicit candidate verification and
+serialization/attachment objects. Debug output for raw materialization and
+payload holders is digest/length-only.
 
 ## 4. Deterministic algorithm and scheduling
 
-Reserve non-tradable instruction/schema/evidence floors; revalidate sources in a coherent snapshot; tokenize with the exact tokenizer; select the bounded portfolio order; pack evidence using deterministic value-per-cost with stable ties while preserving mandatory provenance/contradiction groups; stop before exceeding the budget; emit omitted-count and uncertainty. If mandatory floors cannot fit, return insufficient_context/abstain rather than truncate authority or fabricate citations. Record the heuristic and lack of global optimality.
+Candidate construction first verifies current admission and tokenizes exact
+candidate bytes. compile_v2 then requires a coherent verifier/snapshot/frontier,
+generation vector and tokenizer profile across the entire candidate set.
 
-## 5. Capacity and performance profile
+Trusted instructions and schemas are non-tradable floors. Canonically normalized
+mandatory groups add indivisible evidence obligations. Their complete group
+structure and reason digests are included in mandatory_groups_digest, so a
+policy change invalidates the receipt even if the selected IDs do not change.
 
-Pilot <=128 prompt factors, <=512 evidence candidates, bounded media spans and total tokens from the exact model profile. At most one tokenizer pass per immutable segment plus bounded composition overhead. Measure final token count, truncation, placement, allocations and p99 compilation.
+After mandatory reservation, optional evidence is sorted by deterministic
+expected-value-per-token with stable item-ID ties. The heuristic makes no
+global-optimality claim. Insufficient mandatory budget fails instead of silently
+truncating trusted/schema/group content.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+Per-item token counts are selection costs. They are not treated as the final
+provider payload count. serialize_context_exact runs the exact tokenizer again
+over the actual complete serialized payload and fails closed if framing,
+separators, role wrappers or tokenizer-boundary effects push it over budget.
 
-## 6. Concrete verification cases
+## 5. Admission, revocation and TOCTOU boundary
 
-- CTX-01: external evidence cannot occupy a trusted instruction role without registry admission.
-- CTX-02: a tiny context budget preserves mandatory fields or explicitly refuses compilation.
-- CTX-03: changed source/tombstone/model tuple invalidates a cached compilation.
-- CTX-04: final delivered payload digest equals the compilation digest; a delivery mismatch receives no causal factor credit.
+V2 no longer accepts an arbitrary trusted_admission_digest.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+ContextAdmissionSnapshotVerifierV2 is the owner adapter responsible for
+authenticating admission and revocation state. The candidate type is private to
+the module construction path, so callers cannot populate an admission receipt
+by assigning a digest field.
 
-## 7. Integration, rollback and capability ceiling
+Compilation binds the exact admission snapshot/frontier used at compile time.
 
-Native Codex attachment is the consumer contract; no direct provider path. C1 tests stale citation and contradiction preservation under maximum context pressure. Rollback restores compatible profiles and invalidates caches instead of reusing a stale compiled prompt.
+Attachment requires the same admission verifier trust anchor and re-runs
+verification for every selected candidate against the current snapshot at the
+attachment timestamp. The current snapshot/frontier may advance, but each
+candidate must remain admitted and its source-admission digest must remain
+consistent. Revocation, expiry, verifier replacement or admission drift rejects.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+This closes the compile-to-attach stale-context window inside the module
+contract. Production trust still depends on composing the verifier with the
+authoritative admission/revocation owner; the module cannot authenticate a
+malicious verifier implementation by hashing it.
+
+## 6. Exact tokenizer, serialization and provider delivery
+
+ContextModelProfileV2 binds model artifact, provider ID, provider model,
+tokenizer, serializer, template, tool schema and maximum context tokens.
+
+ExactContextTokenizerV2 receives the real candidate bytes during candidate
+construction and the real final serialized bytes during serialization.
+ContextSerializerV2 receives the exact selected materialized items and returns
+the actual payload bytes. The serializer/template/tool-schema identities must
+match the model profile.
+
+observe_delivery does not accept caller booleans such as delivered=true. It
+requires a valid codex-hepta-contracts ProviderInvocationReceipt whose
+ephemeral_input_sha256 equals the exact attachment payload digest and whose
+ephemeral-input witness is present. Provider ID and model must match the bound
+model profile.
+
+Because ProviderInvocationReceipt is itself constructible contract data,
+ContextProviderDeliveryVerifierV2 is separately required. The intended product
+adapter is kernel.evidence or another authenticated terminal-observer/evidence
+owner. Its evidence digest, verifier identity and recorded time are included in
+the delivery receipt.
+
+Completed/CompletedUnary, Rejected, NotDispatched and Indeterminate remain
+distinct. Indeterminate never aliases Delivered.
+
+## 7. Capacity, failure semantics and verification cases
+
+Current source ceilings are:
+
+- maximum 4,096 candidates;
+- maximum 256 mandatory groups;
+- maximum 1,000,000 context tokens;
+- maximum 4 MiB per materialized item;
+- maximum 16 MiB final serialized payload.
+
+Representative source tests in src/v2_tests.rs cover:
+
+- candidate admission is required before opaque candidate creation;
+- a candidate from another admission snapshot fails compilation;
+- mandatory instructions/schemas refuse insufficient budgets;
+- changing mandatory-group reason changes receipt provenance even with the same
+  selection;
+- serializer framing that makes the final payload exceed budget fails after
+  actual final-payload tokenization;
+- materialized byte drift from the admitted content digest fails;
+- revocation between compile and attach fails;
+- a still-valid candidate may attach under a newer current snapshot/frontier;
+- provider payload mismatch and provider/model mismatch fail;
+- missing independent delivery evidence fails;
+- provider indeterminate remains indeterminate;
+- Debug output does not emit raw payload text.
+
+CTX-01 through CTX-06 are therefore represented by native V2 source mechanisms,
+but product acceptance still requires the named production adapters, product
+caller, exact-candidate runs and independent evidence.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `compile` in [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs); `compile_with_requirements` in [codex-rs/hepta-context-compiler/src/requirements.rs](../../../codex-rs/hepta-context-compiler/src/requirements.rs); `compile_candidate_bound` in [codex-rs/hepta-context-compiler/src/candidate_bound.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound.rs). Source-aware compilation with mandatory groups and candidate-bound receipts implemented.
-- **State and recovery:** Stateless compilation separates trusted instructions from untrusted evidence and binds objective/snapshot/items. Explicit mandatory groups validate exact items before budget selection and cannot be silently omitted.
-- **Source tests:** [codex-rs/hepta-context-compiler/src/requirements_tests.rs](../../../codex-rs/hepta-context-compiler/src/requirements_tests.rs), [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md](../../../codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md), [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md).
-- **Remaining work:** Actual tokenizer/model accounting, prompt realization and physical turn delivery belong to the selected caller profile; a compilation receipt alone does not prove them.
+- **Implemented entrypoints:** verify_context_candidate_v2 in [codex-rs/hepta-context-compiler/src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs); compile_v2 in [codex-rs/hepta-context-compiler/src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs); serialize_context_exact in [codex-rs/hepta-context-compiler/src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs); build_attachment in [codex-rs/hepta-context-compiler/src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs); observe_delivery in [codex-rs/hepta-context-compiler/src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs); compile in [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs); compile_with_requirements in [codex-rs/hepta-context-compiler/src/requirements.rs](../../../codex-rs/hepta-context-compiler/src/requirements.rs); compile_candidate_bound in [codex-rs/hepta-context-compiler/src/candidate_bound.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound.rs).
+- **State and recovery:** no authoritative store. V2 receipts bind verified admission, exact model/serializer/tokenizer identity, canonical mandatory policy, final payload, current attachment snapshot/frontier and provider evidence. Recovery/retry responsibility stays with the owning admission/evidence/provider adapters.
+- **Source tests:** [codex-rs/hepta-context-compiler/src/v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/v2_tests.rs), [codex-rs/hepta-context-compiler/src/requirements_tests.rs](../../../codex-rs/hepta-context-compiler/src/requirements_tests.rs), [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs). These are test identities, not independent acceptance receipts.
+- **Implementation and operating references:** [codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md](../../../codex-rs/hepta-context-compiler/MANDATORY_CONTEXT.md), [docs/modules/context.compiler/TECHNICAL.md](../../../docs/modules/context.compiler/TECHNICAL.md).
+- **Remaining work:** compose a named product caller with the authoritative admission/revocation adapter, qualified exact tokenizer and registered serializer; back ContextProviderDeliveryVerifierV2 with kernel.evidence or another authenticated terminal observer; run exact-head and deterministic merge-candidate qualification; collect target-host resource measurements and independent semantic/security acceptance. None of these remaining gates may be inferred from source presence or unit tests.
