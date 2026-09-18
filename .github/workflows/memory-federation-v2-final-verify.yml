@@ -13,6 +13,18 @@ on:
       - "codex-rs/app-server/**"
       - "docs/modules/memory.federation/**"
       - "qualification/module-execution-dossiers/detail/memory.federation.md"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/memory-federation-v2-final-verify.yml"
+      - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/ext/hepta-memory/**"
+      - "codex-rs/app-server/**"
+      - "docs/modules/memory.federation/**"
+      - "qualification/module-execution-dossiers/detail/memory.federation.md"
 
 permissions:
   contents: read
