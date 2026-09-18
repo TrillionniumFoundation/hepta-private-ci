@@ -141,6 +141,14 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
+### Native durable egress truth
+
+The existing Matrix `stable_txn_id` remains the canonical send transaction identity. Migration `0006_matrix_dispatch_ledger.sql` adds one durable `matrix_dispatch_ledger` plus append-only `matrix_dispatch_observations`; it does not create a second sender or a second state owner.
+
+Transport acceptance records `Accepted` evidence without claiming terminal success. Retry exhaustion or an expired in-flight lease preserves `Indeterminate`; only a matching homeserver event observation can settle `Succeeded`. The SDK `/sync` path observes self-authored Matrix room events and applies that observation inside the same durable owner transaction as the sync frontier. Send-observation and redaction-observation digests are stored separately, so a later redaction cannot erase the original delivery evidence.
+
+The 4096 ceiling applies only to unresolved dispatches (`Prepared`, `Dispatched`, `RetryScheduled`, `Accepted`, `Indeterminate`). Terminal history remains durable and does not consume that active reconciliation working set.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/channel.matrix.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md).
@@ -171,7 +179,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and stable send transaction identity in their existing durable owners; send_observer is a reusable state machine, not another sender. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
+Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and stable send transaction identity in their existing durable owner; `send_observer` is now a reusable façade over that durable ledger, not another state owner or sender. HTTP/SDK acceptance is observable separately from homeserver-observed terminality. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
 
 Current operating and state-format references:
 
@@ -186,8 +194,11 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs); named case: `empty_page_continues_and_exact_target_preserves_page_and_event_order`.
 - [codex-rs/hepta-matrix-sdk/src/sync_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/sync_tests.rs); named case: `v1_redaction_commits_before_replay_and_survives_reopen`.
+- [codex-rs/hepta-matrix-store/tests/durable_dispatch.rs](../../../codex-rs/hepta-matrix-store/tests/durable_dispatch.rs); non-terminal transport acceptance, crash fencing, durable terminal observation and evidence-preserving redaction.
+- [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs); stable transaction retry while refusing to equate transport acceptance with terminal success.
+- [codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs](../../../codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs); feature-gated real-Synapse target qualification requires the durable dispatch to reach `Succeeded` with homeserver observation evidence.
 
-In `codex-rs`, run `just test -p codex-hepta-matrix-sdk -p codex-hepta-matrixd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md) separately labels target acceptance designs.
+The Lane B exact-head workflow runs the focused store/SDK/runtime tests and compiles the real-Synapse target. The separate `.github/workflows/hepta-matrix-real-synapse.yml` workflow binds compile/run receipts to an exact candidate SHA/tree; real Synapse execution is a distinct self-hosted qualification job and is not implied by source presence or compilation.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -262,9 +273,9 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `admit_event` | `pub async fn process_event(` | `codex-rs/hepta-matrixd/src/runtime.rs` | `codex-rs/hepta-matrixd/src/tests.rs` |
-| `prepare_send` | `pub fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
-| `observe_send` | `pub fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `prepare_send` | `pub async fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `observe_send` | `pub async fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- Durable dispatch ownership is implemented in `codex-rs/hepta-matrix-store/src/dispatch.rs` and `0006_matrix_dispatch_ledger.sql`; `send_observer` is only a façade over that owner.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
