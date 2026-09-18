@@ -266,6 +266,83 @@
         }
       ],
       "sourcePathExists": true
+    },
+    {
+      "operation": "verify_signed_owner_summary_v1",
+      "designOperation": "OwnerSummaryVerifierV1::verify",
+      "nativeSymbol": "codex_hepta_control_plane::OwnerSummaryVerifierV1::verify",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_owner_auth.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "state": "candidate_implemented_pinned_ed25519_trust",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_owner_auth.rs",
+          "symbol": "pinned_ed25519_owner_key_admits_only_the_exact_summary"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_owner_auth.rs",
+          "symbol": "signer_identity_is_pinned_outside_request_metadata"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "with_authorized_grant_request_v1",
+      "designOperation": "with_authorized_grant_request_v1",
+      "nativeSymbol": "codex_hepta_control_plane::with_authorized_grant_request_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_authority.rs",
+      "mappingClass": "owner_native_adapter",
+      "delegatedCallees": [
+        "codex_hepta_contracts::FinalUseAuthority::claim",
+        "codex_hepta_contracts::FinalUseAuthority::with_verified_use"
+      ],
+      "state": "candidate_implemented_concrete_kernel_authority_adapter_not_activated",
+      "authority": "independent_final_use_authority_only",
+      "nonClaim": "control.runtime never signs grants or constructs VerifiedUseToken directly",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_authority.rs",
+          "symbol": "independently_signed_final_use_grant_is_required_and_single_use"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_authority.rs",
+          "symbol": "payload_or_scope_drift_breaks_the_final_use_binding"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "PlannerJournalStoreV1",
+      "designOperation": "PlannerJournalStoreV1::{open,load,commit,restore_previous}",
+      "nativeSymbol": "codex_hepta_control_plane::PlannerJournalStoreV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "mappingClass": "owner_native_durability",
+      "delegatedCallees": [
+        "StrictPlannerJournalV1::reopen"
+      ],
+      "state": "candidate_implemented_private_locked_fsync_atomic_store_not_activated",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "durable_commit_reopens_and_process_lock_excludes_second_owner"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "predecessor_restore_is_explicit_and_semantically_verified"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "hash_valid_semantic_forgery_never_reaches_disk"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store.rs",
+          "symbol": "legacy_raw_journal_migrates_once_through_strict_replay"
+        }
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalDomainContracts": [
@@ -279,21 +356,24 @@
     "FeasiblePlanReceiptV1",
     "GrantRequestSetV1",
     "PlannerJournalEntryV1",
-    "AuthenticatedOwnerSummaryV1"
+    "AuthenticatedOwnerSummaryV1",
+    "SignedOwnerSummaryV1",
+    "GrantAuthorityContextV1",
+    "PlannerJournalStoreV1"
   ],
   "completion": {
     "specification": "complete_current_candidate",
     "nativePlanningKernel": "candidate_hardened",
     "resourceProfileBinding": "candidate_implemented",
     "realNduComposition": "candidate_implemented",
-    "ownerAuthenticationSeam": "candidate_implemented_external_verifier_required",
+    "ownerAuthenticationSeam": "candidate_concrete_pinned_ed25519_verifier_implemented_host_trust_composition_pending",
     "narrowProductCaller": "agentd_context_composed",
     "globalPlanCompositionApi": "candidate_implemented_not_activated",
-    "ownerLocalDurabilityReference": "candidate_implemented_with_strict_semantic_replay",
+    "ownerLocalDurabilityReference": "candidate_durable_store_implemented_not_activated",
     "canonicalExternalProtocolAdmission": "not_established",
-    "productionWriter": "not_established",
-    "concreteKernelAuthorityAdapter": "not_established",
-    "exactHeadQualification": "required_for_this_closure_branch",
+    "productionWriter": "candidate_owner_local_store_implemented_not_composed",
+    "concreteKernelAuthorityAdapter": "candidate_implemented_existing_final_use_authority_not_activated",
+    "exactHeadQualification": "required_for_current_closure_head",
     "namedHostQualification": "not_established",
     "independentAcceptance": "not_established",
     "activation": "not_established",
@@ -309,7 +389,10 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "cryptographicOwnerAdmissionSourceImplemented": true,
+    "durableOwnerStoreSourceImplemented": true,
+    "concreteAuthorityAdapterSourceImplemented": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
@@ -317,10 +400,8 @@
   },
   "closureBranch": "work/control-runtime-final-closure-20260917",
   "repositoryControlledGaps": [
-    "Bind the global composition API to a concrete cryptographic owner verifier and named owner set.",
-    "Bind grant-request handoff to the independently owned kernel.authority implementation without importing effect authority into control.runtime.",
-    "Replace the reference journal bytes with an owner-approved production store including schema migration, fsync profile, retention and restore qualification.",
-    "Run exact-head and deterministic synthetic-merge checks on this closure candidate.",
+    "Bind the implemented pinned-key owner verifier, durable planner store and FinalUseAuthority adapter into one named promotion-eligible global planning host.",
+    "Run exact-head and deterministic synthetic-merge checks on the current closure head.",
     "Record named-host load, latency, restart and fault-injection evidence before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
