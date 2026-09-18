@@ -1,0 +1,35 @@
+name: automation-taskflow-focused
+
+on:
+  push:
+    branches:
+      - work/automation-taskflow-durable-causal-chain
+    paths:
+      - codex-rs/hepta-automation/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-contracts/**
+      - .github/workflows/automation-taskflow-focused.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  focused:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Rustfmt changed automation owners
+        run: cargo fmt --all -- --check
+      - name: Check automation and Agentd
+        run: cargo check -p codex-hepta-automation -p codex-hepta-agentd
+      - name: Test durable automation causal chain
+        run: cargo test -p codex-hepta-automation --test durable_causal_chain
+      - name: Test automation library
+        run: cargo test -p codex-hepta-automation --lib
+      - name: Test Agentd library
+        run: cargo test -p codex-hepta-agentd --lib
