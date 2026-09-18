@@ -431,10 +431,10 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 explanations.push(*explanation);
             }
             let Some(content) = compile_explanations(
-            &explanations,
-            prepared.coverage,
-            prepared.admission_expires_unix_ms,
-        ) else {
+                &explanations,
+                prepared.coverage,
+                prepared.admission_expires_unix_ms,
+            ) else {
                 return Ok(None);
             };
             let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
@@ -644,7 +644,9 @@ fn compile_retrieval_batch(
         );
         let mut proposed = selected_memories.clone();
         proposed.push(record);
-        let Ok(content) = serialize_attachment(&proposed, batch.coverage, admission_expires_unix_ms) else {
+        let Ok(content) =
+            serialize_attachment(&proposed, batch.coverage, admission_expires_unix_ms)
+        else {
             continue;
         };
         if content.len() > max_bytes {
@@ -764,7 +766,7 @@ fn federation_source_binding(
     let coverage = serde_json::to_vec(&coverage).ok()?;
     let admission_expiry = admission_expires_unix_ms.to_be_bytes();
     Some(digest_many(
-        b"hepta:cognitive:federated-ephemeral-source-binding:v1",
+        b"hepta:cognitive:federated-ephemeral-source-binding:v2",
         &[
             thread_id.as_bytes(),
             turn_id.as_bytes(),
