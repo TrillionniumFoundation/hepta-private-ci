@@ -4,7 +4,7 @@
   "moduleId": "cognitive.types",
   "lane": "LANE-C-MEMORY",
   "sourceBase": {
-    "observedCommit": "c68ca8dc247227d4b1f2517a11875885adc3185f",
+    "observedCommit": "a54221f09b7e9741ef02e6e0a3ae88b42fbb9fb9",
     "declaredRoot": "codex-rs/hepta-cognitive-types",
     "resolvedRoot": "codex-rs/hepta-cognitive-types"
   },
@@ -79,7 +79,19 @@
     "enumPolicy": "closed snake_case enums; unknown variants rejected",
     "canonicalOrdering": "struct declaration order; BTreeSet/BTreeMap sorted order; exact re-encode byte equality required on decode",
     "digest": "SHA-256 over canonical envelope bytes",
-    "nonCanonicalWhitespaceAccepted": false
+    "nonCanonicalWhitespaceAccepted": false,
+    "goldenVectors": [
+      {
+        "schemaId": "OutcomeSignalV1",
+        "path": "codex-rs/hepta-cognitive-types/testdata/hnmf-wire-v1/outcome_signal_v1.json",
+        "sha256": "94f1ea223042fd0fd5ab8b1b5294dabb71813aca7735674aa4145d180ff8306d"
+      },
+      {
+        "schemaId": "MemoryCueV1",
+        "path": "codex-rs/hepta-cognitive-types/testdata/hnmf-wire-v1/memory_cue_v1.json",
+        "sha256": "3416b1ec9cec8809423b33f4d8b5bc9758ad7a2c46b2f8f560d93e35a1b13087"
+      }
+    ]
   },
   "contractGroups": {
     "legacySnapshotContracts": {
