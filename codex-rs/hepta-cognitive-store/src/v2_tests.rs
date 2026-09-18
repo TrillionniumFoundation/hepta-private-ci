@@ -444,3 +444,127 @@ fn image_rejects_sequence_and_frontier_claims_not_derived_from_history() {
         Err(CognitiveStoreV2Error::ImageFrontierMismatch("memory"))
     );
 }
+
+
+fn page_request(
+    store: &AdmittedCognitiveStoreV2,
+    request_id: &str,
+    after: Option<SnapshotCursorV2>,
+    maximum_records: u32,
+) -> SnapshotPageOpenRequestV2 {
+    SnapshotPageOpenRequestV2 {
+        request_id: id(request_id),
+        scope_id: id("scope:store"),
+        purpose_id: id("purpose:memory"),
+        minimum_memory_frontier: store.snapshot_key().vector.memory_ledger_frontier,
+        minimum_tombstone_frontier: store.snapshot_key().vector.tombstone_frontier,
+        authority_epoch: store.snapshot_key().vector.authority_epoch,
+        deadline_unix_ms: 100,
+        lease_duration_ms: 10,
+        maximum_records,
+        after,
+    }
+}
+
+#[test]
+fn paged_snapshot_preserves_exact_ancestry_across_page_boundaries() {
+    let mut store = store();
+    let first = candidate("memory:page:a", "content:v1", MemoryAdmissionKind::Observation);
+    let first_intent = intent(&store, "intent:page:1", &first);
+    store
+        .append_admitted(&Verifier, first, first_intent)
+        .unwrap_or_else(|error| panic!("append first: {error}"));
+    let correction = candidate(
+        "memory:page:a",
+        "content:v2",
+        MemoryAdmissionKind::Observation,
+    );
+    let correction_intent = intent(&store, "intent:page:2", &correction);
+    store
+        .append_admitted(&Verifier, correction, correction_intent)
+        .unwrap_or_else(|error| panic!("append correction: {error}"));
+    let second = candidate("memory:page:b", "content:v1", MemoryAdmissionKind::Observation);
+    let second_intent = intent(&store, "intent:page:3", &second);
+    store
+        .append_admitted(&Verifier, second, second_intent)
+        .unwrap_or_else(|error| panic!("append second record: {error}"));
+
+    let first_page = store
+        .open_snapshot_page(10, page_request(&store, "page:1", None, 1))
+        .unwrap_or_else(|error| panic!("first page: {error}"));
+    assert_eq!(first_page.records.len(), 1);
+    assert!(!first_page.complete);
+    assert_eq!(first_page.records[0].revision, revision(1));
+    let first_cursor = first_page.next.clone().expect("next cursor");
+
+    let second_page = store
+        .open_snapshot_page(
+            10,
+            page_request(&store, "page:2", Some(first_cursor.clone()), 1),
+        )
+        .unwrap_or_else(|error| panic!("second page: {error}"));
+    assert_eq!(second_page.records.len(), 1);
+    assert_eq!(second_page.records[0].record_id, first_cursor.record_id);
+    assert_eq!(second_page.records[0].revision, revision(2));
+    assert_eq!(
+        second_page.records[0].predecessor_digest,
+        Some(first_cursor.record_digest)
+    );
+    assert!(!second_page.complete);
+
+    let third_page = store
+        .open_snapshot_page(
+            10,
+            page_request(&store, "page:3", second_page.next.clone(), 1),
+        )
+        .unwrap_or_else(|error| panic!("third page: {error}"));
+    assert_eq!(third_page.records.len(), 1);
+    assert_eq!(third_page.records[0].record_id, id("memory:page:b"));
+    assert!(third_page.complete);
+    assert!(third_page.next.is_none());
+}
+
+#[test]
+fn paged_snapshot_rejects_forged_cursor_and_broken_page_ancestry() {
+    let mut store = store();
+    let first = candidate("memory:page:forged", "content:v1", MemoryAdmissionKind::Observation);
+    let first_intent = intent(&store, "intent:page:forged:1", &first);
+    store
+        .append_admitted(&Verifier, first, first_intent)
+        .unwrap_or_else(|error| panic!("append first: {error}"));
+    let correction = candidate(
+        "memory:page:forged",
+        "content:v2",
+        MemoryAdmissionKind::Observation,
+    );
+    let correction_intent = intent(&store, "intent:page:forged:2", &correction);
+    store
+        .append_admitted(&Verifier, correction, correction_intent)
+        .unwrap_or_else(|error| panic!("append correction: {error}"));
+
+    let first_page = store
+        .open_snapshot_page(10, page_request(&store, "page:forged:1", None, 1))
+        .unwrap_or_else(|error| panic!("first page: {error}"));
+    let mut forged = first_page.next.clone().expect("cursor");
+    forged.record_digest = digest("forged-cursor");
+    assert_eq!(
+        store.open_snapshot_page(
+            10,
+            page_request(&store, "page:forged:2", Some(forged), 1),
+        ),
+        Err(CognitiveStoreV2Error::SnapshotCursorMismatch)
+    );
+
+    let mut second_page = store
+        .open_snapshot_page(
+            10,
+            page_request(&store, "page:forged:3", first_page.next.clone(), 1),
+        )
+        .unwrap_or_else(|error| panic!("second page: {error}"));
+    second_page.records[0].predecessor_digest = Some(digest("wrong-predecessor"));
+    second_page.page_digest = second_page.compute_page_digest();
+    assert_eq!(
+        second_page.validate(10),
+        Err(CognitiveStoreV2Error::SnapshotPageAncestryMismatch)
+    );
+}
