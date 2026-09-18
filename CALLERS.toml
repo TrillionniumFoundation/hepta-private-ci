@@ -24,6 +24,8 @@ required_boundary_ids = [
   "final_use_approval_verify",
   "final_use_revocation_feed_trust",
   "final_use_revocation_feed_apply",
+  "final_use_revocation_convergence_trust",
+  "final_use_revocation_convergence_verify",
   "bao_final_use_consumer",
   "bao_registered_consumer_new",
   "bao_final_use_host_new",
@@ -181,6 +183,23 @@ product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
 caller_markers = ["revocation_verifier", ".apply(&self.authority, update, now_unix_ms)", "apply_revocation_update"]
 
 [[boundary]]
+id = "final_use_revocation_convergence_trust"
+symbol = "FinalUseRevocationConvergenceVerifier::new"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub struct FinalUseRevocationConvergenceVerifier", "pub fn new(", "InvalidRevocationNodeTrust"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_revocation_convergence_verify"
+symbol = "FinalUseRevocationConvergenceVerifier::verify"
+call_pattern = "convergence_verifier\\s*\\.\\s*verify\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub struct FinalUseRevocationConvergenceVerifier", "pub fn verify(", "missing_nodes"]
+product_callers = ["codex-rs/hepta-fleet/src/revocation_control.rs"]
+caller_markers = ["convergence_verifier", ".verify(", "FleetRevocationCoordinator"]
+
+[[boundary]]
 id = "bao_final_use_consumer"
 symbol = "BaoClient::consume_kv_v2"
 call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
@@ -301,7 +320,7 @@ forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_control.rs"
-required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "pub struct FinalUseTrustKey", "pub fn new_with_keys(", "RevocationFeedStale", "verify_strict", "update_revocations"]
+required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "pub struct FinalUseRevocationConvergenceVerifier", "pub struct FinalUseTrustKey", "pub fn new_with_keys(", "RevocationFeedStale", "verify_strict", "update_revocations", "missing_nodes"]
 forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for FinalUseRevocationFeedVerifier", "permit_all"]
 
 [[protected_file]]
