@@ -22,8 +22,11 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
-pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 16_384;
-pub const MAX_GENERATION_BOUND_RESULTS: usize = 256;
+/// Product-qualified HNMF ceiling. Hosts may choose a stricter policy but not a
+/// larger one without a new qualified profile.
+pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 512;
+/// Product-qualified maximum number of returned recall events.
+pub const MAX_GENERATION_BOUND_RESULTS: usize = 16;
 const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
 const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
 const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
@@ -47,6 +50,26 @@ pub struct MemoryCueV1 {
     pub approved_context_digest: Digest32,
     pub snapshot_key: CognitiveSnapshotKeyV1,
     pub cue_profile_digest: Digest32,
+}
+
+/// Compile one immutable cue from owner-provided digests and an exact Lane C
+/// snapshot. This function does not acquire a snapshot or invent any digest.
+pub fn compile_cue(
+    cue_id: StableId,
+    objective_digest: Digest32,
+    approved_context_digest: Digest32,
+    snapshot_key: CognitiveSnapshotKeyV1,
+    cue_profile_digest: Digest32,
+) -> Result<MemoryCueV1, RecallErrorV1> {
+    let cue = MemoryCueV1 {
+        cue_id,
+        objective_digest,
+        approved_context_digest,
+        snapshot_key,
+        cue_profile_digest,
+    };
+    cue.validate()?;
+    Ok(cue)
 }
 
 impl MemoryCueV1 {
@@ -229,17 +252,55 @@ impl CandidateUnionV1 {
             return Err(RecallErrorV1::AuthorityGranted);
         }
         let mut identities = BTreeSet::new();
+        let mut observed_channels = BTreeSet::new();
+        let mut previous: Option<&CandidateUnionEntryV1> = None;
         for entry in &self.entries {
+            entry
+                .record
+                .validate()
+                .map_err(|error| RecallErrorV1::InvalidRecord(error.to_string()))?;
+            if entry.record.state != RecordState::Live {
+                return Err(RecallErrorV1::TombstoneCandidate(
+                    entry.record.record_id.to_string(),
+                ));
+            }
             if !identities.insert((entry.record.record_id.clone(), entry.record.revision)) {
                 return Err(RecallErrorV1::DuplicateUnionIdentity(
                     entry.record.record_id.to_string(),
                 ));
             }
-            if entry.channels.is_empty() || entry.support_digests.is_empty() {
+            if entry.channels.is_empty()
+                || !is_strictly_sorted_unique(&entry.channels)
+                || entry.support_digests.is_empty()
+                || !is_strictly_sorted_unique(&entry.support_digests)
+                || !is_strictly_sorted_unique(&entry.contradiction_group_digests)
+                || entry.weighted_score < FixedQ32::ZERO
+                || entry.weighted_score > FixedQ32::ONE
+                || entry.support_digests.iter().any(|digest| digest.is_zero())
+                || entry
+                    .contradiction_group_digests
+                    .iter()
+                    .any(|digest| digest.is_zero())
+            {
                 return Err(RecallErrorV1::InvalidUnionEntry(
                     entry.record.record_id.to_string(),
                 ));
             }
+            observed_channels.extend(entry.channels.iter().copied());
+            if let Some(left) = previous {
+                let ordered = left.weighted_score > entry.weighted_score
+                    || (left.weighted_score == entry.weighted_score
+                        && (left.record.record_id < entry.record.record_id
+                            || (left.record.record_id == entry.record.record_id
+                                && left.record.revision <= entry.record.revision)));
+                if !ordered {
+                    return Err(RecallErrorV1::NonCanonicalOrdering);
+                }
+            }
+            previous = Some(entry);
+        }
+        if u32::try_from(observed_channels.len()).unwrap_or(u32::MAX) != self.distinct_channels {
+            return Err(RecallErrorV1::ChannelCoverageMismatch);
         }
         if self.union_digest != self.compute_union_digest() {
             return Err(RecallErrorV1::DigestMismatch("candidate_union"));
@@ -344,6 +405,40 @@ impl RecallPacketV1 {
         if self.selections.len() > MAX_GENERATION_BOUND_RESULTS {
             return Err(RecallErrorV1::InvalidMaximumResults);
         }
+        let mut identities = BTreeSet::new();
+        let mut previous: Option<&RecallSelectionV1> = None;
+        for selection in &self.selections {
+            if !identities.insert((selection.record_id.clone(), selection.record_revision))
+                || selection.record_digest.is_zero()
+                || selection.channels.is_empty()
+                || !is_strictly_sorted_unique(&selection.channels)
+                || selection.support_digests.is_empty()
+                || !is_strictly_sorted_unique(&selection.support_digests)
+                || !is_strictly_sorted_unique(&selection.contradiction_group_digests)
+                || selection.weighted_score < FixedQ32::ZERO
+                || selection.weighted_score > FixedQ32::ONE
+                || selection.support_digests.iter().any(|digest| digest.is_zero())
+                || selection
+                    .contradiction_group_digests
+                    .iter()
+                    .any(|digest| digest.is_zero())
+            {
+                return Err(RecallErrorV1::InvalidRecallSelection(
+                    selection.record_id.to_string(),
+                ));
+            }
+            if let Some(left) = previous {
+                let ordered = left.weighted_score > selection.weighted_score
+                    || (left.weighted_score == selection.weighted_score
+                        && (left.record_id < selection.record_id
+                            || (left.record_id == selection.record_id
+                                && left.record_revision <= selection.record_revision)));
+                if !ordered {
+                    return Err(RecallErrorV1::NonCanonicalOrdering);
+                }
+            }
+            previous = Some(selection);
+        }
         if self.authority.grants_any() {
             return Err(RecallErrorV1::AuthorityGranted);
         }
@@ -441,11 +536,16 @@ pub fn build_candidate_union(
             continue;
         }
         *count += 1;
-        distinct_channels.insert(candidate.channel);
         let weighted = candidate
             .normalized_score
             .checked_mul(policy_row.weight)
             .map_err(|_| RecallErrorV1::Arithmetic)?;
+        // A zero-weight channel is deliberately non-contributing: it cannot be
+        // used to satisfy minimum channel coverage or alter support receipts.
+        if policy_row.weight == FixedQ32::ZERO {
+            continue;
+        }
+        distinct_channels.insert(candidate.channel);
         let builder = union.entry(identity).or_insert_with(|| UnionBuilder {
             record: candidate.record.clone(),
             channels: BTreeSet::new(),
@@ -626,7 +726,10 @@ pub enum RecallErrorV1 {
     ScoreOutOfRange(&'static str),
     DuplicateUnionIdentity(String),
     InvalidUnionEntry(String),
+    InvalidRecallSelection(String),
     InvalidRecallDisposition,
+    NonCanonicalOrdering,
+    ChannelCoverageMismatch,
     DigestMismatch(&'static str),
     AuthorityGranted,
     Arithmetic,
@@ -639,6 +742,10 @@ impl fmt::Display for RecallErrorV1 {
 }
 
 impl StdError for RecallErrorV1 {}
+
+fn is_strictly_sorted_unique<T: Ord>(values: &[T]) -> bool {
+    values.windows(2).all(|pair| pair[0] < pair[1])
+}
 
 fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), RecallErrorV1> {
     if digest.is_zero() {
