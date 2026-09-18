@@ -60,6 +60,17 @@ pub(crate) async fn advance_replay(
 ) -> Result<(), AuthBusAdmissionError> {
     let claims = authenticated.claims();
     let epoch = claims.key_epoch.get().to_be_bytes();
+    let retired: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM authbus_retired_epochs WHERE issuer_id = ? AND key_epoch = ?)",
+    )
+    .bind(claims.issuer_id.as_str())
+    .bind(epoch.as_slice())
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
+    if retired {
+        return Err(codex_hepta_authbus::Error::Revoked.into());
+    }
     let previous: Option<Vec<u8>> = sqlx::query_scalar(
         "SELECT sequence FROM authbus_replay_sequences
              WHERE issuer_id = ? AND key_epoch = ? AND subject_id = ? AND scope_digest = ?",
