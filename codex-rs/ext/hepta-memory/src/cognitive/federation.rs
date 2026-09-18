@@ -544,6 +544,7 @@ fn compact_federated_coverage(coverage: &Value) -> Option<Value> {
         "r": coverage.get("requested_sources")?,
         "c": coverage.get("completed_sources")?,
         "f": coverage.get("failed_sources")?,
+        "d": coverage.get("discovery_failures")?,
     }))
 }
 
@@ -795,11 +796,13 @@ mod tests {
             requested_sources: 1,
             completed_sources: 1,
             failed_sources: 0,
+            discovery_failures: 0,
         };
         let partial = codex_hepta_memory::FederatedRetrievalCoverage {
             requested_sources: 1,
             completed_sources: 0,
             failed_sources: 1,
+            discovery_failures: 0,
         };
         let complete_binding = super::federation_source_binding(
             "thread",
@@ -888,6 +891,7 @@ mod tests {
         assert_eq!(payload["fc"]["r"], 1);
         assert_eq!(payload["fc"]["c"], 1);
         assert_eq!(payload["fc"]["f"], 0);
+        assert_eq!(payload["fc"]["d"], 0);
         assert_eq!(memories.len(), 2);
         assert_eq!(memories[0]["h"], "22".repeat(32));
         assert_eq!(
@@ -969,7 +973,8 @@ mod tests {
             "coverage": {
                 "requested_sources": 1,
                 "completed_sources": 1,
-                "failed_sources": 0
+                "failed_sources": 0,
+                "discovery_failures": 0
             },
             "memories": [{
                 "source_agent_id": owner_agent_id,
