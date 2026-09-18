@@ -488,6 +488,10 @@ impl DurableInferenceControl {
         // fence. If the active inode is unchanged and only its length grew,
         // replay just the appended suffix. Same-size edits, truncation and
         // compaction (inode replacement) deliberately fall back to full replay.
+        //
+        // Stage only request records touched by that suffix. This keeps peer
+        // synchronization proportional to peer delta size rather than cloning
+        // the complete hot state on every alternating writer mutation.
         if let (Some(cached), Some(current)) = (self.cached_stamp, current_stamp)
             && cached.device == current.device
             && cached.inode == current.inode
@@ -502,8 +506,8 @@ impl DurableInferenceControl {
                 self.archive_stamp = verify_compaction_archive(&self.path, Some(digest))?;
             }
 
-            let mut records = self.records.clone();
-            let mut native = self.native.clone();
+            let mut staged_records = BTreeMap::new();
+            let mut native_json = Vec::new();
             let mut reader = BufReader::new(current_file.try_clone()?);
             reader.seek(SeekFrom::Start(cached.length))?;
             let mut replayed = 0_u64;
@@ -545,21 +549,47 @@ impl DurableInferenceControl {
                     break;
                 }
                 if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
-                    native.replay(json)?;
+                    native_json.push(json.to_string());
                 } else {
-                    apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
-                }
-                if records.len() + native.records.len() > self.capacity {
-                    return Err(Error::CapacityExceeded);
+                    let event = decode_event(line)?;
+                    let request_id = event.request_id().to_string();
+                    if !staged_records.contains_key(&request_id)
+                        && let Some(record) = self.records.get(&request_id)
+                    {
+                        staged_records.insert(request_id.clone(), record.clone());
+                    }
+                    apply_event(&mut staged_records, &event, /*replay*/ true)?;
                 }
             }
 
             if append_only && cached.length + replayed == current.length {
-                if records.keys().any(|id| native.records.contains_key(id)) {
+                let native_delta = self.native.stage_replay_suffix(&native_json)?;
+                if staged_records.keys().any(|id| {
+                    self.native.records.contains_key(id) || native_delta.records.contains_key(id)
+                }) || native_delta
+                    .records
+                    .keys()
+                    .any(|id| self.records.contains_key(id))
+                {
                     return Err(Error::Conflict);
                 }
-                self.records = records;
-                self.native = native;
+                let new_legacy_ids = staged_records
+                    .keys()
+                    .filter(|id| !self.records.contains_key(*id))
+                    .count();
+                if self.records.len()
+                    + new_legacy_ids
+                    + self.native.records.len()
+                    + native_delta.new_ids
+                    > self.capacity
+                {
+                    return Err(Error::CapacityExceeded);
+                }
+
+                for (request_id, record) in staged_records {
+                    self.records.insert(request_id, record);
+                }
+                self.native.apply_replay_suffix(native_delta);
                 self.journal_bytes = current.length;
                 self.file = current_file;
                 self.cached_stamp = current_stamp;
