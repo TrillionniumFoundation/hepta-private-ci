@@ -23,6 +23,8 @@ use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveAdmissionReceiptV1;
 use codex_hepta_objective::ObjectiveCompileReceipt;
 use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
+use codex_hepta_objective::ObjectiveSourceJsonError;
+use codex_hepta_objective::decode_source_envelope_json_v1;
 use codex_hepta_objective::admit_objective_v1;
 use codex_hepta_objective::compile_admitted_objective_v1;
 use codex_hepta_types::AuthorityPosture;
@@ -165,6 +167,7 @@ impl From<io::Error> for ObjectivePublicationStoreErrorV1 {
 
 #[derive(Debug)]
 pub enum ObjectiveProductErrorV1 {
+    SourceJson(ObjectiveSourceJsonError),
     Admission(ObjectiveAdmissionError),
     ObjectiveConflict(Digest32),
     InvalidRunBinding(&'static str),
@@ -180,10 +183,17 @@ impl fmt::Display for ObjectiveProductErrorV1 {
 impl StdError for ObjectiveProductErrorV1 {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
+            Self::SourceJson(error) => Some(error),
             Self::Admission(error) => Some(error),
             Self::Store(error) => Some(error),
             Self::ObjectiveConflict(_) | Self::InvalidRunBinding(_) => None,
         }
+    }
+}
+
+impl From<ObjectiveSourceJsonError> for ObjectiveProductErrorV1 {
+    fn from(value: ObjectiveSourceJsonError) -> Self {
+        Self::SourceJson(value)
     }
 }
 
@@ -227,6 +237,22 @@ impl ObjectiveProductCallerV1 {
                 max_records,
                 recovery,
             )?,
+        })
+    }
+
+    pub fn decode_admit_compile_publish(
+        &mut self,
+        input: &[u8],
+        profile: ObjectiveAdmissionProfileV1,
+        context: ObjectiveAdmissionContextV1,
+        run: RunStartBindingsV1,
+    ) -> Result<ObjectiveProductReceiptV1, ObjectiveProductErrorV1> {
+        let envelope = decode_source_envelope_json_v1(input)?;
+        self.admit_compile_publish(ObjectiveProductRequestV1 {
+            envelope,
+            profile,
+            context,
+            run,
         })
     }
 
