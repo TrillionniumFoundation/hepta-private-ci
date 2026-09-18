@@ -129,8 +129,12 @@ equal to the exact host operation ID. The complete V3 admission frontier is boun
 instead by a deterministic `snapshot_binding` over the operation, registry
 namespace, admission/manifest, withdrawal frontier and exact registry append.
 Both the durable registry snapshot receipt and current-head witness receipt must
-carry that binding. Multi-dataset or multi-predecessor V2 manifests fail closed at
-this V1 bridge rather than losing durable semantics. Recovery has only four phases:
+carry that binding. The host must also retain/reconstruct the previous contract for
+each operation ID and apply `validate_artifact_publication_retry_v1` (or an
+equivalent durable operation-ledger rule), so identity reuse with changed semantics
+conflicts instead of becoming a second publication interpretation. Multi-dataset or
+multi-predecessor V2 manifests fail closed at this V1 bridge rather than losing
+durable semantics. Recovery has only four phases:
 `Prepared -> SnapshotDurable -> WitnessDurable -> Acknowledged`. A source
 acknowledgement is forbidden before `WitnessDurable`. Two synced files are still
 not a distributed transaction; restart requires the immutable publication contract
