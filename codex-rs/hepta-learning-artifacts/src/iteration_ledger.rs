@@ -71,6 +71,8 @@ pub enum IterationLedgerError {
     EvidenceAlreadyUsed(String),
     EmptyEvidenceDigest,
     EvidenceTimestampMissing,
+    EvidenceTimestampRegression,
+    EvidenceAfterEnvelopeExpiry,
     EvidenceCandidateMismatch,
     IndependentActorConflict(String),
     EvidenceKindMismatch,
@@ -223,6 +225,22 @@ impl IterationLedgerV1 {
         if receipt.observed_unix_seconds == 0 {
             return Err(IterationLedgerError::EvidenceTimestampMissing);
         }
+        if self
+            .events
+            .iter()
+            .rev()
+            .find(|event| event.candidate_id == *candidate_id)
+            .is_some_and(|event| {
+                receipt.observed_unix_seconds < event.evidence.observed_unix_seconds
+            })
+        {
+            return Err(IterationLedgerError::EvidenceTimestampRegression);
+        }
+        if requires_live_envelope(next)
+            && receipt.observed_unix_seconds > self.envelope.expiry_unix_seconds
+        {
+            return Err(IterationLedgerError::EvidenceAfterEnvelopeExpiry);
+        }
         if requires_independent_actor(next) && receipt.actor_id == current.generator_identity {
             return Err(IterationLedgerError::IndependentActorConflict(
                 receipt.actor_id.to_string(),
@@ -340,6 +358,15 @@ const fn requires_independent_actor(next: IterationCandidateStateV1) -> bool {
     )
 }
 
+const fn requires_live_envelope(next: IterationCandidateStateV1) -> bool {
+    !matches!(
+        next,
+        IterationCandidateStateV1::Rejected
+            | IterationCandidateStateV1::Quarantined
+            | IterationCandidateStateV1::Superseded
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -376,14 +403,77 @@ mod tests {
         }
     }
     fn receipt(kind: IterationEvidenceKindV1, actor: &str, n: u8) -> IterationEvidenceV1 {
+        receipt_at(kind, actor, n, 1)
+    }
+
+    fn receipt_at(
+        kind: IterationEvidenceKindV1,
+        actor: &str,
+        n: u8,
+        observed_unix_seconds: u64,
+    ) -> IterationEvidenceV1 {
         IterationEvidenceV1 {
             evidence_id: id(&format!("evidence-{n}")),
             candidate_id: id("candidate"),
             actor_id: id(actor),
             kind,
             evidence_digest: digest(n),
-            observed_unix_seconds: 1,
+            observed_unix_seconds,
         }
+    }
+
+    #[test]
+    fn evidence_time_is_monotonic_and_live_for_positive_progression() {
+        let mut bounded = envelope();
+        bounded.expiry_unix_seconds = 10;
+        let mut ledger = IterationLedgerV1::new(bounded).unwrap();
+        ledger.append_candidate(candidate()).unwrap();
+        ledger
+            .transition(
+                &id("candidate"),
+                IterationCandidateStateV1::StaticallyValidated,
+                receipt_at(
+                    IterationEvidenceKindV1::StaticValidation,
+                    "generator",
+                    21,
+                    5,
+                ),
+            )
+            .unwrap();
+        assert_eq!(
+            ledger.transition(
+                &id("candidate"),
+                IterationCandidateStateV1::SandboxTested,
+                receipt_at(IterationEvidenceKindV1::Sandbox, "generator", 22, 4),
+            ),
+            Err(IterationLedgerError::EvidenceTimestampRegression)
+        );
+
+        let mut expired = IterationLedgerV1::new(envelope()).unwrap();
+        expired.append_candidate(candidate()).unwrap();
+        assert_eq!(
+            expired.transition(
+                &id("candidate"),
+                IterationCandidateStateV1::StaticallyValidated,
+                receipt_at(
+                    IterationEvidenceKindV1::StaticValidation,
+                    "generator",
+                    23,
+                    2,
+                ),
+            ),
+            Err(IterationLedgerError::EvidenceAfterEnvelopeExpiry)
+        );
+        assert!(
+            expired
+                .transition(
+                    &id("candidate"),
+                    IterationCandidateStateV1::Rejected,
+                    receipt_at(IterationEvidenceKindV1::Rejection, "reviewer", 24, 2),
+                )
+                .is_ok(),
+            "expired candidates must still be rejectable/quarantinable/supersedable"
+        );
     }
 
     #[test]
