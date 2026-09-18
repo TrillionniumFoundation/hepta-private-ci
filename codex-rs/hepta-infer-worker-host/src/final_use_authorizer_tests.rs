@@ -27,11 +27,7 @@ fn revocations(revision: u64, revoked: &[&str]) -> FinalUseRevocations {
     }
 }
 
-fn config(
-    root: &Path,
-    socket: PathBuf,
-    verifying_key: [u8; 32],
-) -> FinalUseAuthorizerConfig {
+fn config(root: &Path, socket: PathBuf, verifying_key: [u8; 32]) -> FinalUseAuthorizerConfig {
     FinalUseAuthorizerConfig {
         issuer_socket: socket,
         issuer_uid: rustix::process::geteuid().as_raw(),
@@ -78,11 +74,7 @@ async fn serve_once(
 
     let grant = match signer {
         Some(signer) => {
-            let now = u64::try_from(
-                SystemTime::now()
-                    .duration_since(UNIX_EPOCH)?
-                    .as_millis(),
-            )?;
+            let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
             let grant = FinalUseGrant {
                 schema_version: 1,
                 signer_id: "authority-owner".to_string(),
@@ -127,7 +119,14 @@ async fn exact_signed_grant_becomes_one_entry_verified_token() -> Result<()> {
     let expected = binding(11);
     let server_signer = signer.clone();
     let server = tokio::spawn(async move {
-        serve_once(&listener, Some(&server_signer), revocations(1, &[]), 7, None).await
+        serve_once(
+            &listener,
+            Some(&server_signer),
+            revocations(1, &[]),
+            7,
+            None,
+        )
+        .await
     });
 
     let token = authorizer.claim(expected.clone()).await?;
@@ -169,8 +168,11 @@ async fn endpoint_denial_updates_head_and_old_head_cannot_roll_back() -> Result<
     let directory = tempfile::tempdir()?;
     let (listener, socket) = listener(directory.path(), "revocation.sock").await?;
     let signer = SigningKey::from_bytes(&[44; 32]);
-    let authorizer =
-        UnixFinalUseAuthorizer::from_config(config(directory.path(), socket, signer.verifying_key().to_bytes()))?;
+    let authorizer = UnixFinalUseAuthorizer::from_config(config(
+        directory.path(),
+        socket,
+        signer.verifying_key().to_bytes(),
+    ))?;
     let server_signer = signer.clone();
     let server = tokio::spawn(async move {
         serve_once(
