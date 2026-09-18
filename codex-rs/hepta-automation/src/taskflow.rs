@@ -1061,7 +1061,7 @@ impl AutomationStore {
         command: &TaskFlowCommand,
     ) -> Result<TaskFlowCommandResult, TaskFlowError> {
         if matches!(
-            command.transition,
+            &command.transition,
             TaskFlowTransition::RequeueProvenAbsent { .. }
         ) {
             return Err(invalid(
@@ -1076,7 +1076,7 @@ impl AutomationStore {
         command: &TaskFlowCommand,
     ) -> Result<TaskFlowCommandResult, TaskFlowError> {
         if !matches!(
-            command.transition,
+            &command.transition,
             TaskFlowTransition::RequeueProvenAbsent { .. }
         ) {
             return Err(invalid("internal requeue requires provider-absence transition"));
