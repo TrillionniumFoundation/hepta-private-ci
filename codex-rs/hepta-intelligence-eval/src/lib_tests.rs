@@ -40,7 +40,7 @@ fn request() -> EvaluationRequest {
 #[test]
 fn eligible_is_not_promotion() {
     assert_eq!(
-        must(evaluate(request())).disposition,
+        must(evaluate_legacy_inprocess(request())).disposition,
         Disposition::EligibleForFurtherReview
     );
 }
@@ -49,7 +49,7 @@ fn eligible_is_not_promotion() {
 fn self_evaluation_is_rejected() {
     let mut value = request();
     value.evaluator_id = value.candidate_producer_id.clone();
-    assert_eq!(evaluate(value), Err(Error::SelfEvaluation));
+    assert_eq!(evaluate_legacy_inprocess(value), Err(Error::SelfEvaluation));
 }
 
 #[test]
@@ -57,7 +57,7 @@ fn hard_regression_is_rejected() {
     let mut value = request();
     value.comparisons[0].candidate = FixedQ32::ONE;
     value.comparisons[0].baseline = FixedQ32::ZERO;
-    assert_eq!(must(evaluate(value)).disposition, Disposition::Ineligible);
+    assert_eq!(must(evaluate_legacy_inprocess(value)).disposition, Disposition::Ineligible);
 }
 
 #[test]
@@ -67,7 +67,7 @@ fn every_registered_threshold_is_enforced() {
     value.comparisons[0].hard = false;
     value.comparisons[0].candidate = FixedQ32::ONE;
     value.comparisons[0].baseline = FixedQ32::ZERO;
-    let receipt = must(evaluate(value));
+    let receipt = must(evaluate_legacy_inprocess(value));
     assert_eq!(receipt.disposition, Disposition::Ineligible);
     assert_eq!(receipt.failed_metrics, vec![id("latency")]);
 }
@@ -78,7 +78,7 @@ fn registered_hard_regression_allowance_is_enforced_exactly() {
     at_floor.comparisons[0].minimum_delta = FixedQ32::from_raw(-2);
     at_floor.comparisons[0].candidate = FixedQ32::from_raw(2);
     at_floor.comparisons[0].baseline = FixedQ32::ZERO;
-    let receipt = must(evaluate(at_floor));
+    let receipt = must(evaluate_legacy_inprocess(at_floor));
     assert_eq!(receipt.disposition, Disposition::EligibleForFurtherReview);
     assert!(receipt.failed_metrics.is_empty());
 
@@ -86,7 +86,7 @@ fn registered_hard_regression_allowance_is_enforced_exactly() {
     below_floor.comparisons[0].minimum_delta = FixedQ32::from_raw(-2);
     below_floor.comparisons[0].candidate = FixedQ32::from_raw(3);
     below_floor.comparisons[0].baseline = FixedQ32::ZERO;
-    let receipt = must(evaluate(below_floor));
+    let receipt = must(evaluate_legacy_inprocess(below_floor));
     assert_eq!(receipt.disposition, Disposition::Ineligible);
     assert_eq!(receipt.failed_metrics, vec![id("safety")]);
 }
@@ -103,7 +103,7 @@ fn unrepresentable_metric_deltas_fail_closed() {
         value.comparisons[0].direction = direction;
         value.comparisons[0].candidate = FixedQ32::from_raw(candidate);
         value.comparisons[0].baseline = FixedQ32::from_raw(baseline);
-        assert_eq!(evaluate(value), Err(Error::Arithmetic));
+        assert_eq!(evaluate_legacy_inprocess(value), Err(Error::Arithmetic));
     }
 }
 
@@ -115,19 +115,19 @@ fn receipt_digest_binds_threshold_metadata_in_canonical_order() {
     latency.hard = false;
     value.comparisons.push(latency);
 
-    let original = must(evaluate(value.clone()));
+    let original = must(evaluate_legacy_inprocess(value.clone()));
     let mut permuted = value.clone();
     permuted.comparisons.reverse();
-    assert_eq!(must(evaluate(permuted)), original);
+    assert_eq!(must(evaluate_legacy_inprocess(permuted)), original);
 
     let mut reclassified = value.clone();
     reclassified.comparisons[0].hard = false;
-    let reclassified = must(evaluate(reclassified));
+    let reclassified = must(evaluate_legacy_inprocess(reclassified));
     assert_eq!(reclassified.disposition, original.disposition);
     assert_ne!(reclassified.evidence_digest, original.evidence_digest);
 
     value.comparisons[0].minimum_delta = FixedQ32::from_raw(-1);
-    let relaxed = must(evaluate(value));
+    let relaxed = must(evaluate_legacy_inprocess(value));
     assert_eq!(relaxed.disposition, original.disposition);
     assert_ne!(relaxed.evidence_digest, original.evidence_digest);
 }
@@ -137,7 +137,7 @@ fn missing_support_is_insufficient() {
     let mut value = request();
     value.comparisons[0].support_digest = Digest32::ZERO;
     assert_eq!(
-        must(evaluate(value)).disposition,
+        must(evaluate_legacy_inprocess(value)).disposition,
         Disposition::InsufficientEvidence
     );
 }
