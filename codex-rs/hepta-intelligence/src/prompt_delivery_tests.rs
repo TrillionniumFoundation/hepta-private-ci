@@ -66,6 +66,7 @@ fn admitted_registry(
         .verify(
             &SignedAdmissionGrantV1 { grant, signature },
             &factor,
+            digest("scope:prompt"),
             20,
         )
         .expect("verify admission");
