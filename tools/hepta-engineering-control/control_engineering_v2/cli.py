@@ -13,6 +13,7 @@ from .candidate import (
     sandbox_candidate,
 )
 from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope, WorkPackage
+from .production import ProductionReadinessFacts, evaluate_production_readiness
 
 MAX_INPUT_BYTES = 2 * 1024 * 1024
 
@@ -70,6 +71,16 @@ def parser():
     schedule.add_argument("--packages", required=True)
     schedule.add_argument("--completed")
     schedule.add_argument("--generation-id", required=True)
+    readiness = commands.add_parser(
+        "production-readiness",
+        help="fail closed unless authenticated production-readiness facts are complete",
+    )
+    readiness.add_argument("--facts", required=True)
+    readiness.add_argument(
+        "--require",
+        choices=("implementation", "deployment"),
+        default="deployment",
+    )
     for name, help_text in (
         ("candidates", "generate deterministic proposals including no-change"),
         ("sandbox", "execute one candidate in the admitted isolation profile"),
@@ -85,6 +96,9 @@ def parser():
 
 
 def run(args):
+    if args.command == "production-readiness":
+        facts = _record(ProductionReadinessFacts, _read(args.facts))
+        return {"decision": asdict(evaluate_production_readiness(facts))}
     if args.command == "schedule":
         envelope = _record(WorkEnvelope, _read(args.envelope))
         packages = _records(WorkPackage, _read(args.packages), 4096)
@@ -127,4 +141,13 @@ def main(argv=None):
         print(json.dumps({"error": code, "authorityGranted": False}), file=sys.stderr)
         return 1
     print(json.dumps(result, sort_keys=True))
-    return int(args.command == "sandbox" and result["receipt"]["passed"] is not True)
+    if args.command == "sandbox":
+        return int(result["receipt"]["passed"] is not True)
+    if args.command == "production-readiness":
+        field = (
+            "production_implementation_ready"
+            if args.require == "implementation"
+            else "deployment_readiness_ready"
+        )
+        return int(result["decision"][field] is not True)
+    return 0
