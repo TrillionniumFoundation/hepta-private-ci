@@ -51,15 +51,24 @@ A committed pre-dispatch lease can expire and be taken over under a newer fence.
 A committed dispatch-start state is never requeued after crash/reopen. A newer
 owner must reconcile it, and dispatched handoff becomes `indeterminate`.
 
-Activation is **not** implied. The implementation map still records no named
-product caller and no independently accepted production composition. Exact-head
-and synthetic-merge CI are separate execution evidence.
+A real destination-owner source composition is implemented on this stacked
+integration candidate. `runtime.agentd::AgentdOperationCoordinator` binds the
+durable source ledger to the existing `ProductionDurableWriter`, and
+`CognitiveStore` owns an append-only atomic semantic-dedupe/apply inbox. Lost
+source results are reconciled by querying that destination-owned record rather
+than resending the effect.
+
+Activation is **not** implied. The coordinator is not yet constructed by the
+default Agentd runtime lifecycle, and independent acceptance is still open.
+Exact-head and synthetic-merge CI are separate execution evidence.
 
 ## Target-only design
 
-The remaining target composition is a named authenticated product caller plus a
-real destination owner's atomic semantic-dedupe/apply transaction and trusted
-terminal observer. Target-host disk-full, backup/restore, performance,
+The remaining runtime composition is default/lifecycle construction of the
+Agentd coordinator plus external-adapter final-use binding for non-local
+destinations. The CognitiveStore destination-owned atomic dedupe/apply and
+terminal observer are source-implemented in this candidate. Target-host
+disk-full, backup/restore, performance,
 independent acceptance, canary, promotion and release remain outside what
 source presence can prove.
 
@@ -83,8 +92,10 @@ then rejects, recovery is conservative: the operation remains dispatched and
 must be observed `NotApplied` or quarantined; it is never blindly resent.
 
 Destination deduplication remains destination-owned. The durable filesystem
-destination in `durable_tests.rs` is qualification-only and is not a product
-destination or product caller.
+destination in `durable_tests.rs` is qualification-only. The real local
+destination slice uses the existing CognitiveStore owner through
+`ProductionDurableWriter`; see
+[`PRODUCT_COMPOSITION_V1.md`](PRODUCT_COMPOSITION_V1.md).
 
 Terminal source-outbox rows may be compacted, but the authoritative operation
 identity is retained. V1 does not implement destructive long-term operation
@@ -120,17 +131,17 @@ exact candidate.
 
 ## Integration prerequisites
 
-Before product composition may be claimed:
+Before runtime activation may be claimed:
 
-1. bind `DurableOperationStore` to a named authenticated product caller;
-2. bind one real destination owner's atomic semantic-dedupe/apply operation;
-3. bind a trusted destination-owned terminal observer;
-4. preserve `kernel.authority` final-use validation at the real effect
-   boundary;
-5. retain exact-head and deterministic synthetic-merge receipts;
-6. run target-host disk-full/I/O/corruption/backup-restore and performance
+1. construct `AgentdOperationCoordinator` from a named default/runtime
+   lifecycle owner;
+2. preserve `kernel.authority` final-use validation at every actual external
+   effect boundary; the local CognitiveStore owner uses its existing
+   ProductionDurableWriter authority/fence instead;
+3. retain exact-head and deterministic synthetic-merge receipts;
+4. run target-host disk-full/I/O/corruption/backup-restore and performance
    qualification;
-7. complete independent semantic/security review and the ordinary activation,
+5. complete independent semantic/security review and the ordinary activation,
    canary, promotion and release gates.
 
 No production binary may use the reference `OperationLedger` or `Outbox` as a

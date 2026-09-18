@@ -668,6 +668,7 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
     crate::logical_turn_registry::verify_logical_turn_registry(pool, owner).await?;
     crate::local_lease_outbox::verify_local_lease_outbox(pool, owner).await?;
     crate::local_compact_executor::verify_local_compact_events(pool, owner).await?;
+    crate::cross_owner_operation::verify_cross_owner_operations(pool, owner).await?;
     Ok(())
 }
 
@@ -719,10 +720,11 @@ async fn verify_migration_ledger(pool: &SqlitePool) -> Result<(), CognitiveStore
             (8, true),
             (9, true),
             (10, true),
+            (11, true),
         ]
     {
         return Err(CognitiveStoreError::Corrupt(format!(
-            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010 set: {migrations:?}"
+            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011 set: {migrations:?}"
         )));
     }
 

@@ -26,6 +26,8 @@ use sha2::Digest;
 use sha2::Sha256;
 
 use crate::CognitiveStore;
+use crate::CrossOwnerOperationApply;
+use crate::CrossOwnerOperationReceipt;
 use crate::LocalAdmission;
 use crate::LocalLease;
 use crate::LocalLeaseHeadDisposition;
@@ -455,6 +457,44 @@ impl ProductionDurableWriter {
 
     pub fn store(&self) -> &CognitiveStore {
         &self.store
+    }
+
+    /// Apply one already-authorized cross-owner operation through the same
+    /// live production-writer authority/fence used by the Agent owner. The
+    /// destination-side dedupe record and exact payload are committed by the
+    /// CognitiveStore owner; no transport acknowledgement is synthesized.
+    pub async fn apply_cross_owner_operation(
+        &self,
+        apply: &CrossOwnerOperationApply,
+    ) -> Result<CrossOwnerOperationReceipt, ProductionWriterError> {
+        self.verify_authority().await?;
+        self.store
+            .apply_cross_owner_operation(apply)
+            .await
+            .map_err(|error| {
+                ProductionWriterError::Durability(format!(
+                    "cross-owner destination apply failed: {error}"
+                ))
+            })
+    }
+
+    /// Reconcile an uncertain source dispatch against the authoritative
+    /// destination-owned dedupe/apply record.
+    pub async fn observe_cross_owner_operation(
+        &self,
+        operation_id: &str,
+        semantic_digest: &Sha256Digest,
+        payload_digest: &Sha256Digest,
+    ) -> Result<Option<CrossOwnerOperationReceipt>, ProductionWriterError> {
+        self.verify_authority().await?;
+        self.store
+            .observe_cross_owner_operation(operation_id, semantic_digest, payload_digest)
+            .await
+            .map_err(|error| {
+                ProductionWriterError::Durability(format!(
+                    "cross-owner destination observation failed: {error}"
+                ))
+            })
     }
 
     pub async fn admit(
