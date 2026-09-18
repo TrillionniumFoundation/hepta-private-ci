@@ -391,6 +391,28 @@ impl FrozenModelExecutor for Executor {
     }
 }
 
+struct FailOnceWitness {
+    inner: FileRecoveryWitness,
+    fail_sequence: u64,
+}
+
+impl RecoveryWitnessStore for FailOnceWitness {
+    fn current_anchor(&self) -> Result<Option<JournalAnchor>, WitnessError> {
+        self.inner.current_anchor()
+    }
+
+    fn compare_and_store(
+        &mut self,
+        expected: Option<JournalAnchor>,
+        next: JournalAnchor,
+    ) -> Result<(), WitnessError> {
+        if next.sequence == self.fail_sequence {
+            return Err(WitnessError::Indeterminate);
+        }
+        self.inner.compare_and_store(expected, next)
+    }
+}
+
 #[derive(Clone)]
 struct Lineage {
     denied: Option<Digest32>,
@@ -486,6 +508,89 @@ fn runtime_executes_model_commits_witness_and_rotates_without_state_reset() {
         checked(reopened.current_checkpoint()).map(SparseCheckpoint::digest),
         Some(terminal)
     );
+}
+
+#[test]
+fn reopen_reconciles_a_durable_suffix_before_accepting_new_ticks() {
+    let fixture = Fixture::new();
+    let config = config();
+    let scope = scope();
+    let config_digest = checked(config.digest());
+    let witness = checked(open_file_witness(
+        fixture.file("witness-reconcile"),
+        config_digest,
+        &scope,
+    ));
+    let mut runtime = checked(NeuronRuntimeHost::open(
+        fixture.file("segment-reconcile"),
+        config.clone(),
+        native(),
+        scope.clone(),
+        8,
+        Executor {
+            execution: model_execution(),
+        },
+        FailOnceWitness {
+            inner: witness,
+            fail_sequence: 2,
+        },
+        Lineage { denied: None },
+        calibration_policy(),
+        Some(calibration_artifact()),
+        1,
+    ));
+
+    let first = checked(runtime.tick(
+        input(1, Digest32::ZERO),
+        RuntimeTickObservationV1 {
+            now_unix_micros: 2,
+            queue_age_micros: 0,
+        },
+    ));
+    let second_digest = match runtime.tick(
+        input(2, first.tick_receipt.checkpoint_after),
+        RuntimeTickObservationV1 {
+            now_unix_micros: 3,
+            queue_age_micros: 0,
+        },
+    ) {
+        Err(RuntimeError::WitnessIndeterminate(checkpoint)) => checkpoint,
+        other => panic!("expected witness uncertainty after durable journal commit: {other:?}"),
+    };
+    drop(runtime);
+
+    let reopened_witness = checked(open_file_witness(
+        fixture.file("witness-reconcile"),
+        config_digest,
+        &scope,
+    ));
+    let mut reopened = checked(NeuronRuntimeHost::open(
+        fixture.file("segment-reconcile"),
+        config,
+        native(),
+        scope,
+        8,
+        Executor {
+            execution: model_execution(),
+        },
+        reopened_witness,
+        Lineage { denied: None },
+        calibration_policy(),
+        Some(calibration_artifact()),
+        4,
+    ));
+    assert_eq!(
+        checked(reopened.current_checkpoint()).map(SparseCheckpoint::digest),
+        Some(second_digest)
+    );
+    let third = checked(reopened.tick(
+        input(3, second_digest),
+        RuntimeTickObservationV1 {
+            now_unix_micros: 5,
+            queue_age_micros: 0,
+        },
+    ));
+    assert_eq!(third.tick_receipt.checkpoint_before, second_digest);
 }
 
 #[test]
