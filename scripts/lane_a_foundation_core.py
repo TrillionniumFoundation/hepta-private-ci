@@ -273,7 +273,14 @@ def validate_platform_types_vector(root: Path = ROOT) -> None:
 
 def validate_source_specific(root: Path = ROOT) -> None:
     required = {
-        "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
+        "codex-rs/hepta-types/src/lib.rs": [
+            "pub use identity::IdentityError;",
+            "pub use identity::IdProfileV1;",
+            "pub use identity::NonAuthorizingPosture;",
+            "pub use canonical_digest::canonical_digest_v1;",
+            "pub use registry::ContractRegistryV1;",
+            "pub use numeric_conversion::rescale_signal_registered;",
+        ],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
             "In-memory reference model",
