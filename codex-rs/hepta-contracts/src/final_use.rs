@@ -139,9 +139,9 @@ impl fmt::Debug for VerifiedUseWitness<'_> {
     }
 }
 
-impl<'a> VerifiedUseWitness<'a> {
+impl VerifiedUseWitness<'_> {
     #[must_use]
-    pub fn signer_id(&self) -> &'a str {
+    pub fn signer_id(&self) -> &str {
         &self.grant.signer_id
     }
 
@@ -151,7 +151,7 @@ impl<'a> VerifiedUseWitness<'a> {
     }
 
     #[must_use]
-    pub fn grant_id(&self) -> &'a str {
+    pub fn grant_id(&self) -> &str {
         &self.grant.grant_id
     }
 
@@ -161,7 +161,7 @@ impl<'a> VerifiedUseWitness<'a> {
     }
 
     #[must_use]
-    pub fn binding(&self) -> &'a FinalUseBinding {
+    pub fn binding(&self) -> &FinalUseBinding {
         &self.grant.binding
     }
 }
@@ -287,7 +287,7 @@ impl FinalUseAuthority {
         &self,
         token: VerifiedUseToken,
         expected: &FinalUseBinding,
-        consumer: impl FnOnce(VerifiedUseWitness<'_>) -> T,
+        consumer: impl for<'witness> FnOnce(VerifiedUseWitness<'witness>) -> T,
     ) -> Result<T, FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
