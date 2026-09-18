@@ -563,6 +563,7 @@ impl BaoClient {
         &self,
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
+        registry: &SecretLeaseRegistry,
         handle: &SecretLeaseHandle,
         request: &SecretLeaseLookupRequest,
     ) -> Result<SecretLeaseLookupOutcome, BaoClientError> {
@@ -599,10 +600,15 @@ impl BaoClient {
                 authority
                     .with_verified_use(verified, &binding, || ())
                     .map_err(BaoClientError::Authority)?;
+                let observed_at_unix_ms = now_unix_ms()?;
+                registry
+                    .observe_absent(handle.lease_id_sha256(), observed_at_unix_ms)
+                    .await
+                    .map_err(BaoClientError::LeaseRegistry)?;
                 return Ok(SecretLeaseLookupOutcome::Absent {
                     lease_id_sha256: handle.lease_id_sha256(),
                     operation_sha256,
-                    observed_at_unix_ms: now_unix_ms()?,
+                    observed_at_unix_ms,
                 });
             }
             StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN | StatusCode::BAD_REQUEST => {
@@ -646,6 +652,15 @@ impl BaoClient {
         authority
             .with_verified_use(verified, &binding, || ())
             .map_err(BaoClientError::Authority)?;
+        registry
+            .observe_active(
+                handle.lease_id_sha256(),
+                observation.expires_at_unix_ms,
+                observation.renewable,
+                observation.observed_at_unix_ms,
+            )
+            .await
+            .map_err(BaoClientError::LeaseRegistry)?;
         Ok(SecretLeaseLookupOutcome::Active(observation))
     }
 
@@ -653,6 +668,7 @@ impl BaoClient {
         &self,
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
+        registry: &SecretLeaseRegistry,
         handle: &SecretLeaseHandle,
         request: &SecretLeaseRevokeRequest,
     ) -> Result<SecretLeaseMutationOutcome<SecretLeaseRevocation>, BaoClientError> {
@@ -661,6 +677,10 @@ impl BaoClient {
         let verified = authority
             .claim(grant, &binding)
             .map_err(BaoClientError::Authority)?;
+        registry
+            .begin_operation(operation_sha256, "revoke", now_unix_ms()?)
+            .await
+            .map_err(BaoClientError::LeaseRegistry)?;
         authority
             .with_verified_use(verified, &binding, || ())
             .map_err(BaoClientError::Authority)?;
@@ -683,6 +703,7 @@ impl BaoClient {
         {
             Ok(response) => response,
             Err(_) => {
+                persist_indeterminate(registry, operation_sha256).await?;
                 return Ok(SecretLeaseMutationOutcome::Indeterminate {
                     operation_sha256,
                 });
@@ -690,25 +711,50 @@ impl BaoClient {
         };
         match response.status() {
             StatusCode::NO_CONTENT | StatusCode::OK => {
-                Ok(SecretLeaseMutationOutcome::Applied(SecretLeaseRevocation {
+                let observed_at_unix_ms = now_unix_ms()?;
+                let revocation = SecretLeaseRevocation {
                     lease_id_sha256: handle.lease_id_sha256(),
                     operation_sha256,
-                    observed_at_unix_ms: now_unix_ms()?,
-                }))
+                    observed_at_unix_ms,
+                };
+                registry
+                    .record_revoked(
+                        operation_sha256,
+                        handle.lease_id_sha256(),
+                        observed_at_unix_ms,
+                    )
+                    .await
+                    .map_err(|_| BaoClientError::LeaseRegistryAfterProviderEffect)?;
+                Ok(SecretLeaseMutationOutcome::Applied(revocation))
             }
             StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN | StatusCode::BAD_REQUEST => {
+                registry
+                    .mark_rejected(operation_sha256, now_unix_ms()?)
+                    .await
+                    .map_err(BaoClientError::LeaseRegistry)?;
                 Ok(SecretLeaseMutationOutcome::Rejected)
             }
             StatusCode::NOT_FOUND => {
                 // A known lease that is already absent is observationally
                 // revoked for the host lifecycle; do not create a retry loop.
-                Ok(SecretLeaseMutationOutcome::Applied(SecretLeaseRevocation {
+                let observed_at_unix_ms = now_unix_ms()?;
+                let revocation = SecretLeaseRevocation {
                     lease_id_sha256: handle.lease_id_sha256(),
                     operation_sha256,
-                    observed_at_unix_ms: now_unix_ms()?,
-                }))
+                    observed_at_unix_ms,
+                };
+                registry
+                    .record_revoked(
+                        operation_sha256,
+                        handle.lease_id_sha256(),
+                        observed_at_unix_ms,
+                    )
+                    .await
+                    .map_err(|_| BaoClientError::LeaseRegistryAfterProviderEffect)?;
+                Ok(SecretLeaseMutationOutcome::Applied(revocation))
             }
             status if status.is_server_error() => {
+                persist_indeterminate(registry, operation_sha256).await?;
                 Ok(SecretLeaseMutationOutcome::Indeterminate {
                     operation_sha256,
                 })
@@ -848,6 +894,17 @@ async fn read_bounded_body(
         body.extend_from_slice(&chunk);
     }
     Ok(body)
+}
+
+
+async fn persist_indeterminate(
+    registry: &SecretLeaseRegistry,
+    operation_sha256: [u8; 32],
+) -> Result<(), BaoClientError> {
+    registry
+        .mark_indeterminate(operation_sha256, now_unix_ms()?)
+        .await
+        .map_err(|_| BaoClientError::LeaseRegistryAfterProviderEffect)
 }
 
 fn now_unix_ms() -> Result<u64, BaoClientError> {
