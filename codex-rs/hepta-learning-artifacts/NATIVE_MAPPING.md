@@ -40,7 +40,7 @@ capabilities remain host-owned.
 | validate lifecycle transition | `validate_artifact_lifecycle_transition` | `src/closure_v2.rs` | implemented |
 | bind withdrawal registry identity/scope | `WithdrawalRegistryBindingV1`, `DatasetWithdrawalRegistry::new_scoped` | `src/closure_v2.rs` | implemented |
 | bind V3 admission to scoped withdrawal head | `admit_manifest_at_withdrawal_head_v3`, `validate_artifact_publication_v3` | `src/admission_v3.rs` | implemented |
-| stage and revalidate V3 -> durable V1 publication | `prepare_artifact_publication_v3`, `revalidate_artifact_publication_v3` | `src/publication.rs` | implemented |
+| stage and revalidate V3 -> durable V1 publication | `prepare_artifact_publication_v3`, `revalidate_artifact_publication_v3`, `RevalidatedArtifactPublicationV3` | `src/publication.rs` | implemented; durable snapshot access gated by revalidation |
 | persist/reopen withdrawal registry | `write_withdrawal_registry_snapshot`, `read_withdrawal_registry_snapshot` | `src/aux_storage.rs` | implemented |
 | persist/reopen lifecycle journal | `write_lifecycle_journal_snapshot`, `read_lifecycle_journal_snapshot` | `src/aux_storage.rs` | implemented |
 | record governed iteration transitions | `validate_iteration_transition`, `IterationLedgerV1::transition` | `src/iteration.rs`, `src/iteration_ledger.rs` | implemented |
