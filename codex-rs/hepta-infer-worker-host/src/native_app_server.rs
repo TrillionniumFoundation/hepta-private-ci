@@ -218,53 +218,138 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
+        let params = TurnStartParams {
+            thread_id: started.thread.id.clone(),
+            client_user_message_id: Some(request_id.to_string()),
+            input: vec![UserInput::Text {
+                text: prompt,
+                text_elements: Vec::new(),
+            }],
+            additional_context,
+            environments: Some(Vec::new()),
+            ..Default::default()
+        };
+        let final_use = final_use.ok_or("production model dispatch requires final-use authority")?;
+        let now_ms = unix_now_ms()?;
+        let deadline_ms = unix_deadline_ms(now_ms, self.config.timeout)?;
+        let payload_digest = turn_start_payload_digest(&params);
+        let intent = CodexOperationIntent {
+            operation_id: stable_operation_id(request_id)?,
+            subject_id: StableId::new(format!("agent.{}", self.config.agent_id))?,
+            destination_id: StableId::new(format!(
+                "agent.{}.app-server.{}",
+                self.config.agent_id, self.config.generation
+            ))?,
+            thread_id: StableId::new(started.thread.id.clone())?,
+            client_message_id: request_id.to_string(),
+            method_id: StableId::new(TURN_START_METHOD_ID)?,
+            payload_digest,
+            lease_payload_digest: payload_digest,
+            input_digest: turn_input_digest(&params),
+            scope_digest: codex_scope_digest(
+                &self.config,
+                &started.thread.id,
+                &started.model_provider,
+                &params,
+            )?,
+            session_generation: self.config.generation,
+            protocol_version: APP_SERVER_V2_PROTOCOL_VERSION,
+            deadline_ms,
+        };
+        let binding = final_use_binding(now_ms, &intent)?;
+        let signed_grant = final_use_channel::request_signed_grant(
+            &final_use.authority_socket,
+            &binding,
+            intent.deadline_ms,
+        )
+        .await?;
+        let token = final_use.authority.claim(&signed_grant, &binding)?;
+
+        // Durable possible-effect fence is committed before the synchronous
+        // queue admission callback. A crash after this point never replays.
         control.dispatch_native(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                context_digest: control::digest(&serde_json::to_vec(&params.additional_context)?),
             },
         )?;
-        let response = timeout(
-            RPC_TIMEOUT,
-            client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
-                request_id: RequestId::Integer(2),
-                params: TurnStartParams {
-                    thread_id: started.thread.id.clone(),
-                    client_user_message_id: Some(request_id.to_string()),
-                    input: vec![UserInput::Text {
-                        text: prompt,
-                        text_elements: Vec::new(),
-                    }],
-                    additional_context,
-                    environments: Some(Vec::new()),
-                    ..Default::default()
-                },
-            }),
-        )
-        .await;
-        let turn = match response {
-            Ok(Ok(response)) => response.turn,
-            _ => {
+
+        let pending = match admit_verified_turn(
+            unix_now_ms()?,
+            &final_use.authority,
+            token,
+            intent.clone(),
+            RequestId::Integer(2),
+            params,
+            &client.request_handle(),
+        ) {
+            Ok(pending) => pending,
+            Err(error) => {
+                // Every adapter error here is proven pre-admission: validation,
+                // authority recheck, bounded queue full, or closed queue.
+                let reason = format!(
+                    "turn/start not admitted ({:?}): {}",
+                    error.disposition, error.reason
+                );
+                control.stop_native_before_admission(
+                    request_id,
+                    reason.chars().take(1024).collect(),
+                )?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Ok(NativeRunOutput {
-                    thread_id: started.thread.id,
-                    turn_id: String::new(),
-                    model: started.model,
-                    model_provider: started.model_provider,
-                    status: NativeRunStatus::Indeterminate,
-                    output: String::new(),
-                    observed_output_tokens: None,
-                    terminal_observed: false,
-                    owner_authority: NativeOwnerAuthority::Unverified,
-                    stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
-                });
+                return Err(reason.into());
             }
         };
+
+        let start_outcome = match timeout(RPC_TIMEOUT, pending.wait()).await {
+            Ok(outcome) => outcome,
+            Err(_) => TurnStartOutcome::Indeterminate {
+                reason: "turn/start response timed out after queue admission".to_string(),
+            },
+        };
+        let dispatched = match start_outcome {
+            TurnStartOutcome::Started(dispatched) => dispatched,
+            TurnStartOutcome::Indeterminate { reason } => {
+                match reconcile_unknown_turn(&client, &intent).await {
+                    ReconcileOutcome::Recovered(dispatched) => dispatched,
+                    ReconcileOutcome::Missing => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Ok(indeterminate_output(
+                            &started,
+                            format!("{reason}; thread/read found no durable client binding"),
+                        ));
+                    }
+                    ReconcileOutcome::Quarantined { reason: reconcile_reason } => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Ok(indeterminate_output(
+                            &started,
+                            format!("{reason}; reconciliation quarantined: {reconcile_reason}"),
+                        ));
+                    }
+                }
+            }
+            TurnStartOutcome::Rejected { code, message } => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Ok(indeterminate_output(
+                    &started,
+                    format!(
+                        "turn/start admitted but server rejected response ({code}): {message}; do not replay"
+                    ),
+                ));
+            }
+            TurnStartOutcome::Quarantined { reason } => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Ok(indeterminate_output(
+                    &started,
+                    format!("turn/start response quarantined: {reason}; do not replay"),
+                ));
+            }
+        };
+
         let mut output = NativeRunOutput {
             thread_id: started.thread.id,
-            turn_id: turn.id,
+            turn_id: dispatched.turn_id.as_str().to_string(),
             model: started.model,
             model_provider: started.model_provider,
             status: NativeRunStatus::Indeterminate,
@@ -284,6 +369,7 @@ impl AppServerModelDriver {
             .observe(
                 &mut client,
                 &mut output,
+                &dispatched,
                 deadline,
                 cancellation,
                 Some(&owner),
@@ -310,6 +396,7 @@ impl AppServerModelDriver {
                 .observe(
                     &mut client,
                     &mut output,
+                    &dispatched,
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
@@ -345,6 +432,7 @@ impl AppServerModelDriver {
         &self,
         client: &mut RemoteAppServerClient,
         output: &mut NativeRunOutput,
+        dispatched: &DispatchedCodexOperation,
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
