@@ -102,8 +102,8 @@ pub fn read_dataset_withdrawal_snapshot_v1(
         return Err(ArtifactStorageError::Corrupt);
     }
     let snapshot = decode_withdrawal_snapshot(&bytes, expected)?;
-    let registry =
-        DatasetWithdrawalRegistry::from_snapshot(snapshot).map_err(|_| ArtifactStorageError::Semantic)?;
+    let registry = DatasetWithdrawalRegistry::from_snapshot(snapshot)
+        .map_err(|_| ArtifactStorageError::Semantic)?;
     if encode_withdrawal_snapshot(&registry.snapshot(), expected.binding)? != bytes {
         return Err(ArtifactStorageError::Corrupt);
     }
@@ -149,8 +149,8 @@ pub fn read_artifact_lifecycle_snapshot_v2(
         return Err(ArtifactStorageError::Corrupt);
     }
     let snapshot = decode_lifecycle_snapshot(&bytes, expected)?;
-    let journal =
-        ArtifactLifecycleJournalV2::from_snapshot(snapshot, now).map_err(|_| ArtifactStorageError::Semantic)?;
+    let journal = ArtifactLifecycleJournalV2::from_snapshot(snapshot, now)
+        .map_err(|_| ArtifactStorageError::Semantic)?;
     if encode_lifecycle_snapshot(&journal.snapshot(), expected.binding)? != bytes {
         return Err(ArtifactStorageError::Corrupt);
     }
@@ -594,8 +594,12 @@ mod tests {
             digest("binding"),
         )
         .unwrap();
-        let reopened =
-            read_artifact_lifecycle_snapshot_v2(File::open(&target).unwrap(), receipt, 101).unwrap();
+        let reopened = read_artifact_lifecycle_snapshot_v2(
+            File::open(&target).unwrap(),
+            receipt,
+            101,
+        )
+        .unwrap();
         assert_eq!(reopened.snapshot(), snapshot);
         let _ = std::fs::remove_file(target);
     }

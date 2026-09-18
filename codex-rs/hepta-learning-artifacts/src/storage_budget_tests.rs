@@ -150,7 +150,12 @@ fn pre_read_and_post_read_metadata_use_the_same_error_priority() {
         Err(ArtifactStorageError::Capacity),
     );
     assert_eq!(
-        validate_read_length(0, 1, MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES, ArtifactStorageError::Corrupt),
+        validate_read_length(
+            0,
+            1,
+            MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES,
+            ArtifactStorageError::Corrupt,
+        ),
         Err(ArtifactStorageError::Corrupt),
     );
 }
