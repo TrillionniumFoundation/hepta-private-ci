@@ -31,8 +31,12 @@ use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput as V2UserInput;
 use codex_hepta_agentd::AgentdClient;
+use codex_hepta_agentd::CancellationDisposition;
+use codex_hepta_agentd::ContextAttachment;
 use codex_hepta_agentd::MemoryFederationCapabilityState;
 use codex_hepta_agentd::MemoryFederationScopeKind;
+use codex_hepta_agentd::RunPhase;
+use codex_hepta_agentd::RunSnapshot;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_contracts::AgentId;
@@ -274,6 +278,185 @@ impl ProductClient {
         self.inner.shutdown().await?;
         Ok(())
     }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispatch() -> Result<()> {
+    fn digest(byte: char) -> String {
+        byte.to_string().repeat(64)
+    }
+
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(AGENT_A, "lifecycle-wire-workspace")?;
+    fleet.start(&agent)?;
+    let (control, initial_health) = fleet.wait_ready(&agent, 1).await?;
+
+    let capabilities = control.capabilities().await?;
+    for required in [
+        "run.lifecycle",
+        "run.lifecycle.recovery",
+        "control.typed-overload",
+    ] {
+        ensure!(
+            capabilities
+                .capabilities
+                .iter()
+                .any(|capability| capability.id == required && capability.major == 1),
+            "real Agentd did not advertise required capability {required}: {capabilities:?}"
+        );
+    }
+
+    let now_ms = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
+    let deadline_ms = now_ms
+        .checked_add(60_000)
+        .context("lifecycle deadline overflow")?;
+    let authority_epoch = agent_generation(&fleet, &agent.agent_id)?;
+    let snapshot = RunSnapshot {
+        run_id: "run.lifecycle.product.1".to_string(),
+        request_digest: digest('1'),
+        objective_digest: digest('2'),
+        body_digest: digest('3'),
+        artifact_set_digest: digest('4'),
+        authority_epoch,
+        deadline_ms,
+    };
+    let admitted = control.run_start(snapshot.clone()).await?;
+    ensure!(
+        admitted.phase == RunPhase::Admitted && admitted.revision == 1,
+        "real wire did not admit the lifecycle run: {admitted:?}"
+    );
+
+    let attachment = ContextAttachment {
+        run_id: snapshot.run_id.clone(),
+        request_digest: snapshot.request_digest.clone(),
+        objective_digest: snapshot.objective_digest.clone(),
+        body_digest: snapshot.body_digest.clone(),
+        artifact_set_digest: snapshot.artifact_set_digest.clone(),
+        authority_epoch: snapshot.authority_epoch,
+        deadline_ms: snapshot.deadline_ms,
+        context_digest: digest('5'),
+        compilation_receipt_digest: digest('6'),
+    };
+    let attached = control.run_attach_context(admitted.revision, attachment).await?;
+    ensure!(
+        attached.phase == RunPhase::ContextAttached,
+        "real wire did not attach the exact frozen tuple: {attached:?}"
+    );
+    let dispatched = control
+        .run_mark_dispatched(snapshot.run_id.clone(), attached.revision)
+        .await?;
+    ensure!(
+        dispatched.phase == RunPhase::Dispatched,
+        "real wire did not cross the dispatch boundary: {dispatched:?}"
+    );
+    let (disposition, cancelling) = control
+        .run_cancel(
+            snapshot.run_id.clone(),
+            dispatched.revision,
+            "qualification_restart".to_string(),
+        )
+        .await?;
+    ensure!(
+        disposition == CancellationDisposition::CancellingAfterDispatch
+            && cancelling.phase == RunPhase::Cancelling
+            && cancelling.cancellation_ack_deadline_ms.is_some(),
+        "post-dispatch cancellation lost uncertainty semantics: {disposition:?} {cancelling:?}"
+    );
+
+    let safe_snapshot = RunSnapshot {
+        run_id: "run.lifecycle.product.2".to_string(),
+        request_digest: digest('7'),
+        objective_digest: digest('8'),
+        body_digest: digest('9'),
+        artifact_set_digest: digest('a'),
+        authority_epoch,
+        deadline_ms,
+    };
+    let safe_admitted = control.run_start(safe_snapshot.clone()).await?;
+    ensure!(safe_admitted.phase == RunPhase::Admitted);
+
+    fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
+    let restart_deadline = Instant::now() + Duration::from_secs(20);
+    let (restarted_control, restarted_health, restarted_generation) = loop {
+        let report = fleet.supervisor.tick(Instant::now());
+        ensure!(
+            report.faults.is_empty(),
+            "supervisor faults while restarting Agentd: {:?}",
+            report.faults
+        );
+        if let Some(snapshot) = fleet.supervisor.snapshot(&agent.agent_id)
+            && snapshot.active
+            && snapshot.healthy
+            && let Some(spawn_generation) = snapshot.spawn_generation
+            && spawn_generation > 1
+        {
+            let candidate = fleet.control_client(&agent, spawn_generation)?;
+            if let Ok(health) = candidate.health().await
+                && health.ready
+            {
+                break (candidate, health, spawn_generation);
+            }
+        }
+        ensure!(
+            Instant::now() < restart_deadline,
+            "timed out waiting for lifecycle-qualified Agentd restart"
+        );
+        tokio::time::sleep(Duration::from_millis(25)).await;
+    };
+    ensure!(
+        restarted_health.process_id != initial_health.process_id,
+        "supervisor restart reused the original Agentd process"
+    );
+    ensure!(
+        restarted_generation > 1,
+        "supervisor restart did not advance the spawn generation"
+    );
+
+    let uncertain = restarted_control
+        .run_status(snapshot.run_id.clone())
+        .await?
+        .context("dispatched lifecycle run disappeared across restart")?;
+    ensure!(
+        uncertain.phase == RunPhase::Indeterminate
+            && uncertain.cancel_reason.as_deref() == Some("qualification_restart")
+            && uncertain.cancellation_ack_deadline_ms.is_none(),
+        "restart did not preserve post-dispatch uncertainty: {uncertain:?}"
+    );
+
+    let safely_closed = restarted_control
+        .run_status(safe_snapshot.run_id.clone())
+        .await?
+        .context("pre-dispatch lifecycle run disappeared across restart")?;
+    ensure!(
+        safely_closed.phase == RunPhase::Cancelled
+            && safely_closed.cancel_reason.as_deref()
+                == Some("agentd_shutdown_before_dispatch"),
+        "graceful restart did not close safe pre-dispatch work: {safely_closed:?}"
+    );
+
+    // Qualification-only observer: this proves the real UDS path can reconcile
+    // a delegated terminal observation after restart. It is not product caller
+    // or provider-terminal evidence.
+    let reconciled = restarted_control
+        .run_observe_terminal(
+            snapshot.run_id.clone(),
+            uncertain.revision,
+            RunPhase::Succeeded,
+            true,
+        )
+        .await?;
+    ensure!(
+        reconciled.phase == RunPhase::Succeeded && reconciled.terminal_observed,
+        "real wire did not reconcile the owner-observed terminal state: {reconciled:?}"
+    );
+    restarted_control
+        .run_remove_closed(snapshot.run_id, reconciled.revision)
+        .await?;
+    restarted_control
+        .run_remove_closed(safe_snapshot.run_id, safely_closed.revision)
+        .await?;
+
+    Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
