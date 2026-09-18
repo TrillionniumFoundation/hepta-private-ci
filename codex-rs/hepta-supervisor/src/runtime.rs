@@ -38,6 +38,9 @@ pub(crate) struct AgentRuntime<P> {
     pub phase: RuntimePhase,
     pub healthy: bool,
     pub fenced: bool,
+    /// True only after the exact process lease is durably published.
+    /// A false value keeps the spawned child quarantined on the hard-kill path.
+    pub lease_persisted: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
