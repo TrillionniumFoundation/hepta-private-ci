@@ -327,11 +327,14 @@ impl AutomationStore {
         ) {
             return Ok(());
         }
-        let fence = self
-            .historical_automation_fence(&work.occurrence.taskflow_run_id)
-            .await?;
         let step_attempt = self
             .automation_occurrence_step_attempt(work.occurrence.task_id, work.occurrence.occurrence)
+            .await?;
+        let fence = self
+            .historical_automation_step_fence(
+                &work.occurrence.taskflow_run_id,
+                step_attempt,
+            )
             .await?;
         let payload_digest = Sha256Digest::for_bytes(work.admission.prompt.as_bytes());
         let intent_digest = automation_intent_digest(
@@ -404,11 +407,14 @@ impl AutomationStore {
         terminal_receipt_digest: &Sha256Digest,
         now_ms: u64,
     ) -> Result<(), TaskFlowError> {
-        let fence = self
-            .historical_automation_fence(&work.occurrence.taskflow_run_id)
-            .await?;
         let step_attempt = self
             .automation_occurrence_step_attempt(work.occurrence.task_id, work.occurrence.occurrence)
+            .await?;
+        let fence = self
+            .historical_automation_step_fence(
+                &work.occurrence.taskflow_run_id,
+                step_attempt,
+            )
             .await?;
         let payload_digest = Sha256Digest::for_bytes(work.admission.prompt.as_bytes());
         let intent_digest = automation_intent_digest(
@@ -504,30 +510,53 @@ impl AutomationStore {
         u32::try_from(value).map_err(|_| TaskFlowError::Corrupt("step attempt column".to_string()))
     }
 
-    async fn historical_automation_fence(
+    async fn historical_automation_step_fence(
         &self,
         run_id: &str,
+        attempt: u32,
     ) -> Result<TaskFlowFence, TaskFlowError> {
-        let run = self
-            .taskflow_run(run_id)
-            .await?
-            .ok_or_else(|| TaskFlowError::Conflict("automation TaskFlow run is missing".to_string()))?;
+        let row = sqlx::query(
+            "SELECT owner_id, owner_epoch, generation, fencing_token
+             FROM taskflow_step_outbox
+             WHERE owner_agent_id = ? AND run_id = ? AND step_id = ?
+               AND attempt = ?
+             ORDER BY event_seq ASC LIMIT 1",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(AUTOMATION_STEP_ID)
+        .bind(i64::from(attempt))
+        .fetch_optional(self.taskflow_pool())
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?
+        .ok_or_else(|| {
+            TaskFlowError::Conflict("automation TaskFlow step history is missing".to_string())
+        })?;
+        let owner_id: String = row
+            .try_get("owner_id")
+            .map_err(|_| TaskFlowError::Corrupt("step owner id column".to_string()))?;
+        let owner_epoch = u64::try_from(
+            row.try_get::<i64, _>("owner_epoch")
+                .map_err(|_| TaskFlowError::Corrupt("step owner epoch column".to_string()))?,
+        )
+        .map_err(|_| TaskFlowError::Corrupt("step owner epoch column".to_string()))?;
+        let generation = u64::try_from(
+            row.try_get::<i64, _>("generation")
+                .map_err(|_| TaskFlowError::Corrupt("step generation column".to_string()))?,
+        )
+        .map_err(|_| TaskFlowError::Corrupt("step generation column".to_string()))?;
+        let fencing_token: String = row
+            .try_get("fencing_token")
+            .map_err(|_| TaskFlowError::Corrupt("step fencing token column".to_string()))?;
         Ok(TaskFlowFence {
             owner_agent_id: self.taskflow_owner_agent_id().clone(),
-            owner_id: run.owner_id.ok_or_else(|| {
-                TaskFlowError::Corrupt("automation TaskFlow run lost owner id".to_string())
-            })?,
-            owner_epoch: run.owner_epoch.ok_or_else(|| {
-                TaskFlowError::Corrupt("automation TaskFlow run lost owner epoch".to_string())
-            })?,
-            generation: run.generation.ok_or_else(|| {
-                TaskFlowError::Corrupt("automation TaskFlow run lost generation".to_string())
-            })?,
-            fencing_token: run.fencing_token.ok_or_else(|| {
-                TaskFlowError::Corrupt("automation TaskFlow run lost fencing token".to_string())
-            })?,
+            owner_id,
+            owner_epoch,
+            generation,
+            fencing_token,
         })
-    }
+    }}
+
 }
 
 pub fn admission_receipt_digest(occurrence: &AutomationOccurrence) -> Sha256Digest {
