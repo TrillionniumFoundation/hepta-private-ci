@@ -10,7 +10,7 @@
 
 **Lifecycle:** `target`
 
-**Source status:** `existing_bound`; repository source closure candidate, exact-head CI pending
+**Source status:** `existing_bound`
 
 **Bootstrap work package:** `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
 
@@ -26,32 +26,23 @@ Plane `qualification`, kind `trainer`, state model `stateful_shadow` and archite
 
 ## 2. Source binding and implementation status
 
-Declared exclusive target root:
+Declared exclusive target roots:
 
 - `codex-rs/hepta-bellman-operator`
 
-Cargo-bound qualification package:
+Existing declared roots at this exact source snapshot:
 
-- `codex-rs/hepta-operator-acceptance`
+- `codex-rs/hepta-bellman-operator`
 
-The Cargo binding does not make the acceptance package an exclusive source root. It exists to seal qualification evidence under its own narrow authority boundary.
+Non-authoritative implementation evidence roots:
 
-Current source implementation includes:
+None.
 
-- deterministic Bellman target construction;
-- applicability and regularity admission;
-- bounded exact sensor-core construction;
-- complete deterministic Bellman reference evaluation;
-- replay-safe simplest-sufficient tabular fitting plus strict V2 fitting;
-- independently pinned, once-validated tabular payload loading and prediction;
-- replay-safe action-conditioned tabular world-model fitting;
-- independently pinned, once-validated world-model payload loading and prediction;
-- admission of externally produced effective-support, holdout, future-window, calibration, drift and confidence measurements;
-- qualification-evidence acceptance ceremony with trusted time, nonce, durable watermark, frozen-evidence revalidation and externally pinned trust policy.
+Declared roots not yet present:
 
-`docs/modules/learning.operator/IMPLEMENTATION_MAP.json` uses `module_source_snapshot`. Its recorded commit/tree pair is verified and any later change under the Bellman or operator-acceptance package paths invalidates freshness. `scripts/hepta-implementation-maps.py migrate` refreshes the source snapshot instead of preserving an obsolete one.
+None.
 
-This source status does **not** create a production caller or writer, establish live-world efficacy, select a candidate, grant runtime/effect authority, issue independent production acceptance, activate, canary, promote or release anything.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.operator`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -240,27 +231,9 @@ Documentation completion requires this guide, exact registry references and clos
 
 Current candidate status is therefore: **repository source closure in progress under PR CI; production implementation remains false; product caller remains not composed; external live/future/device/independent-acceptance gates remain open.**
 
-## 16. V8.2 pre-coding implementation-readiness overlay
+### Repository source-operation inventory (non-authoritative)
 
-The canonical readiness overlay binds `learning.operator` to primary lane `LANE-E-LEARNING`. The following implementation-level specifications are mandatory alongside Sections 1–15:
-
-- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
-- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
-- [`RDY-LRN`](../../readiness/LEARNING_EVALUATION_EXECUTION.md)
-
-Owned readiness protocols:
-
-- None.
-
-Consumed readiness protocols:
-
-- None.
-
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
-
-## 17. Source implementation receipt
-
-This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+This inventory is navigation evidence for the current qualification candidate. The canonical source-location receipt remains Section 17; operation truth and freshness are machine-checked by `IMPLEMENTATION_MAP.json`.
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
@@ -284,3 +257,29 @@ This receipt records repository source bindings for the current documentation ca
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain explicit follow-up evidence when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+## 16. V8.2 pre-coding implementation-readiness overlay
+
+The canonical readiness overlay binds `learning.operator` to primary lane `LANE-E-LEARNING`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+
+- [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
+- [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
+- [`RDY-LRN`](../../readiness/LEARNING_EVALUATION_EXECUTION.md)
+
+Owned readiness protocols:
+
+- None.
+
+Consumed readiness protocols:
+
+- None.
+
+Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+
+## 17. Source implementation receipt
+
+The bootstrap source-location obligation for `learning.operator` is implemented by work package `HBO-0-BELLMAN-OPERATOR-CONTRACTS` in:
+
+- `codex-rs/hepta-bellman-operator`
+
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
