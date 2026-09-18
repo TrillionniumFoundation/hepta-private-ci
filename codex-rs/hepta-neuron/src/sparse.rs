@@ -182,6 +182,39 @@ impl SparseCheckpoint {
         &self.threshold
     }
 
+    pub fn sequence(&self) -> u64 {
+        self.sequence
+    }
+
+    pub fn monotonic_micros(&self) -> u64 {
+        self.monotonic_micros
+    }
+
+    pub fn activation_digest(&self) -> Digest32 {
+        digest_q24_vector(b"hepta.neuron.activation.q24.v1", &self.activation)
+    }
+
+    pub fn threshold_digest(&self) -> Digest32 {
+        digest_q24_vector(b"hepta.neuron.threshold.q24.v1", &self.threshold)
+    }
+
+    pub fn eligibility_digest(&self) -> Digest32 {
+        digest_q24_vector(b"hepta.neuron.eligibility.q24.v1", &self.eligibility)
+    }
+
+    pub fn estimated_encoded_bytes(&self) -> usize {
+        216_usize.saturating_add(self.temporal.len().saturating_mul(40))
+    }
+
+    pub(crate) fn matches_journal_context(
+        &self,
+        config: Digest32,
+        scope: Digest32,
+        objective: Digest32,
+    ) -> bool {
+        self.config == config && self.scope == scope && self.objective == objective
+    }
+
     fn calculate_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.neuron.sparse-checkpoint.q24.v1".to_vec();
         for value in [
@@ -369,6 +402,15 @@ pub fn sparse_tick(
 }
 
 // Inputs are bounded before this helper. i128 handles products exactly.
+fn digest_q24_vector(domain: &[u8], values: &[i64]) -> Digest32 {
+    let mut bytes = domain.to_vec();
+    bytes.extend_from_slice(&(values.len() as u64).to_be_bytes());
+    for value in values {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
+}
+
 fn mul(a: i64, b: i64) -> i64 {
     let product = i128::from(a) * i128::from(b);
     let magnitude = product.abs();
