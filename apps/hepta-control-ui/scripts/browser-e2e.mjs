@@ -108,10 +108,14 @@ try {
   const quarantine = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Quarantine "));
   quarantine.click();
   const blockedDialog = await waitFor(() => document.querySelector("dialog[data-hepta-confirm='operation']"));
+  const reconcilesBeforeOffline = (await stats()).reconcileCount;
   window.dispatchEvent(new Event("offline"));
   await waitFor(() => root.getAttribute("data-hepta-ready") === "false");
   blockedDialog.querySelector("[data-hepta-confirm-submit='true']").click();
-  await sleep(700);
+  await sleep(1300);
+  if ((await stats()).reconcileCount !== reconcilesBeforeOffline) {
+    throw new Error("offline state consumed automatic reconciliation budget");
+  }
   if (root.getAttribute("data-hepta-ready") !== "false") {
     throw new Error("offline mutation block was cleared by a stale polling response");
   }

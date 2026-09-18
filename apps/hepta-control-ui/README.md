@@ -15,7 +15,7 @@ The current implementation has eight bounded source layers:
 - `src/pending-store.js` — bounded durable unresolved-operation identity mirror; no proposal/scope payload is persisted.
 - `src/http-transport.js` — same-origin HTTPS/CSRF JSON transport adapter.
 - `src/browser-host.js` — authenticated bootstrap and native accessible exact-request confirmation dialog.
-- `src/web-main.js` — browser composition, snapshot polling, reconnect/reconcile, connectivity mutation blocking and fail-closed writer-lease handoff on startup/domain-switch failure.
+- `src/web-main.js` — browser composition, snapshot polling, reconnect/reconcile, connectivity mutation blocking (including pausing automatic reconciliation while offline) and fail-closed writer-lease handoff on startup/domain-switch failure.
 
 `RuntimeClient.applySnapshot()` projects each backend module through the safe
 allowlist before it reaches `readView()`. Raw provider payloads, credentials and
