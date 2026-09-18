@@ -22,7 +22,8 @@ use crate::PortDecisionV1;
 use crate::PortFailureClassV1;
 use crate::PortFailureV1;
 
-// Reserve two ledger candidate identities for abstain and slow-path.\nconst MAX_CANDIDATES_V3: usize = 126;
+// Reserve two ledger candidate identities for abstain and slow-path.
+const MAX_CANDIDATES_V3: usize = 126;
 const MAX_SUPPORT_PPM: u32 = 1_000_000;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -752,6 +753,7 @@ pub fn prepare_intelligence_run_v3<P: CompositionPortsV3, C: CompositionControlV
         "learning.ledger",
         |input| ports.record_decision(input)
     );
+    let _decision_record_digest = predecessor;
 
     let trace_digest = digest_trace_v3(
         &request.run_id,
