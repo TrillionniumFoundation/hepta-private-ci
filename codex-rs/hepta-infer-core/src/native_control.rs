@@ -114,6 +114,10 @@ pub struct NativeDispatch {
     pub codex_session_id: Option<String>,
     #[serde(default)]
     pub codex_deadline_ms: Option<u64>,
+    /// SHA-256 of the exact serialized v2 `TurnStartParams` submitted to the
+    /// owning App Server. Historical records may omit it.
+    #[serde(default)]
+    pub codex_payload_digest: Option<String>,
     #[serde(default)]
     pub codex_request_digest: Option<String>,
 }
