@@ -7,6 +7,7 @@ fn request(operation_id: &str) -> BaoDynamicLeaseRequest {
         consumer_id: "consumer-one".into(),
         namespace: "team-a".into(),
         provider_path: "database/creds/readonly".into(),
+        method: DynamicLeaseMethod::Get,
         operation_id: operation_id.into(),
         parameters: serde_json::json!({"role": "readonly"}),
         max_ttl_seconds: 300,
