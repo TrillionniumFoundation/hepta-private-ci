@@ -3476,6 +3476,7 @@ dependencies = [
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
  "codex-hepta-cognitive-read",
+ "codex-hepta-cognitive-store",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
  "codex-hepta-evidence",
@@ -3594,7 +3595,12 @@ name = "codex-hepta-cognitive-store"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
+ "codex-hepta-contracts",
+ "codex-hepta-memory",
+ "codex-hepta-paths",
  "codex-hepta-types",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
