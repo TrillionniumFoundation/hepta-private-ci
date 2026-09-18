@@ -88,6 +88,58 @@ class CandidateChangeSetTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "changed_file_limit"):
             generate_candidates(envelope, (bundle,))
 
+    def test_atomic_changeset_can_create_only_required_parent_directories(self):
+        root = self.repository()
+        envelope = self.envelope(root)
+        change = MutationSet(
+            (
+                Mutation(
+                    "add_file",
+                    "src/newpkg/first.py",
+                    replacement_text="FIRST = 1\n",
+                ),
+                Mutation(
+                    "add_file",
+                    "src/newpkg/nested/second.py",
+                    replacement_text="SECOND = 2\n",
+                ),
+            )
+        )
+        candidate = generate_candidates(envelope, (change,))[1]
+        tested, receipt = sandbox_candidate(
+            root,
+            replace(envelope, require_network_isolation=False),
+            candidate,
+            ((sys.executable, "-c", "import pathlib; assert pathlib.Path('src/newpkg/first.py').is_file()"),),
+        )
+        self.assertTrue(receipt.passed)
+        self.assertEqual(tested.state, "fixture_tested")
+        self.assertEqual(
+            tested.changed_paths,
+            ("src/newpkg/first.py", "src/newpkg/nested/second.py"),
+        )
+
+    def test_rename_can_create_required_destination_parent_directory(self):
+        root = self.repository()
+        envelope = self.envelope(root)
+        rename = Mutation(
+            "rename_file",
+            "src/module.py",
+            target_path="src/newpkg/module.py",
+        )
+        candidate = generate_candidates(envelope, (rename,))[1]
+        tested, receipt = sandbox_candidate(
+            root,
+            replace(envelope, require_network_isolation=False),
+            candidate,
+            ((sys.executable, "-c", "import pathlib; assert pathlib.Path('src/newpkg/module.py').is_file()"),),
+        )
+        self.assertTrue(receipt.passed)
+        self.assertEqual(
+            tested.changed_paths,
+            ("src/module.py", "src/newpkg/module.py"),
+        )
+
     def test_rename_is_bound_as_two_path_change(self):
         temp, root, base = self.fixture()
         self.addCleanup(temp.cleanup)
