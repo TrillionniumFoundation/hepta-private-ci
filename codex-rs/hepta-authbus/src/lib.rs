@@ -9,7 +9,21 @@
 
 #![forbid(unsafe_code)]
 
+mod control;
 mod signed;
+pub use control::AUTHBUS_CONTROL_SCHEMA_VERSION;
+pub use control::AUTHBUS_MAX_RESERVATIONS;
+pub use control::AuthPolicy;
+pub use control::AuthorizationDecision;
+pub use control::AuthorizationRequest;
+pub use control::PolicyDecisionKind;
+pub use control::PolicyDenyReason;
+pub use control::QuotaSpec;
+pub use control::QuotaState;
+pub use control::ReservationRecord;
+pub use control::ReservationRequest;
+pub use control::ReservationResolution;
+pub use control::ReservationState;
 pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;
@@ -77,6 +91,7 @@ pub enum Error {
     CapacityExceeded,
     InvalidSignature,
     IssuerMismatch,
+    RetiredIssuer,
 }
 
 impl fmt::Display for Error {
