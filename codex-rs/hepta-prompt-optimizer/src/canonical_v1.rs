@@ -36,6 +36,8 @@ pub trait PromptCandidateSourceAuthenticatorV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptModelProfileV1 {
+    pub model_id: StableId,
+    pub model_version: String,
     pub model_digest: Digest32,
     pub tokenizer_digest: Digest32,
     pub template_digest: Digest32,
@@ -46,6 +48,9 @@ pub struct PromptModelProfileV1 {
 
 impl PromptModelProfileV1 {
     pub fn validate(&self) -> Result<(), CanonicalPromptErrorV1> {
+        if self.model_version.is_empty() || self.model_version.len() > 256 {
+            return Err(CanonicalPromptErrorV1::InvalidModelVersion);
+        }
         for (label, digest) in [
             ("model", self.model_digest),
             ("tokenizer", self.tokenizer_digest),
@@ -61,6 +66,8 @@ impl PromptModelProfileV1 {
     #[must_use]
     pub fn digest(&self) -> Digest32 {
         let mut bytes = b"hepta.prompt-optimizer.model-profile.v1".to_vec();
+        push_id(&mut bytes, &self.model_id);
+        push_text(&mut bytes, &self.model_version);
         for digest in [
             self.model_digest,
             self.tokenizer_digest,
@@ -90,6 +97,7 @@ pub struct PromptCandidateBindingV1 {
     pub realization_id: StableId,
     pub role: PromptCandidateRoleV1,
     pub payload_digest: Digest32,
+    pub registry_binding_digest: Digest32,
     pub admission_digest: Digest32,
     pub support_digest: Digest32,
     pub token_cost: u64,
@@ -107,6 +115,7 @@ impl PromptCandidateBindingV1 {
         bytes.push(candidate_role_code(self.role));
         for digest in [
             self.payload_digest,
+            self.registry_binding_digest,
             self.admission_digest,
             self.support_digest,
         ] {
@@ -120,6 +129,7 @@ impl PromptCandidateBindingV1 {
     pub(super) fn validate(&self, now_unix_ms: u64) -> Result<(), CanonicalPromptErrorV1> {
         for (label, digest) in [
             ("candidate payload", self.payload_digest),
+            ("registry binding", self.registry_binding_digest),
             ("candidate admission", self.admission_digest),
             ("candidate support", self.support_digest),
             ("candidate binding", self.binding_digest),
@@ -395,7 +405,11 @@ pub(super) fn require_digest(
 }
 
 pub(super) fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    let raw = value.as_str().as_bytes();
+    push_text(bytes, value.as_str());
+}
+
+pub(super) fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    let raw = value.as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
@@ -428,6 +442,7 @@ pub enum CanonicalPromptErrorV1 {
     EmptyDigest(&'static str),
     InvalidSourceOwner,
     InvalidRegistryFrontier,
+    InvalidModelVersion,
     CandidateLimitExceeded,
     InvalidEnumerationBound,
     DuplicateCandidate(String),
