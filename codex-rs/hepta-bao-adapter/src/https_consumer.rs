@@ -178,33 +178,35 @@ impl BaoClient {
         if reservation.amount < 1 {
             return Err(BaoClientError::AuthBusControl);
         }
-        let result = self.consume_kv_v2(authority, grant, request, consumer).await;
+        let result = self
+            .consume_kv_v2(authority, grant, request, consumer)
+            .await;
         match result {
             Ok(receipt) => {
-                let evidence = serde_json::to_vec(&receipt)
-                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                let evidence =
+                    serde_json::to_vec(&receipt).map_err(|_| BaoClientError::AuthBusControl)?;
                 authbus
-                    .settle_authbus_reservation(
-                        reservation_id,
-                        1,
-                        Digest32::of_bytes(&evidence),
-                    )
+                    .settle_authbus_reservation(reservation_id, 1, Digest32::of_bytes(&evidence))
                     .await
                     .map_err(|_| BaoClientError::AuthBusControl)?;
                 Ok(receipt)
             }
-            Err(error @ (BaoClientError::TimedOut
+            Err(
+                error @ (BaoClientError::TimedOut
                 | BaoClientError::TransportUnavailable
-                | BaoClientError::ConsumerIndeterminate)) => {
+                | BaoClientError::ConsumerIndeterminate),
+            ) => {
                 authbus
                     .quarantine_authbus_reservation(reservation_id)
                     .await
                     .map_err(|_| BaoClientError::AuthBusControl)?;
                 Err(error)
             }
-            Err(error @ (BaoClientError::InvalidConfiguration
+            Err(
+                error @ (BaoClientError::InvalidConfiguration
                 | BaoClientError::InvalidRequest
-                | BaoClientError::Authority(_))) => {
+                | BaoClientError::Authority(_)),
+            ) => {
                 authbus
                     .cancel_authbus_reservation(reservation_id)
                     .await
@@ -212,9 +214,8 @@ impl BaoClient {
                 Err(error)
             }
             Err(error) => {
-                let evidence = Digest32::of_bytes(
-                    format!("hepta.bao.terminal.v1:{error:?}").as_bytes(),
-                );
+                let evidence =
+                    Digest32::of_bytes(format!("hepta.bao.terminal.v1:{error:?}").as_bytes());
                 authbus
                     .settle_authbus_reservation(reservation_id, 1, evidence)
                     .await
@@ -329,7 +330,6 @@ struct KvPayload {
 struct KvMetadata {
     version: u64,
 }
-
 
 fn now_ms() -> Result<u64, BaoClientError> {
     u64::try_from(
