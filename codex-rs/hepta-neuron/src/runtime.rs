@@ -550,7 +550,18 @@ where
             match self.tick(input, observation) {
                 Ok(result) => results.push(result),
                 Err(error) => {
-                    self.poisoned = true;
+                    // A rejection before the first durable mutation (for example,
+                    // revoked input lineage) leaves this fresh rebuild target
+                    // reusable. Once any checkpoint exists, or tick() already
+                    // marked a post-commit uncertainty, partial rebuilt state
+                    // must never be reused.
+                    let durable_progress = match self.journal.current() {
+                        Ok(current) => current.is_some(),
+                        Err(_) => true,
+                    };
+                    if self.poisoned || durable_progress || !results.is_empty() {
+                        self.poisoned = true;
+                    }
                     return Err(error);
                 }
             }
