@@ -13,6 +13,8 @@ use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::Transaction;
 
+use super::dispatch_ledger::apply_send_redaction_tx;
+use super::dispatch_ledger::record_server_event_observation_tx;
 use super::sync_v2_tombstone::active_dispatch_exists_tx;
 use super::sync_v2_tombstone::has_cancel_capacity_tx;
 use super::sync_v2_tombstone::has_commit_capacity_tx;
@@ -31,6 +33,7 @@ use crate::ChangeKind;
 use crate::InboxDisposition;
 use crate::InboxDraft;
 use crate::MatrixDurableError;
+use crate::MatrixServerEventObservation;
 use crate::MatrixEventId;
 use crate::MatrixRoomId;
 use crate::MatrixSyncCheckpoint;
@@ -108,11 +111,22 @@ impl MatrixDurableStore {
         &self,
         decision: &MatrixSyncDecisionV2,
     ) -> Result<MatrixSyncResultV2, MatrixDurableError> {
+        self.apply_sync_decision_v2_with_server_observations(decision, &[])
+            .await
+    }
+
+    pub async fn apply_sync_decision_v2_with_server_observations(
+        &self,
+        decision: &MatrixSyncDecisionV2,
+        server_observations: &[MatrixServerEventObservation],
+    ) -> Result<MatrixSyncResultV2, MatrixDurableError> {
         decision
             .validate()
             .map_err(|_| MatrixDurableError::Invalid)?;
         match decision {
-            MatrixSyncDecisionV2::Commit { batch } => self.commit_sync_batch_v2(batch).await,
+            MatrixSyncDecisionV2::Commit { batch } => {
+                self.commit_sync_batch_v2(batch, server_observations).await
+            }
             MatrixSyncDecisionV2::Cancel {
                 schema_version: _,
                 operation_id,
@@ -220,6 +234,7 @@ impl MatrixDurableStore {
     async fn commit_sync_batch_v2(
         &self,
         batch: &MatrixSyncBatchV2,
+        server_observations: &[MatrixServerEventObservation],
     ) -> Result<MatrixSyncResultV2, MatrixDurableError> {
         let identity = MatrixSyncCommitIdentityV2 {
             schema_version: batch.schema_version,
@@ -250,6 +265,9 @@ impl MatrixDurableStore {
         )
         .await?
         {
+            for observation in server_observations {
+                record_server_event_observation_tx(&mut transaction, observation).await?;
+            }
             transaction.commit().await.map_err(unavailable)?;
             return Ok(result);
         }
@@ -287,6 +305,9 @@ impl MatrixDurableStore {
             );
         }
         insert_decision_outcomes_tx(&mut transaction, decision_seq, &outcomes).await?;
+        for observation in server_observations {
+            record_server_event_observation_tx(&mut transaction, observation).await?;
+        }
 
         let updated_at_ms = existing
             .as_ref()
@@ -432,6 +453,13 @@ impl MatrixDurableStore {
                     transaction,
                     &mutation.room_id,
                     target_event_id,
+                    mutation.received_at_ms,
+                )
+                .await?;
+                apply_send_redaction_tx(
+                    transaction,
+                    target_event_id.as_str(),
+                    semantic_digest.as_str(),
                     mutation.received_at_ms,
                 )
                 .await?;

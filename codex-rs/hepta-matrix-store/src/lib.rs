@@ -43,7 +43,14 @@ pub use model::RoomBinding;
 pub use model::RoomBindingDraft;
 pub use model::RoomThreadBinding;
 pub use model::RoomThreadBindingDraft;
+pub use store::MAX_UNRESOLVED_SENDS;
+pub use store::MatrixDispatchError;
 pub use store::MatrixDurableError;
+pub use store::MatrixServerEventObservation;
+pub use store::SendIntent;
+pub use store::SendReceipt;
+pub use store::SendState;
+pub use store::ServerObservation;
 pub use store::MatrixDurableStore;
 // Native channel.matrix owner-local observations, not an inter-module wire API.
 #[doc(hidden)]

@@ -58,6 +58,8 @@ use crate::RoomThreadBindingDraft;
 use crate::model::MAX_PAGE_ITEMS;
 use crate::model::MAX_PAYLOAD_BYTES;
 
+#[path = "dispatch_ledger.rs"]
+mod dispatch_ledger;
 #[path = "sync_observation.rs"]
 mod sync_observation;
 #[path = "sync_v2.rs"]
@@ -65,6 +67,13 @@ mod sync_v2;
 #[path = "sync_v2_tombstone.rs"]
 mod sync_v2_tombstone;
 
+pub use dispatch_ledger::MAX_UNRESOLVED_SENDS;
+pub use dispatch_ledger::MatrixDispatchError;
+pub use dispatch_ledger::MatrixServerEventObservation;
+pub use dispatch_ledger::SendIntent;
+pub use dispatch_ledger::SendReceipt;
+pub use dispatch_ledger::SendState;
+pub use dispatch_ledger::ServerObservation;
 pub use sync_observation::MatrixSyncUnchangedRequestV1;
 pub use sync_observation::MatrixSyncUnchangedResultV1;
 
