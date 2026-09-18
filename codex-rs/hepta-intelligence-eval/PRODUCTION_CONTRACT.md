@@ -10,7 +10,7 @@ external evidence, this file wins.
 
 | Surface | Status | Allowed use |
 | --- | --- | --- |
-| `evaluate_legacy_inprocess_v1` | private legacy | crate-local compatibility fixtures only |
+| `evaluate_legacy_inprocess_v1` | test-only private legacy | compiled only for crate-local compatibility tests |
 | `decide_independently` | trusted-only compatibility | deterministic in-process composition and qualification fixtures; not an external/production ingress |
 | `decide_independently_v2` | trusted-only compatibility | deterministic in-process composition with preregistered metric roles; not an external/production ingress |
 | `decide_with_signed_evidence_v1` | compatibility external admission | qualification-scoped historical callers only; no `SystemLongitudinal` claim |
