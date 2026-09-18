@@ -77,14 +77,14 @@ impl AuthoritativeCognitiveSnapshotProvider for AgentdAuthoritativeSnapshotProvi
     }
 }
 
-/// The caller admits this method only while the Agent is Running and ready.
-/// `AgentdState::refresh_generation` defines that state as exactly
-/// `spawn_generation + 1`; state_control refreshes and rechecks readiness after
-/// this async call, independently fencing the authority epoch at final use.
+/// The caller admits this method only while the Agent is Running and ready and
+/// passes the exact fleet lifecycle generation observed by `refresh_generation`.
+/// State control rechecks the same epoch after this async call before delivery.
 pub(crate) async fn read(
     store: &CognitiveStore,
     owner: &AgentId,
     body_generation: u64,
+    authority_epoch: u64,
     query: &str,
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
@@ -95,9 +95,12 @@ pub(crate) async fn read(
         )
         .into());
     }
-    let authority_epoch = body_generation.checked_add(1).ok_or_else(|| {
-        CognitiveStoreError::Invalid("cognitive authority epoch overflow".to_string())
-    })?;
+    if authority_epoch == 0 {
+        return Err(CognitiveStoreError::Invalid(
+            "cognitive authority epoch must be non-zero".to_string(),
+        )
+        .into());
+    }
     if let Some(ranker) = ranker {
         ranker
             .require_identity(owner, body_generation)
