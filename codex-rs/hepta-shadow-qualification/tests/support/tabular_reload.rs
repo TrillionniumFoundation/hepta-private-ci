@@ -1,6 +1,7 @@
 //! Cross-owner engineering test: real tabular fit, existing artifact storage,
 //! independent process loading and revocation-safe rollback. Fixture pins are
 //! not deployment authorization or scientific evidence of task improvement.
+#![allow(clippy::expect_used)] // Fixture construction intentionally fails fast in test-only code.
 use std::fs::File;
 use std::path::PathBuf;
 use std::process::Command;
