@@ -159,6 +159,7 @@ async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_
                 .run(
                     &mut control,
                     admission(),
+                    None,
                     "prompt".to_string(),
                     None,
                     &cancellation
@@ -177,6 +178,7 @@ async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_
                 .run(
                     &mut control,
                     admission(),
+                    None,
                     "prompt".to_string(),
                     None,
                     &CancellationToken::new()
