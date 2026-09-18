@@ -174,3 +174,30 @@ async fn destination_dedupe_and_task_survive_store_reopen() {
     assert_eq!(replay.task, first.task);
     assert_eq!(replay.destination_receipt, first.destination_receipt);
 }
+
+
+#[tokio::test]
+async fn fenced_timer_owner_cannot_create_task_through_kernel_operations() {
+    let fixture = Fixture::new();
+    let predecessor = AutomationStore::open(&fixture.layout).await.expect("open predecessor");
+    predecessor.quiesce_timer().await.expect("quiesce");
+    let successor = predecessor.handoff_timer().await.expect("handoff");
+    successor.resume_timer().await.expect("resume successor");
+
+    let draft = draft();
+    let operation = automation_task_operation_intent(
+        predecessor.owner_agent_id(),
+        &draft,
+        generation(7),
+    )
+    .expect("operation");
+    assert_eq!(
+        predecessor
+            .create_task_from_operation(&operation, &draft)
+            .await,
+        Err(AutomationError::TimerFenced)
+    );
+    assert!(successor.list_tasks(10).await.expect("list successor").is_empty());
+    predecessor.close().await;
+    successor.close().await;
+}
