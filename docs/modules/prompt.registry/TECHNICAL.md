@@ -210,7 +210,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. The current source tree contains a named source-level caller in `hepta-intelligence::compile_prompt_registry_v2`, but that does not establish a running product host, model dispatch or terminal provider observation. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. The current source tree contains a named source-level caller in `hepta-intelligence::compile_prompt_registry_v2`; it carries selected registry bytes through context compilation, serialization and attachment receipts, but it does not establish a running product host, model dispatch or terminal provider observation. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `prompt.registry`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
