@@ -281,6 +281,28 @@ jobs:
           for package in $PACKAGES; do args+=(-p "$package"); done
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/owner-test.json" -- just test --locked "${args[@]}"
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
+      - name: Measure cognitive durable-store profile
+        if: matrix.lane == 'source-head'
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
+          HEPTA_COGNITIVE_PERF_RECORDS: "256"
+          HEPTA_COGNITIVE_PERF_OUTPUT: ${{ runner.temp }}/hepta-command-records/cognitive-perf-metrics.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null && \
+             git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- \
+               codex-rs/hepta-cognitive-store/ \
+               codex-rs/hepta-memory/ \
+               codex-rs/hepta-agentd/ \
+               codex-rs/state/; then
+            echo "No cognitive durable-owner changes; PERF-DURABLE sample skipped."
+            exit 0
+          fi
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-command.json" -- \
+            cargo run --locked -p codex-hepta-memory --example cognitive_store_perf
       - name: Clean tracked source
         if: always()
         env:
