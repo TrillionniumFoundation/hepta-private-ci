@@ -19,6 +19,7 @@ pub use durable::DurableProjectionErrorV2;
 pub use durable::DurableProjectionHeadV2;
 pub use durable::DurableProjectionNodeV2;
 pub use durable::build_durable_generation_v2;
+pub use durable::build_durable_generation_from_snapshot_v2;
 pub use durable::durable_relation_kind_v2;
 pub use durable::durable_input_heads_digest_v2;
 pub use durable::durable_projection_digest_v2;
