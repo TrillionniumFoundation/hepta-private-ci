@@ -406,6 +406,32 @@ async fn unknown_checkpoint_image_field_fails_store_reopen() {
     ));
 }
 
+#[tokio::test]
+async fn tampered_immutable_trigger_fails_store_reopen() {
+    let (temp, store, _lease, _fence) = prepared().await;
+
+    sqlx::query("DROP TRIGGER cognitive_qualified_compact_checkpoints_no_update")
+        .execute(&store.pool)
+        .await
+        .expect("drop immutable update guard for corruption fixture");
+    sqlx::query(
+        "CREATE TRIGGER cognitive_qualified_compact_checkpoints_no_update
+         BEFORE UPDATE ON cognitive_qualified_compact_checkpoints BEGIN
+             SELECT 1;
+         END",
+    )
+    .execute(&store.pool)
+    .await
+    .expect("replace immutable update guard with no-op fixture");
+    drop(store);
+
+    let owner = agent_id(84);
+    assert!(matches!(
+        CognitiveStore::open(&layout(&temp, &owner)).await,
+        Err(CognitiveStoreError::Corrupt(_))
+    ));
+}
+
 #[test]
 fn publication_contract_is_authority_free() {
     let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "one");
