@@ -412,7 +412,7 @@ fn next_checkpoint(
 }
 
 const fn valid_transition(from: WriterHandoffPhaseV1, to: WriterHandoffPhaseV1) -> bool {
-    if to == WriterHandoffPhaseV1::Quarantined {
+    if matches!(to, WriterHandoffPhaseV1::Quarantined) {
         return !from.is_terminal();
     }
     matches!(
