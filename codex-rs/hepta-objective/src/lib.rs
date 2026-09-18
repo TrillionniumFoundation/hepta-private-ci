@@ -6,6 +6,7 @@
 
 #![forbid(unsafe_code)]
 
+mod admission_profile_json;
 mod compiler;
 mod error;
 mod feasibility;
@@ -38,6 +39,9 @@ pub fn compile_prevalidated_legacy_objective(
     compiler::compile(source)
 }
 
+pub use admission_profile_json::MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES;
+pub use admission_profile_json::ObjectiveAdmissionProfileJsonError;
+pub use admission_profile_json::decode_admission_profile_json_v1;
 pub use compiler::validate_compiled_objective_v1;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
