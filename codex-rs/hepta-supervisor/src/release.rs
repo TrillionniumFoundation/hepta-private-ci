@@ -167,6 +167,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.active_release = None;
                 match self.start_release_slot(agent_id, slot, target, now) {
                     Ok(()) => Ok(true),
+                    // Lease-publication failure keeps the just-spawned child
+                    // quarantined in the slot until exit is observed. Do not
+                    // start rollback concurrently with that cleanup process.
+                    Err(_) if slot.runtime.is_some() => Ok(true),
                     Err(_) => self.start_automatic_rollback(agent_id, slot, now),
                 }
             }
@@ -211,6 +215,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.release_change = Some(change);
         slot.active_release = None;
         if let Err(error) = self.start_release_slot(agent_id, slot, rollback, now) {
+            if slot.runtime.is_some() {
+                return Ok(true);
+            }
             let failed_generation = self.record(agent_id)?.lifecycle.generation;
             if let Some(change) = slot.release_change.take() {
                 slot.event(
