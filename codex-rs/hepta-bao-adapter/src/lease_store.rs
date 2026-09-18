@@ -179,8 +179,7 @@ impl LeaseStore {
             previous_sha256: self.tail_sha256,
             record: &record,
         };
-        let core_bytes =
-            serde_json::to_vec(&core).map_err(|_| BaoLeaseError::StateUnavailable)?;
+        let core_bytes = serde_json::to_vec(&core).map_err(|_| BaoLeaseError::StateUnavailable)?;
         let frame_sha256 = Digest32::of_bytes(&core_bytes).into_array();
         let frame = JournalFrame {
             schema: JOURNAL_SCHEMA,
@@ -189,8 +188,7 @@ impl LeaseStore {
             record,
             frame_sha256,
         };
-        let mut bytes =
-            serde_json::to_vec(&frame).map_err(|_| BaoLeaseError::StateUnavailable)?;
+        let mut bytes = serde_json::to_vec(&frame).map_err(|_| BaoLeaseError::StateUnavailable)?;
         if bytes.len() > MAX_FRAME_BYTES {
             return Err(BaoLeaseError::StateCapacityExceeded);
         }
@@ -201,7 +199,8 @@ impl LeaseStore {
             .metadata()
             .map_err(|_| BaoLeaseError::StateUnavailable)?
             .len();
-        let additional = u64::try_from(bytes.len()).map_err(|_| BaoLeaseError::StateCapacityExceeded)?;
+        let additional =
+            u64::try_from(bytes.len()).map_err(|_| BaoLeaseError::StateCapacityExceeded)?;
         if current_len.saturating_add(additional) > MAX_JOURNAL_BYTES {
             return Err(BaoLeaseError::StateCapacityExceeded);
         }
@@ -224,9 +223,7 @@ impl LeaseStore {
     }
 }
 
-fn load_journal(
-    journal: &mut File,
-) -> Result<(StoreState, u64, [u8; 32], u64), BaoLeaseError> {
+fn load_journal(journal: &mut File) -> Result<(StoreState, u64, [u8; 32], u64), BaoLeaseError> {
     journal
         .seek(SeekFrom::Start(0))
         .map_err(|_| BaoLeaseError::StateUnavailable)?;
@@ -241,8 +238,8 @@ fn load_journal(
         return Err(BaoLeaseError::StateCorrupt);
     }
 
-    let mut complete_len = u64::try_from(JOURNAL_MAGIC.len())
-        .map_err(|_| BaoLeaseError::StateCorrupt)?;
+    let mut complete_len =
+        u64::try_from(JOURNAL_MAGIC.len()).map_err(|_| BaoLeaseError::StateCorrupt)?;
     let body = &bytes[JOURNAL_MAGIC.len()..];
     let mut state = StoreState::default();
     let mut sequence = 0_u64;
@@ -261,9 +258,7 @@ fn load_journal(
         }
         let frame: JournalFrame =
             serde_json::from_slice(line).map_err(|_| BaoLeaseError::StateCorrupt)?;
-        let expected_sequence = sequence
-            .checked_add(1)
-            .ok_or(BaoLeaseError::StateCorrupt)?;
+        let expected_sequence = sequence.checked_add(1).ok_or(BaoLeaseError::StateCorrupt)?;
         if frame.schema != JOURNAL_SCHEMA
             || frame.sequence != expected_sequence
             || frame.previous_sha256 != tail
@@ -276,8 +271,7 @@ fn load_journal(
             previous_sha256: frame.previous_sha256,
             record: &frame.record,
         };
-        let core_bytes =
-            serde_json::to_vec(&core).map_err(|_| BaoLeaseError::StateCorrupt)?;
+        let core_bytes = serde_json::to_vec(&core).map_err(|_| BaoLeaseError::StateCorrupt)?;
         let expected_sha256 = Digest32::of_bytes(&core_bytes).into_array();
         if expected_sha256 != frame.frame_sha256 {
             return Err(BaoLeaseError::StateCorrupt);
