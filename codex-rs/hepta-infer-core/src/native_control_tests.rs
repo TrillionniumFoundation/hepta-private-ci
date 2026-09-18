@@ -35,6 +35,8 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         turn_id: "turn-1".to_string(),
         model: "actual-model".to_string(),
         model_provider: "provider".to_string(),
+        codex_request_digest: None,
+        codex_receipt_digest: None,
         terminal_observed: status != NativeRunStatus::Indeterminate,
         status,
         output: "observed text".to_string(),
