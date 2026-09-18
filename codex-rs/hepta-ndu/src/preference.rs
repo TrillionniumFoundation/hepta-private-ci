@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
