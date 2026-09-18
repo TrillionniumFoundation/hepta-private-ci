@@ -854,6 +854,48 @@ fn stop_cancels_pending_fault_restart_without_relaunch() -> Result<(), Superviso
 }
 
 #[test]
+fn operator_kill_cancels_health_timeout_recovery_before_exit() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+
+    // Let startup readiness expire. The supervisor begins a failure stop and
+    // would normally restart after the process exits.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(11)),
+        TickReport::default()
+    );
+    assert_eq!(control.counts(&fleet.first).1, 1);
+
+    // Explicit operator kill takes precedence over the queued fault recovery.
+    supervisor.kill(&fleet.first)?;
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(12)),
+        TickReport::default()
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(1)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Stopped
+    );
+    Ok(())
+}
+
+#[test]
 fn recovery_adopts_one_orphan_and_rejects_another() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();

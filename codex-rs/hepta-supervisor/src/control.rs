@@ -74,6 +74,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         if self.cancel_fault_restart_without_runtime(agent_id, slot)? {
             return Ok(());
         }
+        if let Some(runtime) = slot.runtime.as_mut() {
+            runtime.restart_on_failure_exit = false;
+        }
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
             return Ok(());
         }
@@ -102,6 +105,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.restart_pending = false;
         if self.cancel_fault_restart_without_runtime(agent_id, slot)? {
             return Ok(());
+        }
+        if let Some(runtime) = slot.runtime.as_mut() {
+            runtime.restart_on_failure_exit = false;
         }
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
