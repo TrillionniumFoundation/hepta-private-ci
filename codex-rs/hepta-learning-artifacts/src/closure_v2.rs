@@ -182,8 +182,41 @@ pub struct DatasetWithdrawalReceiptV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WithdrawalRegistryBindingV1 {
+    pub registry_id: StableId,
+    pub scope_digest: Digest32,
+}
+
+impl WithdrawalRegistryBindingV1 {
+    pub fn new(
+        registry_id: StableId,
+        scope_digest: Digest32,
+    ) -> Result<Self, ArtifactClosureError> {
+        let binding = Self {
+            registry_id,
+            scope_digest,
+        };
+        binding.validate()?;
+        Ok(binding)
+    }
+
+    fn validate(&self) -> Result<(), ArtifactClosureError> {
+        require_digest(self.scope_digest, "withdrawal registry scope")
+    }
+
+    #[must_use]
+    pub fn binding_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.learning-artifacts.withdrawal-registry-binding.v1".to_vec();
+        push_id(&mut bytes, &self.registry_id);
+        bytes.extend_from_slice(self.scope_digest.as_array());
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DatasetWithdrawalRegistrySnapshotV1 {
     records: Vec<DatasetWithdrawalRecordV1>,
+    pub binding: Option<WithdrawalRegistryBindingV1>,
     pub head_digest: Digest32,
 }
 
@@ -196,6 +229,7 @@ impl DatasetWithdrawalRegistrySnapshotV1 {
 
 #[derive(Clone, Debug, Default)]
 pub struct DatasetWithdrawalRegistry {
+    binding: Option<WithdrawalRegistryBindingV1>,
     records: Vec<DatasetWithdrawalRecordV1>,
     notice_digests: BTreeMap<StableId, Digest32>,
     withdrawn_datasets: BTreeMap<Digest32, u64>,
@@ -205,6 +239,23 @@ impl DatasetWithdrawalRegistry {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn new_scoped(
+        binding: WithdrawalRegistryBindingV1,
+    ) -> Result<Self, ArtifactClosureError> {
+        binding.validate()?;
+        Ok(Self {
+            binding: Some(binding),
+            records: Vec::new(),
+            notice_digests: BTreeMap::new(),
+            withdrawn_datasets: BTreeMap::new(),
+        })
+    }
+
+    #[must_use]
+    pub fn binding(&self) -> Option<&WithdrawalRegistryBindingV1> {
+        self.binding.as_ref()
     }
 
     pub fn append(
@@ -288,6 +339,7 @@ impl DatasetWithdrawalRegistry {
     pub fn snapshot(&self) -> DatasetWithdrawalRegistrySnapshotV1 {
         DatasetWithdrawalRegistrySnapshotV1 {
             records: self.records.clone(),
+            binding: self.binding.clone(),
             head_digest: self
                 .records
                 .last()
@@ -298,9 +350,16 @@ impl DatasetWithdrawalRegistry {
     pub fn from_snapshot(
         snapshot: DatasetWithdrawalRegistrySnapshotV1,
     ) -> Result<Self, ArtifactClosureError> {
-        let expected_head = snapshot.head_digest;
-        let mut registry = Self::new();
-        for expected in snapshot.records {
+        let DatasetWithdrawalRegistrySnapshotV1 {
+            records,
+            binding,
+            head_digest: expected_head,
+        } = snapshot;
+        let mut registry = match binding {
+            Some(binding) => Self::new_scoped(binding)?,
+            None => Self::new(),
+        };
+        for expected in records {
             let receipt = registry.append(expected.notice.clone())?;
             let actual = registry
                 .records
