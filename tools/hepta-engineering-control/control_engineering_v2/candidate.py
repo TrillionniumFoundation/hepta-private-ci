@@ -1030,6 +1030,45 @@ def _changed_paths(
     )
 
 
+def _validate_realized_candidate_footprint(
+    before: Mapping[str, ManifestEntry],
+    after: Mapping[str, ManifestEntry],
+    declared_paths: tuple[str, ...],
+) -> tuple[str, ...]:
+    """Require exact declared object changes and only necessary new parent dirs.
+
+    Git does not version directories, while the sandbox manifest intentionally
+    does.  Adding or renaming a file into a new directory can therefore create
+    directory entries that are not candidate objects themselves.  Permit only
+    newly created directories that are strict ancestors of a declared object;
+    every file/symlink change must still equal the declared candidate footprint.
+    """
+    changed = _changed_paths(before, after)
+    object_changes: list[str] = []
+    for path in changed:
+        before_entry = before.get(path)
+        after_entry = after.get(path)
+        before_kind = None if before_entry is None else before_entry[0]
+        after_kind = None if after_entry is None else after_entry[0]
+        if before_kind == "directory" or after_kind == "directory":
+            if (
+                before_entry is not None
+                or after_entry is None
+                or after_kind != "directory"
+                or not any(
+                    declared != path and declared.startswith(path + "/")
+                    for declared in declared_paths
+                )
+            ):
+                raise EngineeringError("sandbox_path_escape")
+            continue
+        object_changes.append(path)
+    realized = tuple(sorted(object_changes))
+    if realized != declared_paths:
+        raise EngineeringError("sandbox_path_escape")
+    return changed
+
+
 def _changed_byte_budget(
     before: Mapping[str, ManifestEntry],
     after: Mapping[str, ManifestEntry],
@@ -1266,10 +1305,12 @@ def sandbox_candidate(
         _reject_inline_oracle_mutation(workspace, mutation)
         _apply_candidate_mutation(workspace, mutation)
         candidate_manifest = _tree_manifest(workspace)
-        changed = _changed_paths(base_manifest, candidate_manifest)
-        if changed != declared_paths:
-            raise EngineeringError("sandbox_path_escape")
-        if len(changed) > envelope.maximum_changed_files:
+        changed = _validate_realized_candidate_footprint(
+            base_manifest,
+            candidate_manifest,
+            declared_paths,
+        )
+        if len(declared_paths) > envelope.maximum_changed_files:
             raise EngineeringError("changed_file_limit")
         if any(not path_is_within(path, roots) for path in changed):
             raise EngineeringError("sandbox_path_escape")
@@ -1339,7 +1380,11 @@ def sandbox_candidate(
         state_after = _manifest_digest(post_manifest)
         if post_manifest != candidate_manifest or state_after != state_before:
             raise EngineeringError("source_tree_mutated")
-        post_changed = _changed_paths(base_manifest, post_manifest)
+        post_changed = _validate_realized_candidate_footprint(
+            base_manifest,
+            post_manifest,
+            declared_paths,
+        )
         if post_changed != changed:
             raise EngineeringError("source_tree_mutated")
         if any(not path_is_within(path, roots) for path in post_changed):
