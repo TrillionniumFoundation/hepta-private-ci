@@ -90,9 +90,13 @@ This closes the repository-controlled admission/convergence semantics but does n
 
 ### Source composition
 
-The strongest source-composed boundary is the registered Bao host. It uses a crate-private typed final-delivery gate. B4 requires zero non-test product callers of the public raw `BaoClient::consume_kv_v2` closure path and independently inventories the public authority APIs.
+The registered Bao host remains the strongest final-use secret boundary. It uses a crate-private typed final-delivery gate. B4 requires zero non-test product callers of the public raw `BaoClient::consume_kv_v2` closure path and independently inventories the public authority APIs.
 
-There is still no selected deployed product process for that host in this candidate. Source composition is therefore not activation and does not prove product execution.
+Generic leases now also have one concrete owner-side consumer: `codex-rs/hepta-fleet/src/authority_port.rs` computes the exact authority binding from an `AllocationGrant`, verifies the live `AuthorityLeaseVerifier`, rechecks it at consumer entry, and only then executes the existing `LeaseLedger::issue` mutation. B4 admits that exact caller for `verify_use` and `with_verified_use`; arbitrary generic-lease product callers remain denied.
+
+The fleet revocation control plane is separately source-composed in `revocation_control.rs`.
+
+There is still no selected deployed product process for the Bao host or fleet authority port in this candidate. Source composition is therefore not activation and does not prove deployed product execution.
 
 ## Target-only design
 
@@ -103,7 +107,7 @@ Fleet revocation transport/fanout, target-host trusted clock/frontier backends, 
 ## Known limits and non-claims
 
 - no selected product-process caller for the registered Bao host;
-- no generic `kernel.authority` composition for every target ModulePort;
+- `runtime.fleet` now has concrete generic-lease and revocation source composition, but the other registered target ModulePorts remain uncomposed;
 - fleet revocation admission/convergence semantics are implemented, but no deployed wire fanout or measured production convergence/freshness SLA;
 - no qualified attested production clock or deployed rollback-resistant frontier store;
 - no qualified HSM/KMS custody, staged operator ceremony or compromise-response process;
