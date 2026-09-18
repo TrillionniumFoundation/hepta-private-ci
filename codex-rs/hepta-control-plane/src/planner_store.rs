@@ -84,7 +84,10 @@ impl PlannerJournalStoreV1 {
         let frontier_path = store.root.join(FRONTIER_FILE);
         if !frontier_path.exists() {
             let raw = read_bounded(&current)?;
-            let journal = decode_store(&raw)?;
+            if !raw.starts_with(b"HCPJNL01") {
+                return Err(PlannerStoreError::FrontierMismatch);
+            }
+            let journal = PlannerJournalV1::reopen(&raw)?;
             store.commit(&journal)?;
             return Ok((store, journal));
         }
