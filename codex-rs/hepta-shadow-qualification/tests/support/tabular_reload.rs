@@ -155,15 +155,15 @@ fn worker() {
                     bytes.bytes(),
                     &TabularPayloadPinV1 {
                         payload_digest: fixture(request.payload_digest.parse(), "payload digest"),
-                        artifact_digest: fixture(request.artifact_digest.parse(), "artifact digest"),
+                        artifact_digest: fixture(
+                            request.artifact_digest.parse(),
+                            "artifact digest",
+                        ),
                         objective_digest: digest("fixed-external-task"),
                         dataset_digest: digest(&format!("dataset-{}", request.generation)),
                         sensor_core_digest: digest("fixed-grid"),
                         training_profile_digest: digest("strict-tabular"),
-                        generation: fixture(
-                            Generation::new(request.generation),
-                            "generation",
-                        ),
+                        generation: fixture(Generation::new(request.generation), "generation"),
                     },
                 ),
                 "loaded model binding",
