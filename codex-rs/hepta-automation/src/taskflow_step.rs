@@ -1,4 +1,4 @@
-//! Qualification-only durable TaskFlow step outbox.
+//! Durable TaskFlow step intent / receipt outbox.
 //!
 //! The regular TaskFlow ledger records the run projection and its transition
 //! chain.  It intentionally does not claim a provider/effect.  This module
@@ -7,11 +7,9 @@
 //! and reconciliation append receipts to that same chain.  No method here
 //! invokes a provider, wakes a scheduler, or grants production authority.
 //!
-//! The table is created lazily by the explicitly opt-in qualification API.
-//! This keeps the default automation schema/version unchanged while making the
-//! qualification state durable across reopen.  Every read and mutation first
+//! The table is part of the default automation schema. Every read and mutation
 //! verifies the owner, run history, definition binding, event hash chain and
-//! exact generation/fence tuple.
+//! exact generation/fence tuple. This module still grants no provider authority.
 
 #![allow(
     clippy::too_many_arguments,
@@ -34,9 +32,8 @@ use crate::TaskFlowRun;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
 
-/// This module is compiled and callable only by an explicit qualification
-/// feature.  These constants are intentionally negative for all authority
-/// surfaces.
+/// The outbox is available in default builds, but remains authority-free.
+/// Provider authority must be supplied and verified at final use.
 pub const TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED: bool = true;
 pub const TASKFLOW_STEP_OUTBOX_EFFECTS: bool = false;
 pub const TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER: bool = false;
@@ -686,9 +683,8 @@ impl From<TaskFlowReconcileOutcome> for StepOperationResult {
 }
 
 async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError> {
-    // The schema is additive and deliberately qualification-only.  Keeping it
-    // out of the default migrator avoids changing AUTOMATION_SCHEMA_VERSION or
-    // existing production/open paths.
+    // The default migrator creates this table. Keep the idempotent guard so
+    // older qualification databases and explicit reopen paths remain safe.
     sqlx::query(
         r#"CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
             owner_agent_id TEXT NOT NULL,
