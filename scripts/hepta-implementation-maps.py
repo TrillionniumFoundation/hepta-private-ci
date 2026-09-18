@@ -43,6 +43,16 @@ def lane_by_module():
     }
 
 
+def production_implementation(module: dict) -> bool:
+    """Return the canonical source-level production implementation claim.
+
+    MODULES.json owns this bit.  Per-module implementation maps are projections
+    and must not preserve an older false value after the registry advances.
+    Activation, independent acceptance and release remain separate claim fields.
+    """
+    return bool(module.get("production_implementation", False))
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
@@ -99,7 +109,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "declaredRoots": roots,
         "resolvedRoots": resolve_source_roots(ROOT, module),
         "sourceRootPresent": all((ROOT / x).exists() for x in roots),
-        "productionImplementation": False,
+        "productionImplementation": production_implementation(module),
         "productCallerState": "not_composed",
         "productionWriterState": "not_established",
         "operations": operations,
@@ -117,7 +127,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
                 op["sourcePathExists"] and op["nativeSymbol"] for op in operations
             ),
             "sourceRootPresent": all((ROOT / x).exists() for x in roots),
-            "productionImplementation": False,
+            "productionImplementation": production_implementation(module),
             "productExecutionProved": False,
             "independentAcceptance": False,
             "activation": False,
@@ -193,9 +203,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "declaredRoots": declared,
             "resolvedRoots": resolve_source_roots(ROOT, module),
             "sourceRootPresent": all((ROOT / x).exists() for x in declared),
-            "productionImplementation": bool(
-                row.get("productionImplementation", False)
-            ),
+            "productionImplementation": production_implementation(module),
             "productCallerState": row.get("productCallerState", "not_composed"),
             "productionWriterState": row.get(
                 "productionWriterState", "not_established"
@@ -337,6 +345,8 @@ def verify():
             continue
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
+        elif row.get("productionImplementation") != production_implementation(module):
+            failures.append(f"{mid}: production implementation drift")
         for op in ops:
             if not op.get("operation"):
                 failures.append(f"{mid}: operation id")
