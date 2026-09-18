@@ -44,8 +44,7 @@ fn main() -> anyhow::Result<()> {
             trust_file.is_some() == restore_checkpoint.is_some(),
             "--authbus-trust-file and --authbus-restore-checkpoint must be configured together"
         );
-        if let Some(path) = trust_file {
-            let (generation, digest) = restore_checkpoint.expect("paired above");
+        if let (Some(path), Some((generation, digest))) = (trust_file, restore_checkpoint) {
             config = config
                 .with_authbus_trust_file(path)
                 .with_authbus_restore_checkpoint(generation, digest)?;
