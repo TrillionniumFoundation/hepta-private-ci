@@ -225,7 +225,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intelligence-eval/src/closure_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/closure_tests.rs); named case: `eval_03_intersects_superiority_safety_retention_and_unlearning`.
 - [codex-rs/hepta-intelligence-eval/src/lib_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/lib_tests.rs); named case: `eligible_is_not_promotion`.
-- [codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs); native NDU certificate admission covers objective/solver drift, self-evaluation, residual/conservation/spectral gates, multiple-solution disposition and canonical evaluator-identity bounds.
+- [codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs); native NDU certificate admission covers objective/solver drift, self-evaluation, residual/conservation/spectral gates, multiple-solution disposition and canonical evaluator-identity bounds.
 
 In `codex-rs`, run `just test -p codex-hepta-intelligence-eval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md) separately labels target acceptance designs.
 
