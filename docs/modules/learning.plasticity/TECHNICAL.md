@@ -170,8 +170,13 @@ Candidate-only parameter/topology library with a durable proposal registry. Pres
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-plasticity/src/parameter_v2.rs](../../../codex-rs/hepta-plasticity/src/parameter_v2.rs).
-- [codex-rs/hepta-plasticity/src/durable_registry.rs](../../../codex-rs/hepta-plasticity/src/durable_registry.rs).
+- [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md) — current source/host/operations boundary.
+- [CURRENT_STATE.json](CURRENT_STATE.json) — machine-readable current-vs-target source truth.
+- [codex-rs/hepta-plasticity/src/parameter_v2.rs](../../../codex-rs/hepta-plasticity/src/parameter_v2.rs) — stable V2 record/verifier boundary.
+- [codex-rs/hepta-plasticity/src/generator_v3.rs](../../../codex-rs/hepta-plasticity/src/generator_v3.rs) and [mutation_grammar_v1.rs](../../../codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs) — governed deterministic generation and typed mutation policy.
+- [codex-rs/hepta-plasticity/src/durable_registry.rs](../../../codex-rs/hepta-plasticity/src/durable_registry.rs) and [durable_topology_registry_v2.rs](../../../codex-rs/hepta-plasticity/src/durable_topology_registry_v2.rs) — parameter/topology proposal durability.
+- [codex-rs/hepta-intelligence/src/plasticity_product.rs](../../../codex-rs/hepta-intelligence/src/plasticity_product.rs) and [plasticity_topology_product.rs](../../../codex-rs/hepta-intelligence/src/plasticity_topology_product.rs) — authenticated product composition.
+- [codex-rs/hepta-agentd/src/plasticity_host.rs](../../../codex-rs/hepta-agentd/src/plasticity_host.rs) — selected-host artifact/evidence and anchor/fence boundary.
 - [docs/readiness/SELF_ITERATION_EXECUTION.md](../../readiness/SELF_ITERATION_EXECUTION.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
@@ -182,8 +187,13 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-plasticity/src/durable_registry_tests.rs](../../../codex-rs/hepta-plasticity/src/durable_registry_tests.rs); named case: `append_reopen_and_anchor_preserve_exact_record`.
 - [codex-rs/hepta-plasticity/src/lib_tests.rs](../../../codex-rs/hepta-plasticity/src/lib_tests.rs); named case: `legacy_v1_is_explicit_read_only_and_never_upconverted`.
+- [codex-rs/hepta-plasticity/src/generator_v3.rs](../../../codex-rs/hepta-plasticity/src/generator_v3.rs) and [mutation_grammar_v1.rs](../../../codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs); inline deterministic generation, completeness, trust-region and protected-surface cases.
+- [codex-rs/hepta-intelligence/src/plasticity_product_tests.rs](../../../codex-rs/hepta-intelligence/src/plasticity_product_tests.rs); authenticated parameter admission, evaluation coverage and poisoned-writer cases.
+- [codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs](../../../codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs); authenticated topology admission, handoff and durable-anchor cases.
+- [codex-rs/hepta-agentd/tests/plasticity_product_host.rs](../../../codex-rs/hepta-agentd/tests/plasticity_product_host.rs); authoritative artifact frontier, owner-evidence context/owner policy, host anchor/fence and stale-evidence cases.
+- [qualification/lane-f-shadow/tests/plasticity_structural_canary.rs](../../../qualification/lane-f-shadow/tests/plasticity_structural_canary.rs); bounded PLS-3 persist/reopen and abort-before-persistence cases.
 
-In `codex-rs`, run `just test -p codex-hepta-plasticity`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.plasticity.md) separately labels target acceptance designs.
+Run the affected package/qualification tests plus `python3 scripts/hepta-plasticity-status.py verify`. Invocation text is not a stored pass receipt: exact-head and deterministic synthetic-merge workflow results remain the execution evidence. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.plasticity.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
