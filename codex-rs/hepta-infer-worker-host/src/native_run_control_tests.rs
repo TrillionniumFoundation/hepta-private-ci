@@ -114,6 +114,8 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
     let terminal = NativeRunOutput {
         turn_id: "turn-1".to_string(),
         status: NativeRunStatus::Failed,
+        codex_request_digest: None,
+        codex_receipt_digest: None,
         terminal_observed: true,
         observed_output_tokens: Some(17),
         stop_reason: Some("observed terminal failure".to_string()),
