@@ -244,6 +244,33 @@ def validate_wire_vector(root: Path = ROOT) -> None:
         raise VerificationError("HPTA V1 conformance vector mismatch")
 
 
+def validate_platform_types_vector(root: Path = ROOT) -> None:
+    value = read_json(
+        root / "docs/lane-a-foundation/platform.types/CANONICAL_DIGEST_V1.json"
+    )
+    try:
+        encoded = bytes.fromhex(value["encodedHex"])
+        expected_digest = value["sha256"]
+    except (KeyError, TypeError, ValueError) as error:
+        raise VerificationError(
+            f"invalid Platform Types canonical V1 vector: {error}"
+        ) from error
+    if (
+        value.get("schemaVersion") != 1
+        or value.get("contract") != "hepta.platform-types.canonical-digest-v1"
+        or value.get("encodingSchemaVersion") != 1
+        or value.get("typeId") != "platform.types:golden"
+        or value.get("encodedLength") != 218
+        or len(encoded) != 218
+        or not encoded.startswith(b"HEPTA-CANONICAL-DIGEST-V1\0")
+        or hashlib.sha256(encoded).hexdigest() != expected_digest
+        or expected_digest
+        != "b2dd7cbfbd9b6d6635f32ca616beadb135c7f7c5a62c7b6eea8a12071251394d"
+        or value.get("authority") != "none"
+    ):
+        raise VerificationError("Platform Types canonical V1 conformance vector mismatch")
+
+
 def validate_source_specific(root: Path = ROOT) -> None:
     required = {
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
