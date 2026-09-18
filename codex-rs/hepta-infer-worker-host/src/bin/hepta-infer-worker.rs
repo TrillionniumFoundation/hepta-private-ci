@@ -74,17 +74,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !native_profile_selected {
         return Err("--profile native-app-server must be selected explicitly".into());
     }
-    let authority_state_dir =
-        final_use_state_dir.ok_or("--final-use-state-dir is required")?;
+    let authority_state_dir = final_use_state_dir.ok_or("--final-use-state-dir is required")?;
     if !authority_state_dir.is_absolute() {
         return Err("--final-use-state-dir must be absolute".into());
     }
     let revocations: FinalUseRevocations = serde_json::from_slice(&std::fs::read(
         final_use_revocations.ok_or("--final-use-revocations is required")?,
     )?)?;
-    let verifying_key = read_hex_key(
-        &final_use_verifying_key.ok_or("--final-use-verifying-key is required")?,
-    )?;
+    let verifying_key =
+        read_hex_key(&final_use_verifying_key.ok_or("--final-use-verifying-key is required")?)?;
     let final_use_authority = FinalUseAuthority::open_state_dir(
         &authority_state_dir,
         final_use_signer_id.ok_or("--final-use-signer-id is required")?,
@@ -111,15 +109,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let resource: ResourceAdvertisement = serde_json::from_slice(&std::fs::read(
         resource_advertisement.ok_or("--resource-advertisement is required")?,
     )?)?;
-    let grant_bytes =
-        std::fs::read(final_use_grant.ok_or("--final-use-grant is required")?)?;
+    let grant_bytes = std::fs::read(final_use_grant.ok_or("--final-use-grant is required")?)?;
     let admission = NativeAdmission {
         request_id: request_id.ok_or("--request-id is required")?,
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
         maximum_output_tokens: maximum_output_tokens
             .ok_or("--maximum-output-tokens is required")?,
-        maximum_budget_units: maximum_budget_units
-            .ok_or("--maximum-budget-units is required")?,
+        maximum_budget_units: maximum_budget_units.ok_or("--maximum-budget-units is required")?,
         policy: NativeExecutionPolicy { quota, resource },
     };
     let mut prompt = String::new();
@@ -155,7 +151,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         return Err("model outcome is indeterminate; this request was not replayed".into());
     }
     if !output.succeeded() {
-        return Err("model run lacks successful completion with verified owner and final-use authority".into());
+        return Err(
+            "model run lacks successful completion with verified owner and final-use authority"
+                .into(),
+        );
     }
     Ok(())
 }
