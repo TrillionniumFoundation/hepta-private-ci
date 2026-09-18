@@ -32,13 +32,13 @@ This supports model replacement under stable policy semantics, policy/profile re
 - feature snapshot/schema;
 - output schema and score semantics;
 - candidate identity;
-- exact utility/confidence/OOD outputs.
+- exact utility/confidence/OOD outputs and randomized assignment probabilities.
 
 Changing score outputs after commitment fails even when the candidate IDs are unchanged.
 
 ## Random assignment provenance
 
-CounterBased assignment cannot be caller-chosen. `RandomSource` owns a signed payload binding the random-stream digest, request sequence as counter, exact draw, abstain mass, candidate identities and all assignment probabilities.
+CounterBased assignment cannot be caller-chosen. The scorer/policy-output commitment authenticates the assignment probabilities; `RandomSource` then signs a payload binding the random-stream digest, request sequence as counter, exact draw, abstain mass, candidate identities and that same assignment distribution context.
 
 A randomized request without that evidence fails closed. Deterministic requests reject unexpected RandomSource evidence.
 
