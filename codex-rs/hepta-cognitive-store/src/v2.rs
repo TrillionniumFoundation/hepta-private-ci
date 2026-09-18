@@ -388,14 +388,19 @@ impl AdmittedCognitiveStoreV2 {
             .ok_or(CognitiveStoreV2Error::SnapshotCursorOutOfRange)?;
         let next_cursor = (page_end < total_records)
             .then(|| u64::try_from(page_end).unwrap_or(u64::MAX));
-        let previous_record_digest = if cursor == 0 {
+        let previous_record = if cursor == 0 {
             None
         } else {
             self.histories
                 .values()
                 .flat_map(|history| history.iter())
                 .nth(cursor - 1)
-                .map(MemoryRecord::record_digest)
+                .map(|record| SnapshotPagePreviousRecordV2 {
+                    record_id: record.record_id.clone(),
+                    revision: record.revision,
+                    state: record.state,
+                    record_digest: record.record_digest(),
+                })
         };
         let lease_expires_unix_ms = now_unix_ms
             .checked_add(snapshot_request.lease_duration_ms)
@@ -406,7 +411,7 @@ impl AdmittedCognitiveStoreV2 {
             sequence: self.sequence,
             ledger_digest,
             cursor: request.cursor,
-            previous_record_digest,
+            previous_record,
             records,
             next_cursor,
             total_records: u64::try_from(total_records)
@@ -770,13 +775,21 @@ impl SnapshotPageOpenRequestV2 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SnapshotPagePreviousRecordV2 {
+    pub record_id: StableId,
+    pub revision: Revision,
+    pub state: RecordState,
+    pub record_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StoreSnapshotPageV2 {
     pub request_id: StableId,
     pub snapshot_key: CognitiveSnapshotKeyV1,
     pub sequence: LogicalSequence,
     pub ledger_digest: Digest32,
     pub cursor: u64,
-    pub previous_record_digest: Option<Digest32>,
+    pub previous_record: Option<SnapshotPagePreviousRecordV2>,
     pub records: Vec<MemoryRecord>,
     pub next_cursor: Option<u64>,
     pub total_records: u64,
@@ -818,8 +831,29 @@ impl StoreSnapshotPageV2 {
         if self.next_cursor != expected_next {
             return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
         }
-        if (self.cursor == 0) != self.previous_record_digest.is_none() {
+        if (self.cursor == 0) != self.previous_record.is_none() {
             return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
+        }
+        if let (Some(previous), Some(first)) = (&self.previous_record, self.records.first()) {
+            ensure_digest("snapshot_page_predecessor", previous.record_digest)?;
+            if previous.record_id == first.record_id {
+                if first.revision.get() != previous.revision.get().saturating_add(1)
+                    || first.predecessor_digest != Some(previous.record_digest)
+                {
+                    return Err(CognitiveStoreV2Error::BrokenLineage(
+                        first.record_id.to_string(),
+                    ));
+                }
+                if previous.state == RecordState::Tombstone && first.state == RecordState::Live {
+                    return Err(CognitiveStoreV2Error::ResurrectionDenied(
+                        first.record_id.to_string(),
+                    ));
+                }
+            } else if first.revision.get() != 1 || first.predecessor_digest.is_some() {
+                return Err(CognitiveStoreV2Error::BrokenLineage(
+                    first.record_id.to_string(),
+                ));
+            }
         }
         for record in &self.records {
             record
@@ -853,10 +887,13 @@ impl StoreSnapshotPageV2 {
         push_u64(&mut bytes, self.sequence.get());
         push_digest(&mut bytes, self.ledger_digest);
         push_u64(&mut bytes, self.cursor);
-        match self.previous_record_digest {
-            Some(value) => {
+        match &self.previous_record {
+            Some(previous) => {
                 bytes.push(1);
-                push_digest(&mut bytes, value);
+                push_id(&mut bytes, &previous.record_id);
+                push_u64(&mut bytes, previous.revision.get());
+                bytes.push(record_state_code(previous.state));
+                push_digest(&mut bytes, previous.record_digest);
             }
             None => bytes.push(0),
         }
@@ -1078,6 +1115,13 @@ fn same_static_generation_fields(
         && left.tokenizer_digest == right.tokenizer_digest
         && left.template_digest == right.template_digest
         && left.tool_schema_digest == right.tool_schema_digest
+}
+
+fn record_state_code(value: RecordState) -> u8 {
+    match value {
+        RecordState::Live => 0,
+        RecordState::Tombstone => 1,
+    }
 }
 
 fn write_disposition_code(value: MemoryWriteDisposition) -> u8 {
