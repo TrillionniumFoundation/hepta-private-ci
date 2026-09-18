@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "6c96d102ee8538c761a292d3b5ca7b3be4b1c53e",
-    "tree": "4c63f3714b21c594c6bab5d916a5dccd5bcb76d2"
+    "commit": "6f6d92c419bd6abf2b21efd84d3ecb4c3b9cf69d",
+    "tree": "d70d9e9df1fa19f6621c540d04e4722889d10b28"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -44,7 +44,8 @@
       "tests": [
         "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
         "codex-rs/hepta-agentd/src/cognitive_context_tests.rs::context_reads_real_owner_content_and_removes_committed_tombstones",
-        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs::revocation_between_ranking_and_publication_fails_closed"
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs::revocation_between_ranking_and_publication_fails_closed",
+        "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs::learned_ranker_can_select_beyond_legacy_top_four"
       ],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
@@ -76,7 +77,8 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs::high_risk_contradiction_forces_abstention",
-        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs::low_ranked_tail_risk_cannot_poison_the_returnable_population"
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs::low_ranked_tail_risk_cannot_poison_the_returnable_population",
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs::ret04_baseline_profiles_are_digest_distinct"
       ],
       "sourcePathExists": true,
       "designOperation": "recall",
