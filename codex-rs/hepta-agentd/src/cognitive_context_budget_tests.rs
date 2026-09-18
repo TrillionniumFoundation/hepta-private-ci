@@ -350,7 +350,6 @@ async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstenti
     assert_eq!(selected.items, vec![baseline.items[0].clone()]);
 }
 
-
 #[tokio::test]
 async fn learned_ranker_can_promote_a_candidate_beyond_legacy_top_four() {
     let contents = (0..8)
