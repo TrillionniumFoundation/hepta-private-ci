@@ -218,14 +218,15 @@ def verify_work_completion_receipts(
     receipts: tuple[WorkCompletionReceipt, ...] | list[WorkCompletionReceipt],
     trust_store: HmacTrustStore,
     *,
-    generation_id: str,
+    generation_id: str | None,
     source_commit: str,
     source_tree: str,
     now_ns: int | None = None,
 ) -> frozenset[str]:
     """Return authenticated completed package ids for one exact source generation."""
     now = time.time_ns() if now_ns is None else now_ns
-    checked_id(generation_id, "generation_id")
+    if generation_id is not None:
+        checked_id(generation_id, "generation_id")
     if SHA1.fullmatch(source_commit) is None or SHA1.fullmatch(source_tree) is None:
         raise EngineeringError("invalid_git_identity")
     if len(receipts) > 4096:
@@ -239,7 +240,7 @@ def verify_work_completion_receipts(
         checked_sha256(receipt.checks_digest, "checks_digest")
         if receipt.status != "completed":
             raise EngineeringError("completion_not_terminal")
-        if receipt.generation_id != generation_id:
+        if generation_id is not None and receipt.generation_id != generation_id:
             raise EngineeringError("completion_generation_mismatch")
         if receipt.source_commit != source_commit or receipt.source_tree != source_tree:
             raise EngineeringError("completion_source_mismatch")
