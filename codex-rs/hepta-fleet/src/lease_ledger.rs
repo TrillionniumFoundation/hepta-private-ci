@@ -367,7 +367,7 @@ impl LeaseLedger {
             let terminal_at = grant.revoked_at_ms.unwrap_or(grant.expires_at_ms);
             terminal_at
                 .checked_add(retention_ms)
-                .is_some_and(|retain_until| retain_until > now_ms)
+                .map_or(true, |retain_until| retain_until > now_ms)
         });
         Ok(before - self.grants.len())
     }
