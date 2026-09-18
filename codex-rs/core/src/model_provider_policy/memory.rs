@@ -48,6 +48,11 @@ impl MemoryModelProviderPolicyHandle {
 
     pub(crate) fn context(&self) -> ModelProviderPolicyContext<'_> {
         ModelProviderPolicyContext {
+            require_active_policy: self
+                .parent_turn
+                .config
+                .features
+                .enabled(codex_features::Feature::HeptaGovernance),
             registry: self.session.services.extensions.as_ref(),
             session_store: &self.session.services.session_extension_data,
             thread_store: &self.session.services.thread_extension_data,
