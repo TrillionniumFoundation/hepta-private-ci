@@ -34,6 +34,7 @@ pub enum PromptRegistryStoreError {
     Authority(String),
     StateMissing,
     WriterBusy,
+    StateDiverged,
     CapacityMismatch { requested: usize, stored: usize },
 }
 
@@ -136,6 +137,7 @@ impl DurablePromptRegistry {
         token: VerifiedUseToken,
         request: AdmissionRequest,
     ) -> Result<RegistryReceipt, PromptRegistryStoreError> {
+        self.ensure_persisted_generation_matches_current()?;
         let expected = self.registry.admission_binding(&request)?;
         authority
             .with_verified_use(token, &expected, || {
@@ -183,6 +185,7 @@ impl DurablePromptRegistry {
         &mut self,
         mutation: impl FnOnce(&mut PromptRegistry) -> Result<RegistryReceipt, Error>,
     ) -> Result<RegistryReceipt, PromptRegistryStoreError> {
+        self.ensure_persisted_generation_matches_current()?;
         let mut next = self.registry.clone();
         let receipt = mutation(&mut next)?;
         if next != self.registry {
@@ -190,6 +193,18 @@ impl DurablePromptRegistry {
             self.registry = next;
         }
         Ok(receipt)
+    }
+
+    fn ensure_persisted_generation_matches_current(
+        &self,
+    ) -> Result<(), PromptRegistryStoreError> {
+        let bytes = fs::read(self.directory.join(STATE_FILE)).map_err(io_error)?;
+        let decoded = decode_registry_state(&bytes)
+            .map_err(|error| PromptRegistryStoreError::Protocol(error.to_string()))?;
+        if decoded.migrated || decoded.registry != self.registry {
+            return Err(PromptRegistryStoreError::StateDiverged);
+        }
+        Ok(())
     }
 
     fn persist_if_needed(&self) -> Result<bool, PromptRegistryStoreError> {

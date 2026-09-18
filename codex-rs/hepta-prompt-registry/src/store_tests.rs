@@ -173,6 +173,41 @@ fn v0_migration_refuses_to_invent_admission_authority() {
 }
 
 #[test]
+fn writer_fence_refuses_to_overwrite_a_diverged_persisted_generation() {
+    let directory = tempfile::tempdir().expect("store temp dir");
+    let mut store =
+        DurablePromptRegistry::open_or_create(directory.path(), 64).expect("create store");
+    store
+        .register_factor(factor_with_id("factor:1", FactorSource::GovernedInternal))
+        .expect("register factor");
+
+    let mut divergent = store.registry().clone();
+    divergent
+        .register_factor(factor_with_id("factor:disk", FactorSource::GovernedInternal))
+        .expect("advance disk generation");
+    let divergent_bytes = encode_registry_state(&divergent).expect("encode divergent state");
+    std::fs::write(directory.path().join(STATE_FILE), divergent_bytes).expect("replace state");
+
+    assert_eq!(
+        store.register_factor(factor_with_id(
+            "factor:stale-writer",
+            FactorSource::GovernedInternal,
+        )),
+        Err(PromptRegistryStoreError::StateDiverged)
+    );
+    drop(store);
+
+    let reopened = DurablePromptRegistry::open(directory.path()).expect("reopen disk generation");
+    assert!(reopened.registry().factor(&id("factor:disk")).is_some());
+    assert!(
+        reopened
+            .registry()
+            .factor(&id("factor:stale-writer"))
+            .is_none()
+    );
+}
+
+#[test]
 fn interrupted_replacement_restores_last_durable_generation_on_reopen() {
     let directory = tempfile::tempdir().expect("store temp dir");
     {
