@@ -140,6 +140,7 @@ pub struct AuthBusTrustHead {
     pub revision: u64,
     pub key_epoch: u64,
     pub verifying_key_digest: Digest32,
+    pub registration_digest: Digest32,
     pub revoked: bool,
 }
 
