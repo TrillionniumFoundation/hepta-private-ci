@@ -1,4 +1,6 @@
+#[cfg(target_os = "linux")]
 use std::path::Path;
+#[cfg(target_os = "macos")]
 use std::process::Command;
 
 use codex_hepta_contracts::Sha256Digest;
@@ -142,8 +144,6 @@ impl LocalSystemCapacityObserver {
         }
         #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         {
-            let _ = Path::new("/");
-            let _ = Command::new("");
             Err(CapacityObservationError::PlatformUnavailable)
         }
     }
