@@ -73,9 +73,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 The bounded components are:
 
 - `legal-candidate validator`
-- `scoring head`
+- upstream learned-scorer contract and per-decision score commitment validation
+- canonical policy/profile validator
 - `confidence calibrator`
 - `OOD and abstention router`
+- authenticated assignment provenance validator
+
+Model training/inference is not owned by this crate. `policy_digest`, immutable model identity and scorer-contract identity are separate commitments bound by the canonical profile rather than aliases of one another.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -168,13 +172,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-intuition/src/lib.rs](../../../codex-rs/hepta-intuition/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Current source qualification deliberately measures two surfaces: the pure policy kernel and the authenticated end-to-end path that includes signature verification, canonical profile admission, score provenance and assignment provenance. Those CI ceilings remain regression gates, not target-host activation SLOs. Current native limits belong to [codex-rs/hepta-intuition/src/lib.rs](../../../codex-rs/hepta-intuition/src/lib.rs) and the linked implementation components.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Read-only policy library; inject the complete legal candidate set and exact calibration/support profile. Preserve the returned action probability before observing outcomes. Route unsupported or uncalibrated decisions to the configured deterministic slow path; the policy output cannot dispatch a tool or mint an authority token.
+Read-only policy library; inject the complete legal candidate set and exact calibration/support profile. Production-oriented composition also supplies a score commitment and assignment commitment. Counter-based assignment is accepted only when the runtime evidence binds the RNG owner, stream, sequence counter and exact draw. Preserve the returned action probability before observing outcomes. Route unsupported or uncalibrated decisions to the configured deterministic slow path; the policy output cannot dispatch a tool or mint an authority token.
 
 Current operating and state-format references:
 
@@ -187,6 +191,9 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs); named case: `v2_binds_same_outcome_to_its_actual_assignment_and_artifact_metadata`.
+- [codex-rs/hepta-intuition/src/qualified_tests.rs](../../../codex-rs/hepta-intuition/src/qualified_tests.rs); covers zero-omission, canonical profile/risk routing and independent policy/model/scorer identities.
+- [codex-rs/hepta-intuition/src/runtime_commitment.rs](../../../codex-rs/hepta-intuition/src/runtime_commitment.rs); covers score-output and RNG owner/stream/counter/draw binding.
+- [codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs](../../../codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs); exercises Generator/Evaluator/Observer authentication over retained model/data fixtures.
 - [codex-rs/hepta-intuition/src/lib_tests.rs](../../../codex-rs/hepta-intuition/src/lib_tests.rs); named case: `hard_veto_cannot_be_overridden`.
 
 In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
@@ -383,4 +390,4 @@ The bootstrap source-location obligation for `intuition.policy` is implemented b
 
 - `codex-rs/hepta-intuition`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and `.github/workflows/hepta-intuition-qualification.yml`, including closed-world inventory, exact-source and synthetic-merge tests, all-target compilation, strict lint, kernel performance and authenticated end-to-end performance. The `planned` label retained in the canonical work-package registry is a delivery/activation lifecycle state; it does not negate the source-implementation receipt in this section. Likewise the global `I0_DETERMINISTIC` baseline claim remains an empirical/selected-system claim until its evidence registry is advanced; it must not be read as saying the calibrated source kernel is absent. This receipt grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
