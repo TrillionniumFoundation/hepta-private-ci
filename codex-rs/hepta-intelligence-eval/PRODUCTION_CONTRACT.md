@@ -36,8 +36,10 @@ A production qualification is admitted only after all of the following:
 2. Persist/register the frozen plan in host-owned storage before collecting or
    revealing confirmatory holdout outcomes.
 3. Consume the final holdout through `DurableFinalHoldoutJournalV1::consume_proven`.
-   The returned `DurableHoldoutUseV1` has private fields and cannot be forged by
-   an external crate from an in-memory `FinalHoldoutRegistry` receipt.
+   The returned `DurableHoldoutUseV1` has private fields and cannot be directly
+   constructed from an in-memory `FinalHoldoutRegistry` receipt. This is an
+   adapter-origin proof, not independent proof that the supplied file is the
+   deployment's authoritative storage namespace.
 4. Build `LearningEvidenceVerifierV1` only from host-owned current trust state.
    Remote evidence may not choose its verifier, authority epoch, controller map
    or trusted keys.
