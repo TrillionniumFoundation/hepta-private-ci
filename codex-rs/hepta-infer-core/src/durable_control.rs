@@ -23,6 +23,10 @@ use serde::Serialize;
 #[path = "native_control.rs"]
 pub mod native;
 
+#[path = "durable_maintenance.rs"]
+mod maintenance;
+pub use maintenance::MaintenanceStats;
+
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
@@ -187,6 +191,7 @@ pub struct DurableInferenceControl {
     archive_digest: Option<String>,
     archive_stamp: Option<FileStamp>,
     replay_stats: JournalReplayStats,
+    maintenance: std::sync::Arc<maintenance::Counters>,
 }
 
 /// Local work counters, not a throughput claim or a durable fact.
@@ -216,7 +221,7 @@ pub struct CompactionArchiveRetentionReceipt {
 /// A cache discriminator for cooperating writers in a host-owned directory.
 /// This is not authentication against a privileged filesystem writer. Non-Unix
 /// platforms deliberately take the full-replay path rather than trust mtimes.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Copy, Debug, Eq, PartialEq)]
 struct FileStamp {
     device: u64,
     inode: u64,
@@ -244,7 +249,8 @@ impl DurableInferenceControl {
         }
         // Lock BEFORE resolving the journal inode: a peer may publish a
         // compacted generation between open and lock acquisition otherwise.
-        let lock_file = acquire_writer_lock(&path)?;
+        let maintenance = std::sync::Arc::new(maintenance::Counters::default());
+        let lock_file = maintenance::WriterFence::acquire(&path, maintenance.clone())?;
         let file = options.open(&path)?;
         validate_regular_file(&file)?;
         let mut records = BTreeMap::new();
@@ -309,7 +315,9 @@ impl DurableInferenceControl {
         if records.keys().any(|id| native.records.contains_key(id)) {
             return Err(Error::Conflict);
         }
-        let archive_stamp = verify_compaction_archive(&path, compaction_archive_digest.as_deref())?;
+        let archive_stamp = maintenance::verify_archive(
+            &path, compaction_archive_digest.as_deref(), None, &maintenance,
+        )?;
         let cached_stamp = file_stamp(&file)?;
         #[cfg(unix)]
         {
@@ -331,6 +339,7 @@ impl DurableInferenceControl {
             cached_stamp,
             archive_digest: compaction_archive_digest,
             archive_stamp,
+            maintenance,
             replay_stats: JournalReplayStats {
                 full_replays: 1,
                 incremental_replays: 0,
@@ -434,6 +443,10 @@ impl DurableInferenceControl {
         &self.path
     }
 
+    pub fn maintenance_stats(&self) -> MaintenanceStats {
+        self.maintenance.snapshot()
+    }
+
     pub fn replay_stats(&self) -> JournalReplayStats {
         self.replay_stats
     }
@@ -449,11 +462,11 @@ impl DurableInferenceControl {
     /// Acquire the journal writer fence for one short mutation and refresh
     /// this handle from the latest durable cut. The returned lock must remain
     /// alive through append + fsync; dropping it releases other workers.
-    fn reload_locked(&mut self) -> Result<File, Error> {
+    fn reload_locked(&mut self) -> Result<maintenance::WriterFence, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        let lock_file = acquire_writer_lock(&self.path)?;
+        let lock_file = maintenance::WriterFence::acquire(&self.path, self.maintenance.clone())?;
         // Another process may have compacted by atomically replacing the active
         // journal since this handle was opened. Reopen the pathname while the
         // stable sidecar fence is held so replay and the next append target the
@@ -475,14 +488,9 @@ impl DurableInferenceControl {
             // unchanged. Peer appends use validated suffix replay below;
             // same-size edits and generation changes take full replay. Archive
             // disappearance still fails closed.
-            if let Some(digest) = &self.archive_digest {
-                let archive = File::open(archive_path(&self.path, digest)?)?;
-                validate_private_file(&archive)?;
-                let stamp = file_stamp(&archive)?;
-                if stamp.is_none() || stamp != self.archive_stamp {
-                    self.archive_stamp = verify_compaction_archive(&self.path, Some(digest))?;
-                }
-            }
+            self.archive_stamp = maintenance::verify_archive(
+                &self.path, self.archive_digest.as_deref(), self.archive_stamp, &self.maintenance,
+            )?;
             self.file = current_file;
             self.replay_stats.unchanged_reuses =
                 self.replay_stats.unchanged_reuses.saturating_add(1);
@@ -507,9 +515,9 @@ impl DurableInferenceControl {
             if current.length > MAX_JOURNAL_BYTES {
                 return Err(Error::CapacityExceeded);
             }
-            if let Some(digest) = &self.archive_digest {
-                self.archive_stamp = verify_compaction_archive(&self.path, Some(digest))?;
-            }
+            self.archive_stamp = maintenance::verify_archive(
+                &self.path, self.archive_digest.as_deref(), self.archive_stamp, &self.maintenance,
+            )?;
 
             let mut staged_records = BTreeMap::new();
             let mut native_json = Vec::new();
@@ -666,8 +674,9 @@ impl DurableInferenceControl {
         if records.keys().any(|id| native.records.contains_key(id)) {
             return Err(Error::Conflict);
         }
-        let archive_stamp =
-            verify_compaction_archive(&self.path, compaction_archive_digest.as_deref())?;
+        let archive_stamp = maintenance::verify_archive(
+            &self.path, compaction_archive_digest.as_deref(), None, &self.maintenance,
+        )?;
         self.records = records;
         self.native = native;
         self.journal_bytes = journal_bytes;
@@ -690,6 +699,7 @@ impl DurableInferenceControl {
     /// history deletion.
     pub fn archive_released_native(&mut self) -> Result<NativeArchiveReceipt, Error> {
         let _writer_fence = self.reload_locked()?;
+        let mut inventory = maintenance::load_inventory(&self.path, &self.maintenance)?;
         let released = self
             .native
             .records
@@ -708,20 +718,32 @@ impl DurableInferenceControl {
                 archived: 0,
                 remaining_native: self.native.records.len(),
                 journal_bytes: self.journal_bytes,
-                released_archive_bytes: released_archive_bytes(&self.path)?,
+                released_archive_bytes: inventory.bytes,
             });
         }
 
         ensure_released_archive_dir(&self.path)?;
+        maintenance::invalidate_inventory(&self.path)?;
+        #[cfg(test)]
+        maintenance::crash_point("inventory-invalidated");
         for request_id in &released {
             let record = self
                 .native
                 .records
                 .get(request_id)
                 .ok_or(Error::RequestNotFound)?;
-            self.persist_released_native_record(record)?;
+            let added = self.persist_released_native_record(record)?;
+            if added > 0 {
+                inventory.bytes = inventory.bytes.checked_add(added).ok_or(Error::ArithmeticOverflow)?;
+                inventory.records = inventory.records.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
+            }
         }
         sync_released_archive_dir(&self.path)?;
+        #[cfg(test)]
+        maintenance::crash_point("directory-synced");
+        maintenance::save_inventory(&self.path, &inventory)?;
+        #[cfg(test)]
+        maintenance::crash_point("inventory-published");
 
         // Stage hot-state removal separately. Publication of the compacted
         // journal happens before the in-memory cut changes, so a failed rename
@@ -732,12 +754,14 @@ impl DurableInferenceControl {
         }
         self.compact_current_with_archive(&staged_native)?;
         self.native = staged_native;
+        #[cfg(test)]
+        maintenance::crash_point("hot-compacted");
 
         Ok(NativeArchiveReceipt {
             archived: released.len(),
             remaining_native: self.native.records.len(),
             journal_bytes: self.journal_bytes,
-            released_archive_bytes: released_archive_bytes(&self.path)?,
+            released_archive_bytes: inventory.bytes,
         })
     }
 
@@ -747,7 +771,7 @@ impl DurableInferenceControl {
     ) -> Result<Option<native::NativeRunRecord>, Error> {
         validate_identity(request_id, "native archived request")?;
         let path = released_record_path(&self.path, request_id)?;
-        let mut file = match File::open(&path) {
+        let file = match File::open(&path) {
             Ok(file) => file,
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
             Err(error) => return Err(error.into()),
@@ -757,7 +781,10 @@ impl DurableInferenceControl {
             return Err(Error::CorruptJournal("native released archive size"));
         }
         let mut bytes = Vec::new();
-        file.read_to_end(&mut bytes)?;
+        file.take(MAX_JOURNAL_LINE_BYTES as u64 + 1).read_to_end(&mut bytes)?;
+        if bytes.len() > MAX_JOURNAL_LINE_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
         let record: native::NativeRunRecord = serde_json::from_slice(&bytes)
             .map_err(|_| Error::CorruptJournal("native released archive decode"))?;
         native::validate_checkpoint(&record)?;
@@ -772,7 +799,7 @@ impl DurableInferenceControl {
     fn persist_released_native_record(
         &self,
         record: &native::NativeRunRecord,
-    ) -> Result<(), Error> {
+    ) -> Result<u64, Error> {
         if record.state != native::NativeReservationState::Released {
             return Err(Error::InvalidTransition);
         }
@@ -783,36 +810,7 @@ impl DurableInferenceControl {
         if encoded.len() > MAX_JOURNAL_LINE_BYTES {
             return Err(Error::CapacityExceeded);
         }
-
-        match File::open(&path) {
-            Ok(mut existing) => {
-                validate_private_file(&existing)?;
-                if existing.metadata()?.len() > MAX_JOURNAL_LINE_BYTES as u64 {
-                    return Err(Error::CorruptJournal("native released archive size"));
-                }
-                let mut bytes = Vec::new();
-                existing.read_to_end(&mut bytes)?;
-                if bytes != encoded {
-                    return Err(Error::Conflict);
-                }
-                return Ok(());
-            }
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-            Err(error) => return Err(error.into()),
-        }
-
-        let mut options = OpenOptions::new();
-        options.create_new(true).write(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.mode(0o600);
-        }
-        let mut archive = options.open(path)?;
-        archive.write_all(&encoded)?;
-        archive.flush()?;
-        archive.sync_all()?;
-        Ok(())
+        maintenance::publish_released(&path, &encoded)
     }
 
     /// Bound locally retained compaction history only after an external archive
@@ -953,7 +951,9 @@ impl DurableInferenceControl {
             .open(&self.path)?;
         validate_private_file(&self.file)?;
         self.cached_stamp = file_stamp(&self.file)?;
-        self.archive_stamp = verify_compaction_archive(&self.path, Some(&archive_digest))?;
+        self.archive_stamp = maintenance::verify_archive(
+            &self.path, Some(&archive_digest), None, &self.maintenance,
+        )?;
         self.archive_digest = Some(archive_digest);
         self.journal_bytes = compacted_bytes;
         self.poisoned = false;
@@ -990,7 +990,9 @@ impl DurableInferenceControl {
     fn validate_latest_event(&self, event: &Event) -> Result<Option<ControlReceipt>, Error> {
         match event {
             Event::Submit(request) => {
-                if self.native.records.contains_key(&request.request_id) {
+                if self.native.records.contains_key(&request.request_id)
+                    || self.archived_native_record(&request.request_id)?.is_some()
+                {
                     return Err(Error::Conflict);
                 }
                 if let Some(current) = self.records.get(&request.request_id) {
@@ -1217,27 +1219,6 @@ fn sync_released_archive_dir(path: &Path) -> Result<(), Error> {
     Ok(())
 }
 
-fn released_archive_bytes(path: &Path) -> Result<u64, Error> {
-    let directory = released_archive_dir(path);
-    let entries = match fs::read_dir(&directory) {
-        Ok(entries) => entries,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(0),
-        Err(error) => return Err(error.into()),
-    };
-    let mut total = 0_u64;
-    for entry in entries {
-        let entry = entry?;
-        let metadata = entry.metadata()?;
-        if !metadata.is_file() {
-            return Err(Error::InvalidIdentity("native released archive entry"));
-        }
-        total = total
-            .checked_add(metadata.len())
-            .ok_or(Error::ArithmeticOverflow)?;
-    }
-    Ok(total)
-}
-
 fn acquire_writer_lock(path: &Path) -> Result<File, Error> {
     let lock_path = sibling_temp_path(path, "writer.lock");
     let mut options = OpenOptions::new();
@@ -1372,17 +1353,6 @@ fn verify_archive_file(path: &Path, expected_digest: &str) -> Result<Option<File
         return Err(Error::CorruptJournal("compaction archive digest"));
     }
     file_stamp(&file)
-}
-
-fn verify_compaction_archive(
-    path: &Path,
-    expected_digest: Option<&str>,
-) -> Result<Option<FileStamp>, Error> {
-    let Some(expected_digest) = expected_digest else {
-        return Ok(None);
-    };
-    let archive = archive_path(path, expected_digest)?;
-    verify_archive_file(&archive, expected_digest)
 }
 
 fn validate_checkpoint_record(record: &RequestRecord) -> Result<(), Error> {
@@ -1844,3 +1814,7 @@ mod tests;
 #[cfg(all(test, unix))]
 #[path = "durable_scalability_tests.rs"]
 mod scalability_tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_maintenance_tests.rs"]
+mod maintenance_tests;

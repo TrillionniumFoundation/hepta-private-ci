@@ -1,17 +1,9 @@
 name: Hepta architecture convergence
 
 on:
+  # Always report a terminal identity check; select expensive boundaries below.
+  # Workflow-level path skipping can leave a required check permanently pending.
   pull_request:
-    paths:
-      - "codex-rs/hepta-*/**"
-      - "codex-rs/Cargo.toml"
-      - "codex-rs/Cargo.lock"
-      - "codex-rs/rust-toolchain.toml"
-      - "apps/hepta-browser/**"
-      - "docs/**"
-      - "scripts/**"
-      - ".github/actions/hepta-synthetic-merge/**"
-      - ".github/workflows/hepta-architecture-convergence.yml"
   workflow_dispatch:
 
 permissions:
@@ -89,6 +81,22 @@ jobs:
           git diff --check
           printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
           printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+      - name: Select affected architecture boundaries
+        id: scope
+        env:
+          FULL_SCOPE: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/scope-tests.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_ci_scope
+          args=(--head "$SOURCE_SHA" --github-output "$GITHUB_OUTPUT")
+          if [ "$FULL_SCOPE" = "true" ]; then
+            args+=(--full)
+          else
+            args+=(--base "$BASE_SHA")
+          fi
+          python3 scripts/hepta_ci_scope.py "${args[@]}" | tee "$RUNNER_TEMP/hepta-command-records/scope.json"
       - name: Prove candidate identity cannot write, administer, or mutate its PR
         if: github.event_name == 'pull_request'
         env:
@@ -101,7 +109,7 @@ jobs:
           assert_denied() {
             local label="$1"
             shift
-            local output="$RUNNER_TEMP/denied-$label.txt"
+            local output="$RUNNER_TEMP/hepta-command-records/denied-$label.txt"
             if "$@" >"$output" 2>&1; then
               cat "$output"
               echo "candidate unexpectedly obtained $label authority" >&2
@@ -109,16 +117,13 @@ jobs:
             fi
             grep -Eqi '403|forbidden|resource not accessible|permission|admin rights' "$output"
           }
-
           main_sha="$(gh api "repos/$REPO/git/ref/heads/main" --jq '.object.sha')"
           current_title="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.title')"
-
-          # Same-value writes are deliberately used: a misconfigured token would
-          # not change repository semantics, but successful authorization still
-          # fails this job and proves the boundary is broken.
-          assert_denied contents-write             gh api --method PATCH "repos/$REPO/git/refs/heads/main" -f sha="$main_sha"
-          assert_denied repository-admin             gh api --method PATCH "repos/$REPO" -f default_branch=main
-          assert_denied pull-request-write             gh api --method PATCH "repos/$REPO/pulls/$PR_NUMBER" -f title="$current_title"
+          # Same-value probes never deliberately change the repository state.
+          # Successful authorization still fails the job, even for a no-op.
+          assert_denied contents-write gh api --method PATCH "repos/$REPO/git/refs/heads/main" -f sha="$main_sha"
+          assert_denied repository-admin gh api --method PATCH "repos/$REPO" -f default_branch=main
+          assert_denied pull-request-write gh api --method PATCH "repos/$REPO/pulls/$PR_NUMBER" -f title="$current_title"
       - name: Test execution-record rejection and retained diagnostics
         run: |
           set -euo pipefail
@@ -126,10 +131,9 @@ jobs:
       - name: Repository-control rejection regressions
         run: |
           set -euo pipefail
-          # Browser journal tests already run in consolidated-source on both
-          # exact source and merge identities; do not duplicate that owner gate.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls
       - name: Prepare native prerequisites
+        if: steps.scope.outputs.native == 'true'
         run: |
           set -euo pipefail
           sudo apt-get update
@@ -139,17 +143,22 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+        if: steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true'
       - name: Expose DotSlash for existing integration tests
+        if: steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true'
         run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.scope.outputs.native == 'true'
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Resolve verified V8 artifacts
+        if: steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true'
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
       - name: Verify Cargo lock resolution and print exact resolver drift
+        if: steps.scope.outputs.native == 'true'
         working-directory: codex-rs
         shell: bash
         run: |
@@ -172,24 +181,28 @@ jobs:
             echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
           fi
           exit "$locked_status"
-
       - name: Inference owner regressions and streaming digest
+        if: steps.scope.outputs.inference == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core history_growth_emits_update_recovery_memory_and_disk_curve -- --ignored --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-multiwriter-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core alternating_writers_replay_only_peer_deltas -- --ignored --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
       - name: Converged authority and browser semantics
+        if: steps.scope.outputs.effects == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
       - name: Durable operation and external-effect recovery
+        if: steps.scope.outputs.effects == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
       - name: Module lifecycle generations and migration rollback
+        if: steps.scope.outputs.lifecycle == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
@@ -197,6 +210,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/full-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane stateful_feature_history_replace_failure_retire_preserves_effect_idempotency
       - name: Selected-artifact adoption and explicit rollback
+        if: steps.scope.outputs.learning == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
@@ -205,19 +219,29 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
       - name: Objective and prompt policy convergence
+        if: steps.scope.outputs.objective == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective-contract.json" --minimum-tests 1 -- python3 -m unittest -v scripts.test_hepta_objective_contracts
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
-      - name: Derived-view drift and unchanged source
+      - name: Derived-view drift
+        if: steps.scope.outputs.derived == 'true'
         run: |
           set -euo pipefail
-          # Global document/module verification already runs on both identities
-          # in hepta-development-docs. Do not execute those nested gates again.
+          # Independent owner lanes remain in force; do not repeat their gates.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/derived.json" -- python3 scripts/hepta-module-docs.py refresh-derived --check
+      - name: Verify unchanged reviewed source
+        run: |
+          set -euo pipefail
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain exact source input on failure for reproducible diagnosis
+        if: failure() && matrix.lane == 'source-head'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          git archive --format=tar "$SOURCE_SHA" | gzip -1 > "$RUNNER_TEMP/hepta-command-records/source-input.tar.gz"
       - name: Retain command records and bounded stdout stderr
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
