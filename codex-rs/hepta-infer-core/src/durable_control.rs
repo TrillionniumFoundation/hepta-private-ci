@@ -206,6 +206,13 @@ pub struct NativeArchiveReceipt {
     pub released_archive_bytes: u64,
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct CompactionArchiveRetentionReceipt {
+    pub retained: usize,
+    pub removed: usize,
+    pub retained_bytes: u64,
+}
+
 /// A cache discriminator for cooperating writers in a host-owned directory.
 /// This is not authentication against a privileged filesystem writer. Non-Unix
 /// platforms deliberately take the full-replay path rather than trust mtimes.
@@ -808,6 +815,73 @@ impl DurableInferenceControl {
         Ok(())
     }
 
+    /// Bound locally retained compaction history only after an external archive
+    /// owner has acknowledged the exact content digest. The archive referenced
+    /// by the active journal is never removable. If there are not enough
+    /// acknowledged older archives to meet the requested local bound, this
+    /// fails before deleting anything.
+    pub fn prune_exported_compaction_archives(
+        &mut self,
+        exported_digests: &BTreeSet<String>,
+        maximum_local_archives: usize,
+    ) -> Result<CompactionArchiveRetentionReceipt, Error> {
+        if maximum_local_archives == 0 {
+            return Err(Error::InvalidIdentity(
+                "at least one local compaction archive is required",
+            ));
+        }
+        for digest in exported_digests {
+            validate_digest(digest, "exported compaction archive")?;
+        }
+
+        let _writer_fence = self.reload_locked()?;
+        let archives = compaction_archives(&self.path)?;
+        if archives.len() <= maximum_local_archives {
+            return Ok(CompactionArchiveRetentionReceipt {
+                retained: archives.len(),
+                removed: 0,
+                retained_bytes: archives.iter().try_fold(0_u64, |total, (_, _, bytes)| {
+                    total.checked_add(*bytes).ok_or(Error::ArithmeticOverflow)
+                })?,
+            });
+        }
+
+        let required = archives.len() - maximum_local_archives;
+        let current = self.archive_digest.as_deref();
+        let removable = archives
+            .iter()
+            .filter(|(digest, _, _)| {
+                Some(digest.as_str()) != current && exported_digests.contains(digest)
+            })
+            .take(required)
+            .map(|(digest, path, bytes)| (digest.clone(), path.clone(), *bytes))
+            .collect::<Vec<_>>();
+        if removable.len() != required {
+            return Err(Error::CapacityExceeded);
+        }
+
+        let removed_digests = removable
+            .iter()
+            .map(|(digest, _, _)| digest.as_str())
+            .collect::<BTreeSet<_>>();
+        for (_, path, _) in &removable {
+            fs::remove_file(path)?;
+        }
+        sync_parent(&self.path)?;
+
+        let retained_bytes = archives
+            .iter()
+            .filter(|(digest, _, _)| !removed_digests.contains(digest.as_str()))
+            .try_fold(0_u64, |total, (_, _, bytes)| {
+                total.checked_add(*bytes).ok_or(Error::ArithmeticOverflow)
+            })?;
+        Ok(CompactionArchiveRetentionReceipt {
+            retained: maximum_local_archives,
+            removed: required,
+            retained_bytes,
+        })
+    }
+
     /// Rewrite the active journal to one canonical checkpoint per current
     /// request while preserving the complete pre-compaction event stream in a
     /// content-addressed sibling archive. Indeterminate/in-flight records stay
@@ -1065,6 +1139,38 @@ impl DurableInferenceControl {
         }
         Ok(())
     }
+}
+
+fn compaction_archives(path: &Path) -> Result<Vec<(String, PathBuf, u64)>, Error> {
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    let file_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .ok_or(Error::InvalidIdentity("journal path"))?;
+    let prefix = format!("{file_name}.{ARCHIVE_SUFFIX_PREFIX}");
+    let mut archives = Vec::new();
+    for entry in fs::read_dir(parent)? {
+        let entry = entry?;
+        let name = entry.file_name();
+        let Some(name) = name.to_str() else {
+            continue;
+        };
+        let Some(digest) = name.strip_prefix(&prefix) else {
+            continue;
+        };
+        validate_digest(digest, "compaction archive")?;
+        if !entry.file_type()?.is_file() {
+            return Err(Error::InvalidIdentity("compaction archive must be a regular file"));
+        }
+        verify_archive_file(&entry.path(), digest)?;
+        let bytes = entry.metadata()?.len();
+        archives.push((digest.to_string(), entry.path(), bytes));
+    }
+    archives.sort_by(|left, right| left.0.cmp(&right.0));
+    Ok(archives)
 }
 
 fn released_archive_dir(path: &Path) -> PathBuf {
