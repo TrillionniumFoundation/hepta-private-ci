@@ -686,7 +686,7 @@ test("post-dispatch persistence failure is visible in the returned acknowledgeme
     load: () => [],
     save: () => {
       saves += 1;
-      if (saves >= 2) throw new Error("storage unavailable");
+      if (saves >= 3) throw new Error("storage unavailable");
     },
   };
   const transport = {
