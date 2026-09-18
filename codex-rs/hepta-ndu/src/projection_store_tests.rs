@@ -8,6 +8,7 @@ use pretty_assertions::assert_eq;
 use super::NduProjectionStoreError;
 use super::NduProjectionStoreV1;
 use super::STORE_FILENAME;
+use super::STORE_SCHEMA_VERSION;
 use crate::NduProjectionKindV1;
 
 static NEXT_FIXTURE: AtomicU64 = AtomicU64::new(1);
@@ -188,6 +189,64 @@ fn tampered_store_rejects_on_reopen() {
     assert_eq!(
         NduProjectionStoreV1::open(&root).expect_err("tamper must reject"),
         NduProjectionStoreError::CorruptStore
+    );
+    cleanup(&root);
+}
+
+fn rewrite_store_digest(bytes: &mut [u8]) {
+    let prefix_len = bytes.len().checked_sub(32).expect("store digest trailer");
+    let digest = Digest32::of_bytes(&bytes[..prefix_len]);
+    bytes[prefix_len..].copy_from_slice(digest.as_array());
+}
+
+#[test]
+fn schema_version_and_schema_digest_drift_fail_even_with_rehashed_envelope() {
+    let version_root = fixture_path("schema-version");
+    cleanup(&version_root);
+    {
+        let store = NduProjectionStoreV1::open(&version_root).expect("open version store");
+        drop(store);
+    }
+    let version_path = version_root.join(STORE_FILENAME);
+    let mut version_bytes = fs::read(&version_path).expect("read version store");
+    version_bytes[8..12].copy_from_slice(&(STORE_SCHEMA_VERSION + 1).to_be_bytes());
+    rewrite_store_digest(&mut version_bytes);
+    fs::write(&version_path, version_bytes).expect("write version drift");
+    assert_eq!(
+        NduProjectionStoreV1::open(&version_root).expect_err("version drift must reject"),
+        NduProjectionStoreError::SchemaVersion(STORE_SCHEMA_VERSION + 1)
+    );
+    cleanup(&version_root);
+
+    let digest_root = fixture_path("schema-digest");
+    cleanup(&digest_root);
+    {
+        let store = NduProjectionStoreV1::open(&digest_root).expect("open digest store");
+        drop(store);
+    }
+    let digest_path = digest_root.join(STORE_FILENAME);
+    let mut digest_bytes = fs::read(&digest_path).expect("read digest store");
+    digest_bytes[12] ^= 1;
+    rewrite_store_digest(&mut digest_bytes);
+    fs::write(&digest_path, digest_bytes).expect("write schema digest drift");
+    assert_eq!(
+        NduProjectionStoreV1::open(&digest_root).expect_err("schema digest drift must reject"),
+        NduProjectionStoreError::SchemaDigestMismatch
+    );
+    cleanup(&digest_root);
+}
+
+#[test]
+fn owner_root_with_group_or_world_access_rejects() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let root = fixture_path("permissions");
+    cleanup(&root);
+    fs::create_dir(&root).expect("create root");
+    fs::set_permissions(&root, fs::Permissions::from_mode(0o755)).expect("set insecure mode");
+    assert_eq!(
+        NduProjectionStoreV1::open(&root).expect_err("insecure owner root must reject"),
+        NduProjectionStoreError::InsecurePermissions
     );
     cleanup(&root);
 }
