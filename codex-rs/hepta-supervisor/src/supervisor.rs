@@ -548,6 +548,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            if let Some(configured_frontier) = supervisor.production_revocation_frontier
+                && configured_frontier != expected_revocation_frontier
+            {
+                return Err(SupervisorError::ProductionAuthority(format!(
+                    "production revocation frontier mismatch: configured {configured_frontier}, requested {expected_revocation_frontier}"
+                )));
+            }
             let record = supervisor.record(agent_id)?;
             let current = slot.active_release.as_ref().ok_or_else(|| {
                 SupervisorError::Invalid(format!(
