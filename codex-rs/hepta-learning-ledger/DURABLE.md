@@ -44,9 +44,14 @@ Later valid complete frames are preserved for lost-acknowledgement reconciliatio
 corruption after the anchor still rejects. Recovered bytes are synced before
 exposing committed results. The host must authenticate and bind the witness,
 retain it independently and acknowledge externally only after retaining it.
-It must not retry a failed anchored recovery as `Unacknowledged`. This patch does
-not supply the independent witness store; an unanchored recovery cannot detect
-loss of a whole valid suffix.
+It must not retry a failed anchored recovery as `Unacknowledged`. The raw
+`DurableLedger` deliberately does not own its acknowledgement witness, but the
+product-facing `LedgerWriter` now composes it with a separately locked
+`LedgerWitnessStore`. The writer syncs the ledger frame first and then advances
+the independent HEPTLW01 witness before acknowledging success. A witness failure
+after ledger sync is returned as indeterminate and reconciled from the original
+identity; it is never converted into success. An unanchored recovery still
+cannot detect loss of a whole valid suffix.
 
 ## Causal and resource boundaries
 
@@ -66,6 +71,34 @@ lookup is linear in the bounded record count. The synced path has no hard
 real-time or target-host latency claim. The V2 rotation and evaluated-shadow
 consumer below do not add compaction, arbitrary owner migration, independent
 witness storage or production enrollment.
+
+## Production authenticated admission
+
+The stable storage backends remain generic enough to replay V1 history, but the
+product-facing admission surface is `LedgerWriter`. Its owned backend handle is
+not exposed while the writer is in use. Product methods accept only typed,
+signed V2 facts:
+
+- `append_decision` requires a generator signature and exact candidate
+  completeness with zero omitted candidates;
+- `append_outcome` requires an independently controlled observer and enforces
+  one linear correction head;
+- `append_credit_batch` commits all allocations and residual in one frame after
+  exact terminal-outcome conservation;
+- `append_unlearning` records authenticated source→dataset→artifact invalidation;
+- `freeze_dataset` derives active source rows and correction/revocation cuts
+  from the current canonical ledger rather than accepting caller-supplied cuts.
+
+The writer's trust state is an `ActivatedLearningTrustV1` created from a
+generation-bound `LearningTrustDistributionV1`. Trust rotation is monotonic in
+distribution generation/effective time and may not roll authority epoch back.
+The host still owns distribution transport, current-key custody and revocation
+publication.
+
+`LedgerIndexCheckpointV1` is a rebuildable, content-addressed read accelerator.
+It binds the exact anchor, record index, active projection, current correction
+heads and revocation/unlearning frontier. Verification rebuilds it from the
+ledger. It is discarded on mismatch and never replaces canonical replay.
 
 ## Verification and rollback
 
@@ -100,13 +133,14 @@ fallback. Existing commit synchronization and poison/recovery behavior remain
 unchanged. Process death still requires OS handle closure and does not run Drop;
 this is not a physical power-loss or hostile-writer guarantee.
 
-## Segmented V2 persistence behind the existing consumer port
+## Segmented V2 persistence and production writer
 
-`DurableLearningJournal` is sealed to the actual `DurableLedger` and
-`SegmentedLedger` implementations. The existing
-[`run_evaluated_shadow_v1`](../hepta-intelligence/EVALUATED_SHADOW.md) consumer
-uses this port without changing its evaluation, signature, eight-stage ordering,
-Decision identity or no-effect semantics. There is no second data owner.
+`DurableLearningJournal` remains sealed to the actual `DurableLedger` and
+`SegmentedLedger` implementations as a V1 compatibility/testing port. New
+composed callers do not receive that raw port. The evaluated-shadow source
+consumer now owns a `LedgerWriter`, which consumes the backend together with an
+activated trust distribution and independent witness and writes authenticated
+V2 decisions only. There is no second data owner.
 
 `SegmentedLedger::create(owner_lock, first_segment, binding, limits)` takes only
 host-authorized independent handles. A stable, exclusive owner lock spans all
@@ -132,9 +166,11 @@ publish segment names with directory synchronization, retain the ordered series,
 and independently authenticate/persist `LedgerSegmentCheckpoint` before
 acknowledging that frontier externally. The checkpoint includes segment number,
 record anchor and seal state. A record-only anchor cannot detect removal of an
-acknowledged seal or an empty successor. It is a minimum durability frontier,
-**not** a materialized replay checkpoint or an independently implemented witness
-service. Never recreate missing acknowledged history or discard a failed witness.
+acknowledged seal or an empty successor. `LedgerWriter::rotate_segment` now
+advances the independent witness to the new segment topology before reporting
+rotation success. The checkpoint and witness are minimum durability frontiers,
+**not** materialized replay checkpoints or backups. Never recreate missing
+acknowledged history or discard a failed witness.
 
 `recover` validates the complete ordered series under the owner lock. Intermediate
 segments must be sealed. Only an incomplete final tail may be repaired, and only
