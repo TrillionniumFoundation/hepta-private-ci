@@ -211,6 +211,7 @@ fn exact_predicates_remain_distinct_for_related_edges() {
     let mut first = edge("a", "b", KnowledgeRelationKindV2::Related, "related-one");
     first.identity.predicate_id = id("predicate:one");
     let mut second = edge("a", "b", KnowledgeRelationKindV2::Related, "related-two");
+    second.identity.edge_id = first.identity.edge_id.clone();
     second.identity.predicate_id = id("predicate:two");
 
     let generation = build_complete_generation(
@@ -221,6 +222,28 @@ fn exact_predicates_remain_distinct_for_related_edges() {
 
     assert_eq!(generation.edges.len(), 2);
     assert_ne!(
+        generation.edges[0].identity.predicate_id,
+        generation.edges[1].identity.predicate_id
+    );
+}
+
+#[test]
+fn concrete_edge_occurrences_remain_distinct_for_same_predicate() {
+    let first = edge("a", "b", KnowledgeRelationKindV2::Related, "occurrence-one");
+    let second = edge("a", "b", KnowledgeRelationKindV2::Related, "occurrence-two");
+
+    let generation = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], vec![first, second]),
+    )
+    .unwrap_or_else(|error| panic!("valid concrete-edge graph: {error}"));
+
+    assert_eq!(generation.edges.len(), 2);
+    assert_ne!(
+        generation.edges[0].identity.edge_id,
+        generation.edges[1].identity.edge_id
+    );
+    assert_eq!(
         generation.edges[0].identity.predicate_id,
         generation.edges[1].identity.predicate_id
     );
