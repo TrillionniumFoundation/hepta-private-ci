@@ -6,9 +6,9 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "implementationHead": {
-    "commit": "f6af62e8787eeb37cc4ab996863f1664c82f1b09",
+    "commit": "a5439d78ab7926bd2ed2d5d9468c098cc55aa992",
     "branch": "fix/learning-artifacts-closure-20260918",
-    "note": "Module-specific source closure head including lossless single-dataset V3-to-V1 publication projection and lexical create-only leaf containment. sourceBase remains the shared repository-wide implementation-map generation baseline."
+    "note": "Module-specific source closure head including scoped V3 publication, durable withdrawal/lifecycle replay, lexical create-only containment, read-only orphan reconciliation and DENY_ALL admin inspection. sourceBase remains the shared repository-wide implementation-map generation baseline."
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -292,6 +292,34 @@
       "designOperation": "validate_registry_head_witness",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "inspect_orphan_candidate",
+      "nativeSymbol": "inspect_orphan_candidate",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "orphan_inspection_is_read_only_and_requires_retained_digest_evidence"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "inspect_orphan_candidate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "inspect_artifact_admin_state",
+      "nativeSymbol": "inspect_artifact_admin_state",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admin.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "deny_all_observation_only",
+      "tests": [
+        "admin_snapshot_is_read_only_and_deny_all"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "inspect_artifact_admin_state",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -318,7 +346,9 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "readOnlyOrphanInspectionImplemented": true,
+    "readOnlyAdminInspectionImplemented": true
   },
   "sourceRoot": [
     "codex-rs/hepta-learning-artifacts"
