@@ -201,7 +201,7 @@ impl CanonicalContractV1 for PlasticityBatchV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
+#[serde(deny_unknown_fields, tag = "kind", rename_all = "snake_case")]
 pub enum TopologyOperationV1 {
     AddNode {
         label: String,
