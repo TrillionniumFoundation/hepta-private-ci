@@ -147,7 +147,10 @@ fn revocation_cascades_is_terminal_and_keeps_reason_cutoff_history() {
             .expect("realization")
             .active
     );
-    let event = registry.lifecycle_history().last().expect("revocation event");
+    let event = registry
+        .lifecycle_history()
+        .last()
+        .expect("revocation event");
     assert_eq!(event.kind, LifecycleEventKind::Revoked);
     assert_eq!(event.reason_digest, Some(reason));
     assert_eq!(event.cutoff_unix_ms, Some(42));
@@ -179,7 +182,10 @@ fn retirement_requires_reason_and_is_audited() {
     registry
         .retire_factor_with_reason(&id("factor:1"), &id("operator:1"), reason)
         .expect("retire");
-    let event = registry.lifecycle_history().last().expect("retirement event");
+    let event = registry
+        .lifecycle_history()
+        .last()
+        .expect("retirement event");
     assert_eq!(event.kind, LifecycleEventKind::Retired);
     assert_eq!(event.reason_digest, Some(reason));
     registry.validate_integrity().expect("registry integrity");

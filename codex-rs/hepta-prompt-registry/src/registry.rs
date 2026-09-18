@@ -106,7 +106,10 @@ impl PromptRegistry {
         self.revocation_frontier
     }
 
-    pub(crate) fn validate_admission_request(&self, request: &AdmissionRequest) -> Result<(), Error> {
+    pub(crate) fn validate_admission_request(
+        &self,
+        request: &AdmissionRequest,
+    ) -> Result<(), Error> {
         if request.evidence_digest.is_zero() {
             return Err(Error::EmptyDigest("admission evidence"));
         }

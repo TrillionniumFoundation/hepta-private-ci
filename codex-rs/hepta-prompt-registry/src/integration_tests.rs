@@ -61,13 +61,7 @@ fn registry_payload_bytes_bind_compilation_serialization_attachment_and_delivery
     let generation = digest("generation-vector");
     let snapshot = registry.snapshot_v2(generation, &tuple).expect("snapshot");
     let resolution = registry
-        .resolve_payload_v2(
-            &snapshot,
-            generation,
-            &tuple,
-            10,
-            &binding.realization_id,
-        )
+        .resolve_payload_v2(&snapshot, generation, &tuple, 10, &binding.realization_id)
         .expect("resolve exact payload bytes");
     assert_eq!(resolution.payload, payload);
 

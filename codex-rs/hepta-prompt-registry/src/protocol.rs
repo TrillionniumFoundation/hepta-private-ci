@@ -13,12 +13,12 @@ use crate::FactorSource;
 use crate::Lifecycle;
 use crate::LifecycleEvent;
 use crate::LifecycleEventKind;
+use crate::MAX_RECORDS;
 use crate::PromptFactor;
 use crate::PromptRealization;
 use crate::PromptRealizationBindingV2;
 use crate::PromptRegistry;
 use crate::PromptRoleV2;
-use crate::MAX_RECORDS;
 
 const MAX_PROTOCOL_BYTES: usize = 262_144;
 const MAX_DURABLE_STATE_BYTES: usize = 96 * 1024 * 1024;
@@ -177,10 +177,7 @@ pub fn decode_prompt_realization_v1(
         model_id: parse_id("modelId", wire.model_id)?,
         model_version: wire.model_version,
         tokenizer_digest: parse_digest("tokenizerDigest", &wire.tokenizer_digest)?,
-        system_template_digest: parse_digest(
-            "systemTemplateDigest",
-            &wire.system_template_digest,
-        )?,
+        system_template_digest: parse_digest("systemTemplateDigest", &wire.system_template_digest)?,
         message_role: parse_role(&wire.message_role)?,
         payload_digest: parse_digest("payloadDigest", &wire.payload_digest)?,
         token_cost_upper_bound: wire.token_cost_upper_bound,
@@ -224,9 +221,7 @@ fn validate_prompt_factor_v1(value: &PromptFactorV1) -> Result<(), PromptProtoco
     Ok(())
 }
 
-fn validate_prompt_realization_v1(
-    value: &PromptRealizationV1,
-) -> Result<(), PromptProtocolError> {
+fn validate_prompt_realization_v1(value: &PromptRealizationV1) -> Result<(), PromptProtocolError> {
     if value.model_version.is_empty() || value.model_version.len() > 256 {
         return Err(PromptProtocolError::InvalidField("modelVersion"));
     }
@@ -569,9 +564,7 @@ pub(crate) fn decode_registry_state(
     }
 }
 
-fn decode_registry_state_v1(
-    bytes: &[u8],
-) -> Result<DecodedRegistryState, PromptProtocolError> {
+fn decode_registry_state_v1(bytes: &[u8]) -> Result<DecodedRegistryState, PromptProtocolError> {
     let state: DurableStateV1 = serde_json::from_slice(bytes)
         .map_err(|error| PromptProtocolError::InvalidJson(error.to_string()))?;
     if state.schema != DURABLE_SCHEMA_V1 || state.schema_version != 1 {
@@ -584,8 +577,8 @@ fn decode_registry_state_v1(
     if maximum_records == 0 || maximum_records > MAX_RECORDS {
         return Err(PromptProtocolError::InvalidField("maximumRecords"));
     }
-    let revision = Revision::new(state.revision)
-        .map_err(|_| PromptProtocolError::InvalidField("revision"))?;
+    let revision =
+        Revision::new(state.revision).map_err(|_| PromptProtocolError::InvalidField("revision"))?;
     let mut registry = PromptRegistry::new(maximum_records)
         .map_err(|error| PromptProtocolError::StateIntegrity(error.to_string()))?;
     registry.factors.clear();
@@ -629,7 +622,11 @@ fn decode_registry_state_v1(
             admission_digest: parse_digest("admissionDigest", &wire.admission_digest)?,
         };
         let factor_id = record.factor_id.clone();
-        if registry.admissions.insert(factor_id.clone(), record).is_some() {
+        if registry
+            .admissions
+            .insert(factor_id.clone(), record)
+            .is_some()
+        {
             return Err(PromptProtocolError::StateIntegrity(format!(
                 "duplicate admission: {factor_id}"
             )));
@@ -639,11 +636,7 @@ fn decode_registry_state_v1(
         registry.lifecycle_history.push(LifecycleEvent {
             factor_id: parse_id("factorId", wire.factor_id)?,
             kind: parse_lifecycle_event_kind(&wire.kind)?,
-            from: wire
-                .from
-                .as_deref()
-                .map(parse_lifecycle)
-                .transpose()?,
+            from: wire.from.as_deref().map(parse_lifecycle).transpose()?,
             to: parse_lifecycle(&wire.to)?,
             revision: Revision::new(wire.revision)
                 .map_err(|_| PromptProtocolError::InvalidField("revision"))?,
@@ -719,9 +712,7 @@ fn decode_registry_state_v1(
     })
 }
 
-fn decode_registry_state_v0(
-    bytes: &[u8],
-) -> Result<DecodedRegistryState, PromptProtocolError> {
+fn decode_registry_state_v0(bytes: &[u8]) -> Result<DecodedRegistryState, PromptProtocolError> {
     let state: DurableStateV0 = serde_json::from_slice(bytes)
         .map_err(|error| PromptProtocolError::InvalidJson(error.to_string()))?;
     if state.schema != DURABLE_SCHEMA_V0 || state.schema_version != 0 {
@@ -789,10 +780,7 @@ fn binding_from_wire(
         tokenizer_digest: parse_digest("tokenizerDigest", &wire.tokenizer_digest)?,
         template_digest: parse_digest("templateDigest", &wire.template_digest)?,
         tool_schema_digest: parse_digest("toolSchemaDigest", &wire.tool_schema_digest)?,
-        context_profile_digest: parse_digest(
-            "contextProfileDigest",
-            &wire.context_profile_digest,
-        )?,
+        context_profile_digest: parse_digest("contextProfileDigest", &wire.context_profile_digest)?,
         locale_id: parse_id("localeId", wire.locale_id)?,
         role: parse_role(&wire.role)?,
         payload_digest: parse_digest("payloadDigest", &wire.payload_digest)?,
@@ -833,9 +821,7 @@ fn lifecycle_event_kind_name(value: LifecycleEventKind) -> &'static str {
     }
 }
 
-fn parse_lifecycle_event_kind(
-    value: &str,
-) -> Result<LifecycleEventKind, PromptProtocolError> {
+fn parse_lifecycle_event_kind(value: &str) -> Result<LifecycleEventKind, PromptProtocolError> {
     match value {
         "registered" => Ok(LifecycleEventKind::Registered),
         "admitted" => Ok(LifecycleEventKind::Admitted),

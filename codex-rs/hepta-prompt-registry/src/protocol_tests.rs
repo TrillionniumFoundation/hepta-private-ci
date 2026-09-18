@@ -14,7 +14,10 @@ fn prompt_factor_v1_round_trips_canonical_json_and_rejects_unknown_fields() {
         revision: Revision::new(7).expect("revision"),
     };
     let encoded = encode_prompt_factor_v1(&value).expect("encode factor");
-    assert_eq!(decode_prompt_factor_v1(&encoded).expect("decode factor"), value);
+    assert_eq!(
+        decode_prompt_factor_v1(&encoded).expect("decode factor"),
+        value
+    );
 
     let mut unknown = String::from_utf8(encoded.clone()).expect("utf8");
     let index = unknown.len() - 1;
