@@ -105,7 +105,7 @@ This candidate grants no model, provider, tool, network, filesystem, secret, Mat
 
 ## 9. Final source-closure boundaries
 
-The product-visible cognitive-context adapter is intentionally narrow: it proves that a real Agentd caller can enter the same `plan_global_v1` path as a multi-owner composition without creating a second planner. General global composition is represented by typed `AuthenticatedOwnerPortV1` and `NduPlanningPortV1` boundaries; the source test exercises two required owners and the real NDU evaluator. This does not assert that the selected production fleet/evidence adapters have been deployed.
+The product-visible cognitive-context adapter is intentionally narrow: it proves that a real Agentd caller can enter the same `plan_global_v1` path as a multi-owner composition without creating a second planner. General global composition is represented by typed `AuthenticatedOwnerPortV1` and `NduPlanningPortV1` boundaries; the source test exercises two required owners and the real NDU evaluator. This does not assert that the selected production fleet/evidence adapters have been deployed. `plan_global_and_record_v1` additionally commits the snapshot/decision/selection journal frontier before returning a selected result, so the global source path and durable store are exercised as one transaction rather than as disconnected libraries.
 
 `claim_execution_grant_v1` is the explicit handoff to the pre-existing `kernel.authority` final-use owner. Control never signs or manufactures `VerifiedUseToken`. The authority owner validates signature, current epoch/revocation state, single-use nonce and the exact request/scope/payload binding; the token is consumed by `with_verified_use` at the final effect closure.
 
