@@ -54,22 +54,6 @@ impl DurableHoldoutUseV1 {
         &self.receipt
     }
 
-    #[must_use]
-    /// Consume through the durable adapter and return a non-forgeable proof
-    /// suitable for the production signed-admission entrypoints.
-    pub fn consume_proven(
-        &mut self,
-        expected: HoldoutAnchorV1,
-        plan: &CrossFoldPlanReceiptV1,
-    ) -> Result<DurableHoldoutUseV1, DurableHoldoutError> {
-        let receipt = self.consume(expected, plan)?;
-        Ok(DurableHoldoutUseV1 {
-            receipt,
-            anchor: self.anchor(),
-            storage_binding: self.binding,
-        })
-    }
-
     pub fn anchor(&self) -> HoldoutAnchorV1 {
         self.anchor
     }
@@ -285,6 +269,21 @@ impl DurableFinalHoldoutJournalV1 {
         self.journal = candidate;
         self.length = length;
         Ok(receipt)
+    }
+
+    /// Consume through the durable adapter and return a non-forgeable proof
+    /// suitable for the production signed-admission entrypoints.
+    pub fn consume_proven(
+        &mut self,
+        expected: HoldoutAnchorV1,
+        plan: &CrossFoldPlanReceiptV1,
+    ) -> Result<DurableHoldoutUseV1, DurableHoldoutError> {
+        let receipt = self.consume(expected, plan)?;
+        Ok(DurableHoldoutUseV1 {
+            receipt,
+            anchor: self.anchor(),
+            storage_binding: self.binding,
+        })
     }
 
     pub fn anchor(&self) -> HoldoutAnchorV1 {
