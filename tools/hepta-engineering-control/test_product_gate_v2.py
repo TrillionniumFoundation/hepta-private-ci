@@ -40,8 +40,21 @@ class ProductGateTests(unittest.TestCase):
         )
         self.assertEqual(
             receipt["plan"]["integration_order"],
-            ("control.engineering.repository-product-caller",),
+            ("product-probe:ECP-1-ENGINEERING-CONTROL-PLANE",),
         )
+        self.assertEqual(
+            receipt["canonicalWorkPackageInventory"]["packageCount"],
+            91,
+        )
+        self.assertEqual(
+            receipt["canonicalPackageBinding"]["id"],
+            "ECP-1-ENGINEERING-CONTROL-PLANE",
+        )
+        self.assertEqual(
+            receipt["canonicalPackageBinding"]["developmentAfter"],
+            ("DOC-2-DEFAULT-BRANCH-SELECTION",),
+        )
+        self.assertFalse(receipt["canonicalPackageBinding"]["authenticatedPredecessorCompletionSupplied"])
         self.assertFalse(receipt["authenticatedExternalSourceAdmission"])
         self.assertFalse(receipt["mergeAuthority"])
         self.assertFalse(receipt["releaseAuthority"])
