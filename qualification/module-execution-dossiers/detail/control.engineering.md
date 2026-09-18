@@ -45,10 +45,60 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-The owned disposable service supports additive schema migration with a persistent generation fence, real crash-before/after-commit tests, and old-code rollback at a new generation without restoring old data. This is one reviewed counter service, not a general host adapter or arbitrary stateful organ migration.
+The canonical implementation root is `tools/hepta-engineering-control/control_engineering_v2`.
+The historical `hepta_engineering_control.py` module is compatibility-only and is
+not a product/native authority path. A permanent regression rejects product-package
+imports of that legacy module.
 
-- **Implemented entrypoints:** `schedule` in [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py); `decide_integration` in [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py); `DebianSandboxAdapter` in [tools/hepta-engineering-control/control_engineering_v2/assimilation.py](../../../tools/hepta-engineering-control/control_engineering_v2/assimilation.py).
-- **State and recovery:** The base scheduler consumes immutable package/dependency/path-lease inputs and returns bounded assignments. Integration eligibility binds exact source/base/ordered synthetic-merge identities; supplied booleans or receipts are not GitHub execution or release authority. DebianSandboxAdapter provides consent-expiry-checked query_version/query_health/read_status over a disposable Debian rootfs. Each read reopens the pinned root inode, walks every child through directory descriptors with O_NOFOLLOW, and rechecks directory/file identity before and after reading. Regular single-link files must stay on the root device; version/unit/status reads are bounded to 16 KiB/64 KiB/2 MiB. A separate disposable counter-service target now exercises actual unprivileged child readiness, SQLite commit/restart and lost-acknowledgement reconciliation; it grants no live-service authority. The read-only Debian adapter identity and receipt state are process-local; unit-file presence is metadata, not running-service health, and no shell/service-manager/network calls occur.
-- **Source tests:** [tools/hepta-engineering-control/test_hepta_engineering_control.py](../../../tools/hepta-engineering-control/test_hepta_engineering_control.py), [tools/hepta-engineering-control/test_integration_identity.py](../../../tools/hepta-engineering-control/test_integration_identity.py), [tools/hepta-engineering-control/test_assimilation_sandbox.py](../../../tools/hepta-engineering-control/test_assimilation_sandbox.py). Named fixture regressions `test_parent_symlink_swap_during_open_never_reads_outside_root` and `test_parent_directory_replacement_during_read_discards_observation` cover parent-path escape and drift rejection. These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [tools/hepta-engineering-control/README.md](../../../tools/hepta-engineering-control/README.md), [tools/hepta-engineering-control/INTEGRATION_HANDOFF.md](../../../tools/hepta-engineering-control/INTEGRATION_HANDOFF.md).
-- **Remaining work:** Bind live repository/CI/independent review identities and authorized handoff. Scheduling eligibility does not itself merge, deploy, release or complete autonomous development. The fixture adapter does not discover or control live Debian services. Its supplied consent/identity still requires a trusted owner; independently witnessed target parity, live service observation and authorized production deployment remain outside this read-only fixture implementation.
+- **Authenticated source and work admission:** `issue_authenticated_work_envelope`
+  in [orchestration.py](../../../tools/hepta-engineering-control/control_engineering_v2/orchestration.py)
+  verifies the signed `CanonicalSourceReceipt`, repository identity, exact Git
+  commit/tree, document-set digest and freshness before persisting a work envelope.
+- **Engineering orchestration:** `schedule_engineering_work` consumes authenticated
+  predecessor completion receipts, worker skills/capacity, review topology/capacity,
+  CI capacity, expected value, architecture debt, rollback cost, source-root conflicts
+  and the durable lease frontier. It emits worker assignments, deterministic
+  integration order and non-authoritative merge-queue proposals. Distributed mode
+  additionally requires a signed leadership receipt and fencing epoch.
+- **Durable owner state:** `EngineeringStore` in
+  [control_plane.py](../../../tools/hepta-engineering-control/control_engineering_v2/control_plane.py)
+  remains the sole SQLite v5 owner for envelopes, path leases, fencing, assignment
+  generations/frontiers, integration decisions/seals and hash-linked audit events.
+- **Candidate construction:** single-file compatibility candidates remain in
+  [candidate.py](../../../tools/hepta-engineering-control/control_engineering_v2/candidate.py);
+  atomic multi-file changes use `CompositeCandidate` in
+  [composite_candidate.py](../../../tools/hepta-engineering-control/control_engineering_v2/composite_candidate.py).
+  Autonomous candidates cannot modify test/evaluator/fixture/qualification/policy
+  oracle paths even when a caller attempts to widen the candidate envelope.
+- **Sandbox capacity and retry:** [sandbox_control.py](../../../tools/hepta-engineering-control/control_engineering_v2/sandbox_control.py)
+  admits at most eight concurrent sandboxes per coordinator process and permits at
+  most two retries for enumerated infrastructure failures. Semantic rejection is
+  never retried.
+- **Mutation testing:** `run_mutation_testing` in
+  [mutation_testing.py](../../../tools/hepta-engineering-control/control_engineering_v2/mutation_testing.py)
+  runs evaluator-owned checks against admitted source mutants; every mutant must be
+  killed for the receipt to pass.
+- **Integration evidence and decisions:** exact source/synthetic-merge evidence,
+  independent identities, candidate binding, signed seals and replay-safe durable
+  decisions remain in `evidence.py`, `closure.py` and `seal.py`.
+- **Product caller:** `control_engineering_v2.product_gate` is a named repository
+  caller executed by the consolidated source workflow only after strong sandbox and
+  source qualification jobs succeed. It exercises the v2 orchestration path and
+  emits no merge/deploy/release authority.
+- **External production evidence:** [external.py](../../../tools/hepta-engineering-control/control_engineering_v2/external.py)
+  verifies signed external audit anchors, key-custody receipts and deployment facts.
+  `evaluate_authenticated_production_readiness` ignores caller booleans for those
+  external facts and derives them from verified receipts. A distributed deployment
+  cannot be ready without its fencing receipt.
+- **Source tests:** [test_orchestration_v2.py](../../../tools/hepta-engineering-control/test_orchestration_v2.py),
+  [test_composite_candidate.py](../../../tools/hepta-engineering-control/test_composite_candidate.py),
+  [test_mutation_testing.py](../../../tools/hepta-engineering-control/test_mutation_testing.py),
+  [test_external_evidence.py](../../../tools/hepta-engineering-control/test_external_evidence.py),
+  [test_product_gate_v2.py](../../../tools/hepta-engineering-control/test_product_gate_v2.py),
+  plus the existing control-plane, sandbox, seal and consolidated regression suites.
+- **Remaining external work:** real HSM/keystore custody, external immutable audit
+  service, distributed consensus/leader service when distributed mode is selected,
+  independent reviewer acceptance, authorized target-host deployment, operator
+  acceptance, canary/promotion/release and rollback witness remain external evidence
+  gates. Repository code verifies their receipts; it does not impersonate those
+  authorities.
