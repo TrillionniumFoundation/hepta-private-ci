@@ -361,6 +361,7 @@ pub struct CognitiveProjectionReceipt {
     pub fact_set_sha256: Sha256Digest,
     pub input_heads_sha256: Sha256Digest,
     pub output_sha256: Sha256Digest,
+    pub kernel_generation_sha256: Sha256Digest,
     pub entity_count: u64,
     pub relation_count: u64,
     pub node_count: u64,
