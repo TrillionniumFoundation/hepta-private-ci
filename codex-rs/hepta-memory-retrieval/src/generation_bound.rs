@@ -555,7 +555,12 @@ pub fn recall(
     let deliverable_entries = &union.entries[..deliverable_count];
     let minimum_channels = usize::try_from(policy.minimum_distinct_channels).unwrap_or(usize::MAX);
     let observed_channels = distinct_channel_count(deliverable_entries);
-    let contradiction_count = contradiction_population_count(deliverable_entries);
+    // Unrelated tail contradiction groups cannot poison the delivery set, but
+    // evidence sharing a contradiction group with a potential selection must
+    // still be considered even when that evidence ranks below top-k or below
+    // the score floor.
+    let contradiction_count =
+        relevant_contradiction_population_count(deliverable_entries, &union.entries);
     let maximum_ood = deliverable_entries
         .iter()
         .map(|entry| entry.maximum_ood)
@@ -649,11 +654,23 @@ fn distinct_channel_count(entries: &[CandidateUnionEntryV1]) -> usize {
         .len()
 }
 
-fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
+fn relevant_contradiction_population_count(
+    deliverable_entries: &[CandidateUnionEntryV1],
+    union_entries: &[CandidateUnionEntryV1],
+) -> usize {
+    let selected_groups = deliverable_entries
+        .iter()
+        .flat_map(|entry| entry.contradiction_group_digests.iter().copied())
+        .collect::<BTreeSet<_>>();
+    if selected_groups.is_empty() {
+        return 0;
+    }
     let mut populations = BTreeMap::<Digest32, usize>::new();
-    for entry in entries {
+    for entry in union_entries {
         for group in &entry.contradiction_group_digests {
-            *populations.entry(*group).or_insert(0) += 1;
+            if selected_groups.contains(group) {
+                *populations.entry(*group).or_insert(0) += 1;
+            }
         }
     }
     populations.values().filter(|count| **count > 1).count()

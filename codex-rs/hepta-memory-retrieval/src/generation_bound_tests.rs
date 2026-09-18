@@ -301,6 +301,33 @@ fn low_rank_tail_risk_cannot_poison_deliverable_top_k() {
 }
 
 #[test]
+fn tail_contradiction_touching_selected_record_still_forces_abstention() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.maximum_results = 1;
+    policy.minimum_distinct_channels = 2;
+
+    let group = digest("selected-tail-contradiction");
+    let top = record(1);
+    let mut top_lexical = candidate(top.clone(), RetrievalChannelV1::Lexical, 1);
+    top_lexical.contradiction_group_digest = Some(group);
+    let mut top_entity = candidate(top, RetrievalChannelV1::Entity, 1);
+    top_entity.contradiction_group_digest = Some(group);
+
+    let mut tail = candidate(record(9), RetrievalChannelV1::Lexical, 2);
+    tail.normalized_score = FixedQ32::from_raw(1_i64 << 28);
+    tail.contradiction_group_digest = Some(group);
+
+    let packet = recall(&cue, &policy, vec![top_lexical, top_entity, tail])
+        .unwrap_or_else(|error| panic!("contradiction abstention is valid: {error}"));
+    assert_eq!(
+        packet.disposition,
+        RecallDispositionV1::Abstained(RecallAbstentionReasonV1::ContradictoryEvidence)
+    );
+    assert!(packet.selections.is_empty());
+}
+
+#[test]
 fn below_floor_top_k_candidate_is_omitted_and_cannot_poison_recall() {
     let cue = cue();
     let mut policy = policy();
