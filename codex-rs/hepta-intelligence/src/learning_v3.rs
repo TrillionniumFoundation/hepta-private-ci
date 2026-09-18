@@ -58,7 +58,7 @@ pub fn append_decision_v3(
 ) -> Result<AppendReceipt, LearningClosureErrorV3> {
     if request.decision.objective_digest.is_zero()
         || request.decision.support_digest.is_zero()
-        || request.decision.selected_propensity.raw() <= 0
+        || request.decision.selected_propensity.raw() == 0
         || request.decision.completeness != CandidateSetCompleteness::Complete
     {
         return Err(LearningClosureErrorV3::Binding("decision"));
