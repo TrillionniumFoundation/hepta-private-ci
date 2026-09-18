@@ -70,6 +70,9 @@ impl AutomationTurnQueue for SuccessQueue {
         Box::pin(async move {
             Ok(AutomationQueueReceipt {
                 queued_submission_id: format!(
+                    "queue:{}:{}",
+                    admission.task_id, admission.occurrence
+                ),
                 client_user_message_id: admission.client_user_message_id,
             })
         })
