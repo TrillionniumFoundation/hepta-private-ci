@@ -44,7 +44,7 @@ Cross-organ aggregation is never implicit for a new integration. `EvaluationPoli
 
 Missing rules, duplicate rules, unknown axes and `RequireEqual` disagreement reject. Overflow rejects rather than saturating outside a named mathematical projection.
 
-The compatibility API `evaluate_candidates` remains available, but its prior behavior is now explicitly materialized as `legacy-sum-max-zero-tolerance-v1`:
+The old compatibility evaluator entrypoint is removed. If a caller intentionally needs the former behavior, it must construct the explicit `compatibility_evaluation_policy` (`legacy-sum-max-zero-tolerance-v1`) and pass it through the sole evaluation entrypoint `evaluate_candidates_with_policy`:
 
 - utility: sum;
 - risk: sum;
@@ -52,7 +52,7 @@ The compatibility API `evaluate_candidates` remains available, but its prior beh
 - uncertainty: maximum;
 - Pareto absolute tolerance: zero.
 
-New integrations call `evaluate_candidates_with_policy`. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the legacy evaluation digest, preventing a future aggregation change from silently reinterpreting an old result.
+`UtilityProfile` digest v2 also binds the immutable axis/unit/scale registry digest and normalization/clipping manifest digest. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the base evaluation digest, preventing aggregation, units or normalization changes from silently reinterpreting an old result.
 
 ### 3.1 Feasibility, Pareto and scalarization
 
@@ -112,7 +112,7 @@ These local records are not an activation certificate. They deliberately do not 
 
 The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It additionally binds independent evaluator identity, operating region, residuals, resource/risk conservation, perturbation evidence and the spectral-radius upper confidence bound. A certificate with a spectral-radius upper 95% bound `>=0.95`, stale objective, unsupported dimension or missing independent decision cannot activate an adaptive artifact.
 
-`bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only after binding:
+`canonical_iteration_context_digest` freezes subject, objective, generation, event and coefficient context before the protocol-bound solver runs. `solve_preference_target_with_context_digest` copies that digest into every local iteration receipt; `bind_solver_iteration_receipt_v1` rejects unbound or differently bound receipts before converting one local step into an owner-local protocol representation. It binds:
 
 - subject ID and class;
 - immutable objective digest;
@@ -122,7 +122,7 @@ The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It
 - predecessor/next revisions;
 - residual, projection count and state digest.
 
-The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context fails before publication.
+The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context and context rebinding fail before publication. Preference state is constrained to 1–64 axes in `[-1,1]`; an already-converged no-op emits zero iterations and does not advance revision. Exhausting 64 iterations returns `PreferenceSolveResult::Unavailable` without exposing the unconverged candidate state.
 
 ## 6. State, persistence and scheduling
 
@@ -159,7 +159,7 @@ Preference and utility projections are append-only revisions owned by `utility.n
 
 The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
 
-This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
+`NduProjectionJournalV1` remains the reference codec. `NduDurableProjectionJournalV1` is a separate source-implemented writer candidate that takes a host-authorized regular file, locks it, appends fixed canonical frames, calls `sync_all` before publishing memory, poisons the handle after indeterminate I/O, recovers/truncates only an incomplete unacknowledged tail, and can require an independently retained history anchor. Revocation is scoped by objective + subject + projection digest, so equal payload digests in unrelated scopes do not cross-revoke. This still does not claim selected-host activation, containing-directory durability, migration, retention or backup/restore qualification.
 
 ## 7. Goodhart and wireheading controls
 
@@ -220,7 +220,7 @@ Reference-host p95/p99, transient memory and persistent projection targets remai
 - `NDU-SYS-GV-011`: canonical iteration publication rejects missing objective/event/coefficient context.
 - `NDU-SYS-GV-012`: projection-journal reopen, tamper, truncation and revocation non-resurrection fixtures pass.
 
-Exact native mappings are registered in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`. The same implementation cannot be the sole oracle for a critical numerical claim; analytic or independent scalar fixtures remain required.
+Exact native mappings are registered in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`. Current negative fixtures additionally cover preference dimension/range, revision-stable no-op, unavailable iteration exhaustion, receipt context rebinding, malformed/unrelated hierarchy updates, cross-scope revocation, durable anchor rewrite detection, Q32→Q24 ties-even conversion and missing convergence evidence. The same implementation cannot be the sole oracle for a critical numerical claim; analytic or independent scalar fixtures remain required.
 
 ## 10. Implementation sequence
 
