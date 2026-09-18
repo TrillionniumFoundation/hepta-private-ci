@@ -13,8 +13,9 @@ owns `hepta_operations_1.sqlite`, opened through the shared FULL-synchronous
 WAL SQLite shim, and atomically co-commits `operation_ledger` with
 `cross_owner_outbox` during prepare. It implements bounded expiring claim
 leases, monotonically increasing fences, bounded attempts, owner-generation plus
-authority-epoch handoff, a durable dispatch-start/no-blind-retry boundary,
-transport acknowledgement distinct from terminal observation, indeterminate
+authority-epoch handoff, exact bounded payload persistence/recovery, a durable
+dispatch-start/no-blind-retry boundary, transport acknowledgement distinct from
+terminal observation, indeterminate
 reconciliation, and bounded terminal-outbox retention without removing the
 authoritative operation identity.
 
@@ -103,6 +104,7 @@ Reference tests:
 Durable tests:
 
 - atomic prepare rollback under an injected outbox-write failure;
+- exact payload/digest binding before mutation and payload recovery from the durable outbox;
 - semantic replay/conflict across close/reopen;
 - multi-handle live-lease exclusion and expired-lease takeover;
 - renewal and owner-handoff stale-fence rejection;
