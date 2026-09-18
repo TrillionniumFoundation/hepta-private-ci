@@ -1,8 +1,9 @@
-use std::collections::BTreeMap;
-
 use codex_hepta_contracts::Sha256Digest;
-use sha2::Digest;
-use sha2::Sha256;
+use codex_hepta_kg::DurableProjectionEdgeV2;
+use codex_hepta_kg::DurableProjectionHeadV2;
+use codex_hepta_kg::DurableProjectionNodeV2;
+use codex_hepta_kg::durable_input_heads_digest_v2;
+use codex_hepta_kg::durable_projection_digest_v2;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::Transaction;
@@ -20,51 +21,15 @@ use crate::cognitive_intelligence_writer::canonical_relation_id;
 use crate::cognitive_intelligence_writer::occurrence_edge_id;
 use crate::cognitive_intelligence_writer::occurrence_node_id;
 use crate::cognitive_store::unavailable;
-use crate::framing::frame_part;
 
 pub(crate) const MAX_SCOPE_HEADS: usize = 10_000;
 pub(crate) const MAX_SCOPE_NODES: usize = 10_000;
 pub(crate) const MAX_SCOPE_EDGES: usize = 50_000;
 pub(crate) const MAX_PROJECTION_SCOPES: usize = 10_000;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProjectionHead {
-    pub(crate) memory_id: String,
-    pub(crate) revision: i64,
-    pub(crate) content_sha256: String,
-    pub(crate) verification: String,
-    pub(crate) lifecycle: String,
-    pub(crate) fact_set_sha256: String,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProjectionNode {
-    pub(crate) node_id: String,
-    pub(crate) canonical_entity_id: String,
-    pub(crate) entity_type: String,
-    pub(crate) label: String,
-    pub(crate) valid_from: i64,
-    pub(crate) valid_to: Option<i64>,
-    pub(crate) memory_id: String,
-    pub(crate) memory_revision: i64,
-    pub(crate) source_id: String,
-    pub(crate) source_revision: i64,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProjectionEdge {
-    pub(crate) edge_id: String,
-    pub(crate) canonical_relation_id: String,
-    pub(crate) from_node_id: String,
-    pub(crate) to_node_id: String,
-    pub(crate) relation: String,
-    pub(crate) valid_from: i64,
-    pub(crate) valid_to: Option<i64>,
-    pub(crate) memory_id: String,
-    pub(crate) memory_revision: i64,
-    pub(crate) source_id: String,
-    pub(crate) source_revision: i64,
-}
+pub(crate) type ProjectionHead = DurableProjectionHeadV2;
+pub(crate) type ProjectionNode = DurableProjectionNodeV2;
+pub(crate) type ProjectionEdge = DurableProjectionEdgeV2;
 
 impl CognitiveStore {
     /// Materializes a complete exact-scope projection inside the product
@@ -308,7 +273,7 @@ impl CognitiveStore {
                 source_revision: row.try_get("source_revision").map_err(unavailable)?,
             });
         }
-        let output_sha256 = output_digest(&projection_scope, &nodes, &edges);
+        let output_sha256 = output_digest(&projection_scope, &nodes, &edges)?;
 
         sqlx::query(
             "INSERT INTO kg_projection (projection_scope, generation)
@@ -460,76 +425,18 @@ impl CognitiveStore {
 }
 
 pub(crate) fn input_heads_digest(scope: &str, heads: &[ProjectionHead]) -> Sha256Digest {
-    let mut hasher = Sha256::new();
-    frame_part(&mut hasher, b"hepta:cognitive:kg-projection-input:v1");
-    frame_part(&mut hasher, scope.as_bytes());
-    frame_part(
-        &mut hasher,
-        &u64::try_from(heads.len()).unwrap_or(u64::MAX).to_be_bytes(),
-    );
-    for head in heads {
-        frame_part(&mut hasher, head.memory_id.as_bytes());
-        frame_part(&mut hasher, &head.revision.to_be_bytes());
-        frame_part(&mut hasher, head.content_sha256.as_bytes());
-        frame_part(&mut hasher, head.verification.as_bytes());
-        frame_part(&mut hasher, head.lifecycle.as_bytes());
-        frame_part(&mut hasher, head.fact_set_sha256.as_bytes());
-    }
-    finish_digest(hasher)
+    Sha256Digest::parse(durable_input_heads_digest_v2(scope, heads).to_string())
+        .expect("hepta-kg durable input digest is canonical sha256")
 }
 
 pub(crate) fn output_digest(
     scope: &str,
     nodes: &[ProjectionNode],
     edges: &[ProjectionEdge],
-) -> Sha256Digest {
-    let mut hasher = Sha256::new();
-    frame_part(&mut hasher, b"hepta:cognitive:kg-projection-output:v1");
-    frame_part(&mut hasher, scope.as_bytes());
-    frame_part(
-        &mut hasher,
-        &u64::try_from(nodes.len()).unwrap_or(u64::MAX).to_be_bytes(),
-    );
-    for node in nodes {
-        frame_part(&mut hasher, node.node_id.as_bytes());
-        frame_part(&mut hasher, node.canonical_entity_id.as_bytes());
-        frame_part(&mut hasher, node.entity_type.as_bytes());
-        frame_part(&mut hasher, node.label.as_bytes());
-        frame_part(&mut hasher, &node.valid_from.to_be_bytes());
-        frame_part(
-            &mut hasher,
-            &node.valid_to.unwrap_or(i64::MIN).to_be_bytes(),
-        );
-        frame_part(&mut hasher, node.memory_id.as_bytes());
-        frame_part(&mut hasher, &node.memory_revision.to_be_bytes());
-        frame_part(&mut hasher, node.source_id.as_bytes());
-        frame_part(&mut hasher, &node.source_revision.to_be_bytes());
-    }
-    frame_part(
-        &mut hasher,
-        &u64::try_from(edges.len()).unwrap_or(u64::MAX).to_be_bytes(),
-    );
-    for edge in edges {
-        frame_part(&mut hasher, edge.edge_id.as_bytes());
-        frame_part(&mut hasher, edge.canonical_relation_id.as_bytes());
-        frame_part(&mut hasher, edge.from_node_id.as_bytes());
-        frame_part(&mut hasher, edge.to_node_id.as_bytes());
-        frame_part(&mut hasher, edge.relation.as_bytes());
-        frame_part(&mut hasher, &edge.valid_from.to_be_bytes());
-        frame_part(
-            &mut hasher,
-            &edge.valid_to.unwrap_or(i64::MIN).to_be_bytes(),
-        );
-        frame_part(&mut hasher, edge.memory_id.as_bytes());
-        frame_part(&mut hasher, &edge.memory_revision.to_be_bytes());
-        frame_part(&mut hasher, edge.source_id.as_bytes());
-        frame_part(&mut hasher, &edge.source_revision.to_be_bytes());
-    }
-    finish_digest(hasher)
-}
-
-fn finish_digest(hasher: Sha256) -> Sha256Digest {
-    Sha256Digest::from_sha256_output(hasher.finalize())
+) -> Result<Sha256Digest, CognitiveStoreError> {
+    let digest = durable_projection_digest_v2(scope, nodes, edges)
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+    Sha256Digest::parse(digest.to_string()).map_err(CognitiveStoreError::Corrupt)
 }
 
 fn to_i64(value: u64, label: &str) -> Result<i64, CognitiveStoreError> {
