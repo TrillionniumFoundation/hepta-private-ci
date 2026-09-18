@@ -92,11 +92,7 @@ pub trait CognitiveRecoveryWriterFenceVerifier: Send + Sync {
 
 impl<F> CognitiveRecoveryWriterFenceVerifier for F
 where
-    F: Fn(
-            &CognitiveRecoveryWriterFence,
-            &CognitiveRecoveryAnchor,
-            &AgentId,
-        ) -> Result<(), String>
+    F: Fn(&CognitiveRecoveryWriterFence, &CognitiveRecoveryAnchor, &AgentId) -> Result<(), String>
         + Send
         + Sync,
 {
@@ -255,12 +251,7 @@ fn validate_writer_fence(
             "cognitive recovery writer fence is expired".to_string(),
         ));
     }
-    if fence
-        .fence_digest
-        .as_str()
-        .bytes()
-        .all(|byte| byte == b'0')
-    {
+    if fence.fence_digest.as_str().bytes().all(|byte| byte == b'0') {
         return Err(CognitiveRecoveryError::Invalid(
             "cognitive recovery writer-fence digest must be non-zero".to_string(),
         ));
