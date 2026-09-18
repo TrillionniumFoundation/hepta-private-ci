@@ -11,6 +11,7 @@ fn composition(generation: u64) -> RuntimeComposition {
         agentd_generation: generation,
         configuration_digest: digest('1'),
         ports_digest: digest('2'),
+        cancellation_ack_timeout_ms: 1_000,
     }
 }
 
@@ -55,6 +56,7 @@ fn freezes_the_complete_run_tuple_before_context_attachment() {
             terminal_observed: false,
             idempotent: false,
             cancel_reason: None,
+            cancellation_ack_deadline_ms: None,
         }
     );
 
@@ -92,6 +94,7 @@ fn freezes_the_complete_run_tuple_before_context_attachment() {
             terminal_observed: false,
             idempotent: false,
             cancel_reason: None,
+            cancellation_ack_deadline_ms: None,
         }
     );
 }
@@ -140,13 +143,13 @@ fn cancellation_preserves_dispatch_boundary_reason_and_idempotency() {
         AgentRunCoordinator::compose_runtime(composition(3)).expect("compose runtime");
     before.start_run(100, snapshot()).expect("admit run");
     let early = before
-        .cancel_run("run.1", 1, "operator_requested")
+        .cancel_run(103, "run.1", 1, "operator_requested")
         .expect("cancel");
     assert_eq!(early.0, CancellationDisposition::CancelledBeforeDispatch);
     assert_eq!(early.1.phase, RunPhase::Cancelled);
     assert_eq!(early.1.cancel_reason.as_deref(), Some("operator_requested"));
     let repeated = before
-        .cancel_run("run.1", 1, "operator_requested")
+        .cancel_run(104, "run.1", 1, "operator_requested")
         .expect("repeat cancel");
     assert_eq!(repeated.0, CancellationDisposition::AlreadyTerminal);
     assert!(repeated.1.idempotent);
@@ -159,11 +162,12 @@ fn cancellation_preserves_dispatch_boundary_reason_and_idempotency() {
         .expect("attach context");
     after.mark_dispatched(102, "run.1", 2).expect("dispatch");
     let late = after
-        .cancel_run("run.1", 3, "operator_requested")
+        .cancel_run(103, "run.1", 3, "operator_requested")
         .expect("cancel");
     assert_eq!(late.0, CancellationDisposition::CancellingAfterDispatch);
     assert_eq!(late.1.phase, RunPhase::Cancelling);
     assert_eq!(late.1.cancel_reason.as_deref(), Some("operator_requested"));
+    assert_eq!(late.1.cancellation_ack_deadline_ms, Some(1_103));
     let terminal = after
         .observe_terminal("run.1", 4, RunPhase::Indeterminate, false)
         .expect("observe unknown terminality");
@@ -276,7 +280,7 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
             )
             .expect("unknown outcome");
         assert_eq!(
-            coordinator.cancel_run("run.1", unknown.revision, "operator_requested"),
+            coordinator.cancel_run(103, "run.1", unknown.revision, "operator_requested"),
             Err(AgentRunError::TerminalObservationRequired)
         );
         assert_eq!(
