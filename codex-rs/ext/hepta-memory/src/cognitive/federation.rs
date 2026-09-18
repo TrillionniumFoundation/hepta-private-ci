@@ -23,6 +23,7 @@ use codex_hepta_memory::FederatedMemoryExplanation;
 use codex_hepta_memory::FederatedMemoryRevalidationBinding;
 use codex_hepta_memory::FederatedRecallSet;
 use codex_hepta_memory::FederatedRetrievalBatch;
+use codex_hepta_memory::FederatedRetrievalCoverage;
 use codex_hepta_memory::FederatedRevalidationStatus;
 use codex_hepta_memory::FederationConsumerAccess;
 use codex_hepta_memory::MemoryLifecycleState;
@@ -54,6 +55,7 @@ struct PreparedFederatedAttachment {
     turn_id: String,
     workspace: std::path::PathBuf,
     query_sha256: Sha256Digest,
+    coverage: FederatedRetrievalCoverage,
     bindings: Vec<FederatedMemoryRevalidationBinding>,
     source_binding_sha256: Sha256Digest,
     content_sha256: Sha256Digest,
@@ -139,13 +141,14 @@ impl FederatedCognitiveExtension {
             }
             explanations.push(*explanation);
         }
-        let content = compile_explanations(&explanations)?;
+        let content = compile_explanations(&explanations, prepared.coverage)?;
         let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
             input.cwd,
             &prepared.query_sha256,
+            prepared.coverage,
             &prepared.bindings,
             &content_sha256,
         )?;
@@ -289,6 +292,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 input.turn_id.as_str(),
                 workspace.as_path(),
                 &batch.query_sha256,
+                batch.coverage,
                 &bindings,
                 &content_sha256,
             ) else {
@@ -302,6 +306,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 turn_id: input.turn_id,
                 workspace,
                 query_sha256: batch.query_sha256,
+                coverage: batch.coverage,
                 bindings,
                 source_binding_sha256,
                 content_sha256,
@@ -437,6 +442,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
 struct FederatedAttachment<'a> {
     schema_version: u32,
     source: &'static str,
+    coverage: FederatedRetrievalCoverage,
     memories: &'a [FederatedAttachmentMemory],
 }
 
@@ -471,8 +477,10 @@ fn combine_cognitive_materials(
     let local_memory = compact_local_memory(local_value.get("memories")?.as_array()?.first()?)?;
     let federated_memory =
         compact_federated_memory(federated_value.get("memories")?.as_array()?.first()?)?;
+    let federation_coverage = federated_value.get("coverage")?.clone();
     let content = serde_json::to_string(&json!({
         "s": "verified_cognitive_v1",
+        "f": federation_coverage,
         "m": [local_memory, federated_memory],
     }))
     .ok()?;
@@ -593,7 +601,7 @@ fn compile_retrieval_batch(
         );
         let mut proposed = selected_memories.clone();
         proposed.push(record);
-        let Ok(content) = serialize_attachment(&proposed) else {
+        let Ok(content) = serialize_attachment(&proposed, batch.coverage) else {
             continue;
         };
         if content.len() > max_bytes {
@@ -605,11 +613,14 @@ fn compile_retrieval_batch(
     if selected_bindings.is_empty() {
         return None;
     }
-    let content = serialize_attachment(&selected_memories).ok()?;
+    let content = serialize_attachment(&selected_memories, batch.coverage).ok()?;
     Some((selected_bindings, content))
 }
 
-fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<String> {
+fn compile_explanations(
+    explanations: &[FederatedMemoryExplanation],
+    coverage: FederatedRetrievalCoverage,
+) -> Option<String> {
     let memories = explanations
         .iter()
         .map(|explanation| {
@@ -644,7 +655,7 @@ fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<S
             )
         })
         .collect::<Vec<_>>();
-    serialize_attachment(&memories).ok()
+    serialize_attachment(&memories, coverage).ok()
 }
 
 fn attachment_record(
@@ -678,10 +689,12 @@ fn attachment_record(
 
 fn serialize_attachment(
     memories: &[FederatedAttachmentMemory],
+    coverage: FederatedRetrievalCoverage,
 ) -> Result<String, serde_json::Error> {
     serde_json::to_string(&FederatedAttachment {
         schema_version: FEDERATED_ATTACHMENT_SCHEMA_VERSION,
         source: "explicit_federated_verified_memory",
+        coverage,
         memories,
     })
 }
@@ -691,10 +704,12 @@ fn federation_source_binding(
     turn_id: &str,
     workspace: &Path,
     query_sha256: &Sha256Digest,
+    coverage: FederatedRetrievalCoverage,
     bindings: &[FederatedMemoryRevalidationBinding],
     content_sha256: &Sha256Digest,
 ) -> Option<Sha256Digest> {
     let serialized = serde_json::to_vec(bindings).ok()?;
+    let coverage = serde_json::to_vec(&coverage).ok()?;
     Some(digest_many(
         b"hepta:cognitive:federated-ephemeral-source-binding:v1",
         &[
@@ -702,6 +717,7 @@ fn federation_source_binding(
             turn_id.as_bytes(),
             path_identity_bytes(workspace).as_slice(),
             query_sha256.as_str().as_bytes(),
+            coverage.as_slice(),
             serialized.as_slice(),
             content_sha256.as_str().as_bytes(),
         ],
