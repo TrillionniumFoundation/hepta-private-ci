@@ -251,10 +251,24 @@
         "ProductGateTests.test_pull_request_source_head_product_caller_composes_same_v2_path",
         "ProductGateTests.test_base_merge_lane_is_invalid_on_push",
         "ProductGateTests.test_missing_canonical_work_package_registry_fails_closed",
-        "ProductGateTests.test_tampered_canonical_engineering_package_fails_closed"
+        "ProductGateTests.test_tampered_canonical_engineering_package_fails_closed",
+        "ProductGateTests.test_product_receipt_pair_binds_both_exact_lanes",
+        "ProductGateTests.test_product_receipt_pair_rejects_tamper_and_lane_drift"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "exact-source/base-merge product execution receipt bound to canonical ECP-1 registry truth only; no merge or release authority"
+    },
+    {
+      "designOperation": "verify_product_receipt_pair",
+      "nativeModule": "control_engineering_v2.product_gate",
+      "nativeSymbol": "verify_product_receipt_pair",
+      "ownerSymbol": "verify_product_receipt_pair",
+      "tests": [
+        "ProductGateTests.test_product_receipt_pair_binds_both_exact_lanes",
+        "ProductGateTests.test_product_receipt_pair_rejects_tamper_and_lane_drift"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "dual-lane exact-source/base-merge product evidence binding only; no merge or release authority"
     }
   ],
   "negativeAuthorityInvariants": [
