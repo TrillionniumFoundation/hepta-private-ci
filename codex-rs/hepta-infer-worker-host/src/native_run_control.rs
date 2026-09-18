@@ -1,6 +1,7 @@
 //! Local durable admission around the actual App Server driver.
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::native::NativeCodexBoundaryReceipt;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 use sha2::Digest;
@@ -63,6 +64,7 @@ impl AppServerModelDriver {
                 return Ok(output);
             }
             let dispatch = record.dispatch.ok_or("missing durable dispatch binding")?;
+            let codex_boundary = reopened_codex_boundary(&dispatch)?;
             let output = NativeRunOutput {
                 thread_id: dispatch.thread_id,
                 turn_id: record.turn_id.unwrap_or_default(),
@@ -76,6 +78,7 @@ impl AppServerModelDriver {
                 stop_reason: Some(
                     "reopened after possible dispatch; reservation held, no replay".to_string(),
                 ),
+                codex_boundary,
             };
             control.settle_native(&record.request.request_id, output.clone())?;
             return Ok(output);
@@ -104,6 +107,35 @@ impl AppServerModelDriver {
                 Err(error)
             }
         }
+    }
+}
+
+fn reopened_codex_boundary(
+    dispatch: &codex_hepta_infer_core::durable_control::native::NativeDispatch,
+) -> Result<Option<NativeCodexBoundaryReceipt>> {
+    match (
+        dispatch.codex_request_digest.as_ref(),
+        dispatch.codex_connection_digest.as_ref(),
+        dispatch.codex_session_generation,
+        dispatch.codex_protocol_version,
+        dispatch.codex_deadline_ms,
+    ) {
+        (None, None, None, None, None) => Ok(None),
+        (
+            Some(request_digest),
+            Some(connection_digest),
+            Some(session_generation),
+            Some(protocol_version),
+            Some(_deadline_ms),
+        ) => Ok(Some(NativeCodexBoundaryReceipt {
+            request_digest: request_digest.clone(),
+            response_digest: None,
+            connection_digest: connection_digest.clone(),
+            session_generation,
+            protocol_version,
+            status: NativeRunStatus::Indeterminate,
+        })),
+        _ => Err("incomplete durable runtime.codex dispatch binding".into()),
     }
 }
 
