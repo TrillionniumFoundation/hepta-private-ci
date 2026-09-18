@@ -6,6 +6,8 @@ use codex_hepta_types::Digest32;
 
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
+use crate::authbus_trust_store::advance_authbus_rollback_guard;
+use crate::authbus_trust_store::authbus_replay_epoch_retired;
 use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
 
@@ -59,6 +61,9 @@ pub(crate) async fn advance_replay(
     authenticated: &AuthenticatedMessage,
 ) -> Result<(), AuthBusAdmissionError> {
     let claims = authenticated.claims();
+    if authbus_replay_epoch_retired(transaction, &claims.issuer_id, claims.key_epoch).await? {
+        return Err(codex_hepta_authbus::Error::RetiredIssuer.into());
+    }
     let epoch = claims.key_epoch.get().to_be_bytes();
     let previous: Option<Vec<u8>> = sqlx::query_scalar(
         "SELECT sequence FROM authbus_replay_sequences
@@ -109,7 +114,20 @@ pub(crate) async fn advance_replay(
     .execute(&mut **transaction)
     .await
     .map_err(classify_sqlx_error)?;
+    let mut event = b"replay-advance\\0".to_vec();
+    push_text(&mut event, claims.issuer_id.as_str());
+    event.extend_from_slice(&epoch);
+    push_text(&mut event, claims.subject_id.as_str());
+    event.extend_from_slice(claims.scope_digest.as_array());
+    event.extend_from_slice(&claims.sequence.to_be_bytes());
+    event.extend_from_slice(authenticated.receipt().envelope_digest.as_array());
+    advance_authbus_rollback_guard(transaction, &event).await?;
     Ok(())
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    bytes.extend_from_slice(&u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
 }
 
 #[cfg(test)]
