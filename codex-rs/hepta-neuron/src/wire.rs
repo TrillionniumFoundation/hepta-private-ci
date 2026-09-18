@@ -490,7 +490,7 @@ fn strict_object<'a>(
         .ok_or(NeuronWireError::ExpectedObject(name))?;
     for field in required {
         if !object.contains_key(*field) {
-            return Err(NeuronWireError::MissingField(field));
+            return Err(NeuronWireError::MissingField(*field));
         }
     }
     let allowed: BTreeSet<&str> = required.iter().chain(optional).copied().collect();
