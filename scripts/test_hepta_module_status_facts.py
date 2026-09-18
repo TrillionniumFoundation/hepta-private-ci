@@ -37,8 +37,10 @@ class ModuleStatusFactsTests(unittest.TestCase):
                 all(type(row["production_implementation"]) is bool for row in projected)
             )
             self.assertEqual({row["source_root_present"] for row in projected}, {True})
+            expected_production = module_id == "control.engineering"
             self.assertEqual(
-                {row["production_implementation"] for row in projected}, {False}
+                {row["production_implementation"] for row in projected},
+                {expected_production},
             )
             self.assertFalse(
                 module["production_implementation"]
