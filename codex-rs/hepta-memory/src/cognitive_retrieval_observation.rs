@@ -262,13 +262,7 @@ impl CognitiveStore {
         maximum_results: usize,
     ) -> Result<Vec<RetrievalCandidate>, CognitiveStoreError> {
         Ok(self
-            .resolve_retrieval_with_ranks_tx(
-                transaction,
-                access,
-                request,
-                ranked,
-                maximum_results,
-            )
+            .resolve_retrieval_with_ranks_tx(transaction, access, request, ranked, maximum_results)
             .await?
             .into_iter()
             .map(|resolved| resolved.candidate)
