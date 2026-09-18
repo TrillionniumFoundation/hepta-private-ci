@@ -74,7 +74,7 @@ pub(crate) async fn read(
         })
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
     let candidates = store
-        .retrieve_memory_candidates(&access, &RetrievalRequest::new(query, now_seconds()?))
+        .retrieve_memory_candidates_for_ranking(&access, &RetrievalRequest::new(query, now_seconds()?))
         .await?;
     let mut response = CognitiveContextSnapshot {
         snapshot_digest: read.snapshot_digest().to_string(),
