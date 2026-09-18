@@ -315,7 +315,7 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     {
         return Err(E::Binding("reserved or excessive candidates"));
     }
-    let policy_id = bundle.candidate_id.clone();
+    let generator_principal = bundle.generator.clone();
     let evaluation = decide_with_signed_evidence_v2(
         request.evaluation,
         request.metric_roles,
@@ -330,12 +330,39 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
         return Err(E::Ineligible(evaluation.decision.disposition));
     }
     let intuition = decide_calibrated_v2(request.intuition.clone()).map_err(E::Intuition)?;
+    let production_decision = production_decision_from_receipt(
+        &request.run,
+        &request.intuition,
+        &intuition,
+        &request.episode_id,
+        &generator_principal.principal_id,
+        request.dataset.snapshot.dataset_digest,
+        request.candidate_evidence.payload_digest,
+    )?;
+    let decision_payload =
+        decision_signing_payload_v2(&production_decision).map_err(E::Ledger)?;
+    let generator = ledger
+        .verifier()
+        .verify(
+            LearningEvidenceRoleV1::Generator,
+            request.decision_evidence,
+            &decision_payload,
+            now,
+        )
+        .map_err(E::Evidence)?;
+    if generator.principal() != &generator_principal
+        || generator.principal().authority_epoch != request.run.snapshot.authority_epoch
+    {
+        return Err(E::Binding("decision generator"));
+    }
     let mut admission = b"hepta.intelligence.evaluated-shadow.v1\0".to_vec();
     for digest in [
         evaluation.decision.evidence_digest,
         evaluation.authentication_digest,
         Digest32::of_bytes(&request.candidate_evidence.signing_bytes()),
         Digest32::of_bytes(&candidate_payload),
+        Digest32::of_bytes(&request.decision_evidence.signing_bytes()),
+        Digest32::of_bytes(&decision_payload),
         snapshot_digest,
         request.run.request_digest,
         intuition.receipt_digest,
@@ -362,10 +389,10 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
         host: ports,
         ledger,
         expected_head: request.expected_ledger_head,
-        policy_id,
-        episode_id: request.episode_id,
-        request: request.intuition,
+        production_decision,
+        decision_evidence: request.decision_evidence,
         intuition,
+        now,
         admission_digest: run.request_digest,
         appended: None,
         failure: None,
@@ -383,15 +410,15 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
 
 struct DurableDecisionPorts<'a, P> {
     host: &'a mut P,
-    ledger: &'a mut dyn DurableLearningJournal,
+    ledger: &'a mut LedgerWriter,
     expected_head: Digest32,
-    policy_id: StableId,
-    episode_id: StableId,
-    request: CalibratedDecisionRequestV1,
+    production_decision: ProductionDecisionV2,
+    decision_evidence: &'a SignedLearningEvidenceV1,
     intuition: CalibratedIntuitionReceiptV1,
+    now: u64,
     admission_digest: Digest32,
     appended: Option<AppendReceipt>,
-    failure: Option<DurableLedgerError>,
+    failure: Option<ProductionLedgerError>,
 }
 
 impl<P: LaneFShadowPortsV1> LaneFShadowPortsV1 for DurableDecisionPorts<'_, P> {
@@ -435,61 +462,16 @@ impl<P: LaneFShadowPortsV1> LaneFShadowPortsV1 for DurableDecisionPorts<'_, P> {
         Ok(receipt)
     }
     fn record_learning(&mut self, input: &PortInputV1) -> Result<PortReceiptV1, PortFailureV1> {
-        let identifier = |value| {
-            StableId::new(value).map_err(|_| PortFailureV1 {
-                class: PortFailureClassV1::Rejected,
-                evidence_digest: self.admission_digest,
-            })
-        };
-        let abstain = identifier(ABSTAIN)?;
-        let slow_path = identifier(SLOW_PATH)?;
-        let producer = identifier("learning.ledger")?;
-        let (selected, propensity) = match &self.intuition.disposition {
-            CalibratedDispositionV1::Selected(candidate) => (
-                candidate.clone(),
-                self.intuition
-                    .propensities
-                    .iter()
-                    .find(|row| &row.candidate_id == candidate)
-                    .map(|row| row.probability),
-            ),
-            CalibratedDispositionV1::Abstained(_) => {
-                (abstain.clone(), Some(self.intuition.abstain_probability))
-            }
-            CalibratedDispositionV1::SlowPath(_) => (
-                slow_path.clone(),
-                Some(self.intuition.slow_path_probability),
-            ),
-        };
-        let Some(propensity) = propensity.filter(|value| value.raw() > 0) else {
-            return Err(PortFailureV1 {
-                class: PortFailureClassV1::Rejected,
-                evidence_digest: self.intuition.receipt_digest,
-            });
-        };
-        let mut candidates: Vec<_> = self
-            .request
-            .candidates
-            .iter()
-            .map(|candidate| candidate.candidate_id.clone())
-            .collect();
-        candidates.push(abstain);
-        candidates.push(slow_path);
-        let mut support = b"hepta.intelligence.durable-shadow-decision.v1\0".to_vec();
-        support.extend_from_slice(self.admission_digest.as_array());
-        support.extend_from_slice(input.predecessor_digest.as_array());
-        let event = LedgerEvent::Decision(EpisodeDecision {
-            record_id: input.run_id.clone(),
-            episode_id: self.episode_id.clone(),
-            objective_digest: self.request.objective_digest,
-            policy_id: self.policy_id.clone(),
-            candidate_ids: candidates,
-            selected_candidate_id: selected,
-            selected_propensity: propensity,
-            completeness: CandidateSetCompleteness::Complete,
-            support_digest: Digest32::of_bytes(&support),
-        });
-        match self.ledger.append(self.expected_head, event) {
+        let producer = StableId::new("learning.ledger".to_owned()).map_err(|_| PortFailureV1 {
+            class: PortFailureClassV1::Rejected,
+            evidence_digest: self.admission_digest,
+        })?;
+        match self.ledger.append_decision(
+            self.expected_head,
+            self.production_decision.clone(),
+            self.decision_evidence,
+            self.now,
+        ) {
             Ok(receipt) => {
                 let output_digest = receipt.chain_digest;
                 self.appended = Some(receipt);
@@ -507,11 +489,12 @@ impl<P: LaneFShadowPortsV1> LaneFShadowPortsV1 for DurableDecisionPorts<'_, P> {
                 self.failure = Some(error);
                 Err(PortFailureV1 {
                     class: PortFailureClassV1::Indeterminate,
-                    evidence_digest: Digest32::of_bytes(&support),
+                    evidence_digest: self.admission_digest,
                 })
             }
         }
     }
+}
 }
 
 #[cfg(test)]
