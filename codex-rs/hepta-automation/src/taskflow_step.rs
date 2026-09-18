@@ -687,8 +687,8 @@ impl From<TaskFlowReconcileOutcome> for StepOperationResult {
 
 async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError> {
     // The schema is additive and deliberately qualification-only.  Keeping it
-    // out of the default migrator avoids changing AUTOMATION_SCHEMA_VERSION or
-    // existing production/open paths.
+    // Kept as an idempotent guard for stores created by the historical
+    // qualification path; normal stores receive this table from migrations.
     sqlx::query(
         r#"CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
             owner_agent_id TEXT NOT NULL,
