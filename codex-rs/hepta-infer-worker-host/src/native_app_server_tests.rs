@@ -28,7 +28,7 @@ fn observe(
         1,
         AppServerEvent::ServerNotification(Box::new(notification)),
     );
-    observe(output, &test_intent(), &witnessed)
+    observe_notification(output, &test_intent(), &witnessed)
 }
 
 fn output() -> NativeRunOutput {
