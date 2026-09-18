@@ -597,6 +597,21 @@ impl BoundModelExecutionV1 {
     }
 }
 
+pub fn runtime_profile_digest(
+    config: &NeuronRuntimeConfigV1,
+    native: &NativeSparseProfileV1,
+) -> Result<Digest32, ProtocolError> {
+    let config_digest = config.digest()?;
+    let sparse = config.to_sparse_config(native)?;
+    let sparse_digest = sparse
+        .digest()
+        .map_err(|_| ProtocolError::InvalidNativeProfile("sparse config digest"))?;
+    let mut bytes = b"hepta.neuron.runtime-profile.v1".to_vec();
+    bytes.extend_from_slice(config_digest.as_array());
+    bytes.extend_from_slice(sparse_digest.as_array());
+    Ok(Digest32::of_bytes(&bytes))
+}
+
 pub fn q24_feature_digest(values: &[i64]) -> Digest32 {
     let mut bytes = b"hepta.neuron.feature-vector.q24.v1".to_vec();
     bytes.extend_from_slice(&(values.len() as u64).to_be_bytes());
