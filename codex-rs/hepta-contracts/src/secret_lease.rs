@@ -220,7 +220,7 @@ impl SecretLeaseRecord {
                     && !self.renewable
             }
             State::Unknown => match self.pending_operation {
-                Some(Operation::Issue) => self.provider_lease_id.is_none() && self.generation == 0,
+                Some(Operation::Issue) => self.generation == 0,
                 Some(Operation::Renew | Operation::Revoke) => {
                     self.provider_lease_id.is_some() && self.generation > 0
                 }
@@ -273,9 +273,7 @@ impl SecretLeaseRecord {
                 self.generation == 1 && self.provider_lease_id.is_some()
             }
             (State::Requesting, State::Unknown) => {
-                self.generation == 0
-                    && self.pending_operation == Some(Operation::Issue)
-                    && self.provider_lease_id.is_none()
+                self.generation == 0 && self.pending_operation == Some(Operation::Issue)
             }
             (State::Requesting, State::Rejected) => self.generation == 0,
             (State::Active, State::Renewing) => {
@@ -317,9 +315,14 @@ impl SecretLeaseRecord {
                 previous.pending_operation == Some(Operation::Revoke)
                     && self.generation == previous.generation
             }
-            (State::Unknown, State::Expired) => {
-                previous.pending_operation != Some(Operation::Issue)
-                    && self.generation == previous.generation
+            (State::Unknown, State::Expired) => match previous.pending_operation {
+                Some(Operation::Issue) => {
+                    previous.provider_lease_id.is_some() && self.generation == 1
+                }
+                Some(Operation::Renew | Operation::Revoke) => {
+                    self.generation == previous.generation
+                }
+                None => false,
             }
             (State::Unknown, State::Rejected) => {
                 previous.pending_operation == Some(Operation::Issue) && self.generation == 0
