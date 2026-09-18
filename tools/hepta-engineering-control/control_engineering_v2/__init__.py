@@ -69,6 +69,11 @@ from .orchestration import (
     issue_signed_work_envelope,
     plan_engineering_work,
 )
+from .sandbox_control import (
+    SandboxCoordinator,
+    SandboxExecutionPolicy,
+    SandboxExecutionResult,
+)
 from .production import (
     ProductionReadinessDecision,
     ProductionReadinessFacts,
@@ -134,6 +139,9 @@ __all__ = [
     "ProductionReadinessFacts",
     "ReviewCapacity",
     "ReviewRequest",
+    "SandboxCoordinator",
+    "SandboxExecutionPolicy",
+    "SandboxExecutionResult",
     "SandboxParityAttestation",
     "SandboxParityReceipt",
     "SandboxObservation",
