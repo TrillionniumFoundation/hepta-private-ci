@@ -385,6 +385,7 @@ def plan_engineering_work(
             raise EngineeringError("invalid_review_capacity")
         review_template[row.role] = row.slots
 
+    envelope_scope = canonical_paths(envelope.allowed_paths)
     normalized_packages: list[tuple[EngineeringWorkPackage, WorkPackage]] = []
     for package in package_values:
         checked_id(package.package_id, "package_id")
@@ -416,6 +417,11 @@ def plan_engineering_work(
                 package.write_paths,
             )
         )
+        if any(
+            not path_is_within(path, envelope_scope)
+            for path in native.write_paths
+        ):
+            raise EngineeringError("package_path_outside_envelope")
         normalized_packages.append((package, native))
 
     completed: dict[str, CompletionReceipt] = {}
