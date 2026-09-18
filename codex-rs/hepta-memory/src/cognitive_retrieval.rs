@@ -55,6 +55,7 @@ pub struct MemoryExplanation {
     pub memory: MemoryRevisionRecord,
     pub citations: Vec<SourceCitationRecord>,
     pub kg_projection_generation: Option<ProjectionGeneration>,
+    pub kg_projection_generation_digest: Option<Sha256Digest>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
@@ -84,6 +85,7 @@ pub struct MemoryRevalidationBinding {
     pub valid_to_unix_seconds: Option<i64>,
     pub citations: Vec<SourceRevalidationBinding>,
     pub kg_projection_generation: Option<ProjectionGeneration>,
+    pub kg_projection_generation_digest: Option<Sha256Digest>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -135,6 +137,7 @@ pub enum RevalidationDrift {
     CitationSet,
     SourceHash,
     KgProjectionGeneration,
+    KgProjectionDigest,
     NotEligible,
 }
 
@@ -265,9 +268,13 @@ impl CognitiveStore {
             }
             citations.push(source);
         }
-        let kg_projection_generation = self
+        let kg_projection = self
             .projection_generation_for_scope_tx(transaction, &memory.scope)
             .await?;
+        let (kg_projection_generation, kg_projection_generation_digest) =
+            kg_projection.map_or((None, None), |(generation, digest)| {
+                (Some(generation), Some(digest))
+            });
         let current_head: i64 =
             sqlx::query_scalar("SELECT revision FROM memory_heads WHERE memory_id = ?")
                 .bind(memory.id.memory_id.as_str())
@@ -283,6 +290,7 @@ impl CognitiveStore {
             memory,
             citations,
             kg_projection_generation,
+            kg_projection_generation_digest,
         })
     }
 
@@ -482,6 +490,13 @@ impl CognitiveStore {
                 RevalidationDrift::KgProjectionGeneration,
             ));
         }
+        if explanation.kg_projection_generation_digest
+            != binding.kg_projection_generation_digest
+        {
+            return Ok(RevalidationStatus::Stale(
+                RevalidationDrift::KgProjectionDigest,
+            ));
+        }
         if !eligible(memory, now_unix_seconds) {
             return Ok(RevalidationStatus::Stale(RevalidationDrift::NotEligible));
         }
@@ -492,21 +507,29 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         scope: &CognitiveScope,
-    ) -> Result<Option<ProjectionGeneration>, CognitiveStoreError> {
-        let generation = sqlx::query_scalar::<_, i64>(
-            "SELECT generation FROM kg_projection WHERE projection_scope = ?",
+    ) -> Result<Option<(ProjectionGeneration, Sha256Digest)>, CognitiveStoreError> {
+        let row = sqlx::query(
+            "SELECT p.generation, v.generation_digest
+             FROM kg_projection p
+             JOIN kg_projection_v2_publications v
+               ON v.projection_scope = p.projection_scope
+              AND v.generation = p.generation
+             WHERE p.projection_scope = ?",
         )
         .bind(scope.projection_key())
         .fetch_optional(&mut **transaction)
         .await
         .map_err(unavailable)?;
-        generation
-            .map(|generation| {
-                u64::try_from(generation)
-                    .map(ProjectionGeneration)
-                    .map_err(|_| CognitiveStoreError::Corrupt("negative KG generation".to_string()))
-            })
-            .transpose()
+        row.map(|row| {
+            let generation: i64 = row.try_get("generation").map_err(unavailable)?;
+            let generation = u64::try_from(generation)
+                .map(ProjectionGeneration)
+                .map_err(|_| CognitiveStoreError::Corrupt("negative KG generation".to_string()))?;
+            let digest: String = row.try_get("generation_digest").map_err(unavailable)?;
+            let digest = Sha256Digest::parse(digest).map_err(CognitiveStoreError::Corrupt)?;
+            Ok((generation, digest))
+        })
+        .transpose()
     }
 
     async fn memory_fts_channel_tx(
@@ -564,6 +587,9 @@ impl CognitiveStore {
              FROM kg_entity_fts f
              JOIN kg_projection p ON p.projection_scope = f.projection_scope
                                   AND p.generation = f.generation
+             JOIN kg_projection_v2_publications v
+               ON v.projection_scope = p.projection_scope
+              AND v.generation = p.generation
              JOIN kg_nodes n ON n.projection_scope = f.projection_scope
                             AND n.generation = f.generation AND n.node_id = f.node_id
              JOIN kg_projection_node_entities i
@@ -668,6 +694,9 @@ impl CognitiveStore {
                  JOIN kg_edges e
                    ON e.projection_scope = ? AND e.generation = ?
                   AND (e.from_node_id = s.node_id OR e.to_node_id = s.node_id)
+                 JOIN kg_projection_v2_publications v
+                   ON v.projection_scope = e.projection_scope
+                  AND v.generation = e.generation
                  JOIN kg_nodes n
                    ON n.projection_scope = e.projection_scope AND n.generation = e.generation
                   AND n.node_id = CASE WHEN e.from_node_id = s.node_id
@@ -879,6 +908,7 @@ fn binding_from_explanation(explanation: &MemoryExplanation) -> MemoryRevalidati
             })
             .collect(),
         kg_projection_generation: explanation.kg_projection_generation,
+        kg_projection_generation_digest: explanation.kg_projection_generation_digest.clone(),
     }
 }
 
