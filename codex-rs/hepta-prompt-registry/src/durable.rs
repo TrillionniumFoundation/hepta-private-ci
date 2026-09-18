@@ -90,13 +90,6 @@ impl DurablePromptRegistry {
         self.commit(|registry| registry.admit_factor_verified(admission, now_unix_ms))
     }
 
-    pub(crate) fn register_realization_v2(
-        &mut self,
-        binding: PromptRealizationBindingV2,
-    ) -> Result<RegistryReceipt, DurableRegistryError> {
-        self.commit(|registry| registry.register_realization_v2(binding))
-    }
-
     pub fn register_realization_payload_v2(
         &mut self,
         binding: PromptRealizationBindingV2,
@@ -988,6 +981,14 @@ impl std::error::Error for DurableRegistryError {}
 mod tests {
     use std::os::unix::fs::OpenOptionsExt;
 
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+
+    use crate::AdmissionAuthority;
+    use crate::AdmissionBindingV1;
+    use crate::AdmissionGrantV1;
+    use crate::SignedAdmissionGrantV1;
+
     use super::*;
 
     fn id(value: &str) -> StableId {
@@ -1046,4 +1047,145 @@ mod tests {
             Some(LifecycleEventKind::Imported)
         );
     }
+
+    #[test]
+    fn restart_preserves_revocation_payload_and_admission_lineage() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry");
+        let factor = PromptFactor {
+            factor_id: id("factor:durable"),
+            proposer_id: id("proposer:durable"),
+            semantic_version: id("v1"),
+            content_digest: digest("factor:durable"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        let tuple = PromptModelTupleV2 {
+            model_digest: digest("model"),
+            tokenizer_digest: digest("tokenizer"),
+            template_digest: digest("template"),
+            tool_schema_digest: digest("tool-schema"),
+            context_profile_digest: digest("context-profile"),
+            locale_id: id("locale:en-US"),
+        };
+        let payload = b"durable developer instruction".to_vec();
+        let old_snapshot = {
+            let mut durable =
+                DurablePromptRegistry::open_state_dir(&root, 64).expect("open registry");
+            durable
+                .register_factor(factor.clone())
+                .expect("register factor");
+
+            let signing_key = SigningKey::from_bytes(&[31; 32]);
+            let authority = AdmissionAuthority::new(
+                id("review-authority:durable"),
+                signing_key.verifying_key().to_bytes(),
+            )
+            .expect("authority");
+            let grant = AdmissionGrantV1 {
+                schema_version: 1,
+                signer_id: "review-authority:durable".to_owned(),
+                grant_id: "admission:durable".to_owned(),
+                binding: AdmissionBindingV1 {
+                    factor_id: factor.factor_id.to_string(),
+                    factor_content_sha256: factor.content_digest.into_array(),
+                    reviewer_id: "reviewer:durable".to_owned(),
+                    reviewed_scope_sha256: digest("scope:durable").into_array(),
+                    evidence_sha256: digest("evidence:durable").into_array(),
+                },
+                not_before_unix_ms: 10,
+                expires_at_unix_ms: 1000,
+            };
+            let signature = signing_key
+                .sign(&grant.signing_bytes().expect("signing bytes"))
+                .to_bytes()
+                .to_vec();
+            let verified = authority
+                .verify(
+                    &SignedAdmissionGrantV1 { grant, signature },
+                    &factor,
+                    20,
+                )
+                .expect("verified admission");
+            durable
+                .admit_factor_verified(verified, 20)
+                .expect("admit factor");
+
+            let binding = PromptRealizationBindingV2 {
+                realization_id: id("realization:durable"),
+                factor_id: factor.factor_id.clone(),
+                model_digest: tuple.model_digest,
+                tokenizer_digest: tuple.tokenizer_digest,
+                template_digest: tuple.template_digest,
+                tool_schema_digest: tuple.tool_schema_digest,
+                context_profile_digest: tuple.context_profile_digest,
+                locale_id: tuple.locale_id.clone(),
+                role: PromptRoleV2::DeveloperInstruction,
+                payload_digest: Digest32::of_bytes(&payload),
+                token_cost: 8,
+                expires_unix_ms: None,
+            };
+            durable
+                .register_realization_payload_v2(binding, payload.clone(), None)
+                .expect("register payload");
+            let snapshot = durable
+                .snapshot_v2(digest("generation-vector"), &tuple)
+                .expect("old snapshot");
+            durable
+                .revoke_factor(
+                    &factor.factor_id,
+                    &id("revoker:durable"),
+                    digest("reason:revoked"),
+                    50,
+                )
+                .expect("revoke factor");
+            snapshot
+        };
+
+        let reopened =
+            DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen registry");
+        assert_eq!(
+            reopened
+                .registry()
+                .factor(&factor.factor_id)
+                .map(|record| record.lifecycle),
+            Some(Lifecycle::Revoked)
+        );
+        assert!(reopened.registry().revocation_frontier() > old_snapshot.revocation_frontier);
+        assert!(
+            reopened
+                .registry()
+                .lifecycle_events()
+                .iter()
+                .any(|event| event.kind == LifecycleEventKind::Admitted
+                    && event.admission_grant_id == Some(id("admission:durable"))
+                    && event.evidence_digest == digest("evidence:durable"))
+        );
+        assert_eq!(
+            reopened
+                .registry()
+                .realization(&id("realization:durable"))
+                .map(|record| record.active),
+            Some(false)
+        );
+        assert_eq!(
+            reopened
+                .registry()
+                .realization_payloads
+                .get(&id("realization:durable")),
+            Some(&payload)
+        );
+        assert!(matches!(
+            reopened.read_compatible_v2(
+                &old_snapshot,
+                digest("generation-vector"),
+                &tuple,
+                60,
+                vec![factor.factor_id],
+                8,
+            ),
+            Err(DurableRegistryError::Read(PromptRegistryV2Error::SnapshotStale))
+        ));
+    }
+
 }
