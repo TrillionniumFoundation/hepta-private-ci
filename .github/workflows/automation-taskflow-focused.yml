@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - name: Rustfmt changed automation owners
-        run: cargo fmt --all -- --check
+        run: cargo fmt -p codex-hepta-automation -p codex-hepta-agentd -- --check
       - name: Check automation and Agentd
         run: cargo check -p codex-hepta-automation -p codex-hepta-agentd
       - name: Test durable automation causal chain
