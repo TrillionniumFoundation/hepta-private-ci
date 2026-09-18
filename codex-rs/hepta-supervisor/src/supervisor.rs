@@ -944,6 +944,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let selection = read_release_selection(record.layout.run_root())?;
+        if let Some(selection) = selection.as_ref() {
+            slot.control_revision = selection.control_revision;
+        }
         let Some(intent) = intent else {
             if selection.is_some() {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
