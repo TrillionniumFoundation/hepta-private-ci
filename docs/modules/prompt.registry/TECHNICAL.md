@@ -44,6 +44,24 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+### Current state interpretation
+
+The module has independent source, composition and activation states:
+
+| Layer | Current state |
+| --- | --- |
+| deterministic registry core | source implemented |
+| durable owner / reopen / migration | source implemented |
+| reviewer-signature admission compatibility | source implemented |
+| kernel final-use authenticated admission | source implemented |
+| payload-backed realization and exact dereference | source implemented |
+| named non-test source consumer | source composed in `intelligence.control` |
+| deployed runtime owner / product activation | not established |
+| terminal real-model payload observation | not proved |
+| independent acceptance / canary / promotion / release | not granted |
+
+A later work package may therefore remain `planned` even when prerequisite native primitives exist, and a source-implemented primitive does not imply runtime activation.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
