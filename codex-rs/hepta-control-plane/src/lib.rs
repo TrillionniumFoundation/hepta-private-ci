@@ -25,6 +25,7 @@ mod planner_journal;
 mod planner_journal_strict;
 mod planner_ndu;
 mod planner_owner_auth;
+mod planner_store;
 #[path = "embodiment/timing.rs"]
 mod timing;
 
@@ -155,6 +156,8 @@ pub use planner_owner_auth::OwnerSummaryVerificationError;
 pub use planner_owner_auth::OwnerSummaryVerifierV1;
 pub use planner_owner_auth::SignedOwnerSummaryV1;
 pub use planner_owner_auth::owner_summary_signing_bytes_v1;
+pub use planner_store::PlannerJournalStoreError;
+pub use planner_store::PlannerJournalStoreV1;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;
