@@ -89,16 +89,7 @@ impl NduSolverIterationReceipt {
     }
 
     pub(crate) fn validate_integrity(&self) -> Result<(), NduError> {
-        let expected = digest_solver_receipt(
-            self.context_digest,
-            self.solver_predecessor_digest,
-            self.iteration,
-            self.predecessor_revision,
-            self.next_revision,
-            self.residual_raw,
-            self.projection_count,
-            self.state_digest,
-        );
+        let expected = digest_solver_receipt(self);
         if expected != self.local_receipt_digest {
             return Err(NduError::SolverReceiptIntegrityMismatch);
         }
@@ -393,17 +384,7 @@ fn update_once(
         values: next_values,
         state_digest,
     };
-    let local_receipt_digest = digest_solver_receipt(
-        context_digest,
-        solver_predecessor_digest,
-        iteration,
-        state.revision,
-        next_revision,
-        residual_raw,
-        projection_count,
-        state_digest,
-    );
-    let receipt = NduSolverIterationReceipt {
+    let mut receipt = NduSolverIterationReceipt {
         iteration,
         predecessor_revision: state.revision,
         next_revision,
@@ -412,8 +393,9 @@ fn update_once(
         state_digest,
         solver_predecessor_digest,
         context_digest,
-        local_receipt_digest,
+        local_receipt_digest: Digest32::ZERO,
     };
+    receipt.local_receipt_digest = digest_solver_receipt(&receipt);
     Ok((next, receipt))
 }
 
@@ -496,34 +478,24 @@ fn digest_state(
     Digest32::of_bytes(&bytes)
 }
 
-fn digest_solver_receipt(
-    context_digest: Option<Digest32>,
-    solver_predecessor_digest: Digest32,
-    iteration: u32,
-    predecessor_revision: Revision,
-    next_revision: Revision,
-    residual_raw: i64,
-    projection_count: u32,
-    state_digest: Digest32,
-) -> Digest32 {
+fn digest_solver_receipt(receipt: &NduSolverIterationReceipt) -> Digest32 {
     let mut bytes = b"hepta.ndu.local-solver-receipt.v2".to_vec();
-    match context_digest {
+    match receipt.context_digest {
         Some(digest) => {
             bytes.push(1);
             bytes.extend_from_slice(digest.as_array());
         }
         None => bytes.push(0),
     }
-    bytes.extend_from_slice(solver_predecessor_digest.as_array());
-    bytes.extend_from_slice(&iteration.to_be_bytes());
-    bytes.extend_from_slice(&predecessor_revision.get().to_be_bytes());
-    bytes.extend_from_slice(&next_revision.get().to_be_bytes());
-    bytes.extend_from_slice(&residual_raw.to_be_bytes());
-    bytes.extend_from_slice(&projection_count.to_be_bytes());
-    bytes.extend_from_slice(state_digest.as_array());
+    bytes.extend_from_slice(receipt.solver_predecessor_digest.as_array());
+    bytes.extend_from_slice(&receipt.iteration.to_be_bytes());
+    bytes.extend_from_slice(&receipt.predecessor_revision.get().to_be_bytes());
+    bytes.extend_from_slice(&receipt.next_revision.get().to_be_bytes());
+    bytes.extend_from_slice(&receipt.residual_raw.to_be_bytes());
+    bytes.extend_from_slice(&receipt.projection_count.to_be_bytes());
+    bytes.extend_from_slice(receipt.state_digest.as_array());
     Digest32::of_bytes(&bytes)
 }
-
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&usize_to_u32(raw.len()).to_be_bytes());
