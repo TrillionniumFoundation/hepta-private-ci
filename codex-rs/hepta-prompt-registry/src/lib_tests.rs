@@ -256,7 +256,7 @@ fn signed_admission_persists_scope_evidence_and_grant_lineage() {
         .to_vec();
     let signed = SignedAdmissionGrantV1 { grant, signature };
     let verified = authority
-        .verify(&signed, &value, 20)
+        .verify(&signed, &value, digest(b"scope"), 20)
         .unwrap_or_else(|error| panic!("verify admission: {error}"));
     registry
         .admit_factor_verified(verified, 20)
@@ -311,7 +311,12 @@ fn verified_admission_cannot_be_used_after_expiry() {
         .to_bytes()
         .to_vec();
     let verified = authority
-        .verify(&SignedAdmissionGrantV1 { grant, signature }, &value, 20)
+        .verify(
+            &SignedAdmissionGrantV1 { grant, signature },
+            &value,
+            digest(b"scope:2"),
+            20,
+        )
         .unwrap_or_else(|error| panic!("verify admission: {error}"));
     assert_eq!(
         registry.admit_factor_verified(verified, 30),
