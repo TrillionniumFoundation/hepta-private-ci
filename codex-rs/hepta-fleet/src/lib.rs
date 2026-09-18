@@ -11,6 +11,7 @@ pub mod capacity;
 pub mod placement;
 
 mod allocation;
+mod allocation_store;
 mod allocation_digest;
 mod allocation_model;
 mod allocation_validation;
@@ -21,6 +22,10 @@ mod release;
 mod resource;
 
 pub use allocation::calculate_local_allocation_v1;
+pub use allocation_store::FLEET_ALLOCATION_STORE_SCHEMA_VERSION;
+pub use allocation_store::FleetAllocationStateV1;
+pub use allocation_store::FleetAllocationStore;
+pub use allocation_store::FleetAllocationStoreError;
 pub use capacity::CapacityObservationError;
 pub use capacity::CapacityObservationRequestV1;
 pub use capacity::FleetCapacityObserver;
