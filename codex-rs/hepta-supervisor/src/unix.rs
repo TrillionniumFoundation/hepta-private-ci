@@ -549,10 +549,15 @@ fn request_agent_drain(identity: &AgentDrainRequestIdentity) -> Result<(), Proce
         ));
     }
     let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
+    let expected_draining_generation = identity
+        .spawn_generation
+        .checked_add(2)
+        .ok_or_else(|| ProcessDriverError::new("agentd drain generation overflow"))?;
     if response.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
         || response.request_id != 1
         || response.agent_id != identity.agent_id
         || response.spawn_generation != identity.spawn_generation
+        || response.current_generation != expected_draining_generation
     {
         return Err(ProcessDriverError::new(
             "agentd drain acknowledgement identity mismatch",
