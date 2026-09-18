@@ -59,5 +59,15 @@
       "eventName",
       "pullRequestNumber"
     ]
+  },
+  "handoffBoundary": {
+    "workflow": ".github/workflows/hepta-deployment-handoff.yml",
+    "inventory": "tools/hepta-engineering-control/deployment_inventory.py",
+    "exactCandidateBinding": "shared_synthetic_merge_identity",
+    "productionCallerVerified": false,
+    "independentReviewerKeyCustody": false,
+    "authorizedTargetDeployment": false,
+    "operatorAcceptance": false,
+    "release": false
   }
 }

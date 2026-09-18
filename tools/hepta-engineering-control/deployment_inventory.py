@@ -130,6 +130,7 @@ def build_mapping(modules: list[dict], organs: list[dict], domains: list[dict],
                      "writerDomains": sorted(writers[identity]),
                      "technicalDocument": module.get("technicalDocument"),
                      "bootstrapWorkPackage": module.get("bootstrapWorkPackage"),
+                     "repositoryProductImplementation": module.get("production_implementation") is True,
                      "hostBinding": None, "productionCallerVerified": False,
                      "handoffRequired": ["named_host_and_entrypoint", "compiled_port_and_consumer",
                                          "schema_migration_and_recovery", "authenticated_observer",
@@ -143,14 +144,46 @@ def build_mapping(modules: list[dict], organs: list[dict], domains: list[dict],
             "counts": {"modules": len(mmap), "organs": len(omap), "domains": len(dmap)}}
 
 
-def inventory(root: Path, base: str) -> dict:
+def inventory(
+    root: Path,
+    base: str,
+    source: str | None = None,
+    mode: str = "committed-source",
+) -> dict:
     if SHA.fullmatch(base) is None:
         raise InventoryError("base must be an explicit full commit SHA")
+    if source is not None and SHA.fullmatch(source) is None:
+        raise InventoryError("source must be an explicit full commit SHA")
+    if mode not in {"committed-source", "source-head", "base-merge"}:
+        raise InventoryError("unsupported candidate mode")
     head = git(root, "rev-parse", "HEAD^{commit}").decode().strip()
     if SHA.fullmatch(head) is None:
-        raise InventoryError("invalid source identity")
+        raise InventoryError("invalid tested candidate identity")
+    if source is None:
+        if mode != "committed-source":
+            raise InventoryError("explicit source is required for qualified candidate mode")
+        source = head
+    elif mode == "committed-source":
+        raise InventoryError("explicit source requires an exact candidate mode")
+
+    ordered_parents: tuple[str, ...] = ()
+    if mode == "source-head":
+        if head != source:
+            raise InventoryError("source-head identity mismatch")
+    elif mode == "base-merge":
+        ordered_parents = tuple(
+            git(root, "show", "-s", "--format=%P", head).decode().strip().split()
+        )
+        if ordered_parents != (base, source):
+            raise InventoryError("ordered synthetic-merge parent mismatch")
+        if head in {base, source}:
+            raise InventoryError("synthetic merge must be a distinct candidate")
+
     git(root, "merge-base", "--is-ancestor", base, head)
     tree = git(root, "rev-parse", "HEAD^{tree}").decode().strip()
+    source_tree = git(root, "rev-parse", f"{source}^{{tree}}").decode().strip()
+    if SHA.fullmatch(tree) is None or SHA.fullmatch(source_tree) is None:
+        raise InventoryError("invalid candidate tree identity")
     files = {}
     for entry in git(root, "ls-tree", "-r", "-z", head).split(b"\x00"):
         if not entry:
@@ -173,7 +206,13 @@ def inventory(root: Path, base: str) -> dict:
                            data["domains"]["domains"], files)
     result.update({"schema": "hepta.deployment-handoff-inventory.v1",
                    "scope": "committed_source_only_not_live_deployment",
-                   "baseCommit": base, "sourceCommit": head, "sourceTree": tree,
+                   "candidateMode": mode,
+                   "baseCommit": base,
+                   "sourceCommit": source,
+                   "sourceTree": source_tree,
+                   "testedCommit": head,
+                   "testedTree": tree,
+                   "orderedMergeParents": list(ordered_parents),
                    "registryInputs": inputs, "canonicalSelection": False,
                    "allGapsClosed": False, "runtimeAuthority": False})
     return result
@@ -183,9 +222,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument("--base", required=True, help="explicit full ancestor commit SHA")
+    parser.add_argument("--source", help="explicit original source commit SHA")
+    parser.add_argument(
+        "--mode",
+        choices=("committed-source", "source-head", "base-merge"),
+        default="committed-source",
+    )
     args = parser.parse_args()
     try:
-        value = inventory(args.root, args.base)
+        value = inventory(args.root, args.base, source=args.source, mode=args.mode)
     except (InventoryError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         parser.exit(2, f"inventory rejected: {error}\n")
     print(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True))
