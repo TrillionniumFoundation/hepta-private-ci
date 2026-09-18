@@ -1,10 +1,19 @@
+use std::fmt::Debug;
+
 use super::*;
 use codex_hepta_prompt_registry::{
     FactorSource, Lifecycle, PromptFactor, PromptRealizationBindingV2, PromptRoleV2,
 };
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("test fixture failed: {error:?}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid test id")
+    must(StableId::new(value))
 }
 
 fn digest(value: &[u8]) -> Digest32 {
@@ -12,7 +21,7 @@ fn digest(value: &[u8]) -> Digest32 {
 }
 
 fn fixture_registry() -> (PromptRegistry, PromptModelTupleV2, Digest32, PromptRegistrySnapshotV2) {
-    let mut registry = PromptRegistry::new(64).expect("registry");
+    let mut registry = must(PromptRegistry::new(64));
     let model = PromptModelTupleV2 {
         model_digest: digest(b"model"),
         tokenizer_digest: digest(b"tokenizer"),
@@ -22,41 +31,35 @@ fn fixture_registry() -> (PromptRegistry, PromptModelTupleV2, Digest32, PromptRe
     };
     for index in 0..2 {
         let factor_id = id(&format!("factor:{index}"));
-        registry
-            .register_factor(PromptFactor {
-                factor_id: factor_id.clone(),
-                proposer_id: id(&format!("proposer:{index}")),
-                semantic_version: id("v1"),
-                content_digest: digest(format!("factor-body:{index}").as_bytes()),
-                source: FactorSource::GovernedInternal,
-                lifecycle: Lifecycle::Draft,
-            })
-            .expect("factor");
-        registry
-            .admit_factor(
-                &factor_id,
-                &id(&format!("reviewer:{index}")),
-                digest(format!("review:{index}").as_bytes()),
-            )
-            .expect("admit");
-        registry
-            .register_realization_v2(PromptRealizationBindingV2 {
-                realization_id: id(&format!("realization:{index}")),
-                factor_id,
-                model_digest: model.model_digest,
-                tokenizer_digest: model.tokenizer_digest,
-                template_digest: model.template_digest,
-                tool_schema_digest: model.tool_schema_digest,
-                locale_id: model.locale_id.clone(),
-                role: PromptRoleV2::DeveloperInstruction,
-                payload_digest: digest(format!("payload:{index}").as_bytes()),
-                token_cost: 1,
-                expires_unix_ms: None,
-            })
-            .expect("realization");
+        must(registry.register_factor(PromptFactor {
+            factor_id: factor_id.clone(),
+            proposer_id: id(&format!("proposer:{index}")),
+            semantic_version: id("v1"),
+            content_digest: digest(format!("factor-body:{index}").as_bytes()),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        }));
+        must(registry.admit_factor(
+            &factor_id,
+            &id(&format!("reviewer:{index}")),
+            digest(format!("review:{index}").as_bytes()),
+        ));
+        must(registry.register_realization_v2(PromptRealizationBindingV2 {
+            realization_id: id(&format!("realization:{index}")),
+            factor_id,
+            model_digest: model.model_digest,
+            tokenizer_digest: model.tokenizer_digest,
+            template_digest: model.template_digest,
+            tool_schema_digest: model.tool_schema_digest,
+            locale_id: model.locale_id.clone(),
+            role: PromptRoleV2::DeveloperInstruction,
+            payload_digest: digest(format!("payload:{index}").as_bytes()),
+            token_cost: 1,
+            expires_unix_ms: None,
+        }));
     }
     let generation = digest(b"generation");
-    let snapshot = registry.snapshot_v2(generation, &model).expect("snapshot");
+    let snapshot = must(registry.snapshot_v2(generation, &model));
     (registry, model, generation, snapshot)
 }
 
@@ -66,10 +69,15 @@ fn candidate_receipt(
     generation: Digest32,
     snapshot: &PromptRegistrySnapshotV2,
 ) -> PromptCandidateSetReceiptV1 {
-    let compatible = registry
-        .read_compatible_v2(snapshot, generation, model, 10, Vec::new(), 128)
-        .expect("compatible");
-    enumerate_factors(
+    let compatible = must(registry.read_compatible_v2(
+        snapshot,
+        generation,
+        model,
+        10,
+        Vec::new(),
+        128,
+    ));
+    must(enumerate_factors(
         id("decision:1"),
         digest(b"objective"),
         snapshot,
@@ -77,8 +85,7 @@ fn candidate_receipt(
         digest(b"generator"),
         digest(b"hard-filter"),
         digest(b"truncation"),
-    )
-    .expect("candidate receipt")
+    ))
 }
 
 fn evidence(candidate_id: StableId, utility: i64) -> CandidateEvidenceV1 {
@@ -114,16 +121,15 @@ fn prerequisite_bundle_is_evaluated_as_one_marginal_choice() {
     let candidates = candidate_receipt(&registry, &model, generation, &snapshot);
     let prerequisite = candidates.candidates[0].candidate_id.clone();
     let dependent = candidates.candidates[1].candidate_id.clone();
-    let pricing = price_factors(
+    let pricing = must(price_factors(
         &candidates,
         vec![
             evidence(prerequisite.clone(), -1),
             evidence(dependent.clone(), 100),
         ],
-    )
-    .expect("pricing");
+    ));
 
-    let portfolio = select_portfolio(
+    let portfolio = must(select_portfolio(
         &pricing,
         vec![PortfolioRelationV1::Requires {
             candidate_id: dependent,
@@ -134,8 +140,7 @@ fn prerequisite_bundle_is_evaluated_as_one_marginal_choice() {
             token_budget: 2,
             maximum_selected: 2,
         },
-    )
-    .expect("portfolio");
+    ));
 
     assert_eq!(portfolio.selected_candidate_ids.len(), 2);
     assert_eq!(portfolio.total_net_utility, FixedQ32::from_raw(99));
@@ -151,18 +156,17 @@ fn exercise_accepts_exact_snapshot_then_rejects_after_revocation() {
         .iter()
         .map(|candidate| evidence(candidate.candidate_id.clone(), 10))
         .collect();
-    let pricing = price_factors(&candidates, evidence).expect("pricing");
-    let portfolio = select_portfolio(
+    let pricing = must(price_factors(&candidates, evidence));
+    let portfolio = must(select_portfolio(
         &pricing,
         Vec::new(),
         PortfolioBudgetV1 {
             token_budget: 2,
             maximum_selected: 2,
         },
-    )
-    .expect("portfolio");
+    ));
 
-    let accepted = exercise(
+    let accepted = must(exercise(
         &portfolio,
         &registry,
         &snapshot,
@@ -170,14 +174,11 @@ fn exercise_accepts_exact_snapshot_then_rejects_after_revocation() {
         &model,
         10,
         ExerciseBoundaryV1::BeforeModelOrToolDispatch,
-    )
-    .expect("exercise");
+    ));
     assert_eq!(accepted.disposition, ExerciseDispositionV1::Exercise);
 
-    registry
-        .revoke_factor(&portfolio.selected_factor_ids[0])
-        .expect("revoke");
-    let rejected = exercise(
+    must(registry.revoke_factor(&portfolio.selected_factor_ids[0]));
+    let rejected = must(exercise(
         &portfolio,
         &registry,
         &snapshot,
@@ -185,8 +186,7 @@ fn exercise_accepts_exact_snapshot_then_rejects_after_revocation() {
         &model,
         10,
         ExerciseBoundaryV1::BeforeModelOrToolDispatch,
-    )
-    .expect("stale exercise receipt");
+    ));
     assert_eq!(rejected.disposition, ExerciseDispositionV1::RejectStale);
 }
 
@@ -202,7 +202,7 @@ fn pricing_subtracts_all_non_token_cost_dimensions() {
     row.instability_cost = FixedQ32::from_raw(1);
     row.future_option_cost = FixedQ32::from_raw(2);
     let other = evidence(candidates.candidates[1].candidate_id.clone(), 1);
-    let pricing = price_factors(&candidates, vec![row, other]).expect("pricing");
+    let pricing = must(price_factors(&candidates, vec![row, other]));
     assert_eq!(pricing.prices[0].non_token_cost, FixedQ32::from_raw(13));
     assert_eq!(pricing.prices[0].net_utility, FixedQ32::from_raw(7));
 }
