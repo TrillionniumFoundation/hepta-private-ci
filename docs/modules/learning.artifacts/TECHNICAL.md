@@ -70,6 +70,7 @@ Current native components:
 - `dataset_revocation.rs`: snapshot-local preparation of V1 revocation events for directly dataset-bound artifacts.
 - `iteration.rs` and `iteration_ledger.rs`: bounded authority-free self-iteration state and append-only external-evidence bookkeeping.
 - `limits.rs`: one durable record/snapshot capacity contract shared by memory owners and persistence adapters.
+- `service.rs`: read-only owner health/reconciliation status exposing heads, bounded counts and remaining capacity with deny-all authority.
 
 Ingress validates identity, version, size, scope, predecessor/frontier and digest before mutation. State transition is separated from external authority: typed actor/evidence values are supplied only after host authentication, and returned authority posture remains deny-all. This crate owns no signing key, product route, deployment selector or release decision.
 
