@@ -10,6 +10,7 @@ use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_types::Digest32;
 
 use crate::AgentdError;
 
@@ -37,6 +38,7 @@ pub struct AgentdConfig {
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
+    authbus_restore_checkpoint: Option<(u64, Digest32)>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
 }
 
@@ -142,6 +144,7 @@ impl AgentdConfig {
             registry,
             _writer_lock: writer_lock,
             authbus_trust_file: None,
+            authbus_restore_checkpoint: None,
             cognitive_ranker: None,
         })
     }
@@ -155,6 +158,26 @@ impl AgentdConfig {
 
     pub(crate) fn authbus_trust_file(&self) -> Option<&Path> {
         self.authbus_trust_file.as_deref()
+    }
+
+    /// External anti-rollback witness supplied by the host. It is deliberately
+    /// separate from the Agent home SQLite/trust-file lineage.
+    pub fn with_authbus_restore_checkpoint(
+        mut self,
+        generation: u64,
+        digest: Digest32,
+    ) -> Result<Self, AgentdError> {
+        if generation == 0 || digest.is_zero() {
+            return Err(AgentdError::Invalid(
+                "AuthBus restore checkpoint must be nonzero".to_string(),
+            ));
+        }
+        self.authbus_restore_checkpoint = Some((generation, digest));
+        Ok(self)
+    }
+
+    pub(crate) fn authbus_restore_checkpoint(&self) -> Option<(u64, Digest32)> {
+        self.authbus_restore_checkpoint.clone()
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must

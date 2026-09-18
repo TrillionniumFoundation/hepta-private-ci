@@ -1,4 +1,5 @@
 use codex_hepta_agentd::AgentdConfig;
+use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 fn main() -> anyhow::Result<()> {
@@ -8,13 +9,46 @@ fn main() -> anyhow::Result<()> {
     codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
-        if let Some(flag) = args.next() {
-            anyhow::ensure!(flag == "--authbus-trust-file", "unknown Agentd argument");
-            let path = args
+        let mut trust_file = None;
+        let mut restore_checkpoint = None;
+        while let Some(flag) = args.next() {
+            let value = args
                 .next()
-                .ok_or_else(|| anyhow::anyhow!("--authbus-trust-file requires a path"))?;
-            anyhow::ensure!(args.next().is_none(), "unexpected Agentd arguments");
-            config = config.with_authbus_trust_file(path.into());
+                .ok_or_else(|| anyhow::anyhow!("Agentd flag requires a value"))?;
+            match flag.to_str() {
+                Some("--authbus-trust-file") if trust_file.is_none() => {
+                    trust_file = Some(value.into());
+                }
+                Some("--authbus-restore-checkpoint") if restore_checkpoint.is_none() => {
+                    let text = value
+                        .to_str()
+                        .ok_or_else(|| anyhow::anyhow!("AuthBus checkpoint must be UTF-8"))?;
+                    let (generation, digest) = text
+                        .split_once(':')
+                        .ok_or_else(|| anyhow::anyhow!("AuthBus checkpoint must be generation:digest"))?;
+                    let generation = generation.parse::<u64>()?;
+                    let digest = digest
+                        .parse::<Digest32>()
+                        .map_err(|_| anyhow::anyhow!("invalid AuthBus checkpoint digest"))?;
+                    anyhow::ensure!(
+                        generation != 0 && !digest.is_zero(),
+                        "AuthBus checkpoint must be nonzero"
+                    );
+                    restore_checkpoint = Some((generation, digest));
+                }
+                _ => anyhow::bail!("unknown or duplicate Agentd argument"),
+            }
+        }
+
+        anyhow::ensure!(
+            trust_file.is_some() == restore_checkpoint.is_some(),
+            "--authbus-trust-file and --authbus-restore-checkpoint must be configured together"
+        );
+        if let Some(path) = trust_file {
+            let (generation, digest) = restore_checkpoint.expect("paired above");
+            config = config
+                .with_authbus_trust_file(path)
+                .with_authbus_restore_checkpoint(generation, digest)?;
         }
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())

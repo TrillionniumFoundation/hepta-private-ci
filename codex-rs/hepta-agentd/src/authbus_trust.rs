@@ -7,7 +7,6 @@ use std::io::Read;
 use std::path::Path;
 
 use codex_hepta_authbus::IssuerRegistration;
-use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::VerifyingKey;
@@ -31,10 +30,6 @@ pub(crate) struct TextTrust {
     not_after_ms: Option<u64>,
     #[serde(default)]
     previous_epochs: Vec<TrustEpoch>,
-    #[serde(default)]
-    restore_checkpoint_generation: Option<u64>,
-    #[serde(default)]
-    restore_checkpoint_digest_hex: Option<String>,
     thread_ids: Vec<String>,
 }
 
@@ -70,7 +65,6 @@ impl TextTrust {
             ));
         }
         trust.validate_epochs()?;
-        let _ = trust.restore_checkpoint()?;
         Ok(trust)
     }
 
@@ -182,21 +176,6 @@ impl TextTrust {
         })
     }
 
-    pub fn restore_checkpoint(&self) -> Result<Option<(u64, Digest32)>, AgentdError> {
-        match (
-            self.restore_checkpoint_generation,
-            self.restore_checkpoint_digest_hex.as_deref(),
-        ) {
-            (None, None) => Ok(None),
-            (Some(generation), Some(digest)) if generation != 0 => Ok(Some((
-                generation,
-                Digest32::from_array(hex_bytes::<32>(digest)?),
-            ))),
-            _ => Err(invalid(
-                "restore checkpoint generation/digest must be configured together",
-            )),
-        }
-    }
 
     pub fn permits(&self, thread_id: &str) -> bool {
         !self.revoked && self.thread_ids.iter().any(|id| id == thread_id)
