@@ -83,16 +83,21 @@ Consumers compare `request_binding_digest` with the binding of their expected
 input. This is an owner-local integrity API, not an admitted external protocol,
 source authentication or proof of completeness beyond the supplied candidates.
 
-The actual cognitive owner now exposes `CognitiveStore::observe_memory_retrieval`.
+The actual cognitive owner exposes `CognitiveStore::observe_memory_retrieval`.
 It generates and revalidates at most 128 candidates in one SQLite read
-transaction, preserving the legacy retrieval API and top-four ranking. Its
-candidate observation records bind source revisions and scores without raw
-memory or citation bodies. The final top-four omission count is exact for the
-observed candidates. Per-channel `Exhausted` or `LimitReached` records distinguish
-an exhausted bounded generator from a reached query/output cap; they do not
-count unseen rows or prove global coverage, including beyond graph seed limits.
-This owner observation does not bind a complete C1 objective/profile or establish
-delivery-time freshness.
+transaction while preserving the compatibility top-four API. Agentd now
+intersects those materialized candidates with one authoritative read cut and,
+when an explicit `PinnedMemoryRetrievalRuntime` is supplied, binds the real
+owner observation to `compile_cue`, explicit channel-completeness contracts,
+bounded candidate-local HNMF recall and final owner/profile revalidation before
+context publication. MemoryFts, EntityFts and Recency map to lexical, entity and
+temporal evidence respectively. GraphOneHop is not misdeclared as causal or
+procedural; vector/causal/procedural/contradiction channels remain unavailable
+until their actual owners expose authenticated bounded batches. The composed
+runtime records the complete legal set plus explicit abstain/propensity through
+the canonical learning-ledger owner only after final byte/NDU planning and
+revalidation. This is product-host source composition, not target-host
+qualification, independent task efficacy or activation.
 
 Matrix runtime accepts the typed `m.mentions` metadata serialized by the SDK
 after ingress applies its explicit-mention policy. Only the message body is
@@ -117,10 +122,11 @@ The C1 contract in
 `qualification/module-execution-dossiers/C1_EXECUTION.md` still requires a named
 product-host composition with structured objective/profile binding, the actual
 tokenizer/template/payload, delivery-time revocation checks, durable
-provider-attempt correlation, independent task outcomes, learning-ledger
-integration, selected new-process load and rollback. The owner retrieval
-observation, standalone module tests and reference round-trip do not establish
-these product observations.
+provider-attempt correlation, independent task outcomes, selected new-process
+load and rollback. Owner-backed retrieval and durable decision integration are
+now available to an explicitly configured Agentd host, but source composition,
+module tests and CI-host performance observations do not establish those
+independent product outcomes or longitudinal claims.
 
 Canonical objective admission also needs an explicit native adapter and
 registered baseline/classification profile. The canonical envelope cannot by

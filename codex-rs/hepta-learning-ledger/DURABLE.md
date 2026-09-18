@@ -59,8 +59,11 @@ revocations before exposing active records, including causal descendant exclusio
 Revoked bytes remain in the audit journal: this is NOT physical erasure, backup
 deletion, machine unlearning or evidence of future learning improvement.
 
-The original V1 file profile caps are 1..8192 records, 8 MiB per file, 32 KiB per encoded event,
-128 candidates and 128 bytes per stable identity. Quota exhaustion stops rather
+The V1 file profile caps are 1..8192 records, 8 MiB per file and 32 KiB per encoded event.
+`EpisodeDecision` now admits at most 513 candidate identities so memory retrieval can persist
+512 legal candidates plus the explicit `abstain` arm; stable identities remain capped at
+128 bytes. A dedicated durable reopen regression uses compact retrieval candidate identities
+and verifies the maximum decision stays within the unchanged 32 KiB event bound. Quota exhaustion stops rather
 than dropping history. Replay and indexes are bounded by these caps; equal retry
 lookup is linear in the bounded record count. The synced path has no hard
 real-time or target-host latency claim. The V2 rotation and evaluated-shadow

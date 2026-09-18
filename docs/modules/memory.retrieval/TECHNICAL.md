@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); observed identifiers include `RetrievalReceiptV2`, `retrieve_v2`, `binding_digest_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) for the implemented subset and remaining product work.
+The compatibility source-navigation binding remains [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs), but the current engine spans [generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs), [channel_contract.rs](../../../codex-rs/hepta-memory-retrieval/src/channel_contract.rs), [engram_expansion.rs](../../../codex-rs/hepta-memory-retrieval/src/engram_expansion.rs), [hnmf.rs](../../../codex-rs/hepta-memory-retrieval/src/hnmf.rs) and [qualification.rs](../../../codex-rs/hepta-memory-retrieval/src/qualification.rs). Implemented owner composition lives at the existing physical owner and host boundaries: `CognitiveStore::observe_memory_retrieval` in `hepta-memory`, the Agentd owner adapter, and `cognitive_context::read_with_runtime`. These are native Rust surfaces, not newly admitted cross-module wire formats. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) for the exact claim boundary.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -72,10 +72,14 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `bounded input stage`
-- `deterministic algorithm core`
-- `generation publisher`
-- `checkpoint and recovery layer`
+- `cue compiler and generation-vector validator`;
+- `owner channel adapter with explicit exhausted/truncated/partial coverage`;
+- `deterministic candidate union and untrusted-boundary receipt validation`;
+- `bounded candidate-local engram expansion and recurrent HNMF recall`;
+- `Agentd product adapter with final source/profile/ranker revalidation`;
+- `learning.ledger decision adapter for the complete legal set and actual propensity`.
+
+The retrieval engine itself owns no durable fact store. The canonical SQLite cognitive owner supplies source facts and bounded generator observations; the canonical learning ledger owns causal decision persistence.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -123,7 +127,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) binds generation-relative retrieval to one owner-acquired SQLite cut. `observe_memory_retrieval` generates and revalidates the bounded pre-top-four pool in one read transaction; Agentd intersects it with the authoritative read result before cue/channel adaptation. Optional HNMF and learned ranking execute before the final response limit. Context byte planning, owner snapshot revalidation, retrieval-profile revalidation and learned-ranker revalidation all complete before the causal decision is appended. The durable decision sink accepts only an already-created or recovered canonical `DurableLedger`; it does not mint a path, authority or second ledger owner.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -145,13 +149,15 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs) and the linked implementation components.
+The generation-bound engine enforces at most 512 candidate events, 4096 local engram nodes, 32768 synapses, four recurrent steps, 16 recall selections and 64 active units per population. The current SQLite owner is stricter: each native MemoryFts/EntityFts/GraphOneHop/Recency generator is capped at 32 rows and the owner observation materializes at most 128 revalidated candidates before the legacy top-four view. Owner-to-engine adaptation currently maps MemoryFts→lexical, EntityFts→entity and Recency→temporal. GraphOneHop is not silently relabeled as causal or procedural; vector, causal, procedural and contradiction-support require their actual owners to expose authenticated bounded batches.
+
+The source-candidate workflow [hepta-memory-retrieval-qualification.yml](../../../.github/workflows/hepta-memory-retrieval-qualification.yml) measures the maximum engine profile on exact-head and synthetic-merge CI, recording p50/p95/p99 wall latency plus process CPU/RSS observations. Those observations characterize the CI host only. They are not target-host SLOs, longitudinal recall quality or independent acceptance.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Embed retrieval against an authorized coherent read cut. The current host intersects SQLite search with an admitted bounded prefix and reports omitted_records; it does not promise complete recall outside that prefix. Revalidate source revisions before context delivery; missing support and revoked top results require omission or abstention.
+Embed retrieval against an authorized coherent read cut. The composed Agentd path first acquires the authoritative read result and the SQLite owner's full bounded pre-top-four observation, then adapts only exact ID/revision/content matches. A configured channel that lacks an authenticated owner batch fails closed rather than being fabricated. Partial or truncated enabled-channel coverage abstains instead of recording a complete assignment. After HNMF, an optional pinned learned ranker may reorder only the already admitted selections. The 24 KiB context budget and NDU read/abstain plan are applied before final owner/profile/ranker revalidation and durable causal-decision append. Revoked, corrected, expired or generation-drifted sources therefore cannot be attached merely because they ranked earlier.
 
 Current operating and state-format references:
 
@@ -164,10 +170,14 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named case: `channel_completion_order_cannot_change_union_or_recall`.
-- [codex-rs/hepta-memory-retrieval/src/lib_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/lib_tests.rs); named case: `ranking_is_deterministic_and_explainable`.
+- [generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs): deterministic permutation, 512/513 bounds, coverage and hardened receipt validation;
+- [channel_contract_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/channel_contract_tests.rs): explicit generator completeness and channel-limit accounting;
+- [hnmf_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/hnmf_tests.rs): bounded local expansion, recurrent settling, sparse competition, contradiction/OOD abstention and no-recurrence/no-inhibition ablations;
+- [cognitive_retrieval_observation_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs): real SQLite pre-top-four observation, withdrawal and 512-record saturation;
+- Agentd owner-adapter/runtime/context tests: exact authoritative-read intersection, explicit host profile revalidation, learned-ranker composition and final publication bounds;
+- learning-ledger durable tests: 512 legal retrieval candidates plus explicit `abstain` survive sync/reopen.
 
-In `codex-rs`, run `just test -p codex-hepta-memory-retrieval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) separately labels target acceptance designs.
+Run `just test -p codex-hepta-memory-retrieval` for the engine and the named owner/Agentd/ledger package tests for composition. The dedicated source qualification workflow runs both exact head and deterministic synthetic merge and retains metric/time artifacts. No source-host run establishes independent task efficacy, target-host performance or release eligibility.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -247,4 +257,4 @@ The bootstrap source-location obligation for `memory.retrieval` is implemented b
 
 - `codex-rs/hepta-memory-retrieval`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and `.github/workflows/hepta-memory-retrieval-qualification.yml`, including closed-world inventory, package tests, exact-head/synthetic-merge execution, strict lint and retained source-host observations. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

@@ -40,7 +40,7 @@ Owns authoritative snapshot acquisition and read projection. The authoritative p
 
 ### `memory.retrieval`
 
-Owns deterministic retrieval over an admitted snapshot generation. Query, candidate set, ordering and result receipts are bound to the same generation and snapshot identity. Retrieval cannot widen authority or silently substitute a newer or older snapshot.
+Owns deterministic retrieval over an admitted snapshot generation. The current owner path observes the bounded pre-top-four SQLite pool, intersects it with the authoritative read cut, and can compose cue compilation, explicit channel completeness, candidate-local HNMF recall and final source revalidation through Agentd. Query, candidate set, engram/profile generation, ordering and result receipts bind the same generation identity. Retrieval cannot widen authority or silently substitute a newer/older snapshot. Unsupported vector/causal/procedural/contradiction channel owners remain closed rather than fabricated.
 
 ### `memory.federation`
 

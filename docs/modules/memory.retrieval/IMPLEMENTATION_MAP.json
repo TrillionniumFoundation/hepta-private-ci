@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "30370ef7e15b8cf60934eaa6768b4ba8657253ce",
+    "tree": "db8c0c158c4d37e805be4c4e20af7a976bb9c24c"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -18,40 +18,74 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "explicit_host_composition_implemented_not_activated",
+  "productionWriterState": "not_applicable_read_only_engine",
   "operations": [
     {
       "operation": "retrieve_v2",
       "nativeSymbol": "retrieve_v2",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_surface",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "build_candidate_union",
-      "nativeSymbol": "build_candidate_union",
+      "operation": "compile_cue",
+      "nativeSymbol": "compile_cue",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_explicit_host_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "build_candidate_union",
+      "designOperation": "compile_cue",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "recall",
-      "nativeSymbol": "recall",
-      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "build_candidate_union_from_batches",
+      "nativeSymbol": "build_candidate_union_from_batches",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/channel_contract.rs",
+      "state": "source_implemented_explicit_host_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/channel_contract_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retrieve",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "expand_candidate_engram",
+      "nativeSymbol": "expand_candidate_engram",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram_expansion.rs",
+      "state": "source_implemented_explicit_host_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/hnmf_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recall",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "recall_with_engram",
+      "nativeSymbol": "recall_with_engram",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/hnmf.rs",
+      "state": "source_implemented_explicit_host_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/hnmf_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
@@ -59,12 +93,12 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "No repository-local authenticated owner adapter yet exists for vector, causal, procedural or contradiction-support channel batches; configured unsupported channels fail closed."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic and task-quality review",
+    "longitudinal ablation/retention evaluation",
+    "product execution and target-host CPU/RSS/latency qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {

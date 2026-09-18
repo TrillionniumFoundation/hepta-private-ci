@@ -1,52 +1,78 @@
 # memory.retrieval: implementation design
 
 Parent: `docs/modules/memory.retrieval/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded native ranking, V2 input binding and generation-bound recall implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: owner-backed pre-top-four generation, cue/channel binding, bounded HNMF recall and explicit Agentd host composition are implemented. Target-host qualification, independent efficacy/semantic acceptance, activation, promotion and release remain separate gates. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-memory-retrieval`.
-Packages: `MEM-2-RETRIEVAL`.
+Package: `MEM-2-RETRIEVAL`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+The engine owns no source-fact database and no deployment authority. The existing `hepta-memory::CognitiveStore` remains the SQLite content/index owner; Agentd is the explicit product-host adapter; `learning.ledger` remains the causal-decision owner.
 
 ## 2. Public operations and contract details
 
-`compile_cue(objective, approved_context, snapshot) -> MemoryCueV1`; `retrieve(cue, channel_budgets) -> CandidateUnion`; `recall(candidates, engram_snapshot, policy) -> RecallPacketV1 | Abstain`. Channels are explicitly lexical, vector, entity, temporal, causal, procedural and contradiction support where implemented. Each returns scoped IDs, source revisions and a score/support receipt, not unrestricted source payload.
+Implemented native operations are `compile_cue`, `build_candidate_union`, `build_candidate_union_from_batches`, `expand_candidate_engram`, `recall` and `recall_with_engram`, with compatibility `retrieve_v2`.
+
+`MemoryCueV1` binds objective, approved context, cue profile and one exact `CognitiveSnapshotKeyV1`. `RetrievalChannelBatchV1` makes generator coverage explicit as exhausted, truncated or partial. Candidate union and recall receipts bind cue/policy/generation, exact record revision/digest, channel/support evidence, omissions and deny-all authority.
+
+The channel vocabulary is lexical, vector, entity, temporal, causal, procedural and contradiction-support. The current SQLite owner adapter maps only evidence it actually owns: MemoryFts→lexical, EntityFts→entity and Recency→temporal. GraphOneHop is deliberately not reinterpreted as causal/procedural. A requested channel without an authenticated owner batch fails closed.
 
 ## 3. State records and transaction design
 
-No source-fact writer. A rebuildable query/recall cache binds the full read snapshot key, cue digest, retrieval/encoder profile, source quotas and truncation policy. Engram/synapse generations are supplied as immutable projections. Candidate-set and propensity facts are appended only through learning.ledger's owner port.
+The retrieval engine is stateless. `CognitiveStore::observe_memory_retrieval` generates and revalidates the owner's bounded pool in one SQLite read transaction before the legacy top-four projection. It retains per-channel rank, source-revision revalidation bindings and channel saturation observations.
+
+Agentd intersects that pool with one authoritative `ReadRequestV2` result by exact record ID, revision and content digest. The host supplies an immutable retrieval profile/generation vector and optional pinned learned ranker. Final context byte planning and all owner/profile/ranker revalidation complete before causal-decision append.
+
+The causal sink stores the complete legal candidate set plus explicit `abstain` and the actual assignment propensity in the canonical `learning.ledger`. `DurableMemoryRetrievalDecisionSink` only wraps a host-authorized, already-created/recovered `DurableLedger`; it owns no path, credential or witness service.
 
 ## 4. Deterministic algorithm and scheduling
 
-Run bounded channels in parallel; stable-union by exact event revision; deduplicate; apply source/modality quotas and deterministic pre-assignment truncation; expand only a bounded local engram graph; settle at most four steps; apply per-population competition; detect contradictions; calibrate recall/abstain; revalidate exact source support before returning. Vector closeness does not prove truth; incompatible facts are not averaged into a new fact.
+1. Compile a generation-bound cue.
+2. Acquire explicit bounded channel batches from actual owners.
+3. Canonicalize by channel/rank/exact revision; enforce per-channel limits and completeness.
+4. Stable-union and exact-revision deduplicate with policy weights.
+5. Expand a candidate-local engram neighborhood for at most four hops.
+6. Build inbound adjacency once, then run bounded recurrent settling and per-population sparse competition.
+7. Detect contradiction/OOD/coverage/score abstention conditions.
+8. Return at most 16 exact-revision selections.
+9. Optionally apply the host-pinned learned ranker only to admitted selections.
+10. Apply final context byte/NDU planning; revalidate the SQLite cut, retrieval profile and learned artifact; only then append the causal decision.
+
+`recurrent_steps=0` is the no-recurrence ablation. `inhibition_enabled=false` is the no-inhibition ablation; inhibitory edges are ignored, never converted to excitatory support. Vector similarity alone never proves truth.
 
 ## 5. Capacity and performance profile
 
-Use HNMF reference ceilings: <=512 candidate events, <=4096 nodes, <=32768 synapses, <=4 settling steps and <=16 returned events, with <=64 active units per population. Report channel omissions, graph expansion, p99 latency and source revalidation cost; no full-store scan or central synchronous RPC.
+Engine ceilings are <=512 candidate events, <=4096 local nodes, <=32768 synapses, <=4 settling steps, <=16 recall selections and <=64 active units per population.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+The physical SQLite owner is currently stricter: each MemoryFts/EntityFts/GraphOneHop/Recency generator returns at most 32 rows; the owner observation materializes at most 128 revalidated candidates. That stricter owner bound remains authoritative until separately qualified.
+
+`.github/workflows/hepta-memory-retrieval-qualification.yml` executes a maximum-profile deterministic source candidate for exact head and synthetic merge, retains p50/p95/p99 wall latency plus process CPU/RSS observations and validates the structural ceilings. Those measurements describe the CI host only. Target-host latency/resource SLOs and longitudinal task quality require independent evidence.
 
 ## 6. Concrete verification cases
 
-- RET-01: channel completion order/permutation yields an identical canonical candidate union.
-- RET-02: high-risk contradictory support forces abstention/slow path.
-- RET-03: revoked/stale source after ranking cannot be attached to a model request.
-- RET-04: no-intervention, lexical-only, no-recurrence and no-inhibition baselines measure independent utility and resource cost.
+- RET-01: generation-bound permutation tests prove channel completion order cannot change the canonical union/recall.
+- RET-02: HNMF contradiction fixtures force explicit abstention.
+- RET-03: SQLite correction/withdrawal/revalidation tests, Agentd final cut revalidation and product tombstone-after-reopen coverage prevent stale source attachment.
+- RET-04: lexical-only policy plus explicit no-recurrence and no-inhibition dynamics are executable ablation profiles. A no-intervention baseline is the product path that does not attach retrieval. Independent utility/resource comparison remains a learning/evaluation responsibility, not something the retrieval engine may self-score.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+The 512-record SQLite saturation fixture proves the physical generator remains bounded on a larger store. Durable-ledger recovery proves 512 legal candidates plus explicit abstain fit and reopen under the event bound.
 
 ## 7. Integration, rollback and capability ceiling
 
-C1 first changes a bounded read-only ranking/recall decision. Keep complete legal candidates and assignment propensities for causal evaluation. Rollback restores compatible retrieval/engram profiles and rebuilds caches under current tombstones, not old cached answers.
+`AgentdConfig` can be given a host-selected `PinnedMemoryRetrievalRuntime`; normal configuration does not invent a profile or activate one implicitly. The composed read path stays read-only with respect to cognitive facts. Optional learned ranking is additive and its artifact ID is bound into a compound policy identity for causal logging.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Rollback removes the explicit runtime/ranker attachment or restores a compatible immutable profile; the next request always rebuilds from current SQLite tombstones/revisions. Cached answers are not restored as truth.
+
+Immediate revocation/stop remains effective across frozen snapshots. No source or qualification fixture self-issues operator activation, independent acceptance, promotion or release.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `retrieve_v2` in [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); `build_candidate_union` in [codex-rs/hepta-memory-retrieval/src/generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs); `recall` in [codex-rs/hepta-memory-retrieval/src/generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs). Bounded native ranking, V2 input binding and generation-bound recall implemented.
-- **State and recovery:** Native receipts bind the supplied candidate set, including omitted candidates, and retain explicit channel/score/generation data. Ranking is stateless; existing hepta-memory SQLite retrieval remains the physical content/index owner.
-- **Source tests:** [codex-rs/hepta-memory-retrieval/src/v2_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/v2_tests.rs), [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md), [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md).
-- **Remaining work:** Input completeness/freshness still needs the real generator and owner. Do not infer a complete HNMF/embedding execution pipeline from caller-supplied candidates or scores.
+- **Engine entrypoints:** `retrieve_v2` (`src/v2.rs`); `compile_cue`, `build_candidate_union`, `recall` (`src/generation_bound.rs`); `build_candidate_union_from_batches` (`src/channel_contract.rs`); `expand_candidate_engram` (`src/engram_expansion.rs`); `recall_with_engram` (`src/hnmf.rs`).
+- **Owner generation:** `CognitiveStore::observe_memory_retrieval` in `codex-rs/hepta-memory` exposes the bounded pre-top-four materialized pool and exact revalidation facts without changing the legacy top-four API.
+- **Product composition:** Agentd `owner_retrieval_adapter`, `PinnedMemoryRetrievalRuntime` and `cognitive_context::read_with_runtime` bind the owner cut to the engine before final result truncation. `PinnedCognitiveRanker` may reorder only after HNMF admission.
+- **Causal persistence:** `DurableMemoryRetrievalDecisionSink` appends the complete legal set/propensity to the canonical durable learning ledger after final context planning and revalidation. Equal retries are idempotent; same identity/different semantics conflicts.
+- **Receipt validation:** public union/recall/HNMF receipts re-check canonical ordering, limits, record liveness/digests, scores, generation identity, deny-all authority and computed receipt digests rather than trusting builder provenance.
+- **Source qualification:** focused tests cover permutation/property-style invariance, explicit completeness, 512/513 bounds, local engram expansion, recurrent/inhibition ablations, 512-record SQLite saturation and durable reopen. The source qualification workflow retains exact-head and synthetic-merge CI-host performance/resource observations.
+- **Remaining repository capability gaps:** vector, causal, procedural and contradiction-support channels still require their actual owners to expose authenticated bounded batches. Unsupported configured channels intentionally fail closed.
+- **Remaining external gates:** independent task/recall-quality evaluation, longitudinal ablations, target-host CPU/RSS/latency qualification, operator acceptance, activation, canary, promotion and release.
