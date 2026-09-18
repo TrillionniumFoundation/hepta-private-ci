@@ -108,7 +108,7 @@ fn typed_batches_recall_under_product_profile() {
     );
     assert_eq!(packet.recall.selections.len(), 1);
     assert_eq!(packet.generator.candidate_count, 1);
-    assert!(packet.generator.truncated_channels.is_empty());
+    assert!(packet.generator.non_exhaustive_channels.is_empty());
     assert!(!packet.generator.manifest_digest.is_zero());
     assert!(!packet.receipt_digest.is_zero());
 }
@@ -161,7 +161,27 @@ fn generator_completeness_changes_product_receipt() {
     );
     assert_ne!(exhausted.receipt_digest, truncated.receipt_digest);
     assert_eq!(
-        truncated.generator.truncated_channels,
+        truncated.generator.non_exhaustive_channels,
+        vec![RetrievalChannelV1::Lexical]
+    );
+}
+
+
+#[test]
+fn bound_reached_changes_product_receipt_without_claiming_omissions() {
+    let cue = cue();
+    let exhausted = recall_from_batches(&cue, &policy(16), vec![batch(&cue)]).unwrap();
+    let mut bounded_batch = batch(&cue);
+    bounded_batch.completeness = RetrievalChannelCompletenessV1::BoundReached;
+    let bounded = recall_from_batches(&cue, &policy(16), vec![bounded_batch]).unwrap();
+
+    assert_eq!(exhausted.recall, bounded.recall);
+    assert_ne!(
+        exhausted.generator.manifest_digest,
+        bounded.generator.manifest_digest
+    );
+    assert_eq!(
+        bounded.generator.non_exhaustive_channels,
         vec![RetrievalChannelV1::Lexical]
     );
 }
