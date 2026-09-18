@@ -1,3 +1,4 @@
+use codex_hepta_context_compiler::TokenizationReceiptV2;
 use super::*;
 use codex_hepta_prompt_optimizer::PromptAuthenticationErrorV1;
 use codex_hepta_prompt_optimizer::PromptCandidateBindingV1;
@@ -206,6 +207,13 @@ fn exercised_portfolio_compiles_as_atomic_trusted_context() {
             maximum_context_tokens: 1_000,
             token_budget: 100,
             truncation_policy_digest: digest("truncation"),
+            tokenizations: vec![TokenizationReceiptV2::new(
+                id("candidate:001"),
+                digest("payload"),
+                digest("tokenizer"),
+                7,
+            )
+            .expect("tokenization")],
             serialized_payload_digest: digest("serialized-payload"),
         },
     )
@@ -254,6 +262,13 @@ fn invalidated_or_no_intervention_exercise_cannot_compile_prompt_context() {
             maximum_context_tokens: 1_000,
             token_budget: 100,
             truncation_policy_digest: digest("truncation"),
+            tokenizations: vec![TokenizationReceiptV2::new(
+                id("candidate:001"),
+                digest("payload"),
+                digest("tokenizer"),
+                7,
+            )
+            .expect("tokenization")],
             serialized_payload_digest: digest("payload"),
         },
     );
