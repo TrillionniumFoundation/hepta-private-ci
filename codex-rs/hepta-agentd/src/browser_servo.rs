@@ -20,6 +20,9 @@ use std::process::ChildStdout;
 use std::process::Command;
 use std::process::Stdio;
 use std::sync::Mutex;
+use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
@@ -38,6 +41,7 @@ const MAX_FRAME_BYTES: usize = 1_048_576;
 const MAX_SERVICE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_WORKER_BYTES: usize = 512 * 1024 * 1024;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
+const MAX_DISPATCH_CHANNEL_WAIT: Duration = Duration::from_secs(10);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BrowserServoMethod {
@@ -626,7 +630,8 @@ impl BrowserServoProcessConfig {
 pub struct ChildBrowserTransport {
     child: Child,
     stdin: ChildStdin,
-    stdout: BufReader<ChildStdout>,
+    frames: mpsc::Receiver<Result<Vec<u8>, BrowserServoError>>,
+    reader: Option<thread::JoinHandle<()>>,
 }
 
 impl fmt::Debug for ChildBrowserTransport {
@@ -668,10 +673,29 @@ impl ChildBrowserTransport {
         let stdout = child.stdout.take().ok_or_else(|| {
             BrowserServoError::Unavailable("Browser child stdout was not piped".into())
         })?;
+        let (sender, frames) = mpsc::sync_channel(1);
+        let reader = thread::Builder::new()
+            .name("hepta-browser-private-reader".to_string())
+            .spawn(move || {
+                let mut stdout = BufReader::new(stdout);
+                loop {
+                    let result = read_child_frame(&mut stdout);
+                    let terminal = result.is_err();
+                    if sender.send(result).is_err() || terminal {
+                        break;
+                    }
+                }
+            })
+            .map_err(|error| {
+                BrowserServoError::Unavailable(format!(
+                    "failed to start Browser private-channel reader: {error}"
+                ))
+            })?;
         Ok(Self {
             child,
             stdin,
-            stdout: BufReader::new(stdout),
+            frames,
+            reader: Some(reader),
         })
     }
 }
@@ -696,28 +720,15 @@ impl BrowserServoTransport for ChildBrowserTransport {
     }
 
     fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError> {
-        let mut prefix = [0u8; 4];
-        self.stdout.read_exact(&mut prefix).map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel prefix read failed: {error}"
-            ))
-        })?;
-        let length = u32::from_be_bytes(prefix) as usize;
-        if length == 0 || length > MAX_FRAME_BYTES {
-            return Err(BrowserServoError::Protocol(
-                "Browser child announced an invalid frame length".into(),
-            ));
+        match self.frames.recv_timeout(MAX_DISPATCH_CHANNEL_WAIT) {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => Err(BrowserServoError::Indeterminate(
+                "Browser private-channel response deadline exceeded".into(),
+            )),
+            Err(mpsc::RecvTimeoutError::Disconnected) => Err(BrowserServoError::Indeterminate(
+                "Browser private-channel reader disconnected".into(),
+            )),
         }
-        let mut body = vec![0u8; length];
-        self.stdout.read_exact(&mut body).map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel body read failed: {error}"
-            ))
-        })?;
-        let mut frame = Vec::with_capacity(length + 4);
-        frame.extend_from_slice(&prefix);
-        frame.extend_from_slice(&body);
-        Ok(frame)
     }
 }
 
@@ -725,7 +736,35 @@ impl Drop for ChildBrowserTransport {
     fn drop(&mut self) {
         let _ = self.child.kill();
         let _ = self.child.wait();
+        if let Some(reader) = self.reader.take() {
+            let _ = reader.join();
+        }
     }
+}
+
+fn read_child_frame(stdout: &mut BufReader<ChildStdout>) -> Result<Vec<u8>, BrowserServoError> {
+    let mut prefix = [0u8; 4];
+    stdout.read_exact(&mut prefix).map_err(|error| {
+        BrowserServoError::Indeterminate(format!(
+            "Browser private-channel prefix read failed: {error}"
+        ))
+    })?;
+    let length = u32::from_be_bytes(prefix) as usize;
+    if length == 0 || length > MAX_FRAME_BYTES {
+        return Err(BrowserServoError::Protocol(
+            "Browser child announced an invalid frame length".into(),
+        ));
+    }
+    let mut body = vec![0u8; length];
+    stdout.read_exact(&mut body).map_err(|error| {
+        BrowserServoError::Indeterminate(format!(
+            "Browser private-channel body read failed: {error}"
+        ))
+    })?;
+    let mut frame = Vec::with_capacity(length + 4);
+    frame.extend_from_slice(&prefix);
+    frame.extend_from_slice(&body);
+    Ok(frame)
 }
 
 fn verify_file_digest(
