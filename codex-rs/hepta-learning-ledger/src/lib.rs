@@ -65,6 +65,7 @@ pub use model::Revocation;
 pub use objective_run_start::ObjectiveRunStartCommitError;
 pub use objective_run_start::ObjectiveRunStartCommitV1;
 pub use objective_run_start::append_objective_run_start_v1;
+pub use objective_run_start::append_prepared_objective_run_start_v1;
 pub use objective_run_start::decode_objective_run_start_record_v1;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;

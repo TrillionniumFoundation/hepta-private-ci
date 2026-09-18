@@ -76,6 +76,14 @@ pub fn append_objective_run_start_v1(
     bindings: ObjectiveRunStartBindingsV1,
 ) -> Result<ObjectiveRunStartCommitV1, ObjectiveRunStartCommitError> {
     let publication = prepare_objective_run_start_v1(envelope, profile, context, bindings)?;
+    append_prepared_objective_run_start_v1(ledger, expected_predecessor, publication)
+}
+
+pub fn append_prepared_objective_run_start_v1(
+    ledger: &mut DurableLedger,
+    expected_predecessor: Digest32,
+    publication: ObjectiveRunStartPublicationV1,
+) -> Result<ObjectiveRunStartCommitV1, ObjectiveRunStartCommitError> {
     let publication_bytes = encode_objective_run_start_publication_v1(&publication)?;
     let run_start = publication.run_start();
     let event = LedgerEvent::RunStart(ObjectiveRunStartRecordV1 {

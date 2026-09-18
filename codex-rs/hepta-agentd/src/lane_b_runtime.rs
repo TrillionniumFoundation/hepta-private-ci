@@ -141,33 +141,38 @@ impl AgentRunCoordinator {
         &self.composition
     }
 
+    pub fn preflight_objective_run(
+        &self,
+        now_ms: u64,
+        run_start: &RunStartSnapshotV1,
+        bindings: &ObjectiveRunStartRuntimeBindings,
+    ) -> Result<(), AgentRunError> {
+        let snapshot = objective_run_snapshot(run_start, bindings);
+        validate_snapshot(now_ms, &snapshot)?;
+        if snapshot.generation != self.composition.agentd_generation {
+            return Err(AgentRunError::InvalidGeneration);
+        }
+        if let Some(current) = self.runs.get(&snapshot.run_id) {
+            return if current.snapshot == snapshot {
+                Ok(())
+            } else {
+                Err(AgentRunError::Conflict)
+            };
+        }
+        if self.active_run_count() >= MAX_ACTIVE_RUNS || self.runs.len() >= MAX_RETAINED_RUNS {
+            return Err(AgentRunError::CapacityExceeded);
+        }
+        Ok(())
+    }
+
     pub fn start_objective_run(
         &mut self,
         now_ms: u64,
         run_start: &RunStartSnapshotV1,
         bindings: ObjectiveRunStartRuntimeBindings,
     ) -> Result<RunReceipt, AgentRunError> {
-        if run_start.generation != self.composition.agentd_generation {
-            return Err(AgentRunError::InvalidGeneration);
-        }
-        self.start_run(
-            now_ms,
-            RunSnapshot {
-                run_id: run_start.run_id.to_string(),
-                request_digest: bindings.request_digest,
-                objective_digest: run_start.objective_digest.to_string(),
-                hard_constraint_digest: run_start.hard_constraint_digest.to_string(),
-                preference_state_digest: run_start.preference_state_digest.to_string(),
-                model_tuple_digest: run_start.model_tuple_digest.to_string(),
-                prompt_registry_digest: run_start.prompt_registry_digest.to_string(),
-                body_digest: bindings.body_digest,
-                artifact_set_digest: run_start.artifact_set_digest.to_string(),
-                authority_epoch: run_start.authority_epoch,
-                generation: run_start.generation,
-                fence_digest: run_start.fence_digest.to_string(),
-                deadline_ms: bindings.deadline_ms,
-            },
-        )
+        self.preflight_objective_run(now_ms, run_start, &bindings)?;
+        self.start_run(now_ms, objective_run_snapshot(run_start, &bindings))
     }
 
     pub fn start_run(
@@ -354,6 +359,27 @@ impl AgentRunCoordinator {
             .values()
             .filter(|record| !record.phase.closed())
             .count()
+    }
+}
+
+fn objective_run_snapshot(
+    run_start: &RunStartSnapshotV1,
+    bindings: &ObjectiveRunStartRuntimeBindings,
+) -> RunSnapshot {
+    RunSnapshot {
+        run_id: run_start.run_id.to_string(),
+        request_digest: bindings.request_digest.clone(),
+        objective_digest: run_start.objective_digest.to_string(),
+        hard_constraint_digest: run_start.hard_constraint_digest.to_string(),
+        preference_state_digest: run_start.preference_state_digest.to_string(),
+        model_tuple_digest: run_start.model_tuple_digest.to_string(),
+        prompt_registry_digest: run_start.prompt_registry_digest.to_string(),
+        body_digest: bindings.body_digest.clone(),
+        artifact_set_digest: run_start.artifact_set_digest.to_string(),
+        authority_epoch: run_start.authority_epoch,
+        generation: run_start.generation,
+        fence_digest: run_start.fence_digest.to_string(),
+        deadline_ms: bindings.deadline_ms,
     }
 }
 
