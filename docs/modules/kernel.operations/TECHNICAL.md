@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); observed identifiers include `MAX_MODEL_OPERATION_RECORDS`, `OperationLedger`, `begin`, `authorize`, `record_dispatch`, `mark_indeterminate`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) for the implemented subset and remaining product work.
+The registered reference source is [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); observed identifiers include `MAX_MODEL_OPERATION_RECORDS`, `OperationLedger`, `begin`, `authorize`, `record_dispatch`, `mark_indeterminate`. The durable native source is [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs); observed identifiers include `DurableOperationStore`, `prepare_intent`, `claim_outbox`, `record_dispatch_started`, `handoff_owner`, `observe_terminal`, and `execute_with_final_use`. These are source-navigation bindings, not proof of product composition or independent acceptance. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -69,12 +69,12 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The implementation has two claim-separated layers:
 
-- `operation journal`
-- `cross-owner outbox`
-- `deduplication index`
-- `fenced reconciler`
+- reference oracle: bounded `OperationLedger` and `Outbox` in memory;
+- durable owner: SQLite `operation_ledger` plus `cross_owner_outbox` in one lineage;
+- source-side lease/fence and reconciliation state;
+- destination deduplication remains destination-owned and is not simulated as source authority.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -128,13 +128,13 @@ None.
 
 For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+The durable V1 migration is `codex-rs/hepta-operations/migrations/0001_operations.sql`, executed through SQLx's checksum-bound migration ledger. Store open runs SQLite quick/foreign-key checks and verifies required safety tables/triggers before use. This is a current native property for the operations lineage; target-host backup/restore and old-binary rollback remain qualification obligations.
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) identifies both the retained in-memory reference oracle and the SQLite durable owner. Durable prepare uses one `BEGIN IMMEDIATE` transaction for ledger plus source outbox; claims use expiring leases and monotonically increasing fences; a committed dispatch-start state is never requeued. Use [DURABLE_STORE_V1.md](../../lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md) for the exact current transaction/recovery contract.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -163,12 +163,15 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-OperationLedger and outbox types are embedded owner components. Their state transition result is not a remote effect observation. The host must bind each durable destination/outbox and current-fence reconciler; an in-memory ledger does not supply crash durability by itself.
+`OperationLedger` and `Outbox` remain embedded reference components. `DurableOperationStore` supplies the local crash-durable operation/outbox lineage, but its state transition result is still not a remote effect observation. The host must bind each real destination owner's dedupe/apply path and current-fence terminal observer. A local transport acknowledgement remains nonterminal.
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs).
-- [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs).
+- [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs) — reference ledger;
+- [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs) — reference outbox;
+- [codex-rs/hepta-operations/src/durable.rs](../../../codex-rs/hepta-operations/src/durable.rs) — durable native owner;
+- [codex-rs/hepta-operations/migrations/0001_operations.sql](../../../codex-rs/hepta-operations/migrations/0001_operations.sql) — physical V1 schema;
+- [docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md](../../lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md) — transaction/recovery contract.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -178,6 +181,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs); named case: `dispatch_ack_is_not_terminal_success`.
 - [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs); named case: `claim_and_ack_are_generation_fenced`.
+- [codex-rs/hepta-operations/src/durable_tests.rs](../../../codex-rs/hepta-operations/src/durable_tests.rs); covers atomic prepare rollback, reopen replay/conflict, lease takeover, owner handoff, no-blind-retry, acknowledgement/terminal separation, retention, schema corruption, subprocess crash and final-use boundary composition.
 
 In `codex-rs`, run `just test -p codex-hepta-operations`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) separately labels target acceptance designs.
 
@@ -203,6 +207,8 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 ## 15. Definition of module completion
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+
+Claim-level summary for `kernel.operations`: target design is specified; reference semantics are source-implemented; the local durable ledger/outbox backend is source-implemented in this candidate; product caller composition and a real destination-owner binding are not yet claimed; exact-candidate execution is whatever current CI proves; independent acceptance, activation, promotion and release remain ungranted.
 
 For `kernel.operations`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
