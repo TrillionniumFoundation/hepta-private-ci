@@ -127,6 +127,7 @@ fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorErro
     )
 }
 
+#[cfg(unix)]
 fn release_with_matrixd(
     identity: &str,
     agentd_program: &str,
