@@ -14,6 +14,7 @@ use tokio::time::timeout;
 
 use crate::ProductionMutationReceipt;
 use crate::ProductionRecoveryDecision;
+use crate::ReleaseSelectionSnapshot;
 use crate::SupervisorError;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
@@ -65,6 +66,19 @@ impl SupervisordClient {
         agent_id: AgentId,
     ) -> Result<SupervisordAgentStatus, SupervisorError> {
         self.agent(SupervisordMethod::Snapshot { agent_id }).await
+    }
+
+    pub async fn release_selection(
+        &self,
+        agent_id: AgentId,
+    ) -> Result<Option<ReleaseSelectionSnapshot>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ReleaseSelection { agent_id })
+            .await?
+        {
+            SupervisordPayload::ReleaseSelection { selection } => Ok(selection),
+            payload => unexpected(payload),
+        }
     }
 
     pub async fn production_mutation_status(
