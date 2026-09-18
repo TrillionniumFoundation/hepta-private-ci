@@ -292,13 +292,38 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         request: &RetrievalRequest,
     ) -> Result<RetrievalBatch, CognitiveStoreError> {
+        self.retrieve_memory_candidates_with_frontier(access, request)
+            .await
+            .map(|(batch, _)| batch)
+    }
+
+    /// Returns the bounded retrieval and its owner-memory frontier from the
+    /// same SQLite read transaction. Federation uses this as a coherent remote
+    /// observation witness without opening a second read transaction.
+    pub(crate) async fn retrieve_memory_candidates_with_frontier(
+        &self,
+        access: &CognitiveAccess,
+        request: &RetrievalRequest,
+    ) -> Result<(RetrievalBatch, u64), CognitiveStoreError> {
         let fts_query = self.validate_retrieval_request(access, request)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let batch = self
             .retrieve_memory_candidates_tx(&mut transaction, access, request, &fts_query)
             .await?;
+        let frontier: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM memory_revisions WHERE owner_agent_id = ?",
+        )
+        .bind(self.owner_agent_id.as_str())
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        let frontier = u64::try_from(frontier).map_err(|_| {
+            CognitiveStoreError::Corrupt(
+                "memory retrieval owner frontier is negative".to_string(),
+            )
+        })?;
         transaction.commit().await.map_err(unavailable)?;
-        Ok(batch)
+        Ok((batch, frontier))
     }
 
     async fn retrieve_memory_candidates_tx(
