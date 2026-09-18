@@ -68,8 +68,9 @@ impl PlannerJournalStoreV1 {
         if recovery_floor.len() > MAX_REVOKED_DIGESTS {
             return Err(PlannerStoreError::RevocationRegression);
         }
+        let recovery_floor_count = recovery_floor.len();
         let recovery_floor: BTreeSet<_> = recovery_floor.iter().copied().collect();
-        if recovery_floor.len() != recovery_floor.iter().count() {
+        if recovery_floor.len() != recovery_floor_count {
             return Err(PlannerStoreError::RevocationRegression);
         }
 
@@ -267,7 +268,7 @@ fn push_u32(bytes: &mut Vec<u8>, value: usize) -> Result<(), PlannerStoreError> 
 }
 
 fn read_u32(bytes: &[u8], offset: &mut usize) -> Result<usize, PlannerStoreError> {
-    let end = offset
+    let end = (*offset)
         .checked_add(4)
         .ok_or(PlannerStoreError::CorruptState)?;
     let value = u32::from_be_bytes(
@@ -282,7 +283,7 @@ fn read_u32(bytes: &[u8], offset: &mut usize) -> Result<usize, PlannerStoreError
 }
 
 fn read_digest(bytes: &[u8], offset: &mut usize) -> Result<Digest32, PlannerStoreError> {
-    let end = offset
+    let end = (*offset)
         .checked_add(DIGEST_BYTES)
         .ok_or(PlannerStoreError::CorruptState)?;
     let value: [u8; DIGEST_BYTES] = bytes
