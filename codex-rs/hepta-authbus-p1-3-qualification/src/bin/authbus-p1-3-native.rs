@@ -2,6 +2,7 @@ use std::env;
 use std::fs;
 use std::fs::OpenOptions;
 use std::io::Write;
+use std::process::Command;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -20,6 +21,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let source_sha = args[1].clone();
     let source_tree = args[2].clone();
+    let git = |spec: &str| -> Result<String, Box<dyn std::error::Error>> {
+        let output = Command::new("git").args(["rev-parse", spec]).output()?;
+        if !output.status.success() {
+            return Err(format!("git rev-parse {spec} failed").into());
+        }
+        Ok(String::from_utf8(output.stdout)?.trim().to_string())
+    };
+    let checkout_sha = git("HEAD")?;
+    let checkout_tree = git("HEAD^{tree}")?;
+    if source_sha != checkout_sha || source_tree != checkout_tree {
+        return Err("qualification source identity does not match the current checkout".into());
+    }
     let runner_id = StableId::new(&args[3])?;
     let output = std::path::PathBuf::from(&args[4]);
     let executable = env::current_exe()?;
@@ -49,12 +62,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .open(output)?;
     writeln!(
         stream,
-        "{{\"schema_version\":1,\"source_sha\":\"{}\",\"source_tree\":\"{}\",\"executable_digest\":\"{}\",\"command_digest\":\"{}\",\"runner_id\":\"{}\",\"case_count\":{},\"qualification_digest\":\"{}\",\"authority\":false}}",
+        "{{\"schema_version\":2,\"source_sha\":\"{}\",\"source_tree\":\"{}\",\"executable_digest\":\"{}\",\"command_digest\":\"{}\",\"runner_id\":\"{}\",\"started_at_ms\":{},\"completed_at_ms\":{},\"exit_code\":{},\"case_count\":{},\"qualification_digest\":\"{}\",\"authority\":false}}",
         receipt.source_sha,
         receipt.source_tree,
         receipt.executable_digest,
         receipt.command_digest,
         receipt.runner_id,
+        receipt.started_at_ms,
+        receipt.completed_at_ms,
+        receipt.exit_code,
         receipt.case_count,
         receipt.qualification_digest,
     )?;
