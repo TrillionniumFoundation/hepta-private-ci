@@ -992,7 +992,11 @@ impl DurableOperationStore {
         if limit == 0 || limit > MAX_DURABLE_CLAIM_BATCH {
             return Err(DurableOperationError::Invalid("prune limit"));
         }
-        let before = to_i64(terminal_before_unix_ms)?;
+        // This is an inclusive comparison bound, not a timestamp to persist.
+        // Every stored terminal timestamp fits SQLite's signed integer domain,
+        // so a larger unsigned cutoff is equivalent to its greatest value.
+        // Keep checked conversion for identities, revisions and stored times.
+        let before = i64::try_from(terminal_before_unix_ms).unwrap_or(i64::MAX);
         let now = now_millis()?;
         let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(sqlx_error)?;
         let rows = sqlx::query(

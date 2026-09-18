@@ -369,7 +369,7 @@ async fn terminal_gc_writes_tombstone_and_prevents_resurrection() {
     .execute(&store.pool)
     .await
     .expect("fixture state");
-    store
+    let terminal = store
         .observe_terminal(
             &operation.scope_id,
             &operation.operation_id,
@@ -382,10 +382,19 @@ async fn terminal_gc_writes_tombstone_and_prevents_resurrection() {
         )
         .await
         .expect("terminal");
+    let settled_at = terminal.terminal_at_unix_ms.expect("terminal timestamp");
+    assert!(settled_at > 0);
+    assert_eq!(
+        store
+            .prune_terminal(settled_at - 1, 10)
+            .await
+            .expect("before inclusive cutoff"),
+        0
+    );
     let pruned = store
-        .prune_terminal(u64::MAX, 10)
+        .prune_terminal(settled_at, 10)
         .await
-        .expect("prune");
+        .expect("prune at inclusive cutoff");
     assert_eq!(pruned, 1);
     assert!(matches!(
         store.prepare_intent(&operation).await,
@@ -484,4 +493,34 @@ async fn corrupt_database_fails_closed() {
     store.close().await;
     std::fs::write(&path, b"not a sqlite database").expect("corrupt");
     assert!(DurableOperationStore::open(&path).await.is_err());
+}
+
+#[tokio::test]
+async fn retirement_cutoff_range_never_retires_pending_work_or_relaxes_batch_limits() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let operation = intent(b"pending cutoff boundary");
+    let store = DurableOperationStore::open(&path).await.expect("open");
+    store.prepare_intent(&operation).await.expect("prepare");
+    for cutoff in [0, 1, i64::MAX as u64, (i64::MAX as u64) + 1, u64::MAX] {
+        assert_eq!(store.prune_terminal(cutoff, 1).await.expect("cutoff"), 0);
+        assert_eq!(
+            store
+                .operation(&operation.scope_id, &operation.operation_id)
+                .await
+                .expect("lookup")
+                .expect("pending identity retained")
+                .state,
+            DurableOperationState::Prepared
+        );
+    }
+    for limit in [0, MAX_DURABLE_CLAIM_BATCH + 1] {
+        assert_eq!(
+            store.prune_terminal(u64::MAX, limit).await,
+            Err(DurableOperationError::Invalid("prune limit"))
+        );
+    }
+    // The query-bound rule is not a permissive replacement for value storage.
+    assert_eq!(to_i64(u64::MAX), Err(DurableOperationError::Capacity));
+    store.close().await;
 }
