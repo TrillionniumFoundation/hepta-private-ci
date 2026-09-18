@@ -30,6 +30,8 @@ STATIC_INPUTS = [
     Path("qualification/lane-e/TEST_TRACEABILITY.json"),
 ]
 REVALIDATE_HOURS = 24 * 30
+MAX_CLOCK_SKEW = dt.timedelta(minutes=5)
+SCHEMA = "hepta.lane-e-ci-evidence.v2"
 
 
 def sha256_file(path: Path) -> str:
@@ -78,6 +80,39 @@ def require_hex_sha(value: str, label: str, allow_empty: bool = False) -> None:
         raise ValueError(f"{label} must be a 40-character git SHA")
 
 
+def parse_utc(value: Any, label: str) -> dt.datetime:
+    if not isinstance(value, str):
+        raise ValueError(f"{label} must be an ISO-8601 UTC timestamp")
+    parsed = dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None:
+        raise ValueError(f"{label} must include a timezone")
+    return parsed.astimezone(dt.timezone.utc)
+
+
+def git_value(*args: str) -> str:
+    result = subprocess.run(
+        ("git", *args),
+        cwd=ROOT,
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+    return result.stdout.strip()
+
+
+def artifact_path(value: str) -> tuple[Path, str]:
+    path = Path(value)
+    if not path.is_absolute():
+        path = ROOT / path
+    resolved = path.resolve()
+    try:
+        relative = resolved.relative_to(ROOT.resolve())
+    except ValueError as error:
+        raise ValueError(f"evidence artifact must stay inside repository root: {value}") from error
+    return resolved, relative.as_posix()
+
+
 def emit(args: argparse.Namespace) -> int:
     require_hex_sha(args.source_sha, "source_sha")
     require_hex_sha(args.candidate_sha, "candidate_sha")
@@ -91,7 +126,7 @@ def emit(args: argparse.Namespace) -> int:
             raise FileNotFoundError(relative)
         inputs[relative.as_posix()] = sha256_file(path)
 
-    outputs: dict[str, str] = {}
+    outputs: dict[str, dict[str, Any]] = {}
     for label, value in [
         ("coverage", args.coverage),
         ("stressAudit", args.stress),
@@ -99,12 +134,14 @@ def emit(args: argparse.Namespace) -> int:
     ]:
         if not value:
             continue
-        path = Path(value)
-        if not path.is_absolute():
-            path = ROOT / path
+        path, relative = artifact_path(value)
         if not path.is_file() or path.stat().st_size == 0:
             raise FileNotFoundError(f"missing or empty {label}: {path}")
-        outputs[label] = sha256_file(path)
+        outputs[label] = {
+            "path": relative,
+            "sha256": sha256_file(path),
+            "bytes": path.stat().st_size,
+        }
 
     generated = utc_now()
     expires = generated + dt.timedelta(hours=REVALIDATE_HOURS)
@@ -117,7 +154,7 @@ def emit(args: argparse.Namespace) -> int:
         "inputs": inputs,
     }
     receipt = {
-        "schema": "hepta.lane-e-ci-evidence.v1",
+        "schema": SCHEMA,
         "mode": args.mode,
         "sourceSha": args.source_sha,
         "candidateSha": args.candidate_sha,
@@ -156,8 +193,9 @@ def verify(args: argparse.Namespace) -> int:
     if not path.is_absolute():
         path = ROOT / path
     value = json.loads(path.read_text(encoding="utf-8"))
-    if value.get("schema") != "hepta.lane-e-ci-evidence.v1":
+    if value.get("schema") != SCHEMA:
         raise ValueError("unexpected evidence schema")
+
     recorded = value.get("receiptDigest")
     copy = dict(value)
     copy.pop("receiptDigest", None)
@@ -167,13 +205,110 @@ def verify(args: argparse.Namespace) -> int:
         raise ValueError("repository receipt must not claim an unverified signer")
     if value.get("signer") is not None or value.get("signature") is not None:
         raise ValueError("unsigned repository receipt cannot contain signer/signature")
+
+    source_sha = value.get("sourceSha")
+    candidate_sha = value.get("candidateSha")
+    tree_sha = value.get("treeSha")
+    base_sha = value.get("baseSha")
+    if not isinstance(source_sha, str) or not isinstance(candidate_sha, str) or not isinstance(
+        tree_sha, str
+    ):
+        raise ValueError("missing git identity")
+    require_hex_sha(source_sha, "sourceSha")
+    require_hex_sha(candidate_sha, "candidateSha")
+    require_hex_sha(tree_sha, "treeSha")
+    if base_sha is not None:
+        if not isinstance(base_sha, str):
+            raise ValueError("baseSha must be a git SHA or null")
+        require_hex_sha(base_sha, "baseSha")
+
+    git_value("cat-file", "-e", f"{source_sha}^{{commit}}")
+    git_value("cat-file", "-e", f"{candidate_sha}^{{commit}}")
+    observed_tree = git_value("rev-parse", f"{candidate_sha}^{{tree}}")
+    if observed_tree != tree_sha:
+        raise ValueError("candidate tree mismatch")
+
+    mode = value.get("mode")
+    if mode == "exact-head":
+        if candidate_sha != source_sha:
+            raise ValueError("exact-head candidate must equal source")
+        if git_value("rev-parse", f"{source_sha}^{{tree}}") != tree_sha:
+            raise ValueError("source tree mismatch")
+    elif mode == "synthetic-merge":
+        if base_sha is None:
+            raise ValueError("synthetic merge requires baseSha")
+        parents = git_value("rev-list", "--parents", "-n", "1", candidate_sha).split()
+        if parents != [candidate_sha, base_sha, source_sha]:
+            raise ValueError("synthetic merge ordered parents mismatch")
+    else:
+        raise ValueError("unexpected evidence mode")
+
+    generated = parse_utc(value.get("generatedAtUtc"), "generatedAtUtc")
+    expires = parse_utc(value.get("expiresAtUtc"), "expiresAtUtc")
+    if value.get("revalidateAfterHours") != REVALIDATE_HOURS:
+        raise ValueError("unexpected evidence revalidation policy")
+    if expires != generated + dt.timedelta(hours=REVALIDATE_HOURS):
+        raise ValueError("evidence expiry does not match revalidation policy")
+    now = utc_now()
+    if generated > now + MAX_CLOCK_SKEW:
+        raise ValueError("evidence generation time is in the future")
+    if now > expires:
+        raise ValueError("evidence receipt expired")
+
+    context_fields = ("repository", "workflow", "workflowRef", "runId", "runAttempt", "runnerOs")
+    if any(not isinstance(value.get(field), str) or not value.get(field) for field in context_fields):
+        raise ValueError("missing GitHub Actions provenance context")
+    current_repository = os.environ.get("GITHUB_REPOSITORY")
+    if current_repository and current_repository != value["repository"]:
+        raise ValueError("repository context mismatch")
+
+    inputs = value.get("inputs")
+    if not isinstance(inputs, dict) or set(inputs) != {p.as_posix() for p in STATIC_INPUTS}:
+        raise ValueError("unexpected evidence input set")
     for relative in STATIC_INPUTS:
-        expected = value.get("inputs", {}).get(relative.as_posix())
+        expected = inputs.get(relative.as_posix())
         if expected != sha256_file(ROOT / relative):
             raise ValueError(f"input digest mismatch: {relative}")
-    for label, digest in value.get("outputs", {}).items():
-        if not isinstance(label, str) or not isinstance(digest, str) or len(digest) != 64:
-            raise ValueError("invalid output digest")
+
+    outputs = value.get("outputs")
+    if not isinstance(outputs, dict) or not outputs:
+        raise ValueError("evidence outputs are missing")
+    for label, metadata in outputs.items():
+        if not isinstance(label, str) or not isinstance(metadata, dict):
+            raise ValueError("invalid output record")
+        relative = metadata.get("path")
+        digest = metadata.get("sha256")
+        size = metadata.get("bytes")
+        if (
+            not isinstance(relative, str)
+            or not isinstance(digest, str)
+            or len(digest) != 64
+            or not isinstance(size, int)
+            or size <= 0
+        ):
+            raise ValueError("invalid output metadata")
+        artifact, normalized = artifact_path(relative)
+        if normalized != relative or not artifact.is_file():
+            raise ValueError(f"output path mismatch: {label}")
+        if artifact.stat().st_size != size or sha256_file(artifact) != digest:
+            raise ValueError(f"output digest mismatch: {label}")
+
+    toolchain = value.get("toolchain")
+    if not isinstance(toolchain, dict) or not isinstance(toolchain.get("rustc"), str) or not isinstance(
+        toolchain.get("cargo"), str
+    ):
+        raise ValueError("missing toolchain identity")
+    build = {
+        "sourceSha": source_sha,
+        "candidateSha": candidate_sha,
+        "treeSha": tree_sha,
+        "rustc": toolchain["rustc"],
+        "cargo": toolchain["cargo"],
+        "inputs": inputs,
+    }
+    if value.get("buildIdentity") != canonical_digest(build):
+        raise ValueError("build identity mismatch")
+
     print(json.dumps({"ok": True, "receiptDigest": recorded}))
     return 0
 
