@@ -39,8 +39,14 @@ pub use closure::MetricContractV1;
 pub use closure::MetricGateV1;
 pub use closure::MetricRoleContractV2;
 pub use closure::MetricRoleV2;
+#[cfg(feature = "trusted-inprocess-eval")]
 pub use closure::decide_independently;
+#[cfg(not(feature = "trusted-inprocess-eval"))]
+pub(crate) use closure::decide_independently;
+#[cfg(feature = "trusted-inprocess-eval")]
 pub use closure::decide_independently_v2;
+#[cfg(not(feature = "trusted-inprocess-eval"))]
+pub(crate) use closure::decide_independently_v2;
 pub use closure::freeze_cross_fold_plan;
 pub use closure::freeze_cross_fold_plan_v2;
 pub use holdout_journal::FinalHoldoutJournalError;
