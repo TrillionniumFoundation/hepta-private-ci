@@ -178,7 +178,9 @@ fn decision() -> ProductionDecisionV2 {
     ProductionDecisionV2 {
         record_id: id("decision-record"),
         episode_id: id("episode"),
+        run_snapshot_digest: digest("run-snapshot"),
         objective_digest: digest("objective"),
+        policy_digest: digest("policy"),
         candidate_ids: candidates.clone(),
         selected_candidate_id: id("action"),
         selected_propensity: ProbabilityQ32::ONE,
