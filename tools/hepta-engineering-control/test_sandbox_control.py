@@ -78,6 +78,23 @@ class SandboxCoordinatorTests(unittest.TestCase):
                 )
         self.assertEqual(runner.call_count, 1)
 
+    def test_elapsed_time_budget_exhaustion_is_not_retried(self):
+        coordinator = SandboxCoordinator(SandboxExecutionPolicy(8, 2))
+        with mock.patch(
+            "control_engineering_v2.sandbox_control.sandbox_candidate",
+            side_effect=EngineeringError("sandbox_time_budget_exceeded"),
+        ) as runner:
+            with self.assertRaisesRegex(
+                EngineeringError, "sandbox_time_budget_exceeded"
+            ):
+                coordinator.execute(
+                    "/repo",
+                    CandidateEnvelope("env", "a" * 40, ("src",)),
+                    self.candidate(),
+                    (("true",),),
+                )
+        self.assertEqual(runner.call_count, 1)
+
     def test_saturated_admission_fails_without_unbounded_wait(self):
         coordinator = SandboxCoordinator(SandboxExecutionPolicy(1, 0))
         self.assertTrue(coordinator._semaphore.acquire(blocking=False))
