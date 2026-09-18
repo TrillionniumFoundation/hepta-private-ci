@@ -113,7 +113,8 @@ fn run_python(session: &[u8]) -> Result<std::process::Output, Box<dyn Error>> {
     })?;
     stdin.write_all(session)?;
     drop(stdin);
-    Ok(child.wait_with_output()?)
+    let output = child.wait_with_output()?;
+    Ok(output)
 }
 
 #[test]
@@ -130,11 +131,8 @@ fn rust_python_live_v2_session_negotiates_and_loads_typed_payload() -> Result<()
     let mut session = offer.clone();
     session.extend_from_slice(&envelope.encode());
     let output = run_python(&session)?;
-    assert!(
-        output.status.success(),
-        "python session failed: {}",
-        String::from_utf8_lossy(&output.stderr)
-    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(output.status.success(), "python session failed: {stderr}");
     let report: Value = serde_json::from_slice(&output.stdout)?;
     assert_eq!(report["selected_version"], 2);
     assert_eq!(report["schema"], "hepta.integration.v2");
@@ -151,10 +149,10 @@ fn rust_python_live_v2_session_negotiates_and_loads_typed_payload() -> Result<()
     tampered_session.extend_from_slice(&tampered);
     let python_fault = run_python(&tampered_session)?;
     assert!(!python_fault.status.success());
+    let fault_stderr = String::from_utf8_lossy(&python_fault.stderr);
     assert!(
-        String::from_utf8_lossy(&python_fault.stderr).contains("frame digest mismatch"),
-        "{}",
-        String::from_utf8_lossy(&python_fault.stderr)
+        fault_stderr.contains("frame digest mismatch"),
+        "{fault_stderr}"
     );
     assert!(matches!(
         WireEnvelopeV2::decode(&tampered),
