@@ -287,6 +287,9 @@ pub enum Feature {
     GuardianV2,
     /// Enable the Hepta typed governance extension plane.
     HeptaGovernance,
+    /// Deny all Codex tool/effect execution for runtime.codex callers that do
+    /// not yet carry a non-forgeable final-use authority witness.
+    HeptaCodexEffectFence,
     /// Enable Hepta's fail-closed durable regular-turn recovery protocol.
     HeptaTurnRecovery,
     /// Enable same-thread digest-only Hepta Memory shadow recall.
@@ -1444,6 +1447,12 @@ pub const FEATURES: &[FeatureSpec] = &[
     FeatureSpec {
         id: Feature::HeptaGovernance,
         key: "hepta_governance",
+        stage: Stage::UnderDevelopment,
+        default_enabled: false,
+    },
+    FeatureSpec {
+        id: Feature::HeptaCodexEffectFence,
+        key: "hepta_codex_effect_fence",
         stage: Stage::UnderDevelopment,
         default_enabled: false,
     },
