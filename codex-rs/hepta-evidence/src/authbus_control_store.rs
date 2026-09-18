@@ -113,7 +113,7 @@ impl HeptaEvidenceStore {
         .bind(policy.audience.as_str())
         .bind(policy.quota_key.as_str())
         .bind(max_reservation.as_slice())
-        .bind(i64::from(policy.enabled))
+        .bind(if policy.enabled { 1_i64 } else { 0_i64 })
         .bind(digest.as_array().as_slice())
         .bind(now)
         .execute(&mut *tx)
