@@ -23,9 +23,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let executable_digest = Digest32::of_bytes(&fs::read(&executable)?);
     let mut command_bytes = b"authbus-p1-3-native.v1\0".to_vec();
     for value in &args[1..4] {
-        command_bytes.extend_from_slice(
-            &u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes(),
-        );
+        command_bytes
+            .extend_from_slice(&u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes());
         command_bytes.extend_from_slice(value.as_bytes());
     }
     let command_digest = Digest32::of_bytes(&command_bytes);
