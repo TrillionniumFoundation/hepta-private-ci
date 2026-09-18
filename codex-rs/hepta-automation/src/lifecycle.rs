@@ -309,13 +309,36 @@ impl AutomationStore {
             if current.claim_generation != lease.lease_generation
                 || current.claim_token != lease.lease_token
             {
+                let has_step_history: i64 = sqlx::query_scalar(
+                    "SELECT EXISTS(
+                        SELECT 1 FROM taskflow_step_outbox
+                        WHERE owner_agent_id = ? AND run_id = ?
+                          AND step_id = 'codex_turn' AND attempt = ?
+                    )",
+                )
+                .bind(self.taskflow_owner_agent_id().as_str())
+                .bind(&current.taskflow_run_id)
+                .bind(i64::from(current.step_attempt))
+                .fetch_one(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                let next_attempt = if has_step_history == 0 {
+                    current.step_attempt
+                } else {
+                    current
+                        .step_attempt
+                        .checked_add(1)
+                        .filter(|attempt| *attempt <= 1_000_000)
+                        .ok_or(AutomationError::Invalid)?
+                };
                 let changed = sqlx::query(
                     "UPDATE automation_occurrence_lifecycle
-                     SET claim_generation = ?, claim_token = ?, updated_at_ms = ?
+                     SET claim_generation = ?, claim_token = ?, step_attempt = ?, updated_at_ms = ?
                      WHERE task_id = ? AND occurrence = ? AND state = 'claimed'",
                 )
                 .bind(to_i64(lease.lease_generation)?)
                 .bind(&lease.lease_token)
+                .bind(i64::from(next_attempt))
                 .bind(to_i64(now_ms)?)
                 .bind(lease.task.task_id.to_string())
                 .bind(to_i64(lease.occurrence)?)
@@ -339,7 +362,7 @@ impl AutomationStore {
                     None,
                     &format!(
                         "occurrence:reclaim:{}:{}",
-                        lease.occurrence, lease.lease_generation
+                        lease.occurrence, lease.lease_token
                     ),
                     now_ms,
                 )
