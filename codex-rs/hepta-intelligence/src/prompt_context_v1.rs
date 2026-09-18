@@ -44,6 +44,8 @@ pub struct PromptContextPreparationRequestV1 {
     pub maximum_context_tokens: u64,
     pub token_budget: u64,
     pub truncation_policy_digest: Digest32,
+    /// Exact tokenizer receipts produced for the selected prompt payloads.
+    pub tokenizations: Vec<TokenizationReceiptV2>,
     /// Digest of bytes produced by the actual serializer. This is not delivery evidence.
     pub serialized_payload_digest: Digest32,
 }
@@ -142,7 +144,23 @@ where
         .iter()
         .map(|price| (price.candidate_id.clone(), price))
         .collect::<BTreeMap<_, _>>();
-    let tokenizer_digest = exercise_request.current_source.model_profile.tokenizer_digest;
+    let mut tokenizations = BTreeMap::new();
+    for tokenization in &request.tokenizations {
+        tokenization
+            .validate()
+            .map_err(PromptContextCompositionErrorV1::Context)?;
+        if tokenizations
+            .insert(tokenization.item_id.clone(), tokenization.clone())
+            .is_some()
+        {
+            return Err(PromptContextCompositionErrorV1::DuplicateTokenization(
+                tokenization.item_id.to_string(),
+            ));
+        }
+    }
+    if tokenizations.len() != portfolio.selected_candidate_ids.len() {
+        return Err(PromptContextCompositionErrorV1::InvalidTokenizationSet);
+    }
     let mut candidates = Vec::with_capacity(portfolio.selected_candidate_ids.len());
     for candidate_id in &portfolio.selected_candidate_ids {
         let binding = current_bindings
@@ -153,16 +171,28 @@ where
         let price = prices
             .get(candidate_id)
             .ok_or(PromptContextCompositionErrorV1::InvalidPreparation)?;
-        let tokenization = TokenizationReceiptV2::new(
-            candidate_id.clone(),
-            binding.payload_digest,
-            tokenizer_digest,
-            binding.token_cost,
-        )
-        .map_err(PromptContextCompositionErrorV1::Context)?;
+        let tokenization = tokenizations
+            .remove(candidate_id)
+            .ok_or_else(|| PromptContextCompositionErrorV1::MissingTokenization(
+                candidate_id.to_string(),
+            ))?;
+        if tokenization.token_count > binding.token_cost {
+            return Err(PromptContextCompositionErrorV1::TokenizationExceedsRegisteredBound(
+                candidate_id.to_string(),
+            ));
+        }
         candidates.push(ContextCandidateV2 {
             item_id: candidate_id.clone(),
-            role: ContextRoleV2::TrustedInstruction,
+            role: match binding.role {
+                codex_hepta_prompt_optimizer::PromptCandidateRoleV1::ToolSchemaFragment => {
+                    ContextRoleV2::Schema
+                }
+                codex_hepta_prompt_optimizer::PromptCandidateRoleV1::SystemInstruction
+                | codex_hepta_prompt_optimizer::PromptCandidateRoleV1::DeveloperInstruction
+                | codex_hepta_prompt_optimizer::PromptCandidateRoleV1::UserTemplate => {
+                    ContextRoleV2::TrustedInstruction
+                }
+            },
             content_digest: binding.payload_digest,
             source_digest: binding.binding_digest,
             generation_vector_digest: exercise.current_generation_vector_digest,
