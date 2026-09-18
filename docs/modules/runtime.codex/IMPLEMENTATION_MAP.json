@@ -128,9 +128,28 @@
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "observe_delivery",
+      "mappingClass": "owner_native_adapter",
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+          "kind": "terminal_prompt_delivery_mapping",
+          "command": "just test -p codex-hepta-codex-adapter"
+        }
+      ],
+      "sourceSemantics": "Maps only caller-observed terminal provider request facts into the registered PromptDeliveryObservationV1; non-terminal outcomes remain indeterminate and no provider/model authority is minted.",
+      "operation": "observe_prompt_delivery_v1",
+      "nativeSymbol": "observe_prompt_delivery_v1",
+      "sourcePath": "codex-rs/hepta-codex-adapter/src/lib.rs",
+      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Bind observe_prompt_delivery_v1 to a named non-test App Server/Agentd terminal provider-stream caller without adding a second execution spine."
+  ],
   "externalEvidenceGates": [
     "named deployed Agentd caller identity",
     "real model/provider stream observation",

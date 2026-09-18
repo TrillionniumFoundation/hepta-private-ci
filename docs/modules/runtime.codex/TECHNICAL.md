@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-codex-adapter/src/lib.rs](../../../codex-rs/hepta-codex-adapter/src/lib.rs); observed identifiers include `CodexOperationIntent`, `AppServerObservation`, `CodexAdapterReceipt`, `adapt`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.codex.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-codex-adapter/src/lib.rs](../../../codex-rs/hepta-codex-adapter/src/lib.rs); observed identifiers include `CodexOperationIntent`, `AppServerObservation`, `CodexAdapterReceipt`, `adapt`, `PromptDeliveryObservationV1` and `observe_prompt_delivery_v1`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.codex.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -165,6 +165,8 @@ Current operating and state-format references:
 
 - [codex-rs/app-server/README.md](../../../codex-rs/app-server/README.md).
 - [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../readiness/LANE_B_RUNTIME_COMPOSITION.md).
+
+The native adapter now exposes `observe_prompt_delivery_v1` for the registered terminal delivery contract. It accepts only a terminal caller observation whose observed provider-request digest equals the already lease-bound request digest. A delivered observation cannot carry a rejection reason; a rejected observation requires a bounded rejection-reason identifier; token positions are bounded and canonical. Non-terminal/unknown outcomes do not produce `PromptDeliveryObservationV1` and remain indeterminate in the existing adapter path. This is a source mapper, not a provider invocation or deployed caller.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
