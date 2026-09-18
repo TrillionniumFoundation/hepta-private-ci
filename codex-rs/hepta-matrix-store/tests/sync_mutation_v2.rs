@@ -990,21 +990,22 @@ async fn caller_persisted_outbox_attempt_survives_a_later_room_leave() -> TestRe
             .is_empty(),
         "an expired pre-leave lease must not be reclaimed"
     );
+    let observation_digest = "d".repeat(64);
     let sent = store
-        .mark_outbox_sent(
+        .observe_dispatch_terminal_success(
             &txn_id,
-            claimed[0].attempts,
             &sent_event_id,
+            &observation_digest,
             /*now_ms*/ 201,
         )
         .await?;
 
     assert_eq!(
         store
-            .mark_outbox_sent(
+            .observe_dispatch_terminal_success(
                 &txn_id,
-                claimed[0].attempts,
                 &sent_event_id,
+                &observation_digest,
                 /*now_ms*/ 202,
             )
             .await?,
@@ -1012,10 +1013,10 @@ async fn caller_persisted_outbox_attempt_survives_a_later_room_leave() -> TestRe
     );
     assert_eq!(
         store
-            .mark_outbox_sent(
+            .observe_dispatch_terminal_success(
                 &txn_id,
-                claimed[0].attempts,
                 &event("$different-send-result")?,
+                &observation_digest,
                 /*now_ms*/ 203,
             )
             .await,

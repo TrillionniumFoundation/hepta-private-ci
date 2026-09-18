@@ -1755,27 +1755,6 @@ impl MatrixDurableStore {
         .await
     }
 
-    pub async fn mark_outbox_sent(
-        &self,
-        txn_id: &MatrixTransactionId,
-        expected_attempt: u64,
-        event_id: &MatrixEventId,
-        now_ms: u64,
-    ) -> Result<OutboxRecord, MatrixDurableError> {
-        if expected_attempt == 0 {
-            return Err(MatrixDurableError::Invalid);
-        }
-        self.transition_outbox(
-            txn_id,
-            expected_attempt,
-            now_ms,
-            OutboxTransition::Sent {
-                event_id: event_id.clone(),
-            },
-        )
-        .await
-    }
-
     pub async fn mark_outbox_permanent_failure(
         &self,
         txn_id: &MatrixTransactionId,
@@ -1835,22 +1814,6 @@ impl MatrixDurableStore {
                     *next_attempt_at_ms,
                     None,
                     ChangeKind::OutboxRetryScheduled,
-                )
-            }
-            OutboxTransition::Sent { event_id } => {
-                crate::dispatch::mark_dispatch_success_compat_tx(
-                    &mut transaction,
-                    txn_id,
-                    event_id,
-                    expected_attempt,
-                    now_ms,
-                )
-                .await?;
-                (
-                    OutboxState::Sent,
-                    existing.next_attempt_at_ms,
-                    Some(event_id.clone()),
-                    ChangeKind::OutboxSent,
                 )
             }
             OutboxTransition::PermanentFailure => {
@@ -2736,7 +2699,6 @@ impl MatrixDurableStore {
 
 enum OutboxTransition {
     Retry { next_attempt_at_ms: u64 },
-    Sent { event_id: MatrixEventId },
     PermanentFailure,
 }
 
@@ -2746,11 +2708,6 @@ impl OutboxTransition {
         existing: &OutboxRecord,
     ) -> Option<Result<OutboxRecord, MatrixDurableError>> {
         match self {
-            Self::Sent { event_id } if existing.state == OutboxState::Sent => Some(
-                (existing.sent_event_id.as_ref() == Some(event_id))
-                    .then(|| existing.clone())
-                    .ok_or(MatrixDurableError::Conflict),
-            ),
             Self::PermanentFailure if existing.state == OutboxState::PermanentFailure => {
                 Some(Ok(existing.clone()))
             }

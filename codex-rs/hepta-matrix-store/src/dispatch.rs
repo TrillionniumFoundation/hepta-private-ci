@@ -616,61 +616,6 @@ pub(crate) async fn mark_dispatch_failed_tx(
     Ok(())
 }
 
-pub(crate) async fn mark_dispatch_success_compat_tx(
-    transaction: &mut Transaction<'_, Sqlite>,
-    txn_id: &MatrixTransactionId,
-    event_id: &MatrixEventId,
-    expected_attempt: u64,
-    now_ms: u64,
-) -> Result<(), MatrixDurableError> {
-    let current = dispatch_by_txn_tx(transaction, txn_id)
-        .await?
-        .ok_or(MatrixDurableError::Corrupt)?;
-    if current.state == MatrixDispatchState::Succeeded
-        && current.terminal_event_id.as_ref() == Some(event_id)
-    {
-        return Ok(());
-    }
-    if matches!(
-        current.state,
-        MatrixDispatchState::Failed | MatrixDispatchState::Redacted
-    ) {
-        return Err(MatrixDurableError::Conflict);
-    }
-    let digest = local_evidence_digest(
-        "manual_terminal",
-        txn_id,
-        expected_attempt,
-        Some(event_id),
-    )?;
-    insert_observation_tx(
-        transaction,
-        txn_id,
-        MatrixDispatchObservationKind::ManualTerminal,
-        digest.as_str(),
-        Some(event_id),
-        now_ms,
-    )
-    .await?;
-    sqlx::query(
-        "UPDATE matrix_dispatch_ledger
-         SET state = 'succeeded', accepted_event_id = COALESCE(accepted_event_id, ?),
-             terminal_event_id = ?, send_observation_sha256 = ?,
-             updated_at_ms = MAX(updated_at_ms, ?), terminal_at_ms = ?
-         WHERE stable_txn_id = ?",
-    )
-    .bind(event_id.as_str())
-    .bind(event_id.as_str())
-    .bind(digest.as_str())
-    .bind(to_i64(now_ms)?)
-    .bind(to_i64(now_ms)?)
-    .bind(txn_id.as_str())
-    .execute(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
-    Ok(())
-}
-
 pub(crate) async fn fence_expired_dispatches_tx(
     store: &MatrixDurableStore,
     transaction: &mut Transaction<'_, Sqlite>,

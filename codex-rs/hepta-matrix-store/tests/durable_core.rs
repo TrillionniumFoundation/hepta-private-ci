@@ -427,10 +427,10 @@ async fn token_burst_is_one_bounded_final_and_later_updates_replace_the_root() -
     assert!(claimed[0].replaces_event_id.is_none());
     let root_event = event("$matrix-stream-root")?;
     store
-        .mark_outbox_sent(
+        .observe_dispatch_terminal_success(
             &claimed[0].stable_txn_id,
-            claimed[0].attempts,
             &root_event,
+            &"a".repeat(64),
             150,
         )
         .await?;
@@ -587,10 +587,10 @@ async fn capped_delta_replacement_renders_the_complete_prefix() -> TestResult {
     assert!(root[0].replaces_event_id.is_none());
     let root_event_id = event("$complete-prefix-root")?;
     store
-        .mark_outbox_sent(
+        .observe_dispatch_terminal_success(
             &root[0].stable_txn_id,
-            root[0].attempts,
             &root_event_id,
+            &"b".repeat(64),
             171,
         )
         .await?;
