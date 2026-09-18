@@ -24,6 +24,8 @@ from control_engineering_v2 import (
     export_audit_anchor,
     generate_candidate_bundle,
     generate_candidates,
+    orchestration_generation,
+    persist_orchestration_generation,
     plan_engineering_work,
     verify_audit_anchor_receipt,
     verify_distributed_write_grant,
@@ -124,6 +126,30 @@ class FullOrchestrationClosureTests(unittest.TestCase):
         self.assertEqual(plan.merge_queue[0].package_id, "high-value")
         self.assertFalse(plan.merge_queue[0].merge_authority)
         self.assertFalse(plan.worker_write_authority)
+
+        with tempfile.TemporaryDirectory() as directory:
+            with EngineeringStore(Path(directory) / "engineering.sqlite3") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                persisted = persist_orchestration_generation(
+                    store,
+                    self.envelope,
+                    plan,
+                    packages,
+                    (self._completion(),),
+                    self.trust,
+                    now_ns=self.now + 1,
+                )
+                durable = orchestration_generation(store, "generation")
+                self.assertEqual(persisted.assigned, ("high-value",))
+                self.assertEqual(
+                    durable["plan"]["assignments"][0]["worker_id"], "worker"
+                )
+                self.assertEqual(
+                    durable["plan"]["integrationOrder"], ["high-value"]
+                )
+                self.assertEqual(
+                    durable["plan"]["mergeQueue"][0]["package_id"], "high-value"
+                )
 
     def test_forged_completion_receipt_fails_closed(self) -> None:
         forged = replace(self._completion(), source_tree="c" * 40)
