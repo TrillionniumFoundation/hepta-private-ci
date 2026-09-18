@@ -88,6 +88,8 @@ pub enum LearnedOperatorError {
     EmptyDigest(&'static str),
     InvalidGrid,
     DuplicateIdentity(String),
+    DuplicateEvidence,
+    InvalidArtifact,
     SampleLimit,
     UnknownSensor(String),
     UnknownAction(String),
@@ -155,13 +157,24 @@ pub fn fit_tabular_operator(
             adjacent[0].sample_id.to_string(),
         ));
     }
+    let mut evidence = Vec::with_capacity(plan.samples.len());
+    for sample in &plan.samples {
+        require_digest(sample.evidence_digest, "operator training sample")?;
+        evidence.push(sample.evidence_digest);
+    }
+    evidence.sort_unstable();
+    if evidence
+        .windows(2)
+        .any(|adjacent| adjacent[0] == adjacent[1])
+    {
+        return Err(LearnedOperatorError::DuplicateEvidence);
+    }
 
     let sensors = plan.sensor_ids.iter().collect::<BTreeSet<_>>();
     let actions = plan.action_ids.iter().collect::<BTreeSet<_>>();
     let mut groups: BTreeMap<(StableId, StableId), CellAccumulator> = BTreeMap::new();
     let mut sample_binding = b"hepta.bellman-operator.tabular-samples.v1".to_vec();
     for sample in &plan.samples {
-        require_digest(sample.evidence_digest, "operator training sample")?;
         if !sensors.contains(&sample.sensor_id) {
             return Err(LearnedOperatorError::UnknownSensor(
                 sample.sensor_id.to_string(),
@@ -292,16 +305,20 @@ pub fn fit_tabular_operator(
     })
 }
 
+#[deprecated(
+    note = "raw artifact prediction is unauthenticated; use LoadedTabularOperatorV1::from_pinned_payload(...).predict(...)"
+)]
 pub fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, LearnedOperatorError> {
+    validate_tabular_artifact_structure(artifact)?;
     let cell = artifact
         .cells
-        .iter()
-        .find(|cell| &cell.sensor_id == sensor_id && &cell.action_id == action_id)
-        .ok_or(LearnedOperatorError::UnsupportedCell)?;
+        .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor_id, action_id)))
+        .map(|index| &artifact.cells[index])
+        .map_err(|_| LearnedOperatorError::UnsupportedCell)?;
     Ok(TabularOperatorPredictionV1 {
         artifact_id: artifact.artifact_id.clone(),
         sensor_id: cell.sensor_id.clone(),
@@ -312,6 +329,53 @@ pub fn predict_tabular_operator(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+pub(crate) fn validate_tabular_artifact_structure(
+    artifact: &TabularOperatorArtifactV1,
+) -> Result<(), LearnedOperatorError> {
+    if artifact.authority.grants_any()
+        || artifact.artifact_digest.is_zero()
+        || artifact.objective_digest.is_zero()
+        || artifact.dataset_digest.is_zero()
+        || artifact.sensor_core_digest.is_zero()
+        || artifact.training_profile_digest.is_zero()
+        || artifact.cells.is_empty()
+        || artifact.cells.len() > MAX_CELLS
+        || artifact.cells.windows(2).any(|pair| {
+            (&pair[0].sensor_id, &pair[0].action_id)
+                >= (&pair[1].sensor_id, &pair[1].action_id)
+        })
+    {
+        return Err(LearnedOperatorError::InvalidArtifact);
+    }
+    let mut sensors = BTreeMap::<&StableId, usize>::new();
+    let mut actions = BTreeSet::<&StableId>::new();
+    let mut samples = 0_u64;
+    for cell in &artifact.cells {
+        if cell.sample_count == 0
+            || cell.evidence_digest.is_zero()
+            || cell.minimum_target > cell.mean_target
+            || cell.mean_target > cell.maximum_target
+        {
+            return Err(LearnedOperatorError::InvalidArtifact);
+        }
+        *sensors.entry(&cell.sensor_id).or_default() += 1;
+        actions.insert(&cell.action_id);
+        samples = samples
+            .checked_add(u64::from(cell.sample_count))
+            .ok_or(LearnedOperatorError::InvalidArtifact)?;
+    }
+    if sensors.len() > MAX_SENSORS
+        || actions.is_empty()
+        || actions.len() > MAX_ACTIONS
+        || samples == 0
+        || samples > MAX_SAMPLES as u64
+        || sensors.values().any(|count| *count != actions.len())
+    {
+        return Err(LearnedOperatorError::InvalidArtifact);
+    }
+    Ok(())
 }
 
 fn digest_cell(

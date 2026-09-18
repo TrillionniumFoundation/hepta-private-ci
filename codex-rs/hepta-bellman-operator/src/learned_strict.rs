@@ -16,6 +16,7 @@ use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorPredictionV1;
 use crate::fit_tabular_operator;
+use crate::learned::validate_tabular_artifact_structure;
 
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
@@ -35,17 +36,15 @@ pub fn fit_tabular_operator_strict_v2(
     Ok(fit_tabular_operator(plan)?)
 }
 
+#[deprecated(
+    note = "public in-memory artifacts lack an independent admission pin; use LoadedTabularOperatorV1::from_pinned_payload(...).predict(...)"
+)]
 pub fn predict_tabular_operator_indexed_v2(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, StrictLearnedOperatorError> {
-    if artifact.cells.windows(2).any(|adjacent| {
-        (&adjacent[0].sensor_id, &adjacent[0].action_id)
-            >= (&adjacent[1].sensor_id, &adjacent[1].action_id)
-    }) {
-        return Err(StrictLearnedOperatorError::NonCanonicalArtifact);
-    }
+    validate_tabular_artifact_structure(artifact).map_err(StrictLearnedOperatorError::Learned)?;
     let index = artifact
         .cells
         .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor_id, action_id)))
@@ -157,6 +156,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(deprecated)]
     fn op_05_indexed_prediction_uses_canonical_grid() {
         let artifact = fit_tabular_operator_strict_v2(plan()).expect("strict fit succeeds");
         let prediction =

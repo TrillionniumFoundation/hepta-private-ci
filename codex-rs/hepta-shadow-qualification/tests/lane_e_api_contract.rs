@@ -4,6 +4,7 @@
 //! available to a real cross-crate consumer.
 
 #[test]
+#[allow(deprecated)] // Explicitly verifies retained legacy prediction symbols remain linkable.
 fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_ledger::verify_independent_roles;
     let _ = codex_hepta_learning_ledger::validate_authenticated_outcome;
