@@ -25,12 +25,12 @@ fn intent() -> CodexOperationIntent {
         subject_id: id("agent:1"),
         destination_id: id("agent:1/app-server:7"),
         thread_id: id("thread:1"),
-        client_message_id: id("client:1"),
+        client_message_id: "client:1".to_string(),
         method_id: id("turn/start"),
         payload_digest,
         lease_payload_digest: payload_digest,
+        input_digest: turn_input_digest(&params()),
         scope_digest: digest(b"scope"),
-        authority_epoch: 11,
         session_generation: 7,
         protocol_version: 2,
         deadline_ms: 2_000,
@@ -164,14 +164,7 @@ fn mismatched_protocol_observation_is_rejected() {
 }
 
 #[test]
-fn zero_authority_or_session_generation_is_rejected() {
-    let mut zero_authority = dispatched();
-    zero_authority.intent.authority_epoch = 0;
-    assert_eq!(
-        adapt_observation(1_000, &zero_authority, None),
-        Err(Error::InvalidAuthorityEpoch)
-    );
-
+fn zero_session_generation_is_rejected() {
     let mut zero_session = dispatched();
     zero_session.intent.session_generation = 0;
     assert_eq!(
@@ -199,4 +192,14 @@ fn authority_binding_is_derived_from_the_intent() {
     assert_eq!(binding.payload_sha256, *value.payload_digest.as_array());
     assert_eq!(binding.scope_sha256, *value.scope_digest.as_array());
     assert_eq!(binding.request_sha256, *request_digest(&value).as_array());
+}
+
+#[test]
+fn stable_client_message_id_is_bounded() {
+    let mut value = dispatched();
+    value.intent.client_message_id = String::new();
+    assert_eq!(
+        adapt_observation(1_000, &value, None),
+        Err(Error::InvalidClientMessageIdentity)
+    );
 }
