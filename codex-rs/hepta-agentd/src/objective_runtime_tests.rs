@@ -1,3 +1,4 @@
+use codex_hepta_objective::ConstraintClass;
 use codex_hepta_objective::ObjectiveAbstentionRuleProfileV1;
 use codex_hepta_objective::ObjectiveActionProfileV1;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
@@ -26,7 +27,6 @@ use codex_hepta_objective::ObjectiveSourcePredicateV1;
 use codex_hepta_objective::ObjectiveSourceTrustV1;
 use codex_hepta_objective::ObjectiveStructuredIntentV1;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
-use codex_hepta_objective::ConstraintClass;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
