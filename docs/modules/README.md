@@ -67,7 +67,7 @@ Every guide now includes Section 16, which binds the module to one primary imple
 
 ## HeptaBao executable connection
 
-For the implemented host-enrolled read path, continue from the `kernel.authority`, `runtime.supervisor` and `secrets.heptabao` guides to the [final-use and issuer design](../../codex-rs/hepta-contracts/FINAL_USE.md) and [HTTPS consumer integration](../../codex-rs/hepta-bao-adapter/README.md). They specify the actual signatures, persistent state schema, atomic-write and revocation fences, callback trust boundary, APIs, failure outcomes and tests. The earlier metadata-only adapter API remains available with dispatch disabled. These implementation notes add no automatic runtime enrollment or release authority.
+For the implemented host-enrolled static read and bounded SecretLease paths, continue from the `kernel.authority`, `runtime.supervisor` and `secrets.heptabao` guides to the [current implementation](secrets.heptabao/CURRENT_IMPLEMENTATION.md), [SecretLease design](secrets.heptabao/SECRET_LEASE_DESIGN.md), [failure recovery](secrets.heptabao/FAILURE_RECOVERY.md), [HA/storage boundary](secrets.heptabao/HA_AND_STORAGE.md), [final-use and issuer design](../../codex-rs/hepta-contracts/FINAL_USE.md) and [HTTPS consumer integration](../../codex-rs/hepta-bao-adapter/README.md). They specify the actual signatures, persistent state schema, atomic-write and revocation fences, callback trust boundary, APIs, failure outcomes and tests. The earlier metadata-only adapter API remains available with dispatch disabled. These implementation notes add no automatic runtime enrollment or release authority.
 
 ## Shared implementation requirements
 
