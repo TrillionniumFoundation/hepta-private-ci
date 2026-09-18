@@ -205,3 +205,104 @@ fn all_canonical_hnmf_protocols_have_distinct_schema_ids() {
     ]);
     assert_eq!(ids.len(), 12);
 }
+
+
+#[test]
+fn canonical_json_rejects_missing_required_payload_fields() {
+    let span = text_span();
+    let Ok(bytes) = span.to_canonical_json() else {
+        panic!("valid span must encode");
+    };
+    let Ok(text) = String::from_utf8(bytes) else {
+        panic!("canonical JSON must be UTF-8");
+    };
+    let missing = text.replace("\"spanId\":1,", "");
+    assert_ne!(missing, text);
+    assert!(matches!(
+        ModalitySpanRefV1::from_canonical_json(missing.as_bytes()),
+        Err(HnmfContractError::Wire(_))
+    ));
+}
+
+#[test]
+fn canonical_json_rejects_reordered_envelope_keys() {
+    let span = text_span();
+    let Ok(bytes) = span.to_canonical_json() else {
+        panic!("valid span must encode");
+    };
+    let Ok(text) = String::from_utf8(bytes) else {
+        panic!("canonical JSON must be UTF-8");
+    };
+    let prefix =
+        "{\"schema\":\"hepta.hnmf.modality-span-ref.v1\",\"schemaVersion\":1,\"payload\":";
+    let reordered_prefix =
+        "{\"schemaVersion\":1,\"schema\":\"hepta.hnmf.modality-span-ref.v1\",\"payload\":";
+    assert!(text.starts_with(prefix));
+    let reordered = text.replacen(prefix, reordered_prefix, 1);
+    assert_eq!(
+        ModalitySpanRefV1::from_canonical_json(reordered.as_bytes()),
+        Err(HnmfContractError::NonCanonicalJson)
+    );
+}
+
+#[test]
+fn canonical_json_and_collection_bounds_fail_closed() {
+    let oversized_wire = vec![
+        b' ';
+        <ModalitySpanRefV1 as CanonicalJsonV1>::MAX_ENCODED_BYTES + 1
+    ];
+    assert_eq!(
+        ModalitySpanRefV1::from_canonical_json(&oversized_wire),
+        Err(HnmfContractError::BoundExceeded("encoded bytes"))
+    );
+
+    let span_ids = (1..=u64::try_from(MAX_BINDING_SPANS + 1).unwrap_or(u64::MAX))
+        .collect::<BTreeSet<_>>();
+    assert_eq!(
+        CrossModalBindingV1::try_new(
+            1,
+            1,
+            span_ids,
+            AlignmentKindV1::SameObservation,
+            500_000,
+            digest("producer"),
+        ),
+        Err(HnmfContractError::BoundExceeded("binding span count"))
+    );
+
+    assert_eq!(
+        ResourceBudgetV1::try_new(
+            MAX_CANDIDATE_EVENTS + 1,
+            MAX_ENGRAM_NODES,
+            MAX_ENGRAM_SYNAPSES,
+            MAX_RECURRENT_STEPS,
+            MAX_RECALL_EVENTS as u16,
+            MAX_ACTIVATION_PATHS as u16,
+        ),
+        Err(HnmfContractError::BoundExceeded("recall resource budget"))
+    );
+}
+
+#[test]
+fn canonical_set_order_is_insertion_independent() {
+    let left = CrossModalBindingV1::try_new(
+        1,
+        1,
+        BTreeSet::from([2, 1]),
+        AlignmentKindV1::SameObservation,
+        500_000,
+        digest("producer"),
+    );
+    let right = CrossModalBindingV1::try_new(
+        1,
+        1,
+        [1, 2].into_iter().collect(),
+        AlignmentKindV1::SameObservation,
+        500_000,
+        digest("producer"),
+    );
+    let (Ok(left), Ok(right)) = (left, right) else {
+        panic!("binding fixtures must be valid");
+    };
+    assert_eq!(left.to_canonical_json(), right.to_canonical_json());
+}
