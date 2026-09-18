@@ -1581,14 +1581,14 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
         parse_digest(source_provenance.agentd_sha256)?,
         source_provenance
             .matrixd_sha256
-            .map(&parse_digest)
+            .map(|value| parse_digest(value))
             .transpose()?,
         parse_digest(target_provenance.manifest_sha256.clone())?,
         parse_digest(target_provenance.agentd_sha256.clone())?,
         target_provenance
             .matrixd_sha256
             .clone()
-            .map(&parse_digest)
+            .map(|value| parse_digest(value))
             .transpose()?,
         Sha256Digest::for_bytes(b"compatibility-receipt"),
         7,
@@ -1699,7 +1699,7 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
     let target_agentd = parse_digest(target_provenance.agentd_sha256)?;
     let target_matrixd = target_provenance
         .matrixd_sha256
-        .map(&parse_digest)
+        .map(|value| parse_digest(value))
         .transpose()?;
     let decision = signer
         .sign_recovery(
