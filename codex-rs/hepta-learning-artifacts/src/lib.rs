@@ -7,6 +7,7 @@
 
 mod admission_v3;
 mod closure_v2;
+mod control_storage;
 mod dataset_revocation;
 mod error;
 mod iteration;
@@ -43,6 +44,11 @@ pub use closure_v2::WithdrawalAppendDispositionV1;
 pub use closure_v2::validate_artifact_lifecycle_transition;
 pub use closure_v2::validate_artifact_manifest_v2;
 pub use closure_v2::validate_registry_head_witness;
+pub use control_storage::{
+    ArtifactLifecycleSnapshotReceiptV2, DatasetWithdrawalSnapshotReceiptV1,
+    read_artifact_lifecycle_snapshot_v2, read_dataset_withdrawal_snapshot_v1,
+    write_artifact_lifecycle_snapshot_v2, write_dataset_withdrawal_snapshot_v1,
+};
 pub use dataset_revocation::DatasetRevocationError;
 pub use dataset_revocation::DatasetRevocationRequest;
 pub use dataset_revocation::DatasetRevocationSummary;
