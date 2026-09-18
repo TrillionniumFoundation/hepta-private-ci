@@ -363,3 +363,31 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn app_server_rejection_after_dispatch_releases_without_terminal_claim() {
+    let path = path("app-server-rejected");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let rejected = control
+        .reject_native_before_start("r1", "app-server rejected turn/start".to_string())
+        .unwrap();
+    assert_eq!(rejected.state, NativeReservationState::Released);
+    assert_eq!(rejected.observation, None);
+    assert_eq!(
+        rejected.pre_dispatch_stop.as_deref(),
+        Some("app-server rejected turn/start")
+    );
+    assert_eq!(
+        control.native_started("r1", "turn-1".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    control.reserve_native(request("r2"), 1).unwrap();
+    drop(control);
+
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&rejected));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
