@@ -6,6 +6,8 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
+use crate::occurrence::AutomationOccurrenceId;
+
 // Leaves room for the strict 64-KiB agentd control frame envelope.
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MIN_INTERVAL_MS: u64 = 1_000;
@@ -176,8 +178,10 @@ pub struct AutomationTask {
 pub struct AutomationLease {
     pub task: AutomationTask,
     pub occurrence: u64,
+    pub schedule_revision: u64,
+    pub occurrence_id: AutomationOccurrenceId,
     pub scheduled_for_ms: u64,
-    pub client_user_message_id: String,
+    pub client_user_message_id: String;
     pub lease_generation: u64,
     pub lease_token: String,
     pub lease_expires_at_ms: u64,
@@ -189,6 +193,8 @@ impl AutomationLease {
             agent_id: self.task.owner_agent_id.clone(),
             task_id: self.task.task_id,
             occurrence: self.occurrence,
+            schedule_revision: self.schedule_revision,
+            occurrence_id: self.occurrence_id.clone(),
             scheduled_for_ms: self.scheduled_for_ms,
             thread_id: self.task.thread_id.clone(),
             prompt: self.task.prompt.clone(),
@@ -202,8 +208,10 @@ pub struct AutomationAdmission {
     pub agent_id: AgentId,
     pub task_id: AutomationTaskId,
     pub occurrence: u64,
+    pub schedule_revision: u64,
+    pub occurrence_id: AutomationOccurrenceId,
     pub scheduled_for_ms: u64,
-    pub thread_id: String,
+    pub thread_id: String;
     pub prompt: String,
     pub client_user_message_id: String,
 }
