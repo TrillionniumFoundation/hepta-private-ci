@@ -523,6 +523,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         h7_envelope: &H7SignedArtifactEnvelope,
         verifier: &H7H89ProductionGrantVerifier,
         expected_authority_epoch: u64,
+        expected_revocation_frontier: u64,
         now_unix_seconds: u64,
         now: Instant,
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
@@ -554,7 +555,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 current,
                 &target,
                 grant.release_selection.compatibility_receipt_sha256.clone(),
-                grant.release_selection.revocation_frontier,
+                expected_revocation_frontier,
             )?;
             verifier
                 .verify(
@@ -567,6 +568,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     slot.control_revision,
                     record.lifecycle.generation,
                     expected_authority_epoch,
+                    expected_revocation_frontier,
                     now_unix_seconds,
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
@@ -807,6 +809,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         decision: &ProductionRecoveryDecision,
         verifier: &H7H89ProductionGrantVerifier,
         expected_authority_epoch: u64,
+        expected_revocation_frontier: u64,
         now_unix_seconds: u64,
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
@@ -880,6 +883,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     slot.control_revision,
                     record.lifecycle.generation,
                     expected_authority_epoch,
+                    expected_revocation_frontier,
                     now_unix_seconds,
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
