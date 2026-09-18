@@ -240,3 +240,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
+
+#[cfg(test)]
+#[path = "production_objective_tests.rs"]
+mod tests;
