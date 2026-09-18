@@ -178,8 +178,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs); named case: `typed_controller_and_plant_replay_the_explicit_euler_q24_golden`.
-- [codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs); named case: `blocking_and_higher_priority_interference_are_included`.
+- [codex-rs/hepta-control-plane/src/planner_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_tests.rs) — snapshot/resource sealing, canonical resource-profile binding, candidate and grant-request mutation rejection.
+- [codex-rs/hepta-control-plane/src/planner_global_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_global_tests.rs) — authenticated multi-owner composition, real NDU evaluation and monotonic time binding.
+- [codex-rs/hepta-control-plane/src/planner_journal_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_tests.rs) — hash-chain and semantic transition replay.
+- [codex-rs/hepta-control-plane/src/planner_store_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_store_tests.rs) — fsync/frontier crash recovery, migration and non-resurrection.
+- [codex-rs/hepta-control-plane/src/planner_authority_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_authority_tests.rs) — independently signed final-use authority, payload/scope binding and single-use nonce.
+- [codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs) and timing tests remain local embodied-control references rather than global-planner proof.
 
 In `codex-rs`, run `just test -p codex-hepta-control-plane`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) separately labels target acceptance designs.
 
@@ -316,4 +320,17 @@ The bootstrap source-location obligation for `control.runtime` is implemented by
 
 - `codex-rs/hepta-control-plane`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and by the dedicated `.github/workflows/hepta-control-runtime-closure.yml`. The dedicated workflow executes both the exact PR head and a deterministic synthetic merge, verifies documentation/maps and Lane-D semantics, runs focused all-target compilation/tests/strict Clippy/format, and records a release-mode full-ceiling named-host performance artifact. These receipts remain source implementation evidence only. They grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Current closure state
+
+The current source candidate closes the repository-local gaps identified in the September control-runtime review:
+
+- resource reservations are canonically hashed and must match `resource_profile_digest`;
+- the Agentd product caller uses one process-owned monotonic `Instant` domain for planner observation/expiry values;
+- `PlannerJournalV1` replays semantic transitions as well as hashes, and `PlannerJournalStoreV1` provides synced envelope/frontier recovery with deterministic raw-v1 migration and committed-revocation non-resurrection;
+- `plan_global_v1` composes required authenticated owner ports, the real NDU owner port, the sealed planner and deny-all grant requests; the existing read-only Agentd context caller reaches this common path;
+- `claim_execution_grant_v1` hands one immutable request to the existing independently signed `kernel.authority` final-use owner and consumes its non-cloneable token only at the final effect closure;
+- the dedicated source-head/synthetic-merge workflow records exact source, toolchain, host and full-ceiling latency/RSS evidence.
+
+The remaining boundaries are not hidden as source gaps: a selected production host must still bind concrete authenticated fleet/evidence producer adapters, choose the durable global-planner writer/state directory, and attach the independent authority token to a physical effect adapter with terminal reconciliation. Independent acceptance, activation, operator approval, promotion and release remain externally governed.
