@@ -8,7 +8,6 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
-use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid stable id")
