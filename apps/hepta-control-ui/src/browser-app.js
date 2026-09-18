@@ -33,6 +33,28 @@ function focusKey(module, action) {
   return `action:${module.moduleId}:${action}`;
 }
 
+function displayedViewBinding(view) {
+  return Object.freeze({
+    sessionId: view.sessionId,
+    connectionGeneration: view.connectionGeneration,
+    generation: view.generation,
+    revision: view.revision,
+    digest: view.digest,
+  });
+}
+
+function displayedViewStillCurrent(displayedView, view) {
+  return Boolean(
+    displayedView &&
+      view &&
+      displayedView.sessionId === view.sessionId &&
+      displayedView.connectionGeneration === view.connectionGeneration &&
+      displayedView.generation === view.generation &&
+      displayedView.revision === view.revision &&
+      displayedView.digest === view.digest,
+  );
+}
+
 export function buildControlViewModel(view) {
   requireRecord(view, "view");
   if (!Array.isArray(view.modules)) {
@@ -52,8 +74,11 @@ export function buildControlViewModel(view) {
   );
   return Object.freeze({
     stale,
+    sessionId: view.sessionId,
+    connectionGeneration: view.connectionGeneration,
     generation: view.generation,
     revision: view.revision,
+    digest: view.digest,
     pending: view.pending ?? 0,
     indeterminate: view.indeterminate ?? 0,
     recoveryRequired: view.recoveryRequired ?? 0,
@@ -246,7 +271,7 @@ export class ControlPlaneApp {
           subjectId: module.moduleId,
           action,
           expectedRevision: module.revision,
-          displayedRevision: view.revision,
+          displayedView: displayedViewBinding(view),
         });
       } catch (error) {
         this.#announce(`Request construction failed: ${error?.message ?? "unknown error"}`, true);
@@ -332,7 +357,7 @@ export class ControlPlaneApp {
         const scope = snapshotCanonical(rawScope, "stop scope");
         request = Object.freeze({
           operationId: this.#operationIdFactory(),
-          displayedRevision: view.revision,
+          displayedView: displayedViewBinding(view),
           scope,
         });
       } catch (error) {
@@ -382,7 +407,7 @@ export class ControlPlaneApp {
     if (
       !this.#view?.canMutate ||
       this.#mutationBlock !== null ||
-      request.displayedRevision !== this.#view.revision
+      !displayedViewStillCurrent(request.displayedView, this.#view)
     ) {
       restore();
       this.#announce(
