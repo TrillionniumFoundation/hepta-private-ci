@@ -206,12 +206,7 @@ impl Fixture {
     fn file(&self, name: &str) -> std::fs::File {
         let path = self.root.join(name);
         if !path.exists() {
-            checked(
-                OpenOptions::new()
-                    .write(true)
-                    .create_new(true)
-                    .open(&path),
-            );
+            checked(OpenOptions::new().write(true).create_new(true).open(&path));
         }
         checked(OpenOptions::new().read(true).write(true).open(path))
     }
@@ -359,13 +354,8 @@ fn plasticity_requires_explicit_parameter_group_broadcast_and_is_deterministic()
     let sparse_config = checked(config().to_sparse_config(&native()));
     let execution = model_execution();
     let first_tick = input(1, Digest32::ZERO).to_sparse_tick(&scope(), &execution);
-    let (first_checkpoint, _) = checked(sparse_tick(
-        &sparse_config,
-        &first_tick,
-        None,
-    ));
-    let second_tick =
-        input(2, first_checkpoint.digest()).to_sparse_tick(&scope(), &execution);
+    let (first_checkpoint, _) = checked(sparse_tick(&sparse_config, &first_tick, None));
+    let second_tick = input(2, first_checkpoint.digest()).to_sparse_tick(&scope(), &execution);
     let (second_checkpoint, _) = checked(sparse_tick(
         &sparse_config,
         &second_tick,
@@ -432,18 +422,12 @@ fn durable_witness_reopens_exact_acknowledged_anchor() {
         checkpoint_digest: digest("checkpoint"),
     };
     {
-        let mut witness = checked(FileRecoveryWitness::open(
-            fixture.file("witness"),
-            context,
-        ));
+        let mut witness = checked(FileRecoveryWitness::open(fixture.file("witness"), context));
         assert_eq!(checked(witness.current_anchor()), None);
         checked(witness.compare_and_store(None, anchor));
         assert_eq!(checked(witness.current_anchor()), Some(anchor));
     }
-    let reopened = checked(FileRecoveryWitness::open(
-        fixture.file("witness"),
-        context,
-    ));
+    let reopened = checked(FileRecoveryWitness::open(fixture.file("witness"), context));
     assert_eq!(checked(reopened.current_anchor()), Some(anchor));
 }
 
