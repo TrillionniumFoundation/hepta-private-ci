@@ -303,7 +303,6 @@ impl RemoteFederatedResponseV2 {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum FederationTransportOutcomeV2#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FederationTransportOutcomeV2 {
     Unavailable,
     TimedOut,
@@ -390,7 +389,6 @@ enum AuthorityDispositionV2 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct FederatedCoverageV2#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederatedCoverageV2 {
     pub requested_peers: u32,
     pub completed_peers: u32,
