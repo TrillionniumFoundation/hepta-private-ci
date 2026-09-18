@@ -31,6 +31,7 @@ STORE_TABLES = frozenset(
         "path_leases",
         "assignment_generations",
         "orchestration_generations",
+        "distributed_write_frontiers",
         "integration_decisions",
         "audit_events",
         "engineering_schema_meta",
