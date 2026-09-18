@@ -44,10 +44,7 @@ impl fmt::Debug for RegisteredBaoConsumer {
 }
 
 impl RegisteredBaoConsumer {
-    pub fn new(
-        id: String,
-        callback: BaoConsumerCallback,
-    ) -> Result<Self, BaoFinalUseHostError> {
+    pub fn new(id: String, callback: BaoConsumerCallback) -> Result<Self, BaoFinalUseHostError> {
         if !consumer_id(&id) {
             return Err(BaoFinalUseHostError::InvalidConsumerId);
         }
@@ -91,10 +88,7 @@ impl BaoFinalUseHost {
     ) -> Result<Self, BaoFinalUseHostError> {
         let mut registry = BTreeMap::new();
         for consumer in consumers {
-            if registry
-                .insert(consumer.id, consumer.callback)
-                .is_some()
-            {
+            if registry.insert(consumer.id, consumer.callback).is_some() {
                 return Err(BaoFinalUseHostError::DuplicateConsumer);
             }
         }
@@ -170,7 +164,9 @@ impl BaoFinalUseHost {
             .cloned()
             .ok_or(BaoFinalUseHostError::UnregisteredConsumer)?;
         client
-            .consume_kv_v2(&self.authority, grant, request, move |secret| consumer(secret))
+            .consume_kv_v2(&self.authority, grant, request, move |secret| {
+                consumer(secret)
+            })
             .await
             .map_err(BaoFinalUseHostError::Client)
     }
@@ -229,11 +225,7 @@ mod tests {
     fn host_rejects_duplicate_consumer_identity() {
         let directory = tempfile::tempdir().unwrap();
         use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(
-            directory.path(),
-            std::fs::Permissions::from_mode(0o700),
-        )
-        .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let issuer = SigningKey::from_bytes(&[31; 32]);
         let approver = SigningKey::from_bytes(&[32; 32]);
         let distributor = SigningKey::from_bytes(&[33; 32]);
