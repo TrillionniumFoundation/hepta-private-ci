@@ -42,6 +42,9 @@ use crate::RealizationDeliveryV2;
 use crate::RegistryReceipt;
 use crate::VerifiedAdmission;
 use crate::admission::map_final_use_error;
+use crate::protocol::LEGACY_UNRESOLVED_FACTOR_PURPOSE;
+use crate::protocol::LEGACY_UNRESOLVED_MODEL_ID;
+use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 use crate::final_use_realization_binding;
 use crate::final_use_retire_binding;
 use crate::final_use_revoke_binding;
@@ -772,9 +775,9 @@ fn migrate_v1(
         let binding = PromptRealizationBindingV2 {
             realization_id: parse_id(stored_binding.realization_id)?,
             factor_id: parse_id(stored_binding.factor_id)?,
-            model_id: StableId::new("model:legacy-imported")
+            model_id: StableId::new(LEGACY_UNRESOLVED_MODEL_ID)
                 .map_err(|_| DurableRegistryError::Corrupt)?,
-            model_version: "legacy-imported".to_owned(),
+            model_version: LEGACY_UNRESOLVED_MODEL_VERSION.to_owned(),
             model_digest: Digest32::from_array(stored_binding.model_digest),
             tokenizer_digest: Digest32::from_array(stored_binding.tokenizer_digest),
             template_digest: Digest32::from_array(stored_binding.template_digest),
@@ -1009,7 +1012,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
 
 fn decode_factor(mut stored: StoredFactor) -> Result<PromptFactor, DurableRegistryError> {
     if stored.semantic_purpose.is_empty() {
-        stored.semantic_purpose = "legacy imported factor; semantic purpose unavailable".to_owned();
+        stored.semantic_purpose = LEGACY_UNRESOLVED_FACTOR_PURPOSE.to_owned();
     }
     if stored.authority_class.is_empty() {
         stored.authority_class = "registered_prompt_factor".to_owned();
