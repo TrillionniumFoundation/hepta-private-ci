@@ -98,18 +98,7 @@ impl AgentdSelfEvolutionHostV1 {
             verifier,
             now,
         )?;
-        let adoption = self.runtime.adopt(&selection)?;
-        Ok(AgentdSelfEvolutionAdoptionV1 { selection, adoption })
-    }
-
-    /// Consume a previously selected witness directly. This is useful when the
-    /// selector runs in a separate protected process; Agentd still cannot mint
-    /// or widen the witness.
-    pub fn adopt_selected(
-        &mut self,
-        selection: SelfEvolutionSelectionWitnessV1,
-    ) -> Result<AgentdSelfEvolutionAdoptionV1, AgentdSelfEvolutionError> {
-        let adoption = self.runtime.adopt(&selection)?;
+        let adoption = self.runtime.adopt_self_evolution(&selection)?;
         Ok(AgentdSelfEvolutionAdoptionV1 { selection, adoption })
     }
 
@@ -178,7 +167,8 @@ mod tests {
         .unwrap();
         let mut host = AgentdSelfEvolutionHostV1::new(runtime);
         let selected = witness();
-        let adopted = host.adopt_selected(selected.clone()).unwrap();
+        let adoption = host.runtime.adopt_self_evolution(&selected).unwrap();
+        let adopted = AgentdSelfEvolutionAdoptionV1 { selection: selected.clone(), adoption };
         assert_eq!(host.runtime().generation(), generation(11));
         assert_eq!(adopted.selection.selector_id, id("independent-selector"));
 
@@ -203,11 +193,9 @@ mod tests {
             runtime: true,
             ..AuthorityPosture::DENY_ALL
         };
-        assert!(matches!(
-            host.adopt_selected(selected),
-            Err(AgentdSelfEvolutionError::Runtime(
-                SelfEvolutionRuntimeError::SelectionAuthority
-            ))
-        ));
+        assert_eq!(
+            host.runtime.adopt_self_evolution(&selected),
+            Err(SelfEvolutionRuntimeError::SelectionAuthority)
+        );
     }
 }
