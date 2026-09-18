@@ -115,16 +115,56 @@ fn objective_source() -> ObjectiveSourceEnvelope {
 
 fn snapshot(objective_digest: Digest32) -> CapabilitySnapshotV2 {
     let pairs = [
-        ("objective.validation", "objective.compiler", CapabilityNecessityV2::Required),
-        ("legal.actions", "intelligence.control", CapabilityNecessityV2::Required),
-        ("utility.evaluation", "utility.ndu", CapabilityNecessityV2::Required),
-        ("neural.signal", "neuron.runtime", CapabilityNecessityV2::Optional),
-        ("prompt.portfolio", "prompt.optimizer", CapabilityNecessityV2::Optional),
-        ("intuition.decision", "intuition.policy", CapabilityNecessityV2::Required),
-        ("context.compilation", "context.compiler", CapabilityNecessityV2::Required),
-        ("evaluation.admission", "learning.eval", CapabilityNecessityV2::Required),
-        ("learning.record", "learning.ledger", CapabilityNecessityV2::Required),
-        ("dispatch.proposal", "runtime.agentd", CapabilityNecessityV2::Required),
+        (
+            "objective.validation",
+            "objective.compiler",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "legal.actions",
+            "intelligence.control",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "utility.evaluation",
+            "utility.ndu",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "neural.signal",
+            "neuron.runtime",
+            CapabilityNecessityV2::Optional,
+        ),
+        (
+            "prompt.portfolio",
+            "prompt.optimizer",
+            CapabilityNecessityV2::Optional,
+        ),
+        (
+            "intuition.decision",
+            "intuition.policy",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "context.compilation",
+            "context.compiler",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "evaluation.admission",
+            "learning.eval",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "learning.record",
+            "learning.ledger",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "dispatch.proposal",
+            "runtime.agentd",
+            CapabilityNecessityV2::Required,
+        ),
     ];
     let requirements = pairs
         .iter()
@@ -157,7 +197,9 @@ fn snapshot(objective_digest: Digest32) -> CapabilitySnapshotV2 {
     .expect("snapshot")
 }
 
-fn ndu_inputs(objective_digest: Digest32) -> (
+fn ndu_inputs(
+    objective_digest: Digest32,
+) -> (
     ContributionSet,
     UtilityProfile,
     Option<ScalarizationProfile>,
@@ -243,7 +285,10 @@ fn ndu_inputs(objective_digest: Digest32) -> (
     )
 }
 
-fn intuition_input(snapshot_digest: Digest32, objective_digest: Digest32) -> CalibratedDecisionRequestV1 {
+fn intuition_input(
+    snapshot_digest: Digest32,
+    objective_digest: Digest32,
+) -> CalibratedDecisionRequestV1 {
     let policy = digest("intuition-policy");
     let candidates = vec![CalibratedActionCandidateV1 {
         candidate_id: id("read-local"),
@@ -306,7 +351,10 @@ fn intuition_input(snapshot_digest: Digest32, objective_digest: Digest32) -> Cal
     }
 }
 
-fn native_inputs(snapshot_digest: Digest32, objective_digest: Digest32) -> NativeCompositionInputsV3 {
+fn native_inputs(
+    snapshot_digest: Digest32,
+    objective_digest: Digest32,
+) -> NativeCompositionInputsV3 {
     let (utility_contributions, utility_profile, scalarization, evaluation_policy) =
         ndu_inputs(objective_digest);
     let registry = digest("prompt-registry");
@@ -503,14 +551,11 @@ fn v3_native_abstention_is_durable_without_context_or_evaluation() {
     let mut inputs = native_inputs(snapshot.digest(), objective_digest);
     inputs.intuition.candidates[0].legal = false;
     inputs.intuition.completeness.candidate_set_digest =
-        canonical_candidate_set_digest_v1(&inputs.intuition.candidates)
-            .expect("candidate digest");
+        canonical_candidate_set_digest_v1(&inputs.intuition.candidates).expect("candidate digest");
     inputs.intuition.completeness.canonical_order_digest =
-        canonical_candidate_order_digest_v1(&inputs.intuition.candidates)
-            .expect("order digest");
+        canonical_candidate_order_digest_v1(&inputs.intuition.candidates).expect("order digest");
 
-    let mut ports =
-        NativeCompositionPortsV3::new(candidate_set.clone(), inputs, &mut ledger);
+    let mut ports = NativeCompositionPortsV3::new(candidate_set.clone(), inputs, &mut ledger);
     let request = CompositionRunRequestV3 {
         run_id: id("run:native-v3-abstain"),
         request_digest: digest("request-abstain"),
@@ -553,4 +598,3 @@ fn v3_native_abstention_is_durable_without_context_or_evaluation() {
     assert_eq!(decision.selected_candidate_id, id("abstain"));
     assert!(decision.selected_propensity.raw() > 0);
 }
-
