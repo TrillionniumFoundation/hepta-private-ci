@@ -155,6 +155,16 @@ pub enum ModelProviderTerminal {
 ///
 /// The consuming receiver ensures the host cannot finish the same lease twice.
 pub trait ModelProviderAttemptLease: Send {
+    /// Performs the final policy authorization immediately before the host
+    /// invokes the physical provider transport.
+    ///
+    /// Contributors that do not need a distinct final-use fence inherit the
+    /// fail-neutral implementation. Security-sensitive contributors should
+    /// revalidate revocation/expiry here rather than relying only on `begin`.
+    fn authorize_dispatch(&mut self) -> ModelProviderPolicyFuture<'_, ()> {
+        Box::pin(std::future::ready(Ok(())))
+    }
+
     fn finish(
         self: Box<Self>,
         terminal: ModelProviderTerminal,

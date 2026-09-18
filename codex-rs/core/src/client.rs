@@ -444,6 +444,12 @@ impl AdmittedProviderAttempt {
         self.dispatch.clone()
     }
 
+    async fn authorize_dispatch(
+        &self,
+    ) -> std::result::Result<(), ModelProviderPolicyError> {
+        self.owner.authorize_dispatch().await
+    }
+
     fn into_owner(self) -> ProviderAttemptOwner {
         self.owner
     }
@@ -914,6 +920,12 @@ impl ModelClient {
                 .as_ref()
                 .map(AdmittedProviderAttempt::dispatch_metadata)
                 .unwrap_or_default();
+            if let Some(attempt) = admitted_provider_attempt.as_ref() {
+                attempt
+                    .authorize_dispatch()
+                    .await
+                    .map_err(|error| trace_compaction_policy_error(&trace_attempt, error))?;
+            }
             let result = client
                 .compact_input_single_attempt(
                     &payload,
@@ -2108,6 +2120,12 @@ impl ModelClientSession {
             } else {
                 client
             };
+            if let Some(attempt) = admitted_provider_attempt.as_ref() {
+                attempt
+                    .authorize_dispatch()
+                    .await
+                    .map_err(model_provider_policy_error)?;
+            }
             let stream_result = match admitted_provider_attempt.as_ref() {
                 Some(attempt) => {
                     client
@@ -2561,6 +2579,12 @@ impl ModelClientSession {
                     "websocket connection is unavailable".to_string(),
                 )));
             };
+            if let Some(attempt) = admitted_provider_attempt.as_ref() {
+                attempt
+                    .authorize_dispatch()
+                    .await
+                    .map_err(model_provider_policy_error)?;
+            }
             let stream_result = match admitted_provider_attempt.as_ref() {
                 Some(attempt) => {
                     websocket_connection

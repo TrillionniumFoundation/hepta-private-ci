@@ -490,3 +490,101 @@ async fn cancelled_begin_closes_every_acquired_lease() {
     .await
     .expect("cancelled begin should close acquired leases");
 }
+
+
+struct DispatchRecordingContributor {
+    name: &'static str,
+    events: Arc<Mutex<Vec<String>>>,
+}
+
+impl ModelProviderPolicyContributor for DispatchRecordingContributor {
+    fn is_active(&self, _thread_store: &ExtensionData) -> bool {
+        true
+    }
+
+    fn begin<'a>(
+        &'a self,
+        _input: ModelProviderInvocationInput<'a>,
+    ) -> ModelProviderPolicyFuture<'a, ModelProviderPolicyDecision> {
+        Box::pin(std::future::ready(Ok(ModelProviderPolicyDecision::Allow {
+            lease: Box::new(DispatchRecordingLease {
+                name: self.name,
+                events: Arc::clone(&self.events),
+            }),
+        })))
+    }
+}
+
+struct DispatchRecordingLease {
+    name: &'static str,
+    events: Arc<Mutex<Vec<String>>>,
+}
+
+impl ModelProviderAttemptLease for DispatchRecordingLease {
+    fn authorize_dispatch(&mut self) -> ModelProviderPolicyFuture<'_, ()> {
+        self.events
+            .lock()
+            .expect("events lock should not be poisoned")
+            .push(format!("authorize:{}", self.name));
+        Box::pin(std::future::ready(Ok(())))
+    }
+
+    fn finish(
+        self: Box<Self>,
+        terminal: ModelProviderTerminal,
+    ) -> ModelProviderPolicyFuture<'static, ()> {
+        self.events
+            .lock()
+            .expect("events lock should not be poisoned")
+            .push(format!("finish:{}:{terminal:?}", self.name));
+        Box::pin(std::future::ready(Ok(())))
+    }
+}
+
+#[tokio::test]
+async fn composite_dispatch_authorization_runs_in_registration_order() {
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let mut builder = ExtensionRegistryBuilder::<crate::config::Config>::new();
+    for name in ["one", "two"] {
+        builder.model_provider_policy_contributor(Arc::new(DispatchRecordingContributor {
+            name,
+            events: Arc::clone(&events),
+        }));
+    }
+    let registry = builder.build();
+    let (session_store, thread_store, turn_store) = stores();
+    let digests = [digest('a'), digest('b'), digest('c'), digest('d')];
+    let ModelProviderPolicyBegin::Allow { mut lease } = begin_model_provider_policy(
+        &registry,
+        input(&session_store, &thread_store, &turn_store, &digests),
+        false,
+    )
+    .await
+    .expect("dispatch contributors should begin") else {
+        panic!("dispatch contributors should allow");
+    };
+
+    lease
+        .authorize_dispatch()
+        .await
+        .expect("all child dispatch authorizations should succeed");
+    lease
+        .finish(ModelProviderTerminal::NotDispatched {
+            reason_code: "test_terminal".to_string(),
+        })
+        .await
+        .expect("all child leases should finish");
+
+    assert_eq!(
+        events
+            .lock()
+            .expect("events lock should not be poisoned")
+            .as_slice(),
+        [
+            "authorize:one",
+            "authorize:two",
+            "finish:one:NotDispatched { reason_code: \"test_terminal\" }",
+            "finish:two:NotDispatched { reason_code: \"test_terminal\" }",
+        ]
+    );
+}

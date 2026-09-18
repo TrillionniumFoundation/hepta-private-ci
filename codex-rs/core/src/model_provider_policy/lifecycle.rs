@@ -174,6 +174,10 @@ struct CompositeModelProviderAttemptLease {
 }
 
 impl ModelProviderAttemptLease for CompositeModelProviderAttemptLease {
+    fn authorize_dispatch(&mut self) -> ModelProviderPolicyFuture<'_, ()> {
+        Box::pin(async move { self.supervisor.authorize_dispatch().await })
+    }
+
     fn finish(
         self: Box<Self>,
         terminal: ModelProviderTerminal,
@@ -208,6 +212,24 @@ impl LeaseSupervisor {
         })
     }
 
+    async fn authorize_dispatch(&self) -> Result<(), ModelProviderPolicyError> {
+        let (acknowledge, acknowledged) = oneshot::channel();
+        self.commands
+            .send(LeaseCommand::AuthorizeDispatch { acknowledge })
+            .map_err(|_| {
+                ModelProviderPolicyError::new(
+                    "model_provider_policy_lease_supervisor_stopped",
+                    "provider policy lease supervisor stopped before dispatch authorization",
+                )
+            })?;
+        acknowledged.await.map_err(|_| {
+            ModelProviderPolicyError::new(
+                "model_provider_policy_lease_supervisor_stopped",
+                "provider policy lease supervisor stopped before acknowledging dispatch authorization",
+            )
+        })?
+    }
+
     async fn finish(
         self,
         terminal: ModelProviderTerminal,
@@ -237,6 +259,9 @@ impl LeaseSupervisor {
 
 enum LeaseCommand {
     Add(Box<dyn ModelProviderAttemptLease>),
+    AuthorizeDispatch {
+        acknowledge: oneshot::Sender<Result<(), ModelProviderPolicyError>>,
+    },
     Finish {
         terminal: ModelProviderTerminal,
         aggregate_reason_code: &'static str,
@@ -249,6 +274,16 @@ async fn run_lease_supervisor(mut commands: mpsc::UnboundedReceiver<LeaseCommand
     while let Some(command) = commands.recv().await {
         match command {
             LeaseCommand::Add(lease) => leases.push(lease),
+            LeaseCommand::AuthorizeDispatch { acknowledge } => {
+                let mut result = Ok(());
+                for lease in &mut leases {
+                    if let Err(error) = lease.authorize_dispatch().await {
+                        result = Err(error);
+                        break;
+                    }
+                }
+                let _ = acknowledge.send(result);
+            }
             LeaseCommand::Finish {
                 terminal,
                 aggregate_reason_code,

@@ -136,6 +136,21 @@ def verify() -> None:
     ):
         if needle not in physical_client:
             raise SystemExit(f"physical provider send missing required-policy gate: {needle}")
+    if physical_client.count(".authorize_dispatch()") != 3:
+        raise SystemExit(
+            "physical provider sends must authorize exactly the three current "
+            "HTTP/WS/compaction attempt paths before transport invocation"
+        )
+    attempt_owner = (
+        ROOT / "codex-rs/core/src/model_provider_policy/attempt_owner.rs"
+    ).read_text(encoding="utf-8")
+    for needle in (
+        "pub(crate) async fn authorize_dispatch(&self)",
+        "model_provider_policy_dispatch_already_authorized",
+        "lease.authorize_dispatch().await",
+    ):
+        if needle not in attempt_owner:
+            raise SystemExit(f"physical final-dispatch owner fence missing: {needle}")
 
 
 def self_test() -> None:
