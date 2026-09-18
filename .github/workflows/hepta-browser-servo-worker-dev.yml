@@ -36,7 +36,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SERVO_PIN: 84bcc9ac701874fa9819e5cdee06356b961d736c
+  SERVO_PIN: 5cc5bd32d02619acdec5736055515e38c5840ce1
   WORKER_MANIFEST: apps/hepta-browser/servo-worker/Cargo.toml
   WORKER_LOCK: apps/hepta-browser/servo-worker/Cargo.lock
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -89,9 +89,13 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p worker-evidence
-          if test -s "$WORKER_LOCK"; then
+          if test -s "$WORKER_LOCK" && grep -Fq "$SERVO_PIN" "$WORKER_LOCK"; then
             printf 'committed\n' > worker-evidence/cargo-lock-source.txt
           else
+            if test -e "$WORKER_LOCK"; then
+              cp "$WORKER_LOCK" worker-evidence/predecessor-Cargo.lock
+              rm -f "$WORKER_LOCK"
+            fi
             cargo generate-lockfile --manifest-path "$WORKER_MANIFEST"
             printf 'generated-candidate\n' > worker-evidence/cargo-lock-source.txt
           fi
@@ -231,6 +235,15 @@ jobs:
           path: worker-evidence
           if-no-files-found: error
           retention-days: 7
+
+      - name: Restore predecessor tracked lock after candidate qualification
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -f worker-evidence/cargo-lock-source.txt && grep -Fxq generated-candidate worker-evidence/cargo-lock-source.txt; then
+            git checkout -- "$WORKER_LOCK"
+          fi
 
       - name: Verify tracked source remains clean
         if: always()

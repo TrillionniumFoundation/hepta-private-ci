@@ -2,11 +2,14 @@
   "schema_version": 1,
   "upstream_repository": "servo/servo",
   "upstream_branch": "main",
-  "upstream_commit": "84bcc9ac701874fa9819e5cdee06356b961d736c",
+  "upstream_commit": "5cc5bd32d02619acdec5736055515e38c5840ce1",
   "patches": [],
   "integration_mode": "pinned_upstream_with_hepta_adapter_boundary",
   "network_authority": false,
   "effect_authority": false,
   "automatic_update": false,
-  "interpretation": "pinning an upstream source identity is not runtime activation or independent acceptance"
+  "interpretation": "pinning an upstream source identity is not runtime activation or independent acceptance",
+  "qualification_state": "candidate_pending_exact_head",
+  "predecessor_commit": "84bcc9ac701874fa9819e5cdee06356b961d736c",
+  "selection_reason": "includes post-pin WebView/input-event deadlock fixes and is requalified through the Browser real-E2E/reproducibility gate"
 }
