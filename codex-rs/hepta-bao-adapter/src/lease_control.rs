@@ -163,7 +163,8 @@ impl LeaseRegistry {
     pub fn open(directory: &Path) -> Result<Self, BaoClientError> {
         let root = prepare_private_directory(directory)?;
         let lock = open_private_at(&root, "leases.lock", true)?;
-        lock.try_lock().map_err(|_| BaoClientError::LeaseStoreLocked)?;
+        lock.try_lock()
+            .map_err(|_| BaoClientError::LeaseStoreLocked)?;
         let mut journal = open_private_at(&root, "leases.journal", true)?;
         let size = journal
             .metadata()
@@ -284,7 +285,9 @@ impl LeaseRegistry {
             return Err(BaoClientError::InvalidRequest);
         }
         match kind {
-            LeaseOperationKind::Renew if current.state != LeaseState::Active || !current.renewable => {
+            LeaseOperationKind::Renew
+                if current.state != LeaseState::Active || !current.renewable =>
+            {
                 return Err(BaoClientError::LeaseNotRenewable);
             }
             LeaseOperationKind::Revoke
@@ -409,7 +412,9 @@ impl LeaseRegistry {
                 )
                 .map(Some),
             ReconciliationObservation::Revoked => self.mark_revoked(local_lease_id).map(Some),
-            ReconciliationObservation::NotApplied => self.mark_not_applied(local_lease_id).map(Some),
+            ReconciliationObservation::NotApplied => {
+                self.mark_not_applied(local_lease_id).map(Some)
+            }
         }
     }
 
@@ -436,7 +441,8 @@ impl LeaseRegistry {
             .write_all(&bytes)
             .and_then(|_| self.journal.sync_data())
             .map_err(|_| BaoClientError::LeaseStoreUnavailable)?;
-        self.operations.insert(record.operation_id.clone(), record.clone());
+        self.operations
+            .insert(record.operation_id.clone(), record.clone());
         self.records.insert(record.local_lease_id.clone(), record);
         Ok(())
     }
@@ -454,8 +460,8 @@ impl BaoClient {
         request: &BaoDynamicLeaseRequest,
     ) -> Result<FinalUseBinding, BaoClientError> {
         validate_dynamic_request(request)?;
-        let parameters = serde_json::to_vec(&request.parameters)
-            .map_err(|_| BaoClientError::InvalidRequest)?;
+        let parameters =
+            serde_json::to_vec(&request.parameters).map_err(|_| BaoClientError::InvalidRequest)?;
         if parameters.len() > MAX_PARAMETER_BYTES {
             return Err(BaoClientError::InvalidRequest);
         }
@@ -511,7 +517,9 @@ impl BaoClient {
 
         let mut url = self.origin.clone();
         {
-            let mut parts = url.path_segments_mut().map_err(|_| BaoClientError::InvalidRequest)?;
+            let mut parts = url
+                .path_segments_mut()
+                .map_err(|_| BaoClientError::InvalidRequest)?;
             parts.clear().push("v1");
             for part in request.provider_path.split('/') {
                 parts.push(part);
@@ -537,7 +545,10 @@ impl BaoClient {
             Ok(response) => response,
             Err(error) => {
                 let mapped = transport_error(error);
-                if matches!(mapped, BaoClientError::TimedOut | BaoClientError::TransportUnavailable) {
+                if matches!(
+                    mapped,
+                    BaoClientError::TimedOut | BaoClientError::TransportUnavailable
+                ) {
                     return registry
                         .mark_unknown(&record.local_lease_id)
                         .map(BaoLeaseOutcome::Indeterminate);
@@ -675,7 +686,10 @@ impl BaoClient {
             }
         };
         if response.status() != StatusCode::OK {
-            if matches!(response.status(), StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN) {
+            if matches!(
+                response.status(),
+                StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN
+            ) {
                 return Err(BaoClientError::ProviderDenied);
             }
             return registry
@@ -777,7 +791,10 @@ impl BaoClient {
             }
         };
         if !matches!(response.status(), StatusCode::OK | StatusCode::NO_CONTENT) {
-            if matches!(response.status(), StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN) {
+            if matches!(
+                response.status(),
+                StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN
+            ) {
                 return Err(BaoClientError::ProviderDenied);
             }
             return registry
@@ -933,10 +950,9 @@ fn provider_lease_id_valid(value: &str) -> bool {
 }
 
 fn local_lease_id(operation_id: &str, semantic_sha256: [u8; 32]) -> String {
-    let digest = Digest32::of_bytes(
-        &[operation_id.as_bytes(), semantic_sha256.as_slice()].concat(),
-    )
-    .to_string();
+    let digest =
+        Digest32::of_bytes(&[operation_id.as_bytes(), semantic_sha256.as_slice()].concat())
+            .to_string();
     format!("lease:{}", &digest[..32])
 }
 
@@ -944,9 +960,10 @@ fn existing_outcome(record: SecretLeaseMetadata) -> BaoLeaseOutcome {
     match record.state {
         LeaseState::Active => BaoLeaseOutcome::Existing(record),
         LeaseState::Revoked => BaoLeaseOutcome::Revoked(record),
-        LeaseState::Unknown | LeaseState::IssuePending | LeaseState::RenewPending | LeaseState::RevokePending => {
-            BaoLeaseOutcome::Indeterminate(record)
-        }
+        LeaseState::Unknown
+        | LeaseState::IssuePending
+        | LeaseState::RenewPending
+        | LeaseState::RevokePending => BaoLeaseOutcome::Indeterminate(record),
         LeaseState::Expired | LeaseState::NotApplied => BaoLeaseOutcome::Existing(record),
     }
 }
@@ -997,11 +1014,7 @@ fn prepare_private_directory(path: &Path) -> Result<File, BaoClientError> {
     }
 }
 
-fn open_private_at(
-    directory: &File,
-    name: &str,
-    create: bool,
-) -> Result<File, BaoClientError> {
+fn open_private_at(directory: &File, name: &str, create: bool) -> Result<File, BaoClientError> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
