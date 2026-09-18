@@ -66,6 +66,42 @@ pub enum RetrievalChannel {
     Recency,
 }
 
+/// Canonical relation semantics actually traversed by the owner graph channel.
+///
+/// These tags are owner-observed metadata only. Unknown/custom relation strings
+/// continue to participate in GraphOneHop ranking but are not reinterpreted as
+/// one of these stronger semantics.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RetrievalSemanticRelation {
+    Supports,
+    Contradicts,
+    TemporalBefore,
+    TemporalAfter,
+    Causes,
+    Enables,
+    ProcedureStep,
+    PromptComplements,
+    PromptSubstitutes,
+    PromptConflicts,
+}
+
+fn classify_semantic_relation(value: &str) -> Option<RetrievalSemanticRelation> {
+    match value {
+        "supports" => Some(RetrievalSemanticRelation::Supports),
+        "contradicts" => Some(RetrievalSemanticRelation::Contradicts),
+        "temporal_before" => Some(RetrievalSemanticRelation::TemporalBefore),
+        "temporal_after" => Some(RetrievalSemanticRelation::TemporalAfter),
+        "causes" => Some(RetrievalSemanticRelation::Causes),
+        "enables" => Some(RetrievalSemanticRelation::Enables),
+        "procedure_step" => Some(RetrievalSemanticRelation::ProcedureStep),
+        "prompt_complements" => Some(RetrievalSemanticRelation::PromptComplements),
+        "prompt_substitutes" => Some(RetrievalSemanticRelation::PromptSubstitutes),
+        "prompt_conflicts" => Some(RetrievalSemanticRelation::PromptConflicts),
+        _ => None,
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SourceRevalidationBinding {
     pub id: SourceRevisionId,
@@ -161,6 +197,11 @@ struct EntitySeed {
     generation: i64,
     canonical_entity_id: String,
     memory: MemoryKey,
+}
+
+struct GraphHit {
+    memory: MemoryKey,
+    semantic_relations: BTreeSet<RetrievalSemanticRelation>,
 }
 
 impl CognitiveStore {
@@ -635,10 +676,10 @@ impl CognitiveStore {
         transaction: &mut Transaction<'_, Sqlite>,
         seeds: &[EntitySeed],
         now: i64,
-    ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
+    ) -> Result<ChannelOutput<GraphHit>, CognitiveStoreError> {
         let mut queried_canonical_entities = BTreeSet::new();
-        let mut seen = BTreeSet::new();
-        let mut result = Vec::new();
+        let mut positions = BTreeMap::<MemoryKey, usize>::new();
+        let mut result = Vec::<GraphHit>::new();
         let mut limit = RetrievalLimitObservation::Exhausted;
         'seeds: for seed in seeds {
             if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
@@ -660,7 +701,8 @@ impl CognitiveStore {
                      WHERE projection_scope = ? AND generation = ?
                        AND canonical_entity_id = ?
                  )
-                 SELECT DISTINCT e.edge_id, e.memory_id AS edge_memory_id,
+                 SELECT DISTINCT e.edge_id, e.relation,
+                        e.memory_id AS edge_memory_id,
                         e.memory_revision AS edge_memory_revision,
                         n.node_id, n.memory_id AS node_memory_id,
                         n.memory_revision AS node_memory_revision
@@ -716,17 +758,31 @@ impl CognitiveStore {
                 limit = RetrievalLimitObservation::LimitReached;
             }
             for row in rows {
+                let relation: String = row.try_get("relation").map_err(unavailable)?;
+                let semantic_relation = classify_semantic_relation(&relation);
                 for key in [
                     decode_memory_key(&row, "edge_memory_id", "edge_memory_revision")?,
                     decode_memory_key(&row, "node_memory_id", "node_memory_revision")?,
                 ] {
-                    if seen.insert(key.clone()) {
-                        result.push(key);
+                    if let Some(index) = positions.get(&key).copied() {
+                        if let Some(relation) = semantic_relation {
+                            result[index].semantic_relations.insert(relation);
+                        }
+                        continue;
                     }
                     if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
                         limit = RetrievalLimitObservation::LimitReached;
                         break 'seeds;
                     }
+                    let mut semantic_relations = BTreeSet::new();
+                    if let Some(relation) = semantic_relation {
+                        semantic_relations.insert(relation);
+                    }
+                    positions.insert(key.clone(), result.len());
+                    result.push(GraphHit {
+                        memory: key,
+                        semantic_relations,
+                    });
                 }
             }
         }
@@ -737,6 +793,7 @@ impl CognitiveStore {
     }
 
     #[cfg(test)]
+    pub(crate) async fn graph_channel_for_test    #[cfg(test)]
     pub(crate) async fn graph_channel_for_test(
         &self,
         seeds: &[(
@@ -768,11 +825,11 @@ impl CognitiveStore {
         transaction.commit().await.map_err(unavailable)?;
         keys.values
             .into_iter()
-            .map(|key| {
+            .map(|hit| {
                 Ok(MemoryRevisionId {
-                    memory_id: StableMemoryId::parse(key.memory_id)
+                    memory_id: StableMemoryId::parse(hit.memory.memory_id)
                         .map_err(CognitiveStoreError::Corrupt)?,
-                    revision: key.revision,
+                    revision: hit.memory.revision,
                 })
             })
             .collect()

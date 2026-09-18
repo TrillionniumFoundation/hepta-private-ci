@@ -107,6 +107,7 @@ pub use cognitive_retrieval::RetrievalChannelObservation;
 pub use cognitive_retrieval::RetrievalLimitObservation;
 pub use cognitive_retrieval::RetrievalObservation;
 pub use cognitive_retrieval::RetrievalRequest;
+pub use cognitive_retrieval::RetrievalSemanticRelation;
 pub use cognitive_retrieval::RevalidationDrift;
 pub use cognitive_retrieval::RevalidationStatus;
 pub use cognitive_retrieval::SourceCitationRecord;

@@ -44,6 +44,8 @@ pub struct ObservedRetrievalCandidate {
     pub revalidation: MemoryRevalidationBinding,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
+    /// Canonical KG relation semantics actually traversed by GraphOneHop.
+    pub semantic_relations: Vec<RetrievalSemanticRelation>,
 }
 
 /// Created only by the owner read API from one SQLite read transaction.
@@ -79,6 +81,7 @@ impl RetrievalObservation {
 pub(super) struct GeneratedRetrieval {
     pub(super) ranked: Vec<(MemoryKey, AggregatedRank)>,
     channels: Vec<RetrievalChannelObservation>,
+    semantic_relations: BTreeMap<MemoryKey, BTreeSet<RetrievalSemanticRelation>>,
 }
 
 impl CognitiveStore {
@@ -95,21 +98,36 @@ impl CognitiveStore {
         let generated = self
             .generate_retrieval_tx(&mut transaction, access, request, &fts_query)
             .await?;
+        let GeneratedRetrieval {
+            ranked,
+            channels,
+            semantic_relations,
+        } = generated;
         let mut candidates = self
             .resolve_retrieval_tx(
                 &mut transaction,
                 access,
                 request,
-                generated.ranked,
+                ranked,
                 4 * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             )
             .await?;
         let mut observed = candidates
             .iter()
-            .map(|candidate| ObservedRetrievalCandidate {
-                revalidation: candidate.revalidation.clone(),
-                reciprocal_rank_score: candidate.reciprocal_rank_score,
-                channels: candidate.channels.clone(),
+            .map(|candidate| {
+                let key = MemoryKey {
+                    memory_id: candidate.memory.id.memory_id.as_str().to_string(),
+                    revision: candidate.memory.id.revision,
+                };
+                ObservedRetrievalCandidate {
+                    revalidation: candidate.revalidation.clone(),
+                    reciprocal_rank_score: candidate.reciprocal_rank_score,
+                    channels: candidate.channels.clone(),
+                    semantic_relations: semantic_relations
+                        .get(&key)
+                        .map(|relations| relations.iter().copied().collect())
+                        .unwrap_or_default(),
+                }
             })
             .collect::<Vec<_>>();
         observed.sort_by(|left, right| {
@@ -138,7 +156,7 @@ impl CognitiveStore {
             MAX_FTS_TERMS,
             MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             MAX_RETRIEVAL_RESULTS,
-            &generated.channels,
+            &channels,
             &observed,
             observed.len() - batch.candidates.len(),
         ))
@@ -146,7 +164,7 @@ impl CognitiveStore {
         let observation = RetrievalObservation {
             batch,
             candidates: observed,
-            channels: generated.channels,
+            channels,
             observation_sha256: Sha256Digest::for_bytes(&bytes),
         };
         transaction.commit().await.map_err(unavailable)?;
@@ -191,6 +209,17 @@ impl CognitiveStore {
         let graph = self
             .graph_channel_tx(transaction, &seeds.values, now)
             .await?;
+        let graph_keys = graph
+            .values
+            .iter()
+            .map(|hit| hit.memory.clone())
+            .collect::<Vec<_>>();
+        let semantic_relations = graph
+            .values
+            .iter()
+            .filter(|hit| !hit.semantic_relations.is_empty())
+            .map(|hit| (hit.memory.clone(), hit.semantic_relations.clone()))
+            .collect::<BTreeMap<_, _>>();
         let recency = self
             .recency_channel_tx(
                 transaction,
@@ -203,7 +232,7 @@ impl CognitiveStore {
         for (channel, keys, limit) in [
             (RetrievalChannel::MemoryFts, &memory.values, memory.limit),
             (RetrievalChannel::EntityFts, &entity, seeds.limit),
-            (RetrievalChannel::GraphOneHop, &graph.values, graph.limit),
+            (RetrievalChannel::GraphOneHop, &graph_keys, graph.limit),
             (RetrievalChannel::Recency, &recency.values, recency.limit),
         ] {
             add_rrf_channel(&mut ranked, keys, channel);
@@ -221,7 +250,11 @@ impl CognitiveStore {
                 .cmp(&left.1.score)
                 .then_with(|| left.0.cmp(&right.0))
         });
-        Ok(GeneratedRetrieval { ranked, channels })
+        Ok(GeneratedRetrieval {
+            ranked,
+            channels,
+            semantic_relations,
+        })
     }
 
     pub(super) async fn resolve_retrieval_tx(

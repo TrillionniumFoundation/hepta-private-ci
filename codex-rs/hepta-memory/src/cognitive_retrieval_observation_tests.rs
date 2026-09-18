@@ -2,6 +2,7 @@ use super::*;
 use crate::ForgetMemoryDraft;
 use crate::KgEntityFactDraft;
 use crate::KgFactSetDraft;
+use crate::KgRelationFactDraft;
 use crate::MemoryDraft;
 use crate::MemoryRevisionDraft;
 use crate::cognitive_test_support::agent_id;
@@ -282,4 +283,64 @@ async fn omitted_candidate_content_is_bound_even_when_selected_ids_do_not_change
         Sha256Digest::for_bytes(b"Unmatched new tail.")
     );
     assert_ne!(before.observation_sha256(), after.observation_sha256());
+}
+
+#[tokio::test]
+async fn graph_observation_preserves_canonical_relation_semantics() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(/*suffix*/ 46);
+    let store = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("store");
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let content = "Beacon causes launch.";
+    store
+        .remember_with_kg(
+            &access,
+            &source(scope.clone(), "causal-source", content),
+            &MemoryDraft {
+                stable_key: "causal-memory".to_string(),
+                revision: revision(scope, content),
+            },
+            &KgFactSetDraft {
+                entities: vec![
+                    KgEntityFactDraft {
+                        key: "beacon".to_string(),
+                        entity_type: "topic".to_string(),
+                        label: "Beacon".to_string(),
+                    },
+                    KgEntityFactDraft {
+                        key: "launch".to_string(),
+                        entity_type: "event".to_string(),
+                        label: "Launch".to_string(),
+                    },
+                ],
+                relations: vec![KgRelationFactDraft {
+                    key: "beacon-causes-launch".to_string(),
+                    from_entity_key: "beacon".to_string(),
+                    to_entity_key: "launch".to_string(),
+                    relation: "causes".to_string(),
+                }],
+            },
+        )
+        .await
+        .expect("causal memory");
+
+    let observation = store
+        .observe_memory_retrieval(
+            &access,
+            &RetrievalRequest::new("Beacon", /*now_unix_seconds*/ 200),
+        )
+        .await
+        .expect("observation");
+    let candidate = observation
+        .candidates()
+        .iter()
+        .find(|candidate| candidate.channels.contains(&RetrievalChannel::GraphOneHop))
+        .expect("graph candidate");
+    assert_eq!(
+        candidate.semantic_relations,
+        vec![RetrievalSemanticRelation::Causes]
+    );
 }
