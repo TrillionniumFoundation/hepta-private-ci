@@ -19,6 +19,8 @@
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_app_server_client::AppServerEvent;
+use codex_app_server_client::ObservedAppServerEvent;
 use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStatus;
@@ -102,7 +104,34 @@ pub struct AppServerObservation {
 }
 
 impl AppServerObservation {
-    pub fn from_turn_completed(
+    /// Converts only a transport-observed event into a terminal witness.
+    ///
+    /// A caller can construct protocol structs, but it cannot construct
+    /// `ObservedAppServerEvent`; only `RemoteAppServerClient` can mint one
+    /// while dequeuing its initialized connection.
+    pub fn from_observed_event(
+        protocol_version: StableId,
+        session_generation: u64,
+        observed: &ObservedAppServerEvent,
+    ) -> Result<Option<Self>, Error> {
+        match observed.event() {
+            AppServerEvent::ServerNotification(notification) => match notification.as_ref() {
+                codex_app_server_protocol::ServerNotification::TurnCompleted(completed) => {
+                    Self::from_turn_completed(
+                        protocol_version,
+                        session_generation,
+                        observed.sequence(),
+                        completed,
+                    )
+                    .map(Some)
+                }
+                _ => Ok(None),
+            },
+            _ => Ok(None),
+        }
+    }
+
+    fn from_turn_completed(
         protocol_version: StableId,
         session_generation: u64,
         event_sequence: u64,
