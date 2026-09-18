@@ -12,7 +12,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 
 import {
   LinuxBubblewrapLauncher,
@@ -246,7 +246,7 @@ test("profile directory carries a private principal-bound owner manifest and std
   });
   const ownerPath = join(capture.spec.profileDir, ".hepta-profile-owner.json");
   assert.equal(
-    capture.spec.workerPath.startsWith(`${capture.spec.profileDir}/`),
+    capture.spec.workerPath.startsWith(`${capture.spec.profileDir}${sep}`),
     false,
     "verified worker copy must not live under the writable profile bind",
   );

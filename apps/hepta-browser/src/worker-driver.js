@@ -604,11 +604,12 @@ export class SubprocessBrowserDriver {
     await this.#launcher.verify();
     const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
     await ensurePrivateProfileRoot(this.#profileRoot);
-    this.#profileDir = join(
-      this.#profileRoot,
-      `${profileId}.${generation}.${randomUUID()}`,
-    );
-    await mkdir(this.#profileDir, { mode: 0o700 });
+    try {
+      this.#profileDir = join(
+        this.#profileRoot,
+        `${profileId}.${generation}.${randomUUID()}`,
+      );
+      await mkdir(this.#profileDir, { mode: 0o700 });
     this.#profileOwnerPath = join(
       this.#profileDir,
       ".hepta-profile-owner.json",
@@ -631,9 +632,8 @@ export class SubprocessBrowserDriver {
       `.hepta-verified-worker.${profileId}.${generation}.${randomUUID()}`,
     );
     await this.#writePrivateVerifiedWorker(verifiedWorkerBytes);
-    this.#sessionId = profileId;
-    this.#generation = generation;
-    try {
+      this.#sessionId = profileId;
+      this.#generation = generation;
       this.#child = this.#launcher.spawn({
         workerPath: this.#verifiedWorkerPath,
         profileDir: this.#profileDir,
@@ -672,6 +672,9 @@ export class SubprocessBrowserDriver {
       await this.#cleanupProfile();
       this.#child = null;
       this.#client = null;
+      this.#sessionId = null;
+      this.#generation = null;
+      this.#processId = null;
       throw error;
     }
   }
