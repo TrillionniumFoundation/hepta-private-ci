@@ -413,16 +413,18 @@ impl AuthorityLeaseRegistry {
         lease_id: &str,
         expected_revision: u64,
         reason_sha256: [u8; 32],
-        revoked_at_unix_ms: u64,
     ) -> Result<RevocationReceipt, AuthorityLeaseError> {
-        if !identifier(lease_id) || reason_sha256 == [0; 32] || revoked_at_unix_ms == 0 {
+        if !identifier(lease_id) || reason_sha256 == [0; 32] {
+            return Err(AuthorityLeaseError::InvalidRevocation);
+        }
+        let revoked_at_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
+        if revoked_at_unix_ms == 0 {
             return Err(AuthorityLeaseError::InvalidRevocation);
         }
         let mut state = self.lock_state()?;
         if let Some(existing) = state.revocations.get(lease_id) {
             if existing.lease_revision == expected_revision.saturating_add(1)
                 && existing.reason_sha256 == reason_sha256
-                && existing.revoked_at_unix_ms == revoked_at_unix_ms
             {
                 return Ok(receipt(existing, expected_revision));
             }
@@ -1084,7 +1086,7 @@ mod tests {
             Ok(7)
         );
         let receipt = registry
-            .revoke("lease-one", 1, [9; 32], 2_100)
+            .revoke("lease-one", 1, [9; 32])
             .unwrap();
         assert_eq!(receipt.lease_revision, 2);
         assert_eq!(
@@ -1114,7 +1116,7 @@ mod tests {
         let expected = binding();
         std::thread::spawn(move || {
             let result = verifier.with_verified_use(token, &expected, || {
-                registry.revoke("lease-one", 1, [8; 32], 2_002).unwrap();
+                registry.revoke("lease-one", 1, [8; 32]).unwrap();
                 7
             });
             let _ = tx.send(result);
@@ -1168,19 +1170,16 @@ mod tests {
     }
 
     #[test]
-    fn revoke_retry_requires_identical_timestamp_semantics() {
+    fn revoke_retry_reuses_server_owned_timestamp() {
         let (registry, _directory) = fixture();
         registry.put_lease(lease(), 0).unwrap();
-        let first = registry
-            .revoke("lease-one", 1, [9; 32], 2_100)
-            .unwrap();
-        let retry = registry
-            .revoke("lease-one", 1, [9; 32], 2_100)
-            .unwrap();
+        let first = registry.revoke("lease-one", 1, [9; 32]).unwrap();
+        let retry = registry.revoke("lease-one", 1, [9; 32]).unwrap();
         assert_eq!(first, retry);
+        assert_eq!(first.revoked_at_unix_ms, 2_000);
         assert_eq!(
             registry
-                .revoke("lease-one", 1, [9; 32], 2_101)
+                .revoke("lease-one", 1, [10; 32])
                 .unwrap_err(),
             AuthorityLeaseError::Revoked
         );
