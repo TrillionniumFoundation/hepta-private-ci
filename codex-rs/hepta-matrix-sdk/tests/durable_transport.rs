@@ -447,6 +447,13 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
             21,
         )
         .await?;
+    let delayed_retryable = store
+        .record_transport_indeterminate(&original.stable_txn_id, 2, 22)
+        .await?;
+    assert_eq!(
+        delayed_retryable.state,
+        MatrixDispatchState::ObservedTerminal
+    );
     assert_eq!(
         transport.txn_ids()?,
         vec![
