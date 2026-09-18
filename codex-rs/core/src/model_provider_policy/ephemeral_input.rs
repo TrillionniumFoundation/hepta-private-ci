@@ -20,8 +20,10 @@ const WRAPPER_OPEN: &str = "<hepta_memory_reference schema=\"1\">";
 const WRAPPER_CLOSE: &str = "</hepta_memory_reference>";
 const HEPTA_MEMORY_SAME_THREAD_SOURCE: &str = "hepta_memory_same_thread_v1";
 const HEPTA_COGNITIVE_PLANE_SOURCE: &str = "hepta_cognitive_plane_v1";
-const HEPTA_COGNITIVE_FEDERATION_SOURCE: &str = "hepta_cognitive_federation_v1";
-const HEPTA_COGNITIVE_COMBINED_SOURCE: &str = "hepta_cognitive_combined_v1";
+const HEPTA_COGNITIVE_FEDERATION_SOURCE_V1: &str = "hepta_cognitive_federation_v1";
+const HEPTA_COGNITIVE_FEDERATION_SOURCE_V2: &str = "hepta_cognitive_federation_v2";
+const HEPTA_COGNITIVE_COMBINED_SOURCE_V1: &str = "hepta_cognitive_combined_v1";
+const HEPTA_COGNITIVE_COMBINED_SOURCE_V2: &str = "hepta_cognitive_combined_v2";
 
 /// Digest-only binding consumed by the final provider-attempt envelope.
 pub(crate) struct EphemeralModelInputBinding {
@@ -150,8 +152,10 @@ pub(super) fn prepare_ephemeral_model_input(
             proposal.source().as_str(),
             HEPTA_MEMORY_SAME_THREAD_SOURCE
                 | HEPTA_COGNITIVE_PLANE_SOURCE
-                | HEPTA_COGNITIVE_FEDERATION_SOURCE
-                | HEPTA_COGNITIVE_COMBINED_SOURCE
+                | HEPTA_COGNITIVE_FEDERATION_SOURCE_V1
+                | HEPTA_COGNITIVE_FEDERATION_SOURCE_V2
+                | HEPTA_COGNITIVE_COMBINED_SOURCE_V1
+                | HEPTA_COGNITIVE_COMBINED_SOURCE_V2
         )
         || proposal.attempt_id() != context.attempt_id
         || proposal.base_logical_request_sha256() != context.base_logical_request_sha256
