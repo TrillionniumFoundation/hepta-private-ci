@@ -338,8 +338,10 @@ pub fn compose_global_plan_with_fleet_v1(
     owners.push(fleet.owner.summary.clone());
     owners.extend(other_owners.into_iter().map(|owner| owner.summary));
 
-    let mut expected_owner_ids: Vec<_> =
-        owners.iter().map(|summary| summary.owner_id.clone()).collect();
+    let mut expected_owner_ids: Vec<_> = owners
+        .iter()
+        .map(|summary| summary.owner_id.clone())
+        .collect();
     expected_owner_ids.sort();
     if expected_owner_ids.windows(2).any(|pair| pair[0] == pair[1]) {
         return Err(GlobalPlaneError::OwnerSetMismatch);
@@ -357,8 +359,7 @@ pub fn compose_global_plan_with_fleet_v1(
 
     let snapshot = collect_snapshot(snapshot_request, owners)?;
     let prepared = prepare_plan(&snapshot, planning_request)?;
-    let evaluation =
-        evaluate_prepared_plan_with_ndu(&snapshot, &prepared, ndu_input, now_micros)?;
+    let evaluation = evaluate_prepared_plan_with_ndu(&snapshot, &prepared, ndu_input, now_micros)?;
 
     let grant_requests = if evaluation.plan.chosen_candidate_id().is_some() {
         Some(request_execution_grants(
