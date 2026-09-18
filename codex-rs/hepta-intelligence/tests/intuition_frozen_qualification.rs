@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used, clippy::expect_used)]
+
 use codex_hepta_intelligence::IntuitionQualificationEvidenceV2;
 use codex_hepta_intelligence::decide_authenticated_intuition_v2;
 use codex_hepta_intuition::AssignmentModeV1;
