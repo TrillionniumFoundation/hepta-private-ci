@@ -285,7 +285,6 @@ fn observation_digest(
 #[cfg(target_os = "linux")]
 fn parse_linux_meminfo_mib(text: &str) -> Result<u64, CapacityObservationError> {
     let mut total = None;
-    let mut available = None;
     for line in text.lines() {
         let mut parts = line.split_whitespace();
         let Some(key) = parts.next() else {
@@ -299,11 +298,10 @@ fn parse_linux_meminfo_mib(text: &str) -> Result<u64, CapacityObservationError> 
             .map_err(|_| CapacityObservationError::PlatformUnavailable)?;
         match key {
             "MemTotal:" => total = Some(value),
-            "MemAvailable:" => available = Some(value),
             _ => {}
         }
     }
-    let kib = available.or(total).ok_or(CapacityObservationError::PlatformUnavailable)?;
+    let kib = total.ok_or(CapacityObservationError::PlatformUnavailable)?;
     Ok(kib / 1024)
 }
 
@@ -313,9 +311,9 @@ mod tests {
 
     #[cfg(target_os = "linux")]
     #[test]
-    fn linux_memory_parser_prefers_available_capacity() {
+    fn linux_memory_parser_uses_stable_physical_endowment() {
         let text = "MemTotal:       8388608 kB\nMemAvailable:   4194304 kB\n";
-        assert_eq!(parse_linux_meminfo_mib(text).expect("parse"), 4096);
+        assert_eq!(parse_linux_meminfo_mib(text).expect("parse"), 8192);
     }
 
     #[test]
