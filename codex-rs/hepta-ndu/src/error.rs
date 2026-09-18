@@ -107,9 +107,9 @@ impl fmt::Display for NduError {
             Self::PreferenceValueOutOfRange(axis) => {
                 write!(formatter, "preference value must be in [-1,1]: {axis}")
             }
-            Self::EmptyProfileSemanticsDigest => formatter.write_str(
-                "utility profile axis semantics digest must not be zero",
-            ),
+            Self::EmptyProfileSemanticsDigest => {
+                formatter.write_str("utility profile axis semantics digest must not be zero")
+            }
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
             Self::EmptyProtocolDigest(field) => {
                 write!(formatter, "protocol digest must not be zero: {field}")
@@ -182,10 +182,16 @@ impl fmt::Display for NduError {
                 formatter.write_str("preference solver exhausted 64 iterations without convergence")
             }
             Self::DuplicateHierarchySubject(subject) => {
-                write!(formatter, "duplicate hierarchy subject in one generation: {subject}")
+                write!(
+                    formatter,
+                    "duplicate hierarchy subject in one generation: {subject}"
+                )
             }
             Self::HierarchySelfParent(subject) => {
-                write!(formatter, "hierarchy subject cannot be its own parent: {subject}")
+                write!(
+                    formatter,
+                    "hierarchy subject cannot be its own parent: {subject}"
+                )
             }
             Self::InvalidHierarchyParent { parent, child } => write!(
                 formatter,
