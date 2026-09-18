@@ -28,6 +28,7 @@ pub use ingress::MatrixTimelineEvent;
 pub use matrix_sdk::SessionMeta;
 pub use matrix_sdk::SessionTokens;
 pub use matrix_sdk::authentication::matrix::MatrixSession;
+pub use outbound::MatrixDispatchContext;
 pub use outbound::MatrixOutboundTransport;
 pub use outbound::MatrixSendFuture;
 pub use outbound::MatrixTransportError;

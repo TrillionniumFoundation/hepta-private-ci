@@ -9,6 +9,7 @@ use codex_hepta_matrix_protocol::MAX_MATRIX_SYNC_BATCH_PAYLOAD_BYTES_V2;
 use codex_hepta_matrix_protocol::MAX_MATRIX_SYNC_MUTATIONS_V2;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixRoomId;
+use codex_hepta_matrix_protocol::MatrixTransactionId;
 use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
 use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
@@ -17,6 +18,7 @@ use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
 use codex_hepta_matrix_protocol::MatrixSyncResultV2;
 use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_store::MatrixDurableStore;
+use codex_hepta_matrix_store::MatrixServerEventObservation;
 use codex_hepta_matrix_store::MatrixSyncCheckpoint;
 use codex_hepta_matrix_store::MatrixSyncUnchangedRequestV1;
 use codex_hepta_matrix_store::MatrixSyncUnchangedResultV1;
@@ -64,6 +66,7 @@ impl MatrixSyncComposer<'_> {
             return Err(MatrixSdkError::Configuration);
         }
         let mutations = self.normalize(response, observed_at_ms, room_rules)?;
+        let server_observations = self.server_observations(response, observed_at_ms)?;
         let expected = checkpoint.map(|checkpoint| checkpoint.next_batch.as_str());
         // The whole decision, including first-observed time, remains fixed for
         // this attempt. The store binds its complete semantic digest; a reused
@@ -89,6 +92,7 @@ impl MatrixSyncComposer<'_> {
         };
         batch.validate().map_err(|_| MatrixSdkError::Sync)?;
         if batch.mutations.is_empty()
+            && server_observations.is_empty()
             && batch.expected_next_batch.as_deref() == Some(batch.next_batch.as_str())
         {
             // Empty observations still require a fresh owner transaction and
@@ -123,7 +127,7 @@ impl MatrixSyncComposer<'_> {
         let decision = MatrixSyncDecisionV2::Commit { batch };
         let result = self
             .store
-            .apply_sync_decision_v2(&decision)
+            .apply_sync_decision_v2_with_server_observations(&decision, &server_observations)
             .await
             .map_err(|_| MatrixSdkError::Store)?;
         if matches!(result, MatrixSyncResultV2::CapacityExhausted { .. }) {
@@ -179,6 +183,82 @@ impl MatrixSyncComposer<'_> {
         }
         self.ingress.record_sync_commit(accepted, duplicates);
         Ok(())
+    }
+
+    fn server_observations(
+        &self,
+        response: &SyncResponse,
+        observed_at_ms: u64,
+    ) -> Result<Vec<MatrixServerEventObservation>, MatrixSdkError> {
+        let mut observations = BTreeMap::new();
+        for (native_room_id, timeline) in response
+            .rooms
+            .joined
+            .iter()
+            .map(|(id, room)| (id, &room.timeline))
+            .chain(
+                response
+                    .rooms
+                    .left
+                    .iter()
+                    .map(|(id, room)| (id, &room.timeline)),
+            )
+        {
+            let room_id =
+                MatrixRoomId::parse(native_room_id.as_str()).map_err(|_| MatrixSdkError::Sync)?;
+            if !self.config.binding.allowed_rooms.contains(&room_id) {
+                return Err(MatrixSdkError::Sync);
+            }
+            for event in &timeline.events {
+                let raw = event.raw().json().get();
+                let value: Value =
+                    serde_json::from_str(raw).map_err(|_| MatrixSdkError::Sync)?;
+                if value.get("sender").and_then(Value::as_str)
+                    != Some(self.config.binding.expected_mxid.as_str())
+                {
+                    continue;
+                }
+                let event_id = value
+                    .get("event_id")
+                    .and_then(Value::as_str)
+                    .ok_or(MatrixSdkError::Sync)?;
+                let event_id =
+                    MatrixEventId::parse(event_id).map_err(|_| MatrixSdkError::Sync)?;
+                let transaction_id = value
+                    .pointer("/unsigned/transaction_id")
+                    .and_then(Value::as_str)
+                    .and_then(|value| MatrixTransactionId::parse(value).ok());
+                let event_type = value
+                    .get("type")
+                    .and_then(Value::as_str)
+                    .ok_or(MatrixSdkError::Sync)?;
+                let content = value.get("content").cloned().unwrap_or(Value::Null);
+                let identity = serde_json::to_vec(&(
+                    "hepta.matrix.server-observation.v1",
+                    room_id.as_str(),
+                    event_id.as_str(),
+                    self.config.binding.expected_mxid.as_str(),
+                    event_type,
+                    &content,
+                    transaction_id.as_ref().map(MatrixTransactionId::as_str),
+                ))
+                .map_err(|_| MatrixSdkError::Sync)?;
+                let observation = MatrixServerEventObservation {
+                    event_id: event_id.clone(),
+                    transaction_id,
+                    room_id: room_id.clone(),
+                    session_generation: self.config.matrix_generation,
+                    observation_digest: Sha256Digest::for_bytes(&identity).to_string(),
+                    observed_at_ms,
+                };
+                if let Some(previous) = observations.insert(event_id, observation.clone())
+                    && previous != observation
+                {
+                    return Err(MatrixSdkError::Sync);
+                }
+            }
+        }
+        Ok(observations.into_values().collect())
     }
 
     fn normalize(

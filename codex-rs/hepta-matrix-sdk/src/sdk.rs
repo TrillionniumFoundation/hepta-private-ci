@@ -6,6 +6,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_protocol::matrix_binding_digest;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixSyncCheckpoint;
 use codex_hepta_matrix_store::OutboxRecord;
@@ -25,6 +26,7 @@ use serde_json::Value;
 use tokio_util::sync::CancellationToken;
 use url::Url;
 
+use crate::MatrixDispatchContext;
 use crate::MatrixIngress;
 use crate::MatrixOutboundTransport;
 use crate::MatrixSdkPaths;
@@ -347,6 +349,28 @@ fn hepta_sync_token(checkpoint: Option<&MatrixSyncCheckpoint>) -> SyncToken {
 }
 
 impl MatrixOutboundTransport for MatrixSdkClient {
+    fn dispatch_context(
+        &self,
+        record: &OutboxRecord,
+    ) -> Result<MatrixDispatchContext, MatrixTransportError> {
+        if !self.config.binding.allowed_rooms.contains(&record.room_id)
+            || record.binding_revision != self.config.binding.revision
+            || record.generation != self.config.matrix_generation
+        {
+            return Err(MatrixTransportError::Permanent);
+        }
+        let authority_identity = matrix_binding_digest(&self.config.binding)
+            .map_err(|_| MatrixTransportError::Permanent)?
+            .to_string();
+        Ok(MatrixDispatchContext {
+            homeserver_id: self.config.binding.homeserver.as_str().to_string(),
+            device_id: self.config.binding.expected_device_id.as_str().to_string(),
+            session_generation: self.config.matrix_generation,
+            authority_identity,
+            authority_epoch: self.config.binding.revision,
+        })
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             if !self.config.binding.allowed_rooms.contains(&record.room_id)
