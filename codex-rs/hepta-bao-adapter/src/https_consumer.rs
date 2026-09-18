@@ -101,7 +101,27 @@ impl fmt::Debug for BaoClient {
 }
 
 impl BaoClient {
+    /// Construct an enrolled destination with no final-use consumers.
+    ///
+    /// This preserves the metadata/binding-only constructor. Secret-consuming
+    /// calls fail with `UnknownConsumer` until the host explicitly supplies a
+    /// registry through `new_with_consumers`.
     pub fn new(
+        endpoint: &str,
+        ca_pem: &[u8],
+        token: BaoToken,
+        timeout: Duration,
+    ) -> Result<Self, BaoClientError> {
+        Self::new_with_consumers(
+            endpoint,
+            ca_pem,
+            token,
+            timeout,
+            TrustedConsumerRegistry::default(),
+        )
+    }
+
+    pub fn new_with_consumers(
         endpoint: &str,
         ca_pem: &[u8],
         token: BaoToken,
