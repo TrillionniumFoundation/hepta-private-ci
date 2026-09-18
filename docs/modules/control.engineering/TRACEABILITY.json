@@ -130,6 +130,19 @@
       ],
       "state": "source_implemented",
       "capabilityCeiling": "assignment projection or bounded qualification only"
+    },
+    {
+      "designOperation": "evaluate_production_readiness",
+      "nativeModule": "control_engineering_v2.production",
+      "nativeSymbol": "evaluate_production_readiness",
+      "ownerSymbol": "evaluate_production_readiness",
+      "tests": [
+        "ProductionReadinessTests.test_complete_verified_fact_set_closes_both_readiness_dimensions",
+        "ProductionReadinessTests.test_product_caller_and_tests_gate_production_implementation",
+        "ProductionReadinessTests.test_independent_identity_and_live_delivery_gate_deployment"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "status projection only; no merge, deployment, promotion or release authority"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -149,6 +162,7 @@
     "tools/hepta-engineering-control/test_lane_g_hardening.py",
     "tools/hepta-engineering-control/test_lane_g_closure.py",
     "tools/hepta-engineering-control/test_lane_g_seal.py",
-    "tools/hepta-engineering-control/test_consolidated_engineering.py"
+    "tools/hepta-engineering-control/test_consolidated_engineering.py",
+    "tools/hepta-engineering-control/test_production_readiness.py"
   ]
 }
