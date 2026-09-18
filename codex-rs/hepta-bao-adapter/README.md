@@ -19,8 +19,7 @@ The adapter also exposes `BaoClient::request_secret_lease`,
 mutations, not aliases for KV reads. They use `LeaseRegistry` to durably record
 operation identity and lifecycle state before dispatch.
 
-Dynamic issuance calls `POST /v1/{provider_path}`; renewal and revocation call
-`PUT /v1/sys/leases/renew` and `PUT /v1/sys/leases/revoke`. An operation that
+Dynamic issuance explicitly selects bounded `GET` or `POST` for `/v1/{provider_path}`; renewal and revocation call `POST /v1/sys/leases/renew` and `POST /v1/sys/leases/revoke`. An operation that
 may have been applied but lacks a trustworthy acknowledgement moves to
 `Unknown`; the adapter never blindly retries it. Reconciliation requires a
 trusted observation of Active, Revoked, or NotApplied. Reusing an operation ID
