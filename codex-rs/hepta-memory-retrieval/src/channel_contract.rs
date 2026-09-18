@@ -281,3 +281,7 @@ impl fmt::Display for ChannelContractErrorV1 {
 }
 
 impl StdError for ChannelContractErrorV1 {}
+
+#[cfg(test)]
+#[path = "channel_contract_tests.rs"]
+mod tests;
