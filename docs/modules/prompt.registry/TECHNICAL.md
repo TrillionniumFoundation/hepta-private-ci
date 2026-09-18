@@ -70,10 +70,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `schema and migration owner`
+- `deterministic registry core`
+- `signed admission verifier`
+- `durable schema and migration owner`
 - `transactional writer`
 - `snapshot read port`
-- `integrity and lineage verifier`
+- `payload dereference and integrity verifier`
+- `immutable lifecycle lineage journal`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -124,13 +127,13 @@ Read-only data dependencies:
 
 For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+Migrations are deterministic and checksum-bound. The current source implementation stores a schema-versioned owner snapshot under a single-writer lock, verifies file ownership/mode/link count, writes `registry.next`, fsyncs it, atomically renames it to `registry.json`, and fsyncs the state directory before publishing the new in-process image. Reopen validates record relationships, lifecycle-event digests and the whole-registry digest. The v1 compatibility migration preserves lifecycle/revocation state and emits explicit imported-lineage events; migration never resets a revoked factor to an admitted state. Rollback across a schema boundary must restore state compatible with the binary.
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) keeps `PromptRegistry` as a deterministic in-memory domain core and makes `DurablePromptRegistry` the authoritative source-level writer. A mutation is applied to a cloned core, durably committed, and only then published to the live process image, so storage failure cannot expose an uncommitted state. The state directory admits one writer through a lock file. Runtime activation must instantiate this durable wrapper rather than the raw core.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -158,12 +161,17 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the registry owner for immutable factor/realization revisions and lifecycle updates. Optimizers receive read-only views. Revalidate revocation and model/tokenizer compatibility at actual delivery; an inserted factor is not automatically selected. A host must separately bind durable persistence rather than treating an in-memory registry image as a service.
+Use the registry owner for immutable factor/realization revisions and lifecycle updates. Optimizers receive read-only views. Revalidate revocation, context profile and exact model/tokenizer/template/tool-schema compatibility at actual payload dereference; an inserted factor is not automatically selected. Signed admission binds signer, reviewer, exact factor content, reviewed scope, evidence and a short validity interval, and admission lineage is retained in the lifecycle journal.
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs).
-- [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs).
+- [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs) — deterministic factor/realization core and immutable lifecycle journal.
+- [codex-rs/hepta-prompt-registry/src/admission.rs](../../../codex-rs/hepta-prompt-registry/src/admission.rs) — signed admission grants and opaque verified admission.
+- [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs) — single-writer durable owner, reopen validation and schema migration.
+- [codex-rs/hepta-prompt-registry/src/delivery.rs](../../../codex-rs/hepta-prompt-registry/src/delivery.rs) — payload-backed realization registration, supersession and dereference.
+- [codex-rs/hepta-prompt-registry/src/protocol.rs](../../../codex-rs/hepta-prompt-registry/src/protocol.rs) — native canonical JSON codecs for `PromptFactorV1` and `PromptRealizationV1`.
+- [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs) — context-profile-bound exact compatibility snapshots.
+- [codex-rs/hepta-intelligence/src/prompt_delivery.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery.rs) — source-level consumer that dereferences actual bytes before creating trusted `context.compiler` candidates.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -171,8 +179,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named case: `external_material_cannot_admit_itself`.
-- [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named case: `every_state_change_allocates_one_revision_and_identical_retry_does_not`.
+- [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named cases include `external_material_cannot_admit_itself`, signed admission lineage and expiry-at-use.
+- [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named cases cover one-revision mutations, exact tuples, required-factor starvation, canonical filter ordering, active-profile conflicts, explicit supersession and exact payload dereference.
+- [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs); unit cases cover schema migration and restart/non-resurrection of revocation.
+- [codex-rs/hepta-prompt-registry/src/protocol.rs](../../../codex-rs/hepta-prompt-registry/src/protocol.rs); unit cases cover canonical JSON round trips and unknown-field rejection.
+- [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs); cross-crate cases bind the stored payload bytes and admission lineage into `context.compiler`.
 
 In `codex-rs`, run `just test -p codex-hepta-prompt-registry`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md) separately labels target acceptance designs.
 
@@ -198,7 +209,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. The current source tree contains a named source-level caller in `hepta-intelligence::compile_prompt_registry_v2`, but that does not establish a running product host, model dispatch or terminal provider observation. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `prompt.registry`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -328,4 +339,4 @@ The bootstrap source-location obligation for `prompt.registry` is implemented by
 
 - `codex-rs/hepta-prompt-registry`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The source now contains the durable owner, authenticated admission, payload-backed realization delivery, canonical contract codecs and a named source-level composition caller; these facts advance source implementation only. They grant no running-host, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
