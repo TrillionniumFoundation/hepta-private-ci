@@ -266,20 +266,28 @@ impl CognitiveStore {
 
             publish_active_database(&canonical_root, &candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            let open_guard = exclusive_guard
-                .downgrade_shared()
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            // Keep the recovery fence exclusive for this recovered writer
+            // generation. Callers that need additional handles clone this
+            // store; reopening by path would otherwise create a second writer
+            // immediately after a security-sensitive recovery.
             Ok(CognitiveStore {
                 pool,
                 owner_agent_id: layout.agent_id().clone(),
                 path: candidate.clone(),
-                _open_guard: Some(open_guard),
+                _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
             })
         }
         .await;
 
         if result.is_err() {
-            cleanup_recovery_candidate(&candidate);
+            // A pointer rename can succeed while the following directory fsync
+            // reports an error. Never delete a candidate that may already be
+            // the active generation; leaving an unreferenced private candidate
+            // is safer than creating a dangling active pointer.
+            let active = resolve_active_database_path(&canonical_root).ok();
+            if active.as_deref() != Some(candidate.as_path()) {
+                cleanup_recovery_candidate(&candidate);
+            }
         }
         result
     }
