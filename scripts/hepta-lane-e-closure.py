@@ -784,6 +784,21 @@ def verify_workflow(findings: Findings) -> None:
         "synthetic-merge must be PR-only because BASE_SHA is PR-scoped",
     )
     findings.require(
+        bool(re.search(
+            r"^  sign-evidence:\n    if: github\.event_name == 'push'\n    needs: rust-closure",
+            text,
+            re.MULTILINE,
+        )),
+        "workflow_signing_scope",
+        "Sigstore evidence signing must run only after successful trusted-branch rust closure",
+    )
+    rust_job = text.split("  rust-closure:", 1)[1].split("\n  sign-evidence:", 1)[0]
+    findings.require(
+        "id-token: write" not in rust_job,
+        "workflow_oidc_exposure",
+        "pull-request test code must not receive OIDC id-token write permission",
+    )
+    findings.require(
         not TEMPORARY_WORKFLOW_PATH.exists(),
         "temporary_workflow_present",
         "temporary generated-file materializer must not remain in the candidate",
