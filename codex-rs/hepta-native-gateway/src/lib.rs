@@ -538,6 +538,32 @@ mod tests {
     }
 
     #[test]
+    fn keyring_bearer_mode_rejects_unauthenticated_clients() -> Result<()> {
+        let runtime = fixture_runtime()?;
+        let token = "A".repeat(48);
+        let denied = route_request(
+            b"GET /healthz HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            &runtime,
+            Some(&token),
+        )?;
+        assert!(denied.starts_with(b"HTTP/1.1 401 Unauthorized"));
+
+        let request = format!(
+            "GET /healthz HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer {token}\r\n\r\n"
+        );
+        let allowed = route_request(request.as_bytes(), &runtime, Some(&token))?;
+        assert!(allowed.starts_with(b"HTTP/1.1 200 OK"));
+        let body_start = allowed
+            .windows(4)
+            .position(|window| window == b"\r\n\r\n")
+            .context("authenticated health response headers")?
+            + 4;
+        let value: serde_json::Value = serde_json::from_slice(&allowed[body_start..])?;
+        assert_eq!(value["native_auth"], "keyring_bearer_v1");
+        Ok(())
+    }
+
+    #[test]
     fn truthy_values_are_explicit() {
         for value in ["1", "true", "TRUE", "yes", "on"] {
             assert!(truthy(value));
