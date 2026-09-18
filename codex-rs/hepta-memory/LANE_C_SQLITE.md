@@ -86,8 +86,9 @@ proofs and deletion frontiers before those limits can be increased safely.
 
 `lane_c_snapshot_tests.rs` exercises actual owner writes, correction ancestry,
 reopen, committed deletions, scope and verification/time filters, context
-binding, and restoration of an older valid SQLite backup. Agentd's
-`cognitive_context_tests.rs` additionally exercises the production authoritative
-provider against real SQLite and requires final-use failure after frontier,
-authority-epoch or lease drift. Run focused tests with
+binding, and restoration of an older valid SQLite backup. Agentd's `cognitive_context_tests.rs` additionally exercises the production
+authoritative provider against real SQLite and requires final-use failure after
+frontier, authority-epoch or lease drift. `cognitive_context_budget_tests.rs`
+executes the full production `read()` path with a deterministic mid-flight owner
+revision change and requires the delivery fence to fail closed. Run focused tests with
 `just test -p codex-hepta-memory -p codex-hepta-cognitive-read -p codex-hepta-agentd`.
