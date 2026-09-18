@@ -96,7 +96,7 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
         envelope.payload_digest().to_string()
     );
 
-    // Mutating the payload without changing the signed digest must be rejected
+    // Mutating the payload without changing the payload digest must be rejected
     // by both language boundaries.
     let mut tampered = frame.clone();
     *tampered.last_mut().expect("non-empty payload") ^= 0x01;
