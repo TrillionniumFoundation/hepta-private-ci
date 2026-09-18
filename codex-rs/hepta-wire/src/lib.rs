@@ -43,5 +43,6 @@ pub use stream::StreamDecodeError;
 pub use stream::WireReadError;
 pub use stream::WireStreamDecoder;
 pub use stream::read_frame;
+pub use stream::read_frame_for;
 pub use v2::WIRE_VERSION_V2;
 pub use v2::WireEnvelopeV2;
