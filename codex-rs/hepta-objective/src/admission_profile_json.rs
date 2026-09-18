@@ -387,3 +387,7 @@ fn constraint_class(value: &str) -> Result<ConstraintClass, ObjectiveAdmissionPr
         _ => Err(ObjectiveAdmissionProfileJsonError::InvalidField("constraint class")),
     }
 }
+
+#[cfg(test)]
+#[path = "admission_profile_json_tests.rs"]
+mod tests;
