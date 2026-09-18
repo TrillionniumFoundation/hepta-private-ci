@@ -61,7 +61,10 @@ def run_mutation_testing(
     if len(mutants) != len(values):
         raise EngineeringError("mutation_probe_deduplicated")
 
-    check_values = tuple(tuple(item for item in check) for check in checks)
+    raw_checks = bounded_tuple(
+        checks, 64, "check_limit_exceeded"
+    )
+    check_values = tuple(tuple(item for item in check) for check in raw_checks)
     if not check_values:
         raise EngineeringError("invalid_check")
     killed: list[str] = []
