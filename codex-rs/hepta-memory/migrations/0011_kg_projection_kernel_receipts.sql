@@ -57,6 +57,7 @@ WHEN NOT EXISTS (
     FROM kg_projection_generation_receipts AS r
     WHERE r.projection_scope = NEW.projection_scope
       AND r.generation = NEW.generation
+      AND r.input_heads_sha256 = NEW.source_snapshot_sha256
       AND r.node_count = NEW.node_count
       AND r.edge_count = NEW.edge_count
       AND r.node_count = (
