@@ -362,6 +362,11 @@ def _verify_product_receipt(
         or canonical.get("packageId") != CANONICAL_ENGINEERING_PACKAGE
         or canonical.get("state") != "source_implemented"
         or canonical.get("authorityDelta") != "none"
+        or canonical.get("owner") != "developer-productivity"
+        or canonical.get("deputy") != "architecture"
+        or canonical.get("sourceMutationAllowed") is not True
+        or canonical.get("allowedWritePaths")
+        != ["tools/hepta-engineering-control/**"]
         or canonical.get("developmentAfter")
         != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
         or canonical.get("activationAfter")
@@ -424,8 +429,10 @@ def verify_product_receipt_pair(
 
     source_identity = source_head["ciIdentity"]
     merge_identity = base_merge["ciIdentity"]
-    assert isinstance(source_identity, Mapping)
-    assert isinstance(merge_identity, Mapping)
+    if not isinstance(source_identity, Mapping) or not isinstance(
+        merge_identity, Mapping
+    ):
+        raise ValueError("product_receipt_pair_ci_identity")
     for identity in (source_identity, merge_identity):
         if (
             identity.get("repository") != expected_repository
@@ -473,8 +480,10 @@ def verify_product_receipt_pair(
 
     source_canonical = source_head["canonicalWorkPackage"]
     merge_canonical = base_merge["canonicalWorkPackage"]
-    assert isinstance(source_canonical, Mapping)
-    assert isinstance(merge_canonical, Mapping)
+    if not isinstance(source_canonical, Mapping) or not isinstance(
+        merge_canonical, Mapping
+    ):
+        raise ValueError("product_receipt_pair_canonical_drift")
     for key in ("blobOid", "registryDigest", "packageDigest"):
         if source_canonical.get(key) != merge_canonical.get(key):
             raise ValueError("product_receipt_pair_canonical_drift")
@@ -499,9 +508,6 @@ def verify_product_receipt_pair(
         "mergeAuthority": False,
         "releaseAuthority": False,
     }
-    pair["pairDigest"] = semantic_pair_digest = hashlib.sha256(
-        json.dumps(pair, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    ).hexdigest()
     expected_readiness_digest = hashlib.sha256(
         json.dumps(
             {
@@ -513,6 +519,9 @@ def verify_product_receipt_pair(
         ).encode("utf-8")
     ).hexdigest()
     pair["readinessReceiptSetDigest"] = expected_readiness_digest
+    pair["pairDigest"] = semantic_pair_digest = hashlib.sha256(
+        json.dumps(pair, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     if semantic_pair_digest == expected_readiness_digest:
         raise ValueError("product_receipt_pair_domain_collision")
     return pair
