@@ -13,6 +13,7 @@ mod terminal;
 
 pub use install::install;
 pub use install::install_with_mode;
+pub use install::install_with_mode_and_qualification_authority;
 pub use state::GovernanceState;
 
 #[cfg(test)]
