@@ -166,13 +166,21 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#8-current-native-implementation) identifies the actual state owner, persistent surfaces and lock/transaction boundary. Product composition uses `LedgerWriter`; it consumes either `DurableLedger` or `SegmentedLedger`, one `ActivatedLearningTrustV1`, and a separately durable `LedgerWitnessStore`. The writer owns the backend handle while composed, so the same caller cannot bypass authenticated V2 admission through a raw append surface.
+
+One append transaction prepares and validates the full semantic event, compares the exact predecessor, writes one canonical frame, syncs the ledger, publishes the in-memory state, then advances and syncs the independent witness before returning success. Atomic conserved credit is one `CreditBatchV2` event. Outcome correction accepts only the current same-episode predecessor head, so a fork, stale branch or cycle cannot commit. Segment rotation runs through `LedgerWriter::rotate_segment` and witnesses the new topology before reporting success.
+
+Legacy `LearningLedger`, `DurableLedger`, `SegmentedLedger` and `DurableLearningJournal` APIs remain readable compatibility/testing surfaces. New composed callers use `LedgerWriter`; compatibility availability is not permission to create a second production writer.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md).
+
+Semantic rejection writes no bytes. Ledger I/O uncertainty poisons the backend. If the ledger frame is durable but independent witness persistence is uncertain, `LedgerWriter` returns `IndeterminateAfterLedgerCommit`; reconciliation reuses the original identity, predecessor and digest. A failed anchored recovery never falls back to an unanchored open. A verified rebuildable index may accelerate lookup, but mismatch discards the index and falls back to canonical replay.
+
+Logical revocation and `UnlearningLineageEventV1` preserve audit bytes while excluding the source and causal descendants from the active projection. They do not prove physical erasure, backup deletion or parameter unlearning. A source library or fixture cannot stand in for host-owned physical durability, backup erasure or external reconciliation.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -199,7 +207,9 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use DurableLedger with its native codec, owner lock and independently retained anchor. Inspect and reopen existing state before admitting new records; failure of anchored recovery is not permission to fall back to unanchored opening. Segment rotation, retention and backup must preserve acknowledged lineage.
+Use `LedgerWriter` for composed writes. The writer combines the native durable backend, activated signer distribution and independently retained `LedgerWitnessStore`. Inspect and reopen existing state before admitting new records; failure of anchored recovery is not permission to fall back to unanchored opening. Segment rotation, retention and backup must preserve both record and topology frontiers. Host directory synchronization, witness isolation, encryption and physical durability remain deployment-owner obligations.
+
+`LedgerIndexCheckpointV1` is rebuildable acceleration state. It binds the exact ledger anchor, record index, active projection, correction heads and revocation/unlearning frontier and is verified by full deterministic regeneration before use.
 
 Current operating and state-format references:
 
@@ -214,8 +224,14 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-learning-ledger/src/durable_tests.rs](../../../codex-rs/hepta-learning-ledger/src/durable_tests.rs); named case: `persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants`.
-- [codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs](../../../codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs); named case: `ledger_03_rejects_shared_credential_chain`.
+- [codex-rs/hepta-learning-ledger/src/durable_tests.rs](../../../codex-rs/hepta-learning-ledger/src/durable_tests.rs); durable commit/recovery and legacy compatibility.
+- [codex-rs/hepta-learning-ledger/src/ledger_tests.rs](../../../codex-rs/hepta-learning-ledger/src/ledger_tests.rs); correction-head, atomic-credit and unlearning non-resurrection invariants.
+- [codex-rs/hepta-learning-ledger/src/production_tests.rs](../../../codex-rs/hepta-learning-ledger/src/production_tests.rs); signed production writer, independent witness, derived dataset freeze and reopen.
+- [codex-rs/hepta-learning-ledger/src/witness_tests.rs](../../../codex-rs/hepta-learning-ledger/src/witness_tests.rs); independent witness recovery and monotonic frontier checks.
+- [codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs](../../../codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs); monotonic signer-distribution rotation.
+- [codex-rs/hepta-learning-ledger/src/protocol_tests.rs](../../../codex-rs/hepta-learning-ledger/src/protocol_tests.rs); registered protocol round trips and deny-unknown decoding.
+- [codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs](../../../codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs); content-addressed index verification and bounded lookup.
+- [codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs](../../../codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs); pure V2 validation compatibility.
 
 In `codex-rs`, run `just test -p codex-hepta-learning-ledger`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md) separately labels target acceptance designs.
 
@@ -240,7 +256,11 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition, qualification, host establishment and release are separate dimensions and must not be collapsed into one status.
+
+At the source level, the module now contains the production-facing writer, authenticated durable decision/outcome/credit/unlearning facts, ledger-derived dataset freeze, versioned trust activation, independent witness, canonical protocol adapters and verifiable index checkpoint. The existing evaluated-shadow qualification consumer is source-composed through `LedgerWriter`.
+
+This does **not** establish a live product caller or production writer deployment. The selected host must still provide current trust-distribution transport/key custody, exclusive physical file/directory ownership, independent witness placement, live outcome observers and target-host measurements. Exact-candidate CI is qualification evidence only when the corresponding run passes; independent acceptance, activation, canary, selection, promotion and release remain externally governed.
 
 For `learning.ledger`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -429,4 +449,4 @@ The bootstrap source-location obligation for `learning.ledger` is implemented by
 
 - `codex-rs/hepta-learning-ledger`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and the ledger/Lane-E/Lane-F workflows, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The native source now includes `LedgerWriter`, `LedgerWitnessStore`, `ActivatedLearningTrustV1`, registered protocol adapters and `LedgerIndexCheckpointV1`. This receipt is source implementation evidence only; the exact PR head must still pass current CI before source qualification is claimed. It grants no live product-writer deployment, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
