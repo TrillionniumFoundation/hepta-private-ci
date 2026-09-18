@@ -65,9 +65,10 @@ has only one `support_digest` and one runtime predecessor edge. The V3-to-V1
 publication bridge therefore accepts only one source dataset for dataset-derived
 artifacts, preserves that exact digest as V1 revocation support, and rejects
 multi-dataset or multi-predecessor manifests instead of silently dropping
-revocation or eligibility edges. Its V1 event identity is derived from the host
-operation identity plus the V3 admission digest, so the registry chain still
-commits the exact withdrawal-bound admission.
+revocation or eligibility edges. The V1 event identity remains the exact host
+operation identity. The complete withdrawal-bound admission is instead committed
+by the deterministic publication-contract binding carried by both the durable
+registry snapshot receipt and the current-head witness receipt.
 
 `DatasetWithdrawalRegistry` is append-only, digest-chained and replayable from a
 snapshot. A production V3 registry is scoped by `DatasetWithdrawalDomainV1`;
