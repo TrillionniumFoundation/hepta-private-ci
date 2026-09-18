@@ -31,6 +31,7 @@ jobs:
       SOURCE_SHA: ${{ github.sha }}
       BUILD_RUN_ID: ${{ inputs.build_run_id }}
       EXPECTED_WORKER_SHA256: ${{ inputs.worker_sha256 }}
+      SERVO_PIN: 84bcc9ac701874fa9819e5cdee06356b961d736c
     steps:
       - name: Reject non-main or malformed qualification requests
         shell: bash
@@ -65,6 +66,32 @@ jobs:
           bwrap --version > deployment-evidence/bwrap-version.txt
           sha256sum "$(command -v bwrap)" > deployment-evidence/bwrap.sha256
 
+      - name: Verify exact worker build run provenance
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, urllib.request
+          request = urllib.request.Request(
+              f"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/{os.environ['BUILD_RUN_ID']}",
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                  "X-GitHub-Api-Version": "2022-11-28",
+              },
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              run = json.load(response)
+          assert run["head_sha"] == os.environ["SOURCE_SHA"]
+          assert run["head_branch"] == "main"
+          assert run["name"] == "Hepta Browser Servo worker dev"
+          assert run["path"] == ".github/workflows/hepta-browser-servo-worker-dev.yml"
+          assert run["conclusion"] == "success"
+          assert run["event"] in {"push", "workflow_dispatch"}
+          PY
+
       - name: Download exact worker evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
@@ -80,13 +107,24 @@ jobs:
           set -euo pipefail
           test -s worker-evidence/build-receipt.json
           test -s worker-evidence/hepta-servo-worker
+          test -s worker-evidence/Cargo.lock
+          test -s worker-evidence/hepta-servo-worker.spdx.json
           actual="$(sha256sum worker-evidence/hepta-servo-worker | awk '{print $1}')"
           test "$actual" = "$EXPECTED_WORKER_SHA256"
           python3 - <<'PY'
-          import json, os, pathlib
-          receipt = json.loads(pathlib.Path('worker-evidence/build-receipt.json').read_text())
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('worker-evidence')
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          receipt = json.loads((root / 'build-receipt.json').read_text())
           assert receipt['sourceSha'] == os.environ['SOURCE_SHA']
+          assert receipt['sourceTree'] == subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          assert receipt['servoPin'] == os.environ['SERVO_PIN']
+          assert receipt['cargoLockCommitted'] is True
+          assert receipt['cargoLockSha256'] == digest(root / 'Cargo.lock')
           assert receipt['workerSha256'] == os.environ['EXPECTED_WORKER_SHA256']
+          assert receipt['workerSha256'] == digest(root / 'hepta-servo-worker')
+          assert receipt['sbomSha256'] == digest(root / 'hepta-servo-worker.spdx.json')
           assert receipt['reproducibleIndependentBuilds'] is True
           assert receipt['linuxSandboxProbe']['externalNetworkDenied'] is True
           assert receipt['linuxSandboxProbe']['hostSecretHidden'] is True
