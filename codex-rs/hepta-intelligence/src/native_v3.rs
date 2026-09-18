@@ -450,43 +450,50 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         input: &CompositionPortInputV3,
     ) -> Result<CompositionPortReceiptV3, PortFailureV1> {
         let objective_digest = self.objective_digest(input)?;
-        let intuition = self.intuition.as_ref().ok_or_else(|| {
-            native_failure(
-                input,
-                PortFailureClassV1::Rejected,
-                "intuition-not-decided",
-            )
-        })?;
-        let evaluation = self.evaluation.as_ref().ok_or_else(|| {
-            native_failure(
-                input,
-                PortFailureClassV1::Rejected,
-                "evaluation-not-admitted",
-            )
-        })?;
-        let selected = match &intuition.disposition {
-            CalibratedDispositionV1::Selected(candidate) => candidate.clone(),
-            CalibratedDispositionV1::Abstained(_) | CalibratedDispositionV1::SlowPath(_) => {
-                return Err(native_failure(
+        let (selected, propensity, intuition_digest) = {
+            let intuition = self.intuition.as_ref().ok_or_else(|| {
+                native_failure(
                     input,
                     PortFailureClassV1::Rejected,
-                    "non-selected-decision",
-                ));
-            }
+                    "intuition-not-decided",
+                )
+            })?;
+            let selected = match &intuition.disposition {
+                CalibratedDispositionV1::Selected(candidate) => candidate.clone(),
+                CalibratedDispositionV1::Abstained(_) | CalibratedDispositionV1::SlowPath(_) => {
+                    return Err(native_failure(
+                        input,
+                        PortFailureClassV1::Rejected,
+                        "non-selected-decision",
+                    ));
+                }
+            };
+            let propensity = intuition
+                .propensities
+                .iter()
+                .find(|row| row.candidate_id == selected)
+                .map(|row| row.probability)
+                .filter(|value| value.raw() > 0)
+                .ok_or_else(|| {
+                    native_failure(
+                        input,
+                        PortFailureClassV1::Rejected,
+                        "missing-propensity",
+                    )
+                })?;
+            (selected, propensity, intuition.receipt_digest)
         };
-        let propensity = intuition
-            .propensities
-            .iter()
-            .find(|row| row.candidate_id == selected)
-            .map(|row| row.probability)
-            .filter(|value| value.raw() > 0)
+        let evaluation_digest = self
+            .evaluation
+            .as_ref()
             .ok_or_else(|| {
                 native_failure(
                     input,
                     PortFailureClassV1::Rejected,
-                    "missing-propensity",
+                    "evaluation-not-admitted",
                 )
-            })?;
+            })?
+            .evidence_digest;
         let (episode_id, policy_id, expected_head) = {
             let inputs = self.inputs_mut(input, "missing-ledger-input")?;
             (
@@ -511,8 +518,8 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         candidates.push(slow_path);
         let mut support = b"hepta.intelligence.native-decision.v3\0".to_vec();
         support.extend_from_slice(input.predecessor_digest.as_array());
-        support.extend_from_slice(intuition.receipt_digest.as_array());
-        support.extend_from_slice(evaluation.evidence_digest.as_array());
+        support.extend_from_slice(intuition_digest.as_array());
+        support.extend_from_slice(evaluation_digest.as_array());
         support.extend_from_slice(self.candidate_set.digest().as_array());
         let decision = EpisodeDecision {
             record_id: input.run_id.clone(),
