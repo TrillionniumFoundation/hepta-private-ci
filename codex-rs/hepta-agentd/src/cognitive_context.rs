@@ -12,7 +12,15 @@ use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_memory::MemoryRevalidationBinding;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_memory::RevalidationStatus;
+use codex_hepta_memory_retrieval::MAX_GENERATION_BOUND_RESULTS;
+use codex_hepta_memory_retrieval::RetrievalCandidate as BoundedRetrievalCandidate;
+use codex_hepta_memory_retrieval::RetrievalRequest as BoundedRetrievalRequest;
+use codex_hepta_memory_retrieval::retrieve_v2;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -68,8 +76,11 @@ pub(crate) async fn read(
             maximum_encoded_bytes: 1024 * 1024,
         })
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
-    let candidates = store
-        .retrieve_memory_candidates(&access, &RetrievalRequest::new(query, now_seconds()?))
+    // The SQLite owner is the only candidate generator. memory.retrieval then
+    // binds and deterministically ranks the complete bounded owner observation;
+    // the optional learned ranker may only permute that admitted result set.
+    let observation = store
+        .observe_memory_retrieval(&access, &RetrievalRequest::new(query, now_seconds()?))
         .await?;
     let mut response = CognitiveContextSnapshot {
         snapshot_digest: read.snapshot_digest().to_string(),
@@ -78,30 +89,86 @@ pub(crate) async fn read(
         items: Vec::new(),
         plan: None,
     };
-    // Admit the whole bounded owner cut before applying the response byte
-    // budget.  Ranking must see every admitted candidate; otherwise a large
-    // low-ranked record can hide the learned winner before the ranker runs.
-    let mut admitted_items = Vec::new();
-    for candidate in candidates.candidates {
-        let memory = candidate.memory;
-        // The legacy search ranks candidates; the new owner cut admits only
-        // the exact verified revision and content bound by the read port.
-        let accepted = read.records().iter().any(|record| {
-            record.record_id.as_str() == memory.id.memory_id.as_str()
-                && record.revision.get() == memory.id.revision
-                && record.content_digest.to_string() == memory.content_sha256.as_str()
-                && memory.scope == scope
-        });
-        if !accepted {
+    // Intersect every owner-observed candidate with the exact Lane C read cut
+    // before ranking. The scalar score below is the owner's already-aggregated
+    // RRF score; no synthetic per-channel semantics are invented here.
+    let mut bounded_candidates = Vec::new();
+    let mut candidate_bindings = Vec::<MemoryRevalidationBinding>::new();
+    for observed in observation.candidates() {
+        let Some(record) = read.records().iter().find(|record| {
+            record.record_id.as_str() == observed.revalidation.memory.memory_id.as_str()
+                && record.revision.get() == observed.revalidation.memory.revision
+                && record.content_digest.to_string()
+                    == observed.revalidation.content_sha256.as_str()
+        }) else {
             continue;
-        }
-        let item = CognitiveContextItem {
-            memory_id: memory.id.memory_id.as_str().to_string(),
-            revision: memory.id.revision,
-            content: memory.content,
-            content_sha256: memory.content_sha256.as_str().to_string(),
         };
-        admitted_items.push(item);
+        let owner_score = i64::try_from(observed.reciprocal_rank_score).map_err(|error| {
+            CognitiveStoreError::Corrupt(format!("retrieval score overflow: {error}"))
+        })?;
+        bounded_candidates.push(BoundedRetrievalCandidate {
+            record: record.clone(),
+            snapshot_digest: read.snapshot_digest(),
+            lexical_score: FixedQ32::from_raw(owner_score),
+            graph_score: FixedQ32::ZERO,
+            freshness_score: FixedQ32::ZERO,
+        });
+        candidate_bindings.push(observed.revalidation.clone());
+    }
+
+    let mut query_binding = b"hepta.agentd.owner-retrieval.v1".to_vec();
+    query_binding.extend_from_slice(query.as_bytes());
+    query_binding.extend_from_slice(observation.observation_sha256().as_str().as_bytes());
+    let query_digest = Digest32::of_bytes(&query_binding);
+    let query_id = StableId::new(format!("query:{query_digest}"))
+        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    let bounded = retrieve_v2(BoundedRetrievalRequest {
+        query_id,
+        query_digest,
+        snapshot_digest: read.snapshot_digest(),
+        maximum_results: MAX_GENERATION_BOUND_RESULTS,
+        candidates: bounded_candidates,
+    })
+    .map_err(|error| CognitiveStoreError::Corrupt(format!("bounded retrieval failed: {error}")))?;
+
+    let mut ranked_bindings = Vec::with_capacity(bounded.retrieval.results.len());
+    for result in &bounded.retrieval.results {
+        let Some(binding) = candidate_bindings
+            .iter()
+            .find(|binding| binding.memory.memory_id.as_str() == result.record_id.as_str())
+        else {
+            return Err(CognitiveStoreError::Corrupt(
+                "bounded retrieval returned an unknown owner candidate".to_string(),
+            )
+            .into());
+        };
+        ranked_bindings.push(binding.clone());
+    }
+
+    // Resolve content and revalidate source/citation/KG support for all
+    // deliverable candidates in one SQLite read transaction.
+    let ranked_statuses = store
+        .revalidate_memory_candidates(&access, &ranked_bindings, now_seconds()?)
+        .await?;
+    let mut admitted_items = Vec::with_capacity(ranked_statuses.len());
+    for status in ranked_statuses {
+        match status {
+            RevalidationStatus::Current(explanation) => {
+                let memory = explanation.memory;
+                admitted_items.push(CognitiveContextItem {
+                    memory_id: memory.id.memory_id.as_str().to_string(),
+                    revision: memory.id.revision,
+                    content: memory.content,
+                    content_sha256: memory.content_sha256.as_str().to_string(),
+                });
+            }
+            RevalidationStatus::Stale(drift) => {
+                return Err(CognitiveStoreError::Conflict(format!(
+                    "retrieval candidate became stale before ranking: {drift:?}"
+                ))
+                .into());
+            }
+        }
     }
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
@@ -137,6 +204,34 @@ pub(crate) async fn read(
             break;
         }
     }
+    // Revalidate the exact post-ranking attachment set. Tail candidates do not
+    // participate in this gate, while any correction, deletion, citation drift
+    // or KG-generation change affecting a selected item fails the read closed.
+    let mut selected_bindings = Vec::with_capacity(response.items.len());
+    for item in &response.items {
+        let Some(binding) = candidate_bindings.iter().find(|binding| {
+            binding.memory.memory_id.as_str() == item.memory_id
+                && binding.memory.revision == item.revision
+        }) else {
+            return Err(CognitiveStoreError::Corrupt(
+                "selected context item has no owner revalidation binding".to_string(),
+            )
+            .into());
+        };
+        selected_bindings.push(binding.clone());
+    }
+    for status in store
+        .revalidate_memory_candidates(&access, &selected_bindings, now_seconds()?)
+        .await?
+    {
+        if let RevalidationStatus::Stale(drift) = status {
+            return Err(CognitiveStoreError::Conflict(format!(
+                "selected memory changed before context delivery: {drift:?}"
+            ))
+            .into());
+        }
+    }
+
     let encoded_context = serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
     let now_micros = u64::try_from(
