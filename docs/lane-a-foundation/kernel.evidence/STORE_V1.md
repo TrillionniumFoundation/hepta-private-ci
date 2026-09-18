@@ -15,6 +15,7 @@ ordered and checksum-bound:
 8. `0008_provider_effect_ack_source.sql`
 9. `0009_authbus_replay.sql`
 10. `0010_authbus_outbox.sql`
+11. `0011_qualification_evidence.sql`
 
 Unknown, missing, incomplete, failed or checksum-mismatched migration rows cause
 store open to **fail closed**. They are never treated as an empty, current or
@@ -23,8 +24,11 @@ repairable evidence lineage.
 ## Core integrity model
 
 Governance decisions and receipts use unique identities, phase constraints,
-payload hashes, foreign keys and update/delete denial triggers. Provider effect
-intent, acknowledgement and uncertainty rows are separate immutable facts.
+payload hashes, foreign keys and update/delete denial triggers. Qualification
+evidence adds exact candidate commit/tree, registered claim protocol, issuer
+principal/controller/key-chain bindings, Ed25519 signatures and immutable
+predecessor/revocation/supersession links. Provider effect intent,
+acknowledgement and uncertainty rows are separate immutable facts.
 Transport acceptance is not inferred as terminal application; uncertainty is a
 first-class record.
 
@@ -44,8 +48,10 @@ returns. `enqueue_authbus_message` replaces direct admission for durable deliver
 
 ## Backup, restore and retention requirements
 
-Current source does not implement an external monotonic checkpoint or managed
-retention service. A production operator must therefore:
+Current source verifies a signed append-only qualification lineage but does not
+pretend that the local SQLite file is its own external anti-rollback oracle.
+`ANTI_ROLLBACK_V1.md` defines the required externally retained monotonic frontier
+and complete-database replacement procedure. A production operator must therefore:
 
 - copy a transactionally consistent database and associated checkpoint;
 - verify migration checksums and integrity after restore;

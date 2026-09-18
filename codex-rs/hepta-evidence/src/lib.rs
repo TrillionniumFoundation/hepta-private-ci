@@ -13,6 +13,7 @@ mod provider_effect_store;
 mod provider_insert;
 mod provider_record;
 mod provider_store;
+mod qualification_store;
 mod schema_validation;
 mod store;
 mod summary;
@@ -47,6 +48,23 @@ pub use provider_effect_store::StoredProviderEffectUncertainty;
 pub use provider_store::StoredProviderAttemptEvidence;
 pub use provider_store::StoredProviderIntent;
 pub use provider_store::StoredProviderReceipt;
+pub use qualification_store::AuthenticatedEvidenceIssuerV1;
+pub use qualification_store::EvidenceDisposition;
+pub use qualification_store::EvidenceId;
+pub use qualification_store::IndependentDecisionReceiptV1;
+pub use qualification_store::QUALIFICATION_EVIDENCE_MAX_ASSETS;
+pub use qualification_store::QUALIFICATION_EVIDENCE_MAX_CHAIN_EDGES;
+pub use qualification_store::QUALIFICATION_EVIDENCE_MAX_ENCODED_BYTES;
+pub use qualification_store::QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS;
+pub use qualification_store::QUALIFICATION_EVIDENCE_SCHEMA_VERSION;
+pub use qualification_store::QualificationCandidateV1;
+pub use qualification_store::QualificationClaimClassV1;
+pub use qualification_store::QualificationEvidenceDecisionV1;
+pub use qualification_store::QualificationEvidenceEnvelopeV1;
+pub use qualification_store::QualificationEvidenceReferenceV1;
+pub use qualification_store::QualificationEvidenceRoleV1;
+pub use qualification_store::QualificationEvidenceStore;
+pub use qualification_store::StoredQualificationEvidence;
 pub use store::AppendDisposition;
 pub use store::HeptaEvidenceStore;
 pub use store::StoredActionEvidence;
@@ -100,3 +118,7 @@ mod authbus_outbox_tests;
 #[cfg(test)]
 #[path = "authbus_outbox_quarantine_tests.rs"]
 mod authbus_outbox_quarantine_tests;
+
+#[cfg(test)]
+#[path = "qualification_store_tests.rs"]
+mod qualification_store_tests;

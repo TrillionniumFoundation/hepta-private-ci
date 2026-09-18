@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.kernel-evidence.external-checkpoint.v1",
+  "title": "kernel.evidence external anti-rollback checkpoint V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "sourceCommit",
+    "sourceTree",
+    "migrationLedgerSha256",
+    "databaseFilename",
+    "tableHighWatermarks",
+    "frontierSha256",
+    "revocationFrontierSha256",
+    "backupGenerationId",
+    "backupArtifactSha256",
+    "observedUnixMs",
+    "retentionPolicyRevision",
+    "signerPrincipalId",
+    "signingIdentitySha256",
+    "credentialChainSha256",
+    "verifyingKeyHex",
+    "detachedSignatureHex"
+  ],
+  "properties": {
+    "schema": {
+      "const": "hepta.kernel-evidence.external-checkpoint.v1"
+    },
+    "sourceCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "sourceTree": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "migrationLedgerSha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "databaseFilename": {
+      "const": "hepta_evidence_2.sqlite"
+    },
+    "tableHighWatermarks": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "frontierSha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "latestQualificationEvidenceId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "latestQualificationRecordSha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revocationFrontierSha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "backupGenerationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "backupArtifactSha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "predecessorCheckpointSha256": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "observedUnixMs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "retentionPolicyRevision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "signerPrincipalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "signingIdentitySha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "credentialChainSha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "verifyingKeyHex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "detachedSignatureHex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{128}$"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

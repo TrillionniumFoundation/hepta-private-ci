@@ -233,20 +233,20 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0010",
-        "qualification": "source_tests_present",
+        "durability": "sqlite_migrations_0001_0011",
+        "qualification": "target_api_source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "governance and historical evidence storage",
         "provider intent terminal and effect evidence storage",
+        "signed exact-candidate qualification evidence append/query/chain verification",
         "schema migration and integrity validation"
       ],
       "targetOnlyCapabilities": [
-        "external monotonic checkpoint",
-        "cryptographic database replacement detection",
-        "signed evaluator-role and independence verification",
+        "external monotonic checkpoint anchor",
+        "managed backup retention and complete-database replacement oracle",
         "promotion or release authority"
       ],
       "sourceAnchors": [
@@ -284,6 +284,23 @@
           "mustContain": [
             "CREATE TABLE authbus_outbox",
             "authbus_outbox_active_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
+          "mustContain": [
+            "CREATE TABLE qualification_evidence",
+            "qualification_evidence_no_update",
+            "qualification_evidence_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_store.rs",
+          "mustContain": [
+            "pub async fn append_receipt(",
+            "pub async fn verify_chain(",
+            "pub async fn query_claim(",
+            "verify_strict"
           ]
         }
       ]
