@@ -1870,6 +1870,10 @@
         {
           "path": "apps/hepta-native",
           "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-native-app",
+          "mode": "exclusive"
         }
       ],
       "hotPathPolicy": {
@@ -1886,7 +1890,8 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
-        "apps/hepta-native"
+        "apps/hepta-native",
+        "codex-rs/hepta-native-app"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "UI-NATIVE-1-SHELL",
