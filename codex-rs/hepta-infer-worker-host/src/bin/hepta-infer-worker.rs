@@ -95,7 +95,9 @@ async fn run_native(args: &BTreeMap<String, String>) -> MainResult<()> {
     let output = result?;
     println!("{}", serde_json::to_string(&output)?);
     if !output.terminal_observed {
-        return Err("model outcome is indeterminate; provider reconciliation remains required".into());
+        return Err(
+            "model outcome is indeterminate; provider reconciliation remains required".into(),
+        );
     }
     if !output.succeeded() {
         return Err(
