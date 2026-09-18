@@ -29,7 +29,7 @@ static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(crate) enum ReleaseSelectionStatus {
+pub enum ReleaseSelectionStatus {
     Prepared,
     Queued,
     Committed,
@@ -41,6 +41,27 @@ impl ReleaseSelectionStatus {
     pub(crate) const fn terminal(self) -> bool {
         matches!(self, Self::Committed | Self::RolledBack)
     }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ReleaseSelectionSnapshot {
+    pub schema_version: u32,
+    pub agent_id: String,
+    pub grant_sha256: Sha256Digest,
+    pub h7_envelope_sha256: Sha256Digest,
+    pub artifact_sha256: Sha256Digest,
+    pub selector_id: String,
+    pub selector_epoch: u64,
+    pub operator_acceptance: bool,
+    pub promotion: bool,
+    pub source_release: String,
+    pub target_release: String,
+    pub binding: ReleaseSelectionBinding,
+    pub control_revision: u64,
+    pub lifecycle_generation: u64,
+    pub status: ReleaseSelectionStatus,
+    pub selection_sha256: Sha256Digest,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -65,6 +86,27 @@ pub(crate) struct ReleaseSelectionRecord {
 }
 
 impl ReleaseSelectionRecord {
+    pub(crate) fn snapshot(&self) -> ReleaseSelectionSnapshot {
+        ReleaseSelectionSnapshot {
+            schema_version: self.schema_version,
+            agent_id: self.agent_id.clone(),
+            grant_sha256: self.grant_sha256.clone(),
+            h7_envelope_sha256: self.h7_envelope_sha256.clone(),
+            artifact_sha256: self.artifact_sha256.clone(),
+            selector_id: self.selector_id.clone(),
+            selector_epoch: self.selector_epoch,
+            operator_acceptance: self.operator_acceptance,
+            promotion: self.promotion,
+            source_release: self.source_release.clone(),
+            target_release: self.target_release.clone(),
+            binding: self.binding.clone(),
+            control_revision: self.control_revision,
+            lifecycle_generation: self.lifecycle_generation,
+            status: self.status,
+            selection_sha256: self.selection_sha256.clone(),
+        }
+    }
+
     pub(crate) fn prepared(
         grant: &H7H89ProductionGrant,
         control_revision: u64,
