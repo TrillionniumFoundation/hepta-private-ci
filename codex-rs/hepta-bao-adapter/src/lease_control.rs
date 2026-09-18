@@ -133,6 +133,7 @@ struct JournalEntry {
 pub struct LeaseRegistry {
     path: PathBuf,
     journal: File,
+    _root: File,
     _lock: File,
     records: BTreeMap<String, SecretLeaseMetadata>,
     operations: BTreeMap<String, SecretLeaseMetadata>,
@@ -152,22 +153,10 @@ impl LeaseRegistry {
     /// Active-active deployments should implement a strongly consistent shared
     /// owner instead of sharing this local journal over NFS.
     pub fn open(directory: &Path) -> Result<Self, BaoClientError> {
-        std::fs::create_dir_all(directory).map_err(|_| BaoClientError::LeaseStoreUnavailable)?;
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            let metadata = std::fs::metadata(directory)
-                .map_err(|_| BaoClientError::LeaseStoreUnavailable)?;
-            if !metadata.is_dir() || metadata.permissions().mode() & 0o077 != 0 {
-                return Err(BaoClientError::InvalidConfiguration);
-            }
-        }
-
-        let lock_path = directory.join("leases.lock");
-        let journal_path = directory.join("leases.journal");
-        let lock = private_open(&lock_path, true)?;
+        let root = prepare_private_directory(directory)?;
+        let lock = open_private_at(&root, "leases.lock", true)?;
         lock.try_lock().map_err(|_| BaoClientError::LeaseStoreLocked)?;
-        let mut journal = private_open(&journal_path, true)?;
+        let mut journal = open_private_at(&root, "leases.journal", true)?;
         let size = journal
             .metadata()
             .map_err(|_| BaoClientError::LeaseStoreUnavailable)?
@@ -213,6 +202,7 @@ impl LeaseRegistry {
         Ok(Self {
             path: directory.to_path_buf(),
             journal,
+            _root: root,
             _lock: lock,
             records,
             operations,
@@ -544,7 +534,14 @@ impl BaoClient {
                     .map(BaoLeaseOutcome::Indeterminate);
             }
         }
-        let mut body = read_bounded_body(&mut response).await?;
+        let mut body = match read_bounded_body(&mut response).await {
+            Ok(body) => body,
+            Err(_) => {
+                return registry
+                    .mark_unknown(&record.local_lease_id)
+                    .map(BaoLeaseOutcome::Indeterminate);
+            }
+        };
         let decoded: DynamicLeaseResponse = match serde_json::from_slice(&body) {
             Ok(decoded) => decoded,
             Err(_) => {
@@ -939,34 +936,82 @@ fn unix_ms_now() -> Result<u64, BaoClientError> {
     u64::try_from(millis).map_err(|_| BaoClientError::ProviderUnavailable)
 }
 
-fn private_open(path: &Path, create: bool) -> Result<File, BaoClientError> {
-    let mut options = OpenOptions::new();
-    options.read(true).write(true);
-    if create {
-        options.create(true);
-    }
+fn prepare_private_directory(path: &Path) -> Result<File, BaoClientError> {
     #[cfg(unix)]
     {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
+        use std::os::unix::fs::{DirBuilderExt, MetadataExt};
+        if let Err(error) = std::fs::DirBuilder::new().mode(0o700).create(path)
+            && error.kind() != std::io::ErrorKind::AlreadyExists
+        {
+            return Err(BaoClientError::LeaseStoreUnavailable);
+        }
+        let directory: File = rustix::fs::open(
+            path,
+            rustix::fs::OFlags::RDONLY
+                | rustix::fs::OFlags::DIRECTORY
+                | rustix::fs::OFlags::NOFOLLOW
+                | rustix::fs::OFlags::CLOEXEC,
+            rustix::fs::Mode::empty(),
+        )
+        .map_err(|_| BaoClientError::InvalidConfiguration)?
+        .into();
+        let metadata = directory
+            .metadata()
+            .map_err(|_| BaoClientError::LeaseStoreUnavailable)?;
+        if !metadata.is_dir()
+            || metadata.mode() & 0o077 != 0
+            || metadata.uid() != rustix::process::geteuid().as_raw()
+        {
+            return Err(BaoClientError::InvalidConfiguration);
+        }
+        Ok(directory)
     }
-    let file = options
-        .open(path)
-        .map_err(|_| BaoClientError::LeaseStoreUnavailable)?;
+    #[cfg(not(unix))]
+    {
+        let _ = path;
+        Err(BaoClientError::InvalidConfiguration)
+    }
+}
+
+fn open_private_at(
+    directory: &File,
+    name: &str,
+    create: bool,
+) -> Result<File, BaoClientError> {
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
+        let flags = if create {
+            rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE
+        } else {
+            rustix::fs::OFlags::RDWR
+        } | rustix::fs::OFlags::NOFOLLOW
+            | rustix::fs::OFlags::CLOEXEC;
+        let file: File = rustix::fs::openat(
+            directory,
+            name,
+            flags,
+            rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
+        )
+        .map_err(|_| BaoClientError::LeaseStoreUnavailable)?
+        .into();
         let metadata = file
             .metadata()
             .map_err(|_| BaoClientError::LeaseStoreUnavailable)?;
         if !metadata.is_file()
             || metadata.mode() & 0o077 != 0
             || metadata.nlink() != 1
+            || metadata.uid() != rustix::process::geteuid().as_raw()
         {
             return Err(BaoClientError::InvalidConfiguration);
         }
+        Ok(file)
     }
-    Ok(file)
+    #[cfg(not(unix))]
+    {
+        let _ = (directory, name, create);
+        Err(BaoClientError::InvalidConfiguration)
+    }
 }
 
 #[cfg(test)]
