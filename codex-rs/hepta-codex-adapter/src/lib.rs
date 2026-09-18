@@ -288,23 +288,26 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-pub fn adapt(
+pub fn validate_for_dispatch(
     now_ms: u64,
-    intent: CodexOperationIntent,
-    observation: Option<AppServerObservation>,
-) -> Result<CodexAdapterReceipt, Error> {
-    if intent.payload_digest.is_zero() || intent.lease_payload_digest.is_zero() {
-        return Err(Error::EmptyDigest("payload"));
-    }
-    if intent.payload_digest != intent.lease_payload_digest {
-        return Err(Error::PayloadBindingMismatch);
-    }
-    if intent.session_generation == 0 {
-        return Err(Error::InvalidGeneration);
-    }
+    intent: &CodexOperationIntent,
+) -> Result<(), Error> {
+    validate_intent_binding(intent)?;
     if now_ms >= intent.deadline_ms {
         return Err(Error::DeadlineExpired);
     }
+    Ok(())
+}
+
+/// Maps an observed App Server fact. A late terminal observation is still a
+/// fact and must remain recordable after the original dispatch deadline; the
+/// deadline gates dispatch through `validate_for_dispatch`, not reconciliation.
+pub fn adapt(
+    _now_ms: u64,
+    intent: CodexOperationIntent,
+    observation: Option<AppServerObservation>,
+) -> Result<CodexAdapterReceipt, Error> {
+    validate_intent_binding(&intent)?;
 
     let request_digest = request_digest(&intent);
     let (status, retry, response_digest, terminal_outcome, event_sequence) =
@@ -389,6 +392,19 @@ pub fn request_digest(intent: &CodexOperationIntent) -> Digest32 {
     bytes.extend_from_slice(intent.payload_digest.as_array());
     bytes.extend_from_slice(&intent.deadline_ms.to_be_bytes());
     Digest32::of_bytes(&bytes)
+}
+
+fn validate_intent_binding(intent: &CodexOperationIntent) -> Result<(), Error> {
+    if intent.payload_digest.is_zero() || intent.lease_payload_digest.is_zero() {
+        return Err(Error::EmptyDigest("payload"));
+    }
+    if intent.payload_digest != intent.lease_payload_digest {
+        return Err(Error::PayloadBindingMismatch);
+    }
+    if intent.session_generation == 0 {
+        return Err(Error::InvalidGeneration);
+    }
+    Ok(())
 }
 
 fn validate_correlation(
