@@ -56,7 +56,7 @@ A completed revocation before the relevant linearization point denies entry. A c
 - the grant issuer, approval verifier and feed verifier support bounded epoch-window key rings for staged overlap and deterministic retirement;
 - verification identifies the exact trust key used for audit;
 - revocation feed schema V2 signs issued/expiry times and rejects not-yet-valid or stale updates;
-- enrolled nodes can sign exact-update apply acknowledgements; convergence first authenticates the distributor-signed update through the pinned feed verifier, then validates node acknowledgements, rejects future-dated acknowledgements, and records the selected distributor/node trust-key IDs in the report;
+- a successful signed-feed apply returns an opaque receipt bound to the exact update digest; node acknowledgements require that receipt, and convergence first authenticates the distributor-signed update before validating receipt-bound node acknowledgements, rejecting future-dated acknowledgements, and recording selected distributor/node trust-key IDs;
 - the registered Bao host begins without fresh revocation knowledge, checks freshness before provider dispatch and again at final registered-consumer entry, and denies secret release if the feed expires while provider I/O is in flight.
 
 The grant issuer, approver and revocation distributor remain independently pinned roles. Repository signer tools do not generate keys.
@@ -111,7 +111,7 @@ Current source tests cover, among other cases:
 - injected FinalUse clock;
 - external FinalUse claim-snapshot rollback detection;
 - approval/feed key overlap by authority epoch;
-- signed revocation freshness, forged-distributor convergence denial, future-ack rejection and per-key convergence acknowledgement validation;
+- signed revocation freshness, wrong-apply-receipt denial, forged-distributor convergence denial, future-ack rejection and per-key convergence acknowledgement validation;
 - registered consumer, forged independent approval and in-flight feed-expiry denial;
 - the documented VerifiedUse and dispatch linearization races.
 
