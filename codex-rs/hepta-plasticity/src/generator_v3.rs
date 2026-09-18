@@ -12,8 +12,8 @@ use std::fmt;
 use codex_hepta_types::{Digest32, FixedQ32, StableId};
 
 use crate::{
-    LayerNormDenominatorV2, ParameterMutationPolicyErrorV1, ParameterMutationPolicyV1,
-    ParameterCandidateKindV2, ParameterCandidateRequestV2, ParameterDeltaV2, ProposalWindowV2,
+    LayerNormDenominatorV2, ParameterCandidateKindV2, ParameterCandidateRequestV2,
+    ParameterDeltaV2, ParameterMutationPolicyErrorV1, ParameterMutationPolicyV1, ProposalWindowV2,
     authorize_parameter_mutation_v1, verify_parameter_mutation_policy_v1,
 };
 
@@ -467,7 +467,9 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) -> Result<(), ParameterGeneratorE
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{ParameterMutationSurfaceV1, ParameterMutationRuleV1, build_parameter_mutation_policy_v1};
+    use crate::{
+        ParameterMutationRuleV1, ParameterMutationSurfaceV1, build_parameter_mutation_policy_v1,
+    };
 
     fn id(value: &str) -> StableId {
         StableId::new(value).unwrap_or_else(|error| panic!("id {value}: {error}"))

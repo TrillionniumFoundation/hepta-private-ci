@@ -101,11 +101,7 @@ pub fn verify_parameter_mutation_policy_v1(
     policy: &ParameterMutationPolicyV1,
 ) -> Result<(), ParameterMutationPolicyErrorV1> {
     let mut rules = policy.rules.clone();
-    validate_context(
-        policy.selected_artifact_digest,
-        &policy.window,
-        &mut rules,
-    )?;
+    validate_context(policy.selected_artifact_digest, &policy.window, &mut rules)?;
     if rules != policy.rules || policy.policy_digest.is_zero() {
         return Err(ParameterMutationPolicyErrorV1::DigestMismatch);
     }
@@ -207,7 +203,8 @@ fn digest_policy(
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), ParameterMutationPolicyErrorV1> {
     let raw = value.as_str().as_bytes();
-    let length = u32::try_from(raw.len()).map_err(|_| ParameterMutationPolicyErrorV1::Arithmetic)?;
+    let length =
+        u32::try_from(raw.len()).map_err(|_| ParameterMutationPolicyErrorV1::Arithmetic)?;
     bytes.extend_from_slice(&length.to_be_bytes());
     bytes.extend_from_slice(raw);
     Ok(())
