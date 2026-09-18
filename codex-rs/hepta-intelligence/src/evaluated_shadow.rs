@@ -252,6 +252,154 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     })
 }
 
+
+/// Run the evaluated shadow pipeline with an already authenticated V3 intuition
+/// receipt. This crate-private entry point is intentionally not a second public
+/// admission API: callers must first pass `decide_authenticated_intuition_v2`.
+///
+/// Unlike the historical V1 compatibility path, policy identity is not equated
+/// to model-artifact identity. The independently qualified model digest is
+/// checked against the evaluated artifact while the signed intuition request
+/// retains its own policy digest.
+pub(crate) fn run_evaluated_shadow_with_authenticated_intuition_v2<P: LaneFShadowPortsV1>(
+    request: EvaluatedShadowRequestV1<'_>,
+    intuition: CalibratedIntuitionReceiptV1,
+    qualified_model_artifact_digest: Digest32,
+    intuition_authentication_digest: Digest32,
+    verifier: &LearningEvidenceVerifierV1,
+    ledger: &mut dyn DurableLearningJournal,
+    ports: &mut P,
+    now: u64,
+) -> Result<EvaluatedShadowReceiptV1, EvaluatedShadowError> {
+    use EvaluatedShadowError as E;
+
+    if request.run.request_digest.is_zero()
+        || qualified_model_artifact_digest.is_zero()
+        || intuition_authentication_digest.is_zero()
+    {
+        return Err(E::Binding("empty authenticated binding"));
+    }
+    if intuition.decision_id != request.intuition.decision_id || intuition.authority.grants_any() {
+        return Err(E::Binding("intuition receipt"));
+    }
+
+    let snapshot_digest = request.run.snapshot.digest().map_err(E::Pipeline)?;
+    verify_dataset_snapshot_receipt_v3(request.dataset, now).map_err(E::Dataset)?;
+    let bundle = &request.evaluation;
+    if request.dataset.snapshot.dataset_digest != bundle.dataset_digest
+        || request.dataset.snapshot.objective_digest != bundle.objective_digest
+        || bundle.snapshot_ids.as_slice() != [request.dataset.snapshot.snapshot_id.clone()]
+    {
+        return Err(E::Binding("dataset"));
+    }
+
+    let candidate_payload = evaluated_candidate_signing_payload_v1(
+        bundle,
+        &request.metric_roles,
+        request.candidate_bytes,
+        request.run.snapshot.learning_artifact_generation,
+    )?;
+    let candidate = verifier
+        .verify(
+            LearningEvidenceRoleV1::Evaluator,
+            request.candidate_evidence,
+            &candidate_payload,
+            now,
+        )
+        .map_err(E::Evidence)?;
+    if request.run.snapshot.authority_epoch != candidate.principal().authority_epoch {
+        return Err(E::Binding("authority epoch"));
+    }
+    if candidate.principal() != &bundle.evaluator
+        || request.run.snapshot.model_artifact_digest != Digest32::of_bytes(request.candidate_bytes)
+        || request.run.snapshot.model_artifact_digest != qualified_model_artifact_digest
+        || request.intuition.objective_digest != bundle.objective_digest
+        || request.intuition.state_digest != snapshot_digest
+        || request.intuition.policy_generation != request.run.snapshot.learning_artifact_generation
+        || request.intuition.decision_id != request.run.run_id
+    {
+        return Err(E::Binding("candidate or run"));
+    }
+    if request.intuition.completeness.omitted_count_bound != 0
+        || request.intuition.candidates.len() > 126
+        || request
+            .intuition
+            .candidates
+            .iter()
+            .any(|candidate| matches!(candidate.candidate_id.as_str(), ABSTAIN | SLOW_PATH))
+    {
+        return Err(E::Binding("reserved or excessive candidates"));
+    }
+
+    let policy_id = bundle.candidate_id.clone();
+    let evaluation = decide_with_signed_evidence_v2(
+        request.evaluation,
+        request.metric_roles,
+        request.evaluation_evidence,
+        verifier,
+        now,
+    )
+    .map_err(E::Evaluation)?;
+    if evaluation.decision.disposition
+        != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+    {
+        return Err(E::Ineligible(evaluation.decision.disposition));
+    }
+
+    let mut admission = b"hepta.intelligence.evaluated-shadow.authenticated-intuition.v2\0".to_vec();
+    for digest in [
+        evaluation.decision.evidence_digest,
+        evaluation.authentication_digest,
+        Digest32::of_bytes(&request.candidate_evidence.signing_bytes()),
+        Digest32::of_bytes(&candidate_payload),
+        snapshot_digest,
+        request.run.request_digest,
+        qualified_model_artifact_digest,
+        intuition_authentication_digest,
+        intuition.receipt_digest,
+    ] {
+        admission.extend_from_slice(digest.as_array());
+    }
+    let budget = request.run.budget;
+    for micros in [
+        budget.total_micros,
+        budget.objective_micros,
+        budget.legal_set_micros,
+        budget.neural_micros,
+        budget.prompt_micros,
+        budget.intuition_micros,
+        budget.context_micros,
+        budget.dispatch_micros,
+        budget.ledger_micros,
+    ] {
+        admission.extend_from_slice(&micros.to_be_bytes());
+    }
+
+    let mut run = request.run;
+    run.request_digest = Digest32::of_bytes(&admission);
+    let mut adapter = DurableDecisionPorts {
+        host: ports,
+        ledger,
+        expected_head: request.expected_ledger_head,
+        policy_id,
+        episode_id: request.episode_id,
+        request: request.intuition,
+        intuition,
+        admission_digest: run.request_digest,
+        appended: None,
+        failure: None,
+    };
+    let pipeline = run_shadow_pipeline(run, &mut adapter).map_err(E::Pipeline)?;
+    if let Some(error) = adapter.failure {
+        return Err(E::Ledger(error));
+    }
+    Ok(EvaluatedShadowReceiptV1 {
+        evaluation,
+        pipeline,
+        learning: adapter.appended,
+    })
+}
+
 struct DurableDecisionPorts<'a, P> {
     host: &'a mut P,
     ledger: &'a mut dyn DurableLearningJournal,
