@@ -121,7 +121,7 @@ impl AgentdSelfEvolutionHostV1 {
             b"rollback",
             evidence,
         )?;
-        Ok(self.runtime.rollback(selection, regression_evidence_digest)?)
+        Ok(self.runtime.rollback_self_evolution(selection, regression_evidence_digest)?)
     }
 
     /// Dropping the rollback checkpoint is itself evidence-gated. A candidate
@@ -139,7 +139,7 @@ impl AgentdSelfEvolutionHostV1 {
             b"confirm",
             evidence,
         )?;
-        self.runtime.confirm_adoption(selection.selection_digest)?;
+        self.runtime.confirm_self_evolution(selection.selection_digest)?;
         Ok(())
     }
 
@@ -234,7 +234,7 @@ mod tests {
 
         let rolled = host
             .runtime
-            .rollback(&selected, Digest32::of_bytes(b"future-regression"))
+            .rollback_self_evolution(&selected, Digest32::of_bytes(b"future-regression"))
             .unwrap();
         assert_eq!(rolled.restored_candidate_id, id("baseline"));
         assert_eq!(host.runtime().generation(), generation(12));
