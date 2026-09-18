@@ -105,11 +105,20 @@ impl DurablePromptRegistry {
         let factor = self.registry.factor(factor_id).cloned().ok_or_else(|| {
             DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string()))
         })?;
-        let admission = FinalUseAdmissionAuthority::new(authority)
-            .verify(signed, &factor, reviewed_scope_digest, evidence_digest)
-            .map_err(DurableRegistryError::Admission)?;
-        let verified_at_unix_ms = admission.verified_at_unix_ms();
-        self.commit(|registry| registry.admit_factor_verified(admission, verified_at_unix_ms))
+        FinalUseAdmissionAuthority::new(authority)
+            .with_verified_admission(
+                signed,
+                &factor,
+                reviewed_scope_digest,
+                evidence_digest,
+                |admission| {
+                    let verified_at_unix_ms = admission.verified_at_unix_ms();
+                    self.commit(|registry| {
+                        registry.admit_factor_verified(admission, verified_at_unix_ms)
+                    })
+                },
+            )
+            .map_err(DurableRegistryError::Admission)?
     }
 
     pub fn register_realization_payload_v2(
