@@ -1,0 +1,148 @@
+use std::path::Path;
+
+use base64::Engine as _;
+use base64::engine::general_purpose::STANDARD;
+use ed25519_dalek::Signer as _;
+use ed25519_dalek::SigningKey;
+use hepta_native::model::PlatformAction;
+use hepta_native::model::SignedPlatformGrantV1;
+use hepta_native::model::sha256_hex;
+use hepta_native::security::GrantVerifier;
+use hepta_native::security::TrustedKeySet;
+use hepta_native::security::now_unix_ms;
+use hepta_native::updater::SignedUpdateManifestV1;
+use hepta_native::updater::UpdateManager;
+use hepta_native::updater::activate_staged_update;
+use hepta_native::updater::digest_file;
+use tempfile::TempDir;
+
+const D1: &str = "1111111111111111111111111111111111111111111111111111111111111111";
+
+fn key_fixture(root: &Path) -> (SigningKey, TrustedKeySet, std::path::PathBuf) {
+    let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    let public = STANDARD.encode(signing.verifying_key().to_bytes());
+    let path = root.join("trusted-keys.json");
+    std::fs::write(
+        &path,
+        serde_json::to_vec(&serde_json::json!({
+            "schema": "hepta.native-trusted-keys.v1",
+            "keys": {"release.key": public}
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+    let keys = TrustedKeySet::from_path(&path).unwrap();
+    (signing, keys, path)
+}
+
+#[test]
+fn platform_grant_signature_binds_session_operation_and_payload() {
+    let temp = TempDir::new().unwrap();
+    let (signing, keys, _) = key_fixture(temp.path());
+    let now = now_unix_ms().unwrap();
+    let mut grant = SignedPlatformGrantV1 {
+        key_id: "release.key".to_owned(),
+        session_id: "session.1".to_owned(),
+        session_generation: 9,
+        operation_id: "operation.1".to_owned(),
+        action: PlatformAction::CopyText,
+        payload_digest: D1.to_owned(),
+        expires_unix_ms: now + 60_000,
+        signature_base64: String::new(),
+    };
+    grant.signature_base64 =
+        STANDARD.encode(signing.sign(grant.signing_message().as_bytes()).to_bytes());
+    keys.verify_platform_grant(
+        &grant,
+        "session.1",
+        9,
+        "operation.1",
+        PlatformAction::CopyText,
+        D1,
+        now,
+    )
+    .unwrap();
+
+    let error = keys
+        .verify_platform_grant(
+            &grant,
+            "session.2",
+            9,
+            "operation.1",
+            PlatformAction::CopyText,
+            D1,
+            now,
+        )
+        .unwrap_err();
+    assert!(error.to_string().contains("not bound"));
+}
+
+#[test]
+fn signed_update_stages_activates_and_confirms_with_predecessor_backup() {
+    let temp = TempDir::new().unwrap();
+    let (signing, keys, key_path) = key_fixture(temp.path());
+    let package = temp.path().join("next.bin");
+    let target = temp.path().join("hepta-native.bin");
+    std::fs::write(&package, b"new native binary").unwrap();
+    std::fs::write(&target, b"old native binary").unwrap();
+    let now = now_unix_ms().unwrap();
+    let package_digest = digest_file(&package).unwrap();
+    let predecessor_digest = digest_file(&target).unwrap();
+    let mut manifest = SignedUpdateManifestV1 {
+        schema: "hepta.native-update.v1".to_owned(),
+        package_digest: package_digest.clone(),
+        predecessor_digest,
+        evidence_digest: sha256_hex(b"qualification-evidence"),
+        platform: std::env::consts::OS.to_owned(),
+        architecture: std::env::consts::ARCH.to_owned(),
+        backend_protocol_version: 1,
+        channel: "stable".to_owned(),
+        selected_by: "release.reviewer".to_owned(),
+        generator_principal: "release.builder".to_owned(),
+        issued_unix_ms: now.saturating_sub(1000),
+        expires_unix_ms: now + 60_000,
+        key_id: "release.key".to_owned(),
+        signature_base64: String::new(),
+    };
+    manifest.signature_base64 =
+        STANDARD.encode(signing.sign(manifest.signing_message().as_bytes()).to_bytes());
+
+    let update_root = temp.path().join("updates");
+    let manager = UpdateManager::new(keys, update_root).unwrap();
+    let pending = manager.verify_and_stage(manifest, &package, 1).unwrap();
+    assert_eq!(digest_file(&pending.staged_package).unwrap(), package_digest);
+
+    let keys = TrustedKeySet::from_path(&key_path).unwrap();
+    activate_staged_update(&manager.pending_path(), &keys, &target, 1).unwrap();
+    assert_eq!(digest_file(&target).unwrap(), package_digest);
+    assert!(manager.confirm_current_digest(&target).unwrap());
+    assert!(!manager.pending_path().exists());
+}
+
+#[test]
+fn update_rejects_self_selection_before_activation() {
+    let temp = TempDir::new().unwrap();
+    let (_signing, keys, _) = key_fixture(temp.path());
+    let package = temp.path().join("next.bin");
+    std::fs::write(&package, b"new native binary").unwrap();
+    let now = now_unix_ms().unwrap();
+    let manifest = SignedUpdateManifestV1 {
+        schema: "hepta.native-update.v1".to_owned(),
+        package_digest: digest_file(&package).unwrap(),
+        predecessor_digest: sha256_hex(b"old"),
+        evidence_digest: sha256_hex(b"evidence"),
+        platform: std::env::consts::OS.to_owned(),
+        architecture: std::env::consts::ARCH.to_owned(),
+        backend_protocol_version: 1,
+        channel: "stable".to_owned(),
+        selected_by: "same.principal".to_owned(),
+        generator_principal: "same.principal".to_owned(),
+        issued_unix_ms: now,
+        expires_unix_ms: now + 60_000,
+        key_id: "release.key".to_owned(),
+        signature_base64: "invalid".to_owned(),
+    };
+    let manager = UpdateManager::new(keys, temp.path().join("updates")).unwrap();
+    let error = manager.verify_and_stage(manifest, &package, 1).unwrap_err();
+    assert!(error.to_string().contains("selected by its generator"));
+}
