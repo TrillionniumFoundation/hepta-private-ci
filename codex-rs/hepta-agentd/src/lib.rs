@@ -72,6 +72,7 @@ pub use lane_b_runtime::CancellationDisposition;
 pub use lane_b_runtime::ContextAttachment;
 pub use lane_b_runtime::RunPhase;
 pub use lane_b_runtime::RunReceipt;
+pub use lane_b_runtime::ObjectiveRunStartRuntimeBindings;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use production_writer_host::AgentdProductionWriterHost;

@@ -39,9 +39,22 @@ pub struct RunSnapshot {
     pub run_id: String,
     pub request_digest: String,
     pub objective_digest: String,
+    pub hard_constraint_digest: String,
+    pub preference_state_digest: String,
+    pub model_tuple_digest: String,
+    pub prompt_registry_digest: String,
     pub body_digest: String,
     pub artifact_set_digest: String,
     pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
+    pub deadline_ms: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ObjectiveRunStartRuntimeBindings {
+    pub request_digest: String,
+    pub body_digest: String,
     pub deadline_ms: u64,
 }
 

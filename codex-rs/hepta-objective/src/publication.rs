@@ -229,6 +229,12 @@ pub fn decode_objective_run_start_publication_v1(
 fn validate_bindings(
     bindings: &ObjectiveRunStartBindingsV1,
 ) -> Result<(), ObjectivePublicationError> {
+    if bindings.authority_epoch == 0 {
+        return Err(ObjectivePublicationError::InvalidBinding("authorityEpoch"));
+    }
+    if bindings.generation == 0 {
+        return Err(ObjectivePublicationError::InvalidBinding("generation"));
+    }
     for (name, digest) in [
         ("preferenceStateDigest", bindings.preference_state_digest),
         ("modelTupleDigest", bindings.model_tuple_digest),
