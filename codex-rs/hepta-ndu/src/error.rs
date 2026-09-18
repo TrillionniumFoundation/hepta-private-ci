@@ -9,6 +9,7 @@ pub enum NduError {
     DimensionLimitExceeded,
     RequiredOrganLimitExceeded,
     EmptyObjectiveDigest,
+    EmptyProfileSemanticsDigest,
     EmptyProtocolDigest(&'static str),
     EmptySupportDigest { candidate: String, organ: String },
     MixedObjective,
@@ -30,7 +31,16 @@ pub enum NduError {
     InvalidWeight(String),
     InvalidEta,
     DimensionMismatch,
+    PreferenceDimensionLimitExceeded,
+    PreferenceValueOutOfRange(String),
+    PreferenceSolverUnavailable,
     StateDigestMismatch,
+    SolverContextRequired,
+    SolverContextMismatch,
+    SolverReceiptIntegrityMismatch,
+    InvalidHierarchyLink(String),
+    DuplicateHierarchyUpdate(String),
+    DuplicateHierarchyArtifact(String),
     SimultaneousHierarchyUpdate(u64),
     Arithmetic,
 }
@@ -45,6 +55,7 @@ impl NduError {
             | Self::DimensionLimitExceeded
             | Self::RequiredOrganLimitExceeded => "NDU-E001",
             Self::EmptyObjectiveDigest
+            | Self::EmptyProfileSemanticsDigest
             | Self::EmptyProtocolDigest(_)
             | Self::EmptySupportDigest { .. }
             | Self::MixedObjective
@@ -64,8 +75,19 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
-            Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::InvalidEta
+            | Self::DimensionMismatch
+            | Self::PreferenceDimensionLimitExceeded
+            | Self::PreferenceValueOutOfRange(_)
+            | Self::PreferenceSolverUnavailable
+            | Self::StateDigestMismatch => "NDU-E008",
+            Self::InvalidHierarchyLink(_)
+            | Self::DuplicateHierarchyUpdate(_)
+            | Self::DuplicateHierarchyArtifact(_)
+            | Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::SolverContextRequired
+            | Self::SolverContextMismatch
+            | Self::SolverReceiptIntegrityMismatch => "NDU-E002",
             Self::Arithmetic => "NDU-E010",
         }
     }
@@ -84,6 +106,8 @@ impl fmt::Display for NduError {
                 formatter.write_str("required organ set exceeds 32 entries")
             }
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
+            Self::EmptyProfileSemanticsDigest => formatter
+                .write_str("utility profile must bind a nonzero axis semantics manifest digest"),
             Self::EmptyProtocolDigest(field) => {
                 write!(formatter, "protocol digest must not be zero: {field}")
             }
@@ -147,7 +171,37 @@ impl fmt::Display for NduError {
                 formatter.write_str("eta must be in the closed interval [1/16, 1/4]")
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
+            Self::PreferenceDimensionLimitExceeded => {
+                formatter.write_str("preference dimensions must be in the closed interval [1,64]")
+            }
+            Self::PreferenceValueOutOfRange(axis) => {
+                write!(formatter, "preference value must be in [-1,1]: {axis}")
+            }
+            Self::PreferenceSolverUnavailable => formatter
+                .write_str("preference solver reached the 64-iteration bound without convergence"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::SolverContextRequired => {
+                formatter.write_str("solver receipt is not bound to a canonical iteration context")
+            }
+            Self::SolverContextMismatch => {
+                formatter.write_str("solver receipt context does not match publication context")
+            }
+            Self::SolverReceiptIntegrityMismatch => {
+                formatter.write_str("solver receipt integrity digest mismatch")
+            }
+            Self::InvalidHierarchyLink(subject) => {
+                write!(formatter, "invalid hierarchy parent for subject {subject}")
+            }
+            Self::DuplicateHierarchyUpdate(subject) => {
+                write!(
+                    formatter,
+                    "duplicate staged hierarchy update for subject {subject}"
+                )
+            }
+            Self::DuplicateHierarchyArtifact(artifact) => write!(
+                formatter,
+                "artifact {artifact} is staged for multiple subjects in one generation"
+            ),
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
                 "multiple hierarchy levels update in generation {generation}"

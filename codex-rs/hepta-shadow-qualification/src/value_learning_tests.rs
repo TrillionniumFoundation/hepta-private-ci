@@ -22,7 +22,8 @@ use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::RequiredOrganSet;
 use codex_hepta_ndu::UtilityContribution;
 use codex_hepta_ndu::UtilityProfile;
-use codex_hepta_ndu::evaluate_candidates;
+use codex_hepta_ndu::evaluate_candidates_with_policy;
+use codex_hepta_ndu::legacy_evaluation_policy;
 use codex_hepta_objective::ActionClass;
 use codex_hepta_objective::ConfirmationPolicy;
 use codex_hepta_objective::Constraint;
@@ -159,7 +160,24 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
         3
     );
 
-    let evaluation = must(evaluate_candidates(
+    let utility_profile = UtilityProfile {
+        profile_id: id("utility-profile-v1"),
+        axis_semantics_digest: Digest32::of_bytes(b"utility-axis-semantics-v1"),
+        dimensions: vec![(id("success"), AxisDirection::Maximize)],
+        risk_ceilings: vec![AxisLimit {
+            axis: id("privacy-risk"),
+            maximum: FixedQ32::ZERO,
+        }],
+        resource_ceilings: vec![AxisLimit {
+            axis: id("compute"),
+            maximum: FixedQ32::from_raw(10_i64 << 32),
+        }],
+        required_organs: RequiredOrganSet {
+            organ_ids: vec![id("planner")],
+        },
+    };
+    let evaluation_policy = must(legacy_evaluation_policy(&utility_profile));
+    let evaluation = must(evaluate_candidates_with_policy(
         ContributionSet {
             objective_digest,
             generation: must(Generation::new(1)),
@@ -179,23 +197,11 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
                 ),
             ],
         },
-        UtilityProfile {
-            profile_id: id("utility-profile-v1"),
-            dimensions: vec![(id("success"), AxisDirection::Maximize)],
-            risk_ceilings: vec![AxisLimit {
-                axis: id("privacy-risk"),
-                maximum: FixedQ32::ZERO,
-            }],
-            resource_ceilings: vec![AxisLimit {
-                axis: id("compute"),
-                maximum: FixedQ32::from_raw(10_i64 << 32),
-            }],
-            required_organs: RequiredOrganSet {
-                organ_ids: vec![id("planner")],
-            },
-        },
+        utility_profile,
         None,
-    ));
+        evaluation_policy,
+    ))
+    .base;
     assert_eq!(
         evaluation.disposition,
         EvaluationDisposition::UniqueParetoRecommendation

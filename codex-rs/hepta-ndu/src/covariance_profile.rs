@@ -15,6 +15,14 @@ pub enum CovarianceConventionV1 {
 #[derive(Clone, Debug, PartialEq)]
 pub struct NduCovarianceProfileV1 {
     pub units_digest: Digest32,
+    /// Immutable coefficient artifact/profile identity admitted by the owner.
+    pub coefficient_manifest_digest: Digest32,
+    /// Exact pre-boundary conditioning feature/profile identity.
+    pub conditioning_profile_digest: Digest32,
+    /// Driver coordinate order/basis identity.
+    pub coordinate_system_digest: Digest32,
+    /// Numeric conversion and rounding profile used at f64/Q24 boundaries.
+    pub numeric_conversion_profile_digest: Digest32,
     pub driver_dimension: usize,
     pub utility_dimension: usize,
     pub convention: CovarianceConventionV1,
@@ -78,6 +86,10 @@ pub fn admit_covariance_profile(
         specification.maximum_relative_residual,
     ];
     if specification.units_digest.is_zero()
+        || specification.coefficient_manifest_digest.is_zero()
+        || specification.conditioning_profile_digest.is_zero()
+        || specification.coordinate_system_digest.is_zero()
+        || specification.numeric_conversion_profile_digest.is_zero()
         || !(1..=32).contains(&specification.driver_dimension)
         || !(1..=8).contains(&specification.utility_dimension)
         || numeric
@@ -92,6 +104,10 @@ pub fn admit_covariance_profile(
     }
     let mut bytes = b"hepta.ndu.covariance.native-f64.shadow.v1".to_vec();
     bytes.extend_from_slice(specification.units_digest.as_array());
+    bytes.extend_from_slice(specification.coefficient_manifest_digest.as_array());
+    bytes.extend_from_slice(specification.conditioning_profile_digest.as_array());
+    bytes.extend_from_slice(specification.coordinate_system_digest.as_array());
+    bytes.extend_from_slice(specification.numeric_conversion_profile_digest.as_array());
     bytes.extend_from_slice(&(specification.driver_dimension as u64).to_be_bytes());
     bytes.extend_from_slice(&(specification.utility_dimension as u64).to_be_bytes());
     bytes.push(match specification.convention {

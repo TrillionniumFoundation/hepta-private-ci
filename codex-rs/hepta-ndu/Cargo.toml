@@ -16,5 +16,9 @@ workspace = true
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
 
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }
+
 [dev-dependencies]
 pretty_assertions = { workspace = true }
+tempfile = { workspace = true }

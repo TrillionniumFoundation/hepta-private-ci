@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `utility.ndu`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared root is materialized, and source-level read-only composition now exists in `hepta-control-plane` and the intelligence vertical. That composition is a code fact, not an activation/release claim. Exact-candidate tests and qualification still determine whether the composed caller is currently proved; the shared `sourceBase` field in implementation maps remains a repository baseline/provenance identity rather than a cached current-HEAD pointer. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -122,7 +122,7 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+`UtilityProfile` now requires a nonzero `axis_semantics_digest` binding units, normalization, numeric scale and axis ordering; the V2 utility-profile digest includes that manifest identity. Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering, semantic-manifest drift and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -143,7 +143,7 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Projection domains rebuild from declared sources and publish complete generations atomically. `NduProjectionFileStoreV1` provides an owner-local Unix durability primitive with a nonblocking OS writer lock, create-new private staging, file fsync, same-directory atomic rename, containing-directory fsync, bounded reopen and scoped revocation recovery. It is not a selected product store: retention, backup/restore qualification, product ownership and activation remain separate. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -189,6 +189,12 @@ Current operating and state-format references:
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
 ## 12. Verification and qualification
+
+Current focused test sources (source references, not pass receipts) also cover preference dimension/value bounds, revision-stable no-op convergence, fail-closed iteration exhaustion, hierarchy-link validation, protocol context rebinding rejection, scoped revocation and durable-store reopen/single-writer behavior:
+
+- [codex-rs/hepta-ndu/src/preference_tests.rs](../../../codex-rs/hepta-ndu/src/preference_tests.rs).
+- [codex-rs/hepta-ndu/src/protocol_tests.rs](../../../codex-rs/hepta-ndu/src/protocol_tests.rs).
+- [codex-rs/hepta-ndu/src/projection_store_tests.rs](../../../codex-rs/hepta-ndu/src/projection_store_tests.rs).
 
 Current focused test sources (source references, not pass receipts):
 

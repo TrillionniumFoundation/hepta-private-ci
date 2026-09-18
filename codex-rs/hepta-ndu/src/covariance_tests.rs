@@ -15,6 +15,10 @@ fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
 fn profile(dimension: usize, convention: CovarianceConventionV1) -> AdmittedCovarianceProfileV1 {
     checked(admit_covariance_profile(NduCovarianceProfileV1 {
         units_digest: Digest32::of_bytes(b"driver-units-and-order"),
+        coefficient_manifest_digest: Digest32::of_bytes(b"coefficient-manifest-v1"),
+        conditioning_profile_digest: Digest32::of_bytes(b"conditioning-profile-v1"),
+        coordinate_system_digest: Digest32::of_bytes(b"driver-coordinates-v1"),
+        numeric_conversion_profile_digest: Digest32::of_bytes(b"f64-q24-conversion-v1"),
         driver_dimension: dimension,
         utility_dimension: 1,
         convention,

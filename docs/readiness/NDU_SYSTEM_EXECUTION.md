@@ -27,7 +27,7 @@ uncertainty vector
 support digest
 ```
 
-The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero. Every evaluated candidate must also contain a value for every registered uncertainty axis. The candidate support digest is derived from the organ identity, objective, generation, feasibility posture, complete normalized vectors and the upstream support digest, so provenance cannot be detached from contribution semantics.
+The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. The native `UtilityProfile` additionally requires an immutable `axis_semantics_digest` covering axis units, normalization, numeric scale and ordering; a reused profile ID cannot silently change those semantics. Each axis has a registered unit and direction. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero. Every evaluated candidate must also contain a value for every registered uncertainty axis. The candidate support digest is derived from the organ identity, objective, generation, feasibility posture, complete normalized vectors and the upstream support digest, so provenance cannot be detached from contribution semantics.
 
 An organ contributes only facts it owns. `utility.ndu` aggregates supported contributions. `control.runtime` consumes a digest-bound projection of the resulting evaluation; it does not reimplement NDU. `learning.ledger` records the complete candidate/contribution set under its own writer rules.
 
@@ -95,7 +95,7 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
+`eta` is in `[1/16,1/4]`. Preference state has 1–64 axes and every value/target is admitted only in `[-1,1]`. An already converged target is a zero-iteration no-op that preserves revision and state digest. The preference target solver emits at most 64 local iteration receipts; reaching the bound without the required residual returns unavailable rather than a successful successor state. Explicit hierarchy links enforce system→domain→agent→episode parent classes, and only a real parent/direct-child pair is forbidden from selecting new artifacts in the same generation; unrelated subjects may advance concurrently.
 
 ## 5. Convergence, infeasibility and multiple solutions
 
@@ -122,7 +122,7 @@ The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It
 - predecessor/next revisions;
 - residual, projection count and state digest.
 
-The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context fails before publication.
+The canonical protocol-producing path hashes subject/class/objective/generation/event/coefficient into a context digest and then binds that digest to the exact predecessor preference-state digest before solving. Local solver receipts have crate-private fields plus an integrity digest; an unbound local receipt, fabricated/mutated receipt or receipt rebound to another context is rejected before publication. The published receipt has a semantic digest and `AuthorityPosture::DENY_ALL`.
 
 ## 6. State, persistence and scheduling
 
@@ -148,7 +148,7 @@ A numeric covariance fixture proves algebra only. It does not prove conditional 
 
 Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist.
 
-`NduProjectionJournalV1` is an owner-local bounded reference implementation. Each entry binds:
+`NduProjectionJournalV1` is an owner-local bounded reference implementation. Revocation identity is scoped by `(objective_digest, subject_digest, projection_digest)` so equal payload bytes in another scope are not revoked accidentally. Each entry binds:
 
 - monotone sequence;
 - preference, utility, selection or revocation kind;
@@ -159,7 +159,7 @@ Preference and utility projections are append-only revisions owned by `utility.n
 
 The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
 
-This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
+`NduProjectionFileStoreV1` now supplies a Unix owner-local durability primitive: one OS-backed writer lock, private create-new staging, file fsync, same-directory atomic rename, containing-directory fsync and bounded fail-closed reopen. Unsupported platforms reject rather than degrade to weaker semantics. This still does not claim that a product has selected the store or qualified migration, retention, backup/restore, hostile-filesystem assumptions or activation; those properties remain independently proved at the selected host.
 
 ## 7. Goodhart and wireheading controls
 
@@ -218,7 +218,10 @@ Reference-host p95/p99, transient memory and persistent projection targets remai
 - `NDU-SYS-GV-009`: Pareto tolerance changes the frontier and policy digest deterministically.
 - `NDU-SYS-GV-010`: termination receipt reports terminal and true maximum residual separately.
 - `NDU-SYS-GV-011`: canonical iteration publication rejects missing objective/event/coefficient context.
-- `NDU-SYS-GV-012`: projection-journal reopen, tamper, truncation and revocation non-resurrection fixtures pass.
+- `NDU-SYS-GV-012`: projection-journal reopen, tamper, truncation, scoped revocation and non-resurrection fixtures pass.
+- `NDU-SYS-GV-013`: 65 preference axes, out-of-range state/target and iteration exhaustion reject; a converged no-op preserves the predecessor revision.
+- `NDU-SYS-GV-014`: unbound/fabricated-context solver evidence cannot be published or rebound to another canonical context.
+- `NDU-SYS-GV-015`: durable Unix projection store enforces one writer and reopens the fsync-published selected/revoked state.
 
 Exact native mappings are registered in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`. The same implementation cannot be the sole oracle for a critical numerical claim; analytic or independent scalar fixtures remain required.
 
