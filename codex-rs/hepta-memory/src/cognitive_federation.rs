@@ -804,6 +804,23 @@ impl FederatedMemoryReader {
         }
         Ok(None)
     }
+
+    async fn observe_memory_frontier(&self) -> Result<u64, CognitiveStoreError> {
+        let count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM memory_revisions WHERE owner_agent_id = ?",
+        )
+        .bind(self.capability.owner_agent_id.as_str())
+        .fetch_one(&self.owner.pool)
+        .await
+        .map_err(unavailable)?;
+        from_i64(count, "memory federation observed frontier")?
+            .checked_add(1)
+            .ok_or_else(|| {
+                CognitiveStoreError::Corrupt(
+                    "memory federation observed frontier overflow".to_string(),
+                )
+            })
+    }
 }
 
 struct CurrentFederationReaders {
@@ -1048,6 +1065,15 @@ impl CanonicalTransportV2 for CanonicalReaderTransport<'_> {
             if query.query_digest != expected_query {
                 return Err(CanonicalFederationError::TransportRejected);
             }
+            let frontier_before = match self.reader.observe_memory_frontier().await {
+                Ok(frontier) => frontier,
+                Err(CognitiveStoreError::Unavailable(_)) => {
+                    return Ok(CanonicalTransportResultV2::NonTerminal(
+                        CanonicalTransportOutcomeV2::Unavailable,
+                    ));
+                }
+                Err(_) => return Err(CanonicalFederationError::TransportRejected),
+            };
             let batch = match self.reader.retrieve(self.access, self.request).await {
                 Ok(batch) => batch,
                 Err(CognitiveStoreError::Unavailable(_)) => {
@@ -1057,7 +1083,22 @@ impl CanonicalTransportV2 for CanonicalReaderTransport<'_> {
                 }
                 Err(_) => return Err(CanonicalFederationError::TransportRejected),
             };
-            let response = canonical_response_from_batch(query, self.reader, &batch)?;
+            let frontier_after = match self.reader.observe_memory_frontier().await {
+                Ok(frontier) => frontier,
+                Err(CognitiveStoreError::Unavailable(_)) => {
+                    return Ok(CanonicalTransportResultV2::NonTerminal(
+                        CanonicalTransportOutcomeV2::Unavailable,
+                    ));
+                }
+                Err(_) => return Err(CanonicalFederationError::TransportRejected),
+            };
+            if frontier_before != frontier_after {
+                return Ok(CanonicalTransportResultV2::NonTerminal(
+                    CanonicalTransportOutcomeV2::NoTerminalObservation,
+                ));
+            }
+            let response =
+                canonical_response_from_batch(query, self.reader, &batch, frontier_before)?;
             *self.batch.lock().await = Some(batch);
             Ok(CanonicalTransportResultV2::Terminal(response))
         })
@@ -1243,6 +1284,7 @@ fn canonical_response_from_batch(
     query: &CanonicalQueryV2,
     reader: &FederatedMemoryReader,
     batch: &FederatedRetrievalBatch,
+    observed_frontier: u64,
 ) -> Result<CanonicalResponseV2, CanonicalFederationError> {
     let mut items = Vec::with_capacity(batch.candidates.len());
     for candidate in &batch.candidates {
@@ -1282,7 +1324,7 @@ fn canonical_response_from_batch(
         purpose_digest: query.purpose_digest,
         generation_vector_digest: query.generation_vector_digest,
         response_digest: CanonicalDigest32::ZERO,
-        observed_frontier: reader.capability.revision,
+        observed_frontier,
         expires_unix_ms: unix_seconds_to_millis(reader.capability.expires_at_unix_seconds)?
             .min(query.deadline_unix_ms),
         items,
