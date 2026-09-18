@@ -29,6 +29,7 @@ pub use admission::FinalUseAdmissionAuthority;
 pub use admission::SignedAdmissionGrantV1;
 pub use admission::VerifiedAdmission;
 pub use admission::final_use_admission_binding;
+pub use admission::final_use_realization_binding;
 pub use admission::final_use_retire_binding;
 pub use admission::final_use_revoke_binding;
 pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;
