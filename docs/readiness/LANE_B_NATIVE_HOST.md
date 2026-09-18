@@ -10,7 +10,7 @@ This page describes executable behavior in the source, including gaps that requi
 | Hosted model execution | `hepta-infer-worker --profile native-app-server` | Calls the owning Agent's existing App Server provider |
 | Local model driver contract | Host still required | `codex_hepta_infer_worker_host::model_worker` exposes the manifest/grant state machine |
 | Inference reservation and settlement | The native worker calls `DurableInferenceControl` | One journal and lock own local slot admission, dispatch identity and real observed settlement; economic quota remains external |
-| Automation | Agentd's existing `AutomationScheduler` and `AutomationStore` | `effect_executor` is an in-memory component; durable TaskFlow effect wiring remains work |
+| Automation | Agentd's existing `AutomationScheduler` and `AutomationStore` | schema v4 owns revision-bound durable occurrences and the default durable TaskFlow step outbox; `effect_executor` remains an in-memory reference component, not a second runtime owner |
 | Fleet lifecycle | Existing supervisor-owned `FleetRegistry` | `lease_ledger` remains an in-memory component pending durable grants and physical observations |
 | Matrix transport | Existing `hepta-matrixd`, `MatrixDurableStore` and SDK sender | `send_observer` is a reusable state machine; no duplicate sender is started |
 
@@ -61,7 +61,7 @@ The journal has a 64 MiB total byte budget, an 8 MiB encoded-line budget and at 
 ## Remaining implementation work
 
 - Connect economic quota and device-capacity authorities, and implement authenticated provider reconciliation after process loss. Native local-slot reservations and observed usage settlement are wired; hosted execution does not prove local model artifacts, memory/device grants or process isolation.
-- Connect TaskFlow's existing durable step outbox to a real final-use-authorized effect provider and crash reconciliation. Queue acceptance must remain distinct from effect completion.
+- Compose the new TaskFlow final-use effect seam with a named real downstream provider adapter and authenticated terminal observer, then qualify crash reconciliation against that provider. The durable occurrence/outbox/reconciliation chain now keeps queue admission distinct from effect completion; external provider composition and exact-target qualification remain open.
 - Persist resource leases under the existing Fleet owner and use real capacity/pressure observations; caller-provided capacity is not hardware discovery.
 - Keep Matrix send state in the existing durable outbox with its stable transaction identity. Do not introduce a second writer around the in-memory observer.
 - Supply the actual Servo/browser host, UI service integration, physical embodiment drivers and measured hardware qualification where absent.
