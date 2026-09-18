@@ -6,8 +6,14 @@ use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
 use codex_hepta_matrix_protocol::MatrixBindingV1;
 use codex_hepta_matrix_protocol::MatrixDeviceId;
 use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
+use codex_hepta_matrix_protocol::outbox_id;
+use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_matrix_store::InboxDraft;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
+use codex_hepta_matrix_store::OutboxDraft;
+use codex_hepta_matrix_store::OutboxKind;
+use codex_hepta_matrix_store::OutboxState;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
@@ -130,6 +136,110 @@ fn response(events: Vec<Value>) -> TestResult<SyncResponse> {
         },
     );
     Ok(response)
+}
+
+#[tokio::test]
+async fn outbound_terminality_requires_sync_observation_and_redaction_keeps_send_evidence() -> TestResult {
+    let fixture = Fixture::new().await?;
+    let room_id = MatrixRoomId::parse(ROOM)?;
+    let logical_outbox_id = outbox_id(
+        &fixture.config.binding.agent_id,
+        &room_id,
+        "thread-terminal",
+        "turn-terminal",
+        "item-terminal",
+        "final",
+    );
+    let txn_id = transaction_id(&logical_outbox_id, 1)?;
+    fixture
+        .store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id,
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"terminal only after sync".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 5,
+        })
+        .await?;
+    let claimed = fixture.store.claim_outbox(10, 30, 1).await?;
+    assert_eq!(claimed.len(), 1);
+    let server_event_id = MatrixEventId::parse("$outbound-server-event")?;
+    fixture
+        .store
+        .record_transport_accepted(&txn_id, claimed[0].attempts, &server_event_id, 11)
+        .await?;
+    assert_eq!(
+        fixture
+            .store
+            .outbox_for_txn(&txn_id)
+            .await?
+            .expect("outbox")
+            .state,
+        OutboxState::InFlight
+    );
+
+    let outbound = json!({
+        "event_id": server_event_id.as_str(),
+        "sender": AGENT,
+        "origin_server_ts": 15,
+        "type": "m.room.message",
+        "content": {"msgtype":"m.text","body":"terminal only after sync"},
+        "unsigned": {"transaction_id": txn_id.as_str()}
+    });
+    let first = response(vec![outbound])?;
+    fixture
+        .composer()
+        .commit_response(
+            &first,
+            /*checkpoint*/ None,
+            /*observed_at_ms*/ 20,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let terminal = fixture
+        .store
+        .dispatch_for_txn(&txn_id)
+        .await?
+        .expect("dispatch");
+    assert_eq!(terminal.state, MatrixDispatchState::ObservedTerminal);
+    assert!(terminal.send_observation_digest.is_some());
+    let original_send_digest = terminal.send_observation_digest.clone();
+    assert_eq!(
+        fixture
+            .store
+            .outbox_for_txn(&txn_id)
+            .await?
+            .expect("outbox")
+            .state,
+        OutboxState::Sent
+    );
+
+    let checkpoint = fixture.store.sync_checkpoint(1, 1).await?;
+    let mut redacted = response(vec![redaction("$outbound-redaction", server_event_id.as_str())])?;
+    redacted.next_batch = "s2".to_string();
+    fixture
+        .composer()
+        .commit_response(
+            &redacted,
+            checkpoint.as_ref(),
+            /*observed_at_ms*/ 30,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let redacted = fixture
+        .store
+        .dispatch_for_txn(&txn_id)
+        .await?
+        .expect("redacted dispatch");
+    assert_eq!(redacted.state, MatrixDispatchState::Redacted);
+    assert_eq!(redacted.send_observation_digest, original_send_digest);
+    assert!(redacted.redaction_observation_digest.is_some());
+    fixture.store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
