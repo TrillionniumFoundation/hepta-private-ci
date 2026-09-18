@@ -237,7 +237,7 @@ impl AutomationStore {
         lease: &AutomationLease,
         now_ms: u64,
     ) -> Result<AutomationOccurrence, AutomationError> {
-        if lease.task.owner_agent_id != *self.taskflow_owner_agent_id() {
+        if &lease.task.owner_agent_id != self.taskflow_owner_agent_id() {
             return Err(AutomationError::AccessDenied);
         }
         let contract = self.schedule_contract(lease.task.task_id).await?;
@@ -355,7 +355,7 @@ impl AutomationStore {
             .await
             .map_err(|_| AutomationError::Unavailable)?
             .ok_or(AutomationError::Conflict)?;
-        if run.owner_agent_id != *self.taskflow_owner_agent_id() {
+        if &run.owner_agent_id != self.taskflow_owner_agent_id() {
             return Err(AutomationError::AccessDenied);
         }
         let changed = sqlx::query(
