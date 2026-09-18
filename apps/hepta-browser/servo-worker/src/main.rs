@@ -1,6 +1,12 @@
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Read, Write};
+#[cfg(unix)]
+use std::net::{TcpListener, TcpStream};
+#[cfg(unix)]
+use std::os::unix::net::UnixStream;
+#[cfg(unix)]
+use std::path::Path;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, mpsc};
@@ -11,8 +17,9 @@ use dpi::PhysicalSize;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
 use servo::{
-    EventLoopWaker, JSValue, LoadStatus, NavigationRequest, PermissionRequest, RenderingContext,
-    Servo, ServoBuilder, SoftwareRenderingContext, WebView, WebViewBuilder, WebViewDelegate,
+    EventLoopWaker, JSValue, LoadStatus, NavigationRequest, PermissionRequest, Preferences,
+    RenderingContext, Servo, ServoBuilder, SoftwareRenderingContext, WebView, WebViewBuilder,
+    WebViewDelegate,
 };
 use sha2::{Digest, Sha256};
 use url::Url;
@@ -92,6 +99,61 @@ struct StoredOperation {
     terminal: Option<(String, String)>,
 }
 
+const EGRESS_SOCKET_PATH: &str = "/hepta-profile/.hepta-egress.sock";
+
+#[cfg(unix)]
+fn start_egress_relay() -> Result<Option<String>, String> {
+    if !Path::new(EGRESS_SOCKET_PATH).exists() {
+        return Ok(None);
+    }
+    let listener = TcpListener::bind(("127.0.0.1", 0))
+        .map_err(|error| format!("egress relay loopback bind failed: {error}"))?;
+    let address = listener
+        .local_addr()
+        .map_err(|error| format!("egress relay address failed: {error}"))?;
+    thread::Builder::new()
+        .name("hepta-browser-egress-relay".to_string())
+        .spawn(move || {
+            for incoming in listener.incoming() {
+                let Ok(stream) = incoming else {
+                    break;
+                };
+                let _ = thread::Builder::new()
+                    .name("hepta-browser-egress-stream".to_string())
+                    .spawn(move || {
+                        let _ = relay_egress_stream(stream);
+                    });
+            }
+        })
+        .map_err(|error| format!("egress relay thread failed: {error}"))?;
+    Ok(Some(format!("http://127.0.0.1:{}", address.port())))
+}
+
+#[cfg(unix)]
+fn relay_egress_stream(mut browser: TcpStream) -> Result<(), String> {
+    let mut broker = UnixStream::connect(EGRESS_SOCKET_PATH)
+        .map_err(|error| format!("egress broker connect failed: {error}"))?;
+    let mut browser_read = browser
+        .try_clone()
+        .map_err(|error| format!("egress browser stream clone failed: {error}"))?;
+    let mut broker_write = broker
+        .try_clone()
+        .map_err(|error| format!("egress broker stream clone failed: {error}"))?;
+    let request = thread::spawn(move || io::copy(&mut browser_read, &mut broker_write));
+    io::copy(&mut broker, &mut browser)
+        .map_err(|error| format!("egress broker response relay failed: {error}"))?;
+    request
+        .join()
+        .map_err(|_| "egress request relay thread panicked".to_string())?
+        .map_err(|error| format!("egress browser request relay failed: {error}"))?;
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn start_egress_relay() -> Result<Option<String>, String> {
+    Ok(None)
+}
+
 struct Browser {
     servo: Servo,
     context: Rc<SoftwareRenderingContext>,
@@ -116,7 +178,14 @@ impl Browser {
         context
             .make_current()
             .map_err(|error| format!("make_current failed: {error:?}"))?;
+        let mut preferences = Preferences::default();
+        if let Some(proxy_uri) = start_egress_relay()? {
+            preferences.network_http_proxy_uri = proxy_uri.clone();
+            preferences.network_https_proxy_uri = proxy_uri;
+            preferences.network_http_no_proxy = String::new();
+        }
         let servo = ServoBuilder::default()
+            .preferences(preferences)
             .event_loop_waker(Box::new(waker))
             .build();
         servo.setup_logging();
