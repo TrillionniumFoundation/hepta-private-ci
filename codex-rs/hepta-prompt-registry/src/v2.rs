@@ -40,6 +40,8 @@ pub enum PromptRoleV2 {
 pub struct PromptRealizationBindingV2 {
     pub realization_id: StableId,
     pub factor_id: StableId,
+    pub model_id: StableId,
+    pub model_version: String,
     pub model_digest: Digest32,
     pub tokenizer_digest: Digest32,
     pub template_digest: Digest32,
@@ -54,6 +56,9 @@ pub struct PromptRealizationBindingV2 {
 
 impl PromptRealizationBindingV2 {
     pub fn validate(&self) -> Result<(), PromptRegistryV2Error> {
+        if self.model_version.is_empty() || self.model_version.len() > 256 {
+            return Err(PromptRegistryV2Error::InvalidModelVersion);
+        }
         for (name, digest) in [
             ("model", self.model_digest),
             ("tokenizer", self.tokenizer_digest),
@@ -79,6 +84,8 @@ impl PromptRealizationBindingV2 {
         bytes.extend_from_slice(BINDING_DOMAIN);
         push_id(&mut bytes, &self.realization_id);
         push_id(&mut bytes, &self.factor_id);
+        push_id(&mut bytes, &self.model_id);
+        push_text(&mut bytes, &self.model_version);
         for digest in [
             self.model_digest,
             self.tokenizer_digest,
@@ -105,6 +112,8 @@ impl PromptRealizationBindingV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptModelTupleV2 {
+    pub model_id: StableId,
+    pub model_version: String,
     pub model_digest: Digest32,
     pub tokenizer_digest: Digest32,
     pub template_digest: Digest32,
@@ -115,6 +124,9 @@ pub struct PromptModelTupleV2 {
 
 impl PromptModelTupleV2 {
     pub fn validate(&self) -> Result<(), PromptRegistryV2Error> {
+        if self.model_version.is_empty() || self.model_version.len() > 256 {
+            return Err(PromptRegistryV2Error::InvalidModelVersion);
+        }
         for (name, digest) in [
             ("model", self.model_digest),
             ("tokenizer", self.tokenizer_digest),
@@ -130,6 +142,8 @@ impl PromptModelTupleV2 {
     #[must_use]
     pub fn digest(&self) -> Digest32 {
         let mut bytes = b"hepta.prompt-model-tuple.v2".to_vec();
+        push_id(&mut bytes, &self.model_id);
+        push_text(&mut bytes, &self.model_version);
         for digest in [
             self.model_digest,
             self.tokenizer_digest,
@@ -392,7 +406,9 @@ impl PromptRegistry {
                     .is_some_and(|realization| realization.active);
                 let selected_factor =
                     factor_filter.is_empty() || factor_filter.contains(&binding.factor_id);
-                let compatible = binding.model_digest == model_tuple.model_digest
+                let compatible = binding.model_id == model_tuple.model_id
+                    && binding.model_version == model_tuple.model_version
+                    && binding.model_digest == model_tuple.model_digest
                     && binding.tokenizer_digest == model_tuple.tokenizer_digest
                     && binding.template_digest == model_tuple.template_digest
                     && binding.tool_schema_digest == model_tuple.tool_schema_digest
@@ -462,6 +478,7 @@ pub enum PromptRegistryV2Error {
     EmptyDigest(&'static str),
     DigestMismatch(&'static str),
     ZeroTokenCost,
+    InvalidModelVersion,
     InvalidExpiry,
     InvalidFrontier,
     ReadLimitExceeded,
@@ -488,6 +505,8 @@ pub(crate) fn same_profile(
     right: &PromptRealizationBindingV2,
 ) -> bool {
     left.factor_id == right.factor_id
+        && left.model_id == right.model_id
+        && left.model_version == right.model_version
         && left.model_digest == right.model_digest
         && left.tokenizer_digest == right.tokenizer_digest
         && left.template_digest == right.template_digest
@@ -505,7 +524,11 @@ fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), PromptRegis
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    let raw = value.as_str().as_bytes();
+    push_text(bytes, value.as_str());
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    let raw = value.as_bytes();
     push_len(bytes, raw.len());
     bytes.extend_from_slice(raw);
 }
