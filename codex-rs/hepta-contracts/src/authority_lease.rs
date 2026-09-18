@@ -248,10 +248,10 @@ impl AuthorityLeaseRegistry {
         })))
     }
 
-    /// Production constructor. The externally durable frontier is loaded and
-    /// must exactly match local state. Every subsequent mutation advances that
-    /// frontier with CAS before committing the local state, so restoring an old
-    /// local snapshot is detected on reopen.
+    /// External-frontier convenience constructor. The externally durable
+    /// frontier is loaded and must exactly match local state, but time still
+    /// comes from `SystemAuthorityClock`. A production composition that also
+    /// requires protected time must use `open_state_dir_with_trust`.
     pub fn open_state_dir_with_frontier_store(
         directory: &Path,
         owner_id: String,
@@ -373,13 +373,16 @@ impl AuthorityLeaseRegistry {
             }
             Some(current) => {
                 if current == &lease {
+                    if lease.revision != next_revision(expected_revision)? {
+                        return Err(AuthorityLeaseError::RevisionMismatch);
+                    }
                     return Ok(AuthorityLeaseReadV1 {
                         lease,
                         store_revision: state.store_revision,
                     });
                 }
                 if current.revision != expected_revision
-                    || lease.revision != expected_revision.saturating_add(1)
+                    || lease.revision != next_revision(expected_revision)?
                 {
                     return Err(AuthorityLeaseError::RevisionMismatch);
                 }
@@ -441,7 +444,7 @@ impl AuthorityLeaseRegistry {
         }
         let mut state = self.lock_state()?;
         if let Some(existing) = state.revocations.get(lease_id) {
-            if existing.lease_revision == expected_revision.saturating_add(1)
+            if existing.lease_revision == next_revision(expected_revision)?
                 && existing.reason_sha256 == reason_sha256
             {
                 return Ok(receipt(existing, expected_revision));
@@ -1181,6 +1184,30 @@ mod tests {
     }
 
     #[test]
+    fn identical_put_retry_requires_the_original_predecessor() {
+        let (registry, _directory) = fixture();
+        let original = lease();
+        let first = registry.put_lease(original.clone(), 0).unwrap();
+        let retry = registry.put_lease(original.clone(), 0).unwrap();
+        assert_eq!(first, retry);
+        assert_eq!(
+            registry.put_lease(original, 1).unwrap_err(),
+            AuthorityLeaseError::RevisionMismatch
+        );
+
+        let mut replacement = lease();
+        replacement.revision = 2;
+        replacement.expires_at_unix_ms = 40_000;
+        let first = registry.put_lease(replacement.clone(), 1).unwrap();
+        let retry = registry.put_lease(replacement.clone(), 1).unwrap();
+        assert_eq!(first, retry);
+        assert_eq!(
+            registry.put_lease(replacement, 2).unwrap_err(),
+            AuthorityLeaseError::RevisionMismatch
+        );
+    }
+
+    #[test]
     fn stale_cas_and_binding_drift_fail_closed() {
         let (registry, _directory) = fixture();
         registry.put_lease(lease(), 0).unwrap();
@@ -1232,6 +1259,12 @@ mod tests {
         assert_eq!(
             registry
                 .revoke("lease-one", 1, [10; 32])
+                .unwrap_err(),
+            AuthorityLeaseError::Revoked
+        );
+        assert_eq!(
+            registry
+                .revoke("lease-one", 2, [9; 32])
                 .unwrap_err(),
             AuthorityLeaseError::Revoked
         );
