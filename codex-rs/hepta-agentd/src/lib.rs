@@ -74,6 +74,8 @@ pub use lane_b_runtime::RunPhase;
 pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use production_writer_host::AgentdCompactionCheckpointError;
+pub use production_writer_host::AgentdCompactionCheckpointRequest;
 pub use production_writer_host::AgentdProductionWriterHost;
 pub use runtime::run;
 
