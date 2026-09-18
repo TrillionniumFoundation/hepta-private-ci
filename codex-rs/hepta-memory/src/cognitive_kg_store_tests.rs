@@ -1,3 +1,4 @@
+use sqlx::Row;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
@@ -77,6 +78,42 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
         .await
         .expect("first projection");
     assert_eq!(first.projection.generation.get(), 1);
+    let first_v2 = sqlx::query(
+        "SELECT generation_digest, predecessor_generation,
+                predecessor_generation_digest, publication_digest
+         FROM kg_projection_v2_generation_receipts
+         WHERE projection_scope = ? AND generation = 1",
+    )
+    .bind(scope.projection_key())
+    .fetch_one(&store.pool)
+    .await
+    .expect("first V2 projection receipt");
+    assert!(
+        first_v2
+            .try_get::<String, _>("generation_digest")
+            .expect("generation digest")
+            .len()
+            == 64
+    );
+    assert_eq!(
+        first_v2
+            .try_get::<Option<i64>, _>("predecessor_generation")
+            .expect("first predecessor"),
+        None
+    );
+    assert_eq!(
+        first_v2
+            .try_get::<Option<String>, _>("predecessor_generation_digest")
+            .expect("first predecessor digest"),
+        None
+    );
+    assert!(
+        first_v2
+            .try_get::<String, _>("publication_digest")
+            .expect("publication digest")
+            .len()
+            == 64
+    );
     assert_eq!(
         sqlx::query_scalar::<_, i64>(
             "SELECT COUNT(*) FROM kg_entity_fts WHERE kg_entity_fts MATCH 'Ada'",
@@ -108,6 +145,29 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
         .expect("replacement projection");
     assert_eq!(second.projection.generation.get(), 2);
     assert_eq!(second.projection.edge_count, 0);
+    let second_v2 = sqlx::query(
+        "SELECT predecessor_generation, predecessor_generation_digest
+         FROM kg_projection_v2_generation_receipts
+         WHERE projection_scope = ? AND generation = 2",
+    )
+    .bind(scope.projection_key())
+    .fetch_one(&store.pool)
+    .await
+    .expect("second V2 projection receipt");
+    assert_eq!(
+        second_v2
+            .try_get::<Option<i64>, _>("predecessor_generation")
+            .expect("second predecessor"),
+        Some(1)
+    );
+    assert_eq!(
+        second_v2
+            .try_get::<Option<String>, _>("predecessor_generation_digest")
+            .expect("second predecessor digest")
+            .as_deref()
+            .map(str::len),
+        Some(64)
+    );
     assert_eq!(
         sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM kg_edges")
             .fetch_one(&store.pool)
@@ -192,6 +252,17 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
         .expect("tombstone projection");
     assert_eq!(forgotten.projection.generation.get(), 3);
     assert_eq!(forgotten.projection.node_count, 0);
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>(
+            "SELECT COUNT(*) FROM kg_projection_v2_generation_receipts
+             WHERE projection_scope = ?",
+        )
+        .bind(scope.projection_key())
+        .fetch_one(&reopened.pool)
+        .await
+        .expect("V2 receipt count"),
+        3
+    );
     assert_eq!(forgotten.projection.edge_count, 0);
 
     let after_forget = reopened
