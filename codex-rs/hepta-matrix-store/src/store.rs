@@ -1312,6 +1312,7 @@ impl MatrixDurableStore {
                 updated_at_ms: draft.created_at_ms,
                 ..existing
             };
+            crate::dispatch::refresh_dispatch_payload_tx(&mut transaction, &record).await?;
             transaction.commit().await.map_err(unavailable)?;
             return Ok(OutboxDisposition::Coalesced(record));
         }
@@ -1351,6 +1352,7 @@ impl MatrixDurableStore {
                 updated_at_ms: draft.created_at_ms,
                 ..existing
             };
+            crate::dispatch::refresh_dispatch_payload_tx(&mut transaction, &record).await?;
             transaction.commit().await.map_err(unavailable)?;
             return Ok(OutboxDisposition::Coalesced(record));
         }
@@ -1442,6 +1444,7 @@ impl MatrixDurableStore {
             sent_event_id: None,
             replaces_event_id: None,
         };
+        crate::dispatch::ensure_dispatch_for_outbox_tx(&mut transaction, &record).await?;
         transaction.commit().await.map_err(unavailable)?;
         Ok(OutboxDisposition::Enqueued(record))
     }
@@ -1616,20 +1619,25 @@ impl MatrixDurableStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
+        crate::dispatch::fence_expired_dispatches_tx(self, &mut transaction, now_ms).await?;
         let rows = sqlx::query(
-            "SELECT outbox_id, stable_txn_id, room_id, kind,
-                    payload, payload_sha256, logical_txn_count,
-                    binding_revision, generation, state, attempts, next_attempt_at_ms,
-                    lease_until_ms, created_at_ms, updated_at_ms, sent_event_id
-             FROM matrix_sendable_outbox_v2
-             WHERE (
-                    state IN ('pending', 'retry_scheduled') AND next_attempt_at_ms <= ?
-                   ) OR (
-                    state = 'in_flight' AND lease_until_ms <= ?
-                   )
-             ORDER BY next_attempt_at_ms, outbox_id LIMIT ?",
+            "SELECT outbox_messages.outbox_id, outbox_messages.stable_txn_id,
+                    outbox_messages.room_id, outbox_messages.kind,
+                    outbox_messages.payload, outbox_messages.payload_sha256,
+                    outbox_messages.logical_txn_count,
+                    outbox_messages.binding_revision, outbox_messages.generation,
+                    outbox_messages.state, outbox_messages.attempts,
+                    outbox_messages.next_attempt_at_ms, outbox_messages.lease_until_ms,
+                    outbox_messages.created_at_ms, outbox_messages.updated_at_ms,
+                    outbox_messages.sent_event_id
+             FROM matrix_sendable_outbox_v2 AS outbox_messages
+             JOIN matrix_dispatch_ledger AS dispatch
+               ON dispatch.stable_txn_id = outbox_messages.stable_txn_id
+             WHERE dispatch.state IN ('prepared', 'retry_scheduled')
+               AND outbox_messages.state IN ('pending', 'retry_scheduled')
+               AND outbox_messages.next_attempt_at_ms <= ?
+             ORDER BY outbox_messages.next_attempt_at_ms, outbox_messages.outbox_id LIMIT ?",
         )
-        .bind(to_i64(now_ms)?)
         .bind(to_i64(now_ms)?)
         .bind(to_i64(limit as u64)?)
         .fetch_all(&mut *transaction)
@@ -1660,6 +1668,13 @@ impl MatrixDurableStore {
                     if updated.rows_affected() != 1 {
                         return Err(MatrixDurableError::Conflict);
                     }
+                    crate::dispatch::mark_dispatch_failed_tx(
+                        &mut transaction,
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                    )
+                    .await?;
                     self.append_change(
                         &mut transaction,
                         ChangeKind::OutboxFailed,
@@ -1693,6 +1708,13 @@ impl MatrixDurableStore {
             if updated.rows_affected() != 1 {
                 return Err(MatrixDurableError::Conflict);
             }
+            crate::dispatch::mark_dispatch_claimed_tx(
+                &mut transaction,
+                &record.stable_txn_id,
+                attempts,
+                now_ms,
+            )
+            .await?;
             self.append_change(
                 &mut transaction,
                 ChangeKind::OutboxClaimed,
@@ -1800,24 +1822,52 @@ impl MatrixDurableStore {
         // already-issued attempt may still record its observed result. This
         // transition cannot initiate another Matrix send.
         let (state, next_attempt_at_ms, sent_event_id, change_kind) = match &transition {
-            OutboxTransition::Retry { next_attempt_at_ms } => (
-                OutboxState::RetryScheduled,
-                *next_attempt_at_ms,
-                None,
-                ChangeKind::OutboxRetryScheduled,
-            ),
-            OutboxTransition::Sent { event_id } => (
-                OutboxState::Sent,
-                existing.next_attempt_at_ms,
-                Some(event_id.clone()),
-                ChangeKind::OutboxSent,
-            ),
-            OutboxTransition::PermanentFailure => (
-                OutboxState::PermanentFailure,
-                existing.next_attempt_at_ms,
-                None,
-                ChangeKind::OutboxFailed,
-            ),
+            OutboxTransition::Retry { next_attempt_at_ms } => {
+                crate::dispatch::mark_dispatch_retry_tx(
+                    &mut transaction,
+                    txn_id,
+                    expected_attempt,
+                    now_ms,
+                )
+                .await?;
+                (
+                    OutboxState::RetryScheduled,
+                    *next_attempt_at_ms,
+                    None,
+                    ChangeKind::OutboxRetryScheduled,
+                )
+            }
+            OutboxTransition::Sent { event_id } => {
+                crate::dispatch::mark_dispatch_success_compat_tx(
+                    &mut transaction,
+                    txn_id,
+                    event_id,
+                    expected_attempt,
+                    now_ms,
+                )
+                .await?;
+                (
+                    OutboxState::Sent,
+                    existing.next_attempt_at_ms,
+                    Some(event_id.clone()),
+                    ChangeKind::OutboxSent,
+                )
+            }
+            OutboxTransition::PermanentFailure => {
+                crate::dispatch::mark_dispatch_failed_tx(
+                    &mut transaction,
+                    txn_id,
+                    expected_attempt,
+                    now_ms,
+                )
+                .await?;
+                (
+                    OutboxState::PermanentFailure,
+                    existing.next_attempt_at_ms,
+                    None,
+                    ChangeKind::OutboxFailed,
+                )
+            }
         };
         let updated = sqlx::query(
             "UPDATE outbox_messages
@@ -2702,6 +2752,12 @@ impl OutboxTransition {
                     .ok_or(MatrixDurableError::Conflict),
             ),
             Self::PermanentFailure if existing.state == OutboxState::PermanentFailure => {
+                Some(Ok(existing.clone()))
+            }
+            Self::PermanentFailure if existing.state == OutboxState::Sent => {
+                Some(Ok(existing.clone()))
+            }
+            Self::Retry { .. } if existing.state == OutboxState::Sent => {
                 Some(Ok(existing.clone()))
             }
             Self::Retry { next_attempt_at_ms } if existing.state == OutboxState::RetryScheduled => {
@@ -3662,6 +3718,7 @@ async fn verify_store(
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
+    crate::dispatch::verify_dispatch_schema(pool).await?;
     let row =
         sqlx::query("SELECT schema_version, owner_agent_id FROM matrix_meta WHERE singleton = 1")
             .fetch_one(pool)

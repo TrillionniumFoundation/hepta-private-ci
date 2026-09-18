@@ -552,48 +552,168 @@ pub(crate) async fn mark_dispatch_retry_tx(
 }
 
 pub(crate) async fn mark_dispatch_failed_tx(
-    store: &MatrixDurableStore,
     transaction: &mut Transaction<'_, Sqlite>,
     txn_id: &MatrixTransactionId,
     expected_attempt: u64,
     now_ms: u64,
 ) -> Result<(), MatrixDurableError> {
+    let current = dispatch_by_txn_tx(transaction, txn_id)
+        .await?
+        .ok_or(MatrixDurableError::Corrupt)?;
+    if current.state == MatrixDispatchState::Failed {
+        return Ok(());
+    }
+    if matches!(
+        current.state,
+        MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
+    ) {
+        return Err(MatrixDurableError::Conflict);
+    }
     let digest = local_evidence_digest("transport_rejected", txn_id, expected_attempt, None)?;
-    settle_failure_tx(
-        store,
+    insert_observation_tx(
         transaction,
         txn_id,
-        digest.as_str(),
         MatrixDispatchObservationKind::TransportRejected,
+        digest.as_str(),
+        None,
         now_ms,
     )
+    .await?;
+    sqlx::query(
+        "UPDATE matrix_dispatch_ledger
+         SET state = 'failed', send_observation_sha256 = ?,
+             updated_at_ms = MAX(updated_at_ms, ?), terminal_at_ms = ?
+         WHERE stable_txn_id = ?",
+    )
+    .bind(digest.as_str())
+    .bind(to_i64(now_ms)?)
+    .bind(to_i64(now_ms)?)
+    .bind(txn_id.as_str())
+    .execute(&mut **transaction)
     .await
+    .map_err(unavailable)?;
+    Ok(())
 }
 
 pub(crate) async fn mark_dispatch_success_compat_tx(
-    store: &MatrixDurableStore,
     transaction: &mut Transaction<'_, Sqlite>,
     txn_id: &MatrixTransactionId,
     event_id: &MatrixEventId,
     expected_attempt: u64,
     now_ms: u64,
 ) -> Result<(), MatrixDurableError> {
+    let current = dispatch_by_txn_tx(transaction, txn_id)
+        .await?
+        .ok_or(MatrixDurableError::Corrupt)?;
+    if current.state == MatrixDispatchState::Succeeded
+        && current.terminal_event_id.as_ref() == Some(event_id)
+    {
+        return Ok(());
+    }
+    if matches!(
+        current.state,
+        MatrixDispatchState::Failed | MatrixDispatchState::Redacted
+    ) {
+        return Err(MatrixDurableError::Conflict);
+    }
     let digest = local_evidence_digest(
         "manual_terminal",
         txn_id,
         expected_attempt,
         Some(event_id),
     )?;
-    settle_success_tx(
-        store,
+    insert_observation_tx(
         transaction,
         txn_id,
-        event_id,
-        digest.as_str(),
         MatrixDispatchObservationKind::ManualTerminal,
+        digest.as_str(),
+        Some(event_id),
         now_ms,
     )
+    .await?;
+    sqlx::query(
+        "UPDATE matrix_dispatch_ledger
+         SET state = 'succeeded', accepted_event_id = COALESCE(accepted_event_id, ?),
+             terminal_event_id = ?, send_observation_sha256 = ?,
+             updated_at_ms = MAX(updated_at_ms, ?), terminal_at_ms = ?
+         WHERE stable_txn_id = ?",
+    )
+    .bind(event_id.as_str())
+    .bind(event_id.as_str())
+    .bind(digest.as_str())
+    .bind(to_i64(now_ms)?)
+    .bind(to_i64(now_ms)?)
+    .bind(txn_id.as_str())
+    .execute(&mut **transaction)
     .await
+    .map_err(unavailable)?;
+    Ok(())
+}
+
+pub(crate) async fn fence_expired_dispatches_tx(
+    store: &MatrixDurableStore,
+    transaction: &mut Transaction<'_, Sqlite>,
+    now_ms: u64,
+) -> Result<(), MatrixDurableError> {
+    let rows = sqlx::query(
+        "SELECT dispatch.stable_txn_id, dispatch.room_id, dispatch.last_attempt
+         FROM matrix_dispatch_ledger AS dispatch
+         JOIN outbox_messages AS outbox
+           ON outbox.stable_txn_id = dispatch.stable_txn_id
+         WHERE dispatch.state = 'dispatched'
+           AND outbox.state = 'in_flight'
+           AND outbox.lease_until_ms <= ?
+         ORDER BY outbox.outbox_id
+         LIMIT 4096",
+    )
+    .bind(to_i64(now_ms)?)
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    for row in rows {
+        let txn_id = MatrixTransactionId::parse(
+            row.try_get::<String, _>("stable_txn_id")
+                .map_err(unavailable)?,
+        )
+        .map_err(|_| MatrixDurableError::Corrupt)?;
+        let room_id = MatrixRoomId::parse(
+            row.try_get::<String, _>("room_id").map_err(unavailable)?,
+        )
+        .map_err(|_| MatrixDurableError::Corrupt)?;
+        let attempt = to_u64(row.try_get("last_attempt").map_err(unavailable)?)?;
+        let digest = local_evidence_digest("lease_expired_indeterminate", &txn_id, attempt, None)?;
+        insert_observation_tx(
+            transaction,
+            &txn_id,
+            MatrixDispatchObservationKind::TransportRetryable,
+            digest.as_str(),
+            None,
+            now_ms,
+        )
+        .await?;
+        sqlx::query(
+            "UPDATE matrix_dispatch_ledger
+             SET state = 'indeterminate', updated_at_ms = MAX(updated_at_ms, ?)
+             WHERE stable_txn_id = ? AND state = 'dispatched' AND last_attempt = ?",
+        )
+        .bind(to_i64(now_ms)?)
+        .bind(txn_id.as_str())
+        .bind(to_i64(attempt)?)
+        .execute(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        store
+            .append_change(
+                transaction,
+                ChangeKind::OutboxIndeterminate,
+                Some(&room_id),
+                /*event_id*/ None,
+                Some(&txn_id),
+                now_ms,
+            )
+            .await?;
+    }
+    Ok(())
 }
 
 pub(crate) async fn observe_outbound_success_tx(
