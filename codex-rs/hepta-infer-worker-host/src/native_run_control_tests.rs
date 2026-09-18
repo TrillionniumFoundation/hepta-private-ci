@@ -51,7 +51,7 @@ fn admission() -> NativeAdmission {
 }
 
 #[tokio::test]
-async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
+async fn reopened_dispatch_reconciles_without_submitting_a_replacement_turn() {
     let (driver, path) = fixture("reopen");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request(&driver), 1).unwrap();
@@ -62,13 +62,25 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
                 thread_id: "thread-1".to_string(),
                 model_provider: "provider".to_string(),
                 context_digest: "a".repeat(64),
+                client_user_message_id: Some("r1".to_string()),
+                input_payload_sha256: Some(
+                    crate::native_app_server::canonical_input_digest(&[
+                        codex_app_server_protocol::UserInput::Text {
+                            text: "prompt".to_string(),
+                            text_elements: Vec::new(),
+                        },
+                    ])
+                    .unwrap(),
+                ),
             },
         )
         .unwrap();
     drop(control);
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     let cancellation = CancellationToken::new();
-    // The nonexistent socket makes any accidental second dispatch fail.
+    // The nonexistent socket makes reconciliation unavailable. The duplicate may
+    // attempt a read-only reconciliation connection but must never submit a
+    // replacement turn; it falls back to the durable indeterminate record.
     let unknown = driver
         .run(
             &mut control,
