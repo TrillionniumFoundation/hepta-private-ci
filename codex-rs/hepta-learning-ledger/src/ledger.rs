@@ -452,7 +452,7 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
                     value.observed_token_positions_digest,
                 ),
             ] {
-                if digest.is_some_and(Digest32::is_zero) {
+                if digest.is_some_and(|digest| digest.is_zero()) {
                     return Err(LedgerError::EmptyDigest(name));
                 }
             }
