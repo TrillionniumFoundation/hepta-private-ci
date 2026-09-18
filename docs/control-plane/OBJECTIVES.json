@@ -81,24 +81,30 @@
   ],
   "objectiveFunctionContract": {
     "schema": "ObjectiveFunctionV1",
+    "registrySource": "docs/contracts/PROTOCOL_SCHEMAS.json#ObjectiveFunctionV1",
+    "nativeProjection": "codex-rs/hepta-objective/src/canonical_projection.rs::project_objective_function_v1",
     "immutableCore": [
+      "objectiveId",
+      "requestDigest",
       "principalScope",
       "successPredicates",
       "terminalConditions",
       "hardConstraints",
       "evidenceRequirements",
       "allowedActionClasses",
-      "forbiddenActionClasses"
-    ],
-    "boundedAdaptiveSurface": [
+      "forbiddenActionClasses",
+      "confirmationActionClasses",
       "softUtilityDimensions",
-      "resourceAllocation",
-      "explorationBudget",
-      "evidenceEffort",
-      "abstentionThreshold"
+      "resourceEndowment",
+      "risk",
+      "deadlineUnixMs",
+      "revision",
+      "objectiveDigest"
     ],
+    "nextSnapshotAdaptivePolicy": "soft utility, resource, evidence-effort and abstention candidates may be proposed only for a future objective revision; ObjectiveFunctionV1 is immutable for the current run",
     "ambiguityPolicy": "emit_bounded_interpretation_set_or_request_clarification",
-    "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success"
+    "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success",
+    "publicationPolicy": "publish only after authenticated admission, complete V1 feasibility, native compile and exact canonical projection; sub-millisecond deadlines fail projection rather than truncate"
   },
   "baselineProfiles": [
     {
