@@ -40,11 +40,13 @@ Planning remains two-stage. Control owns snapshot/resource feasibility; `utility
 
 `NduPlanEvaluationV1` binds the NDU owner's opaque evaluation digest plus the exact evaluated/rejected/Pareto/advisory projection. `FeasiblePlanReceiptV1` binds snapshot, configuration, revocation frontier, candidate sets, resource profile, rejections, NDU policy/evaluation/binding digests, disposition, uncertainty, selection and expiry.
 
-`PlannerJournalV1` remains the bounded byte/hash-chain reference. `StrictPlannerJournalV1::reopen` first verifies the V1 byte chain and then semantically replays it: snapshot/decision identities must match their payloads, a selection requires a preceding decision, a revoked decision cannot be selected later, and revocation cannot target an unknown decision. This closes hash-valid state-machine forgery inside the reference format; it does not turn the reference bytes into a production store.
+`PlannerJournalV1` remains the bounded byte/hash-chain reference. `StrictPlannerJournalV1::reopen` first verifies the V1 byte chain and then semantically replays it: snapshot/decision identities must match their payloads, a selection requires a preceding decision, a revoked decision cannot be selected later, and revocation cannot target an unknown decision.
+
+`PlannerJournalStoreV1` adds the owner-local durable Unix profile: private directory ownership/mode checks, an exclusive process lock, no-follow private opens, strict replay before commit, temp-file fsync, atomic rename, directory fsync, one verified predecessor generation, explicit restore and deterministic migration from `planner-journal.raw.v1`. Non-Unix hosts fail closed for this profile. This is production-grade storage source, but it is not claimed active until a named product host owns the directory and qualifies the target filesystem/power-loss behavior.
 
 ## 4. Authenticated composition and authority boundary
 
-`AuthenticatedOwnerSummaryV1` cannot be constructed directly outside the composition module. `authenticate_owner_summary_v1` requires a non-empty proof digest and a caller-supplied verifier to accept the exact summary/proof pair. The concrete cryptographic verifier remains owned by the producer/host integration; Control does not invent trust.
+`AuthenticatedOwnerSummaryV1` cannot be constructed directly outside the composition boundary. `authenticate_owner_summary_v1` remains the compatibility seam. The concrete path is `OwnerSummaryVerifierV1`: a host-pinned Ed25519 public key is bound to one producer identity, and `SignedOwnerSummaryV1` signs canonical bytes over every owner-summary field. Control holds verification trust only; producer signing keys never enter the optimizer.
 
 `compose_global_plan_v1` sequences:
 
@@ -55,7 +57,7 @@ Planning remains two-stage. Control owns snapshot/resource feasibility; `utility
 5. sealed final receipt;
 6. deny-all `GrantRequestSetV1` construction.
 
-`handoff_grant_requests_v1` is an explicit independent-authority seam. It forwards each immutable `GrantRequestV1` to a caller-owned authority function and does not interpret, cache, mint or execute the returned authority result. A concrete `kernel.authority` product adapter is still an integration gate.
+`handoff_grant_requests_v1` remains the generic independent-authority seam. `with_authorized_grant_request_v1` is the concrete `kernel.authority` adapter: it derives `FinalUseBinding` from the immutable grant request plus host-owned subject/destination/scope, then requires an independently signed `SignedFinalUseGrant`. The existing `FinalUseAuthority` performs Ed25519 verification, durable single-use nonce claim and final revocation/time revalidation around dispatch. Control neither signs grants nor constructs `VerifiedUseToken` directly.
 
 ## 5. Current bounded product caller
 
@@ -108,28 +110,34 @@ Named-host p95/p99 latency, saturation, restart/reopen timing and fault-injectio
 - `RCP-15`: owner summaries cannot enter global composition without authenticator acceptance.
 - `RCP-16`: authenticated owners + real NDU + sealed plan + grant handoff compose without authority leakage.
 - `RCP-17`: the bounded Agentd caller uses a monotonic planner clock and canonical byte-budget resource profile.
+- `RCP-18`: pinned Ed25519 trust rejects owner-summary identity/signature drift.
+- `RCP-19`: independently signed final-use authority is required and nonce reuse rejects.
+- `RCP-20`: final payload or scope drift changes the authority binding.
+- `RCP-21`: durable journal commit survives reopen while an exclusive owner lock prevents concurrent writers.
+- `RCP-22`: predecessor restore is explicit and semantically replayed.
+- `RCP-23`: hash-valid state-machine forgery is rejected before durable commit.
+- `RCP-24`: legacy raw journal migration succeeds only through strict replay.
 
 Native tests are recorded in the implementation map. Test identities are not execution receipts.
 
 ## 9. Current native implementation
 
-**Implemented entrypoints:** `collect_snapshot` in [codex-rs/hepta-control-plane/src/planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs); `prepare_plan_hardened` in [codex-rs/hepta-control-plane/src/planner_hardened.rs](../../../codex-rs/hepta-control-plane/src/planner_hardened.rs); `evaluate_prepared_plan_with_ndu` in [codex-rs/hepta-control-plane/src/planner_ndu.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu.rs); `compose_global_plan_v1` in [codex-rs/hepta-control-plane/src/planner_composition.rs](../../../codex-rs/hepta-control-plane/src/planner_composition.rs); `plan_observed_context` in [codex-rs/hepta-control-plane/src/planner_context.rs](../../../codex-rs/hepta-control-plane/src/planner_context.rs); `StrictPlannerJournalV1` in [codex-rs/hepta-control-plane/src/planner_journal_strict.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_strict.rs); `OrganHostV1` in [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs).
+**Implemented entrypoints:** `collect_snapshot` in [codex-rs/hepta-control-plane/src/planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs); `prepare_plan_hardened` in [codex-rs/hepta-control-plane/src/planner_hardened.rs](../../../codex-rs/hepta-control-plane/src/planner_hardened.rs); `evaluate_prepared_plan_with_ndu` in [codex-rs/hepta-control-plane/src/planner_ndu.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu.rs); `OwnerSummaryVerifierV1` in [codex-rs/hepta-control-plane/src/planner_owner_auth.rs](../../../codex-rs/hepta-control-plane/src/planner_owner_auth.rs); `compose_global_plan_v1` in [codex-rs/hepta-control-plane/src/planner_composition.rs](../../../codex-rs/hepta-control-plane/src/planner_composition.rs); `with_authorized_grant_request_v1` in [codex-rs/hepta-control-plane/src/planner_authority.rs](../../../codex-rs/hepta-control-plane/src/planner_authority.rs); `plan_observed_context` in [codex-rs/hepta-control-plane/src/planner_context.rs](../../../codex-rs/hepta-control-plane/src/planner_context.rs); `StrictPlannerJournalV1` in [codex-rs/hepta-control-plane/src/planner_journal_strict.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_strict.rs); `PlannerJournalStoreV1` in [codex-rs/hepta-control-plane/src/planner_store.rs](../../../codex-rs/hepta-control-plane/src/planner_store.rs); `OrganHostV1` in [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs).
 
 - **Narrow composition:** Agentd context delivery is an actual read-only caller. It is not the promotion-eligible global planner caller tracked by the maturity gate.
-- **Durability:** strict semantic replay is implemented over the bounded reference journal. Production storage still requires an owner-approved store, schema migration, physical durability/fsync profile, retention and backup/restore qualification.
-- **Authority:** grant requests are immutable deny-all proposals. Concrete `kernel.authority` binding remains independently owned.
+- **Durability:** strict semantic replay plus `PlannerJournalStoreV1` implement the owner-local private/locked/fsync/atomic source profile, single-predecessor retention, explicit restore and legacy migration. Named-host filesystem and power-loss qualification remain separate.
+- **Authority:** grant requests remain immutable deny-all proposals. The concrete adapter consumes the independently owned `FinalUseAuthority`; signing and effect authority remain outside Control.
 - **External protocol:** owner-local Rust types and composition surfaces are not automatically admitted external wire protocols.
 - **Qualification:** exact-head and synthetic-merge CI for this closure candidate must pass before repository-controlled closure is claimed.
 
 ## 10. Remaining gates
 
-Repository code now contains the hardened global-composition seam, but the following remain intentionally unclaimed:
+Repository code now contains the hardened global-composition seam, pinned-key owner verification, the concrete final-use authority adapter and a durable owner-local journal store. The following remain intentionally unclaimed:
 
-- concrete cryptographic owner-summary verifier and named production owner set;
-- concrete `kernel.authority` adapter using the registered final-use contract;
-- owner-approved production journal/store with migration, fsync, retention and restore evidence;
+- one named promotion-eligible global host that composes the implemented owner trust, planner store and independent final-use authority;
 - canonical external wire-protocol admission where cross-process use is required;
-- named-host load/latency/restart/fault-injection evidence;
+- exact-head and deterministic synthetic-merge closure for the current head;
+- named-host load/latency/restart/fault-injection and filesystem/power-loss evidence;
 - independent semantic/security review, operator acceptance, activation, promotion and release.
 
 This candidate grants no model, provider, tool, network, filesystem, secret, fleet, physical effect, acceptance, promotion or release authority.
