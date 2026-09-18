@@ -8,12 +8,16 @@ These are implementation and test mappings, not acceptance certificates.
 ## Implemented boundary
 
 The Python package persists work envelopes, fenced path leases and dependency-aware
-assignment generations; creates bounded code candidates; runs admitted checks;
-verifies source, execution and evaluator evidence; records signed candidate-bound
-review eligibility; and composes consent-bound dormant external-system proposals.
-Its CLI exposes local scheduling, candidate generation and sandbox execution.
-The pilot mutation grammar is deterministic (`no_change`, `add_file`, `replace_text`,
-`delete_file`). It is not a learned code generator or an autonomous development agent.
+assignment generations; verifies exact local or signed canonical source identity;
+performs resource-aware engineering orchestration over worker skills/capacity,
+CI capacity, review topology, expected value, architecture debt and rollback cost;
+creates bounded atomic single- or multi-file code candidates including rename;
+runs admitted checks under a bounded sandbox controller; performs evaluator-owned
+mutation testing; verifies source/execution/evaluator evidence; records signed
+candidate-bound review eligibility; exposes distributed-fence, external-audit-anchor
+and external-key-custody admission contracts; and composes consent-bound dormant
+external-system proposals. The repository CI includes a named v2 product caller.
+It is not a learned code generator, merge service or autonomous release agent.
 
 Review requests and dormant proposals do not themselves merge, activate, deploy,
 enroll a host or transfer credentials. A deployment controller or production caller
@@ -24,12 +28,17 @@ must provide the separate owner authorization required by its own contract.
 | Owner | Responsibility | Main callers |
 | --- | --- | --- |
 | `path_policy.py` | Canonical POSIX paths and cross-platform alias rejection | Store, candidate generator and sandbox |
-| `control_plane.py` | SQLite schema, transactions, envelopes, leases, scheduling and audit | Public facade and CLI |
-| `candidate.py` | Deterministic candidate grammar, exact Git materialization and isolation | Public facade and CLI |
-| `evidence.py` | Exact Git objects, source/merge execution receipts and independent identities | Candidate evidence binder |
+| `control_plane.py` | SQLite schema, transactions, envelopes, leases, base scheduling and audit anchor head | Public facade, orchestrator and CLI |
+| `orchestration.py` | Exact source admission, signed completion receipts, skills/capacity scheduling, integration order and merge-queue proposals | Product caller and public package |
+| `candidate.py` | Deterministic single/multi-file/rename grammar, exact Git materialization and immutable oracle paths | Public facade and CLI |
+| `sandbox_control.py` | <=8 process-local sandbox admission and <=2 infrastructure-only retries | Mutation testing and production qualification |
+| `mutation_testing.py` | Baseline-pass / mutant-kill evaluator gate | Qualification |
+| `evidence.py` | Exact Git objects, source/merge execution receipts, pluggable signing port and independent identities | Candidate evidence binder |
 | `hardening.py` | Active-state frontier and authenticated evidence/consent primitives | Store, closure and seal |
 | `closure.py` | Source-tree and freshness-window binding, dormant assimilation | Seal and public facade |
 | `seal.py` | Signed evidence seals, replay prevention, review and durable eligibility | Public package and facade |
+| `external_controls.py` | Distributed fencing, external audit anchor and HSM/KMS custody receipt admission | Production worker/deployment composition |
+| `product_gate.py` | Named repository CI product caller over the v2 durable owner/orchestrator | `hepta-consolidated-source.yml` |
 | `cli.py` | Bounded JSON ingress and local operations | `python -m control_engineering_v2`, installed CLI |
 
 There are no import-time store patches or alternate clone sandbox owners. The
@@ -79,20 +88,32 @@ Envelope trailing `/**` denotes a canonical prefix. Leases check current envelop
 expiry, declared scope, active conflicts and revisions in the owner transaction.
 Renewal, release and revocation require the exact revision and epoch.
 
-At most 4096 packages, 4096 completed IDs, 256 predecessors per package, 4096 active
-leases, 256 paths per record and 128 assignments are admitted. Encoded semantic
+At most 4096 packages, 4096 authenticated completion receipts, 256 predecessors per
+package, 4096 active leases, 256 paths per record and 128 durable base assignments
+are admitted. The low-level compatibility scheduler still accepts completed IDs,
+but canonical resource-aware orchestration derives that set only from fresh signed
+`CompletionReceipt` objects bound to the same source commit/tree. Encoded semantic
 records also have a 256 KiB bound; hitting a byte bound may reject input below the
 item-count limit. Graph validation is iterative, so valid deep DAGs do not depend
-on Python's recursion limit. Scheduling applies completed predecessors, active
-lease exclusion, intra-batch path exclusion, stable priority and envelope capacity.
-A generation binds the exact source/envelope/active-lease frontier. A changed
-frontier requires a new generation ID. An assignment is a proposal; workers still
-need to acquire leases before writing their declared paths.
+on Python's recursion limit. Base scheduling applies verified completed predecessors, active lease exclusion,
+intra-batch path exclusion, stable priority and envelope capacity. The higher
+orchestration layer then matches required skills, worker capacity, CI units and
+review-role slots and orders admitted work by expected value minus architecture
+debt and rollback cost. A generation binds the exact source/envelope/active-lease
+frontier; the orchestration plan additionally binds the authenticated completion
+frontier. A changed frontier requires a new generation ID. An assignment is still
+a proposal; workers must acquire the exact local lease, and multi-host production
+writes must additionally present a signed distributed fence matching epoch/token,
+paths, source and revocation frontier.
 
 ## Candidate qualification
 
 Candidates bind exact base commit, allowed/protected paths and file/diff/resource
-budgets. No-change is first and candidate identity is content-derived. The executor
+budgets. No-change is first and candidate identity is content-derived. A candidate
+may be a single mutation or one atomic `MutationSet` of up to the changed-file
+ceiling; rename is a first-class two-path operation. Test, tests, __tests__, fixture,
+golden and common test-file forms are mandatory oracle paths and cannot be made
+mutable by an envelope. The executor
 requires the clean caller HEAD to match the envelope. It reads exact Git tree and
 blob records into a metadata-free temporary workspace, without checkout filters,
 Git archive attributes, hooks, repository remotes or credential files.
@@ -105,7 +126,12 @@ See [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md) for platform and mount policy.
 
 Checks use argument vectors without shell expansion, at most 64 checks, 256 arguments
 per check, 8192 characters per argument and 65536 characters per argument vector.
-One elapsed time budget covers all checks. Source HEAD/tree/refs/worktree and
+One elapsed time budget covers all checks. `SandboxCoordinator` admits at most
+eight process-local sandboxes and retries only the explicitly classified
+infrastructure failures, at most twice; semantic rejection is never retried.
+`run_mutation_testing` first requires the no-change/baseline candidate to pass
+the exact evaluator-owned check set and then requires every admitted code mutant
+to fail that same set. Source HEAD/tree/refs/worktree and
 candidate manifests are checked after every command, so a later check cannot hide
 an earlier mutation. Resource and isolation failure rejects or produces a failing
 receipt; no checks cannot pass. A production check runner must use an admitted
@@ -123,10 +149,13 @@ that seal; caller-made booleans or unsealed `BoundEvidenceDecision` values fail.
 Persisted bindings and seals commit with the decision, and seal reuse under a new
 decision ID is rejected. Denied decisions can still be recorded without a seal.
 
-`HmacTrustStore` is the deterministic reference/test signing adapter. Production
-composition needs independent registered signing identities and protected verifier
-keys. Tests using fixture signers establish protocol behavior; they do not establish
-organizational evaluator independence or production key custody.
+`HmacTrustStore` is the deterministic reference/test signing adapter.
+`SignatureTrustStore` is the production-facing signer/verifier protocol, so an
+HSM/KMS-backed adapter can be injected without changing evidence semantics.
+Production admission additionally requires a signed `KeyCustodyReceipt` proving
+hardware-backed custody outside the engineering process. Fixture signers establish
+protocol behavior only; they do not establish organizational independence or
+production key custody.
 
 ## Authorized external-system composition
 
@@ -158,10 +187,12 @@ PYTHONPATH=tools/hepta-engineering-control python3 -m control_engineering_v2 san
 
 Installation of `tools/hepta-engineering-control` provides `hepta-engineering` with
 the same commands. JSON object keys match the exported dataclass field names;
-`packages.json` and `mutations.json` are arrays of `WorkPackage` and `Mutation`
-objects. `checks.json` is an array of string argument arrays. Candidate IDs come from
-the `candidates` output, including its no-change entry. Schedule optionally accepts
-`--completed completed.json`, a JSON array of completed package IDs. Each input
+`packages.json` is an array of `WorkPackage` objects. `mutations.json` accepts
+single `Mutation` objects or `{"mutations": [...]}` atomic mutation sets. `checks.json` is an array of string argument arrays. Candidate IDs come from
+the `candidates` output, including its no-change entry. The legacy `schedule` CLI optionally accepts `--completed completed.json` as a
+local compatibility surface. Product composition must use
+`plan_engineering_work` with authenticated `CompletionReceipt` objects and must
+not treat caller-supplied completion strings as production evidence. Each input
 file is bounded to 2 MiB; duplicate and unknown record keys reject. Machine-readable
 results go to stdout; a rejected operation emits a safe error code on stderr and
 exits 1. A failed sandbox check also exits 1. The CLI cannot issue signed review
@@ -176,7 +207,10 @@ receipts, self-approve changes or deploy them.
 | Active lease conflict/capacity | Wait for or explicitly release/revoke the relevant lease |
 | Future/incomplete schema or corrupt audit | Stop using the store; restore or migrate with the compatible owner |
 | Isolation unavailable or workspace/source mutation | Reject qualification and repair the executor environment |
+| Sandbox capacity or infrastructure retry exhausted | Stop or reschedule; never retry unchanged semantic rejection |
+| Surviving mutation-test mutant | Reject the generated/evaluator test claim and strengthen the oracle |
 | Missing/tampered/stale binding, seal or replay | Obtain fresh independent execution evidence; never set eligibility manually |
+| Missing/stale distributed fence, external audit anchor or key-custody receipt | Block production worker/deployment admission |
 | Consent/parity mismatch or widened effect scope | Obtain exact owner consent and evaluator evidence for the declared target |
 
 Run all current engineering-control tests from the repository root:
