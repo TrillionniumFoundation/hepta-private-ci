@@ -101,7 +101,7 @@ pub struct RunStartPublicationV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LedgerEvent {
-    RunStart(RunStartPublicationV1),
+    RunStart(Box<RunStartPublicationV1>),
     Decision(EpisodeDecision),
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),

@@ -286,14 +286,14 @@ pub fn prepare_intelligence_run_v1<J: DurableLearningJournal>(
     )
     .map_err(ProductionObjectiveError::RunStart)?;
 
-    let event = LedgerEvent::RunStart(RunStartPublicationV1 {
+    let event = LedgerEvent::RunStart(Box::new(RunStartPublicationV1 {
         record_id: bindings.record_id,
         objective_v1_json,
         objective_v1_digest,
         admission: admission.clone(),
         compile: compile.clone(),
         run_start: run_start.clone(),
-    });
+    }));
     let durable_append = journal
         .append(bindings.expected_ledger_predecessor, event)
         .map_err(ProductionObjectiveError::Durable)?;
