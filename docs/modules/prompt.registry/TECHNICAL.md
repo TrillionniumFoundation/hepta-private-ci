@@ -235,7 +235,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 Status axes are intentionally separate and must not be collapsed into one label:
 
 - `PIM-0-PROMPT-INTERVENTION-CONTRACTS` is `source_implemented` in the canonical work-package registry.
-- `PIM-1-PROMPT-FACTOR-REGISTRY` remains `planned` at the package/DAG level because its declared development predecessor `MEM-1-STORE` is still open; this does not erase the source-level durable registry slice already present in this candidate.
+- `PIM-1-PROMPT-FACTOR-REGISTRY` is `source_implemented_execution_pending`: the durable registry source slice, authenticated lifecycle, canonical projections, exercise-bound delivery and focused fault/capacity fixtures are present, while exact-head/merge-candidate execution is still pending. `MEM-1-STORE` remains an open development/activation predecessor and therefore blocks activation, not truthful source-state reporting.
 - `PIM-3-FACTOR-EVOLUTION` remains `planned`; split/merge/evolution and causal-ablation deliverables are not claimed by the registry source implemented here.
 - `productionImplementation`, runtime activation, product execution, independent acceptance, promotion and release remain false/open until their separate gates are satisfied.
 
@@ -279,7 +279,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-1-PROMPT-FACTOR-REGISTRY`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented_execution_pending`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
