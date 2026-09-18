@@ -190,8 +190,8 @@ impl BaoClient {
         if !request.namespace.is_empty() {
             network_request = network_request.header("X-Vault-Namespace", &request.namespace);
         }
-        let verified = claim_final_use(authority, grant, &binding)
-            .map_err(BaoClientError::Authority)?;
+        let verified =
+            claim_final_use(authority, grant, &binding).map_err(BaoClientError::Authority)?;
         let mut response = network_request.send().await.map_err(transport_error)?;
         match response.status() {
             StatusCode::OK => {}
@@ -235,9 +235,11 @@ impl BaoClient {
             version: request.version,
             secret_bytes: secret.len(),
         };
-        deliver_final_use(authority, verified, &binding, || consumer(secret.as_bytes()))
-            .map_err(BaoClientError::Authority)?
-            .map_err(|()| BaoClientError::ConsumerIndeterminate)?;
+        deliver_final_use(authority, verified, &binding, || {
+            consumer(secret.as_bytes())
+        })
+        .map_err(BaoClientError::Authority)?
+        .map_err(|()| BaoClientError::ConsumerIndeterminate)?;
         Ok(receipt)
     }
 }
