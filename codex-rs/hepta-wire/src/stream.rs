@@ -5,8 +5,11 @@ use std::io::Read;
 
 use crate::WIRE_VERSION_V1;
 use crate::WIRE_VERSION_V2;
+use crate::NegotiatedWire;
+use crate::NegotiationError;
 use crate::WireError;
 use crate::WireFrame;
+use crate::WireVersion;
 use crate::envelope::HEADER_FIXED_BYTES;
 use crate::envelope::MAX_ID_BYTES;
 use crate::envelope::parse_frame_header;
@@ -21,12 +24,31 @@ pub const MAX_STREAM_BUFFER_BYTES: usize = MAX_WIRE_FRAME_BYTES * 2;
 /// are validated. The body allocation is therefore bounded by protocol limits
 /// rather than by untrusted transport buffering.
 pub fn read_frame<R: Read>(reader: &mut R) -> Result<WireFrame, WireReadError> {
+    read_frame_inner(reader, None)
+}
+
+pub fn read_frame_for<R: Read>(
+    reader: &mut R,
+    negotiated: NegotiatedWire,
+) -> Result<WireFrame, WireReadError> {
+    read_frame_inner(reader, Some(negotiated))
+}
+
+fn read_frame_inner<R: Read>(
+    reader: &mut R,
+    negotiated: Option<NegotiatedWire>,
+) -> Result<WireFrame, WireReadError> {
     let mut header_bytes = [0_u8; HEADER_FIXED_BYTES];
     reader
         .read_exact(&mut header_bytes)
         .map_err(WireReadError::Io)?;
     let header = parse_frame_header(&header_bytes).map_err(WireReadError::Wire)?;
     ensure_supported_version(header.version).map_err(WireReadError::Wire)?;
+    if let Some(negotiated) = negotiated {
+        negotiated
+            .ensure_version(header.version)
+            .map_err(WireReadError::Negotiation)?;
+    }
 
     let mut frame = Vec::with_capacity(header.total_length);
     frame.extend_from_slice(&header_bytes);
@@ -45,11 +67,19 @@ pub fn read_frame<R: Read>(reader: &mut R) -> Result<WireFrame, WireReadError> {
 #[derive(Default)]
 pub struct WireStreamDecoder {
     buffer: Vec<u8>,
+    expected_version: Option<WireVersion>,
 }
 
 impl WireStreamDecoder {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn for_negotiated(negotiated: NegotiatedWire) -> Self {
+        Self {
+            buffer: Vec::new(),
+            expected_version: Some(negotiated.version()),
+        }
     }
 
     pub fn buffered_bytes(&self) -> usize {
@@ -85,6 +115,17 @@ impl WireStreamDecoder {
             self.buffer.clear();
             return Err(StreamDecodeError::Wire(error));
         }
+        if let Some(expected) = self.expected_version {
+            if header.version != expected.as_u16() {
+                self.buffer.clear();
+                return Err(StreamDecodeError::Negotiation(
+                    NegotiationError::VersionMismatch {
+                        expected,
+                        observed: header.version,
+                    },
+                ));
+            }
+        }
         if self.buffer.len() < header.total_length {
             return Ok(None);
         }
@@ -113,6 +154,7 @@ fn ensure_supported_version(version: u16) -> Result<(), WireError> {
 pub enum WireReadError {
     Io(io::Error),
     Wire(WireError),
+    Negotiation(NegotiationError),
 }
 
 impl fmt::Display for WireReadError {
@@ -120,6 +162,7 @@ impl fmt::Display for WireReadError {
         match self {
             Self::Io(error) => write!(formatter, "wire transport read failed: {error}"),
             Self::Wire(error) => error.fmt(formatter),
+            Self::Negotiation(error) => error.fmt(formatter),
         }
     }
 }
@@ -129,6 +172,7 @@ impl Error for WireReadError {
         match self {
             Self::Io(error) => Some(error),
             Self::Wire(error) => Some(error),
+            Self::Negotiation(error) => Some(error),
         }
     }
 }
@@ -137,6 +181,7 @@ impl Error for WireReadError {
 pub enum StreamDecodeError {
     BufferLimit,
     Wire(WireError),
+    Negotiation(NegotiationError),
 }
 
 impl fmt::Display for StreamDecodeError {
@@ -144,6 +189,7 @@ impl fmt::Display for StreamDecodeError {
         match self {
             Self::BufferLimit => formatter.write_str("wire stream buffer limit exceeded"),
             Self::Wire(error) => error.fmt(formatter),
+            Self::Negotiation(error) => error.fmt(formatter),
         }
     }
 }
@@ -158,7 +204,9 @@ mod tests {
     use codex_hepta_types::StableId;
 
     use crate::WireEnvelope;
+    use crate::WireCapability;
     use crate::WireEnvelopeV2;
+    use crate::negotiate;
 
     use super::*;
 
@@ -211,6 +259,27 @@ mod tests {
         }
         assert_eq!(decoded, vec![first, second]);
         assert_eq!(decoder.buffered_bytes(), 0);
+    }
+
+    #[test]
+    fn negotiated_reader_rejects_v1_downgrade() {
+        let negotiated = negotiate(
+            &[WireVersion::V1, WireVersion::V2],
+            &[WireVersion::V1, WireVersion::V2],
+            &[WireCapability::FullFrameIntegrity],
+        )
+        .expect("negotiate");
+        let bytes = v1().encode();
+        let mut cursor = Cursor::new(bytes);
+        assert!(matches!(
+            read_frame_for(&mut cursor, negotiated),
+            Err(WireReadError::Negotiation(
+                NegotiationError::VersionMismatch {
+                    expected: WireVersion::V2,
+                    observed: 1,
+                }
+            ))
+        ));
     }
 
     #[test]
