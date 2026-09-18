@@ -21,9 +21,6 @@ fn snapshot() -> RunSnapshot {
         objective_digest: digest('4'),
         body_digest: digest('5'),
         artifact_set_digest: digest('6'),
-        intelligence_envelope_digest: None,
-        expected_context_digest: None,
-        expected_context_receipt_digest: None,
         authority_epoch: 7,
         deadline_ms: 10_000,
     }
