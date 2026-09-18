@@ -52,4 +52,12 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_artifacts::verify_artifact_admission_v3;
     let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::append;
     let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::from_snapshot;
+    let _ = codex_hepta_learning_artifacts::write_dataset_withdrawal_snapshot;
+    let _ = codex_hepta_learning_artifacts::read_dataset_withdrawal_snapshot;
+    let _ = codex_hepta_learning_artifacts::write_artifact_lifecycle_snapshot;
+    let _ = codex_hepta_learning_artifacts::read_artifact_lifecycle_snapshot;
+    let _ = codex_hepta_learning_artifacts::prepare_artifact_publication_v1;
+    let _ = codex_hepta_learning_artifacts::verify_artifact_publication_commit_v1;
+    let _ = codex_hepta_learning_artifacts::write_artifact_publication_commit;
+    let _ = codex_hepta_learning_artifacts::read_artifact_publication_commit;
 }
