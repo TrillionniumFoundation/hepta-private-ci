@@ -71,7 +71,7 @@ impl NativeShellRuntime {
         &mut self,
         view: RuntimeView,
     ) -> Result<PresentationState, ShellError> {
-        let session = self.require_session()?;
+        let session = self.require_session()?.clone();
         view.validate()?;
         if view.session_id != session.session_id || view.session_generation != session.generation {
             return Err(ShellError::State(
