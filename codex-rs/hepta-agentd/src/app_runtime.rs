@@ -2,6 +2,8 @@ use std::collections::BTreeMap;
 use std::num::NonZeroUsize;
 use std::sync::Arc;
 
+use tokio_util::sync::CancellationToken;
+
 use codex_app_server::AppServerRuntimeOptions;
 use codex_app_server::AppServerTransport;
 use codex_app_server::AppServerWebsocketAuthSettings;
@@ -30,11 +32,12 @@ pub(crate) async fn run_app_server(
     arg0_paths: Arg0DispatchPaths,
     cognitive_runtime: CognitiveRuntime,
     state: Arc<AgentdState>,
+    shutdown: CancellationToken,
 ) -> std::io::Result<()> {
     let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)?;
     let config_overrides = app_server_config_overrides();
     let runtime_options =
-        app_server_runtime_options_for_agent(&identity, state, cognitive_runtime)?;
+        app_server_runtime_options_for_agent(&identity, state, cognitive_runtime, shutdown)?;
     codex_app_server::run_main_with_transport_options(
         arg0_paths,
         config_overrides,
@@ -81,6 +84,7 @@ pub(crate) fn app_server_runtime_options(
         identity,
         cognitive_runtime,
         /*qualification_turn_writer*/ None,
+        /*embedding_shutdown_token*/ None,
     )
 }
 
@@ -88,15 +92,17 @@ pub(crate) fn app_server_runtime_options_for_agent(
     identity: &AgentdIdentity,
     state: Arc<AgentdState>,
     cognitive_runtime: CognitiveRuntime,
+    shutdown: CancellationToken,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);
-    app_server_runtime_options_with_writer(identity, cognitive_runtime, writer)
+    app_server_runtime_options_with_writer(identity, cognitive_runtime, writer, Some(shutdown))
 }
 
 fn app_server_runtime_options_with_writer(
     identity: &AgentdIdentity,
     cognitive_runtime: CognitiveRuntime,
     qualification_turn_writer: Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+    embedding_shutdown_token: Option<CancellationToken>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let turn_queue_capacity = usize::try_from(identity.resources.turn_queue_capacity)
         .map_err(|_| std::io::Error::other("turn queue capacity does not fit this platform"))?;
@@ -105,7 +111,11 @@ fn app_server_runtime_options_with_writer(
     })?;
     Ok(AppServerRuntimeOptions {
         remote_control_startup_mode: RemoteControlStartupMode::DisabledEphemeral,
-        install_shutdown_signal_handler: true,
+        // Agentd owns OS shutdown ordering. The embedded App Server receives
+        // only the explicit host token after Agentd has closed lifecycle
+        // admission.
+        install_shutdown_signal_handler: embedding_shutdown_token.is_none(),
+        embedding_shutdown_token,
         turn_queue_capacity: Some(turn_queue_capacity),
         required_sqlite_home: Some(AbsolutePathBuf::from_absolute_path(&identity.home_root)?),
         required_thread_store_mode: Some(ThreadStoreConfig::Local),

@@ -219,10 +219,12 @@ impl AgentdState {
     }
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
-        {
-            let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-            runtime.app_server_ready = false;
-        }
+        // Keep the runtime guard until the durable run ledger has installed
+        // its drain fence. A concurrent admission that already acquired the
+        // same runtime guard linearizes before drain; every later admission
+        // observes app_server_ready=false.
+        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.app_server_ready = false;
         self.runs
             .lock()
             .map_err(poisoned_state)?
@@ -230,6 +232,7 @@ impl AgentdState {
                 coordinator.begin_drain();
                 Ok(())
             })?;
+        drop(runtime);
         self.events
             .lock()
             .map_err(poisoned_state)?
@@ -264,7 +267,7 @@ impl AgentdState {
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentdError> {
-        self.require_run_execution_ready()?;
+        let _runtime = self.run_execution_guard()?;
         self.runs
             .lock()
             .map_err(poisoned_state)?
@@ -277,7 +280,7 @@ impl AgentdState {
         expected_revision: u64,
         attachment: ContextAttachment,
     ) -> Result<RunReceipt, AgentdError> {
-        self.require_run_execution_ready()?;
+        let _runtime = self.run_execution_guard()?;
         self.runs
             .lock()
             .map_err(poisoned_state)?
@@ -292,7 +295,7 @@ impl AgentdState {
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentdError> {
-        self.require_run_execution_ready()?;
+        let _runtime = self.run_execution_guard()?;
         self.runs
             .lock()
             .map_err(poisoned_state)?
@@ -385,7 +388,9 @@ impl AgentdState {
             .transact(|coordinator| coordinator.mark_unfinished_for_shutdown())
     }
 
-    fn require_run_execution_ready(&self) -> Result<(), AgentdError> {
+    fn run_execution_guard(
+        &self,
+    ) -> Result<std::sync::MutexGuard<'_, RuntimeState>, AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         if runtime.lifecycle != AgentLifecycle::Running
@@ -397,7 +402,7 @@ impl AgentdState {
                     .to_string(),
             ));
         }
-        Ok(())
+        Ok(runtime)
     }
 
     fn require_run_reconciliation_ready(&self) -> Result<(), AgentdError> {

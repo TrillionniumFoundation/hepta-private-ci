@@ -205,7 +205,6 @@ enum ShutdownAction {
 #[derive(Clone, Copy)]
 enum ShutdownSignal {
     Forceable,
-    #[cfg(unix)]
     GracefulOnly,
 }
 
@@ -450,6 +449,12 @@ pub struct AppServerRuntimeOptions {
     pub plugin_startup_tasks: PluginStartupTasks,
     pub remote_control_startup_mode: RemoteControlStartupMode,
     pub install_shutdown_signal_handler: bool,
+    /// Optional embedding-owned graceful-shutdown trigger.
+    ///
+    /// When present, the embedding runtime owns OS signal handling. Cancelling
+    /// this token closes new execution admission before the App Server waits
+    /// for already-running assistant turns to drain.
+    pub embedding_shutdown_token: Option<CancellationToken>,
     /// Optional maximum pending turn rows in this runtime's queue database.
     ///
     /// Ordinary Codex leaves this unset and retains only its historical
@@ -511,6 +516,10 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
                 "install_shutdown_signal_handler",
                 &self.install_shutdown_signal_handler,
             )
+            .field(
+                "embedding_shutdown_token_attached",
+                &self.embedding_shutdown_token.is_some(),
+            )
             .field("turn_queue_capacity", &self.turn_queue_capacity)
             .field("required_sqlite_home", &self.required_sqlite_home)
             .field(
@@ -545,6 +554,7 @@ impl PartialEq for AppServerRuntimeOptions {
             && self.plugin_startup_tasks == other.plugin_startup_tasks
             && self.remote_control_startup_mode == other.remote_control_startup_mode
             && self.install_shutdown_signal_handler == other.install_shutdown_signal_handler
+            && self.embedding_shutdown_token.is_some() == other.embedding_shutdown_token.is_some()
             && self.turn_queue_capacity == other.turn_queue_capacity
             && self.required_sqlite_home == other.required_sqlite_home
             && self.required_thread_store_mode == other.required_thread_store_mode
@@ -597,6 +607,7 @@ impl Default for AppServerRuntimeOptions {
             plugin_startup_tasks: PluginStartupTasks::Start,
             remote_control_startup_mode: RemoteControlStartupMode::ResolvePersisted,
             install_shutdown_signal_handler: true,
+            embedding_shutdown_token: None,
             turn_queue_capacity: None,
             required_sqlite_home: None,
             required_thread_store_mode: None,
@@ -1105,6 +1116,7 @@ pub async fn run_main_with_transport_options(
         }));
         let mut thread_created_rx = processor.thread_created_receiver();
         let mut running_turn_count_rx = processor.subscribe_running_assistant_turn_count();
+        let embedding_shutdown_token = runtime_options.embedding_shutdown_token.clone();
         let mut connections = HashMap::<ConnectionId, ConnectionState>::new();
         let mut connection_cleanup_tasks = ConnectionCleanupTasks::new();
         let mut remote_control_status_rx = remote_control_handle.status_receiver();
@@ -1130,6 +1142,23 @@ pub async fn run_main_with_transport_options(
                 }
 
                 tokio::select! {
+                    _ = async {
+                        if let Some(token) = embedding_shutdown_token.as_ref() {
+                            token.cancelled().await;
+                        }
+                    }, if embedding_shutdown_token.is_some() && !shutdown_state.requested() => {
+                        // The embedding host owns ordering: it closes its own
+                        // admission first, then cancels this token. Reject any
+                        // queued/new execution starts before waiting for active
+                        // assistant turns to reach zero.
+                        processor.begin_admission_drain();
+                        let running_turn_count = *running_turn_count_rx.borrow();
+                        shutdown_state.on_signal(
+                            ShutdownSignal::GracefulOnly,
+                            connections.len(),
+                            running_turn_count,
+                        );
+                    }
                     shutdown_signal_result = shutdown_signal(), if graceful_signal_restart_enabled && !shutdown_state.forced() => {
                         let signal = match shutdown_signal_result {
                             Ok(signal) => signal,

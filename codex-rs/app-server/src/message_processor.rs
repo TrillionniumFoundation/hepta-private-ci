@@ -5,6 +5,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use crate::attestation::app_server_attestation_provider;
 use crate::config_manager::ConfigManager;
@@ -187,6 +188,7 @@ pub(crate) struct MessageProcessor {
     turn_processor: TurnRequestProcessor,
     windows_sandbox_processor: WindowsSandboxRequestProcessor,
     request_serialization_queues: RequestSerializationQueues,
+    execution_admission_draining: AtomicBool,
 }
 
 #[derive(Debug)]
@@ -654,7 +656,44 @@ impl MessageProcessor {
             turn_processor,
             windows_sandbox_processor,
             request_serialization_queues,
+            execution_admission_draining: AtomicBool::new(false),
         }
+    }
+
+    /// Close new execution admission without interrupting already-running turns.
+    ///
+    /// The gate is checked after request serialization as well as for newly
+    /// arriving requests, so work queued before the drain cannot cross the
+    /// start boundary after the host has requested shutdown.
+    pub(crate) fn begin_admission_drain(&self) {
+        self.execution_admission_draining
+            .store(true, Ordering::Release);
+    }
+
+    fn reject_execution_start_while_draining(
+        &self,
+        request: &ClientRequest,
+    ) -> Result<(), JSONRPCErrorError> {
+        if !self
+            .execution_admission_draining
+            .load(Ordering::Acquire)
+        {
+            return Ok(());
+        }
+        let starts_execution = matches!(
+            request,
+            ClientRequest::TurnStart { .. }
+                | ClientRequest::ThreadQueueStart { .. }
+                | ClientRequest::ThreadRealtimeStart { .. }
+                | ClientRequest::ReviewStart { .. }
+                | ClientRequest::ThreadCompactStart { .. }
+        );
+        if starts_execution {
+            return Err(invalid_request(
+                "app-server is draining; new execution admission is closed",
+            ));
+        }
+        Ok(())
     }
 
     pub(crate) fn clear_runtime_references(&self) {
@@ -958,6 +997,7 @@ impl MessageProcessor {
         if !session.initialized() {
             return Err(invalid_request("Not initialized"));
         }
+        self.reject_execution_start_while_draining(&codex_request)?;
 
         if let Some(reason) = codex_request.experimental_reason()
             && !session.experimental_api_enabled()
@@ -1034,6 +1074,10 @@ impl MessageProcessor {
             connection_id,
             request_id: codex_request.id().clone(),
         };
+        // Recheck after request serialization. A start request may have been
+        // queued while admission was open and only reach execution after the
+        // embedding host began draining.
+        self.reject_execution_start_while_draining(&codex_request)?;
 
         let response_request_id = request_id.clone();
         let outgoing = Arc::clone(&self.outgoing);

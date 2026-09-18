@@ -102,6 +102,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         state.attach_automation_store(store.clone())?;
     }
     let cancellation = CancellationToken::new();
+    let app_server_shutdown = CancellationToken::new();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),
         Arc::clone(&state),
@@ -114,6 +115,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         arg0_paths,
         cognitive_runtime,
         Arc::clone(&state),
+        app_server_shutdown.clone(),
     ));
     let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
     let automation_cancellation = cancellation.clone();
@@ -161,14 +163,21 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             Some(CompletedRuntimeTask::Automation),
         ),
         signal = shutdown_signal() => {
+            // Agentd is the sole OS-signal owner. Close the lifecycle
+            // admission boundary first, then ask the embedded App Server to
+            // reject new execution starts and drain its already-running turns.
             let outcome = signal.and_then(|()| state.mark_draining());
+            if outcome.is_ok() {
+                app_server_shutdown.cancel();
+            }
             (outcome, None)
         }
     };
     if completed_task.is_none() && outcome.is_ok() {
-        // The embedded App Server receives the same process signal and owns
-        // turn/model/tool draining. Keep Agentd control and reconciliation
-        // alive until that drain finishes or the bounded timeout expires.
+        // Agentd has already closed lifecycle admission and explicitly
+        // triggered the embedded App Server's execution-admission drain.
+        // Keep Agentd control and reconciliation alive until existing turns
+        // finish or the bounded timeout expires.
         outcome = drain_app_server(&state, &mut app_server_task).await;
         completed_task = Some(CompletedRuntimeTask::AppServer);
     } else {
