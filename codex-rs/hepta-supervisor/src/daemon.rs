@@ -761,6 +761,49 @@ async fn maintain_fleet_allocations<D: ProcessDriver>(state: &Arc<DaemonState<D>
 }
 
 #[cfg(unix)]
+async fn reserve_start_allocation<D: ProcessDriver>(
+    state: &DaemonState<D>,
+    agent_id: &AgentId,
+    accepted: &SupervisordAgentStatus,
+) -> Result<(), SupervisorError> {
+    let record = state
+        .registry
+        .load()?
+        .agent(agent_id)
+        .cloned()
+        .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+    let lifecycle_generation = record
+        .lifecycle
+        .generation
+        .checked_add(1)
+        .ok_or_else(|| SupervisorError::Invalid("lifecycle generation overflow".to_string()))?;
+    state
+        .fleet_allocator
+        .lock()
+        .await
+        .reserve_agent_start(
+            agent_id,
+            &record.manifest.resources,
+            lifecycle_generation,
+            accepted.control_fence.state_digest.as_str(),
+            unix_millis_now(),
+        )?;
+    Ok(())
+}
+
+#[cfg(unix)]
+async fn release_start_allocation<D: ProcessDriver>(
+    state: &DaemonState<D>,
+    agent_id: &AgentId,
+) {
+    let _ = state
+        .fleet_allocator
+        .lock()
+        .await
+        .release_agent(agent_id, unix_millis_now());
+}
+
+#[cfg(unix)]
 async fn handle_mutation<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     operation: SupervisordMutation,
@@ -834,11 +877,31 @@ async fn handle_mutation<D: ProcessDriver>(
         );
     }
 
+    let start_reserved = matches!(&prepared, PreparedMutation::Start(_));
+    if start_reserved
+        && let Err(error) = reserve_start_allocation(&state, &agent_id, &actual).await
+    {
+        let refreshed = agent_status_locked(&state, &supervisor, &agent_id).ok();
+        return safe_rejection(
+            error,
+            refreshed.or(Some(actual)),
+            /*mutation_started*/ false,
+        );
+    }
+
     let next_revision = match supervisor.next_control_revision(&agent_id) {
         Ok(revision) => revision,
-        Err(error) => return safe_rejection(error, Some(actual), /*mutation_started*/ false),
+        Err(error) => {
+            if start_reserved {
+                release_start_allocation(&state, &agent_id).await;
+            }
+            return safe_rejection(error, Some(actual), /*mutation_started*/ false);
+        }
     };
     if let Err(error) = supervisor.set_control_revision(&agent_id, next_revision) {
+        if start_reserved {
+            release_start_allocation(&state, &agent_id).await;
+        }
         return safe_rejection(error, Some(actual), /*mutation_started*/ false);
     }
 
@@ -1199,6 +1262,11 @@ fn safe_rejection(
         SupervisorError::SignedIntentRecoveryRequired(_) => error_payload(
             "signed_intent_recovery_required",
             "a prior signed lifecycle operation requires recovery",
+            actual,
+        ),
+        SupervisorError::FleetAllocation(_) => error_payload(
+            "resource_unavailable",
+            "fleet resource admission or reconciliation is unavailable",
             actual,
         ),
         SupervisorError::CorruptLease(_)
@@ -1577,6 +1645,7 @@ mod tests {
             "no_previous_release",
             "no_previous_command",
             "unresolved_lease",
+            "resource_unavailable",
             "generation_fenced",
             "control_state_unavailable",
             "operation_indeterminate",
