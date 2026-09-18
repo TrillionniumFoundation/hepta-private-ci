@@ -38,6 +38,7 @@ use crate::LearningLedger;
 use crate::LedgerAnchor;
 use crate::LedgerError;
 use crate::LedgerEvent;
+use crate::LedgerRecord;
 use crate::LedgerSegmentCheckpoint;
 use crate::LedgerSnapshot;
 use crate::LedgerWitnessFrontier;
@@ -212,6 +213,10 @@ impl LedgerWriter {
 
     pub fn snapshot(&self) -> Result<LedgerSnapshot, ProductionLedgerError> {
         self.backend.snapshot().map_err(Into::into)
+    }
+
+    pub fn records(&self) -> Result<Vec<LedgerRecord>, ProductionLedgerError> {
+        Ok(self.backend.snapshot()?.records().to_vec())
     }
 
     pub fn witness_frontier(&self) -> Result<LedgerWitnessFrontier, ProductionLedgerError> {
