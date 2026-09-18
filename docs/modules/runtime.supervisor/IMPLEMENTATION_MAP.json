@@ -108,40 +108,9 @@
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true
-    },
-    {
-      "designOperation": "host_global_control_plane",
-      "mappingClass": "owner_native_cross_module_composition",
-      "ownerEntrypoint": {
-        "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-supervisor/src/global_control.rs",
-        "symbol": "GlobalControlHostV1",
-        "buildTarget": "codex-hepta-supervisor"
-      },
-      "delegatedCallees": [
-        "kernel.evidence::HeptaEvidenceStore::admit_authbus_message",
-        "runtime.fleet::LeaseLedger",
-        "control.runtime::compose_global_plan_with_fleet_v1",
-        "control.runtime::PlannerJournalStoreV1",
-        "kernel.authority::FinalUseAuthority"
-      ],
-      "tests": [
-        {
-          "path": "codex-rs/hepta-supervisor/src/global_control_tests.rs",
-          "kind": "durable_cross_lane_integration",
-          "command": "just test -p codex-hepta-supervisor --lib global_control"
-        }
-      ],
-      "sourceSemantics": "Hosts pinned non-fleet owner trust, durable AuthBus replay, fleet-backed resource admission, NDU/global planning, durable planner decisions and independently signed final-use dispatch without adding an unregistered network protocol.",
-      "operation": "host_global_control_plane",
-      "nativeSymbol": "GlobalControlHostV1",
-      "sourcePath": "codex-rs/hepta-supervisor/src/global_control.rs",
-      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Wire GlobalControlHostV1 into a selected supervisord deployment configuration only after the global planning ingress/wire profile is registered; source composition alone is not activation."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "deployed binary and host identity",
     "target-host watchdog/start/drain measurements",
