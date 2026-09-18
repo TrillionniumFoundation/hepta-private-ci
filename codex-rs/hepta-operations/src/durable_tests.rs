@@ -247,6 +247,65 @@ async fn owner_handoff_fences_pending_workers_and_dispatched_work_requires_recon
 }
 
 #[tokio::test]
+async fn authority_epoch_rotation_fences_pending_and_quarantines_dispatched_work() {
+    let temp = TempDir::new().unwrap();
+    let store = DurableOperationStore::open(&config(temp.path()))
+        .await
+        .unwrap();
+    prepare(&store).await;
+    let stale = claim(&store, 60_000).await;
+
+    let rotated = store
+        .rotate_authority_epoch(&intent().operation_id, generation(3), generation(10))
+        .await
+        .unwrap();
+    assert_eq!(rotated.state, DurableOperationState::Pending);
+    assert_eq!(rotated.intent.owner_generation, generation(3));
+    assert_eq!(rotated.intent.authority_epoch, generation(10));
+    assert!(matches!(
+        store
+            .record_dispatch_started(&stale, stale.envelope().attempt_digest())
+            .await,
+        Err(OperationError::StaleGeneration | OperationError::StaleLease)
+    ));
+
+    let fresh = store
+        .claim_outbox(
+            &intent().operation_id,
+            generation(3),
+            generation(10),
+            &stable_id("worker:epoch-10"),
+            60_000,
+        )
+        .await
+        .unwrap();
+    store
+        .record_dispatch_started(&fresh, fresh.envelope().attempt_digest())
+        .await
+        .unwrap();
+
+    let quarantined = store
+        .rotate_authority_epoch(&intent().operation_id, generation(3), generation(11))
+        .await
+        .unwrap();
+    assert_eq!(quarantined.state, DurableOperationState::Indeterminate);
+    assert_eq!(quarantined.intent.authority_epoch, generation(11));
+    assert!(quarantined.indeterminate_reason_digest.is_some());
+    assert!(matches!(
+        store
+            .claim_outbox(
+                &intent().operation_id,
+                generation(3),
+                generation(11),
+                &stable_id("worker:no-resend"),
+                60_000,
+            )
+            .await,
+        Err(OperationError::Unavailable)
+    ));
+}
+
+#[tokio::test]
 async fn transport_ack_is_not_terminal_and_terminal_replay_is_exact() {
     let temp = TempDir::new().unwrap();
     let store = DurableOperationStore::open(&config(temp.path()))
