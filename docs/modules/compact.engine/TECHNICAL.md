@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); observed identifiers include `CompactCheckpoint`, `compact`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
+The registered primary source remains [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs). The current crate exports the canonical `CompactCheckpointV1` / `CompactionProofV2` contracts plus `build_qualified_candidate` and `prove_compaction`; the historical `NATIVE_BINDINGS.json` observation that named the removed `CompactCheckpoint` / `compact` surface is not an exact-head API claim. Exact-head source and test identity comes from the CI-generated implementation evidence described in section 12. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
