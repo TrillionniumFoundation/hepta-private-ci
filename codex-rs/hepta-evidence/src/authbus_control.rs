@@ -283,19 +283,6 @@ impl HeptaEvidenceStore {
             .map_err(classify_sqlx_error)?;
         let now_i64 = now_millis()?;
         let now = clock(now_i64)?;
-        if now >= expires_at_ms {
-            return Err(AuthBusControlError::InvalidTransition);
-        }
-
-        let decision = authorize_in_tx(
-            &mut tx,
-            policy_id,
-            policy_revision,
-            principal_id,
-            action_id,
-            scope_digest,
-        )
-        .await?;
 
         let binding_digest = reservation_binding_digest(
             policy_id,
@@ -326,11 +313,31 @@ impl HeptaEvidenceStore {
                 && existing.effect_digest == effect_digest
                 && existing.binding_digest == binding_digest
             {
+                let decision = policy_decision(
+                    policy_id,
+                    policy_revision,
+                    principal_id,
+                    action_id,
+                    scope_digest,
+                );
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Ok((decision, existing));
             }
             return Err(AuthBusControlError::IdempotencyConflict);
         }
+
+        if now >= expires_at_ms {
+            return Err(AuthBusControlError::InvalidTransition);
+        }
+        let decision = authorize_in_tx(
+            &mut tx,
+            policy_id,
+            policy_revision,
+            principal_id,
+            action_id,
+            scope_digest,
+        )
+        .await?;
 
         let row = sqlx::query(
             "SELECT revision, window_start_ms, window_end_ms, endowment, reserved, consumed
@@ -801,6 +808,22 @@ async fn authorize_in_tx(
     if allowed != Some(1) {
         return Err(AuthBusControlError::Denied);
     }
+    Ok(policy_decision(
+        policy_id,
+        revision,
+        principal_id,
+        action_id,
+        scope_digest,
+    ))
+}
+
+fn policy_decision(
+    policy_id: &StableId,
+    revision: u64,
+    principal_id: &StableId,
+    action_id: &StableId,
+    scope_digest: Digest32,
+) -> PolicyDecision {
     let mut bytes = b"hepta.authbus.policy-decision.v1\0".to_vec();
     push(&mut bytes, policy_id.as_str());
     bytes.extend_from_slice(&revision.to_be_bytes());
@@ -808,12 +831,12 @@ async fn authorize_in_tx(
     push(&mut bytes, action_id.as_str());
     bytes.extend_from_slice(scope_digest.as_array());
     bytes.push(1);
-    Ok(PolicyDecision {
+    PolicyDecision {
         policy_id: policy_id.clone(),
         revision,
         allowed: true,
         decision_digest: Digest32::of_bytes(&bytes),
-    })
+    }
 }
 
 async fn require_policy_head(

@@ -408,6 +408,25 @@ async fn begin_effect_racing_cancel_has_one_linearization_and_never_double_refun
 }
 
 #[tokio::test]
+async fn exact_reservation_retry_after_revocation_is_observation_not_new_authority() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    seed(&store, 5).await;
+    let original = reserve(&store, "lost-response", 2).await.unwrap();
+    store
+        .set_authbus_policy_revoked(&id("policy:one"), 1, true)
+        .await
+        .unwrap();
+
+    let duplicate = reserve(&store, "lost-response", 2).await.unwrap();
+    assert_eq!(duplicate, original);
+    assert!(matches!(
+        begin_effect(&store, &duplicate.1, effect("lost-response")).await,
+        Err(AuthBusControlError::Denied)
+    ));
+}
+
+#[tokio::test]
 async fn owner_clock_rejects_already_expired_reservation() {
     let temp = TempDir::new().unwrap();
     let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
