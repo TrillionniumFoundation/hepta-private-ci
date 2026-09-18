@@ -9,6 +9,7 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod effect_executor;
 
+mod causal;
 mod model;
 mod scheduler;
 mod store;
@@ -22,9 +23,14 @@ mod taskflow_step;
 pub use model::AutomationAdmission;
 pub use model::AutomationDispatchUncertainty;
 pub use model::AutomationError;
+pub use causal::AutomationOccurrence;
 pub use model::AutomationLease;
+pub use model::AutomationMissedRunPolicy;
+pub use model::AutomationOccurrenceTerminal;
+pub use model::AutomationOverlapPolicy;
 pub use model::AutomationQueueReceipt;
 pub use model::AutomationSchedule;
+pub use model::automation_occurrence_id;
 pub use model::AutomationTask;
 pub use model::AutomationTaskDraft;
 pub use model::AutomationTaskId;
@@ -100,4 +106,4 @@ pub use taskflow_step::TaskFlowStepReceipt;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 3;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 4;
