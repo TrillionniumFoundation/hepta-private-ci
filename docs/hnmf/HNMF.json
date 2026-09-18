@@ -73,14 +73,23 @@
       "id": "ModalitySpanRefV1",
       "maximumEncodedBytes": 32768,
       "requiredFields": [
+        "spanId",
         "modality",
         "assetSha256",
-        "start",
-        "end",
+        "range",
         "preprocessorManifestSha256",
         "uncertaintyPpm",
         "privacyClass"
-      ]
+      ],
+      "nativeRustType": "ModalitySpanRefV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+      "wireSchemaId": "hepta.hnmf.modality-span-ref.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "MemoryEventV1",
@@ -91,13 +100,24 @@
         "scope",
         "observedInterval",
         "modalitySpans",
+        "crossModalBindings",
         "semanticKeys",
         "provenance",
         "verification",
         "retentionPolicy",
         "objectiveDigest",
-        "nduStateDigest"
-      ]
+        "nduStateDigest",
+        "lifecycle"
+      ],
+      "nativeRustType": "MemoryEventV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/event.rs",
+      "wireSchemaId": "hepta.hnmf.memory-event.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "CrossModalBindingV1",
@@ -105,11 +125,20 @@
       "requiredFields": [
         "bindingId",
         "eventId",
-        "spanRefs",
+        "spanIds",
         "alignmentKind",
         "confidencePpm",
         "producerManifestSha256"
-      ]
+      ],
+      "nativeRustType": "CrossModalBindingV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+      "wireSchemaId": "hepta.hnmf.cross-modal-binding.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "EngramNodeV1",
@@ -118,12 +147,23 @@
         "nodeId",
         "population",
         "modalityMask",
+        "semanticCueKeys",
         "supportManifestSha256",
         "thresholdQ16",
         "targetActivityPpm",
         "confidencePpm",
+        "validityInterval",
         "snapshotGeneration"
-      ]
+      ],
+      "nativeRustType": "EngramNodeV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+      "wireSchemaId": "hepta.hnmf.engram-node.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "SynapseV1",
@@ -135,9 +175,19 @@
         "weightQ16",
         "delaySteps",
         "plasticityClass",
+        "eligibilityPpm",
         "supportManifestSha256",
         "snapshotGeneration"
-      ]
+      ],
+      "nativeRustType": "SynapseV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+      "wireSchemaId": "hepta.hnmf.synapse.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "MemoryCueV1",
@@ -151,7 +201,16 @@
         "seedNodeIds",
         "nowUnixMs",
         "resourceBudget"
-      ]
+      ],
+      "nativeRustType": "MemoryCueV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+      "wireSchemaId": "hepta.hnmf.memory-cue.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "RecallPacketV1",
@@ -169,7 +228,16 @@
         "oodPpm",
         "abstain",
         "resourceReceipt"
-      ]
+      ],
+      "nativeRustType": "RecallPacketV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+      "wireSchemaId": "hepta.hnmf.recall-packet.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "OutcomeSignalV1",
@@ -182,7 +250,16 @@
         "riskPpm",
         "oodPpm",
         "observerDigest"
-      ]
+      ],
+      "nativeRustType": "OutcomeSignalV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+      "wireSchemaId": "hepta.hnmf.outcome-signal.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "ReplaySelectionReceiptV1",
@@ -193,7 +270,16 @@
         "sourceBucketCounts",
         "selectionPolicyDigest",
         "resourceReceipt"
-      ]
+      ],
+      "nativeRustType": "ReplaySelectionReceiptV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+      "wireSchemaId": "hepta.hnmf.replay-selection-receipt.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "PlasticityBatchV1",
@@ -206,7 +292,16 @@
         "thresholdProposals",
         "currentSnapshotImmutable",
         "productionActivationAllowed"
-      ]
+      ],
+      "nativeRustType": "PlasticityBatchV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+      "wireSchemaId": "hepta.hnmf.plasticity-batch.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "TopologyProposalV1",
@@ -219,7 +314,16 @@
         "sandboxOnly",
         "operatorAccepted",
         "productionActivationAllowed"
-      ]
+      ],
+      "nativeRustType": "TopologyProposalV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+      "wireSchemaId": "hepta.hnmf.topology-proposal.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     },
     {
       "id": "ForgetPropagationReceiptV1",
@@ -232,7 +336,16 @@
         "retiredSynapses",
         "projectionRebuildRequired",
         "artifactRevocationRequired"
-      ]
+      ],
+      "nativeRustType": "ForgetPropagationReceiptV1",
+      "nativeRustPath": "codex-rs/hepta-cognitive-types/src/hnmf/forget.rs",
+      "wireSchemaId": "hepta.hnmf.forget-propagation-receipt.v1",
+      "wireSchemaVersion": 1,
+      "wireEncoding": "canonical_json_v1",
+      "unknownFieldPolicy": "reject",
+      "unknownEnumPolicy": "reject",
+      "canonicalBytePolicy": "exact_reserialization_match",
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     }
   ],
   "dynamics": {
@@ -447,7 +560,7 @@
       "source-aware multimodal recall packet compilation"
     ],
     "intelligence.control": [
-      "composition fa\u00e7ade only; no durable fact or model execution ownership"
+      "composition façade only; no durable fact or model execution ownership"
     ]
   },
   "prohibitedSubstitutions": [
@@ -488,5 +601,24 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
+  },
+  "nativeContractBinding": {
+    "module": "cognitive.types",
+    "sourceRoot": "codex-rs/hepta-cognitive-types/src/hnmf",
+    "canonicalWireEncoding": "canonical_json_v1",
+    "envelopeRequiredFields": [
+      "schema",
+      "schemaVersion",
+      "payload"
+    ],
+    "wireSchemaVersion": 1,
+    "unknownFieldPolicy": "reject",
+    "unknownEnumPolicy": "reject",
+    "nonCanonicalBytesPolicy": "reject",
+    "goldenVector": "codex-rs/hepta-cognitive-types/tests/data/modality_span_v1.canonical.json",
+    "referenceOracle": "qualification/hnmf-contract-reference",
+    "conformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
+    "qualificationWorkflow": ".github/workflows/hnmf-qualification.yml",
+    "productionActivationClaimed": false
   }
 }
