@@ -9,6 +9,25 @@ use codex_hepta_authbus::ReservationRequest;
 use codex_hepta_authbus::ReservationState;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
+use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+
+use codex_hepta_contracts::PROVIDER_EVIDENCE_SCHEMA_VERSION;
+use codex_hepta_contracts::ProviderEffectAck;
+use codex_hepta_contracts::ProviderEffectAckStatus;
+use codex_hepta_contracts::ProviderEffectAdapter;
+use codex_hepta_contracts::ProviderEffectDispatch;
+use codex_hepta_contracts::ProviderEffectFuture;
+use codex_hepta_contracts::ProviderEffectIdempotencyCapability;
+use codex_hepta_contracts::ProviderEffectIntent;
+use codex_hepta_contracts::ProviderEffectKey;
+use codex_hepta_contracts::ProviderEffectLookup;
+use codex_hepta_contracts::ProviderRequestBinding;
+use codex_hepta_contracts::ProviderRequestKind;
+use codex_hepta_contracts::ProviderTransport;
+use codex_hepta_contracts::RequestBindingId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -19,6 +38,8 @@ use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
 
 use crate::AuthBusAdmissionError;
+use crate::AuthBusEffectError;
+use crate::ObservedCostEvidence;
 use crate::AuthBusControlError;
 use crate::HeptaEvidenceStore;
 
@@ -374,4 +395,157 @@ async fn retired_replay_epoch_frees_capacity_without_reopening_replay() {
             .await,
         Err(AuthBusAdmissionError::Authentication(AuthBusError::RetiredIssuer))
     ));
+}
+
+
+#[derive(Clone)]
+struct CountingEffectAdapter {
+    dispatches: Arc<AtomicUsize>,
+    dispatch: ProviderEffectDispatch,
+}
+
+impl ProviderEffectAdapter for CountingEffectAdapter {
+    fn capability(&self) -> ProviderEffectIdempotencyCapability {
+        ProviderEffectIdempotencyCapability::KeyAndStatusLookup
+    }
+
+    fn dispatch<'a>(
+        &'a self,
+        _intent: &'a ProviderEffectIntent,
+    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        self.dispatches.fetch_add(1, Ordering::Relaxed);
+        let value = self.dispatch.clone();
+        Box::pin(async move { value })
+    }
+
+    fn lookup<'a>(
+        &'a self,
+        _key: &'a ProviderEffectKey,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        Box::pin(async { ProviderEffectLookup::Unknown })
+    }
+}
+
+fn provider_effect(payload: &[u8], occurrence: &str) -> ProviderEffectIntent {
+    let binding = RequestBindingId::for_request(&ProviderRequestBinding {
+        schema_version: PROVIDER_EVIDENCE_SCHEMA_VERSION,
+        thread_id: "thread-authbus".to_string(),
+        turn_id: "turn-authbus".to_string(),
+        host_request_binding_id_sha256: Sha256Digest::for_bytes(b"host-authbus"),
+        request_kind: ProviderRequestKind::Turn,
+        provider_id: "provider-authbus".to_string(),
+        provider_config_sha256: Sha256Digest::for_bytes(b"provider-config"),
+        model: "authbus-model".to_string(),
+        transport: ProviderTransport::Http,
+        endpoint_sha256: Sha256Digest::for_bytes(b"/authbus-effect"),
+        logical_request_sha256: Sha256Digest::for_bytes(b"logical-authbus"),
+        wire_semantic_sha256: Sha256Digest::for_bytes(b"wire-authbus"),
+        ephemeral_input_sha256: None,
+        ephemeral_input_witness_sha256: None,
+    })
+    .expect("binding");
+    ProviderEffectIntent::new(
+        ProviderEffectKey::for_occurrence("provider-authbus", occurrence, &binding)
+            .expect("effect key"),
+        Sha256Digest::for_bytes(payload),
+    )
+}
+
+#[tokio::test]
+async fn bus_04_effect_adapter_is_never_called_after_policy_revision_changes() {
+    let temp = TempDir::new().expect("temp");
+    let (store, decision, revision) = configured(&temp, 10).await;
+    let auth = authorization(1, Digest32::of_bytes(b"payload"));
+    let intent = provider_effect(b"payload", "bus-04-denied");
+    let request = reservation(
+        "reservation:effect-denied",
+        intent.key.as_str(),
+        1,
+        revision,
+        &decision,
+    );
+    store
+        .install_authbus_policy(&policy(2, false))
+        .await
+        .expect("disable policy");
+    let dispatches = Arc::new(AtomicUsize::new(0));
+    let adapter = CountingEffectAdapter {
+        dispatches: dispatches.clone(),
+        dispatch: ProviderEffectDispatch::Unknown,
+    };
+    assert!(matches!(
+        store
+            .dispatch_provider_effect_with_authbus_qualification(
+                &adapter, &auth, &request, &intent, 10
+            )
+            .await,
+        Err(AuthBusEffectError::AuthorizationDenied)
+    ));
+    assert_eq!(dispatches.load(Ordering::Relaxed), 0);
+    let quota = store
+        .authbus_quota_state(&id("quota:provider"))
+        .await
+        .expect("quota")
+        .expect("present");
+    assert_eq!((quota.reserved, quota.consumed), (0, 0));
+}
+
+#[tokio::test]
+async fn completed_provider_effect_settles_only_from_observed_cost_evidence() {
+    let temp = TempDir::new().expect("temp");
+    let (store, decision, revision) = configured(&temp, 10).await;
+    let auth = authorization(1, Digest32::of_bytes(b"payload"));
+    let intent = provider_effect(b"payload", "settlement");
+    let request = reservation(
+        "reservation:provider-complete",
+        intent.key.as_str(),
+        5,
+        revision,
+        &decision,
+    );
+    let ack = ProviderEffectAck::new(
+        intent.key.clone(),
+        intent.payload_sha256.clone(),
+        Sha256Digest::for_bytes(b"provider-operation"),
+        ProviderEffectAckStatus::Completed,
+    );
+    let adapter = CountingEffectAdapter {
+        dispatches: Arc::new(AtomicUsize::new(0)),
+        dispatch: ProviderEffectDispatch::Ack(ack),
+    };
+    let dispatched = store
+        .dispatch_provider_effect_with_authbus_qualification(
+            &adapter, &auth, &request, &intent, 10
+        )
+        .await
+        .expect("dispatch");
+    assert_eq!(dispatched.provider.state, codex_hepta_contracts::ProviderEffectState::Completed);
+    assert_eq!(dispatched.reservation.state, ReservationState::Quarantined);
+    let held = store
+        .authbus_quota_state(&id("quota:provider"))
+        .await
+        .expect("quota")
+        .expect("present");
+    assert_eq!((held.reserved, held.consumed), (5, 0));
+
+    let cost = ObservedCostEvidence {
+        amount: 3,
+        evidence_digest: Digest32::of_bytes(b"provider usage meter"),
+    };
+    let reconciled = store
+        .reconcile_authbus_provider_effect(
+            &adapter,
+            &intent.key,
+            &request.reservation_id,
+            Some(&cost),
+        )
+        .await
+        .expect("settle");
+    assert_eq!(reconciled.reservation.state, ReservationState::Settled);
+    let settled = store
+        .authbus_quota_state(&id("quota:provider"))
+        .await
+        .expect("quota")
+        .expect("present");
+    assert_eq!((settled.reserved, settled.consumed, settled.available()), (0, 3, Some(7)));
 }
