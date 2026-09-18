@@ -57,6 +57,7 @@ jobs:
           set -euo pipefail
           cargo fmt --all -- --check
           cargo test -p codex-hepta-matrix-store --test durable_core
+          cargo test -p codex-hepta-matrix-store --test durable_dispatch
           cargo test -p codex-hepta-matrix-store --test sync_mutation_v2
           cargo test -p codex-hepta-matrix-sdk --test durable_transport
           cargo test -p codex-hepta-matrixd --lib
