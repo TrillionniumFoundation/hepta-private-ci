@@ -1,5 +1,6 @@
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::Instant;
 
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_fleet::AgentLifecycle;
@@ -23,6 +24,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    monotonic_origin: Instant,
 }
 
 struct RuntimeState {
@@ -58,6 +60,7 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
+            monotonic_origin: Instant::now(),
         })
     }
 
@@ -110,6 +113,10 @@ impl AgentdState {
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {
         &self.identity
+    }
+
+    pub(crate) fn monotonic_origin(&self) -> Instant {
+        self.monotonic_origin
     }
 
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {
