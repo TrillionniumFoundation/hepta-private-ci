@@ -485,6 +485,41 @@ mod tests {
         Ok(())
     }
 
+    #[tokio::test]
+    async fn loopback_socket_serves_metadata_bound_v2_status() -> Result<()> {
+        let listener = TcpListener::bind("127.0.0.1:0").await?;
+        let address = listener.local_addr()?;
+        let runtime = Arc::new(fixture_runtime()?);
+        let server = tokio::spawn(async move {
+            let (stream, peer) = listener.accept().await?;
+            assert!(peer.ip().is_loopback());
+            serve_connection(stream, runtime).await
+        });
+
+        let mut client = TcpStream::connect(address).await?;
+        client
+            .write_all(
+                b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n",
+            )
+            .await?;
+        let mut response = Vec::new();
+        client.read_to_end(&mut response).await?;
+        server.await??;
+
+        assert!(response.starts_with(b"HTTP/1.1 200 OK"));
+        let body_start = response
+            .windows(4)
+            .position(|window| window == b"\r\n\r\n")
+            .context("wire response headers")?
+            + 4;
+        let envelope = WireEnvelopeV2::decode(&response[body_start..])?;
+        assert_eq!(envelope.schema().as_str(), "hepta.runtime.status.v1");
+        let value: serde_json::Value = serde_json::from_slice(envelope.payload())?;
+        assert_eq!(value["status"], "ready");
+        assert_eq!(value["authority"]["outbound"], false);
+        Ok(())
+    }
+
     #[test]
     fn unsupported_wire_accept_version_fails_closed() -> Result<()> {
         let response = route_request(
