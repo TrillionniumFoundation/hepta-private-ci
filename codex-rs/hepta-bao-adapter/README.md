@@ -50,10 +50,11 @@ into a zeroizing buffer and passed only to the trusted callback.
 The provider `lease_id` is retained in an opaque `SecretLeaseHandle`. Its
 `Debug` representation is redacted and ordinary metadata exports only
 `lease_id_sha256`. A successful issuance returns the handle plus expiry,
-renewability, operation digest, secret digest and byte count. If the provider
-has issued a lease but the final-use recheck is revoked before consumer entry,
-`DeliveryBlocked` returns the known opaque handle to the trusted host so it
-can revoke or reconcile the credential instead of orphaning it.
+renewability, operation digest, secret digest and byte count. If the provider has issued a lease but the final-use recheck is revoked before
+consumer entry, `DeliveryBlocked` returns the known opaque handle to the trusted
+host. If the trusted consumer enters but reports an indeterminate effect,
+`ConsumerIndeterminate` also returns that handle and metadata. Both paths keep
+the provider credential directly revocable/reconcilable instead of orphaning it.
 
 Renew and revoke use `POST /v1/sys/leases/renew` and
 `POST /v1/sys/leases/revoke`; revoke requests set `sync=true` so a success
