@@ -155,8 +155,13 @@ fn compaction_archives_full_history_and_preserves_indeterminate_fences() {
         Err(Error::CapacityExceeded)
     );
     drop(reopened);
-    std::fs::remove_file(&path).unwrap();
+
+    // Active checkpoints are not self-sufficient audit history: the header
+    // binds the predecessor archive, and loss of that archive fails closed.
     std::fs::remove_file(&archive).unwrap();
+    assert!(DurableInferenceControl::open(&path, 16).is_err());
+
+    std::fs::remove_file(&path).unwrap();
     let lock = path.with_file_name(format!(
         "{}.writer.lock",
         path.file_name().unwrap().to_string_lossy()
