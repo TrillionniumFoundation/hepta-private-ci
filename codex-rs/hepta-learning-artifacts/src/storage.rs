@@ -130,6 +130,16 @@ pub struct PreparedRegistrySnapshotV1 {
     receipt: RegistrySnapshotReceipt,
 }
 
+impl fmt::Debug for PreparedRegistrySnapshotV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("PreparedRegistrySnapshotV1")
+            .field("receipt", &self.receipt)
+            .field("bytes", &format_args!("<{} bytes>", self.bytes.len()))
+            .finish()
+    }
+}
+
 impl PreparedRegistrySnapshotV1 {
     #[must_use]
     pub const fn receipt(&self) -> RegistrySnapshotReceipt {
@@ -142,6 +152,16 @@ pub struct PreparedRegistryHeadWitnessV1 {
     receipt: RegistryHeadWitnessReceipt,
 }
 
+impl fmt::Debug for PreparedRegistryHeadWitnessV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("PreparedRegistryHeadWitnessV1")
+            .field("receipt", &self.receipt)
+            .field("bytes", &format_args!("<{} bytes>", self.bytes.len()))
+            .finish()
+    }
+}
+
 impl PreparedRegistryHeadWitnessV1 {
     #[must_use]
     pub const fn receipt(&self) -> RegistryHeadWitnessReceipt {
@@ -152,6 +172,16 @@ impl PreparedRegistryHeadWitnessV1 {
 pub struct PreparedCandidatePayloadV1 {
     bytes: Vec<u8>,
     content_digest: Digest32,
+}
+
+impl fmt::Debug for PreparedCandidatePayloadV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("PreparedCandidatePayloadV1")
+            .field("content_digest", &self.content_digest)
+            .field("bytes", &format_args!("<{} bytes>", self.bytes.len()))
+            .finish()
+    }
 }
 
 impl PreparedCandidatePayloadV1 {
