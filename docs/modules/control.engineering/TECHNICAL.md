@@ -74,9 +74,16 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
+- `authenticated source-envelope admission`
+- `resource-aware engineering orchestrator`
 - `work-envelope scheduler`
 - `path-lease arbiter`
-- `integration decision engine`
+- `candidate change-set generator`
+- `strong sandbox execution coordinator`
+- `evaluator-owned mutation-testing gate`
+- `integration evidence/seal engine`
+- `distributed-fence / external-audit / key-custody admission`
+- `repository product caller`
 - `audit projection`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -147,7 +154,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies the resource-aware algorithm and qualification ceilings. Current native enforcement belongs to `control_engineering_v2`: candidate count/file/diff bounds in `candidate.py`; <=8 process-local sandbox concurrency and <=2 infrastructure-only retries in `sandbox_control.py`; worker/CI/reviewer capacity in `orchestration.py`; and mutation-test cardinality in `mutation_testing.py`. These ceilings are not throughput measurements. Multi-host capacity and failover require the separately authenticated distributed-fence boundary.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -159,6 +166,7 @@ Current operating and state-format references:
 
 - [docs/modules/control.engineering/IMPLEMENTATION.md](IMPLEMENTATION.md).
 - [docs/modules/control.engineering/SANDBOX_SECURITY.md](SANDBOX_SECURITY.md).
+- [docs/modules/control.engineering/OPERATIONS.md](OPERATIONS.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -166,8 +174,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [tools/hepta-engineering-control/test_control_engineering_v2.py](../../../tools/hepta-engineering-control/test_control_engineering_v2.py); named case: `test_fenced_lease_schedule_reopen_and_audit`.
-- [tools/hepta-engineering-control/assimilation/discovery/tests/test_cli.py](../../../tools/hepta-engineering-control/assimilation/discovery/tests/test_cli.py); named case: `test_real_subprocess_emits_bounded_non_authoritative_candidate`.
+- [tools/hepta-engineering-control/test_orchestration.py](../../../tools/hepta-engineering-control/test_orchestration.py) — signed completion/source admission and multidimensional scheduling.
+- [tools/hepta-engineering-control/test_candidate_changeset.py](../../../tools/hepta-engineering-control/test_candidate_changeset.py) and [test_candidate_policy.py](../../../tools/hepta-engineering-control/test_candidate_policy.py) — atomic multi-file/rename grammar and immutable oracle paths.
+- [tools/hepta-engineering-control/test_sandbox_control.py](../../../tools/hepta-engineering-control/test_sandbox_control.py) and [test_mutation_testing.py](../../../tools/hepta-engineering-control/test_mutation_testing.py) — sandbox concurrency/retry and mutant-kill gates.
+- [tools/hepta-engineering-control/test_external_controls.py](../../../tools/hepta-engineering-control/test_external_controls.py) — distributed fence, external audit anchor and HSM/KMS custody contracts.
+- [tools/hepta-engineering-control/test_product_gate.py](../../../tools/hepta-engineering-control/test_product_gate.py) — named repository product caller.
+- [tools/hepta-engineering-control/test_control_engineering_v2.py](../../../tools/hepta-engineering-control/test_control_engineering_v2.py) and the consolidated hardening/seal suites — durable store and evidence boundaries.
 
 From `tools/hepta-engineering-control`, run `python3 -m unittest test_control_engineering_v2`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) separately labels target acceptance designs.
 
@@ -387,7 +399,7 @@ None.
 
 #### `ECP-1-ENGINEERING-CONTROL-PLANE`
 
-- State: `planned`; priority: `2`; parallel class: `independent_engineering_tooling`.
+- State: `source_implemented`; priority: `2`; parallel class: `independent_engineering_tooling`.
 - Owner/deputy: `developer-productivity` / `architecture`.
 - Allowed write paths:
 - `tools/hepta-engineering-control/**`
@@ -555,4 +567,4 @@ The bootstrap source-location obligation for `control.engineering` is implemente
 
 - `tools/hepta-engineering-control`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy, strong sandbox qualification and the named `engineering-product-gate` repository caller. A product-caller definition is not an observed pass: `production_implementation` remains false until exact-source/synthetic-merge execution receipts prove that caller and its product tests on the exact candidate. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
