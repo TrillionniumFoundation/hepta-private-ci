@@ -126,6 +126,29 @@ impl fmt::Debug for VerifiedUseToken {
     }
 }
 
+/// Non-constructible proof that a verified final-use token crossed its last
+/// revocation/expiry check immediately before an asynchronous effect entry.
+///
+/// The token is deliberately non-cloneable and carries no signing capability.
+/// Once this value exists, later revocation applies to future entries; it
+/// cannot retroactively prove that an already-entered external effect stopped.
+pub struct EnteredUseToken {
+    _owner: Arc<Inner>,
+    binding: FinalUseBinding,
+}
+
+impl fmt::Debug for EnteredUseToken {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("EnteredUseToken([REDACTED])")
+    }
+}
+
+impl EnteredUseToken {
+    pub fn matches(&self, expected: &FinalUseBinding) -> bool {
+        &self.binding == expected
+    }
+}
+
 impl FinalUseAuthority {
     pub fn open_state_dir(
         directory: &std::path::Path,
@@ -226,6 +249,37 @@ impl FinalUseAuthority {
             owner: Arc::clone(&self.0),
             grant: signed.grant.clone(),
         })
+    }
+
+    /// Consume a verified token at the final admission point for an
+    /// asynchronous external effect. The live authority check happens while
+    /// holding the revocation mutex; the mutex is released before the caller
+    /// performs network I/O. This models an effect that has already entered:
+    /// a later revocation can deny future entries but cannot erase or safely
+    /// retry an in-flight effect.
+    pub fn enter_verified_use(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+    ) -> Result<EnteredUseToken, FinalUseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&token.grant, &state.head)?;
+        let entered = EnteredUseToken {
+            _owner: Arc::clone(&self.0),
+            binding: token.grant.binding,
+        };
+        drop(state);
+        Ok(entered)
     }
 
     /// Revalidate live authority after asynchronous work and before releasing a
