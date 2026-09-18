@@ -132,9 +132,49 @@
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
       "sourcePathExists": true
+    },
+    {
+      "designOperation": "consume_intelligence_host_envelope",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-agentd/src/intelligence_facade.rs",
+        "symbol": "pub fn admit(",
+        "buildTarget": "codex-hepta-agentd"
+      },
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "symbol": "pub fn start_run(",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "symbol": "pub fn attach_context(",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/intelligence_facade_tests.rs",
+          "kind": "native_integration",
+          "command": "just test -p codex-hepta-agentd --lib"
+        }
+      ],
+      "sourceSemantics": "Validates IntelligenceHostEnvelopeV1 and maps its exact frozen tuple plus context receipt into the existing Agentd run coordinator without granting effect authority.",
+      "operation": "admit_intelligence_envelope_v1",
+      "nativeSymbol": "pub fn admit(",
+      "sourcePath": "codex-rs/hepta-agentd/src/intelligence_facade.rs",
+      "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Exercise AgentdIntelligenceCaller from the non-test daemon request path before claiming product execution."
+  ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket identity",
     "non-test caller through the full Codex turn path",
@@ -157,7 +197,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "named_intelligence_consumer_source_not_product_executed",
   "productionWriterState": "not_established",
   "owner": "agent-runtime",
   "deputy": "runtime-control",

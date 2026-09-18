@@ -481,9 +481,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "P0.8B-READINESS",
-      "sha256": "2dbf6bc2a1f75d875f8916fe7f33490443f93bc7dc3d5bdcb9cfdaca8e5bb247",
-      "bytes": 18923,
-      "words": 1961,
+      "sha256": "0a297a526500c0d196a4ac4c01fe51deb85ebcd14cd00721c9bae9379f855834",
+      "bytes": 19539,
+      "words": 2032,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -520,7 +520,9 @@
         "ModulePort::runtime.codex::runtime.agentd",
         "ModulePort::runtime.supervisor::runtime.agentd"
       ],
-      "protocols": [],
+      "protocols": [
+        "IntelligenceHostEnvelopeV1"
+      ],
       "ownedDomains": [
         "runtime_health_observation"
       ],
@@ -1394,9 +1396,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "INTELLIGENCE-A0-Q0.63",
-      "sha256": "90da6df941d3bd0b822bbb492a729513c8b15378077689a87295d9d71b735200",
-      "bytes": 21116,
-      "words": 2019,
+      "sha256": "191cece0c964f105952ca4eac758d3e164cc3394057204cb81bfe1fd439c127d",
+      "bytes": 23640,
+      "words": 2266,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -1438,6 +1440,7 @@
         "SupportAuditReceiptV1"
       ],
       "protocols": [
+        "IntelligenceHostEnvelopeV1",
         "LearningArtifactManifestV1",
         "LegalActionCandidateSetV1",
         "NduCoefficientManifestV1",

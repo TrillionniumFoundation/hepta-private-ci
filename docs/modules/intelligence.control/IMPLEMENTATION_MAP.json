@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "named_source_consumer_not_product_executed",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -27,11 +27,17 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/vertical.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "run_read_only_vertical",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "objective.compiler",
+        "context.compiler",
+        "utility.ndu"
+      ]
     },
     {
       "operation": "run_evaluated_shadow_v1",
@@ -39,21 +45,70 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "run_evaluated_shadow_v1",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "learning.eval",
+        "intuition.policy",
+        "learning.ledger"
+      ]
+    },
+    {
+      "operation": "prepare_intelligence_run_v3",
+      "nativeSymbol": "prepare_intelligence_run_v3",
+      "sourcePath": "codex-rs/hepta-intelligence/src/composition_v3.rs",
+      "state": "source_implemented_named_consumer_not_product_executed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/composition_v3_tests.rs",
+        "codex-rs/hepta-intelligence/src/native_v3_tests.rs",
+        "codex-rs/hepta-agentd/src/intelligence_facade_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_intelligence_run",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "objective.compiler",
+        "utility.ndu",
+        "neuron.runtime",
+        "prompt.optimizer",
+        "intuition.policy",
+        "context.compiler",
+        "learning.eval",
+        "learning.ledger",
+        "runtime.agentd"
+      ]
+    },
+    {
+      "operation": "append_outcome_and_credit_v3",
+      "nativeSymbol": "append_outcome_and_credit_v3",
+      "sourcePath": "codex-rs/hepta-intelligence/src/learning_v3.rs",
+      "state": "source_implemented_not_product_observed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/learning_v3_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "route_observed_outcome_and_credit",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "learning.ledger"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Exercise AgentdIntelligenceCaller from an admitted product request with real target-host owner inputs.",
+    "Run current exact-head and deterministic synthetic-merge tests before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "target-host product execution and qualification",
+    "operator acceptance, canary, promotion and release",
+    "empirical longitudinal benefit evidence"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,

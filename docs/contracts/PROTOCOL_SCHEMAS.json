@@ -12,6 +12,350 @@
   },
   "protocols": [
     {
+      "id": "AlgorithmFaultReceiptV1",
+      "contractId": "AlgorithmFaultReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "receiptId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "algorithmId",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "fixtureId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "faultPoint",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "predecessorStateDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "observedStateDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "recoveryResult",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "rollbackResult",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "decision",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
+      "id": "CandidateEvaluationReceiptV1",
+      "contractId": "CandidateEvaluationReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "evaluationId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "candidateId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "evaluatorIdentity",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "evaluatorConfigDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "exactSourceResult",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "syntheticMergeResult",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "mandatoryTestResults",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 65536
+        },
+        {
+          "name": "causalOrLongitudinalResults",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 65536
+        },
+        {
+          "name": "securityResourceResults",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "comparisonToNoChange",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "decision",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "observedUnixMs",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "expiresUnixMs",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
+      "id": "CandidateSetCompletenessReceiptV1",
+      "contractId": "CandidateSetCompletenessReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "setId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "stateDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "generatorId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "generatorCodeDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "grammarDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "hardFilterDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "truncationDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "candidatesDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "candidateCount",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "omittedCountBound",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "canonicalOrderDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "decision",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
+      "id": "ConformanceReceiptV1",
+      "contractId": "ConformanceReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "receiptId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "fixtureId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "sourceCommit",
+          "type": "utf8",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "sourceTree",
+          "type": "utf8",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "implementationDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "runtimeTupleDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "observedOutputDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "exactComparisons",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "toleranceComparisons",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "resourceMetrics",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "restartReplayResult",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "decision",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
       "id": "ContextCompilationReceiptV1",
       "contractId": "ContextCompilationReceiptV1",
       "canonicalEncoding": "canonical_json_utf8",
@@ -246,6 +590,290 @@
       ]
     },
     {
+      "id": "GoldenFixtureManifestV1",
+      "contractId": "GoldenFixtureManifestV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "fixtureId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "algorithmId",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "schemaVersions",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "inputDigests",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "expectedOutputDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "exactFields",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "toleranceFields",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "rejectionClass",
+          "type": "enum",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "seedDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "runtimeProfileDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "predecessorId",
+          "type": "id128",
+          "required": false,
+          "maxBytes": 128
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
+      "id": "IndependentDecisionReceiptV1",
+      "contractId": "IndependentDecisionReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "decisionId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "candidateId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "role",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "principalId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "signingIdentityDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "evidenceSetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "decision",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "conditions",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "expiresUnixMs",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
+      "id": "IntelligenceHostEnvelopeV1",
+      "contractId": "IntelligenceHostEnvelopeV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_envelopeDigest_and_detached_signature",
+      "fields": [
+        {
+          "name": "runId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "requestDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "snapshotDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "bodyDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "artifactSetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "candidateSetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "utilityDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "neuralStageDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "promptStageDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "intuitionDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "contextDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "contextReceiptDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "evaluationDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "decisionRecordDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "compositionTraceDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "authorityEpoch",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "deadlineMicros",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "envelopeDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority_delta"
+      ]
+    },
+    {
       "id": "IntuitionDecisionReceiptV1",
       "contractId": "IntuitionDecisionReceiptV1",
       "canonicalEncoding": "canonical_json_utf8",
@@ -304,6 +932,199 @@
         "canonical_field_order",
         "digest_before_authority_use",
         "unknown_critical_fields_rejected"
+      ]
+    },
+    {
+      "id": "IterationCandidateV1",
+      "contractId": "IterationCandidateV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "candidateId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "envelopeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "generatorIdentity",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "generatorArtifactDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "seedDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "semanticDiffDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "changedPaths",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "authorityDelta",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "resourceDelta",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "testPlanDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "rollbackDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "predecessorId",
+          "type": "id128",
+          "required": false,
+          "maxBytes": 128
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
+      "id": "IterationEnvelopeV1",
+      "contractId": "IterationEnvelopeV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "envelopeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "baseCommit",
+          "type": "utf8",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "baseTree",
+          "type": "utf8",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "grammarDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "allowedPaths",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "deniedAuthorities",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "maximumFiles",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "maximumBytes",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "maximumCandidates",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "wallTimeMicros",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "computeBudget",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "mandatoryChecks",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "expiresUnixMs",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
       ]
     },
     {
@@ -723,6 +1544,101 @@
       ]
     },
     {
+      "id": "NduCoefficientManifestV1",
+      "contractId": "NduCoefficientManifestV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "artifactId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "subjectClass",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "objectiveClassDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "dimensions",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096
+        },
+        {
+          "name": "fixedPointScales",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096
+        },
+        {
+          "name": "coefficientBounds",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "lipschitzBounds",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "monotonicityBounds",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "normalizationDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "runtimeTupleDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "predecessorArtifactId",
+          "type": "id128",
+          "required": false,
+          "maxBytes": 128
+        },
+        {
+          "name": "expiresUnixMs",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "rollbackDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
       "id": "NduPreferenceStateV1",
       "contractId": "NduPreferenceStateV1",
       "canonicalEncoding": "canonical_json_utf8",
@@ -826,6 +1742,301 @@
         "canonical_field_order",
         "digest_before_authority_use",
         "unknown_critical_fields_rejected"
+      ]
+    },
+    {
+      "id": "NduUpdateReceiptV1",
+      "contractId": "NduUpdateReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "updateId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "subjectId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "predecessorRevision",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "nextRevision",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "eventDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "coefficientDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "dtMicros",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "beforeDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "afterDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "utilityDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "uncertaintyPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "projectionCount",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "boundaryResidualPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "conservationResidualQ32",
+          "type": "i64",
+          "required": true
+        },
+        {
+          "name": "disposition",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
+      "id": "NduWellPosednessCertificateV1",
+      "contractId": "NduWellPosednessCertificateV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "certificateId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "manifestDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "operatingDomainDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "squareIntegrability",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "conditionalMean",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "coefficientBounds",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "lipschitz",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "generatorMonotonicity",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "terminalLipschitz",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "continuityScope",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "solverStability",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "evaluatorIdentity",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "decision",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "expiresUnixMs",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
+      "id": "NeuronCheckpointV1",
+      "contractId": "NeuronCheckpointV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "checkpointId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "predecessorId",
+          "type": "id128",
+          "required": false,
+          "maxBytes": 128
+        },
+        {
+          "name": "generation",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "encoderDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "headDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "temporalStateDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "thresholdDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "activationSummary",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "eligibilityDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "logicalSequence",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "normalizationDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "expiresUnixMs",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
       ]
     },
     {
@@ -955,6 +2166,117 @@
         "canonical_field_order",
         "digest_before_authority_use",
         "unknown_critical_fields_rejected"
+      ]
+    },
+    {
+      "id": "OperatorApplicabilityCertificateV1",
+      "contractId": "OperatorApplicabilityCertificateV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "certificateId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "axisPartitionDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "domainDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "actionSpaceDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "holderExponents",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "holderConstants",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "stateLipschitz",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "actionLipschitz",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "ellipticityNuLcbQ32",
+          "type": "i64",
+          "required": true
+        },
+        {
+          "name": "horizonMicros",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "controlIntervalProfileDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "jumpPolicyDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "oodPolicyDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "evaluatorIdentity",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "expiresUnixMs",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "decision",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
       ]
     },
     {
@@ -1097,6 +2419,172 @@
         "canonical_field_order",
         "digest_before_authority_use",
         "unknown_critical_fields_rejected"
+      ]
+    },
+    {
+      "id": "OutcomeWatermarkV1",
+      "contractId": "OutcomeWatermarkV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "watermarkId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "episodeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "observerId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "latestObservableUnixMs",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "expectedDelayProfileDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "terminality",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "censoringReason",
+          "type": "enum",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "correctionPredecessor",
+          "type": "id128",
+          "required": false,
+          "maxBytes": 128
+        },
+        {
+          "name": "finalizedUnixMs",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
+      "id": "PlasticityProposalV1",
+      "contractId": "PlasticityProposalV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "proposalId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "selectedArtifactDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "datasetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "updateRuleDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "modulatorDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "modulatorBroadcastDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "eligibilityDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "parameterDeltaDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "trustRegionMetrics",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "retentionMetrics",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "evaluatorReceipts",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "rollbackPredecessor",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "state",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
       ]
     },
     {
@@ -1485,6 +2973,82 @@
       ]
     },
     {
+      "id": "RandomStreamManifestV1",
+      "contractId": "RandomStreamManifestV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "manifestId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "rootSeedDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "algorithmNamespace",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "episodeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "decisionId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "streamId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "counterStart",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "counterEndExclusive",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "generatorId",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "generatorVersion",
+          "type": "utf8",
+          "required": true,
+          "maxBytes": 64
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
       "id": "RegularityProfileV1",
       "contractId": "RegularityProfileV1",
       "canonicalEncoding": "canonical_json_utf8",
@@ -1643,6 +3207,82 @@
       ]
     },
     {
+      "id": "SupportAuditReceiptV1",
+      "contractId": "SupportAuditReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "auditId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "evaluationPolicyDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "behaviorPolicyDigests",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "supportIntersectionDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "essQ32",
+          "type": "i64",
+          "required": true
+        },
+        {
+          "name": "maxWeightQ32",
+          "type": "i64",
+          "required": true
+        },
+        {
+          "name": "clippedDiagnostics",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "unclippedDiagnostics",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "subgroupCoverage",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "decision",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 32
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "current_run_artifact_immutable",
+        "correction_deletion_and_revocation_lineage_preserved"
+      ]
+    },
+    {
       "id": "TopologyProposalV1",
       "contractId": "TopologyProposalV1",
       "canonicalEncoding": "canonical_json_utf8",
@@ -1769,1517 +3409,6 @@
         "canonical_field_order",
         "digest_before_authority_use",
         "unknown_critical_fields_rejected"
-      ]
-    },
-    {
-      "id": "NduCoefficientManifestV1",
-      "contractId": "NduCoefficientManifestV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "artifactId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "subjectClass",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        },
-        {
-          "name": "objectiveClassDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "dimensions",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 4096
-        },
-        {
-          "name": "fixedPointScales",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 4096
-        },
-        {
-          "name": "coefficientBounds",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "lipschitzBounds",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "monotonicityBounds",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "normalizationDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "runtimeTupleDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "predecessorArtifactId",
-          "type": "id128",
-          "required": false,
-          "maxBytes": 128
-        },
-        {
-          "name": "expiresUnixMs",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "rollbackDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "NduWellPosednessCertificateV1",
-      "contractId": "NduWellPosednessCertificateV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "certificateId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "manifestDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "operatingDomainDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "squareIntegrability",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "conditionalMean",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "coefficientBounds",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "lipschitz",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "generatorMonotonicity",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "terminalLipschitz",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "continuityScope",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "solverStability",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "evaluatorIdentity",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "decision",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        },
-        {
-          "name": "expiresUnixMs",
-          "type": "u64",
-          "required": true
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "NduUpdateReceiptV1",
-      "contractId": "NduUpdateReceiptV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "updateId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "subjectId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "predecessorRevision",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "nextRevision",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "eventDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "objectiveDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "coefficientDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "dtMicros",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "beforeDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "afterDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "utilityDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "uncertaintyPpm",
-          "type": "u32",
-          "required": true
-        },
-        {
-          "name": "projectionCount",
-          "type": "u32",
-          "required": true
-        },
-        {
-          "name": "boundaryResidualPpm",
-          "type": "u32",
-          "required": true
-        },
-        {
-          "name": "conservationResidualQ32",
-          "type": "i64",
-          "required": true
-        },
-        {
-          "name": "disposition",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "OperatorApplicabilityCertificateV1",
-      "contractId": "OperatorApplicabilityCertificateV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "certificateId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "axisPartitionDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "domainDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "actionSpaceDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "holderExponents",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "holderConstants",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "stateLipschitz",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "actionLipschitz",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "ellipticityNuLcbQ32",
-          "type": "i64",
-          "required": true
-        },
-        {
-          "name": "horizonMicros",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "controlIntervalProfileDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "jumpPolicyDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "oodPolicyDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "evaluatorIdentity",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "expiresUnixMs",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "decision",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "CandidateSetCompletenessReceiptV1",
-      "contractId": "CandidateSetCompletenessReceiptV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "setId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "stateDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "generatorId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "generatorCodeDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "grammarDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "hardFilterDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "truncationDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "candidatesDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "candidateCount",
-          "type": "u32",
-          "required": true
-        },
-        {
-          "name": "omittedCountBound",
-          "type": "u32",
-          "required": true
-        },
-        {
-          "name": "canonicalOrderDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "decision",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "OutcomeWatermarkV1",
-      "contractId": "OutcomeWatermarkV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "watermarkId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "episodeId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "observerId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "latestObservableUnixMs",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "expectedDelayProfileDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "terminality",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        },
-        {
-          "name": "censoringReason",
-          "type": "enum",
-          "required": false,
-          "maxBytes": 64
-        },
-        {
-          "name": "correctionPredecessor",
-          "type": "id128",
-          "required": false,
-          "maxBytes": 128
-        },
-        {
-          "name": "finalizedUnixMs",
-          "type": "u64",
-          "required": true
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "SupportAuditReceiptV1",
-      "contractId": "SupportAuditReceiptV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "auditId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "evaluationPolicyDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "behaviorPolicyDigests",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "supportIntersectionDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "essQ32",
-          "type": "i64",
-          "required": true
-        },
-        {
-          "name": "maxWeightQ32",
-          "type": "i64",
-          "required": true
-        },
-        {
-          "name": "clippedDiagnostics",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "unclippedDiagnostics",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "subgroupCoverage",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "decision",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "NeuronCheckpointV1",
-      "contractId": "NeuronCheckpointV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "checkpointId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "predecessorId",
-          "type": "id128",
-          "required": false,
-          "maxBytes": 128
-        },
-        {
-          "name": "generation",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "encoderDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "headDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "temporalStateDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "thresholdDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "activationSummary",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "eligibilityDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "logicalSequence",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "normalizationDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "expiresUnixMs",
-          "type": "u64",
-          "required": true
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "PlasticityProposalV1",
-      "contractId": "PlasticityProposalV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "proposalId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "selectedArtifactDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "datasetDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "updateRuleDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "modulatorDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "modulatorBroadcastDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "eligibilityDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "parameterDeltaDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "trustRegionMetrics",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "retentionMetrics",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "evaluatorReceipts",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "rollbackPredecessor",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "state",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "IterationEnvelopeV1",
-      "contractId": "IterationEnvelopeV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "envelopeId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "baseCommit",
-          "type": "utf8",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "baseTree",
-          "type": "utf8",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "objectiveDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "grammarDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "allowedPaths",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "deniedAuthorities",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "maximumFiles",
-          "type": "u32",
-          "required": true
-        },
-        {
-          "name": "maximumBytes",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "maximumCandidates",
-          "type": "u32",
-          "required": true
-        },
-        {
-          "name": "wallTimeMicros",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "computeBudget",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "mandatoryChecks",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "expiresUnixMs",
-          "type": "u64",
-          "required": true
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "IterationCandidateV1",
-      "contractId": "IterationCandidateV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "candidateId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "envelopeId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "generatorIdentity",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "generatorArtifactDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "seedDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "semanticDiffDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "changedPaths",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "authorityDelta",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "resourceDelta",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "testPlanDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "rollbackDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "predecessorId",
-          "type": "id128",
-          "required": false,
-          "maxBytes": 128
-        },
-        {
-          "name": "state",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "CandidateEvaluationReceiptV1",
-      "contractId": "CandidateEvaluationReceiptV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "evaluationId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "candidateId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "evaluatorIdentity",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "evaluatorConfigDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "exactSourceResult",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "syntheticMergeResult",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "mandatoryTestResults",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 65536
-        },
-        {
-          "name": "causalOrLongitudinalResults",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 65536
-        },
-        {
-          "name": "securityResourceResults",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "comparisonToNoChange",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "decision",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        },
-        {
-          "name": "observedUnixMs",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "expiresUnixMs",
-          "type": "u64",
-          "required": true
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "IndependentDecisionReceiptV1",
-      "contractId": "IndependentDecisionReceiptV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "decisionId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "candidateId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "role",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "principalId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "signingIdentityDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "evidenceSetDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "decision",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        },
-        {
-          "name": "conditions",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "expiresUnixMs",
-          "type": "u64",
-          "required": true
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "GoldenFixtureManifestV1",
-      "contractId": "GoldenFixtureManifestV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "fixtureId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "algorithmId",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "schemaVersions",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "inputDigests",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "expectedOutputDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "exactFields",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "toleranceFields",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "rejectionClass",
-          "type": "enum",
-          "required": false,
-          "maxBytes": 64
-        },
-        {
-          "name": "seedDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "runtimeProfileDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "predecessorId",
-          "type": "id128",
-          "required": false,
-          "maxBytes": 128
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "ConformanceReceiptV1",
-      "contractId": "ConformanceReceiptV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "receiptId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "fixtureId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "sourceCommit",
-          "type": "utf8",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "sourceTree",
-          "type": "utf8",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "implementationDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "runtimeTupleDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "observedOutputDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "exactComparisons",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "toleranceComparisons",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "resourceMetrics",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "restartReplayResult",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        },
-        {
-          "name": "decision",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "RandomStreamManifestV1",
-      "contractId": "RandomStreamManifestV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "manifestId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "rootSeedDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "algorithmNamespace",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "episodeId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "decisionId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "streamId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "counterStart",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "counterEndExclusive",
-          "type": "u64",
-          "required": true
-        },
-        {
-          "name": "generatorId",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "generatorVersion",
-          "type": "utf8",
-          "required": true,
-          "maxBytes": 64
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
-      ]
-    },
-    {
-      "id": "AlgorithmFaultReceiptV1",
-      "contractId": "AlgorithmFaultReceiptV1",
-      "canonicalEncoding": "canonical_json_utf8",
-      "denyUnknownCriticalFields": true,
-      "maximumEncodedBytes": 262144,
-      "digestScope": "all_semantic_fields_except_detached_signature",
-      "fields": [
-        {
-          "name": "receiptId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "algorithmId",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "fixtureId",
-          "type": "id128",
-          "required": true,
-          "maxBytes": 128
-        },
-        {
-          "name": "faultPoint",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "predecessorStateDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "observedStateDigest",
-          "type": "sha256",
-          "required": true,
-          "maxBytes": 64
-        },
-        {
-          "name": "recoveryResult",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        },
-        {
-          "name": "rollbackResult",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        },
-        {
-          "name": "decision",
-          "type": "enum",
-          "required": true,
-          "maxBytes": 32
-        }
-      ],
-      "invariants": [
-        "bounded_lengths",
-        "canonical_field_order",
-        "digest_before_authority_use",
-        "unknown_critical_fields_rejected",
-        "current_run_artifact_immutable",
-        "correction_deletion_and_revocation_lineage_preserved"
       ]
     }
   ],

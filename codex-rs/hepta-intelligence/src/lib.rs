@@ -6,6 +6,41 @@
 
 #![forbid(unsafe_code)]
 
+mod composition_v3;
+
+pub use composition_v3::CompositionBudgetV3;
+pub use composition_v3::CompositionControlV3;
+pub use composition_v3::CompositionDispositionV3;
+pub use composition_v3::CompositionErrorV3;
+pub use composition_v3::CompositionPortInputV3;
+pub use composition_v3::CompositionPortReceiptV3;
+pub use composition_v3::CompositionPortsV3;
+pub use composition_v3::CompositionRunRequestV3;
+pub use composition_v3::CompositionStageV3;
+pub use composition_v3::IntelligenceHostEnvelopeV1;
+pub use composition_v3::LegalActionCandidateSetErrorV1;
+pub use composition_v3::LegalActionCandidateSetV1;
+pub use composition_v3::LegalActionCandidateV1;
+pub use composition_v3::PreparedIntelligenceRunV3;
+pub use composition_v3::StageOutcomeV3;
+pub use composition_v3::StageTraceV3;
+pub use composition_v3::prepare_intelligence_run_v3;
+
+mod learning_v3;
+
+pub use learning_v3::DecisionAppendRequestV3;
+pub use learning_v3::LearningClosureErrorV3;
+pub use learning_v3::OutcomeCreditClosureReceiptV3;
+pub use learning_v3::OutcomeCreditClosureRequestV3;
+pub use learning_v3::append_decision_v3;
+pub use learning_v3::append_outcome_and_credit_v3;
+
+mod native_v3;
+
+pub use native_v3::NativeCompositionInputsV3;
+pub use native_v3::NativeCompositionPortsV3;
+pub use native_v3::NativeNeuronInputV3;
+
 mod evaluated_shadow;
 
 pub use evaluated_shadow::EvaluatedShadowError;
