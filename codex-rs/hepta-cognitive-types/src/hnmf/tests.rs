@@ -9,11 +9,14 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn text_span() -> ModalitySpanRefV1 {
+    let Ok(range) = SpanRangeV1::byte_range(0, 12) else {
+        panic!("text span range fixture must be valid");
+    };
     let Ok(value) = ModalitySpanRefV1::try_new(
         1,
         ModalityKindV1::Text,
         digest("asset"),
-        SpanRangeV1::ByteRange { start: 0, end: 12 },
+        range,
         digest("preprocessor"),
         None,
         None,
@@ -161,10 +164,8 @@ fn event_wire_round_trip_binds_spec_only_fields() {
 
 #[test]
 fn topology_and_plasticity_constructors_enforce_next_snapshot_only() {
-    let proposal = TopologyOperationV1::SplitNode {
-        node_id: 3,
-        left_label: "door-red".to_string(),
-        right_label: "door-blue".to_string(),
+    let Ok(proposal) = TopologyOperationV1::split_node(3, "door-red", "door-blue") else {
+        panic!("topology operation fixture must be valid");
     };
     assert!(TopologyProposalV1::try_new(7, 8, proposal).is_ok());
 
