@@ -18,6 +18,68 @@ from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
 
+STATUS_BEGIN = "<!-- BEGIN GENERATED IMPLEMENTATION STATUS -->"
+STATUS_END = "<!-- END GENERATED IMPLEMENTATION STATUS -->"
+
+
+def plasticity_status_block(row: dict) -> str:
+    lines = [
+        STATUS_BEGIN,
+        "## Generated implementation status",
+        "",
+        "This block is generated only from `IMPLEMENTATION_MAP.json`. Run",
+        "`python3 scripts/hepta-implementation-maps.py sync-plasticity-status` after",
+        "changing the map. Hand-written sections below explain semantics but do not",
+        "override these machine status facts.",
+        "",
+        f"- Product caller: `{row['productCallerState']}`",
+        f"- Production writer: `{row['productionWriterState']}`",
+        f"- Production implementation: `{str(bool(row['productionImplementation'])).lower()}`",
+        f"- Product execution proved: `{str(bool(row['claimBoundary']['productExecutionProved'])).lower()}`",
+        f"- Independent acceptance: `{str(bool(row['claimBoundary']['independentAcceptance'])).lower()}`",
+        f"- Activation: `{str(bool(row['claimBoundary']['activation'])).lower()}`",
+        f"- Release: `{str(bool(row['claimBoundary']['release'])).lower()}`",
+        "",
+        "| Operation | State | Source | Tests |",
+        "| --- | --- | --- | ---: |",
+    ]
+    for op in row["operations"]:
+        lines.append(
+            f"| `{op['operation']}` | `{op['state']}` | "
+            f"`{op.get('sourcePath') or '-'}` | {len(op.get('tests') or [])} |"
+        )
+    lines.extend(["", STATUS_END])
+    return "\n".join(lines)
+
+
+def sync_plasticity_status() -> None:
+    map_path = ROOT / "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json"
+    doc_path = ROOT / "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md"
+    row = json.loads(map_path.read_text(encoding="utf-8"))
+    expected = plasticity_status_block(row)
+    text = doc_path.read_text(encoding="utf-8")
+    pattern = re.compile(re.escape(STATUS_BEGIN) + r".*?" + re.escape(STATUS_END), re.S)
+    if pattern.search(text):
+        text = pattern.sub(expected, text, count=1)
+    else:
+        marker = "\n## Status matrix\n"
+        if marker not in text:
+            raise SystemExit("learning.plasticity current implementation is missing Status matrix")
+        text = text.replace(marker, "\n" + expected + "\n" + marker, 1)
+    doc_path.write_text(text, encoding="utf-8")
+
+
+def plasticity_status_matches() -> bool:
+    row = load("docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json")
+    text = (ROOT / "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md").read_text(
+        encoding="utf-8"
+    )
+    expected = plasticity_status_block(row)
+    pattern = re.compile(re.escape(STATUS_BEGIN) + r".*?" + re.escape(STATUS_END), re.S)
+    match = pattern.search(text)
+    return bool(match and match.group(0) == expected)
+
+
 
 def current_source_base() -> dict[str, str]:
     """Return the immutable source identity used by generated maps."""
@@ -347,6 +409,10 @@ def verify():
             failures.append(f"{mid}: claim boundary")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    if not plasticity_status_matches():
+        failures.append(
+            "learning.plasticity: CURRENT_IMPLEMENTATION generated status differs from IMPLEMENTATION_MAP"
+        )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -364,9 +430,16 @@ def verify():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["generate", "migrate", "verify"])
+    parser.add_argument(
+        "command", choices=["generate", "migrate", "verify", "sync-plasticity-status"]
+    )
     args = parser.parse_args()
-    {"generate": generate, "migrate": migrate, "verify": verify}[args.command]()
+    {
+        "generate": generate,
+        "migrate": migrate,
+        "verify": verify,
+        "sync-plasticity-status": sync_plasticity_status,
+    }[args.command]()
 
 
 if __name__ == "__main__":

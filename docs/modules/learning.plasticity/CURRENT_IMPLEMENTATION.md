@@ -5,12 +5,50 @@ contains both target architecture and stable requirements; this file states what
 implemented now. A claim listed as **Implemented** is a source capability, not an
 activation, acceptance, promotion or release claim.
 
+<!-- BEGIN GENERATED IMPLEMENTATION STATUS -->
+## Generated implementation status
+
+This block is generated only from `IMPLEMENTATION_MAP.json`. Run
+`python3 scripts/hepta-implementation-maps.py sync-plasticity-status` after
+changing the map. Hand-written sections below explain semantics but do not
+override these machine status facts.
+
+- Product caller: `agentd_host_callsite_source_implemented_not_target_host_qualified`
+- Production writer: `agentd_parameter_and_topology_external_anchor_fence_source_implemented_not_target_host_qualified`
+- Production implementation: `false`
+- Product execution proved: `false`
+- Independent acceptance: `false`
+- Activation: `false`
+- Release: `false`
+
+| Operation | State | Source | Tests |
+| --- | --- | --- | ---: |
+| `propose_v2` | `source_implemented_product_adapter_available_not_host_called` | `codex-rs/hepta-plasticity/src/parameter_v2.rs` | 1 |
+| `verify_parameter_proposal_v2` | `source_implemented_product_adapter_available_not_host_called` | `codex-rs/hepta-plasticity/src/parameter_v2.rs` | 1 |
+| `generate_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |
+| `verify_generated_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |
+| `propose_topology_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
+| `verify_topology_proposal_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
+| `durableproposalregistry` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 1 |
+| `authenticated_product_composition` | `adapter_implemented_agentd_host_called_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
+| `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
+| `mutation_grammar` | `source_implemented_typed_allowlist_protected_surfaces` | `codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs` | 1 |
+| `agentd_parameter_host` | `host_callsite_source_implemented_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |
+| `topology_governed_admission` | `source_implemented_typed_writer_handoff_validated` | `codex-rs/hepta-plasticity/src/topology_governance.rs` | 2 |
+| `durable_topology_registry` | `source_implemented_anchored_governed_topology_registry` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 1 |
+| `authenticated_topology_product_composition` | `adapter_implemented_agentd_host_called_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 1 |
+| `agentd_topology_host` | `host_callsite_source_implemented_external_anchor_not_target_host_qualified` | `codex-rs/hepta-agentd/src/topology_plasticity_host.rs` | 2 |
+| `structural_canary_controller` | `source_implemented_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 2 |
+
+<!-- END GENERATED IMPLEMENTATION STATUS -->
+
 ## Status matrix
 
 | Capability | Status | Native / composed surface |
 | --- | --- | --- |
 | Parameter V2 canonical proposal envelope | **Implemented** | `codex-rs/hepta-plasticity/src/parameter_v2.rs` |
 | Deterministic generator-relative candidate completeness | **Implemented** | `generate_parameter_candidates_v3` in `generator_v3.rs` |
+| Typed mutation grammar / protected surfaces | **Implemented** | `MutationGrammarManifestV1` in `mutation_grammar_v1.rs` |
 | Artifact/window-bound content candidate identity | **Implemented** | `generator_v3.rs` and `topology_v2.rs` |
 | Per-layer/global parameter trust regions | **Implemented** | V2 verifier and V3 generator |
 | Durable append-only proposal registry | **Implemented** | `DurableProposalRegistry` |
@@ -20,8 +58,14 @@ activation, acceptance, promotion or release claim.
 | Signed current artifact/evidence-frontier witness | **Implemented adapter** | `PlasticityAdmissionEvidenceV1` |
 | Cryptographically independent evaluator admission | **Implemented adapter** | existing `LearningEvidenceVerifierV1` + signed evaluation path |
 | Evaluation coverage for every generated update | **Implemented adapter** | product adapter rejects missing/duplicate/unexpected evaluations |
-| Product-workspace proposal adapter | **Implemented; no selected-host callsite** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
+| Product-workspace proposal adapter | **Implemented** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
+| Agentd parameter host callsite | **Implemented source composition; not target-host qualified** | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
 | Typed topology proposal generation | **Implemented, proposal-only** | `propose_topology_v2` in `topology_v2.rs` |
+| Typed topology writer-handoff governance | **Implemented** | `topology_governance.rs` |
+| Authenticated topology product admission | **Implemented** | `codex-rs/hepta-intelligence/src/topology_product.rs` |
+| Durable anchored topology proposal registry | **Implemented** | `DurableTopologyProposalRegistryV1` |
+| Agentd topology host + external anchor/fence | **Implemented source composition; not target-host qualified** | `topology_plasticity_host.rs` |
+| Bounded structural canary controller | **Implemented observation state machine; no executed canary evidence** | `StructuralCanaryControllerV1` |
 | Topology application / writer handoff execution | **Target / not implemented** | intentionally no apply API |
 | Weight training / installation | **Target outside this proposal engine** | no authority granted |
 | Selection / activation / promotion / release | **External gate / not implemented** | explicitly denied |
@@ -40,12 +84,13 @@ proposal crate, and that distinction is intentional and now explicit:
 | selected host | MUST call the product adapter, read the current `learning.artifacts` and qualification/evidence frontiers, then issue the short-lived trusted Observer attestation bound by `PlasticityAdmissionEvidenceV1` |
 | selected host rollback domain | MUST implement `PlasticityAnchorCommitterV1` and monotonic writer-fence issuance outside the registry rollback domain |
 
-Therefore the current source does **not** claim that `codex-hepta-plasticity` itself
-queries the artifact or evidence stores, and it does **not** claim that a selected host
-currently invokes the product adapter. The authenticated host witness is the intended
-trust boundary. A future direct store adapter or concrete `agentd`/other host callsite
-may close that seam, but documentation must not describe it as present until its
-source binding and qualification evidence exist.
+`codex-hepta-plasticity` itself still does not query owner stores. The source-selected
+host seam is now `codex-hepta-agentd`: it recomputes the current `ArtifactRegistry`
+and durable learning-ledger frontiers immediately before calling the authenticated
+product adapters and owns separate parameter/topology anchor-fence stores. This is a
+real source callsite, not proof that a deployed target host has executed or accepted
+it. `productionImplementation` and `productExecutionProved` therefore remain false
+until exact target-host evidence exists.
 
 ## Parameter generator semantics
 
@@ -118,9 +163,10 @@ independently accepted migration/writer-handoff implementation and host canary.
 
 ## Remaining external and composition gates
 
-The repository still needs an actual selected-host callsite that supplies the current
-artifact/evidence witness, trust verifier and independent anchor/fence service. Source
-implementation also does not establish independent semantic review, target-host
-qualification, operator acceptance, canary promotion, activation or release. Those
+The repository now contains an Agentd source callsite that supplies current owner
+frontiers and independent anchor/fence services for parameter and topology proposal
+persistence. Remaining gates are execution evidence rather than a missing source seam:
+independent semantic/security review, target-host qualification, operator recovery
+exercise, real structural-canary execution, activation, promotion and release. Those
 states must stay false until their own evidence exists. CI receipts must refer to the
 exact source/merge candidate; source test names are not pass receipts.
