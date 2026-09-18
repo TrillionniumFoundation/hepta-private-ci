@@ -42,12 +42,12 @@ use crate::RealizationDeliveryV2;
 use crate::RegistryReceipt;
 use crate::VerifiedAdmission;
 use crate::admission::map_final_use_error;
-use crate::protocol::LEGACY_UNRESOLVED_FACTOR_PURPOSE;
-use crate::protocol::LEGACY_UNRESOLVED_MODEL_ID;
-use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 use crate::final_use_realization_binding;
 use crate::final_use_retire_binding;
 use crate::final_use_revoke_binding;
+use crate::protocol::LEGACY_UNRESOLVED_FACTOR_PURPOSE;
+use crate::protocol::LEGACY_UNRESOLVED_MODEL_ID;
+use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
