@@ -177,10 +177,7 @@ fn verifies_artifacts_and_round_trips_load_infer_unload() {
     assert!(observation.terminal_observed);
     assert!(observation.succeeded);
     assert_eq!(observation.consumed_tokens, 7);
-    assert_eq!(
-        observation.output_digest,
-        Some(sha256_hex(b"local answer"))
-    );
+    assert_eq!(observation.output_digest, Some(sha256_hex(b"local answer")));
     driver.unload(handle).unwrap();
     server.join().unwrap();
 }
