@@ -56,6 +56,7 @@ pub use qualification::EvidenceAssetRefV1;
 pub use qualification::EvidenceCandidateV1;
 pub use qualification::EvidenceClaimClassV1;
 pub use qualification::EvidenceDispositionV1;
+pub use qualification::EvidenceIssuerAuthorityV1;
 pub use qualification::EvidenceIssuerCertificateV1;
 pub use qualification::EvidenceIssuerKeyRevocationV1;
 pub use qualification::EvidenceIssuerRevocationsV1;
