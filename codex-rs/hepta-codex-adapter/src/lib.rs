@@ -167,10 +167,13 @@ impl AppServerObservation {
         error: &JSONRPCErrorError,
     ) -> Result<Self, Error> {
         validate_observation_coordinates(session_generation, event_sequence)?;
-        let kind = if error.code == APP_SERVER_OVERLOADED_ERROR_CODE {
-            ObservationKind::Overloaded
-        } else {
-            ObservationKind::Rejected
+        let kind = match error.code {
+            APP_SERVER_OVERLOADED_ERROR_CODE => ObservationKind::Overloaded,
+            // JSON-RPC request/method/parameter rejection is established before
+            // a valid turn can be admitted. Internal/custom server failures do
+            // not carry that guarantee and remain indeterminate.
+            -32600..=-32602 => ObservationKind::Rejected,
+            _ => ObservationKind::Indeterminate,
         };
         Ok(Self {
             thread_id,
