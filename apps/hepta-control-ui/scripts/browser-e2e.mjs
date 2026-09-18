@@ -139,11 +139,19 @@ try {
   if ((await stats()).connectCount !== beforeSuspend) {
     throw new Error("pagehide suspension unexpectedly reopened a runtime session");
   }
+  const suspendedLocks = await navigator.locks.query();
+  if (suspendedLocks.held.some((lock) => lock.name.startsWith("hepta.ui.control.writer."))) {
+    throw new Error("pagehide suspension retained the durable writer lease after session drain");
+  }
   const pageShow = new Event("pageshow");
   Object.defineProperty(pageShow, "persisted", { value: true });
   window.dispatchEvent(pageShow);
   await waitForAsync(async () => (await stats()).connectCount >= beforeSuspend + 1);
   await waitFor(() => root.getAttribute("data-hepta-ready") === "true");
+  const resumedLocks = await navigator.locks.query();
+  if (!resumedLocks.held.some((lock) => lock.name.startsWith("hepta.ui.control.writer."))) {
+    throw new Error("pageshow recovery did not reacquire the durable writer lease");
+  }
 
   await fetch("/api/ui-control/e2e-expire-session", { cache: "no-store" });
   await waitForAsync(async () => (await stats()).connectCount >= beforeSuspend + 2, 7000);
