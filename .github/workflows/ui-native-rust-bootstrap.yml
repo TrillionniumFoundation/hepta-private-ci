@@ -1,0 +1,62 @@
+name: ui.native Rust bootstrap
+
+on:
+  push:
+    branches:
+      - ui-native-rust-host
+    paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/hepta-native-app/**"
+      - ".github/workflows/ui-native-rust-bootstrap.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  resolve-lock-and-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install Linux native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libssl-dev libdbus-1-dev xvfb
+
+      - name: Set up Rust 1.95
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Resolve lock and compile native host
+        id: compile
+        continue-on-error: true
+        working-directory: codex-rs
+        run: |
+          set -o pipefail
+          cargo check -p codex-hepta-native-app --all-targets 2>&1 | tee "$RUNNER_TEMP/ui-native-check.log"
+
+      - name: Retain lock candidate
+        if: always()
+        run: |
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/Cargo.lock"
+          test -f "$RUNNER_TEMP/ui-native-check.log" || touch "$RUNNER_TEMP/ui-native-check.log"
+
+      - name: Upload bootstrap artifacts
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: ui-native-bootstrap-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/Cargo.lock
+            ${{ runner.temp }}/ui-native-check.log
+
+      - name: Fail on compiler error
+        if: steps.compile.outcome != 'success'
+        run: exit 1
