@@ -229,6 +229,39 @@ impl AuthoritativeReadResultV1 {
         }
         Ok(())
     }
+
+    /// Revalidate an already-computed read immediately before a product
+    /// consumer uses it. This binds the read back to the exact acquisition
+    /// request and authoritative snapshot receipt, and rechecks lease expiry.
+    ///
+    /// The caller must still ask the authoritative owner whether the bound
+    /// generation remains retained/current; this method validates the immutable
+    /// cryptographic and lease bindings carried by this result.
+    pub fn validate_for_use(
+        &self,
+        now_unix_ms: u64,
+        request: &SnapshotAcquisitionRequestV1,
+        snapshot: &AuthoritativeSnapshotV1,
+    ) -> Result<(), SnapshotProviderError> {
+        self.validate()?;
+        snapshot.validate_for_request(now_unix_ms, request)?;
+        if self.read_result.authority().grants_any() {
+            return Err(SnapshotProviderError::AuthorityGranted);
+        }
+        if self.request_digest != request.digest() {
+            return Err(SnapshotProviderError::RequestDigestMismatch);
+        }
+        if self.snapshot_receipt_digest != snapshot.receipt_digest() {
+            return Err(SnapshotProviderError::SnapshotReceiptMismatch);
+        }
+        if self.generation_vector_digest != snapshot.snapshot_key().vector_digest {
+            return Err(SnapshotProviderError::GenerationVectorDigestMismatch);
+        }
+        if self.read_result.snapshot_digest() != snapshot.snapshot().snapshot_digest {
+            return Err(SnapshotProviderError::ReadSnapshotMismatch);
+        }
+        Ok(())
+    }
 }
 
 pub fn read_authoritative<P: AuthoritativeCognitiveSnapshotProvider>(
@@ -282,6 +315,9 @@ pub enum SnapshotProviderError {
     StaleTombstoneFrontier,
     SnapshotIntegrity,
     ReadSnapshotMismatch,
+    RequestDigestMismatch,
+    SnapshotReceiptMismatch,
+    GenerationVectorDigestMismatch,
     ReceiptDigestMismatch,
     AuthorityGranted,
     EmptyDigest,
