@@ -793,8 +793,8 @@ impl HeptaEvidenceStore {
             let certificate_json: String = row
                 .try_get("issuer_certificate_json")
                 .map_err(classify_sqlx_error)?;
-            let certificate: EvidenceIssuerCertificateV1 =
-                serde_json::from_str(&certificate_json).map_err(|error| {
+            let certificate: EvidenceIssuerCertificateV1 = serde_json::from_str(&certificate_json)
+                .map_err(|error| {
                     EvidenceError::Corrupt(format!(
                         "stored qualification issuer certificate failed to decode: {error}"
                     ))
@@ -850,9 +850,7 @@ impl HeptaEvidenceStore {
         }
         rows.into_iter()
             .map(|row| {
-                let root_id: String = row
-                    .try_get("issuer_root_id")
-                    .map_err(classify_sqlx_error)?;
+                let root_id: String = row.try_get("issuer_root_id").map_err(classify_sqlx_error)?;
                 let key_id: String = row.try_get("issuer_key_id").map_err(classify_sqlx_error)?;
                 let mut reference = reference_from_row(row)?;
                 if authority.is_key_revoked(&root_id, &key_id) {
