@@ -190,15 +190,12 @@ fn validate_advance(
         }
         return match (previous.segment, next.segment) {
             (Some(previous_segment), Some(next_segment))
-                if next_segment == previous_segment
-                    && !previous.sealed
-                    && next.sealed =>
+                if next_segment == previous_segment && !previous.sealed && next.sealed =>
             {
                 Ok(())
             }
             (Some(previous_segment), Some(next_segment))
-                if next_segment == previous_segment + 1
-                    && !next.sealed =>
+                if next_segment == previous_segment + 1 && !next.sealed =>
             {
                 Ok(())
             }

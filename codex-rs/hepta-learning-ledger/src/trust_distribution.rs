@@ -83,12 +83,8 @@ pub fn activate_learning_trust(
     let generation = distribution.generation;
     let effective_at = distribution.effective_at;
     let verifier = LearningEvidenceVerifierV1::new(distribution.trust)?;
-    let distribution_digest = digest_distribution(
-        &distribution_id,
-        generation,
-        effective_at,
-        &verifier,
-    );
+    let distribution_digest =
+        digest_distribution(&distribution_id, generation, effective_at, &verifier);
     Ok(ActivatedLearningTrustV1 {
         distribution_id,
         generation,
