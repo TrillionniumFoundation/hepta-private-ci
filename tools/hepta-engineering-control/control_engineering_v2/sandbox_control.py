@@ -38,6 +38,8 @@ class SandboxCoordinator:
     """Process-local admission owner; distributed deployment needs an external fence."""
 
     def __init__(self, policy: SandboxExecutionPolicy = SandboxExecutionPolicy()):
+        if not isinstance(policy, SandboxExecutionPolicy):
+            raise EngineeringError("invalid_sandbox_execution_policy")
         if (
             type(policy.maximum_parallel_sandboxes) is not int
             or not 1 <= policy.maximum_parallel_sandboxes <= MAX_PARALLEL_SANDBOXES
@@ -61,9 +63,11 @@ class SandboxCoordinator:
             raise EngineeringError("sandbox_capacity_exhausted")
         with self._lock:
             self._active += 1
-            self._peak = max(self._peak, self._active)
             if self._active > self.policy.maximum_parallel_sandboxes:
+                self._active -= 1
+                self._semaphore.release()
                 raise EngineeringError("sandbox_parallelism_invariant")
+            self._peak = max(self._peak, self._active)
 
     def _exit(self) -> None:
         with self._lock:
