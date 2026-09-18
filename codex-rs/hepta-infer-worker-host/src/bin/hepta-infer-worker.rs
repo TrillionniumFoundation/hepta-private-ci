@@ -160,8 +160,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     Ok(())
 }
 
-
-fn read_hex_key(path: &std::path::Path) -> Result<[u8; 32], Box<dyn std::error::Error + Send + Sync>> {
+fn read_hex_key(
+    path: &std::path::Path,
+) -> Result<[u8; 32], Box<dyn std::error::Error + Send + Sync>> {
     let raw = std::fs::read_to_string(path)?;
     let value = raw.trim();
     if value.len() != 64 {
