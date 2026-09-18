@@ -12,10 +12,20 @@ be mistaken for production composition.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import re
+from typing import Iterable
 
 from .control_plane import semantic_digest
+from .external import (
+    AuditAnchorReceipt,
+    ExternalFactReceipt,
+    KeyCustodyReceipt,
+    ReceiptVerifier,
+    verify_audit_anchor,
+    verify_external_fact_receipts,
+    verify_key_custody,
+)
 
 _SHA1 = re.compile(r"[0-9a-f]{40}\Z")
 _SHA256 = re.compile(r"[0-9a-f]{64}\Z")
@@ -76,6 +86,11 @@ class ProductionReadinessFacts:
     deployment_receipt_digest: str
     rollback_rehearsed: bool
     rollback_receipt_digest: str
+    external_audit_anchor: bool = False
+    audit_anchor_receipt_digest: str = ""
+    distributed_mode: bool = False
+    distributed_fencing_verified: bool = False
+    distributed_fencing_receipt_digest: str = ""
     authority_delta: bool = False
 
 
@@ -177,6 +192,15 @@ def evaluate_production_readiness(
         deployment.append("rollback_not_rehearsed")
     if not _valid_sha256(facts.rollback_receipt_digest):
         deployment.append("rollback_receipt_invalid")
+    if facts.external_audit_anchor is not True:
+        deployment.append("external_audit_anchor_missing")
+    if not _valid_sha256(facts.audit_anchor_receipt_digest):
+        deployment.append("audit_anchor_receipt_invalid")
+    if facts.distributed_mode:
+        if facts.distributed_fencing_verified is not True:
+            deployment.append("distributed_fencing_not_verified")
+        if not _valid_sha256(facts.distributed_fencing_receipt_digest):
+            deployment.append("distributed_fencing_receipt_invalid")
 
     implementation_blockers = tuple(sorted(set(implementation)))
     deployment_blockers = tuple(sorted(set(deployment)))
@@ -187,3 +211,73 @@ def evaluate_production_readiness(
         deployment_blockers=deployment_blockers,
         evidence_digest=semantic_digest(asdict(facts)),
     )
+
+
+
+def evaluate_authenticated_production_readiness(
+    facts: ProductionReadinessFacts,
+    *,
+    subject_digest: str,
+    external_fact_receipts: Iterable[ExternalFactReceipt],
+    audit_anchor: AuditAnchorReceipt,
+    key_custody: KeyCustodyReceipt,
+    verifier: ReceiptVerifier,
+    expected_store_identity_digest: str,
+    expected_audit_sequence: int,
+    expected_audit_head_digest: str,
+    now_ns: int | None = None,
+) -> ProductionReadinessDecision:
+    """Verify external facts before projecting deployment readiness.
+
+    Caller-provided booleans are ignored for external acceptance/deployment facts.
+    A production-ready result therefore requires authenticated receipts from
+    independent review, handoff, sandbox, deployment, rollback, audit anchoring
+    and (when distributed_mode is true) distributed fencing authorities.
+    """
+    if not isinstance(facts, ProductionReadinessFacts):
+        raise TypeError("ProductionReadinessFacts required")
+    fact_digests = verify_external_fact_receipts(
+        external_fact_receipts,
+        verifier,
+        subject_digest=subject_digest,
+        now_ns=now_ns,
+    )
+    audit_digest = verify_audit_anchor(
+        audit_anchor,
+        verifier,
+        expected_store_identity_digest=expected_store_identity_digest,
+        expected_sequence=expected_audit_sequence,
+        expected_head_digest=expected_audit_head_digest,
+        now_ns=now_ns,
+    )
+    custody_digest = verify_key_custody(
+        key_custody,
+        verifier,
+        required_roles=("source_authority", "engineering_evidence_binder"),
+        now_ns=now_ns,
+    )
+    distributed_digest = fact_digests.get("distributed_fencing_verified", "")
+    verified = replace(
+        facts,
+        independent_review_accepted="independent_review_accepted" in fact_digests,
+        review_receipt_digest=fact_digests.get("independent_review_accepted", ""),
+        authorized_handoff="authorized_handoff" in fact_digests,
+        handoff_receipt_digest=fact_digests.get("authorized_handoff", ""),
+        external_key_custody=True,
+        key_custody_receipt_digest=custody_digest,
+        strong_sandbox_observed="strong_sandbox_observed" in fact_digests,
+        strong_sandbox_receipt_digest=fact_digests.get("strong_sandbox_observed", ""),
+        deployment_observed="deployment_observed" in fact_digests,
+        deployment_receipt_digest=fact_digests.get("deployment_observed", ""),
+        rollback_rehearsed="rollback_rehearsed" in fact_digests,
+        rollback_receipt_digest=fact_digests.get("rollback_rehearsed", ""),
+        external_audit_anchor=True,
+        audit_anchor_receipt_digest=audit_digest,
+        distributed_fencing_verified=(
+            "distributed_fencing_verified" in fact_digests
+            if facts.distributed_mode
+            else False
+        ),
+        distributed_fencing_receipt_digest=distributed_digest,
+    )
+    return evaluate_production_readiness(verified)
