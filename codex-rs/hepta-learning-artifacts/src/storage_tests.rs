@@ -480,7 +480,9 @@ fn lifecycle_journal_round_trips_through_create_only_durable_snapshot() {
     let file = TestFile::new();
     let receipt =
         write_lifecycle_journal_snapshot(file.create().unwrap(), &journal, binding()).unwrap();
-    let reopened = read_lifecycle_journal_snapshot(file.open(), receipt, 20).unwrap();
+    // Restart after the historical actor credential has expired. Durable replay
+    // validates the recorded event-time binding, not current mutation authority.
+    let reopened = read_lifecycle_journal_snapshot(file.open(), receipt, 101).unwrap();
     assert_eq!(reopened.snapshot(), journal.snapshot());
 }
 
