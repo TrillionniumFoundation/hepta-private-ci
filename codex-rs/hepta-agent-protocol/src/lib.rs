@@ -4,12 +4,12 @@
 
 mod authbus;
 mod capabilities;
+pub use authbus::AuthBusObjectiveBody;
+pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
 pub use authbus::AuthBusTextIngress;
 pub use authbus::AuthBusTextState;
 pub use authbus::AuthBusTextStatus;
-pub use authbus::AuthBusObjectiveBody;
-pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
