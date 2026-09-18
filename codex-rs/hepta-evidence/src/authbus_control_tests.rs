@@ -1,15 +1,22 @@
 use std::time::Duration;
 
+use codex_hepta_authbus::AuthBusTrustHead;
 use codex_hepta_authbus::AuthPolicyRule;
+use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::SignedMessage;
+use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_authbus::EffectAdmissionRequest;
 use codex_hepta_authbus::PolicyEffect;
 use codex_hepta_authbus::QuotaRegistryEntry;
 use codex_hepta_authbus::ReservationReconcileOutcome;
 use codex_hepta_authbus::ReservationState;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
 
 use crate::AuthBusControlError;
@@ -272,4 +279,126 @@ async fn in_flight_reservation_survives_reopen_and_requires_reconciliation() {
     assert_eq!(reconciled.state, ReservationState::Cancelled);
     let snapshot = reopened.quota_snapshot(&quota).await.unwrap();
     assert_eq!((snapshot.reserved, snapshot.consumed), (0, 0));
+}
+
+
+fn replay_message(
+    key: &SigningKey,
+    issuer_id: &StableId,
+    epoch: u64,
+    sequence: u64,
+) -> (IssuerRegistration, SignedMessage) {
+    let registration = IssuerRegistration {
+        issuer_id: issuer_id.clone(),
+        key_epoch: Generation::new(epoch).unwrap(),
+        verifying_key: key.verifying_key(),
+        revoked: false,
+    };
+    let claims = SignedMessageClaims {
+        issuer_id: issuer_id.clone(),
+        key_epoch: registration.key_epoch,
+        message_id: id(&format!("message:checkpoint:{epoch}:{sequence}")),
+        subject_id: id("subject:checkpoint"),
+        scope_digest: Digest32::of_bytes(b"checkpoint-scope"),
+        payload_digest: Digest32::of_bytes(b"checkpoint-payload"),
+        sequence,
+        expires_at_ms: u64::MAX,
+    };
+    let signature = key.sign(&claims.signing_bytes()).to_bytes();
+    (registration, SignedMessage { claims, signature })
+}
+
+#[tokio::test]
+async fn replay_checkpoint_detects_registry_rollback_or_drift() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let key = SigningKey::from_bytes(&[77; 32]);
+    let issuer_id = id("issuer:checkpoint");
+    let (issuer, message) = replay_message(&key, &issuer_id, 1, 10);
+    store
+        .admit_authbus_message(
+            &issuer,
+            &message,
+            message.claims.scope_digest,
+            message.claims.payload_digest,
+        )
+        .await
+        .unwrap();
+    let checkpoint = store.advance_authbus_replay_checkpoint(0).await.unwrap();
+    store
+        .verify_authbus_replay_checkpoint(&checkpoint)
+        .await
+        .unwrap();
+
+    sqlx::query(
+        "UPDATE authbus_replay_sequences SET sequence = ?
+         WHERE issuer_id = ? AND key_epoch = ?",
+    )
+    .bind(9_u64.to_be_bytes().as_slice())
+    .bind(issuer_id.as_str())
+    .bind(1_u64.to_be_bytes().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+
+    assert!(matches!(
+        store.verify_authbus_replay_checkpoint(&checkpoint).await,
+        Err(AuthBusControlError::RollbackDetected)
+    ));
+}
+
+#[tokio::test]
+async fn retired_replay_epoch_stays_revoked_after_safe_compaction() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let key = SigningKey::from_bytes(&[78; 32]);
+    let issuer_id = id("issuer:retirement");
+    let (issuer_v1, message_v1) = replay_message(&key, &issuer_id, 1, 1);
+    store
+        .admit_authbus_message(
+            &issuer_v1,
+            &message_v1,
+            message_v1.claims.scope_digest,
+            message_v1.claims.payload_digest,
+        )
+        .await
+        .unwrap();
+    let checkpoint = store.advance_authbus_replay_checkpoint(0).await.unwrap();
+    let key_digest = Digest32::of_bytes(key.verifying_key().as_bytes());
+    store
+        .observe_authbus_trust_head(&AuthBusTrustHead {
+            issuer_id: issuer_id.clone(),
+            revision: 2,
+            key_epoch: 2,
+            verifying_key_digest: key_digest,
+            registration_digest: Digest32::of_bytes(b"trust-head:epoch-2"),
+            revoked: false,
+        })
+        .await
+        .unwrap();
+
+    let compacted = store
+        .retire_authbus_replay_epoch(&issuer_id, 1, &checkpoint)
+        .await
+        .unwrap();
+    assert_eq!(compacted.generation, checkpoint.generation + 1);
+    store
+        .verify_authbus_replay_checkpoint(&compacted)
+        .await
+        .unwrap();
+
+    let (_, replay_after_compaction) = replay_message(&key, &issuer_id, 1, 2);
+    assert!(matches!(
+        store
+            .admit_authbus_message(
+                &issuer_v1,
+                &replay_after_compaction,
+                replay_after_compaction.claims.scope_digest,
+                replay_after_compaction.claims.payload_digest,
+            )
+            .await,
+        Err(crate::AuthBusAdmissionError::Authentication(
+            codex_hepta_authbus::Error::Revoked
+        ))
+    ));
 }
