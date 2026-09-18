@@ -314,18 +314,9 @@ impl HeptaEvidenceStore {
             ));
         }
 
-        let active: i64 = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM authbus_quota_reservations
-             WHERE principal_id = ? AND state IN ('reserved', 'in_flight', 'quarantined')",
-        )
-        .bind(request.principal_id.as_str())
-        .fetch_one(&mut *tx)
-        .await
-        .map_err(classify_sqlx_error)?;
-        if active >= i64::from(evaluation.max_active_reservations) {
-            return Err(AuthBusControlError::ActiveReservationLimitExceeded);
-        }
-
+        // Preserve idempotency before enforcing admission capacity. A retry of an
+        // already-held operation must return the same reservation even when that
+        // reservation itself fills the principal's active-reservation budget.
         if let Some(existing) = load_reservation_by_operation_tx(&mut tx, &request.operation_id).await?
         {
             if reservation_matches_request(&existing, request) {
@@ -336,6 +327,18 @@ impl HeptaEvidenceStore {
                 });
             }
             return Err(AuthBusControlError::ReservationConflict);
+        }
+
+        let active: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_quota_reservations
+             WHERE principal_id = ? AND state IN ('reserved', 'in_flight', 'quarantined')",
+        )
+        .bind(request.principal_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if active >= i64::from(evaluation.max_active_reservations) {
+            return Err(AuthBusControlError::ActiveReservationLimitExceeded);
         }
 
         if request.amount > quota.available() {
