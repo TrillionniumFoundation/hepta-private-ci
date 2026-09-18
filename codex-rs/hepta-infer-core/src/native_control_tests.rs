@@ -205,7 +205,6 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
     std::fs::remove_file(path).unwrap();
 }
 
-
 #[test]
 fn request_rejection_releases_but_unknown_dispatch_outcomes_hold_capacity() {
     let path = path("request-outcomes");
