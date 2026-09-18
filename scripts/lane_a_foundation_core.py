@@ -243,6 +243,34 @@ def validate_wire_vector(root: Path = ROOT) -> None:
     ):
         raise VerificationError("HPTA V1 conformance vector mismatch")
 
+    value_v2 = read_json(
+        root / "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json"
+    )
+    try:
+        frame_v2 = bytes.fromhex(value_v2["frameHex"])
+        digest_material = bytes.fromhex(value_v2["digestMaterialHex"])
+        complete_digest = value_v2["completeFrameSha256"]
+    except (KeyError, TypeError, ValueError) as error:
+        raise VerificationError(f"invalid HPTA V2 vector: {error}") from error
+    if (
+        value_v2.get("schemaVersion") != 1
+        or value_v2.get("protocol") != "HPTA"
+        or value_v2.get("version") != 2
+        or value_v2.get("frameLength") != 59
+        or len(frame_v2) != 59
+        or frame_v2[:6] != b"HPTA\x00\x02"
+        or hashlib.sha256(frame_v2).hexdigest() != value_v2.get("frameSha256")
+        or hashlib.sha256(digest_material).hexdigest() != complete_digest
+        or frame_v2[18:50].hex() != complete_digest
+        or value_v2.get("claims")
+        != {
+            "metadataAndPayloadBound": True,
+            "authenticated": False,
+            "keyed": False,
+        }
+    ):
+        raise VerificationError("HPTA V2 conformance vector mismatch")
+
 
 def validate_source_specific(root: Path = ROOT) -> None:
     required = {
