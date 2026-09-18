@@ -225,3 +225,75 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
         ))
     );
 }
+
+
+#[test]
+fn compile_cue_is_deterministic_and_binds_snapshot_and_profile() {
+    let snapshot = snapshot_key();
+    let first = compile_cue(
+        digest("objective"),
+        digest("approved-context"),
+        snapshot.clone(),
+        digest("cue-profile"),
+    )
+    .unwrap_or_else(|error| panic!("compile cue: {error}"));
+    let second = compile_cue(
+        digest("objective"),
+        digest("approved-context"),
+        snapshot,
+        digest("cue-profile"),
+    )
+    .unwrap_or_else(|error| panic!("compile cue: {error}"));
+    assert_eq!(first, second);
+
+    let changed = compile_cue(
+        digest("objective"),
+        digest("approved-context"),
+        snapshot_key(),
+        digest("other-profile"),
+    )
+    .unwrap_or_else(|error| panic!("compile changed cue: {error}"));
+    assert_ne!(first.cue_id, changed.cue_id);
+    assert_ne!(first.digest(), changed.digest());
+}
+
+#[test]
+fn product_capacity_ceiling_is_enforced_by_policy() {
+    assert_eq!(MAX_GENERATION_BOUND_CANDIDATES, 512);
+    assert_eq!(MAX_GENERATION_BOUND_RESULTS, 16);
+    let mut oversized = policy();
+    oversized.maximum_results = 17;
+    assert_eq!(oversized.validate(), Err(RecallErrorV1::InvalidMaximumResults));
+}
+
+#[test]
+fn low_rank_tail_risk_cannot_poison_deliverable_top_k() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.maximum_results = 1;
+    policy.minimum_distinct_channels = 2;
+
+    let top = record(1);
+    let top_lexical = candidate(top.clone(), RetrievalChannelV1::Lexical, 1);
+    let top_entity = candidate(top, RetrievalChannelV1::Entity, 1);
+
+    let group = digest("tail-contradiction");
+    let mut tail_lexical = candidate(record(8), RetrievalChannelV1::Lexical, 2);
+    tail_lexical.normalized_score = FixedQ32::from_raw(1_i64 << 28);
+    tail_lexical.ood = ProbabilityQ32::ONE;
+    tail_lexical.contradiction_group_digest = Some(group);
+    let mut tail_entity = candidate(record(9), RetrievalChannelV1::Entity, 2);
+    tail_entity.normalized_score = FixedQ32::from_raw(1_i64 << 28);
+    tail_entity.contradiction_group_digest = Some(group);
+
+    let packet = recall(
+        &cue,
+        &policy,
+        vec![top_lexical, top_entity, tail_lexical, tail_entity],
+    )
+    .unwrap_or_else(|error| panic!("tail risk must not poison top-k: {error}"));
+    assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(packet.selections.len(), 1);
+    assert_eq!(packet.selections[0].record_id, id("memory:1"));
+    assert_eq!(packet.omitted_count, 2);
+}
