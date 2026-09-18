@@ -75,7 +75,11 @@ fn damped_preference_update_emits_local_solver_receipts() {
             .max()
             .expect("maximum residual")
     );
-    assert!(receipts.iter().all(|receipt| receipt.context_digest().is_none()));
+    assert!(
+        receipts
+            .iter()
+            .all(|receipt| receipt.context_digest().is_none())
+    );
 }
 
 #[test]

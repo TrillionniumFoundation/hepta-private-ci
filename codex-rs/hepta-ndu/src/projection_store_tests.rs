@@ -36,12 +36,7 @@ fn durable_store_reopens_selected_projection_after_synced_publication() {
             subject,
             projection,
         ));
-        must(store.select_projection(
-            digest("selection-identity"),
-            objective,
-            subject,
-            projection,
-        ));
+        must(store.select_projection(digest("selection-identity"), objective, subject, projection));
     }
 
     let reopened = must(NduProjectionFileStoreV1::open(&path));
@@ -91,24 +86,9 @@ fn durable_store_preserves_scoped_revocation_after_reopen() {
             subject_b,
             projection,
         ));
-        must(store.select_projection(
-            digest("selection-a"),
-            objective_a,
-            subject_a,
-            projection,
-        ));
-        must(store.select_projection(
-            digest("selection-b"),
-            objective_b,
-            subject_b,
-            projection,
-        ));
-        must(store.revoke_projection(
-            digest("revocation-a"),
-            objective_a,
-            subject_a,
-            projection,
-        ));
+        must(store.select_projection(digest("selection-a"), objective_a, subject_a, projection));
+        must(store.select_projection(digest("selection-b"), objective_b, subject_b, projection));
+        must(store.revoke_projection(digest("revocation-a"), objective_a, subject_a, projection));
     }
 
     let reopened = must(NduProjectionFileStoreV1::open(&path));

@@ -106,9 +106,8 @@ impl fmt::Display for NduError {
                 formatter.write_str("required organ set exceeds 32 entries")
             }
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
-            Self::EmptyProfileSemanticsDigest => formatter.write_str(
-                "utility profile must bind a nonzero axis semantics manifest digest",
-            ),
+            Self::EmptyProfileSemanticsDigest => formatter
+                .write_str("utility profile must bind a nonzero axis semantics manifest digest"),
             Self::EmptyProtocolDigest(field) => {
                 write!(formatter, "protocol digest must not be zero: {field}")
             }
@@ -178,9 +177,8 @@ impl fmt::Display for NduError {
             Self::PreferenceValueOutOfRange(axis) => {
                 write!(formatter, "preference value must be in [-1,1]: {axis}")
             }
-            Self::PreferenceSolverUnavailable => formatter.write_str(
-                "preference solver reached the 64-iteration bound without convergence",
-            ),
+            Self::PreferenceSolverUnavailable => formatter
+                .write_str("preference solver reached the 64-iteration bound without convergence"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
             Self::SolverContextRequired => {
                 formatter.write_str("solver receipt is not bound to a canonical iteration context")
@@ -195,7 +193,10 @@ impl fmt::Display for NduError {
                 write!(formatter, "invalid hierarchy parent for subject {subject}")
             }
             Self::DuplicateHierarchyUpdate(subject) => {
-                write!(formatter, "duplicate staged hierarchy update for subject {subject}")
+                write!(
+                    formatter,
+                    "duplicate staged hierarchy update for subject {subject}"
+                )
             }
             Self::DuplicateHierarchyArtifact(artifact) => write!(
                 formatter,
