@@ -633,7 +633,7 @@ mod tests {
             Err(ArtifactPublicationError::RegistryEventMismatch)
         );
 
-        let mut wrong_chain = receipt.clone();
+        let mut wrong_chain = receipt;
         wrong_chain.chain_digest = digest("other-chain");
         assert_eq!(
             prepare_artifact_publication_v1(
