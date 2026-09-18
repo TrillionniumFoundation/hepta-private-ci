@@ -56,6 +56,7 @@ pub enum NativeOwnerAuthority {
 pub struct NativeCodexBoundaryReceipt {
     pub request_digest: String,
     pub response_digest: Option<String>,
+    pub context_digest: String,
     pub connection_digest: String,
     pub session_generation: u64,
     pub protocol_version: u32,
@@ -657,11 +658,13 @@ fn validate_codex_observation(
             Some(receipt),
         ) => {
             validate_digest(&receipt.request_digest, "native codex receipt request")?;
+            validate_digest(&receipt.context_digest, "native codex receipt context")?;
             validate_digest(&receipt.connection_digest, "native codex receipt connection")?;
             if let Some(response_digest) = receipt.response_digest.as_deref() {
                 validate_digest(response_digest, "native codex receipt response")?;
             }
             if receipt.request_digest != request_digest
+                || receipt.context_digest != dispatch.context_digest
                 || receipt.connection_digest != connection_digest
                 || receipt.session_generation != session_generation
                 || receipt.protocol_version != protocol_version
