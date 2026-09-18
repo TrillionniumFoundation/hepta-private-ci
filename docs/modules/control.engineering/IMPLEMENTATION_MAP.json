@@ -18,58 +18,136 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "repository_product_caller_bound_pending_qualification",
   "productionWriterState": "not_established",
   "operations": [
     {
-      "operation": "schedule",
-      "nativeSymbol": "schedule",
-      "sourcePath": "tools/hepta-engineering-control/hepta_engineering_control.py",
-      "state": "source_implemented_not_product_composed",
+      "operation": "issue_work_envelope",
+      "designOperation": "issue_work_envelope",
+      "nativeSymbol": "issue_work_envelope",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
+      "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_control_engineering_v2.py"
+        }
+      ],
       "sourcePathExists": true,
-      "designOperation": "schedule",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "EngineeringStore.issue_work_envelope"
+      ]
+    },
+    {
+      "operation": "plan_engineering_work",
+      "designOperation": "schedule_ready_packages",
+      "nativeSymbol": "plan_engineering_work",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/orchestration.py",
+      "state": "source_implemented",
+      "authority": "proposal_only",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_orchestration_planner.py"
+        }
+      ],
+      "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "decide_integration",
-      "nativeSymbol": "decide_integration",
-      "sourcePath": "tools/hepta-engineering-control/hepta_engineering_control.py",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "schedule_ready_packages",
+      "designOperation": "schedule_ready_packages",
+      "nativeSymbol": "schedule_ready_packages",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
+      "state": "source_implemented",
+      "authority": "assignment_proposal_only",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_control_engineering_v2.py"
+        },
+        {
+          "path": "tools/hepta-engineering-control/test_consolidated_engineering.py"
+        }
+      ],
       "sourcePathExists": true,
-      "designOperation": "decide_integration",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "EngineeringStore.schedule_ready_packages"
+      ]
     },
     {
-      "operation": "debiansandboxadapter",
-      "nativeSymbol": "DebianSandboxAdapter",
-      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assimilation.py",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "verify_integration_evidence",
+      "designOperation": "verify_integration_evidence",
+      "nativeSymbol": "verify_integration_evidence",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
+      "state": "source_implemented",
+      "authority": "independent_review_eligibility_only",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_control_engineering_v2.py"
+        },
+        {
+          "path": "tools/hepta-engineering-control/test_lane_g_hardening.py"
+        }
+      ],
       "sourcePathExists": true,
-      "designOperation": "debiansandboxadapter",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "control_engineering_v2.evidence.verify_integration_evidence"
+      ]
+    },
+    {
+      "operation": "record_integration_decision",
+      "designOperation": "record_integration_decision",
+      "nativeSymbol": "record_integration_decision",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
+      "state": "source_implemented",
+      "authority": "immutable_eligibility_projection_only",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_lane_g_seal.py"
+        }
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "control_engineering_v2.seal.record_integration_decision"
+      ]
+    },
+    {
+      "operation": "build_product_receipt",
+      "designOperation": "repository_product_caller",
+      "nativeSymbol": "build_product_receipt",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
+      "state": "repository_product_caller_bound_pending_qualification",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_gate_v2.py"
+        }
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "control_engineering_v2.orchestration.plan_engineering_work",
+        "EngineeringStore.schedule_ready_packages"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain a successful exact-head and deterministic synthetic-merge execution receipt for the named repository product caller.",
+    "Keep product execution claims derived from workflow receipts rather than document prose."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "independent semantic review and protected reviewer key custody",
+    "authorized target-host deployment and operator acceptance",
+    "canary, promotion, release, rollback witness, and longitudinal operation"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "repositoryProductCallerBound": true,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
@@ -78,5 +156,11 @@
   },
   "sourceRoot": [
     "tools/hepta-engineering-control"
+  ],
+  "sourceBaseSemantics": "shared_historical_map_generation_baseline_not_current_source_identity",
+  "currentSourceIdentityAuthority": "exact Git/CI execution receipts",
+  "canonicalImplementationRoot": "tools/hepta-engineering-control/control_engineering_v2",
+  "legacyCompatibilitySurfaces": [
+    "tools/hepta-engineering-control/hepta_engineering_control.py"
   ]
 }

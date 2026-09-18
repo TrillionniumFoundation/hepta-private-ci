@@ -55,6 +55,16 @@ from .facade import (
     publish_audit_projection,
     schedule_ready_packages,
 )
+from .orchestration import (
+    AssignmentProposal,
+    CiCapacity,
+    EngineeringOrchestrationPlan,
+    EngineeringWorkItem,
+    IntegrationProposal,
+    ReviewCapacity,
+    WorkerProfile,
+    plan_engineering_work,
+)
 from .hardening import (
     AttestedSandboxParity,
     BoundEvidenceDecision,
@@ -86,6 +96,14 @@ hardened_request_independent_review = request_independent_review
 
 __all__ = [
     "AssimilationProposal",
+    "AssignmentProposal",
+    "CiCapacity",
+    "EngineeringOrchestrationPlan",
+    "EngineeringWorkItem",
+    "IntegrationProposal",
+    "ReviewCapacity",
+    "WorkerProfile",
+    "plan_engineering_work",
     "DebianSandboxAdapter",
     "AttestedSandboxParity",
     "BoundEvidenceDecision",

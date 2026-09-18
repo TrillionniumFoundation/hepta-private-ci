@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.control-engineering-production-implementation.v2",
+  "schemaVersion": 2,
+  "module": "control.engineering",
+  "canonicalImplementationRoot": "tools/hepta-engineering-control/control_engineering_v2",
+  "legacyCompatibilitySurface": "tools/hepta-engineering-control/hepta_engineering_control.py",
+  "repositoryProductCaller": {
+    "workflow": ".github/workflows/hepta-consolidated-source.yml",
+    "job": "engineering-product-gate",
+    "pythonModule": "control_engineering_v2.product_gate",
+    "state": "bound_pending_successful_execution_receipt",
+    "requiredUpstreamJobs": [
+      "workspace-regression",
+      "engineering-sandbox",
+      "qualification"
+    ]
+  },
+  "orchestrationModel": {
+    "symbol": "control_engineering_v2.orchestration.plan_engineering_work",
+    "consumes": [
+      "work_package_dag",
+      "worker_skills",
+      "worker_capacity",
+      "source_path_conflicts",
+      "review_capacity",
+      "ci_capacity",
+      "expected_value",
+      "architecture_debt_reduction",
+      "rollback_cost"
+    ],
+    "produces": [
+      "bounded_assignments",
+      "integration_order",
+      "merge_queue_proposal"
+    ],
+    "authority": "proposal_only"
+  },
+  "claimBoundary": {
+    "sourceImplementation": true,
+    "repositoryProductCallerBound": true,
+    "productExecutionProved": false,
+    "productionImplementation": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "deployment": false,
+    "promotion": false,
+    "release": false
+  },
+  "exactSourceIdentity": "derived_from_git_and_ci_receipts_not_document_sourceBase",
+  "externalGates": [
+    "independent reviewer acceptance",
+    "external key custody",
+    "authorized target-host handoff",
+    "observed deployment",
+    "rollback rehearsal",
+    "operator acceptance and release"
+  ]
+}

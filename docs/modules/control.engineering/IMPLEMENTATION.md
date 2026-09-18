@@ -8,7 +8,9 @@ These are implementation and test mappings, not acceptance certificates.
 ## Implemented boundary
 
 The Python package persists work envelopes, fenced path leases and dependency-aware
-assignment generations; creates bounded code candidates; runs admitted checks;
+assignment generations; plans worker assignments from skills/capacity, review and CI
+capacity, source conflicts, expected value, architecture-debt reduction and rollback
+cost; emits deterministic integration order and merge-queue proposals; creates bounded code candidates; runs admitted checks;
 verifies source, execution and evaluator evidence; records signed candidate-bound
 review eligibility; and composes consent-bound dormant external-system proposals.
 Its CLI exposes local scheduling, candidate generation and sandbox execution.
@@ -24,7 +26,7 @@ must provide the separate owner authorization required by its own contract.
 | Owner | Responsibility | Main callers |
 | --- | --- | --- |
 | `path_policy.py` | Canonical POSIX paths and cross-platform alias rejection | Store, candidate generator and sandbox |
-| `control_plane.py` | SQLite schema, transactions, envelopes, leases, scheduling and audit | Public facade and CLI |
+| `control_plane.py` | SQLite schema, transactions, envelopes, leases, durable scheduling and audit | Public facade and CLI |\n| `orchestration.py` | Worker/skill/capacity-aware assignment, integration order and merge-queue proposals | Repository product caller and direct planners |\n| `product_gate.py` | Exact-Git-bound read-only repository product caller | Consolidated source CI |
 | `candidate.py` | Deterministic candidate grammar, exact Git materialization and isolation | Public facade and CLI |
 | `evidence.py` | Exact Git objects, source/merge execution receipts and independent identities | Candidate evidence binder |
 | `hardening.py` | Active-state frontier and authenticated evidence/consent primitives | Store, closure and seal |
@@ -32,7 +34,7 @@ must provide the separate owner authorization required by its own contract.
 | `seal.py` | Signed evidence seals, replay prevention, review and durable eligibility | Public package and facade |
 | `cli.py` | Bounded JSON ingress and local operations | `python -m control_engineering_v2`, installed CLI |
 
-There are no import-time store patches or alternate clone sandbox owners. The
+The historical `hepta_engineering_control.py` module is compatibility-only; canonical new callers use `control_engineering_v2`. There are no import-time store patches or alternate clone sandbox owners. The
 public package, direct facade and historical public `hardened_*` aliases use the
 current authenticated composition. Lower-layer composition helpers do not replace
 that public boundary. SQLite file access and the Python process are trusted owner
