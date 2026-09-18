@@ -161,7 +161,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-FleetRegistry is operated by the existing supervisor owner. Open the same registry and preserve generation/fence identity during lifecycle changes. The separate lease_ledger is an in-memory component; durable resource grants and real capacity observations remain implementation work. Do not launch a second fleet writer.
+FleetRegistry is operated by the existing supervisor owner. The same supervisord process now opens the crash-recoverable `FleetAllocationStore` under the fleet state root after acquiring the single-writer lock. `LeaseLedger` remains the deterministic in-process state machine inside that durable transaction boundary. Real authenticated capacity observations and target-host enforcement remain deployment/integration evidence; do not launch a second fleet writer.
 
 Current operating and state-format references:
 
@@ -258,10 +258,10 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `allocate` | `pub fn issue(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
+| `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/allocation_store.rs` | `codex-rs/hepta-fleet/src/allocation_store.rs` |
+| `allocate` | `pub fn allocate_and_commit_with_verified_use_v1(` | `codex-rs/hepta-fleet/src/flow.rs` | `codex-rs/hepta-fleet/src/flow.rs` |
+| `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/allocation_store.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- Durable owner persistence, deterministic placement, atomic batch grant commit and local grant enforcement are implemented in `allocation_store.rs`, `placement.rs` and `flow.rs`; deployed capacity-observer and target-host consumer evidence remain external gates.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

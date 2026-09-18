@@ -1,7 +1,7 @@
 # runtime.fleet: implementation design
 
 Parent: `docs/modules/runtime.fleet/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: durable agent registry plus bounded in-memory capacity/lease component implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable agent registry, canonical resource model, deterministic placement/allocation and crash-recoverable allocation store implemented; deployed capacity observation, target-host enforcement evidence and independent acceptance remain in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `FleetRegistry` in [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); `admit_host` in [codex-rs/hepta-fleet/src/lease_ledger.rs](../../../codex-rs/hepta-fleet/src/lease_ledger.rs); `renew_or_revoke` in [codex-rs/hepta-fleet/src/lease_ledger.rs](../../../codex-rs/hepta-fleet/src/lease_ledger.rs). Durable agent registry plus bounded in-memory capacity/lease component implemented.
-- **State and recovery:** FleetRegistry persists agent manifests and generation-specific lifecycle JSON under the existing fleet layout. The separate BTreeMap allocation ledger tracks resources/epoch/expiry and is not the durable grant authority.
+- **Implemented entrypoints:** `FleetRegistry` in [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); durable `admit_host` / `renew_or_revoke` in [codex-rs/hepta-fleet/src/allocation_store.rs](../../../codex-rs/hepta-fleet/src/allocation_store.rs); and `allocate_and_commit_with_verified_use_v1` in [codex-rs/hepta-fleet/src/flow.rs](../../../codex-rs/hepta-fleet/src/flow.rs). Canonical resources, deterministic host placement, kernel final-use authority and crash-recoverable grant persistence are implemented.
+- **State and recovery:** FleetRegistry persists agent manifests and lifecycle state. `FleetAllocationStore` persists the allocation ledger with atomic replace + fsync, reopens exact lease generations, and prunes expired grants before capacity admission. The single supervisord owner opens the store under the fleet state root.
 - **Source tests:** [codex-rs/hepta-fleet/src/registry_tests.rs](../../../codex-rs/hepta-fleet/src/registry_tests.rs), [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json](../../../docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json), [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../../docs/readiness/LANE_B_RUNTIME_COMPOSITION.md).
-- **Remaining work:** Connect the lease component to supervisor-owned durable grants/fences and a real capacity observer; qualify partition, restart and expiry behavior on enrolled hosts.
+- **Remaining work:** Connect a deployed authenticated capacity observer and non-test remote/local runtime consumers; collect target-host partition, restart, expiry and enforcement qualification. Repository source now contains durable grants/fences, deterministic host placement, authority-bound atomic commit and usage reconciliation.

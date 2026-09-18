@@ -31,25 +31,25 @@ External evidence gates:
 
 ## 3. `runtime.fleet`
 
-Owns coherent host enrollment and allocation-lease records; consumers enforce grants locally.
+Supervisor-owned FleetAllocationStore persists coherent host observations and allocation leases; deterministic placement/allocation is committed atomically. The owner exposes grant enforcement and usage-reconciliation APIs; deployed consumers remain an external integration gate.
 
 Current-fence reconciliation records the observed holder disposition; pure allocation arithmetic cannot self-attest use.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn admit_host(` |
-| `allocate` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn issue(` |
-| `renew_or_revoke` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn renew_or_revoke(` |
+| `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/allocation_store.rs` — `pub fn admit_host(` |
+| `allocate` | `owner_native` | `codex-rs/hepta-fleet/src/flow.rs` — `pub fn allocate_and_commit_with_verified_use_v1(` |
+| `renew_or_revoke` | `owner_native` | `codex-rs/hepta-fleet/src/allocation_store.rs` — `pub fn renew_or_revoke(` |
 
 Remaining repository implementation gaps:
 
-- Connect the in-memory lease component to supervisor-owned durable FleetRegistry grants, fences, and a real capacity observer.
+- Bind a deployed authenticated capacity observer and a non-test runtime consumer to the durable owner flow without widening authority.
 
 External evidence gates:
 
-- real enrolled host capacity observation
-- non-test local grant enforcement
-- partition and lease-expiry target qualification
+- real enrolled-host authenticated capacity observation
+- non-test target runtime grant enforcement and usage observation
+- partition, restart and lease-expiry target qualification
 
 ## 4. `runtime.agentd`
 

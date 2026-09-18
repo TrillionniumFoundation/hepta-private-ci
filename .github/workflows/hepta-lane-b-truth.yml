@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-fleet/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
@@ -18,6 +19,7 @@ on:
       - main
     paths:
       - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-fleet/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
@@ -82,12 +84,13 @@ jobs:
           set -euo pipefail
           cargo test -p codex-hepta-supervisor --lib
           cargo test -p codex-hepta-agentd --lib
-          cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
+          cargo test -p codex-hepta-fleet --lib
           cargo test -p codex-hepta-infer-core --bin hepta-infer-control
           cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
           cargo test -p codex-hepta-automation --lib
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
           cargo test -p codex-hepta-matrixd --lib
+          cargo test -p codex-hepta-fleet --lib
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cargo test -p codex-app-server --test all thread_start
           cargo test -p codex-app-server --test all turn_start

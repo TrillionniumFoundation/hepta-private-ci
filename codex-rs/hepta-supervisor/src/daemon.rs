@@ -31,6 +31,8 @@ use codex_hepta_contracts::AgentId;
 #[cfg(any(unix, test))]
 use codex_hepta_fleet::AgentLifecycle;
 #[cfg(unix)]
+use codex_hepta_fleet::FleetAllocationStore;
+#[cfg(unix)]
 use codex_hepta_fleet::FleetRegistry;
 #[cfg(any(unix, test))]
 use codex_hepta_fleet::FleetRegistryError;
@@ -139,6 +141,7 @@ pub const PRODUCTION_AUTHORITY_FEATURE_ENABLED: bool =
 #[cfg(unix)]
 struct DaemonState<D: ProcessDriver> {
     registry: FleetRegistry,
+    _fleet_allocations: Mutex<FleetAllocationStore>,
     supervisor: Mutex<Supervisor<D>>,
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
@@ -192,6 +195,8 @@ async fn run_supervisord_inner(
     }
     let layout = registry.layout().clone();
     let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
+    let fleet_allocations = FleetAllocationStore::open_for_registry(&registry)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let (supervisor, recovery) = Supervisor::recover(
@@ -202,6 +207,7 @@ async fn run_supervisord_inner(
     )?;
     let state = Arc::new(DaemonState {
         registry,
+        _fleet_allocations: Mutex::new(fleet_allocations),
         supervisor: Mutex::new(supervisor),
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier,
