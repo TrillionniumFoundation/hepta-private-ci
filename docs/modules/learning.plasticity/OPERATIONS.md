@@ -9,12 +9,16 @@ claims. A deployment may be stricter but must not silently relax them.
 The product-workspace adapter entrypoint is
 `codex-rs/hepta-intelligence::propose_authenticated_parameter_plasticity_v1`.
 It can construct and persist a proposal only. It has no selection, training,
-installation, runtime-topology, promotion or release authority. No selected production
-host callsite is currently claimed; a host must explicitly invoke this adapter before
-product execution can be asserted.
+installation, runtime-topology, promotion or release authority. `codex-rs/hepta-agentd::propose_agentd_plasticity_v1` is now the source-level host
+callsite. It recomputes the current artifact and durable learning-ledger frontiers
+before invoking the adapter. This source composition is not evidence that a deployed
+target host executed or accepted it, so product execution remains unproved.
 
 The selected host owns three independent facts: current learning-evidence trust state,
-current artifact/evidence frontier witness, and the proposal-registry anchor/fence. The
+current artifact/evidence frontier witness, and the proposal-registry anchor/fence.
+Agentd now provides source implementations for parameter and topology anchor/fence
+stores; deployment must place each anchor store in a rollback domain independent from
+its registry file. The
 proposal registry file MUST NOT be the only copy of its acknowledged anchor. Writer
 fence issuance and anchor persistence MUST be serialized by the host.
 
@@ -24,12 +28,30 @@ If the anchor commit fails after the registry append, the adapter writer is pois
 returns `AnchorPersistenceFailed`, and MUST NOT perform another operation until an
 anchored reopen reconciles the durable file with previously acknowledged history.
 
+## Topology proposal operations
+
+Topology proposal construction is also source-composed through
+`propose_authenticated_topology_plasticity_v1` and
+`propose_agentd_topology_plasticity_v1`. Every update binds a typed
+`WriterHandoffPlanV1` with distinct owners, an advancing writer fence, source-store,
+migration, rollback and acknowledgement-contract digests. The complete governed
+proposal is persisted in `DurableTopologyProposalRegistryV1`, with the same
+lock-before-bootstrap and external-anchor posture as parameter proposals.
+
+`StructuralCanaryControllerV1` is an observation-only bounded state machine. It
+cannot apply topology. Safety violation, lineage mismatch, excess regression or an
+unverified rollback causes terminal abort. An Accepted source receipt is still not
+activation authority and is not evidence of a real host canary run.
+
 ## Required events
 
 A selected host MUST emit one bounded event for: `proposal_attempt`,
 `generator_rejected`, `evidence_rejected`, `evaluation_rejected`, `registry_conflict`,
 `registry_busy`, `registry_indeterminate`, `registry_poisoned`, `anchor_commit_failed`,
-`anchor_mismatch`, `acknowledged_history_missing`, and `proposal_appended`.
+`anchor_mismatch`, `acknowledged_history_missing`, `proposal_appended`,
+`topology_proposal_attempt`, `topology_handoff_rejected`, `topology_proposal_appended`,
+`topology_anchor_commit_failed`, `structural_canary_started`,
+`structural_canary_aborted`, and `structural_canary_observation`.
 
 Events contain digests/IDs and numeric counts only. Raw model parameters, signatures,
 credentials, dataset records and payload bytes are prohibited from logs.
@@ -56,8 +78,9 @@ credentials, dataset records and payload bytes are prohibited from logs.
   for the bounded profile. Exceeding this for 15 minutes disables new plasticity
   attempts but does not affect the currently selected runtime artifact.
 
-These thresholds are the required operating profile for a future selected host. They
-are not measured SLO evidence until a real host callsite and telemetry stream exist.
+These thresholds are the required operating profile for a deployed target host. The
+Agentd source callsites now exist, but the thresholds are not measured SLO evidence
+until a target-host telemetry stream and exact execution receipts exist.
 
 ## Recovery runbook
 
@@ -67,7 +90,7 @@ are not measured SLO evidence until a real host callsite and telemetry stream ex
 3. On `Indeterminate`, `Poisoned` or `AnchorPersistenceFailed`, discard the in-process
    writer handle. Do not convert a failed anchor commit into success based only on the
    registry file.
-4. Reopen only with `AnchoredPlasticityWriterV1::reopen_anchored` and the independently
+4. Reopen parameter state only with `AnchoredPlasticityWriterV1::reopen_anchored` and the independently
    retained last acknowledged anchor. A valid file may contain later unacknowledged
    frames; reconciliation may inspect them because `open_anchored` proves the trusted
    prefix before any repair. Anchor mismatch or missing acknowledged history requires
@@ -76,16 +99,22 @@ are not measured SLO evidence until a real host callsite and telemetry stream ex
    proposal construction.
 6. An identical proposal retry may return the original record. Semantic drift in an
    occupied artifact/window slot remains a conflict.
-7. Resume only after the new current anchor is durably retained outside the registry
+7. Topology proposal recovery follows the same rule through
+   `DurableTopologyProposalRegistryV1::reopen_anchored` and the Agentd topology anchor
+   store. Never convert a missing topology anchor into a fresh bootstrap.
+8. Resume only after the new current anchor is durably retained outside the registry
    rollback domain. A same-domain copy does not satisfy the external commit.
 
 ## Canary and qualification
 
-A production activation claim requires an actual selected-host callsite plus an
-exact-head and synthetic-merge run covering: V3 deterministic generation, trust-region
+A production activation claim requires target-host execution evidence in addition to
+the implemented Agentd source callsites, plus an exact-head and synthetic-merge run
+covering: V3 deterministic generation, trust-region
 rejection, signature expiry/revocation, generator/evaluator controller collision,
 missing evaluation, stale/frontier witness, anchored reopen, failed external-anchor
 commit and poisoned-writer behavior, old-prefix rollback, incomplete-tail recovery,
-writer-fence mismatch, and topology self-activation denial. Until those receipts
-exist, product execution, activation and release remain false even when source
-compilation/tests pass.
+writer-fence mismatch, typed mutation-grammar protected-surface denial, topology
+writer-handoff validation, topology anchored reopen, topology self-activation denial,
+and structural-canary abort semantics. A real bounded canary must additionally emit
+host telemetry and operator evidence. Until those receipts exist, product execution,
+activation and release remain false even when source compilation/tests pass.
