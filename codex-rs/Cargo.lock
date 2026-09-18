@@ -3545,9 +3545,13 @@ dependencies = [
 name = "codex-hepta-bao-adapter"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-authbus",
  "codex-hepta-contracts",
+ "codex-hepta-evidence",
  "codex-hepta-types",
  "codex-http-client",
+ "codex-state",
+ "codex-utils-absolute-path",
  "ed25519-dalek",
  "http 1.4.0",
  "pretty_assertions",
