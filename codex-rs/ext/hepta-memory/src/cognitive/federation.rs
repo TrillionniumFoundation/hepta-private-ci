@@ -23,7 +23,6 @@ use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::FederatedMemoryExplanation;
 use codex_hepta_memory::FederatedMemoryRevalidationBinding;
-use codex_hepta_memory::FederatedRecallSet;
 use codex_hepta_memory::FederatedRetrievalBatch;
 use codex_hepta_memory::FederatedRevalidationStatus;
 use codex_hepta_memory::FederationConsumerAccess;
@@ -63,33 +62,17 @@ struct PreparedFederatedAttachment {
     claimed_token_count: u32,
 }
 
-enum FederatedBackend {
-    Legacy(Arc<FederatedRecallSet>),
-    Runtime(CognitiveRuntime),
-}
-
 pub(crate) struct FederatedCognitiveExtension {
-    backend: FederatedBackend,
+    runtime: CognitiveRuntime,
 }
 
 impl FederatedCognitiveExtension {
-    pub(crate) fn new(federation: Arc<FederatedRecallSet>) -> Self {
-        Self {
-            backend: FederatedBackend::Legacy(federation),
-        }
-    }
-
     pub(crate) fn from_runtime(runtime: CognitiveRuntime) -> Self {
-        Self {
-            backend: FederatedBackend::Runtime(runtime),
-        }
+        Self { runtime }
     }
 
     fn consumer_agent_id(&self) -> Option<AgentId> {
-        match &self.backend {
-            FederatedBackend::Legacy(federation) => Some(federation.consumer_agent_id().clone()),
-            FederatedBackend::Runtime(runtime) => runtime.federation_consumer_agent_id().cloned(),
-        }
+        self.runtime.federation_consumer_agent_id().cloned()
     }
 
     async fn retrieve(
@@ -97,24 +80,16 @@ impl FederatedCognitiveExtension {
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
     ) -> Result<(FederatedRetrievalBatch, [u32; 4]), CognitiveStoreError> {
-        match &self.backend {
-            FederatedBackend::Legacy(federation) => {
-                let batch = federation.retrieve(access, request).await?;
-                Ok((batch, [1, 1, 0, 0]))
-            }
-            FederatedBackend::Runtime(runtime) => {
-                let (batch, coverage) = runtime.retrieve_federated(access, request).await?;
-                Ok((
-                    batch,
-                    [
-                        coverage.requested_peers,
-                        coverage.completed_peers,
-                        coverage.failed_peers,
-                        coverage.truncated_items,
-                    ],
-                ))
-            }
-        }
+        let (batch, coverage) = self.runtime.retrieve_federated(access, request).await?;
+        Ok((
+            batch,
+            [
+                coverage.requested_peers,
+                coverage.completed_peers,
+                coverage.failed_peers,
+                coverage.truncated_items,
+            ],
+        ))
     }
 
     async fn revalidate(
@@ -123,16 +98,9 @@ impl FederatedCognitiveExtension {
         binding: &FederatedMemoryRevalidationBinding,
         now_unix_seconds: i64,
     ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
-        match &self.backend {
-            FederatedBackend::Legacy(federation) => {
-                federation.revalidate(access, binding, now_unix_seconds).await
-            }
-            FederatedBackend::Runtime(runtime) => {
-                runtime
-                    .revalidate_federated(access, binding, now_unix_seconds)
-                    .await
-            }
-        }
+        self.runtime
+            .revalidate_federated(access, binding, now_unix_seconds)
+            .await
     }
 
     fn has_prepared_attachment(
