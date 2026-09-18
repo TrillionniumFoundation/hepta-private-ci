@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
@@ -330,4 +331,157 @@ fn canonical_json_omits_absent_optionals_and_rejects_explicit_null() {
         ModalitySpanRefV1::from_canonical_json(explicit_null.as_bytes()),
         Err(HnmfContractError::NonCanonicalJson)
     );
+}
+
+
+fn assert_wire_round_trip<T>(value: T)
+where
+    T: CanonicalJsonV1 + std::fmt::Debug + PartialEq,
+{
+    let bytes = value
+        .to_canonical_json()
+        .unwrap_or_else(|error| panic!("canonical protocol must encode: {error}"));
+    let decoded = T::from_canonical_json(&bytes)
+        .unwrap_or_else(|error| panic!("canonical protocol must decode: {error}"));
+    assert_eq!(decoded, value);
+}
+
+#[test]
+fn every_canonical_protocol_round_trips_strictly() {
+    assert_wire_round_trip(text_span());
+
+    let binding = CrossModalBindingV1::try_new(
+        1,
+        1,
+        BTreeSet::from([1, 2]),
+        AlignmentKindV1::SameObservation,
+        900_000,
+        digest("binding-producer"),
+    )
+    .unwrap_or_else(|error| panic!("binding fixture must be valid: {error}"));
+    assert_wire_round_trip(binding);
+
+    let event = memory_event(
+        MemoryVerificationStateV1::Verified,
+        MemoryLifecycleV1::Active,
+    )
+    .unwrap_or_else(|error| panic!("event fixture must be valid: {error}"));
+    assert_wire_round_trip(event);
+
+    let interval = TimeIntervalV1::try_new(1_000, None)
+        .unwrap_or_else(|error| panic!("interval fixture must be valid: {error}"));
+    let node = EngramNodeV1::try_new(
+        1,
+        EngramPopulationV1::SemanticConcept,
+        BTreeSet::from([ModalityKindV1::Text]),
+        BTreeSet::from(["door".to_string()]),
+        digest("support-manifest"),
+        0,
+        100_000,
+        900_000,
+        interval,
+        1,
+    )
+    .unwrap_or_else(|error| panic!("engram fixture must be valid: {error}"));
+    assert_wire_round_trip(node);
+
+    let synapse = SynapseV1::try_new(
+        1,
+        2,
+        SynapseRelationV1::Associative,
+        10_000,
+        1,
+        PlasticityClassV1::Static,
+        0,
+        digest("synapse-support"),
+        1,
+    )
+    .unwrap_or_else(|error| panic!("synapse fixture must be valid: {error}"));
+    assert_wire_round_trip(synapse);
+
+    let cue = MemoryCueV1::try_new(
+        1,
+        digest("cue-objective"),
+        digest("cue-ndu"),
+        BTreeSet::from([ModalityKindV1::Text]),
+        BTreeSet::from(["door".to_string()]),
+        BTreeSet::from([1]),
+        1_000,
+        ResourceBudgetV1::default(),
+    )
+    .unwrap_or_else(|error| panic!("cue fixture must be valid: {error}"));
+    assert_wire_round_trip(cue);
+
+    let resource_receipt = ResourceReceiptV1::try_new(0, 0, 0, 0)
+        .unwrap_or_else(|error| panic!("resource receipt fixture must be valid: {error}"));
+    let recall = RecallPacketV1::try_new(
+        digest("cue"),
+        digest("event-snapshot"),
+        digest("engram-snapshot"),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+        0,
+        0,
+        0,
+        false,
+        None,
+        resource_receipt,
+    )
+    .unwrap_or_else(|error| panic!("recall fixture must be valid: {error}"));
+    assert_wire_round_trip(recall);
+
+    let outcome = OutcomeSignalV1::try_new(
+        1,
+        0,
+        100_000,
+        100_000,
+        0,
+        0,
+        digest("observer"),
+    )
+    .unwrap_or_else(|error| panic!("outcome fixture must be valid: {error}"));
+    assert_wire_round_trip(outcome);
+
+    let replay_resource = ResourceReceiptV1::try_new(0, 0, 0, 0)
+        .unwrap_or_else(|error| panic!("replay resource fixture must be valid: {error}"));
+    let replay = ReplaySelectionReceiptV1::try_new(
+        digest("candidate-set"),
+        Vec::new(),
+        BTreeMap::new(),
+        digest("selection-policy"),
+        replay_resource,
+    )
+    .unwrap_or_else(|error| panic!("replay fixture must be valid: {error}"));
+    assert_wire_round_trip(replay);
+
+    let plasticity = PlasticityBatchV1::try_new(
+        1,
+        2,
+        digest("outcome-signal"),
+        Vec::new(),
+        Vec::new(),
+    )
+    .unwrap_or_else(|error| panic!("plasticity fixture must be valid: {error}"));
+    assert_wire_round_trip(plasticity);
+
+    let operation = TopologyOperationV1::add_node(
+        "door-concept",
+        EngramPopulationV1::SemanticConcept,
+    )
+    .unwrap_or_else(|error| panic!("topology operation fixture must be valid: {error}"));
+    let topology = TopologyProposalV1::try_new(1, 2, operation)
+        .unwrap_or_else(|error| panic!("topology fixture must be valid: {error}"));
+    assert_wire_round_trip(topology);
+
+    let forget = ForgetPropagationReceiptV1::try_new(
+        1,
+        1,
+        2,
+        BTreeSet::new(),
+        BTreeSet::new(),
+    )
+    .unwrap_or_else(|error| panic!("forget fixture must be valid: {error}"));
+    assert_wire_round_trip(forget);
 }
