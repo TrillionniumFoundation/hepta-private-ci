@@ -26,6 +26,7 @@ use crate::ArtifactEvent;
 use crate::ArtifactKind;
 use crate::ArtifactLifecycleEventV1;
 use crate::ArtifactLifecycleJournalRecordV2;
+use crate::ArtifactLifecycleJournalSnapshotV2;
 use crate::ArtifactLifecycleJournalV2;
 use crate::ArtifactLifecycleStateV1;
 use crate::ArtifactManifest;
@@ -830,9 +831,9 @@ fn decode_lifecycle_snapshot(
     if count != expected.records || head != expected.head_digest {
         return Err(ArtifactStorageError::Corrupt);
     }
-    let mut journal = ArtifactLifecycleJournalV2::new();
+    let mut records = Vec::with_capacity(count);
     for line in lines {
-        if journal.records().len() >= count {
+        if records.len() >= count {
             return Err(ArtifactStorageError::Corrupt);
         }
         let fields: Vec<_> = line.split('|').collect();
@@ -858,32 +859,24 @@ fn decode_lifecycle_snapshot(
             authority_epoch: parse_u64(fields[19])?,
             occurred_at: parse_u64(fields[20])?,
         };
-        let expected_record = ArtifactLifecycleJournalRecordV2 {
+        records.push(ArtifactLifecycleJournalRecordV2 {
             sequence: parse_u64(fields[1])?,
             predecessor_head_digest: parse_digest(fields[2])?,
             event_digest: parse_digest(fields[3])?,
             chain_digest: parse_digest(fields[4])?,
             producer_id: parse_id(fields[5])?,
-            actor: actor.clone(),
-            event: event.clone(),
-        };
-        let receipt = journal
-            .append(
-                expected_record.predecessor_head_digest,
-                &expected_record.producer_id,
-                actor,
-                event,
-                replay_now,
-            )
-            .map_err(|_| ArtifactStorageError::Semantic)?;
-        let actual = journal
-            .records()
-            .last()
-            .ok_or(ArtifactStorageError::Semantic)?;
-        if actual != &expected_record || receipt.sequence != expected_record.sequence {
-            return Err(ArtifactStorageError::Corrupt);
-        }
+            actor,
+            event,
+        });
     }
+    let journal = ArtifactLifecycleJournalV2::from_snapshot(
+        ArtifactLifecycleJournalSnapshotV2 {
+            records,
+            head_digest: head,
+        },
+        replay_now,
+    )
+    .map_err(|_| ArtifactStorageError::Semantic)?;
     if journal.records().len() != count || journal.head_digest() != head {
         return Err(ArtifactStorageError::Corrupt);
     }
