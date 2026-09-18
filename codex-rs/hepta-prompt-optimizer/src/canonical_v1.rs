@@ -40,6 +40,7 @@ pub struct PromptModelProfileV1 {
     pub tokenizer_digest: Digest32,
     pub template_digest: Digest32,
     pub tool_schema_digest: Digest32,
+    pub context_profile_digest: Digest32,
     pub locale_id: StableId,
 }
 
@@ -50,6 +51,7 @@ impl PromptModelProfileV1 {
             ("tokenizer", self.tokenizer_digest),
             ("template", self.template_digest),
             ("tool schema", self.tool_schema_digest),
+            ("context profile", self.context_profile_digest),
         ] {
             require_digest(digest, label)?;
         }
@@ -64,6 +66,7 @@ impl PromptModelProfileV1 {
             self.tokenizer_digest,
             self.template_digest,
             self.tool_schema_digest,
+            self.context_profile_digest,
         ] {
             bytes.extend_from_slice(digest.as_array());
         }
