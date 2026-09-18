@@ -84,6 +84,9 @@ class ProductionReadinessFacts:
     audit_anchor_receipt_digest: str = ""
     multi_host_execution: bool = False
     distributed_coordination_bound: bool = False
+    distributed_frontier_persisted: bool = False
+    audit_anchor_store_bound: bool = False
+    key_custody_identity_bound: bool = False
 
 
 @dataclass(frozen=True)
@@ -176,6 +179,8 @@ def evaluate_production_readiness(
         deployment.append("external_key_custody_missing")
     if not _valid_sha256(facts.key_custody_receipt_digest):
         deployment.append("key_custody_receipt_invalid")
+    if facts.key_custody_identity_bound is not True:
+        deployment.append("key_custody_identity_unbound")
     if facts.strong_sandbox_observed is not True:
         deployment.append("strong_sandbox_not_observed")
     if not _valid_sha256(facts.strong_sandbox_receipt_digest):
@@ -194,8 +199,12 @@ def evaluate_production_readiness(
         deployment.append("external_audit_anchor_missing")
     if not _valid_sha256(facts.audit_anchor_receipt_digest):
         deployment.append("audit_anchor_receipt_invalid")
+    if facts.audit_anchor_store_bound is not True:
+        deployment.append("audit_anchor_store_unbound")
     if facts.multi_host_execution is True and facts.distributed_coordination_bound is not True:
         deployment.append("distributed_coordination_missing")
+    if facts.multi_host_execution is True and facts.distributed_frontier_persisted is not True:
+        deployment.append("distributed_frontier_not_persisted")
 
     implementation_blockers = tuple(sorted(set(implementation)))
     deployment_blockers = tuple(sorted(set(deployment)))
