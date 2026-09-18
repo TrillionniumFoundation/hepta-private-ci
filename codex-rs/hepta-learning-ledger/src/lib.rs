@@ -16,10 +16,12 @@ mod error;
 mod journal;
 mod ledger;
 mod model;
+mod production;
 mod segment_codec;
 mod segments;
 mod shadow;
 mod signed_evidence;
+mod witness;
 
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
@@ -66,6 +68,20 @@ pub use model::OutcomeFinality;
 pub use model::OutcomeObservation;
 pub use model::Revocation;
 pub use model::UnlearningLineageEventV1;
+pub use production::DatasetFreezePlanV2;
+pub use production::LedgerWriter;
+pub use production::ProductionDecisionV2;
+pub use production::ProductionLedgerError;
+pub use production::UnlearningLineageReceiptV1;
+pub use production::UnlearningLineageRequestV1;
+pub use production::candidate_ids_digest_v2;
+pub use production::candidate_order_digest_v2;
+pub use production::credit_batch_signing_payload_v2;
+pub use production::dataset_freeze_signing_payload_v2;
+pub use production::decision_signing_payload_v2;
+pub use production::freeze_dataset_from_ledger;
+pub use production::outcome_signing_payload_v2;
+pub use production::unlearning_signing_payload_v1;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;
@@ -86,6 +102,8 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
+pub use witness::LedgerWitnessFrontier;
+pub use witness::LedgerWitnessStore;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
