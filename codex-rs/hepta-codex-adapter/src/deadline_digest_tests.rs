@@ -87,10 +87,25 @@ fn an_exact_retry_keeps_the_adapter_receipt_stable() {
 }
 
 #[test]
-fn the_deadline_remains_exclusive() {
-    let value = dispatched(intent(2_000));
+fn the_admission_deadline_remains_exclusive_but_late_terminal_truth_is_accepted() {
+    let value = intent(2_000);
     assert_eq!(
-        adapt_observation(2_000, &value, None),
+        final_use_binding(2_000, &value),
         Err(Error::DeadlineExpired)
     );
+
+    let dispatched = dispatched(value);
+    let receipt = adapt_observation(
+        3_000,
+        &dispatched,
+        Some(TerminalObservation {
+            thread_id: "thread:deadline".to_string(),
+            turn_id: "turn:deadline".to_string(),
+            outcome: TerminalOutcome::Completed,
+            protocol_version: 2,
+            response_digest: digest(b"late-terminal"),
+        }),
+    )
+    .expect("post-admission terminal truth must remain recordable after deadline");
+    assert_eq!(receipt.status, AdapterStatus::Succeeded);
 }
