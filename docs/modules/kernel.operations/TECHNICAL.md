@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); observed identifiers include `MAX_MODEL_OPERATION_RECORDS`, `OperationLedger`, `begin`, `authorize`, `record_dispatch`, `mark_indeterminate`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) for the implemented subset and remaining product work.
+The current source has two intentionally distinct surfaces. The production-shaped durable source owner is [codex-rs/hepta-operations/src/durable/store.rs](../../../codex-rs/hepta-operations/src/durable/store.rs), with `DurableOperationStore::prepare_intent`, leased `claim_outbox`, durable dispatch transitions and terminal settlement; [durable/dispatcher.rs](../../../codex-rs/hepta-operations/src/durable/dispatcher.rs) owns real final-use gated adapter admission, and [durable/reconcile.rs](../../../codex-rs/hepta-operations/src/durable/reconcile.rs) owns destination receipts and fenced settlement. The bounded [ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs) / [outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs) remain deterministic reference oracles rather than the durability boundary. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) for the exact implemented subset and remaining product activation work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -113,7 +113,7 @@ None.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The target wire/JSON contracts must preserve identical semantics and canonical digest scopes when admitted. The current durable native surface is typed Rust plus SQLite records; it does **not** claim that a production JSON codec for every target contract already exists. Native tests cover semantic digest stability, bounds, state/error transitions, migration/integrity behavior, crash/reopen and cross-owner idempotency. Error mapping preserves rejected, unavailable, indeterminate, quarantined and terminal outcomes without converting transport acknowledgement into effect success.
 
 ## 6. Data authority, persistence and migrations
 
@@ -126,21 +126,21 @@ Read-only data dependencies:
 
 None.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+`DurableOperationStore` is the authoritative writer for `operation_ledger` and the source-local `cross_owner_outbox`. `prepare_intent` acquires an immediate SQLite writer transaction and commits both records atomically. Mutations are revision/generation/fence-bound, exact semantic replay is idempotent and reused scoped identities with changed content conflict. Destination domain facts remain owned by their destination modules; `automation.taskflow` is the first concrete destination integration and commits its task row plus immutable operation receipt in one automation-owner transaction.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+The operations migrator is deterministic and checksum-bound. Store open verifies migration lineage, quick/foreign-key checks and required tables/indexes/triggers before reads or writes. Migration `0002_retired_identity_tombstones.sql` preserves retired source and generic destination semantic identities so retention cannot resurrect a previously completed effect. The automation owner migration `0004_kernel_operation_dedupe.sql` supplies the same no-replay identity fence around task creation.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Retention removes live terminal rows only after durable tombstone publication in the same transaction. Tombstones are immutable and permanent in the current profile. A rollback across a schema boundary must therefore preserve readable tombstone lineage or fail closed rather than silently re-admit retired work.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md).
+The durable source owner uses the repository SQLite durability shim with WAL + `synchronous=FULL`; logical publication uses `BEGIN IMMEDIATE`. Outbox leases record worker, generation, monotonic fence and expiry; stale lease holders cannot renew/retry/ack a newer claim. Expired pending work may be claimed by a non-stale generation. After an external effect may have crossed, work is never returned to the retry queue: `Dispatched`/`Indeterminate` can settle only from matching destination evidence. A higher generation may atomically adopt such an unresolved operation while recording terminal evidence, while lower generations remain stale. The retained in-memory oracle does not participate in production recovery.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Durable recovery is source-implemented for SQLite reopen, fenced pending-lease takeover, unresolved dispatched/indeterminate owner handoff, indeterminate terminal reconciliation and retention tombstones. Child-process crash fixtures cover pre-dispatch and post-durable-dispatch boundaries; forced write failure proves ledger/outbox co-commit rollback. These source tests still do not replace target-host power-loss/storage qualification or a continuously hosted product reconciler. Unknown effects remain unresolved until destination evidence exists.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -157,18 +157,22 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) specifies pilot ceilings and measurement obligations. Current durable source enforces bounded claim batches, bounded lease duration, bounded attempts and store record ceilings in `src/durable`; the 16,384-record limits in `ledger.rs`/`outbox.rs` apply only to the reference oracle. Pilot shard ceilings remain design targets until selected-host measurements prove them.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-OperationLedger and outbox types are embedded owner components. Their state transition result is not a remote effect observation. The host must bind each durable destination/outbox and current-fence reconciler; an in-memory ledger does not supply crash durability by itself.
+`DurableOperationStore` exposes durable state and backlog metrics; `DurableDispatcher` separates queue acknowledgement from terminal observation. Agentd currently opens the operations store as a source-composition seam. `automation.taskflow` supplies the first destination-owned apply/dedupe receipt path. Product activation still requires an enrolled grant source, hosted dispatcher/reconciler and operational alert thresholds; opening the store grants no effect authority.
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs).
-- [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs).
+- [docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md](../../lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md).
+- [codex-rs/hepta-operations/src/durable/store.rs](../../../codex-rs/hepta-operations/src/durable/store.rs).
+- [codex-rs/hepta-operations/src/durable/dispatcher.rs](../../../codex-rs/hepta-operations/src/durable/dispatcher.rs).
+- [codex-rs/hepta-operations/src/durable/reconcile.rs](../../../codex-rs/hepta-operations/src/durable/reconcile.rs).
+- [codex-rs/hepta-automation/src/operation_destination.rs](../../../codex-rs/hepta-automation/src/operation_destination.rs).
+- [docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md](../../lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -176,8 +180,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs); named case: `dispatch_ack_is_not_terminal_success`.
-- [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs); named case: `claim_and_ack_are_generation_fenced`.
+- [codex-rs/hepta-operations/src/durable/tests.rs](../../../codex-rs/hepta-operations/src/durable/tests.rs): atomic publication/reopen, lease fencing/takeover, indeterminate/terminal reconciliation, retention and anti-resurrection.
+- [codex-rs/hepta-operations/src/durable/fault_tests.rs](../../../codex-rs/hepta-operations/src/durable/fault_tests.rs): independent handles, forced write failure and real child-process crash boundaries including higher-generation unresolved owner handoff.
+- [codex-rs/hepta-operations/src/durable/dispatcher_tests.rs](../../../codex-rs/hepta-operations/src/durable/dispatcher_tests.rs): bounded claims and real final-use gated dispatch.
+- [codex-rs/hepta-automation/tests/kernel_operations_destination.rs](../../../codex-rs/hepta-automation/tests/kernel_operations_destination.rs): lost-ack source→automation-owner apply→terminal reconcile, exact replay, payload drift and destination reopen.
+- [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs) and [outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs): retained deterministic reference-oracle semantics.
 
 In `codex-rs`, run `just test -p codex-hepta-operations`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) separately labels target acceptance designs.
 
@@ -308,9 +315,13 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `pending` |
-| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `pending` |
+| `prepare_intent` | `DurableOperationStore::prepare_intent` | `codex-rs/hepta-operations/src/durable/store.rs` | `durable/tests.rs`, `durable/fault_tests.rs` |
+| `claim_outbox` | `DurableOperationStore::claim_outbox` | `codex-rs/hepta-operations/src/durable/store.rs` | `durable/tests.rs`, `durable/fault_tests.rs` |
+| `authorized_dispatch` | `DurableDispatcher::dispatch_authorized` | `codex-rs/hepta-operations/src/durable/dispatcher.rs` | `durable/dispatcher_tests.rs`, automation owner vertical slice |
+| `observe_terminal` | `DurableOperationStore::reconcile_destination_receipt` | `codex-rs/hepta-operations/src/durable/reconcile.rs` | `durable/tests.rs`, `durable/fault_tests.rs`, automation owner vertical slice |
+| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `ledger_tests.rs` |
+| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `outbox_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- The automation destination-owner slice is source-composed; other registered destination owners still require equivalent dedupe/apply/observer bindings.
+- Agentd store-open composition is present, but an enrolled production grant source, hosted dispatch/reconcile loop, exact-candidate qualification, independent acceptance, activation and release remain separate gates.
