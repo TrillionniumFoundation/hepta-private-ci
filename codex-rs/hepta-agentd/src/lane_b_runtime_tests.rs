@@ -9,8 +9,10 @@ fn composition() -> RuntimeComposition {
         agent_id: "agent.1".to_string(),
         supervisor_generation: 2,
         agentd_generation: 3,
+        authority_epoch: 7,
         configuration_digest: digest('1'),
         ports_digest: digest('2'),
+        fence_digest: digest('7'),
     }
 }
 
@@ -22,6 +24,8 @@ fn snapshot() -> RunSnapshot {
         body_digest: digest('5'),
         artifact_set_digest: digest('6'),
         authority_epoch: 7,
+        generation: 3,
+        fence_digest: digest('7'),
         deadline_ms: 10_000,
     }
 }
@@ -112,6 +116,33 @@ fn cancellation_preserves_the_dispatch_boundary() {
         .expect("observe unknown terminality");
     assert_eq!(terminal.phase, RunPhase::Indeterminate);
     assert!(!terminal.terminal_observed);
+}
+
+#[test]
+fn stale_generation_authority_or_fence_is_rejected_before_run_admission() {
+    let mut coordinator =
+        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
+
+    let mut stale_generation = snapshot();
+    stale_generation.generation = 2;
+    assert_eq!(
+        coordinator.start_run(100, stale_generation),
+        Err(AgentRunError::RuntimeBindingMismatch)
+    );
+
+    let mut stale_authority = snapshot();
+    stale_authority.authority_epoch = 6;
+    assert_eq!(
+        coordinator.start_run(100, stale_authority),
+        Err(AgentRunError::RuntimeBindingMismatch)
+    );
+
+    let mut stale_fence = snapshot();
+    stale_fence.fence_digest = digest('8');
+    assert_eq!(
+        coordinator.start_run(100, stale_fence),
+        Err(AgentRunError::RuntimeBindingMismatch)
+    );
 }
 
 #[test]
