@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::fmt;
+use std::io::Read;
 
 use crate::DecodeFrameError;
 use crate::DecodedEnvelope;
@@ -95,6 +96,52 @@ impl StreamingDecoder {
             decoded.push(envelope);
         }
         Ok(decoded)
+    }
+}
+
+/// Read exactly one frame from a blocking byte stream.
+///
+/// Only the fixed 54-byte header is read before frame lengths and bounds are
+/// validated. The owned frame allocation happens only after that admission,
+/// so an attacker-controlled advertised length cannot trigger an unbounded
+/// pre-validation allocation inside this API. `std::net::TcpStream`,
+/// `std::os::unix::net::UnixStream`, files and pipes implement `Read`.
+pub fn read_frame<R: Read>(reader: &mut R) -> Result<DecodedEnvelope, ReadFrameError> {
+    let mut header = [0_u8; WIRE_HEADER_BYTES];
+    reader
+        .read_exact(&mut header)
+        .map_err(ReadFrameError::Io)?;
+    let inspected = inspect_header(&header).map_err(ReadFrameError::Protocol)?;
+    let mut frame = Vec::with_capacity(inspected.frame_length);
+    frame.extend_from_slice(&header);
+    frame.resize(inspected.frame_length, 0);
+    reader
+        .read_exact(&mut frame[WIRE_HEADER_BYTES..])
+        .map_err(ReadFrameError::Io)?;
+    decode_frame(&frame).map_err(|error| ReadFrameError::Protocol(StreamDecodeError::Frame(error)))
+}
+
+#[derive(Debug)]
+pub enum ReadFrameError {
+    Io(std::io::Error),
+    Protocol(StreamDecodeError),
+}
+
+impl fmt::Display for ReadFrameError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Io(error) => write!(formatter, "wire stream I/O failed: {error}"),
+            Self::Protocol(error) => error.fmt(formatter),
+        }
+    }
+}
+
+impl Error for ReadFrameError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::Io(error) => Some(error),
+            Self::Protocol(error) => Some(error),
+        }
     }
 }
 
