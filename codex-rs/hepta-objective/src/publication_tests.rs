@@ -97,8 +97,8 @@ fn bindings() -> RunStartBindingsV1 {
 
 #[test]
 fn publication_binds_compiled_objective_and_run_snapshot() {
-    let publication = ObjectiveRunPublicationV1::new(admission(), compiled(), bindings())
-        .expect("publication");
+    let publication =
+        ObjectiveRunPublicationV1::new(admission(), compiled(), bindings()).expect("publication");
     assert_eq!(
         publication.run_start.objective_digest,
         publication.compile.objective.semantic_digest
@@ -131,12 +131,11 @@ fn publication_rejects_authority_or_unbound_run_identity() {
 
 #[test]
 fn run_snapshot_digest_changes_with_generation() {
-    let first = ObjectiveRunPublicationV1::new(admission(), compiled(), bindings())
-        .expect("first");
+    let first = ObjectiveRunPublicationV1::new(admission(), compiled(), bindings()).expect("first");
     let mut second_bindings = bindings();
     second_bindings.generation += 1;
-    let second = ObjectiveRunPublicationV1::new(admission(), compiled(), second_bindings)
-        .expect("second");
+    let second =
+        ObjectiveRunPublicationV1::new(admission(), compiled(), second_bindings).expect("second");
     assert_ne!(
         first.run_start.semantic_digest().expect("first digest"),
         second.run_start.semantic_digest().expect("second digest")
