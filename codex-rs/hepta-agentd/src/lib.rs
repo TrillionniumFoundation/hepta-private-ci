@@ -17,6 +17,7 @@ mod control;
 mod error;
 mod event_buffer;
 mod lane_b_runtime;
+mod owner_retrieval_adapter;
 mod production_writer_host;
 mod qualification_writer;
 mod runtime;
