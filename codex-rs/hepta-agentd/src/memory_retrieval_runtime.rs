@@ -17,7 +17,6 @@ use codex_hepta_learning_ledger::EpisodeDecision;
 use codex_hepta_memory_retrieval::CandidateUnionBuildV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
 use codex_hepta_memory_retrieval::HnmfRecallReceiptV1;
-use codex_hepta_memory_retrieval::RecallDispositionV1;
 use codex_hepta_memory_retrieval::RecallDynamicsV1;
 use codex_hepta_memory_retrieval::RetrievalPolicyV1;
 use codex_hepta_types::Digest32;
@@ -264,6 +263,7 @@ impl PinnedMemoryRetrievalRuntime {
         prepared: &PreparedMemoryRetrievalV1,
         built: &CandidateUnionBuildV1,
         receipt: &HnmfRecallReceiptV1,
+        selected_identity: Option<(String, u64)>,
     ) -> Result<Digest32, String> {
         if !built.all_enabled_channels_exhausted {
             return Err("incomplete retrieval coverage cannot be logged as a causal decision".to_string());
@@ -286,18 +286,16 @@ impl PinnedMemoryRetrievalRuntime {
             return Err("retrieval candidate identity collision".to_string());
         }
 
-        let selected_candidate_id = match receipt.packet.disposition {
-            RecallDispositionV1::Recalled => {
-                let selected = receipt
-                    .packet
-                    .selections
-                    .first()
-                    .ok_or_else(|| "recalled packet has no selection".to_string())?;
-                retrieval_candidate_id(&selected.record_id, selected.record_revision.get())?
+        let selected_candidate_id = match selected_identity {
+            Some((record_id, revision)) => {
+                let record_id = StableId::new(record_id).map_err(|error| error.to_string())?;
+                let candidate_id = retrieval_candidate_id(&record_id, revision)?;
+                if !candidate_ids.contains(&candidate_id) {
+                    return Err("selected retrieval identity is outside the complete legal set".to_string());
+                }
+                candidate_id
             }
-            RecallDispositionV1::Abstained(_) => {
-                StableId::new("abstain").map_err(|error| error.to_string())?
-            }
+            None => StableId::new("abstain").map_err(|error| error.to_string())?,
         };
         let mut support_bytes = b"hepta.memory-retrieval.learning-decision.v1".to_vec();
         support_bytes.extend_from_slice(prepared.preparation_digest.as_array());
