@@ -6,6 +6,7 @@ use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskState;
+use codex_hepta_automation::TimerPhase;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
@@ -311,5 +312,88 @@ async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
             Err(AutomationError::Corrupt)
         ));
     }
+    Ok(())
+}
+
+
+#[tokio::test]
+async fn timer_quiescence_is_durable_and_unknown_work_blocks_handoff() -> TestResult {
+    let (_temp, layout, store, lease) = leased_store().await?;
+    let stopped = store.quiesce_timer().await?;
+    assert_eq!(stopped.phase, TimerPhase::Draining);
+    assert_eq!(stopped.leased_occurrences, 1);
+    assert!(!stopped.can_handoff());
+    assert_eq!(store.claim_due(100_000, 2, 100).await?, None);
+    assert_eq!(store.handoff_timer().await.err(), Some(AutomationError::Conflict));
+
+    store.record_dispatch_uncertain(&lease, 101).await?;
+    store.close().await;
+    let reopened = AutomationStore::open(&layout).await?;
+    assert_eq!(reopened.timer_status().await?.uncertain_dispatches, 1);
+    assert_eq!(reopened.recover_stale_generation(2).await?, 0);
+    assert_eq!(reopened.handoff_timer().await.err(), Some(AutomationError::Conflict));
+
+    reopened
+        .reconcile_dispatch(lease.task.task_id, lease.occurrence, &receipt(&lease), 102)
+        .await?;
+    assert!(reopened.timer_status().await?.can_handoff());
+    reopened.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn timer_handoff_fences_predecessor_and_preserves_occurrence_identity() -> TestResult {
+    let (_temp, _layout, store, lease) = leased_store().await?;
+    store.release_for_retry(&lease).await?;
+    store.quiesce_timer().await?;
+    let successor = store.handoff_timer().await?;
+    assert_eq!(successor.timer_status().await?.writer_epoch, 2);
+    assert_eq!(successor.timer_status().await?.phase, TimerPhase::Draining);
+
+    assert_eq!(
+        store.claim_due(100, 1, 100).await,
+        Err(AutomationError::TimerFenced)
+    );
+    assert_eq!(
+        store
+            .create_task(&AutomationTaskDraft::new(
+                "019153a4-3088-7e03-a56a-9b1964f75dde",
+                "stale create",
+                AutomationSchedule::Once,
+                100,
+                1,
+            ))
+            .await,
+        Err(AutomationError::TimerFenced)
+    );
+
+    successor.resume_timer().await?;
+    let next = successor
+        .claim_due(100, 2, 100)
+        .await?
+        .ok_or("missing handoff lease")?;
+    assert_eq!(next.client_user_message_id, lease.client_user_message_id);
+    assert_eq!(next.occurrence, lease.occurrence);
+    store.close().await;
+    successor.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn repeated_timer_handoffs_keep_writer_epoch_monotone() -> TestResult {
+    let (_temp, layout, mut store, lease) = leased_store().await?;
+    store.release_for_retry(&lease).await?;
+    for expected_epoch in 2..=9 {
+        store.quiesce_timer().await?;
+        let successor = store.handoff_timer().await?;
+        store.close().await;
+        successor.close().await;
+        store = AutomationStore::open(&layout).await?;
+        let status = store.timer_status().await?;
+        assert_eq!(status.writer_epoch, expected_epoch);
+        assert_eq!(status.phase, TimerPhase::Draining);
+        store.resume_timer().await?;
+    }
+    store.close().await;
     Ok(())
 }
