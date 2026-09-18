@@ -451,13 +451,29 @@ mod tests {
 
     fn publication_binding(
         predecessor_head_digest: Digest32,
-        snapshot_binding: Digest32,
     ) -> ArtifactPublicationRegistryBindingV1 {
         ArtifactPublicationRegistryBindingV1 {
             registry_id: id("artifacts"),
             predecessor_head_digest,
-            snapshot_binding,
         }
+    }
+
+    fn publication_contract() -> ArtifactPublicationContractV1 {
+        let mut contract = ArtifactPublicationContractV1 {
+            operation_id: id("operation"),
+            registry_id: id("artifacts"),
+            admission_digest: digest("admission"),
+            manifest_digest: digest("manifest"),
+            withdrawal_domain_digest: digest("domain"),
+            withdrawal_head_digest: Digest32::ZERO,
+            registry_predecessor_head_digest: digest("previous-head"),
+            registry_successor_head_digest: digest("registry-head"),
+            registry_sequence: LogicalSequence::new(1).expect("sequence"),
+            registry_event_digest: digest("registry-event"),
+            snapshot_binding: Digest32::ZERO,
+        };
+        contract.snapshot_binding = publication_contract_binding(&contract);
+        contract
     }
 
     fn snapshot_receipt(binding: Digest32) -> RegistrySnapshotReceipt {
@@ -506,20 +522,8 @@ mod tests {
 
     #[test]
     fn crash_recovery_never_treats_snapshot_only_as_published() {
-        let binding = digest("binding");
-        let contract = ArtifactPublicationContractV1 {
-            operation_id: id("operation"),
-            registry_id: id("artifacts"),
-            admission_digest: digest("admission"),
-            manifest_digest: digest("manifest"),
-            withdrawal_domain_digest: digest("domain"),
-            withdrawal_head_digest: Digest32::ZERO,
-            registry_predecessor_head_digest: digest("previous-head"),
-            registry_successor_head_digest: digest("registry-head"),
-            registry_sequence: LogicalSequence::new(1).expect("sequence"),
-            registry_event_digest: digest("registry-event"),
-            snapshot_binding: binding,
-        };
+        let contract = publication_contract();
+        let binding = contract.snapshot_binding;
         let mut prepared =
             recover_artifact_publication_v1(contract.clone(), None, None).expect("recover");
         assert_eq!(prepared.phase(), ArtifactPublicationPhaseV1::Prepared);
@@ -567,20 +571,8 @@ mod tests {
 
     #[test]
     fn durable_witness_from_wrong_registry_namespace_is_rejected() {
-        let binding = digest("binding");
-        let contract = ArtifactPublicationContractV1 {
-            operation_id: id("operation"),
-            registry_id: id("artifacts"),
-            admission_digest: digest("admission"),
-            manifest_digest: digest("manifest"),
-            withdrawal_domain_digest: digest("domain"),
-            withdrawal_head_digest: Digest32::ZERO,
-            registry_predecessor_head_digest: digest("previous-head"),
-            registry_successor_head_digest: digest("registry-head"),
-            registry_sequence: LogicalSequence::new(1).expect("sequence"),
-            registry_event_digest: digest("registry-event"),
-            snapshot_binding: binding,
-        };
+        let contract = publication_contract();
+        let binding = contract.snapshot_binding;
         let mut transaction =
             recover_artifact_publication_v1(contract, Some(snapshot_receipt(binding)), None)
                 .expect("snapshot recovery");
@@ -612,21 +604,9 @@ mod tests {
 
     #[test]
     fn witness_without_snapshot_is_rejected_after_restart() {
-        let binding = digest("binding");
+        let contract = publication_contract();
+        let binding = contract.snapshot_binding;
         let (head, receipt) = witness(binding);
-        let contract = ArtifactPublicationContractV1 {
-            operation_id: id("operation"),
-            registry_id: id("artifacts"),
-            admission_digest: digest("admission"),
-            manifest_digest: digest("manifest"),
-            withdrawal_domain_digest: digest("domain"),
-            withdrawal_head_digest: Digest32::ZERO,
-            registry_predecessor_head_digest: digest("previous-head"),
-            registry_successor_head_digest: digest("registry-head"),
-            registry_sequence: LogicalSequence::new(1).expect("sequence"),
-            registry_event_digest: digest("registry-event"),
-            snapshot_binding: binding,
-        };
         assert_eq!(
             recover_artifact_publication_v1(contract, None, Some((&head, receipt))),
             Err(ArtifactPublicationError::SnapshotNotDurable)
@@ -653,7 +633,7 @@ mod tests {
             &registry,
             20,
             &receipt,
-            publication_binding(predecessor, digest("binding")),
+            publication_binding(predecessor),
         )
         .expect("publication contract");
         assert_eq!(transaction.contract().operation_id, operation_id);
@@ -673,7 +653,7 @@ mod tests {
                 &registry,
                 20,
                 &wrong_event,
-                publication_binding(predecessor, digest("binding")),
+                publication_binding(predecessor),
             ),
             Err(ArtifactPublicationError::RegistryEventMismatch)
         );
@@ -687,7 +667,7 @@ mod tests {
                 &registry,
                 20,
                 &wrong_chain,
-                publication_binding(predecessor, digest("binding")),
+                publication_binding(predecessor),
             ),
             Err(ArtifactPublicationError::RegistryChainMismatch)
         );
@@ -746,34 +726,62 @@ mod tests {
     }
 
     #[test]
-    fn dataset_derived_registry_event_identity_commits_admission_frontier() {
-        let mut first = admission();
-        first.validated_manifest.manifest.provenance_mode = ProvenanceModeV1::DatasetDerived;
-        first.validated_manifest.manifest.source_dataset_digests = vec![digest("dataset")];
-        let mut second = first.clone();
-        second.admission_digest = digest("other-admission");
+    fn publication_binding_commits_admission_frontier_without_rewriting_operation_identity() {
+        let registry = scoped_registry();
+        let head = registry.snapshot().head_digest;
+        let mut manifest = admission().validated_manifest.manifest;
+        manifest.provenance_mode = ProvenanceModeV1::DatasetDerived;
+        manifest.source_dataset_digests = vec![digest("dataset")];
+        let first =
+            crate::admit_manifest_at_withdrawal_head_v3(&registry, head, manifest.clone(), 20)
+                .expect("first admission");
+        let second =
+            crate::admit_manifest_at_withdrawal_head_v3(&registry, head, manifest, 21)
+                .expect("second admission");
+        let operation_id = id("operation");
+        let predecessor = digest("previous-head");
         let first_event =
-            artifact_registry_event_for_admission_v3(id("operation"), &first).expect("projection");
+            artifact_registry_event_for_admission_v3(operation_id.clone(), &first)
+                .expect("first projection");
         let second_event =
-            artifact_registry_event_for_admission_v3(id("operation"), &second).expect("projection");
-        assert_ne!(digest_event(&first_event), digest_event(&second_event));
-        let ArtifactEvent::Register {
-            manifest: first_manifest,
-            ..
-        } = first_event
-        else {
-            panic!("publication must register");
-        };
-        let ArtifactEvent::Register {
-            manifest: second_manifest,
-            ..
-        } = second_event
-        else {
-            panic!("publication must register");
-        };
+            artifact_registry_event_for_admission_v3(operation_id.clone(), &second)
+                .expect("second projection");
+        assert_eq!(digest_event(&first_event), digest_event(&second_event));
+        assert_eq!(first_event.event_id(), &operation_id);
+        assert_eq!(second_event.event_id(), &operation_id);
+
+        let receipt = append_receipt(operation_id.clone(), &first, predecessor);
+        let first_transaction = prepare_artifact_publication_v1(
+            operation_id.clone(),
+            &first,
+            &registry,
+            21,
+            &receipt,
+            publication_binding(predecessor),
+        )
+        .expect("first publication contract");
+        let second_transaction = prepare_artifact_publication_v1(
+            operation_id,
+            &second,
+            &registry,
+            21,
+            &receipt,
+            publication_binding(predecessor),
+        )
+        .expect("second publication contract");
+        assert_ne!(
+            first_transaction.contract().snapshot_binding,
+            second_transaction.contract().snapshot_binding
+        );
+    }
+
+    #[test]
+    fn recovery_rejects_contract_semantic_drift() {
+        let mut contract = publication_contract();
+        contract.admission_digest = digest("other-admission");
         assert_eq!(
-            first_manifest.support_digest,
-            second_manifest.support_digest
+            recover_artifact_publication_v1(contract, None, None),
+            Err(ArtifactPublicationError::ContractBindingMismatch)
         );
     }
 
@@ -790,7 +798,6 @@ mod tests {
 
     #[test]
     fn prepare_requires_current_domain_bound_admission() {
-        let binding = digest("binding");
         let registry = scoped_registry();
         let stale = admission();
         let operation_id = id("operation");
@@ -803,7 +810,7 @@ mod tests {
                 &registry,
                 20,
                 &receipt,
-                publication_binding(predecessor, binding),
+                publication_binding(predecessor),
             ),
             Err(ArtifactPublicationError::Admission(_))
         ));
