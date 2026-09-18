@@ -126,6 +126,14 @@ impl FleetRevocationCoordinator {
                 return Err(FleetRevocationError::StaleUpdate);
             }
             if new.head.authority_epoch == old.head.authority_epoch
+                && !new
+                    .head
+                    .revoked_grant_ids
+                    .is_superset(&old.head.revoked_grant_ids)
+            {
+                return Err(FleetRevocationError::ConflictingUpdate);
+            }
+            if new.head.authority_epoch == old.head.authority_epoch
                 && new.head.revision == old.head.revision
             {
                 if same_update(&current.update, &update) {
@@ -230,6 +238,31 @@ impl FleetRevocationCoordinator {
             .as_ref()
             .ok_or(FleetRevocationError::NoCurrentUpdate)?;
         let now = self.now()?;
+        if now >= current.update.update.expires_at_unix_ms {
+            let acknowledged: BTreeSet<String> = current
+                .acknowledgements
+                .iter()
+                .map(|candidate| candidate.ack.node_id.clone())
+                .collect();
+            let acknowledged_nodes: Vec<String> = acknowledged.iter().cloned().collect();
+            let missing_nodes: Vec<String> = current
+                .expected_nodes
+                .iter()
+                .filter(|node| !acknowledged.contains(*node))
+                .cloned()
+                .collect();
+            return Ok(FleetRevocationStatus {
+                authority_epoch: current.update.update.head.authority_epoch,
+                revision: current.update.update.head.revision,
+                issued_at_unix_ms: current.update.update.issued_at_unix_ms,
+                expires_at_unix_ms: current.update.update.expires_at_unix_ms,
+                convergence_deadline_unix_ms: current.convergence_deadline_unix_ms,
+                acknowledged_nodes,
+                missing_nodes,
+                converged: false,
+                feed_fresh: false,
+            });
+        }
         let report = self.current_report()?;
         Ok(FleetRevocationStatus {
             authority_epoch: current.update.update.head.authority_epoch,
@@ -240,7 +273,7 @@ impl FleetRevocationCoordinator {
             acknowledged_nodes: report.acknowledged_nodes,
             missing_nodes: report.missing_nodes,
             converged: report.converged(),
-            feed_fresh: now < current.update.update.expires_at_unix_ms,
+            feed_fresh: true,
         })
     }
 
@@ -436,6 +469,9 @@ mod tests {
             coordinator.node_state("node-a").unwrap(),
             FleetNodeRevocationState::FeedStale
         );
+        let stale = coordinator.status().unwrap();
+        assert!(!stale.feed_fresh);
+        assert!(!stale.converged);
     }
 
     #[test]
@@ -473,6 +509,20 @@ mod tests {
         );
 
         clock.set(1_300);
+        let mut removed = update.clone();
+        removed.update.head.revision = 3;
+        removed.update.head.revoked_grant_ids.clear();
+        removed.update.issued_at_unix_ms = 1_250;
+        removed.update.expires_at_unix_ms = 2_100;
+        removed.signature = distributor
+            .sign(&removed.update.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        assert_eq!(
+            coordinator.install_update(removed).unwrap_err(),
+            FleetRevocationError::ConflictingUpdate
+        );
+
         let mut newer = update;
         newer.update.head.revision = 3;
         newer.update.issued_at_unix_ms = 1_250;
