@@ -86,12 +86,18 @@ from .execution_control import (
 )
 from .external_control import (
     AuditAnchorReceipt,
+    CustodiedSignatureProvider,
     DistributedWriteGrant,
     KeyCustodyReceipt,
+    admit_distributed_write_grant,
+    distributed_write_frontier,
     export_audit_anchor,
+    store_snapshot_digest,
     verify_audit_anchor_receipt,
+    verify_custodied_signature_provider,
     verify_distributed_write_grant,
     verify_key_custody_receipt,
+    verify_store_audit_anchor,
 )
 from .production import (
     ProductionReadinessDecision,
@@ -129,6 +135,12 @@ hardened_request_independent_review = request_independent_review
 
 __all__ = [
     "AuditAnchorReceipt",
+    "CustodiedSignatureProvider",
+    "admit_distributed_write_grant",
+    "distributed_write_frontier",
+    "store_snapshot_digest",
+    "verify_custodied_signature_provider",
+    "verify_store_audit_anchor",
     "CandidateBundle",
     "DistributedWriteGrant",
     "EngineeringAssignment",
