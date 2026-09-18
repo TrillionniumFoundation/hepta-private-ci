@@ -95,6 +95,9 @@ export class RuntimeClient {
   #timer = null;
   #timerDueAt = null;
   #connectAttempt = 0;
+  #closing = false;
+  #activeIo = 0;
+  #drainWaiters = [];
   #session = null;
   #snapshot = null;
   #previousSnapshot = null;
@@ -140,6 +143,9 @@ export class RuntimeClient {
   }
 
   async connect(endpointManifest) {
+    if (this.#closing) {
+      fail(ERROR_CODES.NOT_CONNECTED, "runtime client is closing");
+    }
     const manifest = readOwnDataFields(
       endpointManifest,
       "endpointManifest",
@@ -376,18 +382,27 @@ export class RuntimeClient {
 
   async close() {
     this.#connectAttempt += 1;
-    if (!this.#session) return;
-    const closingSession = Object.freeze({ ...this.#session });
+    if (this.#closing) {
+      await this.#waitForIoDrain();
+      return;
+    }
+    this.#closing = true;
+    const closingSession = this.#session ? Object.freeze({ ...this.#session }) : null;
     this.#cancelReconciliationTimer();
-    this.#markPendingIndeterminate();
-    this.#persistBestEffort();
+    if (closingSession) {
+      this.#markPendingIndeterminate();
+      this.#persistBestEffort();
+    }
     let closeError = null;
     try {
-      await this.#transport.close(Object.freeze({ sessionId: closingSession.sessionId }));
+      if (closingSession) {
+        await this.#transport.close(Object.freeze({ sessionId: closingSession.sessionId }));
+      }
     } catch (error) {
       closeError = error;
     } finally {
       if (
+        closingSession &&
         this.#session?.sessionId === closingSession.sessionId &&
         this.#session?.connectionGeneration === closingSession.connectionGeneration
       ) {
@@ -395,6 +410,8 @@ export class RuntimeClient {
         this.#snapshot = null;
         this.#previousSnapshot = null;
       }
+      await this.#waitForIoDrain();
+      this.#closing = false;
     }
     if (closeError instanceof UiControlError) throw closeError;
     if (closeError !== null) {
@@ -403,6 +420,9 @@ export class RuntimeClient {
   }
 
   async #submit(method, input) {
+    if (this.#closing) {
+      fail(ERROR_CODES.NOT_CONNECTED, "runtime client is closing");
+    }
     const capturedSession = this.#captureSession();
     const capturedSnapshot = this.#captureSnapshot();
     const operationId = stableId(input.operationId, "operationId");
@@ -483,80 +503,85 @@ export class RuntimeClient {
       [input.payloadName]: payload,
     });
 
-    let rawResponse;
+    this.#beginIo();
     try {
-      rawResponse = await this.#transport.request(method, request);
-    } catch {
-      const acknowledgement = cloneAcknowledgement(entry, "indeterminate", {
-        accepted: null,
-        errorCode: ERROR_CODES.BACKEND_UNAVAILABLE,
-      });
+      let rawResponse;
+      try {
+        rawResponse = await this.#transport.request(method, request);
+      } catch {
+        cloneAcknowledgement(entry, "indeterminate", {
+          accepted: null,
+          errorCode: ERROR_CODES.BACKEND_UNAVAILABLE,
+        });
+        this.#persistBestEffort();
+        this.#scheduleReconciliation();
+        return entry.acknowledgement;
+      }
+      let response;
+      try {
+        response = requireRecord(
+          snapshotCanonical(rawResponse, "request acknowledgement", { maxBytes: MAX_REQUEST_BYTES }),
+          "request acknowledgement",
+        );
+      } catch {
+        cloneAcknowledgement(entry, "indeterminate", {
+          accepted: null,
+          errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
+        });
+        entry.recoveryRequired = true;
+        this.#persistBestEffort();
+        fail(ERROR_CODES.PROTOCOL_VIOLATION, "backend acknowledgement must be a record", {
+          operationId,
+          semanticDigest,
+        });
+      }
+
+      if (
+        response.operationId !== operationId ||
+        response.semanticDigest !== semanticDigest ||
+        response.method !== method ||
+        response.sessionId !== entry.originSessionId ||
+        response.connectionGeneration !== entry.originConnectionGeneration ||
+        response.runtimeGeneration !== entry.runtimeGeneration
+      ) {
+        cloneAcknowledgement(entry, "indeterminate", {
+          accepted: null,
+          errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
+        });
+        entry.recoveryRequired = true;
+        this.#persistBestEffort();
+        fail(ERROR_CODES.PROTOCOL_VIOLATION, "backend acknowledgement provenance mismatch", {
+          operationId,
+          semanticDigest,
+        });
+      }
+      if (response.accepted === false) {
+        this.#deletePersistedPending(entry);
+        fail(ERROR_CODES.REQUEST_REJECTED, "backend rejected the request", {
+          operationId,
+          semanticDigest,
+        });
+      }
+      if (response.accepted !== true) {
+        cloneAcknowledgement(entry, "indeterminate", {
+          accepted: null,
+          errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
+        });
+        entry.recoveryRequired = true;
+        this.#persistBestEffort();
+        fail(ERROR_CODES.PROTOCOL_VIOLATION, "backend acknowledgement accepted flag is invalid", {
+          operationId,
+          semanticDigest,
+        });
+      }
+
+      cloneAcknowledgement(entry, "pending", { accepted: true });
       this.#persistBestEffort();
       this.#scheduleReconciliation();
       return entry.acknowledgement;
+    } finally {
+      this.#endIo();
     }
-    let response;
-    try {
-      response = requireRecord(
-        snapshotCanonical(rawResponse, "request acknowledgement", { maxBytes: MAX_REQUEST_BYTES }),
-        "request acknowledgement",
-      );
-    } catch {
-      cloneAcknowledgement(entry, "indeterminate", {
-        accepted: null,
-        errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
-      });
-      entry.recoveryRequired = true;
-      this.#persistBestEffort();
-      fail(ERROR_CODES.PROTOCOL_VIOLATION, "backend acknowledgement must be a record", {
-        operationId,
-        semanticDigest,
-      });
-    }
-
-    if (
-      response.operationId !== operationId ||
-      response.semanticDigest !== semanticDigest ||
-      response.method !== method ||
-      response.sessionId !== entry.originSessionId ||
-      response.connectionGeneration !== entry.originConnectionGeneration ||
-      response.runtimeGeneration !== entry.runtimeGeneration
-    ) {
-      cloneAcknowledgement(entry, "indeterminate", {
-        accepted: null,
-        errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
-      });
-      entry.recoveryRequired = true;
-      this.#persistBestEffort();
-      fail(ERROR_CODES.PROTOCOL_VIOLATION, "backend acknowledgement provenance mismatch", {
-        operationId,
-        semanticDigest,
-      });
-    }
-    if (response.accepted === false) {
-      this.#deletePersistedPending(entry);
-      fail(ERROR_CODES.REQUEST_REJECTED, "backend rejected the request", {
-        operationId,
-        semanticDigest,
-      });
-    }
-    if (response.accepted !== true) {
-      cloneAcknowledgement(entry, "indeterminate", {
-        accepted: null,
-        errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
-      });
-      entry.recoveryRequired = true;
-      this.#persistBestEffort();
-      fail(ERROR_CODES.PROTOCOL_VIOLATION, "backend acknowledgement accepted flag is invalid", {
-        operationId,
-        semanticDigest,
-      });
-    }
-
-    cloneAcknowledgement(entry, "pending", { accepted: true });
-    this.#persistBestEffort();
-    this.#scheduleReconciliation();
-    return entry.acknowledgement;
   }
 
   #reconcileObservation(observation, pending, session) {
@@ -664,48 +689,53 @@ export class RuntimeClient {
   }
 
   async #reconcileEntry(entry, session) {
-    let observation;
+    this.#beginIo();
     try {
-      observation = await this.#transport.reconcile(
-        Object.freeze({
-          sessionId: session.sessionId,
-          connectionGeneration: session.connectionGeneration,
-          method: entry.method,
-          operationId: entry.operationId,
-          semanticDigest: entry.semanticDigest,
-          originSessionId: entry.originSessionId,
-          originConnectionGeneration: entry.originConnectionGeneration,
-          runtimeGeneration: entry.runtimeGeneration,
-        }),
-      );
-    } catch {
-      this.#advanceReconciliation(entry);
-      this.#persistBestEffort();
-      return;
-    }
-    if (observation == null) {
-      this.#advanceReconciliation(entry);
-      this.#persistBestEffort();
-      return;
-    }
-    try {
-      const safeObservation = requireRecord(
-        snapshotCanonical(observation, "reconciliation observation", {
-          maxBytes: MAX_REQUEST_BYTES,
-        }),
-        "reconciliation observation",
-      );
-      this.#reconcileObservation(safeObservation, entry, session);
-    } catch (error) {
-      entry.recoveryRequired = true;
-      cloneAcknowledgement(entry, "indeterminate", {
-        accepted: entry.accepted,
-        errorCode:
-          error instanceof UiControlError
-            ? error.code
-            : ERROR_CODES.PROTOCOL_VIOLATION,
-      });
-      this.#persistBestEffort();
+      let observation;
+      try {
+        observation = await this.#transport.reconcile(
+          Object.freeze({
+            sessionId: session.sessionId,
+            connectionGeneration: session.connectionGeneration,
+            method: entry.method,
+            operationId: entry.operationId,
+            semanticDigest: entry.semanticDigest,
+            originSessionId: entry.originSessionId,
+            originConnectionGeneration: entry.originConnectionGeneration,
+            runtimeGeneration: entry.runtimeGeneration,
+          }),
+        );
+      } catch {
+        this.#advanceReconciliation(entry);
+        this.#persistBestEffort();
+        return;
+      }
+      if (observation == null) {
+        this.#advanceReconciliation(entry);
+        this.#persistBestEffort();
+        return;
+      }
+      try {
+        const safeObservation = requireRecord(
+          snapshotCanonical(observation, "reconciliation observation", {
+            maxBytes: MAX_REQUEST_BYTES,
+          }),
+          "reconciliation observation",
+        );
+        this.#reconcileObservation(safeObservation, entry, session);
+      } catch (error) {
+        entry.recoveryRequired = true;
+        cloneAcknowledgement(entry, "indeterminate", {
+          accepted: entry.accepted,
+          errorCode:
+            error instanceof UiControlError
+              ? error.code
+              : ERROR_CODES.PROTOCOL_VIOLATION,
+        });
+        this.#persistBestEffort();
+      }
+    } finally {
+      this.#endIo();
     }
   }
 
@@ -869,6 +899,27 @@ export class RuntimeClient {
       });
       throw error;
     }
+  }
+
+  #beginIo() {
+    this.#activeIo += 1;
+  }
+
+  #endIo() {
+    if (this.#activeIo <= 0) {
+      fail(ERROR_CODES.PROTOCOL_VIOLATION, "runtime client I/O accounting underflow");
+    }
+    this.#activeIo -= 1;
+    if (this.#activeIo === 0) {
+      const waiters = this.#drainWaiters;
+      this.#drainWaiters = [];
+      for (const resolve of waiters) resolve();
+    }
+  }
+
+  #waitForIoDrain() {
+    if (this.#activeIo === 0) return Promise.resolve();
+    return new Promise((resolve) => this.#drainWaiters.push(resolve));
   }
 
   #captureSession() {
