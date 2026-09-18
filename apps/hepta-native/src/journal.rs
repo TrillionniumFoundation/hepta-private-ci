@@ -1,6 +1,6 @@
-use std::fs::File;
-use std::fs::OpenOptions;
 use std::io::Write as _;
+
+use atomic_write_file::AtomicWriteFile;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -223,29 +223,12 @@ impl OperationJournal {
         if let Some(parent) = self.path.parent() {
             std::fs::create_dir_all(parent)?;
         }
-        let tmp_path = self.path.with_extension("tmp");
-        let mut file = OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(&tmp_path)?;
+        let mut file = AtomicWriteFile::open(&self.path)?;
         file.write_all(&bytes)?;
         file.sync_all()?;
-        drop(file);
-        std::fs::rename(&tmp_path, &self.path)?;
-        sync_parent_best_effort(&self.path);
+        file.commit()?;
         Ok(())
     }
-}
-
-fn sync_parent_best_effort(path: &Path) {
-    let Some(parent) = path.parent() else {
-        return;
-    };
-    if let Ok(directory) = File::open(parent) {
-        let _ = directory.sync_all();
-    }
-}
 
 fn phase_transition_allowed(from: OperationPhase, to: OperationPhase) -> bool {
     match from {
