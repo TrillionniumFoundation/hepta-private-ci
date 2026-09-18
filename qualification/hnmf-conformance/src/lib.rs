@@ -94,6 +94,8 @@ mod tests {
             vec![
                 ProvenanceRefV1::try_new("source-7", 1, digest('e'), 1).unwrap(),
             ],
+            MemoryVerificationStateV1::Verified,
+            RetentionPolicyV1::try_new(digest('f'), None).unwrap(),
             digest('d'),
             digest('e'),
             Some(500_000),
@@ -173,6 +175,11 @@ mod tests {
                 source_sha256: digest('e'),
                 observed_at_unix_ms: 1,
             }],
+            verification: MemoryVerificationState::Verified,
+            retention_policy: RetentionPolicy {
+                policy_digest: digest('f'),
+                retain_until_unix_ms: None,
+            },
             objective_digest: digest('d'),
             ndu_state_digest: digest('e'),
             behavior_propensity_ppm: Some(500_000),
