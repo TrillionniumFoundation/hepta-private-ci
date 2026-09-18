@@ -1099,7 +1099,7 @@ async fn verify_current_projection_contents(
             )));
         }
 
-        let expected_output = output_digest(&projection_scope, &expected_nodes, &expected_edges);
+        let expected_output = output_digest(&projection_scope, &expected_nodes, &expected_edges)?;
         let stored_output: String = current.try_get("output_sha256").map_err(unavailable)?;
         if expected_output.as_str() != stored_output {
             return Err(CognitiveStoreError::Corrupt(format!(
