@@ -198,6 +198,56 @@ fn compaction_preserves_private_modes_reclaims_orphan_and_refreshes_peers() {
 }
 
 #[test]
+fn compaction_archive_pruning_requires_export_ack_and_preserves_current_anchor() {
+    let fixture = Fixture::new();
+    let mut control = DurableInferenceControl::open(fixture.path(), 8).unwrap();
+    let mut archives = Vec::new();
+
+    for index in 0..4 {
+        let id = format!("archive-{index}");
+        control.reserve_native(request(&id), 1).unwrap();
+        control
+            .stop_native_before_dispatch(&id, "archive fixture".to_string())
+            .unwrap();
+        archives.push(control.compact_with_archive().unwrap());
+    }
+
+    let before = compaction_archives(&fixture.path()).unwrap();
+    assert_eq!(before.len(), 4);
+    let current = control.archive_digest.clone().unwrap();
+    assert!(archives.last().unwrap().exists());
+
+    let insufficient = BTreeSet::from([before[0].0.clone()]);
+    assert_eq!(
+        control.prune_exported_compaction_archives(&insufficient, 2),
+        Err(Error::CapacityExceeded)
+    );
+    assert_eq!(compaction_archives(&fixture.path()).unwrap().len(), 4);
+
+    let exported = before
+        .iter()
+        .filter(|(digest, _, _)| digest != &current)
+        .map(|(digest, _, _)| digest.clone())
+        .collect::<BTreeSet<_>>();
+    let receipt = control
+        .prune_exported_compaction_archives(&exported, 2)
+        .unwrap();
+    assert_eq!(receipt.removed, 2);
+    assert_eq!(receipt.retained, 2);
+    assert!(receipt.retained_bytes > 0);
+    let after = compaction_archives(&fixture.path()).unwrap();
+    assert_eq!(after.len(), 2);
+    assert!(after.iter().any(|(digest, _, _)| digest == &current));
+
+    drop(control);
+    let reopened = DurableInferenceControl::open(fixture.path(), 8).unwrap();
+    assert_eq!(
+        reopened.native_record("archive-3").unwrap().state,
+        NativeReservationState::Released
+    );
+}
+
+#[test]
 fn temporary_symlink_never_truncates_an_unrelated_file() {
     let fixture = Fixture::new();
     let mut control = DurableInferenceControl::open(fixture.path(), 8).unwrap();
