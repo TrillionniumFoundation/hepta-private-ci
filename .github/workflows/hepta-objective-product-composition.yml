@@ -1,0 +1,106 @@
+name: Hepta objective product composition qualification
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - codex-rs/hepta-objective/**
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/Cargo.lock
+      - docs/modules/objective.compiler/**
+      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
+      - qualification/module-execution-dossiers/detail/objective.compiler.md
+      - .github/workflows/hepta-objective-product-composition.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-objective-product-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  product-composition:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact source
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git rev-parse HEAD HEAD^{tree}
+      - name: Prepare native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - name: Verify lock and formatting
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/verify_cargo_lock.py
+          cargo fmt --package codex-hepta-objective --package codex-hepta-learning-ledger --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
+      - name: Compile product objective chain
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/check.json" -- cargo check --locked -p codex-hepta-objective -p codex-hepta-learning-ledger -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets
+      - name: Test product objective chain
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/objective-test.json" -- cargo test --locked -p codex-hepta-objective
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/ledger-test.json" -- cargo test --locked -p codex-hepta-learning-ledger
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/intelligence-test.json" -- cargo test --locked -p codex-hepta-intelligence product_objective -- --nocapture
+      - name: Strict lint product objective chain
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/clippy.json" -- cargo clippy --locked -p codex-hepta-objective -p codex-hepta-learning-ledger -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
+      - name: Measure authenticated durable run-start path
+        working-directory: codex-rs
+        env:
+          HEPTA_OBJECTIVE_MEASURE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/measurement.json" -- cargo test --locked -p codex-hepta-intelligence product_objective_named_host_measurement_receipt -- --nocapture
+      - name: Clean tracked state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain command and measurement records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: objective-product-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/objective-product/*.json
+          if-no-files-found: error
+          retention-days: 30
