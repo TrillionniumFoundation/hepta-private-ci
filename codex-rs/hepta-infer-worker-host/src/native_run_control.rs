@@ -64,6 +64,7 @@ impl AppServerModelDriver {
             if let Some(output) = record.observation {
                 return Ok(output);
             }
+            let settled_request_id = record.request.request_id.clone();
             let dispatch = record.dispatch.ok_or("missing durable dispatch binding")?;
             let output = NativeRunOutput {
                 thread_id: dispatch.thread_id,
@@ -79,7 +80,6 @@ impl AppServerModelDriver {
                     "reopened after possible dispatch; reservation held, no replay".to_string(),
                 ),
             };
-            let settled_request_id = record.request.request_id.clone();
             store.with_control(|control| {
                 control
                     .settle_native(&settled_request_id, output.clone())
