@@ -3476,13 +3476,17 @@ dependencies = [
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
  "codex-hepta-cognitive-read",
+ "codex-hepta-cognitive-store",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
  "codex-hepta-evidence",
  "codex-hepta-fleet",
+ "codex-hepta-intelligence-eval",
  "codex-hepta-learning-artifacts",
+ "codex-hepta-learning-ledger",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
+ "codex-hepta-operations",
  "codex-hepta-paths",
  "codex-hepta-supervisor",
  "codex-hepta-types",
@@ -3497,6 +3501,7 @@ dependencies = [
  "ed25519-dalek",
  "serde",
  "serde_json",
+ "sha2",
  "sqlx",
  "tempfile",
  "thiserror 2.0.18",
@@ -3695,6 +3700,7 @@ dependencies = [
  "codex-hepta-types",
  "serde",
  "serde_json",
+ "tempfile",
 ]
 
 [[package]]
