@@ -72,7 +72,6 @@ impl HeptaEvidenceStore {
         authorization: &AuthorizationRequest,
         reservation: &ReservationRequest,
         intent: &ProviderEffectIntent,
-        now_ms: u64,
     ) -> Result<AuthBusEffectDispatchReceipt, AuthBusEffectError> {
         let decision = self.authorize_authbus(authorization).await?;
         if decision.kind != PolicyDecisionKind::Allowed {
@@ -80,7 +79,7 @@ impl HeptaEvidenceStore {
         }
         verify_effect_binding(&decision, authorization, reservation, intent)?;
         let held = self
-            .reserve_authbus_quota(&decision, reservation, now_ms)
+            .reserve_authbus_quota(&decision, reservation)
             .await?;
         let provider = match self
             .dispatch_provider_effect_qualification(adapter, intent)
