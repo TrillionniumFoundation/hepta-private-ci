@@ -22,7 +22,7 @@ use crate::H7H89ProductionGrant;
 use crate::ReleaseSelectionBinding;
 use crate::SupervisorError;
 
-pub(crate) const RELEASE_SELECTION_SCHEMA_VERSION: u32 = 1;
+pub const RELEASE_SELECTION_SCHEMA_VERSION: u32 = 1;
 pub(crate) const RELEASE_SELECTION_FILE: &str = "supervisor-release-selection.json";
 const SELECTION_DOMAIN: &[u8] = b"hepta-supervisor:release-selection:v1";
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
@@ -62,6 +62,30 @@ pub struct ReleaseSelectionSnapshot {
     pub lifecycle_generation: u64,
     pub status: ReleaseSelectionStatus,
     pub selection_sha256: Sha256Digest,
+}
+
+impl ReleaseSelectionSnapshot {
+    pub fn validate(&self) -> Result<(), SupervisorError> {
+        ReleaseSelectionRecord {
+            schema_version: self.schema_version,
+            agent_id: self.agent_id.clone(),
+            grant_sha256: self.grant_sha256.clone(),
+            h7_envelope_sha256: self.h7_envelope_sha256.clone(),
+            artifact_sha256: self.artifact_sha256.clone(),
+            selector_id: self.selector_id.clone(),
+            selector_epoch: self.selector_epoch,
+            operator_acceptance: self.operator_acceptance,
+            promotion: self.promotion,
+            source_release: self.source_release.clone(),
+            target_release: self.target_release.clone(),
+            binding: self.binding.clone(),
+            control_revision: self.control_revision,
+            lifecycle_generation: self.lifecycle_generation,
+            status: self.status,
+            selection_sha256: self.selection_sha256.clone(),
+        }
+        .validate()
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
