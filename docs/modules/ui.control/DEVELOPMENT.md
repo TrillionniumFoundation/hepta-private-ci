@@ -264,7 +264,9 @@ for assistive technology, exposes pending/indeterminate state, and disables all
 mutating controls while the view is stale. The final confirmed request is the
 same immutable object passed to `RuntimeClient`.
 
-`ControlPlaneApp` now collapses rapid duplicate logical actions while confirmation/acknowledgement is outstanding, exposes `aria-busy`, restores focus to the initiating action after rerender and can be externally mutation-blocked after snapshot/connectivity loss. The native confirmation host displays the exact immutable request in an accessible `<dialog>`.
+`ControlPlaneApp` collapses rapid duplicate logical actions while confirmation/acknowledgement is outstanding, exposes `aria-busy`, restores focus after confirmation/cancellation/failure, and can be externally mutation-blocked after snapshot/connectivity loss. Confirmation is revalidated immediately before submission, so an offline/session/stale transition that occurs while the dialog is open invalidates the request instead of crossing transport. The native confirmation host displays the exact immutable request in an accessible `<dialog>`.
+
+The repository-owned browser host treats `offline` as an immediate mutation block, re-establishes an authenticated observation session after `online`, `UNAUTHENTICATED`, `NOT_CONNECTED` and BFCache/page-session resume, and never replays unresolved mutations during recovery. Pending storage keys are SHA-256-bound to the authenticated bootstrap persistence namespace plus endpoint/protocol/manifest/base-path domain so a changed principal/domain cannot silently inherit another domain's local mirror.
 
 A production host must still define localization and real authentication/session-expiry behavior, apply the generated CSP/security-header policy at the TLS/reverse-proxy boundary, and independently qualify the selected browser/screen-reader matrix against the real backend.
 
@@ -280,7 +282,7 @@ npm --prefix apps/hepta-control-ui run build
 `check` performs JavaScript syntax validation and executes all control-ui tests.
 `build` produces a static `apps/hepta-control-ui/dist/` with content-hashed ESM/CSS, rewritten hashed imports, top-level SRI, `asset-manifest.json`, `manifest.webmanifest` and `security-headers.json`, then syntax-checks every generated JavaScript asset. `dist/` remains a derived build artifact, not authoritative source or an independent deployment receipt.
 
-The dedicated UI workflow additionally runs `npm run browser-e2e` in real Google Chrome at the exact PR source and deterministic synthetic merge. That source-owned smoke test covers exact confirmation, rapid duplicate-click collapse, focus restoration and the generated security-header surface; it is not a substitute for independent real-backend accessibility acceptance.
+The dedicated UI workflow additionally runs `npm run browser-e2e` in real Google Chrome at the exact PR source and deterministic synthetic merge. That source-owned smoke test covers exact confirmation, rapid duplicate-click collapse, focus restoration, offline confirmation invalidation, online/session-expiry recovery without mutation replay and the generated security-header surface; it is not a substitute for independent cross-browser/screen-reader real-backend accessibility acceptance.
 
 ## 11. Required regression cases
 
@@ -288,6 +290,7 @@ Every change touching the transport, projection or browser controller should
 retain tests for:
 
 - provider/secret fields cannot reach `readView()` or the browser view model;
+- accessor-shaped required snapshot/module/transport fields fail closed without invoking getters;
 - stale displayed revisions reject mutation;
 - target revision and displayed revision remain separately bound;
 - semantic digest is computed by the client from the final payload;
@@ -297,7 +300,9 @@ retain tests for:
 - cross-session/origin provenance cannot settle a pending operation, and in-flight acknowledgement provenance remains bound across close/reconnect races;
 - reload/crash recovery reconciles the durable operation identity without persisting the request payload or resubmitting mutation;
 - persistence failure before dispatch prevents transport I/O;
-- rapid duplicate logical actions collapse to one request while pending and rerender restores focus;
+- rapid duplicate logical actions collapse to one request while awaiting confirmation/acknowledgement and rerender restores focus;
+- an offline/session transition while confirmation is open invalidates the request before transport;
+- session expiry, online recovery and BFCache/page-session resume establish a fresh observation session without mutation replay;
 - terminal state requires explicit terminal observation;
 - 1 MiB view and 1024 pending-operation limits are enforced;
 - protocol mismatch and backend rejection expose stable typed errors;
