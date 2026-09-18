@@ -20,8 +20,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "partial_narrow_agentd_signed_text_composed",
+  "productionWriterState": "candidate_owner_store_implemented_not_accepted",
   "operations": [
     {
       "operation": "authenticate",
@@ -58,11 +58,82 @@
       "designOperation": "enqueue_authbus_message",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "install_authbus_policy",
+      "nativeSymbol": "install_authbus_policy",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "policy_write",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorize",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authorize_and_reserve_authbus",
+      "nativeSymbol": "authorize_and_reserve_authbus",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "policy_decision_quota_reservation",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorize+reserve",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "validate_authbus_reservation_for_effect",
+      "nativeSymbol": "validate_authbus_reservation_for_effect",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "final_use_validation",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "final-use",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "settle_authbus_reservation",
+      "nativeSymbol": "settle_authbus_reservation",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "quota_settlement",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "settle",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "retire_authbus_replay_epoch",
+      "nativeSymbol": "retire_authbus_replay_epoch",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_recovery.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "replay_retirement",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "replay-retirement",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the new policy/quota/reservation candidate.",
+    "Compose authorize+reserve+final-use+observed settlement into a registered external-effect caller.",
+    "Retain and verify independently governed restore checkpoints in the selected production host."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -81,5 +152,24 @@
   "sourceRoot": [
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
-  ]
+  ],
+  "sourceBaseMeaning": "repository-wide generated baseline shared by all module maps; exact candidate identity is supplied by CI receipts",
+  "composition": {
+    "domainCore": {
+      "owner": "auth.authbus",
+      "path": "codex-rs/hepta-authbus",
+      "role": "pure authentication and policy/quota/reservation contracts"
+    },
+    "durableStateOwner": {
+      "owner": "kernel.evidence",
+      "path": "codex-rs/hepta-evidence",
+      "role": "SQLite replay, outbox, policy, quota, reservation, recovery checkpoint"
+    },
+    "hostIntegration": {
+      "owner": "runtime.agentd",
+      "path": "codex-rs/hepta-agentd",
+      "role": "narrow signed-text product caller; not a general effect adapter"
+    },
+    "effectComposition": "not_yet_product_composed"
+  }
 }
