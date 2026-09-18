@@ -93,6 +93,7 @@ fn fixture() -> Fixture {
             tokenizer_digest: digest("tokenizer"),
             template_digest: digest("template"),
             tool_schema_digest: digest("tools"),
+            context_profile_digest: digest("context-profile"),
             locale_id: id("en-US"),
         },
         bindings: vec![binding],
