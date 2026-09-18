@@ -988,6 +988,67 @@ mod tests {
         Ok((directory, root))
     }
 
+    fn wire_status_fixture_json() -> serde_json::Value {
+        serde_json::json!({
+            "schema": "hepta_vnext_live_runtime_status_v1",
+            "product": "hepta",
+            "status": "ready",
+            "state_root": "/tmp/hepta-test",
+            "state": {
+                "adapter": "test",
+                "schema_version": 5,
+                "outcome_generation": 0,
+                "preference_generation": 0,
+                "runtime_snapshot_version": 1,
+                "runtime_snapshot_generation": 0,
+                "integrity_binding_present": true,
+                "integrity_verification": "test",
+                "open_mode": "read-only-test"
+            },
+            "authority": {
+                "telegram": false,
+                "outbound": false,
+                "model_invocation": false,
+                "operator_mutation": false,
+                "enforce": false,
+                "promotion": false,
+                "retirement": false,
+                "automatic_transition": false
+            }
+        })
+    }
+
+    #[test]
+    fn runtime_status_wire_codec_rejects_unknown_critical_fields() -> Result<()> {
+        let codec = RuntimeStatusWireCodec::new()?;
+        let mut value = wire_status_fixture_json();
+        value
+            .as_object_mut()
+            .context("wire status fixture object")?
+            .insert("unknown_critical".to_string(), serde_json::json!(true));
+        let payload = serde_json::to_vec(&value)?;
+        assert_eq!(
+            codec.decode_value(&payload),
+            Err(SchemaCodecError::Rejected("runtime status schema rejected"))
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn runtime_status_wire_codec_rejects_effect_authority() -> Result<()> {
+        let codec = RuntimeStatusWireCodec::new()?;
+        let mut value = wire_status_fixture_json();
+        value["authority"]["outbound"] = serde_json::json!(true);
+        let payload = serde_json::to_vec(&value)?;
+        assert_eq!(
+            codec.decode_value(&payload),
+            Err(SchemaCodecError::Rejected(
+                "runtime status cannot serialize effect authority"
+            ))
+        );
+        Ok(())
+    }
+
     #[tokio::test]
     async fn opens_exact_schema_v5_without_mutation_authority() -> Result<()> {
         let (_directory, root) = fixture(EXISTING_SCHEMA_VERSION).await?;
