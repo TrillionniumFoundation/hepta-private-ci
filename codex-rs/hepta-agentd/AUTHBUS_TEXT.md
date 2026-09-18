@@ -44,15 +44,21 @@ and allowed existing thread IDs:
 One issuer/epoch and at most 16 thread IDs are supported. An empty allowlist
 permits startup but no text admission; use the normal session ingress to create
 a thread, then install its ID. Replace the complete file atomically while
-preserving its permissions. The daemon reloads it for admission and dispatch
-stages. Keep the private signing key with the independent producer.
+preserving its permissions. The daemon reloads it for admission and dispatch stages and reconciles the
+issuer/key epoch with the durable AuthBus issuer registry. The file may revoke
+an active epoch, but cannot replace the enrolled public key at the same epoch or
+reactivate a revoked/retired epoch. Rotation uses a strictly higher epoch after
+the previous managed epoch has been revoked. Keep the private signing key with
+the independent producer.
 
 Revocation uses `revoked: true`; removing a thread also prevents subsequent
 admission/dispatch to that thread. Neither operation cancels work already
 accepted by the target queue. Registry reads are current snapshots, not an
-atomic transaction with the target queue. Changing epochs does not implicitly
-revoke or delete old-epoch outbox rows. Recovery scans filter the selected
-issuer/epoch before applying their row limit.
+atomic transaction with the target queue. Changing epochs does not implicitly revoke or delete old-epoch outbox rows.
+Safe replay retirement is a separate owner operation requiring a newer managed
+epoch, no active old-epoch deliveries and the exact externally retained rollback
+checkpoint. Recovery scans filter the selected issuer/epoch before applying
+their row limit.
 
 ## Produce and submit a message
 
@@ -151,6 +157,10 @@ Injected transport tests alone do not establish the native product result.
 
 Run the scoped suites with
 `just test -p codex-hepta-evidence -p codex-hepta-agentd`, then the repository's
-scoped fix/format workflow. This
-profile supplies no production key hosting, provider quota ledger, cross-backup
-rollback protection, or exactly-once external-effect guarantee.
+scoped fix/format workflow. This profile now consumes the durable managed issuer lifecycle but still
+supplies no HSM/remote production key hosting. The shared EvidenceStore contains
+the AuthBus policy/quota/reservation source candidate and rollback-checkpoint API,
+but this text profile does not allocate provider quota or become a generic effect
+caller. Cross-backup rollback protection becomes effective only when an
+independently governed checkpoint is retained and verified. Exactly-once
+external effects are not claimed.
