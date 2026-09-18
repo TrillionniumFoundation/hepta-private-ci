@@ -1,5 +1,6 @@
 //! Connect the canonical SQLite owner to the authoritative cognitive read port.
 
+use std::future::Future;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -57,6 +58,36 @@ pub(crate) async fn read(
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    read_with_revalidation_hook(
+        store,
+        owner,
+        body_generation,
+        authority_epoch,
+        query,
+        limit,
+        ranker,
+        || async { Ok(()) },
+    )
+    .await
+}
+
+/// Shared production composition used by the normal entrypoint and adversarial
+/// tests. The hook runs after the authoritative result is fully computed but
+/// immediately before the owner/lease/vector consume-time revalidation.
+async fn read_with_revalidation_hook<F, Fut>(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    authority_epoch: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    before_revalidation: F,
+) -> Result<CognitiveContextSnapshot, CognitiveContextError>
+where
+    F: FnOnce() -> Fut,
+    Fut: Future<Output = Result<(), CognitiveStoreError>>,
+{
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -269,6 +300,8 @@ pub(crate) async fn read(
         )
         .into());
     }
+
+    before_revalidation().await?;
 
     // Reacquire the owner cut at the final consumption boundary. Exact revision
     // revalidation is only one part of this check: the original leased receipt,
