@@ -24,6 +24,8 @@ pub enum LearningEvidenceRoleV1 {
     Generator,
     Observer,
     Evaluator,
+    CreditAllocator,
+    UnlearningAuthority,
 }
 
 impl LearningEvidenceRoleV1 {
@@ -32,6 +34,8 @@ impl LearningEvidenceRoleV1 {
             Self::Generator => 0,
             Self::Observer => 1,
             Self::Evaluator => 2,
+            Self::CreditAllocator => 3,
+            Self::UnlearningAuthority => 4,
         }
     }
 }
@@ -119,6 +123,18 @@ impl VerifiedLearningEvidenceV1 {
     pub fn payload_digest(&self) -> Digest32 {
         self.payload_digest
     }
+    #[must_use]
+    pub fn controller_id(&self) -> &StableId {
+        &self.controller_id
+    }
+    #[must_use]
+    pub fn trust_digest(&self) -> Digest32 {
+        self.trust_digest
+    }
+    #[must_use]
+    pub fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -151,7 +167,7 @@ impl LearningEvidenceVerifierV1 {
                 || signer.principal.authority_epoch != trust.authority_epoch
                 || signer.principal.signing_key_digest != Digest32::of_bytes(&signer.verifying_key)
                 || signer.roles.is_empty()
-                || signer.roles.len() > 3
+                || signer.roles.len() > 5
             {
                 return Err(SignedEvidenceError::InvalidTrust);
             }
