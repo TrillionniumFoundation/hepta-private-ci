@@ -25,7 +25,7 @@ env:
 jobs:
   qualification:
     name: Architecture convergence (${{ matrix.lane }})
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -132,6 +132,29 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls
+      - name: Inference owner regressions and streaming digest
+        if: steps.scope.outputs.inference == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core history_growth_emits_update_recovery_memory_and_disk_curve -- --ignored --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-multiwriter-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core alternating_writers_replay_only_peer_deltas -- --ignored --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+      - name: Module lifecycle generations and migration rollback
+        if: steps.scope.outputs.lifecycle == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/full-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane stateful_feature_history_replace_failure_retire_preserves_effect_idempotency
+      - name: Objective and prompt policy convergence
+        if: steps.scope.outputs.objective == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective-contract.json" --minimum-tests 1 -- python3 -m unittest -v scripts.test_hepta_objective_contracts
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
       - name: Prepare native prerequisites
         if: steps.scope.outputs.native == 'true'
         run: |
@@ -181,14 +204,6 @@ jobs:
             echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
           fi
           exit "$locked_status"
-      - name: Inference owner regressions and streaming digest
-        if: steps.scope.outputs.inference == 'true'
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core history_growth_emits_update_recovery_memory_and_disk_curve -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-multiwriter-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core alternating_writers_replay_only_peer_deltas -- --ignored --nocapture
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
       - name: Converged authority and browser semantics
         if: steps.scope.outputs.effects == 'true'
         run: |
@@ -201,14 +216,6 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
-      - name: Module lifecycle generations and migration rollback
-        if: steps.scope.outputs.lifecycle == 'true'
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/full-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane stateful_feature_history_replace_failure_retire_preserves_effect_idempotency
       - name: Selected-artifact adoption and explicit rollback
         if: steps.scope.outputs.learning == 'true'
         run: |
@@ -218,13 +225,6 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
-      - name: Objective and prompt policy convergence
-        if: steps.scope.outputs.objective == 'true'
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective-contract.json" --minimum-tests 1 -- python3 -m unittest -v scripts.test_hepta_objective_contracts
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
       - name: Derived-view drift
         if: steps.scope.outputs.derived == 'true'
         run: |

@@ -154,7 +154,11 @@ fn compaction_archives_full_history_and_preserves_indeterminate_fences() {
             .count(),
         2
     );
-    assert!(!checkpoint.lines().any(|line| line.starts_with(JOURNAL_PREFIX)));
+    assert!(
+        !checkpoint
+            .lines()
+            .any(|line| line.starts_with(JOURNAL_PREFIX))
+    );
 
     drop(control);
     let mut reopened = DurableInferenceControl::open(&path, 16).unwrap();
