@@ -15,6 +15,7 @@ use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationDispositionV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
 use codex_hepta_matrix_protocol::MatrixSyncResultV2;
+use codex_hepta_matrix_protocol::MatrixTransactionId;
 use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixSyncCheckpoint;
@@ -64,6 +65,55 @@ impl MatrixSyncComposer<'_> {
             return Err(MatrixSdkError::Configuration);
         }
         let mutations = self.normalize(response, observed_at_ms, room_rules)?;
+        let outbound_observations = self.outbound_observations(response)?;
+        // Homeserver event observations are settled before checkpoint advance.
+        // If the process crashes after this point, the same sync response is
+        // replayed and these transitions are idempotent; we never lose
+        // terminality behind an already-advanced cursor.
+        for (txn_id, room_id, event_id) in &outbound_observations {
+            let evidence = serde_json::to_vec(&(
+                "hepta.matrix.homeserver-event.v1",
+                txn_id.as_str(),
+                room_id.as_str(),
+                event_id.as_str(),
+                response.next_batch.as_str(),
+            ))
+            .map_err(|_| MatrixSdkError::Sync)?;
+            let digest = Sha256Digest::for_bytes(&evidence);
+            self.store
+                .observe_outbox_server_event(
+                    txn_id,
+                    room_id,
+                    event_id,
+                    &digest,
+                    observed_at_ms,
+                )
+                .await
+                .map_err(|_| MatrixSdkError::Store)?;
+        }
+        for mutation in &mutations {
+            if let MatrixSyncMutationBodyV2::Redaction { target_event_id } = &mutation.body {
+                let evidence = serde_json::to_vec(&(
+                    "hepta.matrix.redaction.v1",
+                    mutation.source_event_id.as_str(),
+                    target_event_id.as_str(),
+                    mutation.room_id.as_str(),
+                    mutation.sender.as_str(),
+                    mutation.origin_server_ts_ms,
+                ))
+                .map_err(|_| MatrixSdkError::Sync)?;
+                let digest = Sha256Digest::for_bytes(&evidence);
+                self.store
+                    .observe_outbox_redaction(
+                        target_event_id,
+                        &mutation.source_event_id,
+                        &digest,
+                        observed_at_ms,
+                    )
+                    .await
+                    .map_err(|_| MatrixSdkError::Store)?;
+            }
+        }
         let expected = checkpoint.map(|checkpoint| checkpoint.next_batch.as_str());
         // The whole decision, including first-observed time, remains fixed for
         // this attempt. The store binds its complete semantic digest; a reused
@@ -179,6 +229,76 @@ impl MatrixSyncComposer<'_> {
         }
         self.ingress.record_sync_commit(accepted, duplicates);
         Ok(())
+    }
+
+    fn outbound_observations(
+        &self,
+        response: &SyncResponse,
+    ) -> Result<Vec<(MatrixTransactionId, MatrixRoomId, MatrixEventId)>, MatrixSdkError> {
+        let mut observations = BTreeMap::new();
+        let rooms = response
+            .rooms
+            .joined
+            .iter()
+            .map(|(id, room)| (id, &room.timeline))
+            .chain(
+                response
+                    .rooms
+                    .left
+                    .iter()
+                    .map(|(id, room)| (id, &room.timeline)),
+            );
+        for (native_room_id, timeline) in rooms {
+            let room_id =
+                MatrixRoomId::parse(native_room_id.as_str()).map_err(|_| MatrixSdkError::Sync)?;
+            if !self.config.binding.allowed_rooms.contains(&room_id) {
+                continue;
+            }
+            for timeline_event in &timeline.events {
+                let raw = timeline_event.raw();
+                let sender = raw
+                    .get_field::<String>("sender")
+                    .map_err(|_| MatrixSdkError::Sync)?;
+                if sender.as_deref() != Some(self.config.binding.expected_mxid.as_str()) {
+                    continue;
+                }
+                let unsigned = raw
+                    .get_field::<Value>("unsigned")
+                    .map_err(|_| MatrixSdkError::Sync)?;
+                let Some(transaction_id) = unsigned
+                    .as_ref()
+                    .and_then(|value| value.get("transaction_id"))
+                    .and_then(Value::as_str)
+                else {
+                    continue;
+                };
+                let Ok(txn_id) = MatrixTransactionId::parse(transaction_id) else {
+                    continue;
+                };
+                let event_id = raw
+                    .get_field::<String>("event_id")
+                    .map_err(|_| MatrixSdkError::Sync)?
+                    .ok_or(MatrixSdkError::Sync)?;
+                let event_id =
+                    MatrixEventId::parse(event_id).map_err(|_| MatrixSdkError::Sync)?;
+                let key = txn_id.as_str().to_string();
+                if let Some((prior_room, prior_event)) = observations.get(&key) {
+                    if prior_room != &room_id || prior_event != &event_id {
+                        return Err(MatrixSdkError::Sync);
+                    }
+                } else {
+                    observations.insert(key, (room_id, event_id));
+                }
+            }
+        }
+        observations
+            .into_iter()
+            .map(|(txn_id, (room_id, event_id))| {
+                MatrixTransactionId::parse(txn_id)
+                    .map(|txn_id| (txn_id, room_id, event_id))
+                    .map_err(|_| MatrixSdkError::Sync)
+            })
+            .collect()
     }
 
     fn normalize(
