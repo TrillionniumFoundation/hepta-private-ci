@@ -1,11 +1,10 @@
-//! Agent-local, qualification-only TaskFlow definition and run ledger.
+//! Agent-local durable TaskFlow definition and run ledger.
 //!
-//! This module is deliberately small and boring: it gives the H2 compiler and
-//! H3 durable-kernel work a typed seam without creating a second scheduler or
-//! an effect executor.  Definitions and transitions are immutable evidence in
-//! the existing per-Agent automation SQLite database.  The existing
-//! `AutomationScheduler` remains the only wakeup owner; callers must provide a
-//! lease/generation fence for every run mutation.
+//! This module owns the durable run projection and immutable transition chain
+//! without creating a second scheduler or effect executor. The existing
+//! `AutomationScheduler` remains the wakeup owner, and callers must provide a
+//! lease/generation fence for every run mutation. This storage owner does not
+//! itself grant production caller, provider-effect, or final-use authority.
 
 #![allow(
     clippy::expect_used,
@@ -77,7 +76,7 @@ impl TaskFlowNodeKind {
 }
 
 /// A deliberately constrained node contract.  Activity and Effect nodes are
-/// represented only; this qualification ledger never invokes a callback.
+/// represented only; this durable ledger never invokes a provider callback.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct TaskFlowNodeSpec {
