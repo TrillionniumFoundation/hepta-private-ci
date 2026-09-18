@@ -20,6 +20,7 @@ codex-http-client = { workspace = true }
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+sqlx = { workspace = true }
 url = { workspace = true }
 zeroize = { workspace = true, features = ["serde"] }
 
