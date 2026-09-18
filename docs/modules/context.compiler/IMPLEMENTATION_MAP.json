@@ -27,9 +27,11 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "compile",
+      "designOperation": "compile_v1_compatibility",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -39,9 +41,11 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/requirements.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/requirements_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "compile_with_requirements",
+      "designOperation": "compile_with_requirements_v1_compatibility",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -51,15 +55,88 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "compile_candidate_bound",
+      "designOperation": "compile_candidate_bound_v1_compatibility",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_context_candidate_v2",
+      "nativeSymbol": "verify_context_candidate_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_admitted_context_candidate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compile_v2",
+      "nativeSymbol": "compile_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "serialize_context_exact",
+      "nativeSymbol": "serialize_context_exact",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "serialize_and_exact_tokenize_final_payload",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_attachment",
+      "nativeSymbol": "build_attachment",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_current_admission_and_build_attachment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "observe_delivery",
+      "nativeSymbol": "observe_delivery",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "bind_provider_receipt_and_independent_delivery_evidence",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Compose V2 with the authoritative admission/revocation owner, a qualified exact tokenizer, and the registered serializer in a named product caller.",
+    "Back ContextProviderDeliveryVerifierV2 with kernel.evidence or another authenticated terminal observer and bind the physical provider attempt.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
