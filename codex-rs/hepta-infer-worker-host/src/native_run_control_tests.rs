@@ -62,6 +62,11 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
                 thread_id: "thread-1".to_string(),
                 model_provider: "provider".to_string(),
                 context_digest: "a".repeat(64),
+                codex_request_digest: None,
+                codex_connection_digest: None,
+                codex_session_generation: None,
+                codex_protocol_version: None,
+                codex_deadline_ms: None,
             },
         )
         .unwrap();
