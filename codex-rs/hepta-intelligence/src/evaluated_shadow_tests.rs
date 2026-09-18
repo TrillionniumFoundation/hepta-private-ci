@@ -1,19 +1,19 @@
 use super::*;
 use crate::LaneFStageV1;
 use crate::PipelineDispositionV1;
+use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
+use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
 use codex_hepta_intuition::RiskClass;
-use codex_hepta_learning_ledger::AppendDisposition;
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::LedgerAnchor;
-use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_artifacts::IterationCandidateStateV1;
 use codex_hepta_learning_artifacts::IterationCandidateV1;
 use codex_hepta_learning_artifacts::IterationEnvelopeV1;
 use codex_hepta_learning_artifacts::IterationEvidenceKindV1;
 use codex_hepta_learning_artifacts::IterationEvidenceV1;
 use codex_hepta_learning_artifacts::IterationLedgerV1;
-use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_learning_ledger::AppendDisposition;
+use codex_hepta_learning_ledger::DurableLedger;
+use codex_hepta_learning_ledger::LedgerAnchor;
+use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_types::ProbabilityQ32;
 use pretty_assertions::assert_eq;
 use std::fs;
@@ -208,7 +208,8 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
 }
 
 #[test]
-fn future_holdout_improvement_is_independently_selected_then_consumed_and_degradation_is_rejected() {
+fn future_holdout_improvement_is_independently_selected_then_consumed_and_degradation_is_rejected()
+{
     let mut fixture = Fixture::new();
     let evaluation = decide_with_signed_evidence_v2(
         fixture.bundle.clone(),
@@ -269,14 +270,59 @@ fn future_holdout_improvement_is_independently_selected_then_consumed_and_degrad
             )
             .expect("valid iteration transition");
     };
-    transition(&mut iteration, IterationCandidateStateV1::StaticallyValidated, IterationEvidenceKindV1::StaticValidation, "generator", digest("static"), 1);
-    transition(&mut iteration, IterationCandidateStateV1::SandboxTested, IterationEvidenceKindV1::Sandbox, "generator", digest("sandbox"), 2);
-    transition(&mut iteration, IterationCandidateStateV1::IndependentlyEvaluated, IterationEvidenceKindV1::Evaluation, "evaluator", evaluation.decision.evidence_digest, 3);
-    transition(&mut iteration, IterationCandidateStateV1::ReviewRequested, IterationEvidenceKindV1::Review, "reviewer", digest("review"), 4);
-    transition(&mut iteration, IterationCandidateStateV1::AcceptedCandidate, IterationEvidenceKindV1::Decision, "reviewer", digest("acceptance"), 5);
-    transition(&mut iteration, IterationCandidateStateV1::Selected, IterationEvidenceKindV1::Selection, "selector", digest("selection"), 6);
+    transition(
+        &mut iteration,
+        IterationCandidateStateV1::StaticallyValidated,
+        IterationEvidenceKindV1::StaticValidation,
+        "generator",
+        digest("static"),
+        1,
+    );
+    transition(
+        &mut iteration,
+        IterationCandidateStateV1::SandboxTested,
+        IterationEvidenceKindV1::Sandbox,
+        "generator",
+        digest("sandbox"),
+        2,
+    );
+    transition(
+        &mut iteration,
+        IterationCandidateStateV1::IndependentlyEvaluated,
+        IterationEvidenceKindV1::Evaluation,
+        "evaluator",
+        evaluation.decision.evidence_digest,
+        3,
+    );
+    transition(
+        &mut iteration,
+        IterationCandidateStateV1::ReviewRequested,
+        IterationEvidenceKindV1::Review,
+        "reviewer",
+        digest("review"),
+        4,
+    );
+    transition(
+        &mut iteration,
+        IterationCandidateStateV1::AcceptedCandidate,
+        IterationEvidenceKindV1::Decision,
+        "reviewer",
+        digest("acceptance"),
+        5,
+    );
+    transition(
+        &mut iteration,
+        IterationCandidateStateV1::Selected,
+        IterationEvidenceKindV1::Selection,
+        "selector",
+        digest("selection"),
+        6,
+    );
     assert_eq!(
-        iteration.candidate(&fixture.bundle.candidate_id).unwrap().state,
+        iteration
+            .candidate(&fixture.bundle.candidate_id)
+            .unwrap()
+            .state,
         IterationCandidateStateV1::Selected
     );
 
@@ -299,7 +345,10 @@ fn future_holdout_improvement_is_independently_selected_then_consumed_and_degrad
     )
     .expect("selected next generation consumed");
     assert!(consumed.learning.is_some());
-    assert_eq!(consumed.pipeline.disposition, PipelineDispositionV1::DispatchProposed);
+    assert_eq!(
+        consumed.pipeline.disposition,
+        PipelineDispositionV1::DispatchProposed
+    );
 
     // A later candidate that does not beat the no-change baseline is rejected
     // before any host port or durable Decision can consume it.

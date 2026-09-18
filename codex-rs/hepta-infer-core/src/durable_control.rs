@@ -208,9 +208,7 @@ impl DurableInferenceControl {
             lock_options.mode(0o600);
         }
         let lock_file = lock_options.open(&lock_path)?;
-        lock_file
-            .try_lock()
-            .map_err(|_| Error::WriterUnavailable)?;
+        lock_file.try_lock().map_err(|_| Error::WriterUnavailable)?;
 
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
