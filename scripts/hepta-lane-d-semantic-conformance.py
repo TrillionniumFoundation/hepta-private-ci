@@ -168,6 +168,18 @@ def verify() -> int:
         encoding="utf-8"
     )
     product_caller = (
+        ROOT / "codex-rs/hepta-intelligence/src/production_objective.rs"
+    ).read_text(encoding="utf-8")
+    runtime_consumer = (
+        ROOT / "codex-rs/hepta-agentd/src/objective_host.rs"
+    ).read_text(encoding="utf-8")
+    agentd_lib = (ROOT / "codex-rs/hepta-agentd/src/lib.rs").read_text(
+        encoding="utf-8"
+    )
+    agentd_manifest = (ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text(
+        encoding="utf-8"
+    )
+    legacy_direct_store = (
         ROOT / "codex-rs/hepta-agentd/src/objective_runtime.rs"
     ).read_text(encoding="utf-8")
     for token in [
@@ -187,15 +199,39 @@ def verify() -> int:
         "Product callers must use",
     ]:
         need(token in objective_lib, "objective API boundary " + token)
+    # There is one default Objective product chain. The historical Agentd-owned
+    # file-store implementation remains compileable only behind an explicit
+    # qualification feature so it cannot become a second durable owner.
     for token in [
-        "admit_publish_and_start_objective_run_v1",
-        "ObjectiveRunFileStore",
-        "file.sync_all()?",
-        "fs::hard_link(&temp_path, &final_path)",
-        "CompileDisposition::ExplicitAbstain",
+        "prepare_intelligence_run_v1",
+        "DurableLearningJournal",
+        "RunStartPublicationV1",
+        "project_objective_function_v1",
+        "LedgerEvent::RunStart",
+        ".append(",
+    ]:
+        need(token in product_caller, "canonical objective product caller " + token)
+    for token in [
+        "start_intelligence_run_v1",
+        "IntelligenceHostEnvelopeV1",
+        "envelope.validate()",
         ".start_run(",
     ]:
-        need(token in product_caller, "objective product caller " + token)
+        need(token in runtime_consumer, "objective runtime consumer " + token)
+    need(
+        'qualification-objective-direct-store = []' in agentd_manifest,
+        "qualification-only direct Objective store feature is missing",
+    )
+    need(
+        '#[cfg(any(test, feature = "qualification-objective-direct-store"))]\nmod objective_runtime;'
+        in agentd_lib,
+        "Agentd direct Objective store is available in the default product build",
+    )
+    need(
+        "ObjectiveRunFileStore" in legacy_direct_store
+        and "admit_publish_and_start_objective_run_v1" in legacy_direct_store,
+        "qualification Objective compatibility surface disappeared",
+    )
 
     ndu = (ROOT / "codex-rs/hepta-ndu/src/evaluator.rs").read_text(encoding="utf-8")
     for token in [
