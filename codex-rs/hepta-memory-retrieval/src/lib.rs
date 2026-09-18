@@ -106,6 +106,7 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+#[cfg(test)]
 pub(crate) fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
     retrieve_request(&request)
 }

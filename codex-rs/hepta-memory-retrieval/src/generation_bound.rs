@@ -542,28 +542,35 @@ pub fn recall(
 ) -> Result<RecallPacketV1, RecallErrorV1> {
     let union = build_candidate_union(cue, policy, candidates)?;
     let maximum_results = usize::try_from(policy.maximum_results).unwrap_or(0);
-    // Risk gating is evaluated only over the candidates eligible to be
-    // delivered. Lower-ranked tail candidates remain bound by union_digest but
-    // cannot force an unrelated top-k recall to abstain.
-    let risk_entries = &union.entries[..union.entries.len().min(maximum_results)];
+    // Form the exact delivery-eligible set before applying risk gates. The
+    // canonical union still binds every admitted candidate, but entries below
+    // the score floor or beyond the result bound cannot be returned and cannot
+    // poison the risk decision for unrelated deliverable entries.
+    let deliverable_count = union
+        .entries
+        .iter()
+        .take_while(|entry| entry.weighted_score >= policy.minimum_total_score)
+        .take(maximum_results)
+        .count();
+    let deliverable_entries = &union.entries[..deliverable_count];
     let minimum_channels = usize::try_from(policy.minimum_distinct_channels).unwrap_or(usize::MAX);
-    let observed_channels = distinct_channel_count(risk_entries);
-    let contradiction_count = contradiction_population_count(risk_entries);
-    let maximum_ood = risk_entries
+    let observed_channels = distinct_channel_count(deliverable_entries);
+    let contradiction_count = contradiction_population_count(deliverable_entries);
+    let maximum_ood = deliverable_entries
         .iter()
         .map(|entry| entry.maximum_ood)
         .max()
         .unwrap_or(ProbabilityQ32::ZERO);
     let reason = if union.entries.is_empty() {
         Some(RecallAbstentionReasonV1::NoCandidate)
+    } else if deliverable_entries.is_empty() {
+        Some(RecallAbstentionReasonV1::ScoreBelowFloor)
     } else if observed_channels < minimum_channels {
         Some(RecallAbstentionReasonV1::InsufficientChannelCoverage)
     } else if policy.abstain_on_contradiction && contradiction_count > 0 {
         Some(RecallAbstentionReasonV1::ContradictoryEvidence)
     } else if maximum_ood > policy.maximum_ood {
         Some(RecallAbstentionReasonV1::OutOfDistribution)
-    } else if union.entries[0].weighted_score < policy.minimum_total_score {
-        Some(RecallAbstentionReasonV1::ScoreBelowFloor)
     } else {
         None
     };
@@ -571,11 +578,9 @@ pub fn recall(
     let (disposition, selections, omitted_count) = match reason {
         Some(reason) => (RecallDispositionV1::Abstained(reason), Vec::new(), 0),
         None => {
-            let omitted_count = union.entries.len().saturating_sub(maximum_results);
-            let selections = union
-                .entries
+            let omitted_count = union.entries.len().saturating_sub(deliverable_entries.len());
+            let selections = deliverable_entries
                 .iter()
-                .take(maximum_results)
                 .map(|entry| RecallSelectionV1 {
                     record_id: entry.record.record_id.clone(),
                     record_revision: entry.record.revision,

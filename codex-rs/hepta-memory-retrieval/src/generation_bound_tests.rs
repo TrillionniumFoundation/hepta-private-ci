@@ -299,3 +299,23 @@ fn low_rank_tail_risk_cannot_poison_deliverable_top_k() {
     assert_eq!(packet.selections[0].record_id, id("memory:1"));
     assert_eq!(packet.omitted_count, 2);
 }
+
+#[test]
+fn below_floor_top_k_candidate_is_omitted_and_cannot_poison_recall() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.maximum_results = 2;
+    policy.minimum_distinct_channels = 1;
+
+    let top = candidate(record(1), RetrievalChannelV1::Lexical, 1);
+    let mut low_risk = candidate(record(2), RetrievalChannelV1::Entity, 1);
+    low_risk.normalized_score = FixedQ32::from_raw(1_i64 << 27);
+    low_risk.ood = ProbabilityQ32::ONE;
+
+    let packet = recall(&cue, &policy, vec![top, low_risk])
+        .unwrap_or_else(|error| panic!("below-floor tail must be omitted: {error}"));
+    assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(packet.selections.len(), 1);
+    assert_eq!(packet.selections[0].record_id, id("memory:1"));
+    assert_eq!(packet.omitted_count, 1);
+}
