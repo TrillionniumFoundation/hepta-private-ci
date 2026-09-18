@@ -110,7 +110,7 @@ Critical protocol schemas:
 - `TopologyProposalV1`
 - `ForgetPropagationReceiptV1`
 
-The HNMF wire profile is `canonical_json_v1`: UTF-8 JSON with no insignificant whitespace, a mandatory `schema` + `schemaVersion=1` + `payload` envelope, strict unknown-field and unknown-enum rejection, lower-hex digests, deterministic collection ordering, per-protocol encoded-byte ceilings, and byte-for-byte reserialization equality on admission. The checked-in golden vector and production/reference conformance fixture are part of the contract evidence. This is a Hepta canonical JSON profile, not a claim of RFC 8785/JCS equivalence.
+The HNMF wire profile is `canonical_json_v1`: UTF-8 JSON with no insignificant whitespace, a mandatory `schema` + `schemaVersion=1` + `payload` envelope, strict unknown-field and unknown-enum rejection, lower-hex digests, deterministic collection ordering, `omit_when_none` optional fields, per-protocol encoded-byte ceilings, and byte-for-byte reserialization equality on admission. The checked-in golden vector and production/reference conformance fixture are part of the contract evidence. This is a Hepta canonical JSON profile, not a claim of RFC 8785/JCS equivalence.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
