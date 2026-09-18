@@ -19,6 +19,7 @@ use codex_hepta_types::StableId;
 struct Fixture {
     artifact_key: QualificationMacKeyV1,
     scorer_key: QualificationMacKeyV1,
+    assignment_key: QualificationMacKeyV1,
     subject_id: StableId,
     request: CalibratedDecisionRequestV1,
     profile: CanonicalPolicyProfileV1,
@@ -29,6 +30,7 @@ struct Fixture {
     ood_mac: QualificationMacV1,
     completeness_mac: QualificationMacV1,
     scorer_mac: QualificationMacV1,
+    assignment_mac: QualificationMacV1,
 }
 
 impl Fixture {
@@ -45,8 +47,15 @@ impl Fixture {
             [0x22; 32],
             false,
         );
+        let assignment_key = QualificationMacKeyV1::from_trusted_bytes(
+            id("qualification:key:assignment"),
+            11,
+            [0x33; 32],
+            false,
+        );
         let subject_id = id("intuition:policy:production");
-        let candidates = vec![candidate("candidate:a", 10), candidate("candidate:b", 20)];
+        let mut candidates = vec![candidate("candidate:a", 10), candidate("candidate:b", 20)];
+        candidates[1].assignment_probability = ProbabilityQ32::ONE;
         let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates)?;
         let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates)?;
         let policy_digest = digest(b"policy");
@@ -146,7 +155,11 @@ impl Fixture {
             completeness,
             calibration,
             ood,
-            assignment: AssignmentModeV1::Deterministic,
+            assignment: AssignmentModeV1::CounterBased {
+                random_stream_digest: digest(b"qualified-random-stream"),
+                draw: ProbabilityQ32::ZERO,
+                abstain_probability: ProbabilityQ32::ZERO,
+            },
             candidates,
         };
 
@@ -168,6 +181,11 @@ impl Fixture {
             scorer_contract.contract_digest,
             scorer_contract.model_artifact_digest,
             &score_evidence,
+        )?;
+        let assignment_digest = canonical_assignment_digest_v1(
+            &request,
+            profile.profile_digest,
+            scorer_output_digest,
         )?;
 
         let profile_mac = issue_qualification_mac_v1(
@@ -215,10 +233,20 @@ impl Fixture {
             sequence,
             sequence,
         )?;
+        let assignment_mac = issue_qualification_mac_v1(
+            &assignment_key,
+            subject_id.clone(),
+            assignment_scope_digest_v1(),
+            assignment_digest,
+            generation,
+            sequence,
+            sequence,
+        )?;
 
         Ok(Self {
             artifact_key,
             scorer_key,
+            assignment_key,
             subject_id,
             request,
             profile,
@@ -229,6 +257,7 @@ impl Fixture {
             ood_mac,
             completeness_mac,
             scorer_mac,
+            assignment_mac,
         })
     }
 
@@ -245,11 +274,13 @@ impl Fixture {
                     ood: &self.ood_mac,
                     completeness: &self.completeness_mac,
                     scorer_output: &self.scorer_mac,
+                    assignment: &self.assignment_mac,
                 },
             },
             QualificationTrustV1 {
                 artifact_key: &self.artifact_key,
                 scorer_key: &self.scorer_key,
+                assignment_key: &self.assignment_key,
                 subject_id: &self.subject_id,
                 expected_generation: self.request.policy_generation,
             },
@@ -292,6 +323,58 @@ fn authentication_tag_tampering_is_rejected() {
     let mut fixture = Fixture::new().unwrap_or_else(|error| panic!("fixture: {error:?}"));
     fixture.profile_mac.tag = digest(b"tampered-tag");
     assert_eq!(fixture.decide(), Err(QualifiedError::AuthenticationTagMismatch));
+}
+
+#[test]
+fn assignment_probability_tampering_requires_assignment_authority() {
+    let mut fixture = Fixture::new().unwrap_or_else(|error| panic!("fixture: {error:?}"));
+    fixture.request.candidates[0].assignment_probability = ProbabilityQ32::ONE;
+    fixture.request.candidates[1].assignment_probability = ProbabilityQ32::ZERO;
+    assert_eq!(
+        fixture.decide(),
+        Err(QualifiedError::AuthenticationPayloadMismatch)
+    );
+}
+
+#[test]
+fn random_stream_and_draw_tampering_require_assignment_authority() {
+    let mut stream_fixture =
+        Fixture::new().unwrap_or_else(|error| panic!("fixture: {error:?}"));
+    if let AssignmentModeV1::CounterBased {
+        random_stream_digest,
+        ..
+    } = &mut stream_fixture.request.assignment
+    {
+        *random_stream_digest = digest(b"tampered-random-stream");
+    }
+    assert_eq!(
+        stream_fixture.decide(),
+        Err(QualifiedError::AuthenticationPayloadMismatch)
+    );
+
+    let mut draw_fixture = Fixture::new().unwrap_or_else(|error| panic!("fixture: {error:?}"));
+    if let AssignmentModeV1::CounterBased { draw, .. } = &mut draw_fixture.request.assignment {
+        *draw = probability_ppm(1);
+    }
+    assert_eq!(
+        draw_fixture.decide(),
+        Err(QualifiedError::AuthenticationPayloadMismatch)
+    );
+}
+
+#[test]
+fn qualification_roles_require_distinct_key_identities() {
+    let mut fixture = Fixture::new().unwrap_or_else(|error| panic!("fixture: {error:?}"));
+    fixture.assignment_key = QualificationMacKeyV1::from_trusted_bytes(
+        id("qualification:key:scorer"),
+        12,
+        [0x44; 32],
+        false,
+    );
+    assert_eq!(
+        fixture.decide(),
+        Err(QualifiedError::AuthenticationKeyRoleConflict)
+    );
 }
 
 #[test]
