@@ -104,7 +104,7 @@ async fn supported_families_project_exact_pending_and_terminal_records() {
     assert_eq!(pending_governance.state(), HistoricalEvidenceState::Pending);
     pending_governance.validate().expect("valid pending record");
     store
-        .append_receipt(&GovernanceReceipt::new(
+        .append_governance_receipt(&GovernanceReceipt::new(
             governance,
             None,
             false,
