@@ -25,6 +25,7 @@ use codex_hepta_types::StableId;
 pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 16_384;
 pub const MAX_GENERATION_BOUND_RESULTS: usize = 256;
 const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
+const CUE_ID_DOMAIN: &[u8] = b"hepta.memory-cue.identity.v1";
 const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
 const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
 const RECALL_PACKET_DOMAIN: &[u8] = b"hepta.recall-packet.v1";
@@ -70,6 +71,39 @@ impl MemoryCueV1 {
         push_digest(&mut bytes, self.cue_profile_digest);
         Digest32::of_bytes(&bytes)
     }
+}
+
+pub fn compile_cue(
+    objective_digest: Digest32,
+    approved_context_digest: Digest32,
+    snapshot_key: CognitiveSnapshotKeyV1,
+    cue_profile_digest: Digest32,
+) -> Result<MemoryCueV1, RecallErrorV1> {
+    snapshot_key
+        .validate()
+        .map_err(RecallErrorV1::Contract)?;
+    ensure_digest("objective", objective_digest)?;
+    ensure_digest("approved_context", approved_context_digest)?;
+    ensure_digest("cue_profile", cue_profile_digest)?;
+
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(CUE_ID_DOMAIN);
+    push_digest(&mut bytes, objective_digest);
+    push_digest(&mut bytes, approved_context_digest);
+    push_digest(&mut bytes, snapshot_key.vector_digest);
+    push_digest(&mut bytes, cue_profile_digest);
+    let cue_identity = Digest32::of_bytes(&bytes);
+    let cue_id = StableId::new(format!("memory-cue:{cue_identity}"))
+        .map_err(|_| RecallErrorV1::InvalidCueIdentity)?;
+    let cue = MemoryCueV1 {
+        cue_id,
+        objective_digest,
+        approved_context_digest,
+        snapshot_key,
+        cue_profile_digest,
+    };
+    cue.validate()?;
+    Ok(cue)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -616,6 +650,7 @@ pub enum RecallErrorV1 {
     ChannelNotEnabled(RetrievalChannelV1),
     InvalidMaximumResults,
     InvalidMinimumCoverage,
+    InvalidCueIdentity,
     CandidateLimitExceeded,
     DuplicateChannelCandidate(String),
     ConflictingRecordRevision(String),
