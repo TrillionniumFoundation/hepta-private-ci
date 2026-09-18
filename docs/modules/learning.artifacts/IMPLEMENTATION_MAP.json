@@ -159,7 +159,7 @@
     },
     {
       "operation": "revalidate_artifact_publication_v3",
-      "nativeSymbol": "revalidate_artifact_publication_v3 -> RevalidatedArtifactPublicationV3",
+      "nativeSymbol": "revalidate_artifact_publication_v3",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
       "state": "source_implemented_type_state_gates_durable_snapshot_access",
       "authority": "none",
@@ -171,7 +171,8 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [
         "validate_artifact_publication_v3"
-      ]
+      ],
+      "resultType": "RevalidatedArtifactPublicationV3"
     },
     {
       "operation": "write_withdrawal_registry_snapshot",
