@@ -90,7 +90,7 @@ impl DurablePromptRegistry {
         self.commit(|registry| registry.admit_factor_verified(admission, now_unix_ms))
     }
 
-    pub fn register_realization_v2(
+    pub(crate) fn register_realization_v2(
         &mut self,
         binding: PromptRealizationBindingV2,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
@@ -517,7 +517,7 @@ fn migrate_v1(
     stored: StoredV1,
     maximum_records: usize,
 ) -> Result<PromptRegistry, DurableRegistryError> {
-    if stored.schema != 1 {
+    if stored.schema != 1 || stored.maximum_records == 0 || maximum_records == 0 {
         return Err(DurableRegistryError::Corrupt);
     }
     let revision = Revision::new(stored.revision).map_err(|_| DurableRegistryError::Corrupt)?;
