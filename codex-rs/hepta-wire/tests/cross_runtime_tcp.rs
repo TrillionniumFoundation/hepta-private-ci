@@ -148,7 +148,7 @@ fn python_tcp_v2_is_admitted_and_metadata_tamper_rejects() -> Result<(), Box<dyn
     let listener = TcpListener::bind("127.0.0.1:0")?;
     let address = listener.local_addr()?.to_string();
 
-    let mut child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
+    let mut child = Command::new(std::env::var_os("PYTHON").unwrap_or("python3".into()))
         .args(["-c", PYTHON_CLIENT, &address])
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
