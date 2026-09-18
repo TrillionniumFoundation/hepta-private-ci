@@ -3306,6 +3306,7 @@
       "consumesContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
+        "ModulePort::kernel.authority::prompt.registry",
         "ModulePort::kernel.operations::prompt.registry",
         "ModulePort::platform.types::prompt.registry"
       ],
@@ -3378,12 +3379,14 @@
           "prompt_factor_lifecycle"
         ],
         "directDependencies": [
-          "platform.types",
-          "kernel.operations"
+          "kernel.authority",
+          "kernel.operations",
+          "platform.types"
         ],
         "contractInputs": [
           "DomainRead::cross_owner_outboxV1",
           "DomainRead::operation_ledgerV1",
+          "ModulePort::kernel.authority::prompt.registry",
           "ModulePort::kernel.operations::prompt.registry",
           "ModulePort::platform.types::prompt.registry"
         ],
@@ -4032,6 +4035,7 @@
       "consumesContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
+        "ModulePort::kernel.authority::prompt.registry",
         "ModulePort::kernel.operations::prompt.registry",
         "ModulePort::platform.types::prompt.registry"
       ],
@@ -4104,12 +4108,14 @@
           "prompt_factor_lifecycle"
         ],
         "directDependencies": [
-          "platform.types",
-          "kernel.operations"
+          "kernel.authority",
+          "kernel.operations",
+          "platform.types"
         ],
         "contractInputs": [
           "DomainRead::cross_owner_outboxV1",
           "DomainRead::operation_ledgerV1",
+          "ModulePort::kernel.authority::prompt.registry",
           "ModulePort::kernel.operations::prompt.registry",
           "ModulePort::platform.types::prompt.registry"
         ],
@@ -7404,6 +7410,7 @@
       "consumesContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
+        "ModulePort::kernel.authority::prompt.registry",
         "ModulePort::kernel.operations::prompt.registry",
         "ModulePort::platform.types::prompt.registry"
       ],
@@ -7486,12 +7493,14 @@
           "prompt_factor_lifecycle"
         ],
         "directDependencies": [
-          "platform.types",
-          "kernel.operations"
+          "kernel.authority",
+          "kernel.operations",
+          "platform.types"
         ],
         "contractInputs": [
           "DomainRead::cross_owner_outboxV1",
           "DomainRead::operation_ledgerV1",
+          "ModulePort::kernel.authority::prompt.registry",
           "ModulePort::kernel.operations::prompt.registry",
           "ModulePort::platform.types::prompt.registry"
         ],
