@@ -545,7 +545,7 @@ fn validate_relations<'a>(
     };
     let mut seen = BTreeSet::new();
     for relation in relations {
-        let (kind, left, right, support) = match relation {
+        let (left, right, support) = match relation {
             PortfolioRelationV1::Interaction { left_candidate_id, right_candidate_id, marginal_utility, support_digest } => {
                 let (left, right) = ordered_pair(left_candidate_id, right_candidate_id)?;
                 let key = (0_u8, left.clone(), right.clone());
@@ -553,7 +553,7 @@ fn validate_relations<'a>(
                     return Err(CanonicalError::NonCanonicalInput("duplicate relation"));
                 }
                 graph.interactions.insert((left, right), *marginal_utility);
-                (0_u8, left_candidate_id, right_candidate_id, *support_digest)
+                (left_candidate_id, right_candidate_id, *support_digest)
             }
             PortfolioRelationV1::Conflict { left_candidate_id, right_candidate_id, support_digest } => {
                 let (left, right) = ordered_pair(left_candidate_id, right_candidate_id)?;
@@ -562,7 +562,7 @@ fn validate_relations<'a>(
                     return Err(CanonicalError::NonCanonicalInput("duplicate relation"));
                 }
                 graph.conflicts.insert((left, right));
-                (1_u8, left_candidate_id, right_candidate_id, *support_digest)
+                (left_candidate_id, right_candidate_id, *support_digest)
             }
             PortfolioRelationV1::Requires { candidate_id, prerequisite_candidate_id, support_digest } => {
                 if candidate_id == prerequisite_candidate_id {
@@ -573,10 +573,9 @@ fn validate_relations<'a>(
                     return Err(CanonicalError::NonCanonicalInput("duplicate relation"));
                 }
                 graph.requires.entry(candidate_id.clone()).or_default().push(prerequisite_candidate_id.clone());
-                (2_u8, candidate_id, prerequisite_candidate_id, *support_digest)
+                (candidate_id, prerequisite_candidate_id, *support_digest)
             }
         };
-        let _ = kind;
         ensure_digest("relation support", support)?;
         for endpoint in [left, right] {
             if !prices.contains_key(endpoint) {
