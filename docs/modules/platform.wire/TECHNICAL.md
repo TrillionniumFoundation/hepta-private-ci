@@ -32,8 +32,9 @@ target/production work. The detailed current contract is
 | Header-first bounded stream reader | implemented | `stream.rs` |
 | Deterministic property/fuzz smoke | implemented as focused tests | `protocol_tests.rs` |
 | Live Rust↔Python V2 loading | qualification evidence present | `cross_language_wire_fault.rs` |
+| Registered product source consumers | source-composed | `runtime.codex::adapt_wire`, `context.compiler::compile_wire` |
 | Authenticated/keyed anti-tamper protection | not owned by codec | transport/authority integration required |
-| Named production caller and target-host activation | not established | separate integration/activation gate |
+| Deployed production caller and target-host activation | not established | separate integration/activation gate |
 | Independent acceptance/promotion/release | not granted | external governance gates |
 
 HPTA V2's complete-frame digest is unkeyed SHA-256. It binds metadata and
@@ -81,7 +82,10 @@ with `WireEnvelope`, `WireError`, `MAX_WIRE_PAYLOAD_BYTES`, `encode` and
 - `schema.rs`: `SchemaRegistry`, `SchemaAdmission`, `PayloadCodec`;
 - `stream.rs`: header-first bounded `read_frame`.
 
-These are source bindings, not production activation. Read the
+The registered `runtime.codex` and `context.compiler` consumers now have
+actual Cargo dependencies on `codex-hepta-wire` and source callsites that bind
+negotiated version, producer, generation and schema before domain entry. These
+are source bindings/composition, not production activation. Read the
 [current executable contract](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md)
 and the
 [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation)
@@ -217,6 +221,8 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs): V1 round trip plus explicit metadata-integrity non-claim.
 - [codex-rs/hepta-wire/src/protocol_tests.rs](../../../codex-rs/hepta-wire/src/protocol_tests.rs): V2 complete-frame mutation rejection, negotiation/downgrade policy, strict schema admission, header-first streaming and deterministic fuzz/property smoke.
 - [codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs](../../../codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs): live Rust↔Python V1/V2 byte boundary including a Python-generated V2 reply frame.
+- [codex-rs/hepta-codex-adapter/src/wire_tests.rs](../../../codex-rs/hepta-codex-adapter/src/wire_tests.rs): registered `runtime.codex` source consumer, including downgrade/producer/generation/schema rejection.
+- [codex-rs/hepta-context-compiler/src/wire_tests.rs](../../../codex-rs/hepta-context-compiler/src/wire_tests.rs): registered `context.compiler` source consumer entering the existing deterministic compiler only after the same ingress fences.
 
 In `codex-rs`, run `just test -p codex-hepta-wire` and the focused
 `codex-hepta-shadow-qualification` cross-language test. Commands are test
@@ -329,5 +335,5 @@ This receipt records repository source bindings for the current documentation ca
 | `stream_decode` | `read_frame` | `codex-rs/hepta-wire/src/stream.rs` | `protocol_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- A live Rust↔Python qualification caller exists, but no authenticated production consumer is claimed.
-- Production implementation/activation, independent acceptance, promotion and release remain false until their separate evidence gates pass.
+- The registered `runtime.codex` and `context.compiler` consumers are source-composed; their deployment/authenticated transport state is not claimed.
+- Production activation, independent acceptance, promotion and release remain false until their separate evidence gates pass.
