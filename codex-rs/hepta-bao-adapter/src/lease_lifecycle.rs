@@ -863,7 +863,6 @@ fn store_error(error: LeaseStoreError) -> BaoClientError {
 }
 
 #[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
 struct DynamicLeaseResponse {
     lease_id: String,
     renewable: bool,
@@ -872,7 +871,6 @@ struct DynamicLeaseResponse {
 }
 
 #[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
 struct LeaseControlResponse {
     lease_id: String,
     renewable: bool,
@@ -880,15 +878,18 @@ struct LeaseControlResponse {
 }
 
 #[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
 struct LeaseLookupResponse {
     data: LeaseLookupData,
 }
 
 #[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
 struct LeaseLookupData {
     id: String,
     ttl: u64,
     renewable: bool,
 }
+
+
+#[cfg(all(test, unix))]
+#[path = "lease_lifecycle_tests.rs"]
+mod tests;
