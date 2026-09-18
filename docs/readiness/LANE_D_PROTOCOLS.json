@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "lane": "LANE-D-OBJECTIVE-VALUE",
   "authorityDelta": "none",
-  "admissionState": "candidate_owner_local_contracts_pending_product_wire_admission",
+  "admissionState": "candidate_product_wire_composed_pending_canonical_promotion_and_activation",
   "canonicalRegistries": [
     "docs/contracts/CONTRACTS.json",
     "docs/contracts/PROTOCOL_SCHEMAS.json",
@@ -613,5 +613,14 @@
         "sequence, kind, identity, payload and predecessor"
       ]
     }
-  ]
+  ],
+  "productComposition": {
+    "objectiveCompiler": {
+      "state": "candidate_composed",
+      "ingress": "AuthBusObjectiveIngress",
+      "caller": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "authority": "deny_all",
+      "canonicalPromotion": "not_established"
+    }
+  }
 }
