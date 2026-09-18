@@ -161,6 +161,12 @@ async fn serve_overloaded_connection(
     stream: UnixStream,
     state: Arc<AgentdState>,
 ) -> Result<(), AgentdError> {
+    // Overload is still part of the authenticated local control boundary.
+    // Do not parse or reflect request metadata from a peer that the normal
+    // control path would reject.
+    stream.ensure_current_user_peer().map_err(|error| {
+        AgentdError::Protocol(format!("reject overloaded agentd control peer identity: {error}"))
+    })?;
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
