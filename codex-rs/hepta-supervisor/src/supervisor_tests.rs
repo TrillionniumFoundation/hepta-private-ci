@@ -1749,6 +1749,12 @@ fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_b
     )?;
     assert_eq!(receipt.status, crate::ProductionMutationStatus::Committed);
     assert_eq!(receipt.target_release, target_id.to_string());
+    let projection = recovered
+        .release_selection_snapshot(&fleet.first)?
+        .expect("release selection projection");
+    assert_eq!(projection.status, crate::ReleaseSelectionStatus::Committed);
+    assert_eq!(projection.target_release, target_id.to_string());
+    assert_eq!(projection.binding.revocation_frontier, 7);
     assert_eq!(
         crate::signed_intent::read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
