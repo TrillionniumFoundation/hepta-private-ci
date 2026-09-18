@@ -23,13 +23,24 @@ plan digests. They deliberately do not authenticate caller-supplied identities,
 prove causal exchangeability, select a candidate or establish future-calendar
 efficacy.
 
-## Added implementation closure
+## Production implementation closure
+
+`PRODUCTION_CONTRACT.md` is normative for ingress. The raw semantic engines remain
+available only for explicit trusted compatibility; they are not production
+qualification entrypoints.
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
-| freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| freeze preregistered cross-fold lineage + metric roles | `freeze_cross_fold_plan_v2` | `src/metric_roles.rs` | production-required |
+| durably consume final holdout and mint proof | `DurableFinalHoldoutJournalV1::consume_proven` | `src/durable_holdout.rs` | production-required |
+| signed independent qualification | `decide_with_signed_durable_evidence_v3` | `src/signed_evaluation.rs` | production-required for `Qualification` |
+| signed durable observed-time longitudinal qualification | `decide_with_signed_durable_longitudinal_evidence_v4` | `src/longitudinal_time.rs` | production-required for `SystemLongitudinal` |
+
+Compatibility-only semantic operations include `freeze_cross_fold_plan`,
+`FinalHoldoutRegistry::consume`, `decide_independently`,
+`decide_independently_v2`, signed V1/V2 and longitudinal V3. They remain useful
+for deterministic composition/migration tests but cannot satisfy the production
+contract by themselves.
 
 `freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
 deduplicates every principal, episode and window set; rejects training/holdout
