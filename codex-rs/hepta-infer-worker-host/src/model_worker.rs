@@ -22,6 +22,13 @@ pub struct ModelManifest {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+/// Resource limits after an authoritative boundary has admitted this worker.
+///
+/// This is an in-process representation, not a self-authenticating wire credential.
+/// Callers crossing IPC/network/process boundaries must authenticate the issuer
+/// and verify the authoritative grant before constructing this value. Validation
+/// below checks local structure/current semantics; it does not prove grant origin
+/// or perform an online authority lookup.
 pub struct ResourceGrant {
     pub grant_id: String,
     pub authority_epoch: u64,
