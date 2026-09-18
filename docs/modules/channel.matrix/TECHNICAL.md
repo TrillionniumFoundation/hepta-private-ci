@@ -171,7 +171,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and stable send transaction identity in their existing durable owners; send_observer is a reusable state machine, not another sender. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
+Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. `MatrixDurableStore` is the single writer for sync/dedupe, stable send transaction identity, dispatch state, append-only send observations and terminal archive. `send_observer` is only a façade over that store and never starts another sender. SDK/HTTP acceptance remains indeterminate; a trusted homeserver event observation settles successful terminality. Real homeserver, final-use authority/revocation, encryption/session and reconnection qualification require the selected host profile.
 
 Current operating and state-format references:
 
@@ -184,10 +184,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs](../../../codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs); covers accepted-but-indeterminate send state, crash/reopen transaction reuse, terminal archive and separate redaction evidence.
+- [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs); covers ACK loss, stable transaction reuse and non-terminal transport acceptance.
 - [codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs); named case: `empty_page_continues_and_exact_target_preserves_page_and_event_order`.
 - [codex-rs/hepta-matrix-sdk/src/sync_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/sync_tests.rs); named case: `v1_redaction_commits_before_replay_and_survives_reopen`.
 
-In `codex-rs`, run `just test -p codex-hepta-matrix-sdk -p codex-hepta-matrixd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md) separately labels target acceptance designs.
+In `codex-rs`, run `cargo test -p codex-hepta-matrix-store --test dispatch_ledger`, `cargo test -p codex-hepta-matrix-sdk --test durable_transport`, and `cargo test -p codex-hepta-matrixd --lib`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -262,8 +264,8 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `admit_event` | `pub async fn process_event(` | `codex-rs/hepta-matrixd/src/runtime.rs` | `codex-rs/hepta-matrixd/src/tests.rs` |
-| `prepare_send` | `pub fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
-| `observe_send` | `pub fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `prepare_send` | `pub async fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs`, `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `observe_send` | `pub async fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs`, `codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
