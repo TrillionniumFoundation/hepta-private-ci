@@ -29,19 +29,39 @@ fn validate_counter(payload: &[u8]) -> Result<(), SchemaValidationError> {
 }
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("test identifier")
+    let Ok(value) = StableId::new(value) else {
+        panic!("test identifier rejected");
+    };
+    value
 }
 
 fn generation() -> Generation {
-    Generation::new(3).expect("test generation")
+    let Ok(value) = Generation::new(3) else {
+        panic!("test generation rejected");
+    };
+    value
+}
+
+fn wire_v2(schema: &str, payload: Vec<u8>) -> WireEnvelopeV2 {
+    let result = WireEnvelopeV2::new(id(schema), id("producer"), generation(), payload);
+    let Ok(value) = result else {
+        panic!("valid wire envelope rejected");
+    };
+    value
 }
 
 #[test]
 fn typed_codec_round_trips_on_v1_and_v2() {
     let producer = id("schema.test");
     let value = Counter(42);
-    let v1 = encode_typed_v1(producer.clone(), generation(), &value).expect("v1 encode");
-    let v2 = encode_typed_v2(producer, generation(), &value).expect("v2 encode");
+    let v1_result = encode_typed_v1(producer.clone(), generation(), &value);
+    let Ok(v1) = v1_result else {
+        panic!("typed v1 encode rejected");
+    };
+    let v2_result = encode_typed_v2(producer, generation(), &value);
+    let Ok(v2) = v2_result else {
+        panic!("typed v2 encode rejected");
+    };
     assert_eq!(decode_typed_v1::<Counter>(&v1), Ok(value.clone()));
     assert_eq!(decode_typed_v2::<Counter>(&v2), Ok(value));
 }
@@ -49,44 +69,25 @@ fn typed_codec_round_trips_on_v1_and_v2() {
 #[test]
 fn registry_rejects_unknown_schema_oversize_and_invalid_payload() {
     let mut registry = SchemaRegistry::new();
-    registry
-        .register(
-            SchemaRule::new(id(Counter::SCHEMA_ID), 4, validate_counter)
-                .expect("valid schema rule"),
-        )
-        .expect("register schema");
+    let rule_result = SchemaRule::new(id(Counter::SCHEMA_ID), 4, validate_counter);
+    let Ok(rule) = rule_result else {
+        panic!("valid schema rule rejected");
+    };
+    assert_eq!(registry.register(rule), Ok(()));
 
-    let unknown = WireEnvelopeV2::new(
-        id("unknown.v1"),
-        id("producer"),
-        generation(),
-        vec![1],
-    )
-    .expect("valid wire envelope");
+    let unknown = wire_v2("unknown.v1", vec![1]);
     assert!(matches!(
         registry.admit_v2(&unknown),
         Err(SchemaAdmissionError::UnknownSchema(_))
     ));
 
-    let oversize = WireEnvelopeV2::new(
-        id(Counter::SCHEMA_ID),
-        id("producer"),
-        generation(),
-        vec![0; 5],
-    )
-    .expect("valid wire envelope");
+    let oversize = wire_v2(Counter::SCHEMA_ID, vec![0; 5]);
     assert!(matches!(
         registry.admit_v2(&oversize),
         Err(SchemaAdmissionError::PayloadTooLarge { .. })
     ));
 
-    let invalid = WireEnvelopeV2::new(
-        id(Counter::SCHEMA_ID),
-        id("producer"),
-        generation(),
-        vec![0; 3],
-    )
-    .expect("valid wire envelope");
+    let invalid = wire_v2(Counter::SCHEMA_ID, vec![0; 3]);
     assert!(matches!(
         registry.admit_v2(&invalid),
         Err(SchemaAdmissionError::Validation {
@@ -98,13 +99,7 @@ fn registry_rejects_unknown_schema_oversize_and_invalid_payload() {
 
 #[test]
 fn typed_decode_rejects_schema_confusion() {
-    let envelope = WireEnvelopeV2::new(
-        id("hepta.other.v1"),
-        id("producer"),
-        generation(),
-        42_u32.to_be_bytes().to_vec(),
-    )
-    .expect("valid wire envelope");
+    let envelope = wire_v2("hepta.other.v1", 42_u32.to_be_bytes().to_vec());
     assert!(matches!(
         decode_typed_v2::<Counter>(&envelope),
         Err(TypedCodecError::SchemaMismatch { .. })
