@@ -67,6 +67,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-lane-e-evidence.py self-test
 
       - name: Locked all-target compilation
         working-directory: codex-rs
