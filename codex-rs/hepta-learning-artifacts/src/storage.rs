@@ -28,10 +28,10 @@ use crate::RegistryAppendDisposition;
 use crate::RegistryHeadRequirementV1;
 use crate::RegistryHeadWitnessV1;
 use crate::StateChange;
+use crate::MAX_DURABLE_ARTIFACT_RECORDS;
+use crate::MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES;
 
-const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
 const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 4096;
 const MAX_HEAD: usize = 4096;
 const MAGIC: &str = "HEPTAR01";
 const HEAD_MAGIC: &str = "HEPTAH01";
@@ -212,8 +212,8 @@ pub fn read_registry_snapshot(
 ) -> Result<ArtifactRegistry, ArtifactStorageError> {
     if expected.binding.is_zero()
         || expected.file_digest.is_zero()
-        || expected.records > MAX_RECORDS
-        || expected.encoded_bytes > MAX_SNAPSHOT
+        || expected.records > MAX_DURABLE_ARTIFACT_RECORDS
+        || expected.encoded_bytes > MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES
         || expected.encoded_bytes == 0
         || (expected.records == 0) != expected.head_digest.is_zero()
     {
@@ -221,7 +221,7 @@ pub fn read_registry_snapshot(
     }
     let bytes = read_bounded(
         file,
-        MAX_SNAPSHOT,
+        MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES,
         expected.encoded_bytes as u64,
         ArtifactStorageError::Corrupt,
     )?;
@@ -470,7 +470,7 @@ fn encode_snapshot(
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     let count = registry.records().len();
-    if count > MAX_RECORDS {
+    if count > MAX_DURABLE_ARTIFACT_RECORDS {
         return Err(ArtifactStorageError::Capacity);
     }
     let mut text = format!("{MAGIC}\n{binding}\n{count}\n");
@@ -507,7 +507,7 @@ fn encode_snapshot(
             }
         }
     }
-    if text.len() > MAX_SNAPSHOT {
+    if text.len() > MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES {
         return Err(ArtifactStorageError::Capacity);
     }
     Ok(text.into_bytes())
