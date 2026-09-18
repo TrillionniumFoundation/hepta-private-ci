@@ -1,0 +1,266 @@
+use std::collections::BTreeMap;
+
+use codex_hepta_contracts::AgentId;
+use thiserror::Error;
+
+use crate::FleetResourceArithmeticError;
+use crate::FleetResourceVectorV1;
+use crate::LocalAllocationCalculationV1;
+use crate::LocalAllocationCandidateV1;
+use crate::LocalAllocationError;
+use crate::LocalHostCapacityCandidateV1;
+use crate::calculate_local_allocation_v1;
+use crate::capacity::ObservedFleetCapacityV1;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FleetPlacementHostV1 {
+    pub observation: ObservedFleetCapacityV1,
+    /// Capacity still available after already-committed durable grants.
+    pub available: FleetResourceVectorV1,
+}
+
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct FleetPlacementRequestV1 {
+    pub request_id: String,
+    pub agent_id: AgentId,
+    pub weight: u32,
+    pub minimum: FleetResourceVectorV1,
+    pub desired: FleetResourceVectorV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FleetPlacementAssignmentV1 {
+    pub request_id: String,
+    pub agent_id: AgentId,
+    pub host_id: String,
+    pub failure_domain_id: String,
+    pub resources: FleetResourceVectorV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FleetPlacementPlanV1 {
+    pub assignments: Vec<FleetPlacementAssignmentV1>,
+    pub calculation: LocalAllocationCalculationV1,
+}
+
+#[derive(Clone, Debug, Error, Eq, PartialEq)]
+pub enum FleetPlacementError {
+    #[error("fleet placement requires at least one eligible host")]
+    NoHosts,
+    #[error("no host can satisfy minimum resources for request {0}")]
+    NoEligibleHost(String),
+    #[error("duplicate placement request {0}")]
+    DuplicateRequest(String),
+    #[error("placement resource arithmetic failed")]
+    ResourceArithmetic,
+    #[error(transparent)]
+    Allocation(#[from] LocalAllocationError),
+}
+
+/// Deterministically selects a host before invoking the existing weighted
+/// max-min allocator. The caller supplies authenticated/fresh observations;
+/// this function is still pure and carries no grant authority.
+pub fn calculate_fleet_placement_v1(
+    hosts: &[FleetPlacementHostV1],
+    requests: &[FleetPlacementRequestV1],
+) -> Result<FleetPlacementPlanV1, FleetPlacementError> {
+    if hosts.is_empty() {
+        return Err(FleetPlacementError::NoHosts);
+    }
+
+    let mut ordered_hosts = hosts.to_vec();
+    ordered_hosts.sort_by(|left, right| {
+        left.observation
+            .host_id
+            .cmp(&right.observation.host_id)
+            .then_with(|| {
+                left.observation
+                    .failure_domain_id
+                    .cmp(&right.observation.failure_domain_id)
+            })
+    });
+    for host in &ordered_hosts {
+        if !host.available.fits(host.observation.capacity) {
+            return Err(FleetPlacementError::ResourceArithmetic);
+        }
+    }
+
+    let mut ordered_requests = requests.to_vec();
+    ordered_requests.sort();
+    for pair in ordered_requests.windows(2) {
+        if pair[0].request_id == pair[1].request_id {
+            return Err(FleetPlacementError::DuplicateRequest(
+                pair[0].request_id.clone(),
+            ));
+        }
+    }
+
+    let mut residual: Vec<_> = ordered_hosts.iter().map(|host| host.available).collect();
+    let mut host_counts = vec![0_u64; ordered_hosts.len()];
+    let mut domain_counts: BTreeMap<&str, u64> = BTreeMap::new();
+    let mut bound = Vec::with_capacity(ordered_requests.len());
+
+    for request in &ordered_requests {
+        let mut eligible = Vec::new();
+        for (index, host) in ordered_hosts.iter().enumerate() {
+            if request.minimum.fits(residual[index]) {
+                eligible.push((
+                    *domain_counts
+                        .get(host.observation.failure_domain_id.as_str())
+                        .unwrap_or(&0),
+                    host_counts[index],
+                    host.observation.host_id.as_str(),
+                    index,
+                ));
+            }
+        }
+        eligible.sort();
+        let Some((_, _, _, selected)) = eligible.first().copied() else {
+            return Err(FleetPlacementError::NoEligibleHost(
+                request.request_id.clone(),
+            ));
+        };
+        residual[selected] = residual[selected]
+            .checked_sub(request.minimum)
+            .map_err(map_resource_error)?;
+        host_counts[selected] = host_counts[selected]
+            .checked_add(1)
+            .ok_or(FleetPlacementError::ResourceArithmetic)?;
+        let domain = ordered_hosts[selected].observation.failure_domain_id.as_str();
+        let count = domain_counts.entry(domain).or_default();
+        *count = count
+            .checked_add(1)
+            .ok_or(FleetPlacementError::ResourceArithmetic)?;
+        bound.push(LocalAllocationCandidateV1 {
+            request_id: request.request_id.clone(),
+            agent_id: request.agent_id.clone(),
+            host_id: ordered_hosts[selected].observation.host_id.clone(),
+            caller_supplied_weight: request.weight,
+            caller_supplied_minimum: request.minimum,
+            caller_supplied_desired: request.desired,
+        });
+    }
+
+    let allocation_hosts: Vec<_> = ordered_hosts
+        .iter()
+        .map(|host| LocalHostCapacityCandidateV1 {
+            host_id: host.observation.host_id.clone(),
+            failure_domain_id: host.observation.failure_domain_id.clone(),
+            caller_supplied_allocatable: host.available,
+        })
+        .collect();
+    let calculation = calculate_local_allocation_v1(&allocation_hosts, &bound)?;
+    let assignments = calculation
+        .shares()
+        .iter()
+        .map(|share| FleetPlacementAssignmentV1 {
+            request_id: share.request_id.clone(),
+            agent_id: share.agent_id.clone(),
+            host_id: share.host_id.clone(),
+            failure_domain_id: share.failure_domain_id.clone(),
+            resources: share.resources,
+        })
+        .collect();
+    Ok(FleetPlacementPlanV1 {
+        assignments,
+        calculation,
+    })
+}
+
+fn map_resource_error(_: FleetResourceArithmeticError) -> FleetPlacementError {
+    FleetPlacementError::ResourceArithmetic
+}
+
+#[cfg(test)]
+mod tests {
+    use codex_hepta_contracts::Sha256Digest;
+
+    use super::*;
+    use crate::FLEET_CAPACITY_OBSERVATION_SCHEMA_VERSION;
+
+    fn agent(index: usize) -> AgentId {
+        AgentId::parse(format!("00000000-0000-4000-8000-{index:012x}")).expect("agent id")
+    }
+
+    fn host(id: &str, domain: &str, turns: u64) -> FleetPlacementHostV1 {
+        let capacity = FleetResourceVectorV1 {
+            concurrent_turns: turns,
+            memory_mib: 4096,
+            tool_processes: 16,
+            turn_queue_slots: 256,
+        };
+        FleetPlacementHostV1 {
+            observation: ObservedFleetCapacityV1 {
+                schema_version: FLEET_CAPACITY_OBSERVATION_SCHEMA_VERSION,
+                host_id: id.to_string(),
+                failure_domain_id: domain.to_string(),
+                host_generation: 1,
+                observation_revision: 1,
+                observed_at_ms: 1,
+                valid_until_ms: 100,
+                capacity,
+                observation_digest: Sha256Digest::for_bytes(id.as_bytes()),
+            },
+            available: capacity,
+        }
+    }
+
+    fn request(id: &str, index: usize, minimum: u64, desired: u64) -> FleetPlacementRequestV1 {
+        FleetPlacementRequestV1 {
+            request_id: id.to_string(),
+            agent_id: agent(index),
+            weight: 1,
+            minimum: FleetResourceVectorV1 {
+                concurrent_turns: minimum,
+                ..FleetResourceVectorV1::default()
+            },
+            desired: FleetResourceVectorV1 {
+                concurrent_turns: desired,
+                ..FleetResourceVectorV1::default()
+            },
+        }
+    }
+
+    #[test]
+    fn placement_selects_hosts_before_allocation_and_spreads_failure_domains() {
+        let hosts = vec![host("host-a", "rack-a", 4), host("host-b", "rack-b", 4)];
+        let requests = vec![
+            request("request-a", 1, 1, 4),
+            request("request-b", 2, 1, 4),
+        ];
+        let plan = calculate_fleet_placement_v1(&hosts, &requests).expect("placement");
+        assert_eq!(plan.assignments[0].host_id, "host-a");
+        assert_eq!(plan.assignments[1].host_id, "host-b");
+    }
+
+    #[test]
+    fn placement_is_permutation_invariant() {
+        let mut hosts = vec![host("host-b", "rack-b", 4), host("host-a", "rack-a", 4)];
+        let mut requests = vec![
+            request("request-b", 2, 1, 4),
+            request("request-a", 1, 1, 4),
+        ];
+        let expected = calculate_fleet_placement_v1(&hosts, &requests).expect("placement");
+        hosts.reverse();
+        requests.reverse();
+        assert_eq!(
+            calculate_fleet_placement_v1(&hosts, &requests).expect("placement"),
+            expected
+        );
+    }
+
+    #[test]
+    fn placement_rejects_oversubscribed_minimums_before_granting() {
+        let hosts = vec![host("host-a", "rack-a", 1)];
+        let requests = vec![
+            request("request-a", 1, 1, 1),
+            request("request-b", 2, 1, 1),
+        ];
+        assert_eq!(
+            calculate_fleet_placement_v1(&hosts, &requests),
+            Err(FleetPlacementError::NoEligibleHost(
+                "request-b".to_string()
+            ))
+        );
+    }
+}
