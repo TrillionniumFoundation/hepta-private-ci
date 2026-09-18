@@ -9,14 +9,15 @@ The public V2 surface is `NORMATIVE_CONTEXT_COMPILER_API =
 `src/v2.rs` implementation remains private and supplies only the deterministic
 selection engine.
 
-The normative path requires typed, authenticated, snapshot-bound trusted
-admission evidence. Raw `ContextAdmissionSnapshotEvidenceV2` must pass
+The normative path requires typed, authenticated, snapshot-bound admission
+evidence for every candidate, including untrusted evidence. Admission does not
+change role: evidence remains evidence and cannot satisfy an instruction/schema
+binding. Raw `ContextAdmissionSnapshotEvidenceV2` must pass
 `verify_admission_snapshot_v2(..., ContextAdmissionVerifierV2)`; the verified
 snapshot has private fields and cannot be directly assembled from caller
 digests. `ContextAdmissionSnapshotV2::verify_trusted_binding` is then the only
-constructor path for `VerifiedContextAdmissionV2`. Trusted instruction/schema
-candidates therefore cannot satisfy the public V2 contract with a naked
-caller-supplied admission digest or a self-assembled snapshot. The verified
+constructor path for `VerifiedContextAdmissionV2`. No candidate can satisfy the public V2 contract with a naked caller-supplied
+admission digest or a self-assembled snapshot. The verified
 snapshot binds issuer, source snapshot, revocation frontier, witness, verifier
 identity, verifier-produced verification digest, observation time and canonical
 admission records.
@@ -40,8 +41,8 @@ provider-facing token budget is enforced against this final measurement, not
 against the sum of candidate token counts.
 
 `build_attachment` consumes that serialized payload and a current
-`ContextAdmissionSnapshotV2`. It revalidates every selected trusted
-instruction/schema against the current snapshot, rejects issuer drift, stale
+`ContextAdmissionSnapshotV2`. It revalidates every selected candidate,
+including untrusted evidence, against the current snapshot, rejects issuer drift, stale
 snapshot time, missing admission, source/content/role drift, expiry and
 revocation, and binds the current revocation frontier and witness into the
 attachment.
