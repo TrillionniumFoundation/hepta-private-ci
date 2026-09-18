@@ -62,16 +62,16 @@ impl Store {
         initial: FinalUseRevocations,
     ) -> Result<(Self, State), FinalUseError> {
         let root = prepare_directory(root)?;
-        // The pre-existing lock file remains the durable "initialization began"
-        // marker. Creating the lock is no longer equivalent to owning the
-        // authority for the process lifetime.
-        let initialized = entry_exists(&root, "authority.lock")?;
         let store = Self {
             root,
             signer_id: signer_id.to_owned(),
             verifying_key,
         };
-        let _guard = store.lock_mutation()?;
+        // Atomically create the durable initialization marker or open the
+        // existing one, then take the same exclusive fence used by mutations.
+        // O_EXCL removes the race where two first-openers both observed absence
+        // before either created the marker.
+        let (_guard, created_marker) = store.lock_initialization()?;
         let has_state = entry_exists(&store.root, "authority.json")?;
         let mut state = if has_state {
             store.load_or_migrate()?
@@ -79,7 +79,7 @@ impl Store {
             // Once initialization has begun, absence of the snapshot is data
             // loss (or an interrupted first initialization), never permission
             // to reset replay state.
-            if initialized {
+            if !created_marker {
                 return Err(FinalUseError::InvalidTrust);
             }
             let state = State {
@@ -118,12 +118,20 @@ impl Store {
         Ok((store, state))
     }
 
-    /// Acquire the cross-process serialization/final-use fence. The file
-    /// descriptor itself is the guard: closing it releases the OS lock.
+    /// Acquire the cross-process serialization/final-use fence. Once the
+    /// store exists, the lock inode is part of the durable schema and is never
+    /// recreated implicitly: a missing lock file fails closed instead of
+    /// allowing two generations to lock different inodes.
     pub(super) fn lock_mutation(&self) -> Result<File, FinalUseError> {
-        let file = open_private(&self.root, "authority.lock", Access::Create)?;
+        let file = open_private(&self.root, "authority.lock", Access::ReadWrite)?;
         file.lock().map_err(|_| FinalUseError::Unavailable)?;
         Ok(file)
+    }
+
+    fn lock_initialization(&self) -> Result<(File, bool), FinalUseError> {
+        let (file, created) = create_or_open_lock(&self.root, "authority.lock")?;
+        file.lock().map_err(|_| FinalUseError::Unavailable)?;
+        Ok((file, created))
     }
 
     /// Incrementally refresh the small head plus only journal records appended
@@ -370,7 +378,58 @@ fn read_bounded(directory: &File, name: &str) -> Result<Vec<u8>, FinalUseError> 
 
 enum Access {
     Read,
+    ReadWrite,
     Create,
+}
+
+#[cfg(unix)]
+fn create_or_open_lock(
+    directory: &File,
+    name: &str,
+) -> Result<(File, bool), FinalUseError> {
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
+    use std::os::unix::fs::MetadataExt;
+
+    let flags = OFlags::RDWR
+        | OFlags::CREATE
+        | OFlags::EXCL
+        | OFlags::NOFOLLOW
+        | OFlags::CLOEXEC;
+    let (file, created): (File, bool) = match rustix::fs::openat(
+        directory,
+        name,
+        flags,
+        Mode::RUSR | Mode::WUSR,
+    ) {
+        Ok(fd) => (fd.into(), true),
+        Err(rustix::io::Errno::EXIST) => (
+            open_private(directory, name, Access::ReadWrite)?,
+            false,
+        ),
+        Err(_) => return Err(FinalUseError::Unavailable),
+    };
+    let metadata = file.metadata().map_err(|_| FinalUseError::Unavailable)?;
+    if !metadata.is_file()
+        || metadata.mode() & 0o077 != 0
+        || metadata.nlink() != 1
+        || metadata.uid() != rustix::process::geteuid().as_raw()
+    {
+        return Err(FinalUseError::UnsafeStateDirectory);
+    }
+    if created {
+        file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        directory.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+    }
+    Ok((file, created))
+}
+
+#[cfg(not(unix))]
+fn create_or_open_lock(
+    _directory: &File,
+    _name: &str,
+) -> Result<(File, bool), FinalUseError> {
+    Err(FinalUseError::UnsafeStateDirectory)
 }
 
 #[cfg(unix)]
@@ -411,6 +470,7 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     use std::os::unix::fs::MetadataExt;
     let flags = match access {
         Access::Read => OFlags::RDONLY,
+        Access::ReadWrite => OFlags::RDWR,
         Access::Create => OFlags::RDWR | OFlags::CREATE,
     } | OFlags::NOFOLLOW
         | OFlags::CLOEXEC;
