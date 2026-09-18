@@ -2,14 +2,14 @@ use std::time::Duration;
 
 use codex_hepta_authbus::AuthBusTrustHead;
 use codex_hepta_authbus::AuthPolicyRule;
-use codex_hepta_authbus::IssuerRegistration;
-use codex_hepta_authbus::SignedMessage;
-use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_authbus::EffectAdmissionRequest;
+use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::PolicyEffect;
 use codex_hepta_authbus::QuotaRegistryEntry;
 use codex_hepta_authbus::ReservationReconcileOutcome;
 use codex_hepta_authbus::ReservationState;
+use codex_hepta_authbus::SignedMessage;
+use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -121,7 +121,10 @@ async fn bus_01_simultaneous_last_unit_reservations_cannot_both_succeed() {
     let rejected = left.err().or_else(|| right.err()).unwrap();
     assert!(matches!(rejected, AuthBusControlError::QuotaExceeded));
     let snapshot = first.quota_snapshot(&quota).await.unwrap();
-    assert_eq!((snapshot.capacity, snapshot.reserved, snapshot.consumed), (1, 1, 0));
+    assert_eq!(
+        (snapshot.capacity, snapshot.reserved, snapshot.consumed),
+        (1, 1, 0)
+    );
 }
 
 #[tokio::test]
@@ -219,7 +222,10 @@ async fn bus_02_duplicate_settlement_is_idempotent_and_changed_cost_conflicts() 
         Err(AuthBusControlError::ReservationConflict)
     ));
     let snapshot = store.quota_snapshot(&quota).await.unwrap();
-    assert_eq!((snapshot.reserved, snapshot.consumed, snapshot.available()), (0, 7, 3));
+    assert_eq!(
+        (snapshot.reserved, snapshot.consumed, snapshot.available()),
+        (0, 7, 3)
+    );
 }
 
 #[tokio::test]
@@ -253,7 +259,10 @@ async fn bus_03_expiry_racing_terminal_result_never_double_refunds() {
         .unwrap();
     assert_eq!(store.expire_reservations().await.unwrap(), 0);
     let snapshot = store.quota_snapshot(&quota).await.unwrap();
-    assert_eq!((snapshot.reserved, snapshot.consumed, snapshot.available()), (0, 6, 4));
+    assert_eq!(
+        (snapshot.reserved, snapshot.consumed, snapshot.available()),
+        (0, 6, 4)
+    );
 }
 
 #[tokio::test]
@@ -339,7 +348,6 @@ async fn in_flight_reservation_survives_reopen_and_requires_reconciliation() {
     assert_eq!((snapshot.reserved, snapshot.consumed), (0, 0));
 }
 
-
 fn replay_message(
     key: &SigningKey,
     issuer_id: &StableId,
@@ -404,7 +412,10 @@ async fn replay_checkpoint_detects_restore_before_latest_external_anchor() {
         .advance_authbus_replay_checkpoint(first_checkpoint.generation)
         .await
         .unwrap();
-    store.verify_authbus_replay_checkpoint(&latest).await.unwrap();
+    store
+        .verify_authbus_replay_checkpoint(&latest)
+        .await
+        .unwrap();
 
     // Simulate restoring checkpoint metadata from the predecessor snapshot while
     // the independently retained latest checkpoint remains outside the restore.
@@ -479,7 +490,6 @@ async fn retired_replay_epoch_stays_revoked_after_safe_compaction() {
         ))
     ));
 }
-
 
 #[tokio::test]
 async fn trust_head_is_monotonic_across_revision_key_and_revocation_lifecycle() {
