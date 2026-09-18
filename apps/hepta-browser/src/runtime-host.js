@@ -603,6 +603,7 @@ export class BrowserProfileHost {
     const profileId = stableId(input.profileId, "profileId");
     const generation = positiveInteger(input.generation, "generation");
     const operationId = stableId(input.operationId, "operationId");
+    const principalId = stableId(input.principalId, "principalId");
     return exclusive(this.#locks, `${profileId}:${generation}`, async () => {
       const durable = await this.#journal.getOperation(
         profileId,
@@ -610,7 +611,7 @@ export class BrowserProfileHost {
         operationId,
       );
       if (!durable) throw new TypeError("persisted operation does not exist");
-      if (input.principalId !== durable.principalId) {
+      if (principalId !== durable.principalId) {
         throw new TypeError("principal does not own persisted operation");
       }
       if (durable.terminalObserved === true) {
@@ -651,6 +652,17 @@ export class BrowserProfileHost {
           ),
           "persisted driver reconciliation observation",
         );
+        if (
+          observed.operationId !== durable.operationId ||
+          digest(observed.requestDigest, "persisted observation requestDigest") !==
+            durable.requestDigest ||
+          digest(observed.semanticDigest, "persisted observation semanticDigest") !==
+            durable.semanticDigest
+        ) {
+          throw new TypeError(
+            "persisted reconciliation observation did not bind the durable operation",
+          );
+        }
         receipt = this.#effectReceipt(
           profileId,
           operationId,

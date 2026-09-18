@@ -475,6 +475,9 @@ test("subprocess driver delegates persisted recovery only to an explicit trusted
       received = input;
       assert.equal(signal?.aborted, false);
       return {
+        operationId: input.operationId,
+        requestDigest: input.requestDigest,
+        semanticDigest: input.semanticDigest,
         terminalObserved: true,
         status: "succeeded",
         outcomeDigest: D1,
@@ -488,12 +491,42 @@ test("subprocess driver delegates persisted recovery only to an explicit trusted
       principalId: "principal.1",
       profileGeneration: 1,
       operationId: "operation.persisted",
+      requestDigest: D1,
+      semanticDigest: D1,
     },
     { signal: controller.signal },
   );
   assert.equal(received.operationId, "operation.persisted");
   assert.equal(observed.terminalObserved, true);
   assert.equal(observed.status, "succeeded");
+});
+
+test("subprocess persisted reconciler rejects a mismatched observation binding", async () => {
+  const driver = new SubprocessBrowserDriver({
+    workerPath: "/worker",
+    workerDigest: D1,
+    profileRoot: "/profiles",
+    launcher: fakeLauncher(),
+    persistedReconciler: async (input) => ({
+      operationId: input.operationId,
+      requestDigest: "2".repeat(64),
+      semanticDigest: input.semanticDigest,
+      terminalObserved: true,
+      status: "succeeded",
+      outcomeDigest: D1,
+    }),
+  });
+  await assert.rejects(
+    driver.reconcilePersisted({
+      profileId: "profile.1",
+      principalId: "principal.1",
+      profileGeneration: 1,
+      operationId: "operation.persisted",
+      requestDigest: D1,
+      semanticDigest: D1,
+    }),
+    /did not bind the exact durable operation/,
+  );
 });
 
 test("subprocess driver containment kills the quarantined worker and still permits cleanup", async () => {

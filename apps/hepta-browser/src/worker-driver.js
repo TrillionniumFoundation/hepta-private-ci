@@ -767,10 +767,22 @@ export class SubprocessBrowserDriver {
         observationReason: "persisted_reconciler_unavailable",
       });
     }
-    return requireRecord(
+    const observed = requireRecord(
       await this.#persistedReconciler(input, { signal }),
       "persisted browser reconciliation observation",
     );
+    if (
+      observed.operationId !== input.operationId ||
+      expectedDigest(observed.requestDigest, "persisted observation requestDigest") !==
+        expectedDigest(input.requestDigest, "persisted input requestDigest") ||
+      expectedDigest(observed.semanticDigest, "persisted observation semanticDigest") !==
+        expectedDigest(input.semanticDigest, "persisted input semanticDigest")
+    ) {
+      throw new TypeError(
+        "persisted reconciler observation did not bind the exact durable operation",
+      );
+    }
+    return observed;
   }
 
   async contain(input) {
