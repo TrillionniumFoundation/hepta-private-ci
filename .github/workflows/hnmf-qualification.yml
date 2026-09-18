@@ -11,6 +11,7 @@ on:
       - "qualification/hnmf-contract-reference/**"
       - "qualification/hnmf-adversarial-reference/**"
       - "scripts/hepta-hnmf.py"
+      - "scripts/hepta-cognitive-types-status.py"
       - ".github/workflows/hnmf-qualification.yml"
       - "README.md"
   push:
@@ -25,6 +26,7 @@ on:
       - "qualification/hnmf-contract-reference/**"
       - "qualification/hnmf-adversarial-reference/**"
       - "scripts/hepta-hnmf.py"
+      - "scripts/hepta-cognitive-types-status.py"
       - ".github/workflows/hnmf-qualification.yml"
       - "README.md"
 
@@ -45,6 +47,7 @@ jobs:
         run: |
           python3 scripts/hepta-hnmf.py self-test
           python3 scripts/hepta-hnmf.py verify
+          python3 scripts/hepta-cognitive-types-status.py --verify
 
       - name: Show Rust toolchain identity
         run: |
