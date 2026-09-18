@@ -51,8 +51,8 @@ impl AgentdState {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
-        let mut runtime_modules = RuntimeModuleSetV1::new(identity.spawn_generation)
-            .map_err(runtime_module_error)?;
+        let mut runtime_modules =
+            RuntimeModuleSetV1::new(identity.spawn_generation).map_err(runtime_module_error)?;
         let agent_id = identity.agent_id.to_string();
         let generation = identity.spawn_generation.to_string();
         runtime_modules

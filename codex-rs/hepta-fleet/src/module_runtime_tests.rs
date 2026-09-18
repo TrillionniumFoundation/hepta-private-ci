@@ -26,8 +26,14 @@ fn canonical_catalog_is_runtime_consumed_and_acyclic() {
 fn generic_lifecycle_handles_add_activate_drain_and_retire() {
     let mut set = RuntimeModuleSetV1::new(7).expect("set");
     let binding = digest("agentd");
-    assert!(set.ensure_registered("runtime.agentd", 7, binding.clone()).expect("register"));
-    assert!(set.ensure_active("runtime.agentd", 7, binding).expect("activate"));
+    assert!(
+        set.ensure_registered("runtime.agentd", 7, binding.clone())
+            .expect("register")
+    );
+    assert!(
+        set.ensure_active("runtime.agentd", 7, binding)
+            .expect("activate")
+    );
     set.begin_drain_all().expect("drain");
     assert_eq!(
         set.instance("runtime.agentd").expect("instance").lifecycle,
@@ -47,7 +53,8 @@ fn unknown_or_conflicting_runtime_binding_fails_closed() {
         set.ensure_active("future.unknown", 3, digest("future")),
         Err(RuntimeModuleErrorV1::UnknownCatalogModule(_))
     ));
-    set.ensure_active("runtime.agentd", 3, digest("a")).expect("first");
+    set.ensure_active("runtime.agentd", 3, digest("a"))
+        .expect("first");
     assert!(matches!(
         set.ensure_active("runtime.agentd", 4, digest("b")),
         Err(RuntimeModuleErrorV1::ConflictingBinding(_))
@@ -68,9 +75,15 @@ fn topology_candidate_requires_shadow_canary_and_fresh_generation_rollback() {
         predecessor.clone(),
     )
     .expect("candidate");
-    candidate.enter_shadow(digest("qualification")).expect("shadow");
-    candidate.enter_canary(digest("selection"), digest("observation")).expect("canary");
-    candidate.request_rollback(digest("regression"), 13).expect("rollback request");
+    candidate
+        .enter_shadow(digest("qualification"))
+        .expect("shadow");
+    candidate
+        .enter_canary(digest("selection"), digest("observation"))
+        .expect("canary");
+    candidate
+        .request_rollback(digest("regression"), 13)
+        .expect("rollback request");
     candidate.mark_rolled_back(&predecessor).expect("rollback");
     candidate.validate_recovered().expect("recoverable");
     assert_eq!(candidate.stage, RuntimeTopologyStageV1::RolledBack);
@@ -91,7 +104,9 @@ fn rollback_generation_never_resurrects_predecessor_generation() {
     )
     .expect("candidate");
     candidate.enter_shadow(digest("q")).expect("shadow");
-    candidate.enter_canary(digest("s"), digest("o")).expect("canary");
+    candidate
+        .enter_canary(digest("s"), digest("o"))
+        .expect("canary");
     candidate.promote(digest("confirm")).expect("promote");
     assert!(matches!(
         candidate.request_rollback(digest("regression"), 4),

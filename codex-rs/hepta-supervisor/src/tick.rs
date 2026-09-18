@@ -47,10 +47,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
                 if !self.continue_release_change_after_exit(agent_id, slot, now)? {
                     if slot.restart_after_exit {
-                    slot.restart_after_exit = false;
-                    let generation = self.record(agent_id)?.lifecycle.generation;
-                    self.schedule_automatic_restart(agent_id, slot, generation, now)?;
-                }
+                        slot.restart_after_exit = false;
+                        let generation = self.record(agent_id)?.lifecycle.generation;
+                        self.schedule_automatic_restart(agent_id, slot, generation, now)?;
+                    }
                     self.start_pending_restart(agent_id, slot, now)?;
                 }
             }

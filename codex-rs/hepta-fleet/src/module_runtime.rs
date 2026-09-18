@@ -54,8 +54,8 @@ pub struct RuntimeModuleCatalogV1 {
 
 impl RuntimeModuleCatalogV1 {
     pub fn canonical() -> Result<Self, RuntimeModuleErrorV1> {
-        let source: SourceCatalogV1 =
-            serde_json::from_str(CANONICAL_MODULES_JSON).map_err(|_| RuntimeModuleErrorV1::CatalogDecode)?;
+        let source: SourceCatalogV1 = serde_json::from_str(CANONICAL_MODULES_JSON)
+            .map_err(|_| RuntimeModuleErrorV1::CatalogDecode)?;
         if source.modules.is_empty() || source.modules.len() > MAX_MODULES {
             return Err(RuntimeModuleErrorV1::CatalogBounds);
         }
@@ -211,7 +211,12 @@ impl RuntimeModuleSetV1 {
         module_generation: u64,
         binding_digest: String,
     ) -> Result<bool, RuntimeModuleErrorV1> {
-        self.ensure(module_id, module_generation, binding_digest, RuntimeModuleLifecycleV1::Registered)
+        self.ensure(
+            module_id,
+            module_generation,
+            binding_digest,
+            RuntimeModuleLifecycleV1::Registered,
+        )
     }
 
     pub fn ensure_active(
@@ -232,14 +237,20 @@ impl RuntimeModuleSetV1 {
                 if current.module_generation != module_generation
                     || current.binding_digest != binding_digest =>
             {
-                return Err(RuntimeModuleErrorV1::ConflictingBinding(module_id.to_string()));
+                return Err(RuntimeModuleErrorV1::ConflictingBinding(
+                    module_id.to_string(),
+                ));
             }
             Some(_) => {}
             None => {
                 self.ensure_registered(module_id, module_generation, binding_digest)?;
             }
         }
-        self.transition(module_id, module_generation, RuntimeModuleLifecycleV1::Active)?;
+        self.transition(
+            module_id,
+            module_generation,
+            RuntimeModuleLifecycleV1::Active,
+        )?;
         Ok(true)
     }
 
@@ -288,7 +299,11 @@ impl RuntimeModuleSetV1 {
                 .ok_or_else(|| RuntimeModuleErrorV1::UnknownRuntimeModule(id.clone()))?;
             match instance.lifecycle {
                 RuntimeModuleLifecycleV1::Registered => {
-                    self.transition(&id, instance.module_generation, RuntimeModuleLifecycleV1::Active)?;
+                    self.transition(
+                        &id,
+                        instance.module_generation,
+                        RuntimeModuleLifecycleV1::Active,
+                    )?;
                 }
                 RuntimeModuleLifecycleV1::Active => {}
                 state => {
@@ -313,10 +328,18 @@ impl RuntimeModuleSetV1 {
                 .ok_or_else(|| RuntimeModuleErrorV1::UnknownRuntimeModule(id.clone()))?;
             match instance.lifecycle {
                 RuntimeModuleLifecycleV1::Active | RuntimeModuleLifecycleV1::Canary => {
-                    self.transition(&id, instance.module_generation, RuntimeModuleLifecycleV1::Draining)?;
+                    self.transition(
+                        &id,
+                        instance.module_generation,
+                        RuntimeModuleLifecycleV1::Draining,
+                    )?;
                 }
                 RuntimeModuleLifecycleV1::Registered | RuntimeModuleLifecycleV1::Shadow => {
-                    self.transition(&id, instance.module_generation, RuntimeModuleLifecycleV1::Retired)?;
+                    self.transition(
+                        &id,
+                        instance.module_generation,
+                        RuntimeModuleLifecycleV1::Retired,
+                    )?;
                 }
                 RuntimeModuleLifecycleV1::Draining
                 | RuntimeModuleLifecycleV1::Retired
@@ -335,7 +358,11 @@ impl RuntimeModuleSetV1 {
                 .cloned()
                 .ok_or_else(|| RuntimeModuleErrorV1::UnknownRuntimeModule(id.clone()))?;
             if instance.lifecycle != RuntimeModuleLifecycleV1::Retired {
-                self.transition(&id, instance.module_generation, RuntimeModuleLifecycleV1::Retired)?;
+                self.transition(
+                    &id,
+                    instance.module_generation,
+                    RuntimeModuleLifecycleV1::Retired,
+                )?;
             }
         }
         Ok(())
@@ -353,7 +380,11 @@ impl RuntimeModuleSetV1 {
                 instance.lifecycle,
                 RuntimeModuleLifecycleV1::Retired | RuntimeModuleLifecycleV1::Quarantined
             ) {
-                self.transition(&id, instance.module_generation, RuntimeModuleLifecycleV1::Quarantined)?;
+                self.transition(
+                    &id,
+                    instance.module_generation,
+                    RuntimeModuleLifecycleV1::Quarantined,
+                )?;
             }
         }
         Ok(())
@@ -386,7 +417,9 @@ impl RuntimeModuleSetV1 {
         }
         validate_digest(&binding_digest)?;
         if self.catalog.module(module_id).is_none() {
-            return Err(RuntimeModuleErrorV1::UnknownCatalogModule(module_id.to_string()));
+            return Err(RuntimeModuleErrorV1::UnknownCatalogModule(
+                module_id.to_string(),
+            ));
         }
         if let Some(existing) = self.instances.get(module_id) {
             if existing.module_generation == module_generation
@@ -395,7 +428,9 @@ impl RuntimeModuleSetV1 {
             {
                 return Ok(false);
             }
-            return Err(RuntimeModuleErrorV1::ConflictingBinding(module_id.to_string()));
+            return Err(RuntimeModuleErrorV1::ConflictingBinding(
+                module_id.to_string(),
+            ));
         }
         self.instances.insert(
             module_id.to_string(),
@@ -501,7 +536,10 @@ impl RuntimeTopologyCandidateV1 {
         })
     }
 
-    pub fn enter_shadow(&mut self, qualification_digest: String) -> Result<(), RuntimeModuleErrorV1> {
+    pub fn enter_shadow(
+        &mut self,
+        qualification_digest: String,
+    ) -> Result<(), RuntimeModuleErrorV1> {
         require_stage(self.stage, RuntimeTopologyStageV1::Proposed)?;
         validate_digest(&qualification_digest)?;
         self.qualification_digest = Some(qualification_digest);
@@ -536,7 +574,10 @@ impl RuntimeTopologyCandidateV1 {
         regression_digest: String,
         rollback_generation: u64,
     ) -> Result<(), RuntimeModuleErrorV1> {
-        if !matches!(self.stage, RuntimeTopologyStageV1::Canary | RuntimeTopologyStageV1::Promoted) {
+        if !matches!(
+            self.stage,
+            RuntimeTopologyStageV1::Canary | RuntimeTopologyStageV1::Promoted
+        ) {
             return Err(RuntimeModuleErrorV1::InvalidTopologyStage);
         }
         validate_digest(&regression_digest)?;
@@ -549,7 +590,10 @@ impl RuntimeTopologyCandidateV1 {
         advance_candidate_revision(self)
     }
 
-    pub fn mark_rolled_back(&mut self, restored_topology_digest: &str) -> Result<(), RuntimeModuleErrorV1> {
+    pub fn mark_rolled_back(
+        &mut self,
+        restored_topology_digest: &str,
+    ) -> Result<(), RuntimeModuleErrorV1> {
         require_stage(self.stage, RuntimeTopologyStageV1::RollbackRequested)?;
         validate_digest(restored_topology_digest)?;
         if restored_topology_digest != self.rollback_predecessor_digest {
@@ -562,7 +606,9 @@ impl RuntimeTopologyCandidateV1 {
     pub fn reject(&mut self, observation_digest: String) -> Result<(), RuntimeModuleErrorV1> {
         if !matches!(
             self.stage,
-            RuntimeTopologyStageV1::Proposed | RuntimeTopologyStageV1::Shadow | RuntimeTopologyStageV1::Canary
+            RuntimeTopologyStageV1::Proposed
+                | RuntimeTopologyStageV1::Shadow
+                | RuntimeTopologyStageV1::Canary
         ) {
             return Err(RuntimeModuleErrorV1::InvalidTopologyStage);
         }
@@ -619,13 +665,20 @@ pub enum RuntimeModuleErrorV1 {
     InvalidIdentity,
     InvalidDigest,
     DuplicateModule(String),
-    UnknownDependency { module: String, dependency: String },
+    UnknownDependency {
+        module: String,
+        dependency: String,
+    },
     DependencyCycle,
     UnknownCatalogModule(String),
     UnknownRuntimeModule(String),
     ConflictingBinding(String),
     InvalidGeneration,
-    GenerationMismatch { module: String, expected: u64, actual: u64 },
+    GenerationMismatch {
+        module: String,
+        expected: u64,
+        actual: u64,
+    },
     InvalidTransition {
         module: String,
         from: RuntimeModuleLifecycleV1,
@@ -658,16 +711,23 @@ fn valid_transition(from: RuntimeModuleLifecycleV1, to: RuntimeModuleLifecycleV1
     use RuntimeModuleLifecycleV1 as L;
     matches!(
         (from, to),
-        (L::Registered, L::Shadow | L::Active | L::Retired | L::Quarantined)
-            | (L::Shadow, L::Canary | L::Retired | L::Quarantined)
-            | (L::Canary, L::Active | L::Draining | L::Retired | L::Quarantined)
+        (
+            L::Registered,
+            L::Shadow | L::Active | L::Retired | L::Quarantined
+        ) | (L::Shadow, L::Canary | L::Retired | L::Quarantined)
+            | (
+                L::Canary,
+                L::Active | L::Draining | L::Retired | L::Quarantined
+            )
             | (L::Active, L::Draining | L::Retired | L::Quarantined)
             | (L::Draining, L::Retired | L::Quarantined)
             | (L::Quarantined, L::Retired)
     )
 }
 
-fn validate_dag(modules: &BTreeMap<String, RuntimeModuleAbiV1>) -> Result<(), RuntimeModuleErrorV1> {
+fn validate_dag(
+    modules: &BTreeMap<String, RuntimeModuleAbiV1>,
+) -> Result<(), RuntimeModuleErrorV1> {
     let mut remaining = modules
         .iter()
         .map(|(id, module)| (id.clone(), module.dependencies.len()))
@@ -680,9 +740,17 @@ fn validate_dag(modules: &BTreeMap<String, RuntimeModuleAbiV1>) -> Result<(), Ru
     while let Some(id) = ready.pop_first() {
         visited += 1;
         for module in modules.values() {
-            if module.dependencies.iter().any(|dependency| dependency == &id) {
-                let count = remaining.get_mut(&module.id).ok_or(RuntimeModuleErrorV1::DependencyCycle)?;
-                *count = count.checked_sub(1).ok_or(RuntimeModuleErrorV1::DependencyCycle)?;
+            if module
+                .dependencies
+                .iter()
+                .any(|dependency| dependency == &id)
+            {
+                let count = remaining
+                    .get_mut(&module.id)
+                    .ok_or(RuntimeModuleErrorV1::DependencyCycle)?;
+                *count = count
+                    .checked_sub(1)
+                    .ok_or(RuntimeModuleErrorV1::DependencyCycle)?;
                 if *count == 0 {
                     ready.insert(module.id.clone());
                 }
@@ -699,7 +767,9 @@ fn validate_dag(modules: &BTreeMap<String, RuntimeModuleAbiV1>) -> Result<(), Ru
 fn validate_id(value: &str) -> Result<(), RuntimeModuleErrorV1> {
     if value.is_empty()
         || value.len() > 128
-        || !value.bytes().all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':'))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':'))
     {
         return Err(RuntimeModuleErrorV1::InvalidIdentity);
     }
@@ -709,7 +779,9 @@ fn validate_id(value: &str) -> Result<(), RuntimeModuleErrorV1> {
 fn validate_digest(value: &str) -> Result<(), RuntimeModuleErrorV1> {
     if value.len() != 64
         || value.bytes().all(|byte| byte == b'0')
-        || !value.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
     {
         return Err(RuntimeModuleErrorV1::InvalidDigest);
     }
@@ -717,15 +789,30 @@ fn validate_digest(value: &str) -> Result<(), RuntimeModuleErrorV1> {
 }
 
 fn require_some_digest(value: &Option<String>) -> Result<(), RuntimeModuleErrorV1> {
-    value.as_deref().ok_or(RuntimeModuleErrorV1::InvalidDigest).and_then(validate_digest)
+    value
+        .as_deref()
+        .ok_or(RuntimeModuleErrorV1::InvalidDigest)
+        .and_then(validate_digest)
 }
 
-fn require_stage(actual: RuntimeTopologyStageV1, expected: RuntimeTopologyStageV1) -> Result<(), RuntimeModuleErrorV1> {
-    if actual == expected { Ok(()) } else { Err(RuntimeModuleErrorV1::InvalidTopologyStage) }
+fn require_stage(
+    actual: RuntimeTopologyStageV1,
+    expected: RuntimeTopologyStageV1,
+) -> Result<(), RuntimeModuleErrorV1> {
+    if actual == expected {
+        Ok(())
+    } else {
+        Err(RuntimeModuleErrorV1::InvalidTopologyStage)
+    }
 }
 
-fn advance_candidate_revision(candidate: &mut RuntimeTopologyCandidateV1) -> Result<(), RuntimeModuleErrorV1> {
-    candidate.revision = candidate.revision.checked_add(1).ok_or(RuntimeModuleErrorV1::ArithmeticOverflow)?;
+fn advance_candidate_revision(
+    candidate: &mut RuntimeTopologyCandidateV1,
+) -> Result<(), RuntimeModuleErrorV1> {
+    candidate.revision = candidate
+        .revision
+        .checked_add(1)
+        .ok_or(RuntimeModuleErrorV1::ArithmeticOverflow)?;
     Ok(())
 }
 

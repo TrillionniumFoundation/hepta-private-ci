@@ -61,13 +61,13 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         if not path or path.startswith("/") or ".." in parts or "\\" in path or "\x00" in path:
             raise ValueError(f"invalid repository path: {path!r}")
 
+        if path in DERIVED_ONLY or path.startswith("qualification/module-execution-dossiers/detail/"):
+            derived = True
+            continue
+
         if path in {"README.md", "CONTRIBUTING.md"} or (
             path.startswith("docs/") and path.endswith(".md")
         ):
-            continue
-
-        if path in DERIVED_ONLY or path.startswith("qualification/module-execution-dossiers/detail/"):
-            derived = True
             continue
 
         if path in CANONICAL_DOC_GROUPS:
