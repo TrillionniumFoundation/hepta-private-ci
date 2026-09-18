@@ -261,7 +261,18 @@ fn request_authorized(request: &str, expected_token: &str) -> bool {
     };
     value
         .strip_prefix("Bearer ")
-        .is_some_and(|presented| presented == expected_token)
+        .is_some_and(|presented| constant_time_eq(presented.as_bytes(), expected_token.as_bytes()))
+}
+
+fn constant_time_eq(left: &[u8], right: &[u8]) -> bool {
+    if left.len() != right.len() {
+        return false;
+    }
+    let mut difference = 0_u8;
+    for (&left, &right) in left.iter().zip(right) {
+        difference |= left ^ right;
+    }
+    difference == 0
 }
 
 fn truthy(value: &str) -> bool {
