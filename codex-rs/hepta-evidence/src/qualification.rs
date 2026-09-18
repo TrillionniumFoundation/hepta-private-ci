@@ -150,6 +150,15 @@ impl EvidenceCandidateV1 {
     }
 }
 
+#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub struct EvidenceId(String);
+
+impl EvidenceId {
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct EvidenceAssetRefV1 {
@@ -549,16 +558,15 @@ impl HeptaEvidenceStore {
         &self,
         signed: &SignedQualificationEvidenceEnvelopeV1,
         issuer: &AuthenticatedEvidenceIssuerV1,
-    ) -> Result<AppendDisposition, EvidenceError> {
+    ) -> Result<EvidenceId, EvidenceError> {
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        let disposition =
-            append_qualification_receipt_in_transaction(&mut transaction, signed, issuer).await?;
+        append_qualification_receipt_in_transaction(&mut transaction, signed, issuer).await?;
         transaction.commit().await.map_err(classify_sqlx_error)?;
-        Ok(disposition)
+        Ok(EvidenceId(signed.envelope.receipt_id.clone()))
     }
 
     pub async fn append_independent_decision_receipt(
