@@ -66,7 +66,7 @@ fn conserves_capacity_and_reuses_identical_grant() {
 fn host_capacity_refresh_cannot_drop_below_live_commitments() {
     let mut ledger = LeaseLedger::new();
     ledger.admit_host(host()).expect("host");
-    ledger.issue(200, grant("one", 600)).expect("grant");
+    ledger.issue(200, grant("one", 2)).expect("grant");
     let mut shrunken = host();
     shrunken.observation_revision = 2;
     shrunken.observed_at_ms = 300;
