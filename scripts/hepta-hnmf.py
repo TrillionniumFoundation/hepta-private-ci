@@ -466,6 +466,7 @@ def verify() -> int:
         "canonical_json_rejects_reordered_envelope_keys",
         "canonical_json_and_collection_bounds_fail_closed",
         "canonical_set_order_is_insertion_independent",
+        "canonical_json_omits_absent_optionals_and_rejects_explicit_null",
     ]:
         need(test_name in hnmf_tests, f"production HNMF boundary test {test_name}")
     conformance = (
