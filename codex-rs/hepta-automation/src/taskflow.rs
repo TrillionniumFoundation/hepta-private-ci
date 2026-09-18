@@ -1013,6 +1013,15 @@ impl AutomationStore {
             }
             return Ok(run);
         }
+        let effect_attempts: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM taskflow_effect_dispatch_attempts
+             WHERE owner_agent_id = ? AND run_id = ?",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
         let unresolved_effects: i64 = sqlx::query_scalar(
             "SELECT COUNT(*)
              FROM taskflow_effect_dispatch_attempts a
@@ -1032,6 +1041,11 @@ impl AutomationStore {
         if unresolved_effects != 0 {
             return Err(TaskFlowError::Conflict(
                 "TaskFlow run has unresolved provider-contact evidence".to_string(),
+            ));
+        }
+        if effect_attempts != 0 && run.state != TaskFlowRunState::Queued {
+            return Err(TaskFlowError::Conflict(
+                "provider absence must be durably requeued before run takeover".to_string(),
             ));
         }
         if let Some(previous_generation) = run.generation
