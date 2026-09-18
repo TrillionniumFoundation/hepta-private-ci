@@ -134,8 +134,7 @@ impl ProductionObjectiveStartReceiptV1 {
         self.run_start
             .validate_for_objective(&self.objective.objective, canonical_digest)
             .map_err(ProductionObjectiveError::RunStart)?;
-        if self.objective.objective.source_digest
-            != self.objective_admission.admitted_source_digest
+        if self.objective.objective.source_digest != self.objective_admission.admitted_source_digest
         {
             return Err(ProductionObjectiveError::AdmissionBindingMismatch);
         }
@@ -196,22 +195,35 @@ impl fmt::Display for ProductionObjectiveError {
             Self::CompiledObjective(error) => {
                 write!(formatter, "compiled objective validation failed: {error}")
             }
-            Self::Durable(error) => write!(formatter, "durable run-start publication failed: {error}"),
-            Self::AuthorityEscalation => formatter.write_str("objective host envelope grants authority"),
+            Self::Durable(error) => {
+                write!(formatter, "durable run-start publication failed: {error}")
+            }
+            Self::AuthorityEscalation => {
+                formatter.write_str("objective host envelope grants authority")
+            }
             Self::InvalidPublishedDisposition => {
                 formatter.write_str("published objective is not a compiled disposition")
             }
             Self::AdmissionBindingMismatch => {
                 formatter.write_str("published objective is not bound to admitted source")
             }
-            Self::HostBindingMismatch => {
-                formatter.write_str("runtime host envelope differs from durable publication receipt")
+            Self::HostBindingMismatch => formatter
+                .write_str("runtime host envelope differs from durable publication receipt"),
+            Self::EmptyHostDigest(field) => {
+                write!(formatter, "host envelope {field} digest is zero")
             }
-            Self::EmptyHostDigest(field) => write!(formatter, "host envelope {field} digest is zero"),
-            Self::InvalidDurableSequence => formatter.write_str("host envelope durable sequence is zero"),
-            Self::RunStartDigestMismatch => formatter.write_str("host envelope run-start digest mismatch"),
-            Self::EnvelopeDigestMismatch => formatter.write_str("objective host envelope digest mismatch"),
-            Self::NotRunStartRecord => formatter.write_str("ledger record is not a run-start publication"),
+            Self::InvalidDurableSequence => {
+                formatter.write_str("host envelope durable sequence is zero")
+            }
+            Self::RunStartDigestMismatch => {
+                formatter.write_str("host envelope run-start digest mismatch")
+            }
+            Self::EnvelopeDigestMismatch => {
+                formatter.write_str("objective host envelope digest mismatch")
+            }
+            Self::NotRunStartRecord => {
+                formatter.write_str("ledger record is not a run-start publication")
+            }
         }
     }
 }
@@ -273,8 +285,8 @@ pub fn prepare_intelligence_run_v1<J: DurableLearningJournal>(
 
     validate_compiled_objective_v1(&compile.objective)
         .map_err(ProductionObjectiveError::CompiledObjective)?;
-    let objective_v1 =
-        project_objective_function_v1(source, &outcome).map_err(ProductionObjectiveError::Projection)?;
+    let objective_v1 = project_objective_function_v1(source, &outcome)
+        .map_err(ProductionObjectiveError::Projection)?;
     let objective_v1_json = objective_v1
         .canonical_json()
         .map_err(ProductionObjectiveError::Projection)?;
@@ -337,7 +349,6 @@ pub fn prepare_intelligence_run_v1<J: DurableLearningJournal>(
     receipt.validate()?;
     Ok(ProductionObjectiveDispositionV1::Published(receipt))
 }
-
 
 /// Reconstruct the exact runtime handoff from an already-validated durable
 /// RunStart record. This is used after process recovery and intentionally
