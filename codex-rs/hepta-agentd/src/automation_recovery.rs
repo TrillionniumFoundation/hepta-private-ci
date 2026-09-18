@@ -326,6 +326,10 @@ async fn complete_work(
     recovery_generation: u64,
 ) -> Result<(), AgentdError> {
     store
+        .ensure_admitted_taskflow_uncertainty(work, now_ms)
+        .await
+        .map_err(taskflow_error)?;
+    store
         .reconcile_occurrence_taskflow_terminal_with_recovery(
             work,
             terminal,
