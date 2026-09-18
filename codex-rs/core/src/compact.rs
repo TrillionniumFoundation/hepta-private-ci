@@ -748,6 +748,10 @@ async fn drain_to_completed(
     prompt: &Prompt,
 ) -> CodexResult<()> {
     let provider_policy_context = ModelProviderPolicyContext {
+        require_active_policy: turn_context
+            .config
+            .features
+            .enabled(codex_features::Feature::HeptaGovernance),
         registry: sess.services.extensions.as_ref(),
         session_store: &sess.services.session_extension_data,
         thread_store: &sess.services.thread_extension_data,
