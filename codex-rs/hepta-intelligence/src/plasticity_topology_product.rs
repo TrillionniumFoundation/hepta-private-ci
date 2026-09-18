@@ -186,7 +186,12 @@ pub fn topology_generation_signing_payload_v1(
     let mut changes = changes.to_vec();
     changes.sort();
     let mut handoffs = handoffs.to_vec();
-    handoffs.sort_by(|left, right| left.module_id.cmp(&right.module_id));
+    handoffs.sort_by(|left, right| {
+        left.module_id
+            .cmp(&right.module_id)
+            .then_with(|| left.operation.cmp(&right.operation))
+            .then_with(|| left.handoff_digest.cmp(&right.handoff_digest))
+    });
     let mut bytes = b"hepta.intelligence.topology-plasticity-generation.v1\0".to_vec();
     push_admission(&mut bytes, admission);
     push_len(&mut bytes, changes.len())?;
