@@ -106,6 +106,20 @@
       "designOperation": "trusted_time_and_external_anti_rollback_frontier",
       "mappingClass": "owner_native_interface",
       "delegatedCallees": []
+    },
+    {
+      "operation": "final_use_revocation_convergence",
+      "nativeSymbol": "FinalUseRevocationConvergenceVerifier",
+      "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "state": "source_implemented_transport_external",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_control.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_enrolled_node_revocation_convergence",
+      "mappingClass": "owner_native_verifier",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -114,7 +128,7 @@
     "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes."
   ],
   "externalEvidenceGates": [
-    "fleet revocation transport, convergence and measured freshness qualification",
+    "fleet revocation transport and measured convergence/freshness latency qualification; signed per-node convergence protocol is repository-implemented",
     "protected production AuthorityFrontierStore backend qualification",
     "attested or otherwise independently protected AuthorityClock qualification",
     "HSM/KMS key custody, staged rotation and compromise-response ceremony",

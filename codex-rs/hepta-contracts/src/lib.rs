@@ -48,11 +48,16 @@ pub use final_use_control::FinalUseApproval;
 pub use final_use_control::FinalUseApprovalVerifier;
 pub use final_use_control::FinalUseControlError;
 pub use final_use_control::FinalUseRevocationFeedVerifier;
+pub use final_use_control::FinalUseRevocationAck;
+pub use final_use_control::FinalUseRevocationConvergenceReport;
+pub use final_use_control::FinalUseRevocationConvergenceVerifier;
+pub use final_use_control::FinalUseRevocationNodeTrust;
 pub use final_use_control::FinalUseRevocationReceipt;
 pub use final_use_control::FinalUseRevocationUpdate;
 pub use final_use_control::FinalUseTrustKey;
 pub use final_use_control::SignedFinalUseApproval;
 pub use final_use_control::SignedFinalUseRevocationUpdate;
+pub use final_use_control::SignedFinalUseRevocationAck;
 pub use final_use_control::MAX_REVOCATION_FEED_LIFETIME_MS;
 
 pub use agent_id::AgentId;

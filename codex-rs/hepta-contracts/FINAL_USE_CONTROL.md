@@ -76,6 +76,22 @@ A signature is therefore not a perpetual revocation credential. Transport may
 retry while the signed freshness window is current; deployment must obtain a
 new head before expiry.
 
+## Enrolled-node convergence acknowledgement
+
+`FinalUseRevocationAck` is a separate node-signed receipt over the exact
+revocation-update digest, distributor identity, epoch/revision and local apply
+time. `FinalUseRevocationConvergenceVerifier` pins a closed set of at most 256
+enrolled nodes, each with its own bounded epoch key ring. It verifies every
+supplied acknowledgement and returns deterministic acknowledged/missing node
+sets for one still-fresh update.
+
+A missing node is never silently counted as converged. Duplicate, unknown,
+forged, wrong-head, pre-issuance or post-expiry acknowledgements fail closed.
+A restarted host has no Bao freshness authority until it applies a current
+signed update again; only after that catch-up may its host identity produce an
+ack. The resulting report can prove repository-protocol convergence, but it
+does not perform transport or prove a deployment's latency SLA by itself.
+
 ## Registered Bao consumer host and partition policy
 
 `BaoFinalUseHost` composes one durable `FinalUseAuthority`, independent
@@ -169,7 +185,7 @@ capacity snapshots and rotate epoch before fail-closed exhaustion.
 The repository-controlled candidate implements the primitives above but does
 **not** claim:
 
-- a fleet transport, consensus service or measured convergence SLA;
+- a fleet transport, consensus service or measured convergence-latency SLA (the signed per-node convergence proof is implemented);
 - an attested production clock implementation;
 - an externally deployed anti-rollback frontier backend;
 - HSM/KMS custody, rotation ceremony or compromise-response qualification;

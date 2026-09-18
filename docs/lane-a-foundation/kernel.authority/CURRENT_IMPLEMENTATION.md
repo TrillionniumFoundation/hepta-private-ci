@@ -82,6 +82,9 @@ reconciled.
 - verification identifies the exact trust key used for audit;
 - revocation feed schema V2 signs issued/expiry times and rejects not-yet-valid
   or stale updates;
+- enrolled nodes can sign exact-update apply acknowledgements, and the
+  convergence verifier returns deterministic acknowledged/missing node sets
+  while the update is still fresh;
 - the registered Bao host begins without fresh revocation knowledge, requires a
   current signed head before secret use, and denies new secret use after the
   signed freshness deadline until another current head is ingested.
@@ -157,7 +160,7 @@ Repository source does not manufacture or claim:
 
 - a selected product process for the registered Bao host;
 - generic kernel.authority composition for every target ModulePort;
-- fleet revocation transport/consensus or measured convergence SLA;
+- fleet revocation transport/consensus or a measured convergence-latency SLA (signed per-node convergence evidence is implemented);
 - an attested production clock;
 - a deployed rollback-resistant external frontier store;
 - HSM/KMS custody, operator rotation/compromise ceremony;
