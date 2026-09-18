@@ -461,50 +461,58 @@ impl AutomationStore {
             .await
             .map_err(unavailable)?;
         let task = task_from_row(&task_row, &self.owner_agent_id)?;
-        let schedule_revision = to_u64(
-            task_row
-                .try_get("schedule_revision")
-                .map_err(unavailable)?,
-        )?;
-        let occurrence_id =
-            deterministic_occurrence_id(task_id, schedule_revision, scheduled_for_ms)?;
-        sqlx::query(
-            "INSERT INTO automation_occurrences (
-                 owner_agent_id, occurrence_id, task_id, schedule_revision, ordinal,
-                 scheduled_for_ms, client_user_message_id, state,
-                 materialized_at_ms, updated_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, 'materialized', ?, ?)
-             ON CONFLICT(owner_agent_id, occurrence_id) DO NOTHING",
-        )
-        .bind(self.owner_agent_id.as_str())
-        .bind(&occurrence_id)
-        .bind(task_id.to_string())
-        .bind(to_i64(schedule_revision)?)
-        .bind(to_i64(occurrence)?)
-        .bind(to_i64(scheduled_for_ms)?)
-        .bind(&client_id)
-        .bind(to_i64(now_ms)?)
-        .bind(to_i64(now_ms)?)
-        .execute(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        let causal_row = sqlx::query(
-            "SELECT ordinal, client_user_message_id
+        let existing_causal = sqlx::query(
+            "SELECT occurrence_id, schedule_revision, scheduled_for_ms, client_user_message_id
              FROM automation_occurrences
-             WHERE owner_agent_id = ? AND occurrence_id = ?",
+             WHERE owner_agent_id = ? AND task_id = ? AND ordinal = ?",
         )
         .bind(self.owner_agent_id.as_str())
-        .bind(&occurrence_id)
-        .fetch_one(&mut *transaction)
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .fetch_optional(&mut *transaction)
         .await
         .map_err(unavailable)?;
-        if to_u64(causal_row.try_get("ordinal").map_err(unavailable)?)? != occurrence
-            || causal_row
-                .try_get::<String, _>("client_user_message_id")
-                .map_err(unavailable)?
-                != client_id
-        {
-            return Err(AutomationError::Conflict);
+        if let Some(causal_row) = existing_causal {
+            let stored_scheduled_for =
+                to_u64(causal_row.try_get("scheduled_for_ms").map_err(unavailable)?)?;
+            let stored_client: String =
+                causal_row.try_get("client_user_message_id").map_err(unavailable)?;
+            if stored_scheduled_for != scheduled_for_ms || stored_client != client_id {
+                return Err(AutomationError::Conflict);
+            }
+        } else {
+            let schedule_revision = to_u64(
+                task_row
+                    .try_get("schedule_revision")
+                    .map_err(unavailable)?,
+            )?;
+            let occurrence_id =
+                deterministic_occurrence_id(task_id, schedule_revision, scheduled_for_ms)?;
+            sqlx::query(
+                "INSERT INTO automation_occurrences (
+                     owner_agent_id, occurrence_id, task_id, schedule_revision, ordinal,
+                     scheduled_for_ms, client_user_message_id, state,
+                     materialized_at_ms, updated_at_ms
+                 ) VALUES (?, ?, ?, ?, ?, ?, ?, 'materialized', ?, ?)",
+            )
+            .bind(self.owner_agent_id.as_str())
+            .bind(&occurrence_id)
+            .bind(task_id.to_string())
+            .bind(to_i64(schedule_revision)?)
+            .bind(to_i64(occurrence)?)
+            .bind(to_i64(scheduled_for_ms)?)
+            .bind(&client_id)
+            .bind(to_i64(now_ms)?)
+            .bind(to_i64(now_ms)?)
+            .execute(&mut *transaction)
+            .await
+            .map_err(|error| {
+                if is_constraint(&error) {
+                    AutomationError::Conflict
+                } else {
+                    unavailable(error)
+                }
+            })?;
         }
         transaction.commit().await.map_err(unavailable)?;
         Ok(Some(AutomationLease {
