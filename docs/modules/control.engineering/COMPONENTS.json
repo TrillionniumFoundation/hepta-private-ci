@@ -320,7 +320,7 @@
         "ProductionReadinessDecision",
         "evaluate_production_readiness"
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_execution_pending",
       "failureModel": [
         "repository_mismatch",
         "product_caller_missing",
@@ -328,7 +328,10 @@
         "reviewer_identity_collision",
         "strong_sandbox_not_observed",
         "deployment_not_observed",
-        "rollback_not_rehearsed"
+        "rollback_not_rehearsed",
+        "source_product_receipt_invalid",
+        "merge_product_receipt_invalid",
+        "orchestration_product_receipt_set_mismatch"
       ],
       "resourceBounds": {
         "ambientAuthority": 0
@@ -485,20 +488,25 @@
       "source": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
       "symbols": [
         "build_product_receipt",
-        "main"
+        "main",
+        "verify_product_receipt_pair"
       ],
       "state": "source_implemented_dual_lane_execution_pending",
       "failureModel": [
         "repository_identity_mismatch",
         "ordered_merge_parent_mismatch",
-        "product_assignment_not_composed"
+        "product_assignment_not_composed",
+        "product_receipt_digest_mismatch",
+        "product_receipt_pair_ci_identity",
+        "product_receipt_pair_merge_identity",
+        "product_receipt_pair_canonical_drift"
       ],
       "resourceBounds": {
         "runtimeAuthority": 0,
         "mergeAuthority": 0,
         "releaseAuthority": 0
       },
-      "rollback": "discard the receipt; no product transition is authorized"
+      "rollback": "discard the lane receipts/pair receipt; no product transition is authorized"
     }
   ],
   "externalGates": {
