@@ -69,7 +69,7 @@ impl AutomationTurnQueue for SuccessQueue {
     ) -> AutomationFuture<'_, AutomationQueueReceipt> {
         Box::pin(async move {
             Ok(AutomationQueueReceipt {
-                queued_submission_id: format!("queue:{}:{}", admission.task_id, admission.occurrence),
+                queued_submission_id: format!(
                 client_user_message_id: admission.client_user_message_id,
             })
         })
@@ -304,11 +304,7 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
 
     // Only an external ReconcileOnly `Missing` proof may open this retry path.
     store
-        .reconcile_uncertain_occurrence_absent(
-            task.task_id,
-            1,
-            &uncertain.client_user_message_id,
-        )
+        .reconcile_uncertain_occurrence_absent(task.task_id, 1, &uncertain.client_user_message_id)
         .await
         .expect("release after absence proof");
     let lease = store
@@ -317,7 +313,10 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
         .expect("claim")
         .expect("retry due");
     assert_eq!(lease.occurrence, 1);
-    assert_eq!(lease.client_user_message_id, uncertain.client_user_message_id);
+    assert_eq!(
+        lease.client_user_message_id,
+        uncertain.client_user_message_id
+    );
     let second = store
         .materialize_occurrence(&lease, 101)
         .await
