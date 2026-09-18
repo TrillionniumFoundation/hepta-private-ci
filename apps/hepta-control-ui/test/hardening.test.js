@@ -1399,18 +1399,21 @@ test("failed persistence-domain switch keeps the old lease recoverable and relea
     },
   };
   let intervalId = 0;
+  const windowListeners = new Map();
   const window = {
     location: { origin: "https://control.example" },
     setInterval() { intervalId += 1; return intervalId; },
     clearInterval() {},
-    addEventListener() {},
-    removeEventListener() {},
+    addEventListener(name, listener) { windowListeners.set(name, listener); },
+    removeEventListener(name) { windowListeners.delete(name); },
   };
   let bootstrapCalls = 0;
   let connectCalls = 0;
   let failFirstDomainBConnect = true;
   let activeSession = null;
   let activeGeneration = 0;
+  let heldCloseGate = null;
+  let heldCloseStartedResolve = null;
   const fetchImpl = async (url) => {
     const path = new URL(url).pathname;
     if (path === "/api/ui-control/bootstrap") {
@@ -1476,6 +1479,12 @@ test("failed persistence-domain switch keeps the old lease recoverable and relea
       );
     }
     if (path === "/api/ui-control/close") {
+      if (heldCloseGate) {
+        heldCloseStartedResolve?.();
+        await heldCloseGate;
+        heldCloseGate = null;
+        heldCloseStartedResolve = null;
+      }
       return new Response(JSON.stringify({ closed: true }), {
         status: 200,
         headers: { "content-type": "application/json" },
@@ -1506,6 +1515,33 @@ test("failed persistence-domain switch keeps the old lease recoverable and relea
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(held.size, 1);
   assert.notEqual([...held][0], oldLeaseName);
+  const domainBLeaseName = [...held][0];
+
+  let finishHeldClose;
+  heldCloseGate = new Promise((resolve) => { finishHeldClose = resolve; });
+  const heldCloseStarted = new Promise((resolve) => { heldCloseStartedResolve = resolve; });
+  const pageHide = windowListeners.get("pagehide");
+  const pageShow = windowListeners.get("pageshow");
+  assert.equal(typeof pageHide, "function");
+  assert.equal(typeof pageShow, "function");
+  pageHide();
+  await heldCloseStarted;
+  assert.deepEqual([...held], [domainBLeaseName]);
+
+  finishHeldClose();
+  for (let index = 0; index < 20 && held.size !== 0; index += 1) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  assert.equal(held.size, 0);
+
+  const beforeResumeConnect = connectCalls;
+  pageShow({ persisted: true });
+  for (let index = 0; index < 40 && (held.size !== 1 || connectCalls === beforeResumeConnect); index += 1) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  assert.equal(held.size, 1);
+  assert.equal([...held][0], domainBLeaseName);
+  assert.ok(connectCalls > beforeResumeConnect);
 
   await control.dispose();
   await new Promise((resolve) => setImmediate(resolve));
