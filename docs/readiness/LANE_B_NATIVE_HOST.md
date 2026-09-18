@@ -12,7 +12,7 @@ This page describes executable behavior in the source, including gaps that requi
 | Inference reservation and settlement | The native worker calls `DurableInferenceControl` | One journal and lock own local slot admission, dispatch identity and real observed settlement; economic quota remains external |
 | Automation | Agentd's existing `AutomationScheduler` and `AutomationStore` | `effect_executor` is an in-memory component; durable TaskFlow effect wiring remains work |
 | Fleet lifecycle | Existing supervisor-owned `FleetRegistry` | `lease_ledger` remains an in-memory component pending durable grants and physical observations |
-| Matrix transport | Existing `hepta-matrixd`, `MatrixDurableStore` and SDK sender | dispatch/send observations share `MatrixDurableStore`; `send_observer` is only a durable façade and no duplicate sender is started |
+| Matrix transport | Existing `hepta-matrixd`, `MatrixDurableStore` and SDK sender | dispatch/send observations share `MatrixDurableStore`; `send_observer` is only a durable façade; final-use grant admission remains a separate kernel.authority integration |
 
 The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-control`, and `hepta-matrix-send-observer` entry points exit 64 with the real owner or missing integration named. Their former empty mains returned success without doing work. Existing component tests now run as library tests, with sibling test sources.
 

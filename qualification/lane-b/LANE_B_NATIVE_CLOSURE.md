@@ -173,6 +173,10 @@ A homeserver event observation settles send terminality; App Server turn complet
 | `prepare_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn prepare_send(` |
 | `observe_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn observe_send(` |
 
+Remaining repository implementation gaps:
+
+- Bind Matrix egress to an independently issued kernel.authority FinalUseAuthority/VerifiedUseToken at the final send boundary; the durable dispatch ledger can retain verified grant identity and payload binding, but MatrixSdkClient does not mint or self-verify a production grant.
+
 External evidence gates:
 
 - real enrolled homeserver/user/device/encryption identity

@@ -59,7 +59,7 @@
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Persists one stable Matrix transaction identity with payload/grant binding and authority scope before dispatch; unresolved capacity excludes terminal history.",
+      "sourceSemantics": "Persists one stable Matrix transaction identity with exact payload, runtime authority-scope identity/epoch, optional independently verified grant identity, and an unresolved-only capacity fence before dispatch.",
       "operation": "prepare_send",
       "nativeSymbol": "pub fn prepare_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
@@ -89,7 +89,9 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Bind Matrix egress to an independently issued kernel.authority FinalUseAuthority/VerifiedUseToken at the final send boundary; the durable dispatch ledger can retain verified grant identity and payload binding, but MatrixSdkClient does not mint or self-verify a production grant."
+  ],
   "externalEvidenceGates": [
     "real enrolled homeserver/user/device/encryption identity",
     "live sync and send transport callsites",
@@ -99,7 +101,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,

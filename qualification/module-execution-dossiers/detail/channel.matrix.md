@@ -1,7 +1,7 @@
 # channel.matrix: implementation design
 
 Parent: `docs/modules/channel.matrix/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: durable Matrix runtime and dispatch ledger are integrated under MatrixDurableStore; remaining real-target qualification and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable Matrix runtime and dispatch ledger are integrated under MatrixDurableStore; the final-use authority callsite plus real-target qualification and independent acceptance remain. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -16,7 +16,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 3. State records and transaction design
 
-`matrix_ingress_projection` keys homeserver+room+event ID and retains source digest, sync position, sender evidence, redaction/correction and scope. `matrix_dispatch_ledger` keys operation ID and the canonical stable Matrix transaction ID with payload/grant digest, room/session generation, authority identity/epoch and separate transport, terminal-send and redaction evidence. Append-only homeserver observations settle successful egress in the same durable owner. Persist dedupe and sync-watermark advancement atomically or through a recoverable staged watermark.
+`matrix_ingress_projection` keys homeserver+room+event ID and retains source digest, sync position, sender evidence, redaction/correction and scope. `matrix_dispatch_ledger` keys operation ID and the canonical stable Matrix transaction ID with exact payload digest, room/session generation, runtime authority-scope identity/epoch, optional independently verified grant identity/payload binding, and separate transport, terminal-send and redaction evidence. Append-only homeserver observations settle successful egress in the same durable owner. Persist dedupe and sync-watermark advancement atomically or through a recoverable staged watermark.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -49,4 +49,4 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 - **State and recovery:** MatrixRuntime and the send-observer facade use the same MatrixDurableStore. Stable transaction identity, dispatch/acceptance uncertainty, append-only homeserver observations, terminal send evidence and redaction evidence survive reopen under the single Matrix SQLite writer.
 - **Source tests:** [codex-rs/hepta-matrixd/src/runtime/tests.rs](../../../codex-rs/hepta-matrixd/src/runtime/tests.rs), [codex-rs/hepta-matrixd/src/send_observer_tests.rs](../../../codex-rs/hepta-matrixd/src/send_observer_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/modules/channel.matrix/IMPLEMENTATION_MAP.json](../../../docs/modules/channel.matrix/IMPLEMENTATION_MAP.json), [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../../docs/readiness/LANE_B_RUNTIME_COMPOSITION.md).
-- **Remaining work:** Repository-owned dispatch-ledger integration is closed. Qualify the exact candidate against an enrolled homeserver/device transport, encryption, rate limiting, reconnect/redaction and restore, then obtain independent acceptance.
+- **Remaining work:** Bind the final SDK send boundary to an independently issued `FinalUseAuthority` / `VerifiedUseToken`; the runtime Matrix binding is scope/fence identity and must not self-issue per-send authority. Then qualify enrolled homeserver/device transport, encryption, rate limiting, reconnect/redaction and restore.

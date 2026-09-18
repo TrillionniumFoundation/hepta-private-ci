@@ -171,7 +171,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Sync/dedupe, stable send transaction identity and the dispatch ledger share MatrixDurableStore; send_observer is now a thin durable facade, not another sender. Transport acceptance remains non-terminal until a matching homeserver event is committed by sync. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
+Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Sync/dedupe, stable send transaction identity and the dispatch ledger share MatrixDurableStore; send_observer is now a thin durable facade, not another sender. Transport acceptance remains non-terminal until a matching homeserver event is committed by sync. The runtime Matrix binding is persisted as scope/fence identity only; it is not a final-use grant. Real egress still requires an independently issued `FinalUseAuthority` / `VerifiedUseToken` immediately before SDK send, followed by real homeserver, encryption/session and reconnection qualification.
 
 Current operating and state-format references:
 
@@ -267,4 +267,5 @@ This receipt records repository source bindings for the current documentation ca
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - The native hepta-matrixd runner owns the SDK outbox sender; MatrixDurableStore now owns the corresponding dispatch ledger and append-only server-event observations.
-- Real-target qualification, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- The ledger accepts independently verified grant metadata when supplied; `MatrixSdkClient` currently supplies none and does not self-mint authority.
+- Real final-use authority composition, real-target qualification, independent acceptance, activation, and release remain false until their separate evidence gates pass.
