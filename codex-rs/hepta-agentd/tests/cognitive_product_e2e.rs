@@ -342,8 +342,19 @@ async fn real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispat
         attached.phase == RunPhase::ContextAttached,
         "real wire did not attach the exact frozen tuple: {attached:?}"
     );
+    let dispatch_binding = codex_hepta_agentd::RunDispatchBinding::new(
+        snapshot.run_id.clone(),
+        digest('5'),
+        "thread.lifecycle.qualification",
+        digest('b'),
+    )
+    .map_err(anyhow::Error::msg)?;
     let dispatched = control
-        .run_mark_dispatched(snapshot.run_id.clone(), attached.revision)
+        .run_mark_dispatched(
+            snapshot.run_id.clone(),
+            attached.revision,
+            dispatch_binding.clone(),
+        )
         .await?;
     ensure!(
         dispatched.phase == RunPhase::Dispatched,
@@ -434,24 +445,37 @@ async fn real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispat
         "graceful restart did not close safe pre-dispatch work: {safely_closed:?}"
     );
 
-    // Qualification-only observer: this proves the real UDS path can reconcile
-    // a delegated terminal observation after restart. It is not product caller
-    // or provider-terminal evidence.
-    let reconciled = restarted_control
-        .run_observe_terminal(
-            snapshot.run_id.clone(),
-            uncertain.revision,
-            RunPhase::Succeeded,
-            true,
-        )
-        .await?;
+    // The embedded App Server thread is ephemeral. After process restart there
+    // is no provider-owned terminal state to verify, so a caller cannot turn
+    // an indeterminate run into success by presenting a self-authored digest.
+    let fabricated = codex_hepta_agentd::RunTerminalObservation::new(
+        snapshot.run_id.clone(),
+        dispatch_binding.binding_digest,
+        dispatch_binding.thread_id,
+        "turn.lifecycle.fabricated",
+        RunPhase::Succeeded,
+    )
+    .map_err(anyhow::Error::msg)?;
     ensure!(
-        reconciled.phase == RunPhase::Succeeded && reconciled.terminal_observed,
-        "real wire did not reconcile the owner-observed terminal state: {reconciled:?}"
+        restarted_control
+            .run_observe_terminal(
+                snapshot.run_id.clone(),
+                uncertain.revision,
+                RunPhase::Succeeded,
+                Some(fabricated),
+            )
+            .await
+            .is_err(),
+        "post-restart lifecycle must reject terminal success without a live Codex observation"
     );
-    restarted_control
-        .run_remove_closed(snapshot.run_id, reconciled.revision)
-        .await?;
+    let still_uncertain = restarted_control
+        .run_status(snapshot.run_id.clone())
+        .await?
+        .context("indeterminate run disappeared after rejected terminal claim")?;
+    ensure!(
+        still_uncertain.phase == RunPhase::Indeterminate,
+        "rejected terminal claim mutated durable run state: {still_uncertain:?}"
+    );
     restarted_control
         .run_remove_closed(safe_snapshot.run_id, safely_closed.revision)
         .await?;
