@@ -14,8 +14,8 @@ mod closure;
 mod durable_holdout;
 mod holdout_journal;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
-pub use durable_holdout::FencedFinalHoldoutJournalV2;
 pub use durable_holdout::DurableHoldoutError;
+pub use durable_holdout::FencedFinalHoldoutJournalV2;
 pub use durable_holdout::HoldoutAnchorV1;
 pub use durable_holdout::HoldoutOwnerContextV2;
 mod ope;
@@ -263,7 +263,6 @@ fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[Stabl
     Digest32::of_bytes(&bytes)
 }
 
-#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
