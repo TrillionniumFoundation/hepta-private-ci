@@ -50,6 +50,7 @@ pub use error::LedgerError;
 pub use journal::DurableLearningJournal;
 pub use ledger::LearningLedger;
 pub use model::AppendDisposition;
+pub use model::AuthenticatedDecisionRecordV2;
 pub use model::AuthenticatedOutcomeRecordV2;
 pub use model::AuthenticatedOutcomeTerminality;
 pub use model::AppendReceipt;
