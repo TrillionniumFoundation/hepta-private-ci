@@ -248,7 +248,10 @@ the real admission probe fails; strict mode turns that into failure. Never count
 skip as strong sandbox evidence. `test_consolidated_engineering.py` adds concurrent
 SQLite lease races, rollback fault injection, migration/downgrade protection, deep
 DAG and lease capacity behavior, forged evidence rejection, per-command source/state
-mutation detection and real CLI subprocess round trips. Historical registries that
-merely asserted maturity or counted source symbols have been retired in favor of
-these behavior tests and this single implementation map. CI definitions remain in
+mutation detection and real CLI subprocess round trips. The historical `hepta_engineering_control.py` module remains a local regression
+compatibility surface only. Its boolean-based `decide_integration` is permanently
+fail-closed and always includes `legacy_unauthenticated_evidence`; it cannot issue
+positive review eligibility even when all legacy booleans are true. Historical
+registries that merely asserted maturity or counted source symbols have been
+retired in favor of these behavior tests and this single implementation map. CI definitions remain in
 the repository's current workflow; this document does not certify an unobserved run.
