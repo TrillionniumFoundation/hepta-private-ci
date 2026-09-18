@@ -51,8 +51,16 @@ id = "memory_production_writer_open"
 symbol = "ProductionDurableWriter::open"
 definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
 definition_markers = ["pub struct ProductionDurableWriter", "pub async fn open", "ProductionAuthorityVerifier"]
-product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+product_callers = ["codex-rs/hepta-cognitive-store/src/production.rs"]
 caller_markers = ["ProductionDurableWriter::open", "verifier"]
+
+[[boundary]]
+id = "cognitive_store_production_writer_open"
+symbol = "ProductionCognitiveStore::open_writer"
+definition_path = "codex-rs/hepta-cognitive-store/src/production.rs"
+definition_markers = ["pub struct ProductionCognitiveStore", "pub async fn open_writer", "ProductionAuthorityVerifier"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["open_writer", "verifier"]
 
 [[boundary]]
 id = "agentd_production_writer_host"
@@ -286,7 +294,12 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
+required = ["ProductionCognitiveStore::open", "open_writer", "ProductionAuthorityVerifier"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-cognitive-store/src/production.rs"
+required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier", "open_with_recovery"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
