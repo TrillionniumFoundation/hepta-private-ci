@@ -802,6 +802,7 @@ mod tests {
     use super::FEDERATED_COGNITIVE_SOURCE;
     use super::FederatedCognitiveExtension;
     use super::combine_cognitive_materials;
+    use super::federation_source_binding;
     use super::now_unix_seconds;
     use crate::cognitive::CognitiveProposalMaterial;
     use crate::extension::HeptaMemoryThreadState;
@@ -810,6 +811,35 @@ mod tests {
     const THREAD_ID: &str = "00000000-0000-4000-8000-000000000711";
     const OWNER_ID: &str = "00000000-0000-4000-8000-000000000712";
     const CONSUMER_ID: &str = "00000000-0000-4000-8000-000000000713";
+
+    #[test]
+    fn federated_source_binding_changes_when_coverage_changes() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().canonicalize().expect("workspace");
+        let query_sha256 = Sha256Digest::for_bytes(b"same query");
+        let content_sha256 = Sha256Digest::for_bytes(b"same content");
+        let complete = federation_source_binding(
+            "thread",
+            "turn",
+            &workspace,
+            &query_sha256,
+            &[1, 1, 0, 0],
+            &[],
+            &content_sha256,
+        )
+        .expect("complete binding");
+        let partial = federation_source_binding(
+            "thread",
+            "turn",
+            &workspace,
+            &query_sha256,
+            &[2, 1, 1, 0],
+            &[],
+            &content_sha256,
+        )
+        .expect("partial binding");
+        assert_ne!(complete, partial);
+    }
 
     #[test]
     fn combined_proposal_is_exact_bounded_and_owner_capability_sensitive() {
