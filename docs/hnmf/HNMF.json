@@ -615,6 +615,7 @@
     "unknownFieldPolicy": "reject",
     "unknownEnumPolicy": "reject",
     "nonCanonicalBytesPolicy": "reject",
+    "optionalFieldPolicy": "omit_when_none",
     "goldenVector": "codex-rs/hepta-cognitive-types/tests/data/modality_span_v1.canonical.json",
     "referenceOracle": "qualification/hnmf-contract-reference",
     "conformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
