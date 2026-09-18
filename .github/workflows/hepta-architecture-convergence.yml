@@ -1,0 +1,102 @@
+name: Hepta architecture convergence
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-browser/**"
+      - "apps/hepta-browser/**"
+      - "codex-rs/hepta-objective/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-supervisor/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-prompt-optimizer/**"
+      - "docs/**"
+      - "scripts/**"
+      - ".github/workflows/hepta-architecture-convergence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-architecture-convergence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head:
+    name: Exact-head architecture convergence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Verify exact identity
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+
+      - name: Converged authority and browser semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
+
+      - name: Durable operation and external-effect recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
+
+      - name: Module lifecycle generations
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
+
+      - name: Concurrent durable inference and compaction
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core concurrent_handles_share_budget_without_holding_the_lock_during_execution
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core compaction_archives_full_history_and_preserves_indeterminate_fences
+
+      - name: Objective and prompt policy convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
+
+      - name: Canonical document and registry checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-module-docs.py verify
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
