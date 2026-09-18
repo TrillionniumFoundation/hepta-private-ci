@@ -101,12 +101,36 @@ fn codex_deadline(timeout: Duration) -> Result<(u64, u64)> {
     Ok((now_ms, deadline_ms))
 }
 
-fn remaining_before(deadline_ms: u64) -> Result<Duration> {
-    let now_ms = unix_now_ms()?;
+fn remaining_from(now_ms: u64, deadline_ms: u64) -> Result<Duration> {
     if now_ms >= deadline_ms {
         return Err("runtime.codex request deadline elapsed before effect entry".into());
     }
     Ok(Duration::from_millis(deadline_ms - now_ms))
+}
+
+fn remaining_before(deadline_ms: u64) -> Result<Duration> {
+    remaining_from(unix_now_ms()?, deadline_ms)
+}
+
+fn validate_post_authority_fence(
+    health: &HealthSnapshot,
+    expected_ingress: &std::path::Path,
+    current_ingress: &std::path::Path,
+    cancelled: bool,
+    now_ms: u64,
+    deadline_ms: u64,
+) -> Result<()> {
+    if cancelled {
+        return Err("cancelled before final-use entry".into());
+    }
+    if !health.ready || health.fenced {
+        return Err("owning Agent lost readiness during final-use authorization".into());
+    }
+    if current_ingress != expected_ingress {
+        return Err("App Server ingress changed during final-use authorization".into());
+    }
+    remaining_from(now_ms, deadline_ms)?;
+    Ok(())
 }
 
 fn codex_intent(
@@ -665,15 +689,17 @@ impl AppServerModelDriver {
                 return Err("Agent generation recheck timed out before final-use entry".into());
             }
         };
-        if current_ingress.socket_path != ingress_socket_path {
+        if let Err(error) = validate_post_authority_fence(
+            &owner_health,
+            &ingress_socket_path,
+            &current_ingress.socket_path,
+            cancellation.is_cancelled(),
+            unix_now_ms()?,
+            codex_deadline_ms,
+        ) {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("App Server ingress changed during final-use authorization".into());
+            return Err(error);
         }
-        if cancellation.is_cancelled() {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("cancelled before final-use entry".into());
-        }
-        remaining_before(codex_deadline_ms)?;
 
         let authority_witness =
             Digest32::from_array(verified_use.witness_sha256()).to_string();
