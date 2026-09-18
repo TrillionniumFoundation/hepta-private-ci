@@ -1,3 +1,5 @@
+use std::error::Error;
+use std::io;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
@@ -51,54 +53,51 @@ print(json.dumps({'schema': schema.decode('utf-8'), 'producer': producer.decode(
                   'generation': generation, 'payload_hex': payload.hex()}, sort_keys=True), flush=True)
 "#;
 
-fn run_python_server(frame: &[u8]) -> (bool, String, String) {
+fn run_python_server(frame: &[u8]) -> Result<(bool, String, String), Box<dyn Error>> {
     let mut child = Command::new(
         std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()),
     )
     .args(["-c", PYTHON_V2_SERVER])
     .stdout(Stdio::piped())
     .stderr(Stdio::piped())
-    .spawn()
-    .expect("python3 is required for the cross-runtime wire test");
+    .spawn()?;
 
-    let stdout = child.stdout.take().expect("python stdout");
+    let stdout = child
+        .stdout
+        .take()
+        .ok_or_else(|| io::Error::other("python stdout unavailable"))?;
     let mut reader = BufReader::new(stdout);
     let mut port_line = String::new();
-    reader.read_line(&mut port_line).expect("python port");
-    let port: u16 = port_line.trim().parse().expect("python port number");
+    reader.read_line(&mut port_line)?;
+    let port: u16 = port_line.trim().parse()?;
 
-    let mut stream =
-        TcpStream::connect(("127.0.0.1", port)).expect("connect python server");
-    stream.write_all(frame).expect("write wire frame");
-    stream
-        .shutdown(Shutdown::Write)
-        .expect("shutdown write");
+    let mut stream = TcpStream::connect(("127.0.0.1", port))?;
+    stream.write_all(frame)?;
+    stream.shutdown(Shutdown::Write)?;
 
     let mut report = String::new();
-    reader.read_to_string(&mut report).expect("python report");
-    let status = child.wait().expect("python exit status");
+    reader.read_to_string(&mut report)?;
+    let status = child.wait()?;
     let mut stderr = String::new();
     child
         .stderr
         .take()
-        .expect("python stderr")
-        .read_to_string(&mut stderr)
-        .expect("python stderr text");
-    (status.success(), report, stderr)
+        .ok_or_else(|| io::Error::other("python stderr unavailable"))?
+        .read_to_string(&mut stderr)?;
+    Ok((status.success(), report, stderr))
 }
 
 #[test]
-fn rust_python_live_tcp_v2_loads_and_binds_metadata_and_payload() {
+fn rust_python_live_tcp_v2_loads_and_binds_metadata_and_payload() -> Result<(), Box<dyn Error>> {
     let envelope = WireEnvelopeV2::new(
-        StableId::new("hepta.counter.v1").expect("schema"),
-        StableId::new("rust.runtime").expect("producer"),
-        Generation::new(11).expect("generation"),
+        StableId::new("hepta.counter.v1")?,
+        StableId::new("rust.runtime")?,
+        Generation::new(11)?,
         42_u32.to_be_bytes().to_vec(),
-    )
-    .expect("valid v2 envelope");
+    )?;
     let frame = envelope.encode();
 
-    let (success, report, stderr) = run_python_server(&frame);
+    let (success, report, stderr) = run_python_server(&frame)?;
     assert!(success, "python server failed: {stderr}");
     assert!(report.contains("\"schema\": \"hepta.counter.v1\""));
     assert!(report.contains("\"producer\": \"rust.runtime\""));
@@ -107,11 +106,12 @@ fn rust_python_live_tcp_v2_loads_and_binds_metadata_and_payload() {
 
     let mut tampered = frame;
     tampered[54] = b'i';
-    let (success, _report, stderr) = run_python_server(&tampered);
+    let (success, _report, stderr) = run_python_server(&tampered)?;
     assert!(!success);
     assert!(stderr.contains("frame digest mismatch"));
     assert!(matches!(
         WireEnvelopeV2::decode(&tampered),
         Err(WireV2Error::FrameDigestMismatch { .. })
     ));
+    Ok(())
 }
