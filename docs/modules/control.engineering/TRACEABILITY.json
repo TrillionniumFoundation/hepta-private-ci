@@ -166,7 +166,10 @@
       "tests": [
         "OrchestrationTests.test_authenticated_completion_and_multidimensional_capacity",
         "OrchestrationTests.test_unsigned_completion_cannot_satisfy_predecessor",
-        "OrchestrationTests.test_signed_completion_requires_real_durable_assignment_generation"
+        "OrchestrationTests.test_signed_completion_requires_real_durable_assignment_generation",
+        "OrchestrationTests.test_plan_rejects_envelope_not_identical_to_admitted_owner_state",
+        "OrchestrationTests.test_plan_rejects_duplicate_and_unbounded_capacity_dimensions",
+        "OrchestrationTests.test_worker_scope_is_canonicalized_before_matching"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "assignment/integration-order/merge-queue proposals only"
