@@ -104,7 +104,7 @@ async fn saturated_channels_observe_limits_before_dedup_and_preserve_top_four() 
     assert!(observation.candidates().len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES);
     assert!(
         observation
-            .ranked_candidates()
+            .candidates()
             .iter()
             .all(|candidate| !candidate.channel_ranks.is_empty())
     );
