@@ -189,7 +189,7 @@ fn canonical_json_golden_vectors_are_stable() {
     .unwrap();
     let outcome_bytes =
         include_bytes!("../testdata/hnmf-wire-v1/outcome_signal_v1.json").as_slice();
-    assert_eq!(canonical_json_bytes(&outcome).unwrap(), outcome_bytes);
+    assert_eq!(canonical_json_bytes(&outcome).unwrap().as_slice(), outcome_bytes);
     assert_eq!(
         canonical_json_digest(&outcome).unwrap().to_string(),
         "94f1ea223042fd0fd5ab8b1b5294dabb71813aca7735674aa4145d180ff8306d"
@@ -207,7 +207,7 @@ fn canonical_json_golden_vectors_are_stable() {
     )
     .unwrap();
     let cue_bytes = include_bytes!("../testdata/hnmf-wire-v1/memory_cue_v1.json").as_slice();
-    assert_eq!(canonical_json_bytes(&cue).unwrap(), cue_bytes);
+    assert_eq!(canonical_json_bytes(&cue).unwrap().as_slice(), cue_bytes);
     assert_eq!(
         canonical_json_digest(&cue).unwrap().to_string(),
         "3416b1ec9cec8809423b33f4d8b5bc9758ad7a2c46b2f8f560d93e35a1b13087"
