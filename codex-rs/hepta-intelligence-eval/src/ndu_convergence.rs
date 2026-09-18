@@ -133,7 +133,10 @@ pub fn evaluate_ndu_convergence_v1(
     }
     for (name, digest) in [
         ("objective class", evidence.objective_class_digest),
-        ("current objective class", evidence.current_objective_class_digest),
+        (
+            "current objective class",
+            evidence.current_objective_class_digest,
+        ),
         ("solver", evidence.solver_digest),
         ("initialization", evidence.initialization_digest),
         ("operating region", evidence.operating_region_digest),
@@ -145,7 +148,10 @@ pub fn evaluate_ndu_convergence_v1(
     }
     for (name, value) in [
         ("maximum residual", evidence.maximum_residual_q32),
-        ("spectral radius upper 95", evidence.spectral_radius_upper95_q32),
+        (
+            "spectral radius upper 95",
+            evidence.spectral_radius_upper95_q32,
+        ),
         ("conservation residual", evidence.conservation_residual_q32),
     ] {
         if value < 0 {
