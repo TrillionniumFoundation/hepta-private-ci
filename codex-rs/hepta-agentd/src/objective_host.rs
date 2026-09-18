@@ -8,8 +8,6 @@ use std::fmt;
 
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::ProductionObjectiveError;
-use codex_hepta_types::Digest32;
-
 use crate::AgentRunCoordinator;
 use crate::AgentRunError;
 use crate::RunReceipt;
@@ -52,7 +50,6 @@ pub fn start_intelligence_run_v1(
     coordinator: &mut AgentRunCoordinator,
     now_ms: u64,
     envelope: &IntelligenceHostEnvelopeV1,
-    body_digest: Digest32,
 ) -> Result<RunReceipt, ObjectiveHostError> {
     envelope.validate().map_err(ObjectiveHostError::Envelope)?;
     let deadline_micros = envelope
@@ -67,7 +64,7 @@ pub fn start_intelligence_run_v1(
                 run_id: envelope.run_start.run_id.to_string(),
                 request_digest: envelope.admitted_source_digest.to_string(),
                 objective_digest: envelope.run_start.objective_digest.to_string(),
-                body_digest: body_digest.to_string(),
+                body_digest: envelope.runtime_body_digest.to_string(),
                 artifact_set_digest: envelope.run_start.artifact_set_digest.to_string(),
                 authority_epoch: envelope.run_start.authority_epoch,
                 deadline_ms,
