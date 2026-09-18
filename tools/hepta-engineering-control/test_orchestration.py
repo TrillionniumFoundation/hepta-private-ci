@@ -113,9 +113,10 @@ class OrchestrationTests(unittest.TestCase):
                     generation_id="g",
                     now_ns=self.now,
                 )
-        self.assertEqual([row.package_id for row in plan.assignments], ["feature", "foundation"])
+        self.assertEqual([row.package_id for row in plan.assignments], ["feature"])
         self.assertEqual(plan.assignments[0].worker_id, "worker-python")
-        self.assertEqual(plan.integration_order, ("feature", "foundation"))
+        self.assertEqual(plan.integration_order, ("feature",))
+        self.assertIn(("foundation", "already_completed"), plan.blocked)
         self.assertEqual(plan.merge_queue[0].state, "awaiting_candidate_evidence")
         self.assertFalse(plan.merge_queue[0].merge_authority)
 
