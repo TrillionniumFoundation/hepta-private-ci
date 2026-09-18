@@ -30,6 +30,7 @@ fn sample(name: &str, sensor: &str, action: &str, target: i64) -> TabularOperato
 
 fn artifact_pin(artifact: &TabularOperatorArtifactV1) -> TabularArtifactPinV1 {
     TabularArtifactPinV1 {
+        payload_digest: tabular_artifact_payload_digest_v1(artifact).expect("payload digest"),
         artifact_digest: artifact.artifact_digest,
         objective_digest: artifact.objective_digest,
         dataset_digest: artifact.dataset_digest,
@@ -159,7 +160,28 @@ fn op_05_raw_prediction_rejects_noncanonical_public_artifact() {
     artifact.cells.swap(0, 1);
     assert_eq!(
         predict_tabular_operator(&artifact, &artifact_pin(&artifact), &id("sensor-a"), &id("action-a")),
-        Err(LearnedOperatorError::InvalidGrid)
+        Err(LearnedOperatorError::ArtifactBinding)
+    );
+}
+
+#[test]
+fn op_05_raw_prediction_rejects_semantically_valid_cell_tamper() {
+    let samples = vec![
+        sample("t1", "sensor-a", "action-a", 10),
+        sample("t2", "sensor-a", "action-a", 20),
+        sample("t3", "sensor-a", "action-b", 10),
+        sample("t4", "sensor-a", "action-b", 20),
+        sample("t5", "sensor-b", "action-a", 10),
+        sample("t6", "sensor-b", "action-a", 20),
+        sample("t7", "sensor-b", "action-b", 10),
+        sample("t8", "sensor-b", "action-b", 20),
+    ];
+    let mut artifact = fit_tabular_operator(plan(samples)).expect("fit");
+    let pin = artifact_pin(&artifact);
+    artifact.cells[0].mean_target = FixedQ32::from_raw(14);
+    assert_eq!(
+        predict_tabular_operator(&artifact, &pin, &id("sensor-a"), &id("action-a")),
+        Err(LearnedOperatorError::ArtifactBinding)
     );
 }
 
