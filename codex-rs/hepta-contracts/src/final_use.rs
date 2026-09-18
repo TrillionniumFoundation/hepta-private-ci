@@ -158,6 +158,10 @@ impl EnteredUseToken {
 }
 
 impl VerifiedUseToken {
+    pub const fn witness_sha256(&self) -> [u8; 32] {
+        self.witness_sha256
+    }
+
     /// Revalidate this claimed grant at the final asynchronous effect entry.
     /// This consumes the token so one claim cannot authorize two entries.
     pub fn enter(self, expected: &FinalUseBinding) -> Result<EnteredUseToken, FinalUseError> {
