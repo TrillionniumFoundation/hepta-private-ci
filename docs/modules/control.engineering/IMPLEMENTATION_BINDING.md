@@ -3,7 +3,7 @@
 The canonical implementation guide is [IMPLEMENTATION.md](IMPLEMENTATION.md).
 Concrete source lives in `tools/hepta-engineering-control/control_engineering_v2/`;
 `__init__.py` exports the canonical authenticated v2 composition; `control_plane.py`
-directly owns the SQLite v5 schema/transactions; `orchestration.py` owns verified
+directly owns the SQLite v6 schema/transactions; `orchestration.py` owns verified
 source issuance, signed predecessor completion and multidimensional planning;
 `candidate.py` owns exact Git materialization/strong isolation while
 `candidate_bundle.py` adds atomic multi-file/rename grammar; `execution_control.py`
