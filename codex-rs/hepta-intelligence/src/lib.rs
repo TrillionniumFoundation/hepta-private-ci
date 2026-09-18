@@ -30,6 +30,8 @@ pub use prompt_pipeline::PreparedPromptDeliveryV1;
 pub use prompt_pipeline::PromptContextCompileRequestV1;
 pub use prompt_pipeline::PromptDeliveryPrepareRequestV1;
 pub use prompt_pipeline::PromptPayloadMaterializationV1;
+pub use prompt_pipeline::PromptSerializationOccurrenceV1;
+pub use prompt_pipeline::PromptSerializationProofV1;
 pub use prompt_pipeline::PromptPipelineErrorV1;
 pub use prompt_pipeline::compile_exercised_prompt_context_v1;
 pub use prompt_pipeline::observe_prompt_delivery_v1;

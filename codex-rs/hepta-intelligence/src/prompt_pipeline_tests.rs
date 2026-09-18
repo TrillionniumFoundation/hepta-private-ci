@@ -162,7 +162,7 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
     );
     assert!(!prepared.materialization.authority.grants_any());
 
-    let serialized_payload = b"actual-provider-payload".to_vec();
+    let serialized_payload = b"provider-prefix|payload:a|provider-suffix".to_vec();
     let payload_digest = Digest32::of_bytes(&serialized_payload);
     let delivery = prepare_prompt_delivery_v1(
         &registry,
@@ -179,6 +179,12 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
     assert_eq!(delivery.serialized_payload, serialized_payload);
     assert_eq!(delivery.materialization, prepared.materialization);
     assert_eq!(delivery.serialization.payload_digest, payload_digest);
+    assert_eq!(delivery.serialization_proof.occurrences.len(), 1);
+    assert_eq!(
+        delivery.serialization_proof.occurrences[0].realization_id,
+        id("realization:a")
+    );
+    assert!(!delivery.serialization_proof.authority.grants_any());
     assert!(!delivery.attachment.authority.grants_any());
 
     let observation = observe_prompt_delivery_v1(
@@ -234,4 +240,29 @@ fn selected_realization_without_registry_payload_fails_closed() {
         error,
         PromptPipelineErrorV1::Registry(message) if message.contains("PayloadMissing")
     ));
+}
+
+#[test]
+fn serialization_without_selected_prompt_bytes_fails_closed() {
+    let (registry, binding) = registry_and_binding();
+    let portfolio = portfolio(binding);
+    let prepared = compile_exercised_prompt_context_v1(&registry, &portfolio, compile_request(100))
+        .expect("compile exercised portfolio");
+
+    let error = prepare_prompt_delivery_v1(
+        &registry,
+        &portfolio,
+        &prepared,
+        PromptDeliveryPrepareRequestV1 {
+            exercise: exercise(101),
+            serialization_id: id("serialization:missing-prompt"),
+            serialized_payload: b"provider-request-without-selected-realization".to_vec(),
+            attachment_id: id("attachment:missing-prompt"),
+        },
+    )
+    .expect_err("missing selected prompt bytes must fail");
+    assert_eq!(
+        error,
+        PromptPipelineErrorV1::SerializedPayloadMissing("realization:a".to_string())
+    );
 }

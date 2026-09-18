@@ -72,11 +72,57 @@ pub struct PromptDeliveryPrepareRequestV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptSerializationOccurrenceV1 {
+    pub realization_id: StableId,
+    pub payload_digest: Digest32,
+    pub start_offset: u64,
+    pub end_offset: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptSerializationProofV1 {
+    pub compilation_receipt_digest: Digest32,
+    pub materialization_bundle_digest: Digest32,
+    pub serialized_payload_digest: Digest32,
+    pub occurrences: Vec<PromptSerializationOccurrenceV1>,
+    pub proof_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl PromptSerializationProofV1 {
+    pub fn validate(&self) -> Result<(), PromptPipelineErrorV1> {
+        if self.compilation_receipt_digest.is_zero()
+            || self.materialization_bundle_digest.is_zero()
+            || self.serialized_payload_digest.is_zero()
+            || self.proof_digest.is_zero()
+            || self.authority.grants_any()
+        {
+            return Err(PromptPipelineErrorV1::SerializationProofDrift);
+        }
+        let mut previous_end = 0_u64;
+        for occurrence in &self.occurrences {
+            if occurrence.payload_digest.is_zero()
+                || occurrence.start_offset >= occurrence.end_offset
+                || occurrence.start_offset < previous_end
+            {
+                return Err(PromptPipelineErrorV1::SerializationProofDrift);
+            }
+            previous_end = occurrence.end_offset;
+        }
+        if self.proof_digest != prompt_serialization_proof_digest(self) {
+            return Err(PromptPipelineErrorV1::SerializationProofDrift);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PreparedPromptDeliveryV1 {
     pub exercise: PromptExerciseDecisionV1,
     pub serialization: ContextSerializationReceiptV2,
     pub attachment: ContextAttachmentV2,
     pub materialization: PromptPayloadMaterializationV1,
+    pub serialization_proof: PromptSerializationProofV1,
     pub serialized_payload: Vec<u8>,
 }
 
@@ -91,6 +137,9 @@ pub enum PromptPipelineErrorV1 {
     SelectedRealizationMissing(String),
     Registry(String),
     PayloadMaterializationDrift,
+    SerializedPayloadMissing(String),
+    SerializationProofDrift,
+    Arithmetic,
 }
 
 impl fmt::Display for PromptPipelineErrorV1 {
@@ -222,9 +271,15 @@ pub fn prepare_prompt_delivery_v1(
         return Err(PromptPipelineErrorV1::PayloadMaterializationDrift);
     }
 
-    // Serialization binds the bytes supplied to the downstream runtime rather
-    // than accepting a caller-authored digest with no preimage.
-    let payload_digest = Digest32::of_bytes(&serialized_payload);
+    // Prove that every selected prompt realization occurs byte-for-byte in the
+    // final serialization, in the same relative order as the compiled context.
+    // A digest of arbitrary provider bytes is not enough to establish exposure.
+    let serialization_proof = prove_prompt_serialization(
+        &prepared.compiled,
+        &materialization,
+        &serialized_payload,
+    )?;
+    let payload_digest = serialization_proof.serialized_payload_digest;
     let serialization = record_serialization(&prepared.compiled, serialization_id, payload_digest)
         .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     let attachment = build_attachment(&prepared.compiled, &serialization, attachment_id)
@@ -234,6 +289,7 @@ pub fn prepare_prompt_delivery_v1(
         serialization,
         attachment,
         materialization,
+        serialization_proof,
         serialized_payload,
     })
 }
@@ -291,6 +347,92 @@ fn materialize_prompt_payloads(
     };
     materialization.validate()?;
     Ok(materialization)
+}
+
+fn prove_prompt_serialization(
+    compiled: &CompiledContextV2,
+    materialization: &PromptPayloadMaterializationV1,
+    serialized_payload: &[u8],
+) -> Result<PromptSerializationProofV1, PromptPipelineErrorV1> {
+    compiled
+        .validate()
+        .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
+    materialization.validate()?;
+
+    let mut cursor = 0_usize;
+    let mut occurrences = Vec::with_capacity(materialization.payloads.len());
+    for item_id in &compiled.receipt.selected_item_ids {
+        let Some(payload) = materialization
+            .payloads
+            .iter()
+            .find(|payload| payload.binding.realization_id == *item_id)
+        else {
+            continue;
+        };
+        if payload.payload.is_empty() {
+            return Err(PromptPipelineErrorV1::SerializedPayloadMissing(
+                item_id.to_string(),
+            ));
+        }
+        let Some(relative_start) = find_subslice(&serialized_payload[cursor..], &payload.payload)
+        else {
+            return Err(PromptPipelineErrorV1::SerializedPayloadMissing(
+                item_id.to_string(),
+            ));
+        };
+        let start = cursor
+            .checked_add(relative_start)
+            .ok_or(PromptPipelineErrorV1::Arithmetic)?;
+        let end = start
+            .checked_add(payload.payload.len())
+            .ok_or(PromptPipelineErrorV1::Arithmetic)?;
+        occurrences.push(PromptSerializationOccurrenceV1 {
+            realization_id: item_id.clone(),
+            payload_digest: payload.payload_digest,
+            start_offset: u64::try_from(start).map_err(|_| PromptPipelineErrorV1::Arithmetic)?,
+            end_offset: u64::try_from(end).map_err(|_| PromptPipelineErrorV1::Arithmetic)?,
+        });
+        cursor = end;
+    }
+    if occurrences.len() != materialization.payloads.len() {
+        return Err(PromptPipelineErrorV1::SerializationProofDrift);
+    }
+
+    let mut proof = PromptSerializationProofV1 {
+        compilation_receipt_digest: compiled.receipt.receipt_digest,
+        materialization_bundle_digest: materialization.bundle_digest,
+        serialized_payload_digest: Digest32::of_bytes(serialized_payload),
+        occurrences,
+        proof_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    proof.proof_digest = prompt_serialization_proof_digest(&proof);
+    proof.validate()?;
+    Ok(proof)
+}
+
+fn prompt_serialization_proof_digest(proof: &PromptSerializationProofV1) -> Digest32 {
+    let mut bytes = b"hepta.prompt-pipeline.serialization-proof.v1".to_vec();
+    bytes.extend_from_slice(proof.compilation_receipt_digest.as_array());
+    bytes.extend_from_slice(proof.materialization_bundle_digest.as_array());
+    bytes.extend_from_slice(proof.serialized_payload_digest.as_array());
+    push_len(&mut bytes, proof.occurrences.len());
+    for occurrence in &proof.occurrences {
+        push_id(&mut bytes, &occurrence.realization_id);
+        bytes.extend_from_slice(occurrence.payload_digest.as_array());
+        bytes.extend_from_slice(&occurrence.start_offset.to_be_bytes());
+        bytes.extend_from_slice(&occurrence.end_offset.to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
+}
+
+fn find_subslice(haystack: &[u8], needle: &[u8]) -> Option<usize> {
+    if needle.is_empty() {
+        return None;
+    }
+    haystack
+        .windows(needle.len())
+        .position(|window| window == needle)
 }
 
 fn prompt_payload_bundle_digest(payloads: &[PromptRealizationPayloadV2]) -> Digest32 {
