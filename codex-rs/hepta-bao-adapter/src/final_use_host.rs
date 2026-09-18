@@ -9,7 +9,10 @@
 use std::collections::BTreeMap;
 use std::fmt;
 use std::sync::Arc;
+use std::sync::Mutex;
 
+use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_contracts::FinalUseApprovalVerifier;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseControlError;
@@ -62,6 +65,8 @@ pub struct BaoFinalUseHost {
     authority: FinalUseAuthority,
     approval_verifier: FinalUseApprovalVerifier,
     revocation_verifier: FinalUseRevocationFeedVerifier,
+    clock: Arc<dyn AuthorityClock>,
+    revocation_fresh_until_unix_ms: Mutex<u64>,
     consumers: BTreeMap<String, BaoConsumerCallback>,
 }
 
@@ -81,6 +86,7 @@ impl BaoFinalUseHost {
         authority: FinalUseAuthority,
         approval_verifier: FinalUseApprovalVerifier,
         revocation_verifier: FinalUseRevocationFeedVerifier,
+        clock: Arc<dyn AuthorityClock>,
         consumers: impl IntoIterator<Item = RegisteredBaoConsumer>,
     ) -> Result<Self, BaoFinalUseHostError> {
         let mut registry = BTreeMap::new();
@@ -99,6 +105,8 @@ impl BaoFinalUseHost {
             authority,
             approval_verifier,
             revocation_verifier,
+            clock,
+            revocation_fresh_until_unix_ms: Mutex::new(0),
             consumers: registry,
         })
     }
@@ -114,9 +122,20 @@ impl BaoFinalUseHost {
         &self,
         update: &SignedFinalUseRevocationUpdate,
     ) -> Result<(), BaoFinalUseHostError> {
-        self.revocation_verifier
-            .apply(&self.authority, update)
-            .map_err(BaoFinalUseHostError::Control)
+        let now_unix_ms = self
+            .clock
+            .now_unix_ms()
+            .map_err(BaoFinalUseHostError::Trust)?;
+        let receipt = self
+            .revocation_verifier
+            .apply(&self.authority, update, now_unix_ms)
+            .map_err(BaoFinalUseHostError::Control)?;
+        let mut fresh_until = self
+            .revocation_fresh_until_unix_ms
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
+        *fresh_until = receipt.valid_until_unix_ms;
+        Ok(())
     }
 
     /// Production composition boundary. The request's signed `consumer_id`
@@ -131,6 +150,17 @@ impl BaoFinalUseHost {
         approval: &SignedFinalUseApproval,
         request: &BaoReadRequest,
     ) -> Result<BaoSecretReceipt, BaoFinalUseHostError> {
+        let now_unix_ms = self
+            .clock
+            .now_unix_ms()
+            .map_err(BaoFinalUseHostError::Trust)?;
+        let fresh_until = *self
+            .revocation_fresh_until_unix_ms
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
+        if fresh_until == 0 || now_unix_ms >= fresh_until {
+            return Err(BaoFinalUseHostError::StaleRevocationFeed);
+        }
         self.approval_verifier
             .verify(grant, approval)
             .map_err(BaoFinalUseHostError::Control)?;
@@ -162,6 +192,9 @@ pub enum BaoFinalUseHostError {
     DuplicateConsumer,
     EmptyConsumerRegistry,
     UnregisteredConsumer,
+    StaleRevocationFeed,
+    Unavailable,
+    Trust(AuthorityTrustError),
     Control(FinalUseControlError),
     Client(BaoClientError),
 }
@@ -232,6 +265,7 @@ mod tests {
                 authority,
                 approval_verifier,
                 revocation_verifier,
+                Arc::new(codex_hepta_contracts::SystemAuthorityClock),
                 [first, second],
             )
             .unwrap_err(),
