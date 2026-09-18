@@ -266,7 +266,7 @@ pub fn validate_prompt_portfolio_exposure(
     exposure: &PromptPortfolioExposureV1,
 ) -> Result<PromptPortfolioExposureReceiptV1, CausalV2Error> {
     if exposure.selected_factor_ids.is_empty()
-        || exposure.selected_factor_ids.len() > MAX_CANDIDATES as usize
+        || exposure.selected_factor_ids.len() > 128
         || exposure.selected_factor_ids.len() != exposure.selected_realization_ids.len()
     {
         return Err(CausalV2Error::CandidateLimit);
