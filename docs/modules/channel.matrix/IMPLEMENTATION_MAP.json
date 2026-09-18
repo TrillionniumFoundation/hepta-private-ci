@@ -47,22 +47,30 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn prepare_send(",
-        "buildTarget": "codex-hepta-matrixd::send_observer"
+        "path": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
+        "symbol": "pub async fn dispatch_outbox_once(",
+        "buildTarget": "codex-hepta-matrix-sdk"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "send_identity",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/dispatch_ledger.rs",
+          "symbol": "pub async fn record_transport_accepted(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix"
         }
       ],
-      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "durable_transport_truth",
+          "command": "just test -p codex-hepta-matrix-sdk"
+        }
+      ],
+      "sourceSemantics": "Claims the durable outbox with one stable Matrix transaction identity and records transport acceptance/uncertainty without inferring terminal delivery.",
       "operation": "prepare_send",
-      "nativeSymbol": "pub fn prepare_send(",
-      "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
+      "nativeSymbol": "pub async fn dispatch_outbox_once(",
+      "sourcePath": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
       "sourcePathExists": true
     },
     {
@@ -70,28 +78,34 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn observe_send(",
-        "buildTarget": "codex-hepta-matrixd::send_observer"
+        "path": "codex-rs/hepta-matrix-sdk/src/sync.rs",
+        "symbol": "pub async fn commit_response(",
+        "buildTarget": "codex-hepta-matrix-sdk"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "acknowledgement_and_reconciliation",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/dispatch_ledger.rs",
+          "symbol": "pub async fn observe_outbox_server_event(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix"
         }
       ],
-      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
+          "kind": "homeserver_terminal_reconciliation",
+          "command": "just test -p codex-hepta-matrix-sdk"
+        }
+      ],
+      "sourceSemantics": "Settles durable send terminality only from a trusted homeserver sync observation; redaction evidence is retained separately from the original send observation.",
       "operation": "observe_send",
-      "nativeSymbol": "pub fn observe_send(",
-      "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
+      "nativeSymbol": "pub async fn commit_response(",
+      "sourcePath": "codex-rs/hepta-matrix-sdk/src/sync.rs",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "real enrolled homeserver/user/device/encryption identity",
     "live sync and send transport callsites",
@@ -101,7 +115,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
