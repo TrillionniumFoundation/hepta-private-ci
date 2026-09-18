@@ -44,9 +44,9 @@ map insertion order or process-global registry participates in the encoding.
 
 ## Conformance
 
-`CANONICAL_V1_CONFORMANCE.json` freezes exact bytes and SHA-256 output. Rust
-unit tests plus independent Python and TypeScript oracle implementations must
-all reproduce every vector byte-for-byte. CI executes both external oracles on
+`CANONICAL_V1_CONFORMANCE.json` freezes exact bytes and SHA-256 output.
+Rust unit tests plus independent Python and TypeScript oracle implementations
+must all reproduce every vector byte-for-byte. CI executes both external oracles on
 the exact source HEAD and deterministic synthetic merge candidate.
 
 Changing any tag, framing rule, ordering rule, domain, limit or normalization
