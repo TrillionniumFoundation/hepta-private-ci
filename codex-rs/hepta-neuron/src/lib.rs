@@ -74,6 +74,7 @@ pub use protocol::active_indices;
 pub use protocol::inhibition_digest;
 pub use protocol::model_tuple_digest;
 pub use protocol::q24_feature_digest;
+pub use protocol::runtime_profile_digest;
 pub use resources::ResourceSummaryError;
 pub use resources::RuntimeResourceSampleV1;
 pub use resources::RuntimeResourceSummaryV1;
