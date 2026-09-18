@@ -28,13 +28,13 @@ Repository-local composition follows this sequence:
    edges; each receipt must reference a real immutable assignment generation in the
    owner store, bind that generation semantic digest, and name a package actually
    assigned under the same envelope/source frontier;
-   work;
 3. run `plan_engineering_work` with explicit worker skills/path scope/capacity,
    CI capacity, review topology, expected value, architecture debt and rollback cost;
 4. acquire the durable local path lease before any worker writes;
 5. for a multi-host production worker, additionally verify a signed
    `DistributedFenceReceipt` bound to the same local epoch/token/paths/source and
-   a current revocation frontier;
+   a current revocation frontier; admission re-reads the owner store and rejects a
+   stale receipt if the local lease has been renewed, released, revoked or expired;
 6. qualify candidate bytes through the strong sandbox controller and mutation-testing
    gate, then verify exact source/merge/evaluator evidence and a sealed review binding;
 7. externally anchor the current SQLite audit head and prove hardware-backed key
