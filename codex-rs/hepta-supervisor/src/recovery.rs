@@ -131,18 +131,44 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: release.release_id().clone(),
             identity: spawned.identity.clone(),
         };
-        if let Err(error) = write_lease(record.layout.run_root(), &lease) {
-            let _ = spawned.process.kill();
-            self.transition_without_runtime(
+        if let Err(lease_error) = write_lease(record.layout.run_root(), &lease) {
+            // The external process already exists. Never drop its handle just
+            // because durable publication failed: retain it as a fenced
+            // cleanup runtime until exit is actually observed. This keeps a
+            // failed kill observable/retryable instead of creating an
+            // untracked child inside the live supervisor generation.
+            let kill_error = spawned.process.kill().err();
+            slot.healthy_since = None;
+            slot.runtime = Some(AgentRuntime {
+                process: spawned.process,
+                identity: spawned.identity,
+                spawn_generation: starting.generation,
+                release_id: lease.release_id,
+                generation: starting.generation,
+                phase: RuntimePhase::Killing,
+                healthy: false,
+                fenced: true,
+                lease_persisted: false,
+            });
+            slot.event(starting.generation, SupervisorEventKind::Spawned);
+            slot.event(starting.generation, SupervisorEventKind::KillRequested);
+            let failed_generation = self.transition_without_runtime(
                 agent_id,
                 slot,
                 starting.generation,
                 AgentLifecycle::Failed,
             )?;
-            return Err(error);
+            if let Some(runtime) = slot.runtime.as_mut() {
+                runtime.generation = failed_generation;
+            }
+            if let Some(kill_error) = kill_error {
+                return Err(driver_error(agent_id, kill_error));
+            }
+            return Err(lease_error);
         }
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
+        slot.healthy_since = None;
         slot.runtime = Some(AgentRuntime {
             process: spawned.process,
             identity: spawned.identity,
@@ -154,6 +180,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             },
             healthy: false,
             fenced: false,
+            lease_persisted: true,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
         Ok(())
@@ -247,6 +274,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     phase,
                     healthy: false,
                     fenced: false,
+                    lease_persisted: true,
                 });
                 slot.event(
                     record.lifecycle.generation,
