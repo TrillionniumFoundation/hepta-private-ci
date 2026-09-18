@@ -5,55 +5,7 @@ contains both target architecture and stable requirements; this file states what
 implemented now. A claim listed as **Implemented** is a source capability, not an
 activation, acceptance, promotion or release claim.
 
-<!-- BEGIN GENERATED IMPLEMENTATION STATUS -->
-## Generated implementation status
-
-This block is generated only from `IMPLEMENTATION_MAP.json`. Run
-`python3 scripts/hepta-implementation-maps.py sync-plasticity-status` after
-changing the map. Hand-written sections below explain semantics but do not
-override these machine status facts.
-
-- Product caller: `agentd_host_callsite_source_implemented_not_target_host_qualified`
-- Production writer: `agentd_parameter_and_topology_external_anchor_fence_source_implemented_not_target_host_qualified`
-- Production implementation: `false`
-- Product execution proved: `false`
-- Independent acceptance: `false`
-- Activation: `false`
-- Release: `false`
-
-| Operation | State | Source | Tests |
-| --- | --- | --- | ---: |
-| `propose_v2` | `source_implemented_product_adapter_available_not_host_called` | `codex-rs/hepta-plasticity/src/parameter_v2.rs` | 1 |
-| `verify_parameter_proposal_v2` | `source_implemented_product_adapter_available_not_host_called` | `codex-rs/hepta-plasticity/src/parameter_v2.rs` | 1 |
-| `generate_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |
-| `verify_generated_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |
-| `propose_topology_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
-| `verify_topology_proposal_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
-| `durableproposalregistry` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 1 |
-| `authenticated_product_composition` | `adapter_implemented_agentd_host_called_pairwise_roles_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 3 |
-| `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
-| `parameter_mutation_policy` | `source_implemented_authority_free_typed_parameter_allowlist_protected_surfaces` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 1 |
-| `agentd_parameter_host` | `host_callsite_source_implemented_owner_evidence_required_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |
-| `agentd_owner_evidence_resolution` | `host_enforced_typed_owner_evidence_resolution_concrete_deployment_adapters_required` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |
-| `topology_governed_admission` | `source_implemented_typed_writer_handoff_validated` | `codex-rs/hepta-plasticity/src/topology_governance.rs` | 2 |
-| `durable_topology_registry` | `source_implemented_anchored_governed_topology_registry` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 1 |
-| `authenticated_topology_product_composition` | `adapter_implemented_agentd_host_called_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 1 |
-| `agentd_topology_host` | `host_callsite_source_implemented_external_anchor_not_target_host_qualified` | `codex-rs/hepta-agentd/src/topology_plasticity_host.rs` | 2 |
-| `structural_canary_controller` | `source_implemented_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 5 |
-
-### Repository-controlled gaps
-
-- Run exact-head and deterministic synthetic-merge compilation, tests, lint, document verification and Lane F qualification for this final source/document head.
-- Bind PlasticityOwnerEvidenceResolverV1 to concrete authoritative owner-store adapters in the selected deployment and exercise freshness/provenance failures before changing productionImplementation or productExecutionProved.
-
-### External evidence gates
-
-- independent semantic and security review
-- target-host product execution, concrete owner-evidence adapter qualification and telemetry
-- operator acceptance and incident-recovery exercise
-- real bounded structural canary execution, promotion, activation and release
-
-<!-- END GENERATED IMPLEMENTATION STATUS -->
+<!-- BEGIN GENERATED IMPLEMENTATION STATUS -->\n## Generated implementation status\n\nThis block is generated only from `IMPLEMENTATION_MAP.json`. Run\n`python3 scripts/hepta-implementation-maps.py sync-plasticity-status` after\nchanging the map. Hand-written sections below explain semantics but do not\noverride these machine status facts.\n\n- Product caller: `agentd_host_callsite_source_implemented_not_target_host_qualified`\n- Production writer: `agentd_parameter_and_topology_external_anchor_fence_source_implemented_not_target_host_qualified`\n- Production implementation: `false`\n- Product execution proved: `false`\n- Independent acceptance: `false`\n- Activation: `false`\n- Release: `false`\n\n| Operation | State | Source | Tests |\n| --- | --- | --- | ---: |\n| `propose_v2` | `source_implemented_product_adapter_available_not_host_called` | `codex-rs/hepta-plasticity/src/parameter_v2.rs` | 1 |\n| `verify_parameter_proposal_v2` | `source_implemented_product_adapter_available_not_host_called` | `codex-rs/hepta-plasticity/src/parameter_v2.rs` | 1 |\n| `generate_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |\n| `verify_generated_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |\n| `propose_topology_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |\n| `verify_topology_proposal_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |\n| `durableproposalregistry` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 1 |\n| `authenticated_product_composition` | `adapter_implemented_agentd_host_called_pairwise_roles_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 4 |\n| `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |\n| `parameter_mutation_policy` | `source_implemented_authority_free_typed_parameter_allowlist_protected_surfaces` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 1 |\n| `agentd_parameter_host` | `host_callsite_source_implemented_owner_evidence_required_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |\n| `agentd_owner_evidence_resolution` | `host_enforced_typed_owner_evidence_resolution_concrete_deployment_adapters_required` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |\n| `topology_governed_admission` | `source_implemented_typed_writer_handoff_validated` | `codex-rs/hepta-plasticity/src/topology_governance.rs` | 2 |\n| `durable_topology_registry` | `source_implemented_anchored_governed_topology_registry` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 1 |\n| `authenticated_topology_product_composition` | `adapter_implemented_agentd_host_called_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 1 |\n| `agentd_topology_host` | `host_callsite_source_implemented_external_anchor_not_target_host_qualified` | `codex-rs/hepta-agentd/src/topology_plasticity_host.rs` | 2 |\n| `structural_canary_controller` | `source_implemented_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 5 |\n\n### Repository-controlled gaps\n\n- Run exact-head and deterministic synthetic-merge compilation, tests, lint, document verification and Lane F qualification for this final source/document head.\n- Bind PlasticityOwnerEvidenceResolverV1 to concrete authoritative owner-store adapters in the selected deployment and exercise freshness/provenance failures before changing productionImplementation or productExecutionProved.\n\n### External evidence gates\n\n- independent semantic and security review\n- target-host product execution, concrete owner-evidence adapter qualification and telemetry\n- operator acceptance and incident-recovery exercise\n- real bounded structural canary execution, promotion, activation and release\n\n<!-- END GENERATED IMPLEMENTATION STATUS -->
 
 ## Status matrix
 
@@ -150,7 +102,10 @@ product-workspace adapter. It requires, before any durable proposal append:
    window, generations, dataset/update/modulator/eligibility digests and generator digest;
 4. signed independent evaluation for every generated update candidate;
 5. one consistent authenticated evaluator identity across those evaluations;
-6. exact artifact/window/generation lineage and exact durable predecessor.
+6. exact artifact/window/generation lineage and exact durable predecessor;
+7. a governed V2 `evaluation_digest` that durably binds candidate-evaluation evidence,
+   Generator/Observer authentication, the owner-evidence set, generator identity and
+   the current trust snapshot without changing the V2 wire schema.
 
 The existing learning-evidence verifier enforces signer trust, signature validity,
 validity window, revocation and role assignment. Product admission now requires
@@ -158,7 +113,10 @@ pairwise Generator/Observer/Evaluator separation across the verifier's principal
 credential, signing-key and controller boundaries. The adapter derives proposer/evaluator IDs from authenticated principals
 instead of trusting caller-supplied role strings.
 
-The integration regression suite exercises the complete signed adapter path with
+The durable V2 proposal now carries the governed-admission digest in its existing
+`evaluation_digest` field, so registry recovery retains the authenticated admission
+context instead of only the candidate-evaluation subset. The integration regression
+suite exercises the complete signed adapter path with
 deterministic Ed25519 fixtures and asserts rejection of a tampered artifact-frontier
 witness, generator/evaluator and observer/evaluator controller collisions, owner-evidence
 context substitution, and failed external-anchor persistence. These fixtures establish source behavior only; they are not proof that an
