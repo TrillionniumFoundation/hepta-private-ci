@@ -66,6 +66,7 @@ fn request(driver: &AppServerModelDriver, admission: &NativeAdmission) -> Native
                     driver.config.generation,
                     &driver.config.model,
                     admission.maximum_output_tokens,
+                    admission.maximum_budget_units,
                 )
                 .unwrap();
             digest(
@@ -76,12 +77,14 @@ fn request(driver: &AppServerModelDriver, admission: &NativeAdmission) -> Native
                     &driver.config.agentd_socket,
                     driver.config.timeout.as_millis(),
                     admission.maximum_output_tokens,
+                    admission.maximum_budget_units,
                     &binding,
                 ))
                 .unwrap(),
             )
         },
         maximum_output_tokens: admission.maximum_output_tokens,
+        maximum_budget_units: admission.maximum_budget_units,
         admission: Some(
             admission
                 .policy
@@ -91,6 +94,7 @@ fn request(driver: &AppServerModelDriver, admission: &NativeAdmission) -> Native
                     driver.config.generation,
                     &driver.config.model,
                     admission.maximum_output_tokens,
+                    admission.maximum_budget_units,
                 )
                 .unwrap(),
         ),
@@ -145,7 +149,7 @@ fn admission(driver: &AppServerModelDriver) -> NativeAdmission {
         provider_id: "provider".to_string(),
         model: Some(driver.config.model.clone()),
         resource_sha256: Sha256Digest::for_bytes(b"resource"),
-        quota_sha256: Sha256Digest::for_bytes(b"quota"),
+        quota_sha256: quota.digest().expect("quota digest"),
         capability_sha256: vec![Sha256Digest::for_bytes(b"infer")],
         state: ResourceAdvertisementState::Available,
         revision: 1,
@@ -161,6 +165,7 @@ fn admission(driver: &AppServerModelDriver) -> NativeAdmission {
         request_id: "r1".to_string(),
         maximum_in_flight: 1,
         maximum_output_tokens: 512,
+        maximum_budget_units: 1,
         policy: NativeExecutionPolicy { quota, resource },
     }
 }
