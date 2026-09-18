@@ -1,140 +1,197 @@
 # Final-use production control composition
 
-This document specifies the repository-implemented control layer around
-`FinalUseAuthority`. It supplements `FINAL_USE.md`; it does not weaken or
-replace that verifier, its durable nonce burn, or its monotonic revocation
-rules.
+This document specifies the repository-controlled production control layer
+around `FinalUseAuthority`. It supplements `FINAL_USE.md`; it does not weaken
+the durable nonce burn, exact binding, live revocation or fail-closed rules.
 
-## Roles and separation
+The general-lease trust decision is separately frozen in
+[`ADR-0001-LEASE-TRUST-MODEL.md`](../../docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md)
+and the final-use ordering contract is in
+[`LINEARIZATION.md`](../../docs/modules/kernel.authority/LINEARIZATION.md).
+
+## Roles, key rotation and separation
 
 A production-capable host can pin three independent Ed25519 trust roles:
 
-1. **grant issuer** — signs the `FinalUseGrant` verified by `FinalUseAuthority`;
-2. **operator approver** — signs `FinalUseApproval`, which binds the exact grant
-   semantic digest, signer, grant id and authority epoch;
-3. **revocation distributor** — signs `FinalUseRevocationUpdate`, which contains
-   one complete monotonic `FinalUseRevocations` head.
+1. **grant issuer** — signs `FinalUseGrant`;
+2. **operator approver** — signs `FinalUseApproval` over the exact grant
+   semantic digest;
+3. **revocation distributor** — signs fresh `FinalUseRevocationUpdate` heads.
 
-`BaoFinalUseHost` additionally owns a closed registry from signed
-`consumer_id` to a trusted process-local callback. The request cannot supply a
-closure or convert a consumer-name string into code.
+All three roles support bounded epoch-window rotation. The grant issuer uses
+`FinalUseIssuerTrustKey`; approval and revocation roles use
+`FinalUseTrustKey`. Each ring accepts at most eight keys. Each entry has a stable key id and inclusive
+authority-epoch window. Overlapping windows permit staged rotation; a key
+outside its epoch window is rejected even when its signature is otherwise
+valid. Verification can report the selected key id for audit evidence.
+Duplicate ids/keys, weak Ed25519 keys and invalid epoch windows are rejected.
 
-The roles may be operated by separate processes and keys. The repository tools
-`hepta-final-use-signer`, `hepta-final-use-approver` and
-`hepta-final-use-revocation-signer` are separate binaries behind the explicit
-`production-authority` feature. None generates a private key. Each signing key
-must be provisioned externally and kept in an owner-only file or stronger
-approved key-custody boundary.
+The one-key verifier constructors and the single-key
+`FinalUseAuthority::open_state_dir_with_trust` remain compatibility helpers.
+Production host configuration should use `open_state_dir_with_issuer_keys`
+plus the control verifiers' `new_with_keys` constructors and retain required
+historical trust material in its audit/evidence system. The complete issuer
+trust-set digest is pinned into FinalUse durable store schema V2; legacy schema
+V1 single-key state is never silently upgraded into a key-ring trust model. Repository utilities never
+generate private keys; custody, compromise response and HSM/KMS policy remain
+external operational responsibilities.
 
 ## Approval protocol
 
-`FinalUseApproval` schema version 1 contains:
+`FinalUseApproval` remains schema version 1 and binds:
 
-- `approver_id`;
-- grant `signer_id`;
-- `grant_id`;
-- `authority_epoch`;
-- SHA-256 of `FinalUseGrant::signing_bytes()`.
+- approver identity;
+- grant issuer identity and grant id;
+- authority epoch;
+- SHA-256 of the exact `FinalUseGrant::signing_bytes()` payload.
+
+The signing domain remains
+`hepta.kernel.authority.final-use-approval.v1\0`. Any change to subject,
+destination, scope, payload, nonce, time window or other grant semantic field
+changes the digest and invalidates approval.
+
+## Revocation distribution protocol V2
+
+`FinalUseRevocationUpdate` schema version 2 contains:
+
+- bounded distributor identity;
+- one complete monotonic `FinalUseRevocations` head;
+- signed `issued_at_unix_ms`;
+- signed `expires_at_unix_ms`.
 
 The signing domain is
-`hepta.kernel.authority.final-use-approval.v1\0`. The production host verifies
-this signature independently from the issuer signature before provider
-dispatch. Payload, destination, scope, subject, nonce, time window or any other
-signed grant semantic change changes the grant digest and invalidates approval.
+`hepta.kernel.authority.revocation-feed.v2\0`. The window must be positive
+and no longer than `MAX_REVOCATION_FEED_LIFETIME_MS` (300,000 ms).
+Verification rejects not-yet-valid and stale updates before changing the
+authority owner.
 
-## Revocation distribution protocol
+`FinalUseRevocationFeedVerifier::apply` verifies identity, shape, freshness,
+active epoch-key and Ed25519 signature, then delegates the head to
+`FinalUseAuthority::update_revocations`. The durable authority owner still
+enforces monotonic revision/epoch and same-epoch revocation-superset rules.
+The returned `FinalUseRevocationReceipt` records the distributor, selected
+trust key, head epoch/revision and freshness deadline without secret material.
 
-`FinalUseRevocationUpdate` schema version 1 contains a bounded distributor id
-and one complete `FinalUseRevocations` head. Its signing domain is
-`hepta.kernel.authority.revocation-feed.v1\0`.
+A signature is therefore not a perpetual revocation credential. Transport may
+retry while the signed freshness window is current; deployment must obtain a
+new head before expiry.
 
-`FinalUseRevocationFeedVerifier` pins one distributor identity and public key,
-verifies the update signature, and only then calls the durable
-`FinalUseAuthority::update_revocations`. The authority store remains the owner
-of monotonicity: stale/replayed revisions, epoch rollback and same-epoch
-revocation removal fail closed. Transport can therefore retry the same update
-without turning transport acknowledgement into authority.
+## Enrolled-node convergence acknowledgement
 
-The repository implements authentication and ingestion, not fleet transport
-fanout, SLA or consensus. Deployment must independently qualify the mechanism
-that delivers the latest signed update to each host and must stop affected
-effects when current-head freshness cannot be established.
+`FinalUseRevocationAck` is a separate node-signed receipt over the exact
+revocation-update digest, distributor identity, epoch/revision and local apply
+time. `FinalUseRevocationConvergenceVerifier` pins a closed set of at most 256
+enrolled nodes, each with its own bounded epoch key ring. It verifies every
+supplied acknowledgement and returns deterministic acknowledged/missing node
+sets for one still-fresh update.
 
-## Registered Bao consumer host
+A missing node is never silently counted as converged. Duplicate, unknown,
+forged, wrong-head, pre-issuance or post-expiry acknowledgements fail closed.
+A restarted host has no Bao freshness authority until it applies a current
+signed update again; only after that catch-up may its host identity produce an
+ack. The resulting report can prove repository-protocol convergence, but it
+does not perform transport or prove a deployment's latency SLA by itself.
 
-`BaoFinalUseHost` composes:
+## Registered Bao consumer host and partition policy
 
-- one durable `FinalUseAuthority`;
-- one `FinalUseApprovalVerifier`;
-- one `FinalUseRevocationFeedVerifier`;
-- a non-empty, duplicate-free registry of `RegisteredBaoConsumer` callbacks.
+`BaoFinalUseHost` composes one durable `FinalUseAuthority`, independent
+approval verifier, independent revocation-feed verifier, owner-bound
+`AuthorityClock`, and a closed non-empty registry of
+`RegisteredBaoConsumer` callbacks.
 
-For one secret read the host first verifies independent approval, resolves the
-signed `BaoReadRequest.consumer_id` in its registry, and delegates to
-`BaoClient::consume_kv_v2`. The lower-level client still performs exact binding
-construction, durable single-use claim, pinned HTTPS retrieval, response bounds,
-version/digest validation and final authority recheck. An unregistered consumer
-fails before dispatch.
+The host starts with **no fresh revocation knowledge**. It must ingest a current
+signed V2 head before allowing secret final use. It records only the signed
+freshness deadline. When the bound trusted clock reaches that deadline, new
+secret final use fails with `StaleRevocationFeed` until another authenticated
+head advances the owner. This makes the repository host policy for network
+partition explicit: stale revocation knowledge stops new affected effects.
 
-`BaoClient::consume_kv_v2` remains public for library qualification and legacy
-source compatibility, but B4 caller proof treats the registered host as its
-only non-test/non-example product caller in the current tree. No named product
-process is activated by this source composition alone.
+The request's signed `consumer_id` must resolve to the pre-enrolled callback.
+Independent approval is checked before provider dispatch. The lower Bao client
+still performs exact request binding, single-use claim, pinned HTTPS, response
+bounds, exact version/digest checks and final VerifiedUse revalidation.
 
-## Revocation and consumer-entry linearization
+`BaoClient::consume_kv_v2` remains public for lower-level qualification, but
+B4 permits its non-test caller only from the registered host. No deployed
+product process is selected merely by this source composition.
 
-The final synchronous entry rule is:
+## External time and anti-rollback
 
-1. acquire the authority mutex;
-2. revalidate owner, binding, epoch, revocation and time;
-3. release the mutex;
-4. enter the already selected trusted synchronous consumer.
+Both authority families now expose explicit host trust interfaces:
 
-The successful validation is the linearization point. A revocation committed
-before that point denies entry. A revocation that commits after that point is
-ordered after entry and cannot retroactively undo an already-entered effect.
-The callback no longer runs while holding the revocation mutex, so a slow,
-panicking or re-entrant callback cannot block future revocation updates or
-poison the authority mutex.
+- `AuthorityClock` supplies time. Product code cannot pass arbitrary
+  `now_unix_ms` into a lease verifier.
+- `AuthorityFrontierStore<F>` supplies externally durable load/CAS state that
+  must survive rollback/replacement of the local authority directory.
 
-The callback must still be bounded. A crash or callback error after entry is an
-indeterminate effect and requires reconciliation; it is never interpreted as
-proof that no effect occurred.
+General-lease production construction uses
+`AuthorityLeaseRegistry::open_state_dir_with_trust`. FinalUse production
+construction uses `FinalUseAuthority::open_state_dir_with_trust`.
+On open, local and external frontiers must match exactly.
 
-## Authority leases and trusted time / anti-rollback
+For each mutation, the owner CAS-advances the external frontier **before**
+committing the corresponding local fsync/rename. CAS failure fences the live
+owner. If the external CAS succeeds but the local commit fails or the process
+crashes, reopening observes the external frontier ahead of local state and
+fails closed until explicit operator recovery. This is intentional uncertainty,
+not an automatic rollback.
 
-The general `AuthorityLeaseRegistry` in `src/authority_lease.rs` is the native
-owner for the documented `authority_lease` and `capability_revocation` domains.
-It provides CAS mutation/revocation, bounded capacity, explicit epoch rollover,
-host-supplied trusted time, and a host-supplied anti-rollback frontier.
+`SystemAuthorityClock` and constructors without an external frontier exist for
+compatibility/tests. They are not an attested-time or external anti-rollback
+claim and must not be used to upgrade production qualification.
 
-The local filesystem is not itself an external anti-rollback oracle. The host
-must protect and monotonically advance the trusted frontier outside the local
-authority directory. Likewise, trusted time is supplied by the host; this
-repository does not claim an attested clock service.
+## Least authority for general leases
+
+`AuthorityLeaseRegistry` is the non-cloneable administrative owner. It alone
+can put/replace leases, revoke, prune expired unrevoked leases and advance
+epochs. `AuthorityLeaseVerifier` is a cloneable attenuation that can read and
+perform live verification but cannot mutate authority state.
+
+A verified token is rechecked against the **exact current lease record**.
+Replacing a lease invalidates an outstanding token from an older revision.
+Revocation retry is idempotent only when lease/revision, reason digest **and
+revocation timestamp** are identical.
+
+The lease is registry-authoritative, not a portable signed bearer. See ADR-0001.
+
+## Linearization
+
+There are two explicit final-use boundaries:
+
+- `deliver_final_use` / `with_verified_use`: successful live validation is
+  the consumer-entry linearization point; the owner lock is released before
+  bounded consumer code.
+- `dispatch_final_use` / `with_dispatch_boundary`: the lock is held only
+  across a short local irreversible dispatch transition, then released.
+
+Neither boundary may hold the authority mutex over remote provider waits,
+reconciliation loops or arbitrary plugin/user code. See `LINEARIZATION.md`
+for the normative ordering and crash-uncertainty rule.
 
 ## Capacity lifecycle
 
-The final-use nonce/revocation registry and general lease registry are bounded.
-The general registry exposes current/max counts and an explicit durable epoch
-rollover. Deployments must alert before exhaustion, coordinate epoch change
-through the authority owner, and distribute the resulting trusted frontier / 
-revocation epoch before admitting new work. No cache eviction or implicit
-history reset is allowed.
+The general lease owner remains bounded at 16,384 leases and 16,384 revocation
+records. `prune_expired_leases` provides bounded online reclamation (maximum
+1,024 entries per call) for expired **unrevoked** leases. Revocation tombstones
+are not silently collected inside an epoch. Epoch advance fences prior authority
+and clears bounded history.
+
+FinalUse nonce and revocation state remains bounded and uses explicit epoch
+rollover. It does not silently evict replay history. Hosts monitor the exposed
+capacity snapshots and rotate epoch before fail-closed exhaustion.
 
 ## Current non-claims
 
-This source closes the repository-level primitives for independent approval,
-authenticated revocation ingestion, registered consumer identity and
-non-blocking revocation linearization. It does **not** claim:
+The repository-controlled candidate implements the primitives above but does
+**not** claim:
 
-- fleet revocation transport/freshness SLA or consensus;
-- HSM/KMS/operator ceremony qualification;
-- an external anti-rollback oracle;
-- an attested time service;
-- a cross-platform durable authority backend;
-- a selected production process caller;
-- operator acceptance, activation, canary, promotion or release.
+- a fleet transport, consensus service or measured convergence-latency SLA (the signed per-node convergence proof is implemented);
+- an attested production clock implementation;
+- an externally deployed anti-rollback frontier backend;
+- HSM/KMS custody, rotation ceremony or compromise-response qualification;
+- a cross-platform durable authority store;
+- product composition for every registered kernel.authority ModulePort;
+- independent acceptance, activation, canary, promotion or release.
 
-Those remain explicit target-host / external evidence gates and must not be
-inferred from source compilation or unit tests.
+The canonical target/current/product/evidence table is
+[`TRACEABILITY.md`](../../docs/modules/kernel.authority/TRACEABILITY.md).
