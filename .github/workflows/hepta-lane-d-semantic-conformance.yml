@@ -7,6 +7,9 @@ on:
   pull_request:
     paths:
       - codex-rs/hepta-objective/**
+      - codex-rs/hepta-agentd/Cargo.toml
+      - codex-rs/hepta-agentd/src/objective_runtime.rs
+      - codex-rs/hepta-agentd/src/objective_runtime_tests.rs
       - codex-rs/hepta-ndu/**
       - codex-rs/hepta-control-plane/**
       - docs/contracts/OBJECTIVE_ERRORS.json
