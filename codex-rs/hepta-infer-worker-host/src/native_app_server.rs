@@ -208,6 +208,8 @@ impl AppServerModelDriver {
             .request
             .payload_digest
             .parse::<Digest32>()?;
+        let context_digest =
+            Digest32::of_bytes(&serde_json::to_vec(&additional_context)?);
         let adapter_deadline_ms = unix_ms()?
             .checked_add(u64::try_from(
                 (self.config.timeout + RPC_TIMEOUT + INTERRUPT_GRACE + RPC_TIMEOUT).as_millis(),
@@ -220,6 +222,7 @@ impl AppServerModelDriver {
             method_id: StableId::new("app-server:v2:turn-start".to_string())?,
             payload_digest,
             lease_payload_digest: payload_digest,
+            context_digest,
             connection_digest,
             session_generation: self.config.generation,
             protocol_version: APP_SERVER_PROTOCOL_VERSION,
@@ -233,7 +236,7 @@ impl AppServerModelDriver {
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                context_digest: context_digest.to_string(),
                 codex_request_digest: Some(pending_boundary.request_digest.to_string()),
                 codex_connection_digest: Some(connection_digest.to_string()),
                 codex_session_generation: Some(self.config.generation),
@@ -608,6 +611,7 @@ fn native_boundary_receipt(
     Ok(NativeCodexBoundaryReceipt {
         request_digest: receipt.request_digest.to_string(),
         response_digest: receipt.response_digest.map(|digest| digest.to_string()),
+        context_digest: receipt.context_digest.to_string(),
         connection_digest: receipt.connection_digest.to_string(),
         session_generation: receipt.session_generation,
         protocol_version: receipt.protocol_version,
