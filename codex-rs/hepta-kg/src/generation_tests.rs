@@ -22,6 +22,7 @@ fn probability(raw: u64) -> ProbabilityQ32 {
 
 fn support(label: &str, tombstoned: bool) -> KnowledgeSupportV2 {
     KnowledgeSupportV2 {
+        support_id: id(&format!("support:{label}")),
         source_id: id(&format!("source:{label}")),
         source_revision: revision(1),
         source_fact_digest: digest(&format!("fact:{label}")),
@@ -225,3 +226,74 @@ fn supports_and_contradicts_remain_distinct_edges() {
     assert_eq!(generation.edges.len(), 2);
     assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
 }
+
+#[test]
+fn derived_incremental_delta_replays_the_complete_generation() {
+    let first = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a-v1"), node("b", "b-v1")],
+            vec![edge(
+                "a",
+                "b",
+                KnowledgeRelationKindV2::Supports,
+                "edge-ab-v1",
+            )],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid first generation: {error}"));
+
+    let second = build_complete_generation(
+        generation(2),
+        KnowledgeProjectionInputV2 {
+            source_snapshot_digest: digest("snapshot:2"),
+            generation_vector_digest: digest("vector:2"),
+            graph_profile_digest: digest("profile:1"),
+            complete_source_cut: true,
+            nodes: vec![node("a", "a-v1"), node("b", "b-v2")],
+            edges: vec![edge(
+                "a",
+                "b",
+                relation_kind_from_name("collaborated_with"),
+                "edge-ab-v2",
+            )],
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid second generation: {error}"));
+
+    let delta = derive_incremental_delta(&first, &second)
+        .unwrap_or_else(|error| panic!("delta must derive: {error}"));
+    let incremental = apply_incremental_delta(&first, generation(2), delta)
+        .unwrap_or_else(|error| panic!("derived delta must replay: {error}"));
+    assert_eq!(incremental, second);
+}
+
+#[test]
+fn named_relation_kinds_are_stable_distinct_and_queryable() {
+    let collaborated = relation_kind_from_name("collaborated_with");
+    assert_eq!(collaborated, relation_kind_from_name("collaborated_with"));
+    assert_ne!(collaborated, relation_kind_from_name("references"));
+
+    let generation = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b")],
+            vec![edge("a", "b", collaborated, "edge-ab")],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid named-relation graph: {error}"));
+    let result = query_relations(
+        &generation,
+        KnowledgeRelationQueryV2 {
+            query_id: id("query:named"),
+            generation_digest: generation.generation_digest,
+            seed_node_ids: vec![id("node:a")],
+            relation_kinds: vec![collaborated],
+            maximum_edges: 8,
+        },
+    )
+    .unwrap_or_else(|error| panic!("named relation query: {error}"));
+    assert_eq!(result.edges.len(), 1);
+    assert_eq!(result.edges[0].identity.relation, collaborated);
+}
+
