@@ -24,6 +24,13 @@ from .control_plane import WorkEnvelope
 from .control_plane import WorkPackage
 
 _SHA1 = re.compile(r"^[0-9a-f]{40}$")
+EXPECTED_REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
+EXPECTED_REPOSITORY_ID = 1320694176
+EXPECTED_WORKFLOW_PREFIX = (
+    EXPECTED_REPOSITORY
+    + "/.github/workflows/hepta-consolidated-source.yml@"
+)
+EXPECTED_JOB = "engineering-product-gate"
 
 
 def _git(repository: Path, *args: str) -> str:
@@ -48,12 +55,40 @@ def build_product_receipt(
     *,
     mode: str,
     source_sha: str,
+    repository_full_name: str,
+    repository_id: int,
+    workflow_ref: str,
+    job_name: str,
+    run_id: int,
+    run_attempt: int,
+    event_name: str,
+    pull_request_number: int,
     base_sha: str | None = None,
 ) -> dict[str, object]:
     """Bind a qualified Git candidate to the engineering-control product caller."""
 
     repository = repository.resolve()
     source_sha = _checked_sha(source_sha, "source_sha")
+    if repository_full_name != EXPECTED_REPOSITORY:
+        raise ValueError("repository_identity_mismatch")
+    if type(repository_id) is not int or repository_id != EXPECTED_REPOSITORY_ID:
+        raise ValueError("repository_id_mismatch")
+    if not isinstance(workflow_ref, str) or not workflow_ref.startswith(
+        EXPECTED_WORKFLOW_PREFIX
+    ):
+        raise ValueError("workflow_identity_mismatch")
+    if job_name != EXPECTED_JOB:
+        raise ValueError("job_identity_mismatch")
+    if type(run_id) is not int or run_id <= 0:
+        raise ValueError("invalid_run_id")
+    if type(run_attempt) is not int or run_attempt <= 0:
+        raise ValueError("invalid_run_attempt")
+    if event_name not in {"pull_request", "push"}:
+        raise ValueError("invalid_event_name")
+    if type(pull_request_number) is not int or pull_request_number < 0:
+        raise ValueError("invalid_pull_request_number")
+    if (event_name == "pull_request") != (pull_request_number > 0):
+        raise ValueError("pull_request_identity_mismatch")
     head = _checked_sha(_git(repository, "rev-parse", "HEAD"), "head")
     head_tree = _checked_sha(
         _git(repository, "rev-parse", "HEAD^{tree}"), "head_tree"
@@ -129,6 +164,16 @@ def build_product_receipt(
     receipt: dict[str, object] = {
         "schema": "hepta.control-engineering-product-execution.v1",
         "mode": mode,
+        "ciIdentity": {
+            "repository": repository_full_name,
+            "repositoryId": repository_id,
+            "workflowRef": workflow_ref,
+            "job": job_name,
+            "runId": run_id,
+            "runAttempt": run_attempt,
+            "eventName": event_name,
+            "pullRequestNumber": pull_request_number,
+        },
         "sourceSha": source_sha,
         "sourceTree": source_tree,
         "testedSha": head,
@@ -197,6 +242,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--mode", choices=("source-head", "base-merge"), required=True)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--base-sha")
+    parser.add_argument("--repository-full-name", required=True)
+    parser.add_argument("--repository-id", type=int, required=True)
+    parser.add_argument("--workflow-ref", required=True)
+    parser.add_argument("--job-name", required=True)
+    parser.add_argument("--run-id", type=int, required=True)
+    parser.add_argument("--run-attempt", type=int, required=True)
+    parser.add_argument("--event-name", required=True)
+    parser.add_argument("--pull-request-number", type=int, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
 
@@ -205,6 +258,14 @@ def main(argv: list[str] | None = None) -> int:
             args.repository,
             mode=args.mode,
             source_sha=args.source_sha,
+            repository_full_name=args.repository_full_name,
+            repository_id=args.repository_id,
+            workflow_ref=args.workflow_ref,
+            job_name=args.job_name,
+            run_id=args.run_id,
+            run_attempt=args.run_attempt,
+            event_name=args.event_name,
+            pull_request_number=args.pull_request_number,
             base_sha=args.base_sha,
         )
     except (OSError, subprocess.CalledProcessError, RuntimeError, ValueError) as error:
