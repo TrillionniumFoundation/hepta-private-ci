@@ -15,7 +15,7 @@ use super::validate_nonzero;
 use super::validate_ppm;
 use super::validate_signed_ppm;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct OutcomeSignalV1 {
     episode_id: u64,
@@ -128,6 +128,21 @@ impl ReplayCandidateV1 {
         })
     }
 
+    fn validate(&self) -> Result<(), ContractErrorV1> {
+        validate_nonzero(self.event_id, "replay event id must be non-zero")?;
+        for (value, name) in [
+            (self.expected_utility_gain_ppm, "expected utility gain"),
+            (self.prediction_error_ppm, "prediction error"),
+            (self.novelty_ppm, "novelty"),
+            (self.rarity_ppm, "rarity"),
+            (self.forgetting_risk_ppm, "forgetting risk"),
+            (self.coverage_need_ppm, "coverage need"),
+        ] {
+            validate_ppm(value, name)?;
+        }
+        Ok(())
+    }
+
     fn score(&self) -> u64 {
         [
             self.expected_utility_gain_ppm,
@@ -184,15 +199,38 @@ impl ReplaySelectionReceiptV1 {
     }
 }
 
+    pub fn validate(&self) -> Result<(), ContractErrorV1> {
+        if self.selected_event_ids.len() > MAX_REPLAY_SELECTION || self.selected_event_ids.contains(&0) {
+            return Err(ContractErrorV1::BoundExceeded("replay selected events"));
+        }
+        let mut unique = BTreeSet::new();
+        if self
+            .selected_event_ids
+            .iter()
+            .any(|event_id| !unique.insert(*event_id))
+        {
+            return Err(ContractErrorV1::Conflict("duplicate replay selected event"));
+        }
+        let count_sum = self
+            .source_bucket_counts
+            .values()
+            .map(|value| *value as usize)
+            .sum::<usize>();
+        if count_sum != self.selected_event_ids.len() {
+            return Err(ContractErrorV1::Conflict(
+                "source bucket counts must equal selected event count",
+            ));
+        }
+        self.resource_receipt.validate_absolute()
+    }
+}
+
 impl CanonicalContractV1 for ReplaySelectionReceiptV1 {
     const SCHEMA_ID: &'static str = "ReplaySelectionReceiptV1";
     const MAX_ENCODED_BYTES: usize = 65_536;
 
     fn validate_contract(&self) -> Result<(), ContractErrorV1> {
-        if self.selected_event_ids.len() > MAX_REPLAY_SELECTION {
-            return Err(ContractErrorV1::BoundExceeded("replay selected events"));
-        }
-        Ok(())
+        self.validate()
     }
 }
 
@@ -211,6 +249,9 @@ pub fn select_replay_v1(
         || maximum_per_source_bucket > maximum_selected
     {
         return Err(ContractErrorV1::BoundExceeded("replay selection"));
+    }
+    for candidate in candidates {
+        candidate.validate()?;
     }
     let mut scored = candidates
         .iter()
