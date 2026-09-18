@@ -31,7 +31,7 @@ use crate::authbus_trust::invalid;
 use crate::authbus_trust::load_external_replay_checkpoint;
 
 pub(crate) struct TextIngress {
-    pub identity: AgentdIdentity,
+    identity: AgentdIdentity,
     pub evidence: HeptaEvidenceStore,
     pub trust_file: PathBuf,
     pub replay_checkpoint_file: Option<PathBuf>,
@@ -77,7 +77,7 @@ impl TextIngress {
         let external = self
             .replay_checkpoint_file
             .as_deref()
-            .map(|path| load_external_replay_checkpoint(path, self.identity_for_checkpoint()?))
+            .map(|path| load_external_replay_checkpoint(path, &self.identity))
             .transpose()?;
         if embedded.is_some() && external.is_some() && embedded != external {
             return Err(invalid("embedded and external replay checkpoints disagree"));
@@ -89,10 +89,6 @@ impl TextIngress {
                 .map_err(|error| invalid(&error.to_string()))?;
         }
         Ok(())
-    }
-
-    fn identity_for_checkpoint(&self) -> Result<&AgentdIdentity, AgentdError> {
-        Ok(&self.identity)
     }
 
     #[cfg(test)]
