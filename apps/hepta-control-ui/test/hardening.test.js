@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { ControlPlaneApp } from "../src/browser-app.js";
+import { loadBrowserBootstrap } from "../src/browser-host.js";
 import { SameOriginHttpTransport } from "../src/http-transport.js";
 import { LocalStoragePendingStore } from "../src/pending-store.js";
 import { ERROR_CODES } from "../src/protocol.js";
@@ -374,5 +375,60 @@ test("cancelled confirmation restores focus after dialog focus displacement", as
   retry.listeners.get("click")();
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(document.activeElement?.textContent, "Retry runtime.agentd");
+});
+
+test("chunked transport responses are bounded while streaming", async () => {
+  const chunk = new Uint8Array(600_000).fill(120);
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+    fetchImpl: async () =>
+      new Response(
+        new ReadableStream({
+          start(controller) {
+            controller.enqueue(chunk);
+            controller.enqueue(chunk);
+            controller.close();
+          },
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      ),
+  });
+  await assert.rejects(
+    transport.readSnapshot(),
+    (error) => error.code === ERROR_CODES.PROTOCOL_VIOLATION,
+  );
+});
+
+test("bootstrap streaming bound and JSON media type fail closed", async () => {
+  const bootstrapChunk = new Uint8Array(10_000).fill(120);
+  await assert.rejects(
+    loadBrowserBootstrap({
+      origin: "https://control.example",
+      fetchImpl: async () =>
+        new Response(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue(bootstrapChunk);
+              controller.enqueue(bootstrapChunk);
+              controller.close();
+            },
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+    }),
+    (error) => error.code === ERROR_CODES.PROTOCOL_VIOLATION,
+  );
+
+  await assert.rejects(
+    loadBrowserBootstrap({
+      origin: "https://control.example",
+      fetchImpl: async () =>
+        new Response("{}", {
+          status: 200,
+          headers: { "content-type": "application/jsonp" },
+        }),
+    }),
+    (error) => error.code === ERROR_CODES.PROTOCOL_VIOLATION,
+  );
 });
 
