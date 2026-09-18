@@ -704,10 +704,15 @@ impl FederationAuthorityV2 for ProductReaderAuthority<'_> {
                 }
                 Some(_) => FederationAuthorityStateV2::StaleGeneration,
             };
+            let authority_capability =
+                current.map_or(self.expected_capability, |reader| reader.capability());
+            let authority_expires_unix_ms = capability_expiry_ms(authority_capability)
+                .map_err(|_| FederationV2Error::AuthorityRevalidationFailed)?;
             Ok(FederationAuthorityObservationV2 {
                 query_binding_digest: query.binding_digest(),
                 lease_epoch: query.lease_epoch,
                 observed_unix_ms,
+                authority_expires_unix_ms,
                 state,
             })
         })
