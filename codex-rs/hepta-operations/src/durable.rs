@@ -23,6 +23,7 @@ const OPERATIONS_DB_FILENAME: &str = "hepta_operations_1.sqlite";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 pub const MAX_DURABLE_ACTIVE_OPERATIONS: i64 = 100_000;
+pub const MAX_DURABLE_PAYLOAD_BYTES: usize = 1_048_576;
 pub const MAX_DURABLE_OUTBOX_ATTEMPTS: i64 = 16;
 pub const MAX_DURABLE_OUTBOX_LEASE_MS: i64 = 60_000;
 pub const MAX_DURABLE_CLAIM_BATCH: u32 = 256;
@@ -165,6 +166,7 @@ impl DispatchEnvelope {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DispatchLease {
     envelope: DispatchEnvelope,
+    payload: Vec<u8>,
     worker_id: StableId,
     expires_at_ms: i64,
 }
@@ -176,6 +178,10 @@ impl DispatchLease {
 
     pub fn operation_id(&self) -> &StableId {
         &self.envelope.operation_id
+    }
+
+    pub fn payload(&self) -> &[u8] {
+        &self.payload
     }
 
     pub fn worker_id(&self) -> &StableId {
@@ -240,8 +246,10 @@ impl DurableOperationStore {
     pub async fn prepare_intent(
         &self,
         intent: PreparedIntent,
+        payload: Vec<u8>,
     ) -> Result<DurableOperationRecord, OperationError> {
         intent.validate()?;
+        validate_payload(&intent, &payload)?;
         let semantic_digest = intent.semantic_digest();
         let now = now_millis()?;
         let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)?;
@@ -296,14 +304,15 @@ impl DurableOperationStore {
         // of the authoritative intent and its source outbox is committed.
         sqlx::query(
             "INSERT INTO cross_owner_outbox (
-                operation_id, destination, semantic_digest, payload_digest, state,
+                operation_id, destination, semantic_digest, payload_digest, payload, state,
                 fence, attempts, available_at_ms, created_at_ms, updated_at_ms
-             ) VALUES (?, ?, ?, ?, 'queued', 0, 0, ?, ?, ?)",
+             ) VALUES (?, ?, ?, ?, ?, 'queued', 0, 0, ?, ?, ?)",
         )
         .bind(intent.operation_id.as_str())
         .bind(intent.destination.as_str())
         .bind(semantic_digest.as_array().as_slice())
         .bind(intent.payload_digest.as_array().as_slice())
+        .bind(payload)
         .bind(now)
         .bind(now)
         .bind(now)
@@ -456,9 +465,11 @@ impl DurableOperationStore {
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
+        let payload = outbox.payload;
         tx.commit().await.map_err(storage)?;
         Ok(DispatchLease {
             envelope: envelope_from(&record, fence, attempt),
+            payload,
             worker_id: worker_id.clone(),
             expires_at_ms,
         })
@@ -510,6 +521,7 @@ impl DurableOperationStore {
         envelope.fence = fence;
         Ok(DispatchLease {
             envelope,
+            payload: lease.payload.clone(),
             worker_id: lease.worker_id.clone(),
             expires_at_ms,
         })
@@ -930,7 +942,7 @@ impl DurableOperationStore {
         dispatch_digest: Digest32,
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
-        effect: impl FnOnce(&DispatchEnvelope) -> EffectObservation,
+        effect: impl FnOnce(&DispatchEnvelope, &[u8]) -> EffectObservation,
     ) -> Result<DurableOperationRecord, OperationError> {
         if self
             .record_dispatch_started(lease, dispatch_digest)
@@ -940,7 +952,7 @@ impl DurableOperationStore {
             return Err(OperationError::DispatchAlreadyStarted);
         }
         let observation = execute_with_final_use(authority, grant, lease.envelope(), || {
-            effect(lease.envelope())
+            effect(lease.envelope(), lease.payload())
         })?;
         match observation {
             EffectObservation::Terminal {
@@ -981,6 +993,7 @@ pub fn execute_with_final_use<T>(
 #[derive(Clone, Debug)]
 struct OutboxRow {
     state: String,
+    payload: Vec<u8>,
     fence: i64,
     attempts: i64,
     worker_id: Option<String>,
@@ -1050,6 +1063,18 @@ fn require_live_lease(
         || now < outbox.updated_at_ms
     {
         return Err(OperationError::StaleLease);
+    }
+    Ok(())
+}
+
+fn validate_payload(intent: &PreparedIntent, payload: &[u8]) -> Result<(), OperationError> {
+    if payload.is_empty() || payload.len() > MAX_DURABLE_PAYLOAD_BYTES {
+        return Err(OperationError::InvalidRequest(
+            "durable operation payload must be 1..=1048576 bytes",
+        ));
+    }
+    if Digest32::of_bytes(payload) != intent.payload_digest {
+        return Err(OperationError::InvalidDigest("operation payload binding"));
     }
     Ok(())
 }
@@ -1190,6 +1215,14 @@ fn decode_operation(row: SqliteRow) -> Result<DurableOperationRecord, OperationE
 
 fn decode_outbox(row: SqliteRow) -> Result<OutboxRow, OperationError> {
     let state: String = row.try_get("state").map_err(storage)?;
+    let payload: Vec<u8> = row.try_get("payload").map_err(storage)?;
+    if payload.is_empty() || payload.len() > MAX_DURABLE_PAYLOAD_BYTES {
+        return Err(OperationError::Corrupt("invalid stored outbox payload size".into()));
+    }
+    let payload_digest = stored_digest(&row, "payload_digest")?;
+    if Digest32::of_bytes(&payload) != payload_digest {
+        return Err(OperationError::Corrupt("stored outbox payload digest mismatch".into()));
+    }
     if !matches!(
         state.as_str(),
         "queued"
@@ -1219,6 +1252,7 @@ fn decode_outbox(row: SqliteRow) -> Result<OutboxRow, OperationError> {
     }
     Ok(OutboxRow {
         state,
+        payload,
         fence,
         attempts,
         worker_id: row.try_get("worker_id").map_err(storage)?,
