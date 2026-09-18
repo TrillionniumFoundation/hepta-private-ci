@@ -51,6 +51,42 @@ fn start(control: &mut DurableInferenceControl, id: &str) {
 }
 
 #[test]
+fn concurrent_handles_share_budget_without_holding_the_lock_during_execution() {
+    let path = path("concurrent-handles");
+    // Both handles open before either request is admitted. Historically the
+    // second open failed because the first handle retained the exclusive lock
+    // for its full lifetime.
+    let mut first = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut second = DurableInferenceControl::open(&path, 8).unwrap();
+
+    let r1 = first.reserve_native(request("r1"), 2).unwrap();
+    let r2 = second.reserve_native(request("r2"), 2).unwrap();
+    assert_eq!(r1.state, NativeReservationState::Reserved);
+    assert_eq!(r2.state, NativeReservationState::Reserved);
+
+    // Each mutation refreshes under the short writer fence, so both handles
+    // can progress against the same durable budget without stale overwrite.
+    first.dispatch_native("r1", dispatch()).unwrap();
+    let mut d2 = dispatch();
+    d2.thread_id = "thread-2".to_string();
+    second.dispatch_native("r2", d2).unwrap();
+
+    drop(first);
+    drop(second);
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.native_record("r1").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    assert_eq!(
+        reopened.native_record("r2").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn duplicate_reopen_preserves_exact_binding_and_reserves_only_once() {
     let path = path("duplicate");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
