@@ -737,7 +737,6 @@ where
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct FederationCancellationRequestV2#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederationCancellationRequestV2 {
     pub cancellation_id: StableId,
     pub query_id: StableId,
