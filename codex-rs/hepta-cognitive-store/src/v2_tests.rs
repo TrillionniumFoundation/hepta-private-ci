@@ -151,7 +151,11 @@ fn only_verified_candidates_can_enter_the_live_ledger() {
         ),
     ] {
         let mut store = store();
-        let mut value = candidate("memory:verification", "content", MemoryAdmissionKind::Inference);
+        let mut value = candidate(
+            "memory:verification",
+            "content",
+            MemoryAdmissionKind::Inference,
+        );
         value.verification = verification;
         let write_intent = intent(&store, "intent:verification", &value);
         assert_eq!(
@@ -165,9 +169,8 @@ fn only_verified_candidates_can_enter_the_live_ledger() {
 
 #[test]
 fn revocation_reserve_allows_forget_after_ordinary_capacity_is_full() {
-    let mut store =
-        AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
-            .unwrap_or_else(|error| panic!("valid tiny store: {error}"));
+    let mut store = AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
+        .unwrap_or_else(|error| panic!("valid tiny store: {error}"));
     let first = candidate("memory:1", "content:v1", MemoryAdmissionKind::Observation);
     store
         .append_admitted(&Verifier, first.clone(), intent(&store, "intent:1", &first))
@@ -338,7 +341,6 @@ fn export_reopen_and_snapshot_preserve_history_and_tombstones() {
         .unwrap_or_else(|error| panic!("validate snapshot: {error}"));
 }
 
-
 #[test]
 fn image_validation_rejects_journal_receipt_identity_drift_even_after_rehash() {
     let mut store = store();
@@ -383,7 +385,6 @@ fn image_validation_rejects_sequence_and_frontier_drift_even_after_rehash() {
         Err(CognitiveStoreV2Error::ImageFrontierMismatch("memory"))
     );
 }
-
 
 #[test]
 fn paged_snapshot_binds_one_ledger_root_and_rejects_midstream_mutation() {
@@ -468,7 +469,6 @@ fn paged_snapshot_binds_one_ledger_root_and_rejects_midstream_mutation() {
         Err(CognitiveStoreV2Error::DigestMismatch("ledger_root"))
     );
 }
-
 
 #[test]
 fn paged_snapshot_proves_same_record_ancestry_and_rejects_forged_tombstone_boundary() {
