@@ -8,6 +8,10 @@ use std::sync::Mutex;
 
 use crate::AuthorityClock;
 use crate::AuthorityFrontierStore;
+use crate::AuthorityReplayClaim;
+use crate::AuthorityReplayEpochAdvance;
+use crate::AuthorityReplayError;
+use crate::AuthorityReplayStore;
 use crate::AuthorityTrustError;
 use crate::SystemAuthorityClock;
 use ed25519_dalek::Signature;
@@ -20,7 +24,8 @@ use sha2::Sha256;
 #[path = "final_use_store.rs"]
 mod store;
 
-const MAX_CLAIMS: usize = 16_384;
+const MAX_LOCAL_CLAIMS: usize = 16_384;
+const MAX_REVOCATIONS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
 const MAX_ISSUER_TRUST_KEYS: usize = 8;
 
@@ -175,6 +180,19 @@ impl FinalUseFrontier {
             failed: false,
         }))
     }
+
+    /// Provisioning frontier for an authority whose replay truth is held by an
+    /// external atomic replay store rather than the local JSON snapshot.
+    pub fn for_external_replay_head(head: &FinalUseRevocations) -> Result<Self, FinalUseError> {
+        if !valid_head(head) {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        Ok(frontier_for_external_replay_state(&State {
+            head: head.clone(),
+            used_nonces: BTreeSet::new(),
+            failed: false,
+        }))
+    }
 }
 
 /// Read-only capacity/frontier snapshot for host alerting and epoch rollover.
@@ -187,6 +205,7 @@ pub struct FinalUseCapacity {
     pub revoked_grants: usize,
     pub max_claims: usize,
     pub max_revocations: usize,
+    pub external_replay: bool,
 }
 
 impl FinalUseCapacity {
@@ -202,7 +221,12 @@ impl FinalUseCapacity {
     /// epoch-transition head. The caller chooses the reserve according to its
     /// deployment/fanout SLA; this method itself is not rollover authority.
     pub fn rollover_required_with_reserve(self, reserve: usize) -> bool {
-        self.remaining_claims() <= reserve || self.remaining_revocations() <= reserve
+        (!self.external_replay && self.remaining_claims() <= reserve)
+            || self.remaining_revocations() <= reserve
+    }
+
+    pub fn claims_are_externally_owned(self) -> bool {
+        self.external_replay
     }
 }
 
@@ -222,6 +246,7 @@ struct Inner {
     store: store::Store,
     clock: Arc<dyn AuthorityClock>,
     frontier_store: Option<Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>>,
+    replay_store: Option<Arc<dyn AuthorityReplayStore>>,
 }
 
 /// Host-configured authority owner. Clone shares the same revocation and
@@ -295,6 +320,7 @@ impl FinalUseAuthority {
             store,
             clock,
             frontier_store: None,
+            replay_store: None,
         })))
     }
 
@@ -333,6 +359,7 @@ impl FinalUseAuthority {
             store,
             clock,
             frontier_store: Some(frontier_store),
+            replay_store: None,
         })))
     }
 
@@ -370,6 +397,106 @@ impl FinalUseAuthority {
             store,
             clock,
             frontier_store: Some(frontier_store),
+            replay_store: None,
+        })))
+    }
+
+    /// Production constructor with trusted time, rollback frontier and an
+    /// externally durable atomic replay store. Each replica uses its own
+    /// private local state directory while all replicas for signer_id share
+    /// the same replay owner. The replay store must be explicitly provisioned
+    /// to the exact starting epoch before this constructor is called.
+    pub fn open_state_dir_with_trust_and_replay(
+        directory: &std::path::Path,
+        signer_id: String,
+        verifying_key: [u8; 32],
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+        replay_store: Arc<dyn AuthorityReplayStore>,
+    ) -> Result<Self, FinalUseError> {
+        let key =
+            VerifyingKey::from_bytes(&verifying_key).map_err(|_| FinalUseError::InvalidTrust)?;
+        if !identifier(&signer_id) || key.is_weak() || !valid_head(&head) {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        clock.now_unix_ms().map_err(map_trust_error)?;
+        if replay_store
+            .current_epoch(&signer_id)
+            .map_err(map_replay_error)?
+            != head.authority_epoch
+        {
+            return Err(FinalUseError::AntiRollbackViolation);
+        }
+        let (store, state) = store::Store::open_exact(directory, &signer_id, verifying_key, head)?;
+        if !state.used_nonces.is_empty() {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let observed = frontier_for_external_replay_state(&state);
+        let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
+        if trusted != observed {
+            return Err(FinalUseError::AntiRollbackViolation);
+        }
+        Ok(Self(Arc::new(Inner {
+            signer_id,
+            issuer_keys: vec![PinnedIssuerKey {
+                key_id: "single-key".into(),
+                key,
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: u64::MAX,
+            }],
+            state: Mutex::new(state),
+            store,
+            clock,
+            frontier_store: Some(frontier_store),
+            replay_store: Some(replay_store),
+        })))
+    }
+
+    /// Key-ring variant of open_state_dir_with_trust_and_replay.
+    pub fn open_state_dir_with_issuer_keys_and_replay(
+        directory: &std::path::Path,
+        signer_id: String,
+        issuer_keys: Vec<FinalUseIssuerTrustKey>,
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+        replay_store: Arc<dyn AuthorityReplayStore>,
+    ) -> Result<Self, FinalUseError> {
+        if !identifier(&signer_id) || !valid_head(&head) {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        clock.now_unix_ms().map_err(map_trust_error)?;
+        if replay_store
+            .current_epoch(&signer_id)
+            .map_err(map_replay_error)?
+            != head.authority_epoch
+        {
+            return Err(FinalUseError::AntiRollbackViolation);
+        }
+        let (issuer_keys, issuer_trust_sha256) = pin_issuer_keys(issuer_keys)?;
+        let (store, state) = store::Store::open_key_ring_exact(
+            directory,
+            &signer_id,
+            issuer_trust_sha256,
+            head,
+        )?;
+        if !state.used_nonces.is_empty() {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let observed = frontier_for_external_replay_state(&state);
+        let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
+        if trusted != observed {
+            return Err(FinalUseError::AntiRollbackViolation);
+        }
+        Ok(Self(Arc::new(Inner {
+            signer_id,
+            issuer_keys,
+            state: Mutex::new(state),
+            store,
+            clock,
+            frontier_store: Some(frontier_store),
+            replay_store: Some(replay_store),
         })))
     }
 
@@ -390,7 +517,11 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        Ok(frontier_for_state(&state))
+        Ok(if self.0.replay_store.is_some() {
+            frontier_for_external_replay_state(&state)
+        } else {
+            frontier_for_state(&state)
+        })
     }
 
     /// Return a coherent read-only snapshot that lets the trusted host alert
@@ -406,13 +537,27 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
+        let (used_nonces, max_claims, external_replay) =
+            if let Some(replay_store) = &self.0.replay_store {
+                let count = replay_store
+                    .claimed_count(&self.0.signer_id, state.head.authority_epoch)
+                    .map_err(map_replay_error)?;
+                (
+                    usize::try_from(count).map_err(|_| FinalUseError::Unavailable)?,
+                    usize::MAX,
+                    true,
+                )
+            } else {
+                (state.used_nonces.len(), MAX_LOCAL_CLAIMS, false)
+            };
         Ok(FinalUseCapacity {
             authority_epoch: state.head.authority_epoch,
             revision: state.head.revision,
-            used_nonces: state.used_nonces.len(),
+            used_nonces,
             revoked_grants: state.head.revoked_grant_ids.len(),
-            max_claims: MAX_CLAIMS,
-            max_revocations: MAX_CLAIMS,
+            max_claims,
+            max_revocations: MAX_REVOCATIONS,
+            external_replay,
         })
     }
 
@@ -439,6 +584,23 @@ impl FinalUseAuthority {
         }
         let mut next = state.clone();
         if head.authority_epoch > next.head.authority_epoch {
+            if let Some(replay_store) = &self.0.replay_store {
+                match replay_store
+                    .advance_epoch(
+                        &self.0.signer_id,
+                        next.head.authority_epoch,
+                        head.authority_epoch,
+                    )
+                    .map_err(map_replay_error)
+                {
+                    Ok(AuthorityReplayEpochAdvance::Advanced)
+                    | Ok(AuthorityReplayEpochAdvance::AlreadyAtTarget) => {}
+                    Err(error) => {
+                        state.failed = true;
+                        return Err(error);
+                    }
+                }
+            }
             next.used_nonces.clear();
         }
         next.head = head;
@@ -467,6 +629,48 @@ impl FinalUseAuthority {
         if !verified {
             return Err(FinalUseError::InvalidSignature);
         }
+        if let Some(replay_store) = &self.0.replay_store {
+            {
+                let state = self
+                    .0
+                    .state
+                    .lock()
+                    .map_err(|_| FinalUseError::Unavailable)?;
+                if state.failed {
+                    return Err(FinalUseError::Unavailable);
+                }
+                validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
+            }
+            match replay_store
+                .claim(
+                    &self.0.signer_id,
+                    signed.grant.authority_epoch,
+                    signed.grant.nonce,
+                )
+                .map_err(map_replay_error)?
+            {
+                AuthorityReplayClaim::Claimed => {}
+                AuthorityReplayClaim::AlreadyClaimed => {
+                    return Err(FinalUseError::AlreadyClaimed);
+                }
+            }
+            // The external claim is intentionally not refunded. Recheck live
+            // authority after its durable I/O before admitting dispatch.
+            let state = self
+                .0
+                .state
+                .lock()
+                .map_err(|_| FinalUseError::Unavailable)?;
+            if state.failed {
+                return Err(FinalUseError::Unavailable);
+            }
+            validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
+            return Ok(VerifiedUseToken {
+                owner: Arc::clone(&self.0),
+                grant: signed.grant.clone(),
+            });
+        }
+
         let mut state = self
             .0
             .state
@@ -480,14 +684,14 @@ impl FinalUseAuthority {
         if state.used_nonces.contains(&signed.grant.nonce) {
             return Err(FinalUseError::AlreadyClaimed);
         }
-        if state.used_nonces.len() >= MAX_CLAIMS {
+        if state.used_nonces.len() >= MAX_LOCAL_CLAIMS {
             return Err(FinalUseError::CapacityExceeded);
         }
         let mut next = state.clone();
         next.used_nonces.insert(signed.grant.nonce);
         self.persist_or_fence(&mut state, next)?;
-        // Persistence can outlast a short grant. Never admit a dispatch using
-        // the time sampled before that I/O; its nonce stays consumed on expiry.
+        // Compatibility persistence can outlast a short grant. Never admit a
+        // dispatch using time sampled before that I/O.
         validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
         Ok(VerifiedUseToken {
             owner: Arc::clone(&self.0),
@@ -570,8 +774,16 @@ impl FinalUseAuthority {
         next: State,
     ) -> Result<(), FinalUseError> {
         if let Some(frontier_store) = &self.0.frontier_store {
-            let expected = frontier_for_state(state);
-            let advanced = frontier_for_state(&next);
+            let expected = if self.0.replay_store.is_some() {
+                frontier_for_external_replay_state(state)
+            } else {
+                frontier_for_state(state)
+            };
+            let advanced = if self.0.replay_store.is_some() {
+                frontier_for_external_replay_state(&next)
+            } else {
+                frontier_for_state(&next)
+            };
             if let Err(error) =
                 frontier_store.compare_and_set(&self.0.signer_id, &expected, &advanced)
             {
@@ -626,7 +838,7 @@ pub fn dispatch_final_use<T>(
 fn valid_head(head: &FinalUseRevocations) -> bool {
     head.authority_epoch > 0
         && head.revision > 0
-        && head.revoked_grant_ids.len() <= MAX_CLAIMS
+        && head.revoked_grant_ids.len() <= MAX_REVOCATIONS
         && head.revoked_grant_ids.iter().all(|id| identifier(id))
 }
 
@@ -676,6 +888,32 @@ fn frontier_for_state(state: &State) -> FinalUseFrontier {
         authority_epoch: state.head.authority_epoch,
         revocation_revision: state.head.revision,
         state_sha256: hash.finalize().into(),
+    }
+}
+
+fn frontier_for_external_replay_state(state: &State) -> FinalUseFrontier {
+    let mut hash = Sha256::new();
+    hash.update(b"hepta.kernel.authority.final-use-frontier.external-replay.v1\0");
+    hash.update(state.head.authority_epoch.to_le_bytes());
+    hash.update(state.head.revision.to_le_bytes());
+    hash.update((state.head.revoked_grant_ids.len() as u64).to_le_bytes());
+    for grant_id in &state.head.revoked_grant_ids {
+        hash.update((grant_id.len() as u64).to_le_bytes());
+        hash.update(grant_id.as_bytes());
+    }
+    FinalUseFrontier {
+        authority_epoch: state.head.authority_epoch,
+        revocation_revision: state.head.revision,
+        state_sha256: hash.finalize().into(),
+    }
+}
+
+fn map_replay_error(error: AuthorityReplayError) -> FinalUseError {
+    match error {
+        AuthorityReplayError::Invalid => FinalUseError::InvalidTrust,
+        AuthorityReplayError::Conflict => FinalUseError::AntiRollbackViolation,
+        AuthorityReplayError::EpochMismatch => FinalUseError::EpochMismatch,
+        AuthorityReplayError::Unavailable => FinalUseError::Unavailable,
     }
 }
 
