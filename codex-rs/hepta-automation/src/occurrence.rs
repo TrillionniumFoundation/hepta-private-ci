@@ -175,7 +175,7 @@ impl AutomationStore {
             "UPDATE automation_runs
              SET execution_state = 'taskflow_bound'
              WHERE task_id = ? AND occurrence = ?
-               AND execution_state IN ('materialized', 'indeterminate')",
+               AND execution_state = 'materialized'",
         )
         .bind(task_id.to_string())
         .bind(to_i64(occurrence)?)
