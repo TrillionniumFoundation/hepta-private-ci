@@ -62,6 +62,7 @@ impl From<NduProjectionJournalError> for NduProjectionStoreError {
 /// It is not an activation claim: a product host must still choose this store,
 /// qualify the target filesystem and backup/restore behavior, distribute a
 /// trusted checkpoint anchor, and prove writer ownership operationally.
+#[derive(Debug)]
 pub struct NduProjectionStoreV1 {
     root: PathBuf,
     journal: NduProjectionJournalV1,
