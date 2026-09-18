@@ -212,7 +212,9 @@
         "durable replay fencing",
         "rejection release",
         "unknown-outcome capacity hold",
-        "Codex request-digest reconciliation"
+        "Codex request-digest reconciliation",
+        "live-process one-shot abort of durably journaled but definitely unsent effects",
+        "recovery cannot downgrade a journaled dispatch when the in-memory abort proof is lost"
       ]
     },
     {
@@ -231,8 +233,15 @@
         "independently signed exact-binding grant",
         "forged grant rejection",
         "explicit authority denial",
-        "revocation-head rollback rejection",
-        "authority wait is bounded by runtime request deadline and post-authority owner fencing"
+        "revocation-head rollback rejection"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "post-authority deadline, cancellation, owner-readiness and ingress fencing",
+        "terminal status and owner-authority success conjunction"
       ]
     }
   ]
