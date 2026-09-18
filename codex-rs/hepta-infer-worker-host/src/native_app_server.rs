@@ -41,6 +41,7 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
+pub use control::TransientNativeControl;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
