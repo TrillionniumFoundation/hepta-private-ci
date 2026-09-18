@@ -57,6 +57,12 @@ pub use iteration_ledger::{
     IterationEvidenceKindV1, IterationEvidenceV1, IterationLedgerError, IterationLedgerEventV1,
     IterationLedgerSnapshotV1, IterationLedgerV1, MAX_ITERATION_EVENTS,
 };
+pub use journal_storage::JournalSnapshotReceiptV1;
+pub use journal_storage::JournalStorageError;
+pub use journal_storage::read_dataset_withdrawal_snapshot;
+pub use journal_storage::read_lifecycle_journal_snapshot;
+pub use journal_storage::write_dataset_withdrawal_snapshot;
+pub use journal_storage::write_lifecycle_journal_snapshot;
 pub use lifecycle_journal::ArtifactLifecycleJournalError;
 pub use lifecycle_journal::ArtifactLifecycleJournalReceiptV2;
 pub use lifecycle_journal::ArtifactLifecycleJournalRecordV2;
@@ -65,12 +71,6 @@ pub use lifecycle_journal::ArtifactLifecycleJournalV2;
 pub use lifecycle_journal::LifecycleActorEvidenceV2;
 pub use lifecycle_journal::LifecycleActorRoleV2;
 pub use lifecycle_journal::LifecycleAppendDispositionV2;
-pub use journal_storage::JournalSnapshotReceiptV1;
-pub use journal_storage::JournalStorageError;
-pub use journal_storage::read_dataset_withdrawal_snapshot;
-pub use journal_storage::read_lifecycle_journal_snapshot;
-pub use journal_storage::write_dataset_withdrawal_snapshot;
-pub use journal_storage::write_lifecycle_journal_snapshot;
 pub use model::ArtifactEvent;
 pub use model::ArtifactKind;
 pub use model::ArtifactManifest;
