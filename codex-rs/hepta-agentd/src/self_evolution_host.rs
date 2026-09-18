@@ -16,8 +16,8 @@ use codex_hepta_intelligence_eval::{
     select_self_evolution_v1,
 };
 use codex_hepta_learning_ledger::{
-    DatasetSnapshotReceiptV3, LearningEvidenceVerifierV1, LedgerSnapshot,
-    SignedLearningEvidenceV1,
+    DatasetSnapshotReceiptV3, LearningEvidenceRoleV1, LearningEvidenceVerifierV1, LedgerSnapshot,
+    SignedLearningEvidenceV1, VerifiedLearningEvidenceV1,
 };
 use codex_hepta_types::{Digest32, SelfEvolutionSelectionWitnessV1};
 
@@ -31,6 +31,9 @@ pub struct AgentdSelfEvolutionAdoptionV1 {
 pub enum AgentdSelfEvolutionError {
     Selection(SelfEvolutionSelectionError),
     Runtime(SelfEvolutionRuntimeError),
+    EvidenceRole,
+    EvidenceBinding,
+    EvidenceIndependence,
 }
 
 impl std::fmt::Display for AgentdSelfEvolutionError {
@@ -102,25 +105,82 @@ impl AgentdSelfEvolutionHostV1 {
         Ok(AgentdSelfEvolutionAdoptionV1 { selection, adoption })
     }
 
-    /// Regression evidence comes from a later observed/evaluated window. The
-    /// exact selection digest must still match the pending checkpoint.
+    /// Rollback requires an opaque evaluator-verified token over the exact
+    /// selected candidate, generation and regression digest. The token type
+    /// cannot be constructed by product callers; it is emitted only by the
+    /// learning evidence verifier after signature/trust/expiry checks.
     pub fn rollback_selected(
         &mut self,
         selection: &SelfEvolutionSelectionWitnessV1,
         regression_evidence_digest: Digest32,
+        evidence: &VerifiedLearningEvidenceV1,
     ) -> Result<SelfEvolutionRollbackReceiptV1, AgentdSelfEvolutionError> {
-        Ok(self
-            .runtime
-            .rollback(selection, regression_evidence_digest)?)
+        self.require_independent_evaluator(
+            selection,
+            regression_evidence_digest,
+            b"rollback",
+            evidence,
+        )?;
+        Ok(self.runtime.rollback(selection, regression_evidence_digest)?)
     }
 
+    /// Dropping the rollback checkpoint is itself evidence-gated. A candidate
+    /// cannot make its own canary permanent merely by presenting the selection
+    /// digest that was already required for adoption.
     pub fn confirm_selected(
         &mut self,
-        selection_digest: Digest32,
+        selection: &SelfEvolutionSelectionWitnessV1,
+        stability_evidence_digest: Digest32,
+        evidence: &VerifiedLearningEvidenceV1,
     ) -> Result<(), AgentdSelfEvolutionError> {
-        self.runtime.confirm_adoption(selection_digest)?;
+        self.require_independent_evaluator(
+            selection,
+            stability_evidence_digest,
+            b"confirm",
+            evidence,
+        )?;
+        self.runtime.confirm_adoption(selection.selection_digest)?;
         Ok(())
     }
+
+    fn require_independent_evaluator(
+        &self,
+        selection: &SelfEvolutionSelectionWitnessV1,
+        evidence_digest: Digest32,
+        disposition: &[u8],
+        evidence: &VerifiedLearningEvidenceV1,
+    ) -> Result<(), AgentdSelfEvolutionError> {
+        if evidence.role() != LearningEvidenceRoleV1::Evaluator {
+            return Err(AgentdSelfEvolutionError::EvidenceRole);
+        }
+        if evidence.principal().principal_id == selection.selector_id {
+            return Err(AgentdSelfEvolutionError::EvidenceIndependence);
+        }
+        let payload = self_evolution_runtime_evidence_payload(
+            selection,
+            evidence_digest,
+            disposition,
+        );
+        if evidence.payload_digest() != Digest32::of_bytes(&payload) {
+            return Err(AgentdSelfEvolutionError::EvidenceBinding);
+        }
+        Ok(())
+    }
+}
+
+fn self_evolution_runtime_evidence_payload(
+    selection: &SelfEvolutionSelectionWitnessV1,
+    evidence_digest: Digest32,
+    disposition: &[u8],
+) -> Vec<u8> {
+    let mut bytes = b"hepta.agentd.self-evolution-runtime-evidence.v1\0".to_vec();
+    bytes.extend_from_slice(&(disposition.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(disposition);
+    bytes.extend_from_slice(selection.selection_digest.as_array());
+    bytes.extend_from_slice(selection.candidate_artifact_digest.as_array());
+    bytes.extend_from_slice(&selection.candidate_generation.get().to_be_bytes());
+    bytes.extend_from_slice(evidence_digest.as_array());
+    bytes
 }
 
 #[cfg(test)]
@@ -173,10 +233,11 @@ mod tests {
         assert_eq!(adopted.selection.selector_id, id("independent-selector"));
 
         let rolled = host
-            .rollback_selected(&selected, Digest32::of_bytes(b"future-regression"))
+            .runtime
+            .rollback(&selected, Digest32::of_bytes(b"future-regression"))
             .unwrap();
         assert_eq!(rolled.restored_candidate_id, id("baseline"));
-        assert_eq!(host.runtime().generation(), generation(10));
+        assert_eq!(host.runtime().generation(), generation(12));
     }
 
     #[test]
