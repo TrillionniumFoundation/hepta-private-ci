@@ -227,7 +227,6 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
         canonical_completeness_evidence_payload_v1(&request).unwrap(),
         completeness
     );
-    assert_eq!(canonical_scoring_evidence_payload_v1(&scoring).unwrap(), scorer);
     assert_eq!(
         canonical_profile_qualification_evidence_payload_v1(&profile).unwrap(),
         qualification
@@ -235,4 +234,16 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
     assert!(canonical_random_assignment_evidence_payload_v1(&request)
         .unwrap()
         .is_some());
+    assert_eq!(
+        decide_calibrated_v3(request.clone(), &profile, &scoring),
+        Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "scored candidates"
+        ))
+    );
+    let rebound =
+        scoring_commitment_for_request_v1(&request, &profile, digest("feature-snapshot")).unwrap();
+    assert_ne!(
+        canonical_scoring_evidence_payload_v1(&rebound).unwrap(),
+        scorer
+    );
 }
