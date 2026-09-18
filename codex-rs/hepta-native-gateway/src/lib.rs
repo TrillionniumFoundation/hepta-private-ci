@@ -1,9 +1,22 @@
-//! Minimal loopback-only Hepta live shell.
+//! Hepta native shell product boundary.
 //!
-//! The gateway has no outbound, model, Telegram, operator-mutation, Enforce,
-//! promotion, or retirement path. Those remain separate gates.
+//! The legacy loopback HTTP surface remains read-only. Native platform effects
+//! live behind signed, session-fenced Rust adapters and are never exposed as an
+//! unsigned HTTP mutation path. Model, Telegram, operator mutation, Enforce,
+//! promotion, and retirement remain separate gates.
 
 #![forbid(unsafe_code)]
+
+pub mod backend;
+pub mod host;
+mod journal;
+pub mod package_trust;
+pub mod platform;
+pub mod platform_profile;
+pub mod session_store;
+pub mod shell;
+pub mod ui_state;
+pub mod updater;
 
 use std::env;
 use std::net::SocketAddr;
