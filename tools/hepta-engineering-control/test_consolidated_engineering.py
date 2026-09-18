@@ -107,6 +107,28 @@ class OwnerTransactionTests(unittest.TestCase):
                 EngineeringStore(path)
             self.assertEqual(path.read_bytes(), before)
 
+    def test_schema_v5_adds_rich_orchestration_projection(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "owner.sqlite3"
+            with EngineeringStore(path):
+                pass
+            with sqlite3.connect(path) as connection:
+                connection.execute("DROP TABLE orchestration_generations")
+                connection.execute("PRAGMA user_version=5")
+                connection.execute(
+                    "UPDATE engineering_schema_meta SET schema_version=5"
+                )
+            with EngineeringStore(path) as store:
+                self.assertEqual(
+                    store.connection.execute("PRAGMA user_version").fetchone()[0], 6
+                )
+                self.assertIsNotNone(
+                    store.connection.execute(
+                        "SELECT 1 FROM sqlite_master "
+                        "WHERE type='table' AND name='orchestration_generations'"
+                    ).fetchone()
+                )
+
     def test_schema_v3_migrates_without_losing_owner_facts(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "owner.sqlite3"
