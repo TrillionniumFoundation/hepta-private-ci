@@ -315,7 +315,9 @@ impl fmt::Display for IdentityError {
             Self::InvalidCharacter => {
                 formatter.write_str("identifier contains an invalid character")
             }
-            Self::NonCanonical => formatter.write_str("identifier is not canonical for its profile"),
+            Self::NonCanonical => {
+                formatter.write_str("identifier is not canonical for its profile")
+            }
             Self::UnknownProfile => formatter.write_str("unknown identifier profile"),
             Self::Zero => formatter.write_str("monotonic identity must be non-zero"),
             Self::Overflow => formatter.write_str("monotonic identity overflow"),
