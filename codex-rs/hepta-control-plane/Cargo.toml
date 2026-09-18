@@ -16,6 +16,8 @@ workspace = true
 [dependencies]
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-types = { path = "../hepta-types" }
+rustix = { workspace = true, features = ["fs", "process"] }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
