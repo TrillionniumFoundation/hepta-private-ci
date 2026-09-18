@@ -80,6 +80,7 @@ pub enum DurableProposalRegistryError {
     InvalidScope,
     InvalidWriterFence,
     InvalidAnchor,
+    BootstrapRequiresEmptyFile,
     AcknowledgedHistoryMissing,
     AnchorMismatch,
     ContextMismatch,
@@ -112,6 +113,7 @@ impl From<Error> for DurableProposalRegistryError {
 #[derive(Clone, Copy)]
 enum RecoveryPolicy {
     Unanchored,
+    BootstrapEmpty,
     Require(DurableRegistryAnchorV1),
 }
 
@@ -179,6 +181,23 @@ impl DurableProposalRegistry {
         )
     }
 
+    /// Enroll a new production registry only when the exclusively locked file
+    /// is physically empty. The check is performed after lock acquisition.
+    pub fn open_bootstrap_empty(
+        file: File,
+        registry_scope_digest: Digest32,
+        writer_fence: u64,
+        maximum_records: usize,
+    ) -> Result<Self, DurableProposalRegistryError> {
+        Self::open_with_policy(
+            file,
+            registry_scope_digest,
+            writer_fence,
+            maximum_records,
+            RecoveryPolicy::BootstrapEmpty,
+        )
+    }
+
     pub fn open_anchored(
         file: File,
         registry_scope_digest: Digest32,
@@ -224,6 +243,9 @@ impl DurableProposalRegistry {
         let file_len = file.metadata()?.len();
         if file_len > MAX_FILE_BYTES {
             return Err(DurableProposalRegistryError::Capacity);
+        }
+        if matches!(policy, RecoveryPolicy::BootstrapEmpty) && file_len != 0 {
+            return Err(DurableProposalRegistryError::BootstrapRequiresEmptyFile);
         }
         file.seek(SeekFrom::Start(0))?;
         if file_len == 0 {
