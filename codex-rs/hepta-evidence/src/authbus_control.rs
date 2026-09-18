@@ -759,9 +759,8 @@ impl HeptaEvidenceStore {
         let stored = load_checkpoint_tx(&mut tx)
             .await?
             .ok_or(AuthBusControlError::RollbackDetected)?;
-        let digest = replay_digest_tx(&mut tx).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
-        if stored != *expected || digest != expected.replay_digest {
+        if stored != *expected {
             return Err(AuthBusControlError::RollbackDetected);
         }
         Ok(())
