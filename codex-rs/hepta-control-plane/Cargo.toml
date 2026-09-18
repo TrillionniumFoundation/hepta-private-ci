@@ -14,10 +14,14 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-hepta-authbus = { path = "../hepta-authbus" }
+codex-hepta-contracts = { workspace = true }
+codex-hepta-fleet = { workspace = true }
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-types = { path = "../hepta-types" }
 rustix = { workspace = true, features = ["fs", "process"] }
 
 [dev-dependencies]
+ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
