@@ -10,8 +10,8 @@
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "narrow_agentd_context_composed_global_source_composition_not_hosted",
+  "productionWriterState": "durable_owner_store_implemented_not_host_composed",
   "operations": [
     {
       "operation": "collect_snapshot",
@@ -194,6 +194,179 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
+    },
+    {
+      "operation": "canonical_resource_profile_digest",
+      "nativeSymbol": "codex_hepta_control_plane::canonical_resource_profile_digest",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "ResourceReservationV1 list"
+      ],
+      "outputs": [
+        "Digest32"
+      ],
+      "state": "source_implemented_required_binding",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "resource_profile_digest_must_match_exact_reservations"
+        }
+      ],
+      "designOperation": "canonical_resource_profile_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "evaluate_prepared_plan_with_ndu",
+      "nativeSymbol": "codex_hepta_control_plane::evaluate_prepared_plan_with_ndu",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "inputs": [
+        "GlobalStateSnapshotV1",
+        "PreparedPlanInputV1",
+        "NduPlanningInputV1",
+        "monotonic time"
+      ],
+      "outputs": [
+        "EvaluatedPlanV1"
+      ],
+      "state": "source_implemented_real_ndu_owner_composition",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+          "symbol": "real_ndu_evaluation_is_bound_into_plan"
+        }
+      ],
+      "designOperation": "evaluate_prepared_plan_with_ndu",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_ndu::evaluate_candidates_with_policy"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "plan_observed_context",
+      "nativeSymbol": "codex_hepta_control_plane::plan_observed_context",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "inputs": [
+        "ObservedContextV1"
+      ],
+      "outputs": [
+        "ObservedContextPlanV1"
+      ],
+      "state": "product_composed_narrow_agentd_context",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+          "symbol": "measured_context_is_selected_and_budget_excess_abstains"
+        }
+      ],
+      "productCaller": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "designOperation": "plan_observed_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "evaluate_prepared_plan_with_ndu"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "PlannerJournalStoreV1",
+      "nativeSymbol": "codex_hepta_control_plane::PlannerJournalStoreV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "inputs": [
+        "owner directory",
+        "current revoked-decision recovery floor"
+      ],
+      "outputs": [
+        "durable PlannerJournalV1"
+      ],
+      "state": "source_implemented_local_unix_durable_owner_store",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "durable_store_fsync_reopens_selected_plan"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "v1_reference_envelope_migrates_atomically_to_v2"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "restore_of_pre_revocation_backup_fails_current_recovery_floor"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "persist_rejects_history_regression"
+        }
+      ],
+      "designOperation": "PlannerJournalStoreV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "compose_global_plan_with_fleet_v1",
+      "nativeSymbol": "codex_hepta_control_plane::compose_global_plan_with_fleet_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/global_plane.rs",
+      "inputs": [
+        "authenticated owner summaries",
+        "runtime.fleet AllocationGrant",
+        "PlanningRequestV1",
+        "NduPlanningInputV1"
+      ],
+      "outputs": [
+        "GlobalControlPlanV1"
+      ],
+      "state": "source_implemented_global_multi_owner_composition_not_named_product_host",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/global_plane_tests.rs",
+          "symbol": "authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request"
+        }
+      ],
+      "designOperation": "compose_global_plan_with_fleet_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "runtime.fleet::LeaseLedger",
+        "utility.ndu"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "claim_final_use_for_grant_request_v1",
+      "nativeSymbol": "codex_hepta_control_plane::claim_final_use_for_grant_request_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/authority_bridge.rs",
+      "inputs": [
+        "GrantRequestV1",
+        "trusted host subject/destination/scope",
+        "independently signed FinalUseGrant"
+      ],
+      "outputs": [
+        "kernel.authority VerifiedUseToken"
+      ],
+      "state": "source_implemented_independent_authority_bridge_not_effect_dispatch",
+      "authority": "independent_kernel_authority_only",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/authority_bridge_tests.rs",
+          "symbol": "independent_authority_claims_exact_planner_binding"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/authority_bridge_tests.rs",
+          "symbol": "payload_drift_is_rejected_by_independent_authority_binding"
+        }
+      ],
+      "designOperation": "claim_final_use_for_grant_request_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "kernel.authority::FinalUseAuthority"
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalDomainContracts": [
@@ -210,12 +383,17 @@
   ],
   "completion": {
     "specification": "complete",
-    "nativePlanningKernel": "candidate_implemented",
-    "ownerLocalDurabilityReference": "candidate_implemented",
-    "canonicalExternalProtocolAdmission": "not_established",
-    "productionCaller": "not_established",
-    "productionWriter": "not_established",
-    "exactHeadQualification": "required",
+    "nativePlanningKernel": "source_implemented",
+    "ownerLocalDurabilityReference": "source_implemented",
+    "durableOwnerStore": "source_implemented_local_unix_not_product_hosted",
+    "canonicalResourceProfileBinding": "source_implemented",
+    "authenticatedOwnerAdmission": "source_implemented",
+    "realNduComposition": "source_implemented",
+    "narrowProductCaller": "agentd_context_composed",
+    "globalSourceComposition": "source_implemented",
+    "globalProductionCaller": "not_established",
+    "canonicalExternalProtocolAdmission": "not_established_for_global_wire",
+    "exactHeadQualification": "required_for_current_pr_head",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -233,7 +411,10 @@
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
     "productionImplementation": false,
-    "productExecutionProved": false,
+    "narrowProductExecutionComposed": true,
+    "globalSourceCompositionImplemented": true,
+    "globalProductExecutionProved": false,
+    "exactHeadQualificationCurrent": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false
@@ -243,12 +424,17 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Name and compose a production host for the global multi-owner planner path; the existing Agentd caller is request-local context planning only.",
+    "Admit a canonical external wire/producer protocol for global owner summaries where cross-process composition is required.",
+    "Complete exact-head plus deterministic synthetic-merge qualification for the final PR head and record named-host resource/latency/recovery measurements."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "named-host load, fault-injection and recovery qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "implementationHead": {
+    "commit": "a0ecf2b5c92fbb9208c48eb0246485f894825425",
+    "note": "control.runtime source closure head before documentation synchronization; exact-head PR qualification remains required"
+  }
 }
