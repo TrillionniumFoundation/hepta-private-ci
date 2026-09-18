@@ -144,6 +144,25 @@ export class ControlPlaneApp {
     );
     main.append(counters);
 
+    if (view.pending > 0 && typeof this.#client.reconcilePending === "function") {
+      const reconcilePending = document.createElement("button");
+      reconcilePending.setAttribute("type", "button");
+      reconcilePending.setAttribute("data-focus-key", "reconcile-pending");
+      reconcilePending.textContent =
+        view.recoveryRequired > 0
+          ? "Reconcile unresolved operations"
+          : "Refresh pending operation status";
+      const reconcileBusyKey = "reconcile-pending";
+      reconcilePending.disabled =
+        this.#mutationBlock !== null || this.#busy.has(reconcileBusyKey);
+      reconcilePending.addEventListener(
+        "click",
+        () => void this.#requestPendingReconciliation(reconcilePending),
+      );
+      focusTargets.set("reconcile-pending", reconcilePending);
+      main.append(reconcilePending);
+    }
+
     const stop = document.createElement("button");
     stop.setAttribute("type", "button");
     stop.setAttribute("data-focus-key", "stop");
@@ -241,6 +260,51 @@ export class ControlPlaneApp {
       this.#busy.delete(busyKey);
       this.#setBusyState();
       if (button && this.#view?.canMutate && this.#mutationBlock === null) button.disabled = false;
+    }
+  }
+
+  async #requestPendingReconciliation(button) {
+    if (
+      this.#mutationBlock !== null ||
+      typeof this.#client.reconcilePending !== "function" ||
+      !this.#view ||
+      this.#view.pending <= 0
+    ) {
+      return;
+    }
+    const busyKey = "reconcile-pending";
+    if (this.#busy.has(busyKey)) {
+      this.#announce("A pending-operation reconciliation batch is already running.");
+      return;
+    }
+    this.#busy.add(busyKey);
+    if (button) button.disabled = true;
+    this.#setBusyState();
+    try {
+      const result = await this.#client.reconcilePending({ force: true });
+      this.#busy.delete(busyKey);
+      this.#setBusyState();
+      this.render({ restoreFocusKey: "reconcile-pending" });
+      this.#announce(
+        `Reconciliation batch completed; pending ${result.pending}, indeterminate ${result.indeterminate}, manual recovery required ${result.recoveryRequired}.`,
+        result.recoveryRequired > 0,
+      );
+    } catch (error) {
+      this.#busy.delete(busyKey);
+      this.#setBusyState();
+      try {
+        this.render({ restoreFocusKey: "reconcile-pending" });
+      } catch {
+        // Session transitions can temporarily make the current view unavailable.
+      }
+      this.#announce(
+        `${error?.code ?? "ERROR"}: ${error?.message ?? "reconciliation failed"}`,
+        true,
+      );
+    } finally {
+      this.#busy.delete(busyKey);
+      this.#setBusyState();
+      if (button && this.#mutationBlock === null) button.disabled = false;
     }
   }
 
