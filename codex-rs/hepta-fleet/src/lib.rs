@@ -79,6 +79,7 @@ pub use release::ReleaseMetadata;
 pub use release::ReleaseProgramMetadata;
 pub use resource::FleetResourceArithmeticError;
 pub use resource::FleetResourceAxisV1;
+pub use resource::FleetResourceSourceV1;
 pub use resource::FleetResourceVectorV1;
 pub use runtime_allocator::DEFAULT_RUNTIME_GRANT_RETENTION_MS;
 pub use runtime_allocator::DEFAULT_RUNTIME_LEASE_RENEW_MARGIN_MS;
