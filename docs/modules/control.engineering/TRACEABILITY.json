@@ -249,10 +249,12 @@
         "ProductGateTests.test_pull_request_product_caller_composes_v2_orchestrator",
         "ProductGateTests.test_source_push_requires_exact_head",
         "ProductGateTests.test_pull_request_source_head_product_caller_composes_same_v2_path",
-        "ProductGateTests.test_base_merge_lane_is_invalid_on_push"
+        "ProductGateTests.test_base_merge_lane_is_invalid_on_push",
+        "ProductGateTests.test_missing_canonical_work_package_registry_fails_closed",
+        "ProductGateTests.test_tampered_canonical_engineering_package_fails_closed"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "exact-source/base-merge product execution receipt only; no merge or release authority"
+      "capabilityCeiling": "exact-source/base-merge product execution receipt bound to canonical ECP-1 registry truth only; no merge or release authority"
     }
   ],
   "negativeAuthorityInvariants": [
