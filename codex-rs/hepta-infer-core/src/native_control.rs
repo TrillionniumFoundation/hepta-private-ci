@@ -407,13 +407,25 @@ impl DurableInferenceControl {
             options.mode(0o600);
         }
         let mut replacement = options.open(&next_path)?;
-        replacement
-            .try_lock()
-            .map_err(|_| Error::WriterUnavailable)?;
-        replacement.write_all(&rewritten)?;
-        replacement.flush()?;
-        replacement.sync_all()?;
-        fs::rename(&next_path, &self.path)?;
+        let prepared = (|| -> Result<(), Error> {
+            replacement
+                .try_lock()
+                .map_err(|_| Error::WriterUnavailable)?;
+            replacement.write_all(&rewritten)?;
+            replacement.flush()?;
+            replacement.sync_all()?;
+            Ok(())
+        })();
+        if let Err(error) = prepared {
+            drop(replacement);
+            let _ = fs::remove_file(&next_path);
+            return Err(error);
+        }
+        if let Err(error) = fs::rename(&next_path, &self.path) {
+            drop(replacement);
+            let _ = fs::remove_file(&next_path);
+            return Err(error.into());
+        }
         // The pathname now names the replacement inode. Switch the live locked
         // handle immediately so no later fallible durability step can leave this
         // owner holding only the unlinked predecessor lock.
