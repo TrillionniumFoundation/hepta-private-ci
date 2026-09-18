@@ -72,9 +72,13 @@ const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
-fn codex_deadline(timeout: Duration) -> Result<(u64, u64)> {
+fn unix_now_ms() -> Result<u64> {
     let now_ms = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis();
-    let now_ms = u64::try_from(now_ms).map_err(|_| "system time does not fit u64 milliseconds")?;
+    Ok(u64::try_from(now_ms).map_err(|_| "system time does not fit u64 milliseconds")?)
+}
+
+fn codex_deadline(timeout: Duration) -> Result<(u64, u64)> {
+    let now_ms = unix_now_ms()?;
     let timeout_ms = u64::try_from(timeout.as_millis())
         .map_err(|_| "native worker timeout does not fit u64 milliseconds")?;
     let deadline_ms = now_ms
@@ -163,7 +167,7 @@ fn bind_nonterminal_codex_receipt(
     } else {
         None
     };
-    let receipt = adapt_codex(/*now_ms*/ 0, intent.clone(), observation)?;
+    let receipt = adapt_codex(unix_now_ms()?, intent.clone(), observation)?;
     output.status = native_status_from_pre_turn_receipt(&receipt)?;
     bind_codex_receipt(output, &receipt);
     Ok(())
@@ -386,8 +390,11 @@ impl AppServerModelDriver {
                 AppServerObservation::from_turn_completed(&intent, &expected_turn_id, &completed)?;
             adapt_codex(deadline_ms, intent, Some(observation))?
         } else {
-            adapt_codex(/*now_ms*/ 0, intent, None)?
+            adapt_codex(unix_now_ms()?, intent, None)?
         };
+        if !terminal_observed {
+            output.status = native_status_from_pre_turn_receipt(&receipt)?;
+        }
         bind_codex_receipt(&mut output, &receipt);
         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
         Ok(Some(output))
