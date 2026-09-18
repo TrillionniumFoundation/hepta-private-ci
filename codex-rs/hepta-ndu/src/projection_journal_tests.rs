@@ -176,7 +176,10 @@ fn revocation_is_scoped_by_objective_and_subject() {
         shared_projection,
     ));
 
-    assert_eq!(journal.selected_projection_digest(objective_a, subject_a), None);
+    assert_eq!(
+        journal.selected_projection_digest(objective_a, subject_a),
+        None
+    );
     assert_eq!(
         journal.selected_projection_digest(objective_b, subject_b),
         Some(shared_projection)
