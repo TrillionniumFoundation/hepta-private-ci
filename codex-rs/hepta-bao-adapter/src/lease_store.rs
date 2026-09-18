@@ -9,6 +9,8 @@ use serde::Serialize;
 
 use crate::lease_lifecycle::BaoLeaseMetadata;
 use crate::lease_lifecycle::BaoLeaseOperationKind;
+use crate::lease_lifecycle::BaoLeaseReconciliationObservation;
+use crate::lease_lifecycle::BaoReconciliationOutcome;
 
 const MAX_STATE_BYTES: u64 = 8 * 1024 * 1024;
 
@@ -184,6 +186,47 @@ impl BaoLeaseStore {
         let _guard = self.lock()?;
         let mut stored = self.load()?;
         stored.leases.insert(metadata.lease_id.clone(), metadata);
+        self.persist(&stored)
+    }
+
+    pub(crate) fn resolve_indeterminate(
+        &self,
+        observation: &BaoLeaseReconciliationObservation,
+    ) -> Result<(), LeaseStoreError> {
+        let _guard = self.lock()?;
+        let mut stored = self.load()?;
+        let mut record = stored
+            .operations
+            .remove(&observation.operation_id)
+            .ok_or(LeaseStoreError::InvalidState)?;
+        if record.request_sha256 != observation.original_request_sha256
+            || record.state != OperationState::Indeterminate
+        {
+            stored
+                .operations
+                .insert(observation.operation_id.clone(), record);
+            return Err(LeaseStoreError::Conflict);
+        }
+        match observation.outcome {
+            BaoReconciliationOutcome::NotApplied => {
+                record.state = OperationState::Prepared;
+            }
+            BaoReconciliationOutcome::Rejected => {
+                record.state = OperationState::Rejected;
+            }
+            BaoReconciliationOutcome::Applied => {
+                let metadata = observation
+                    .metadata
+                    .clone()
+                    .ok_or(LeaseStoreError::InvalidState)?;
+                record.state = OperationState::Succeeded;
+                record.lease_id = Some(metadata.lease_id.clone());
+                stored.leases.insert(metadata.lease_id.clone(), metadata);
+            }
+        }
+        stored
+            .operations
+            .insert(observation.operation_id.clone(), record);
         self.persist(&stored)
     }
 
