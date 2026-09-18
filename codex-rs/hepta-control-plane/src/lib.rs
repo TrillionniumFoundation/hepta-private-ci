@@ -110,6 +110,7 @@ pub use planner::ResourceReservationV1;
 pub use planner::SearchDisclosureV1;
 pub use planner::SnapshotRequestV1;
 pub use planner::bind_ndu_plan_evaluation_v1;
+pub use planner::canonical_resource_profile_digest;
 pub use planner::collect_snapshot;
 pub use planner::finalize_plan;
 pub use planner::prepare_plan;
