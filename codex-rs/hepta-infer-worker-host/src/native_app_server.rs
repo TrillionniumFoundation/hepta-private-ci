@@ -6,6 +6,8 @@
 use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
+use std::pin::Pin;
+use std::sync::Arc;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -46,6 +48,9 @@ use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
 use codex_hepta_codex_adapter::adapt as adapt_codex;
 use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::EnteredUseToken;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
@@ -71,6 +76,15 @@ const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+pub type TurnStartAuthorityFuture<'a> =
+    Pin<Box<dyn Future<Output = Result<VerifiedUseToken>> + Send + 'a>>;
+
+/// Host-owned final-use port. runtime.codex can request a claim for the exact
+/// final binding, but it cannot construct a VerifiedUseToken itself.
+pub trait TurnStartAuthorizer: Send + Sync {
+    fn claim<'a>(&'a self, binding: FinalUseBinding) -> TurnStartAuthorityFuture<'a>;
+}
 
 fn unix_now_ms() -> Result<u64> {
     let now_ms = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis();
@@ -111,6 +125,44 @@ fn codex_intent(
         protocol_version: APP_SERVER_PROTOCOL_V2,
         deadline_ms,
     })
+}
+
+fn final_use_binding(
+    agent_id: &AgentId,
+    intent: &CodexOperationIntent,
+    model: &str,
+    model_provider: &str,
+) -> Result<FinalUseBinding> {
+    let scope = serde_json::to_vec(&(
+        "hepta.runtime.codex.turn-start.scope.v1",
+        agent_id.to_string(),
+        intent.session_id.as_str(),
+        intent.thread_id.as_str(),
+        model,
+        model_provider,
+        intent.owner_generation,
+        intent.protocol_version,
+    ))?;
+    Ok(FinalUseBinding {
+        subject_id: agent_id.to_string(),
+        destination_id: "provider:codex-app-server".to_string(),
+        request_sha256: codex_request_digest(intent)?.into_array(),
+        scope_sha256: Digest32::of_bytes(&scope).into_array(),
+        payload_sha256: intent.payload_digest.into_array(),
+    })
+}
+
+async fn send_authorized_turn_start(
+    client: &mut RemoteAppServerClient,
+    _entered: EnteredUseToken,
+    params: TurnStartParams,
+) -> std::result::Result<TurnStartResponse, TypedRequestError> {
+    client
+        .request_typed(ClientRequest::TurnStart {
+            request_id: RequestId::Integer(2),
+            params,
+        })
+        .await
 }
 
 fn bind_codex_receipt(output: &mut NativeRunOutput, receipt: &CodexAdapterReceipt) {
@@ -187,6 +239,7 @@ pub struct NativeWorkerConfig {
 /// local slot admission and settlement; duplicate requests never start a turn.
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
+    turn_start_authorizer: Option<Arc<dyn TurnStartAuthorizer>>,
 }
 
 impl AppServerModelDriver {
@@ -200,7 +253,21 @@ impl AppServerModelDriver {
         {
             return Err("invalid native worker configuration".into());
         }
-        Ok(Self { config })
+        Ok(Self {
+            config,
+            turn_start_authorizer: None,
+        })
+    }
+
+    /// Attach the trusted-host final-use port. The port must obtain a
+    /// kernel.authority VerifiedUseToken for the exact binding supplied here;
+    /// runtime.codex never receives an issuer private key.
+    pub fn with_turn_start_authorizer(
+        mut self,
+        authorizer: Arc<dyn TurnStartAuthorizer>,
+    ) -> Self {
+        self.turn_start_authorizer = Some(authorizer);
+        self
     }
 
     /// Reconcile a previously dispatched request without submitting any new
@@ -420,6 +487,11 @@ impl AppServerModelDriver {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
         }
+        let turn_start_authorizer = self
+            .turn_start_authorizer
+            .as_ref()
+            .ok_or("kernel.authority final-use authorizer is required before provider contact")?
+            .clone();
         if cancellation.is_cancelled() {
             return Err("cancelled before admission".into());
         }
@@ -522,6 +594,18 @@ impl AppServerModelDriver {
             codex_deadline_ms,
         )?;
         let exact_codex_request_digest = codex_request_digest(&codex_intent)?;
+        let authority_binding = final_use_binding(
+            &self.config.agent_id,
+            &codex_intent,
+            &started.model,
+            &started.model_provider,
+        )?;
+        let verified_use = turn_start_authorizer.claim(authority_binding.clone()).await?;
+        if verified_use.witness_sha256() == [0; 32] {
+            return Err("kernel.authority returned an empty final-use witness".into());
+        }
+        let authority_witness =
+            Digest32::from_array(verified_use.witness_sha256()).to_string();
         control.dispatch_native(
             request_id,
             NativeDispatch {
@@ -533,15 +617,20 @@ impl AppServerModelDriver {
                 codex_session_id: Some(started.thread.session_id.clone()),
                 codex_deadline_ms: Some(codex_deadline_ms),
                 codex_payload_digest: Some(exact_turn_payload_digest),
+                codex_authority_witness_sha256: Some(authority_witness),
                 codex_request_digest: Some(exact_codex_request_digest.to_string()),
             },
         )?;
+        // This is the final revocation/expiry fence. After it returns, the
+        // effect is considered entered: any acknowledgement loss is reconciled
+        // and never turned into a blind retry.
+        let entered_use = verified_use.enter(&authority_binding)?;
+        if !entered_use.matches(&authority_binding) {
+            return Err("kernel.authority final-use binding mismatch at entry".into());
+        }
         let response = timeout(
             RPC_TIMEOUT,
-            client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
-                request_id: RequestId::Integer(2),
-                params: turn_start_params,
-            }),
+            send_authorized_turn_start(&mut client, entered_use, turn_start_params),
         )
         .await;
         let turn = match response {
