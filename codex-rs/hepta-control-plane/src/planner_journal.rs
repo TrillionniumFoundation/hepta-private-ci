@@ -157,6 +157,11 @@ impl PlannerJournalV1 {
     }
 
     #[must_use]
+    pub fn revoked_decision_digests(&self) -> Vec<Digest32> {
+        self.revoked_digests().into_iter().collect()
+    }
+
+    #[must_use]
     pub fn selected_plan_digest(&self) -> Option<Digest32> {
         let revoked = self.revoked_digests();
         let mut selected = None;
