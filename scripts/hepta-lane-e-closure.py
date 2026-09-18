@@ -144,7 +144,7 @@ def verify_symbol(source: str, native_symbol: str) -> bool:
         owner = parts[-2]
         return bool(
             re.search(rf"\b(?:struct|enum|type)\s+{re.escape(owner)}\b", source)
-            and re.search(rf"\bimpl\s+{re.escape(owner)}\b", source)
+            and re.search(rf"\bimpl(?:\s*<[^>]+>)?\s+{re.escape(owner)}\b", source)
         )
     return True
 
@@ -453,6 +453,45 @@ def verify_traceability(
                 )
 
 
+    production_raw = trace.get("productionIngressCases")
+    findings.require(
+        isinstance(production_raw, list) and len(production_raw) == 1,
+        "production_ingress_case_count",
+        "exactly one signed production-ingress case is required",
+    )
+    if isinstance(production_raw, list):
+        for item in production_raw:
+            if not isinstance(item, dict):
+                findings.add("invalid_production_ingress_case", "invalid production-ingress case")
+                continue
+            source_path = relative_path(item.get("source"), findings, "productionIngressCase.source")
+            functions = item.get("functions")
+            if source_path is None or not source_path.is_file():
+                findings.add("production_ingress_source_missing", "production-ingress source is missing")
+                continue
+            findings.require(
+                isinstance(functions, list)
+                and len(functions) >= 2
+                and all(isinstance(value, str) for value in functions),
+                "production_ingress_functions_missing",
+                "production-ingress case must map at least two native tests",
+            )
+            if isinstance(functions, list):
+                source_text = source_path.read_text(encoding="utf-8")
+                for function in functions:
+                    if isinstance(function, str):
+                        findings.require(
+                            bool(re.search(rf"\bfn\s+{re.escape(function)}\s*\(", source_text)),
+                            "production_ingress_function_unresolved",
+                            f"production-ingress function is missing: {function}",
+                        )
+            findings.require(
+                item.get("status") == "native_test_mapped",
+                "production_ingress_status",
+                "production-ingress case must be native_test_mapped",
+            )
+
+
 def verify_learning_eval_production_contract(findings: Findings) -> None:
     for path, label in [
         (PRODUCTION_CONTRACT_PATH, "production contract"),
@@ -709,6 +748,39 @@ def verify_workflow(findings: Findings) -> None:
         bool(re.search(r"^  synthetic-merge:\s*$", text, re.MULTILINE)),
         "workflow_gate_missing",
         "workflow is missing synthetic-merge job",
+    )
+    findings.require(
+        "evaluated_shadow_tests::" in text
+        and "-p codex-hepta-intelligence" in text,
+        "workflow_gate_missing",
+        "workflow is missing signed production-ingress regression tests",
+    )
+    findings.require(
+        "fenced_holdout::tests::" in text
+        and "signed_evaluation_binds_metrics_roles_and_host_identities" in text,
+        "workflow_gate_missing",
+        "workflow is missing bounded fenced/signed stress coverage",
+    )
+    for token in [
+        "emit-evidence",
+        "Sign learning.eval evidence",
+        "Retain learning.eval evidence",
+        "id-token: write",
+        "learning-eval-evidence.json",
+    ]:
+        findings.require(
+            token in text,
+            "workflow_evidence_missing",
+            f"workflow evidence/provenance step is missing {token}",
+        )
+    findings.require(
+        bool(re.search(
+            r"^  synthetic-merge:\n    if: github\.event_name == 'pull_request'\s*$",
+            text,
+            re.MULTILINE,
+        )),
+        "workflow_synthetic_scope",
+        "synthetic-merge must be PR-only because BASE_SHA is PR-scoped",
     )
     findings.require(
         not TEMPORARY_WORKFLOW_PATH.exists(),
