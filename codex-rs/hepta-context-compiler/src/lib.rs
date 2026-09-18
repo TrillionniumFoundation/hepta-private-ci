@@ -263,7 +263,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[path = "lib_tests.rs"]
 mod tests;
 
-
 #[cfg(test)]
 #[path = "wire_tests.rs"]
 mod wire_tests;
