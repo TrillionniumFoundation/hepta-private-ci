@@ -294,7 +294,7 @@ try {
     expectedRevision: 2,
   };
   const neverGrant = grant("navigate", browserActionDigest(neverAction), origin, "never");
-  await crashHost.openProfile({
+  const crashSession = await crashHost.openProfile({
     profileId: "profile.crash",
     principalId: "principal.crash",
     manifestDigest: D1,
@@ -318,9 +318,9 @@ try {
   assert.equal(unknown.terminalObserved, false);
   await crashDriver.contain({
     profileId: "profile.crash",
-    processId: "servo.pid." + String(Number.NaN),
+    processId: crashSession.processId,
     generation: 1,
-  }).catch(() => {});
+  });
   const durable = await crashJournal.getOperation("profile.crash", 1, "operation.never");
   assert.equal(durable.terminalObserved, false);
 
