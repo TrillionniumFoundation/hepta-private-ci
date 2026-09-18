@@ -4,6 +4,7 @@ import unittest
 from control_engineering_v2 import (
     ProductionReadinessFacts,
     evaluate_production_readiness,
+    semantic_digest,
 )
 
 
@@ -38,7 +39,11 @@ class ProductionReadinessTests(unittest.TestCase):
             deployment_receipt_digest="9" * 64,
             rollback_rehearsed=True,
             rollback_receipt_digest="a" * 64,
-            orchestration_product_receipt_digest="b" * 64,
+            source_product_receipt_digest="b" * 64,
+            merge_product_receipt_digest="c" * 64,
+            orchestration_product_receipt_digest=semantic_digest(
+                {"sourceHead": "b" * 64, "baseMerge": "c" * 64}
+            ),
             sandbox_controller_verified=True,
             sandbox_controller_receipt_digest="c" * 64,
             generated_test_mutation_gate_verified=True,
@@ -120,12 +125,16 @@ class ProductionReadinessTests(unittest.TestCase):
     def test_orchestration_sandbox_and_mutation_testing_gate_implementation(self) -> None:
         facts = replace(
             self.facts(),
+            source_product_receipt_digest="",
+            merge_product_receipt_digest="",
             orchestration_product_receipt_digest="",
             sandbox_controller_verified=False,
             generated_test_mutation_gate_verified=False,
         )
         decision = evaluate_production_readiness(facts)
         self.assertFalse(decision.production_implementation_ready)
+        self.assertIn("source_product_receipt_invalid", decision.implementation_blockers)
+        self.assertIn("merge_product_receipt_invalid", decision.implementation_blockers)
         self.assertIn(
             "orchestration_product_receipt_invalid", decision.implementation_blockers
         )
@@ -134,6 +143,26 @@ class ProductionReadinessTests(unittest.TestCase):
         )
         self.assertIn(
             "generated_test_mutation_gate_not_verified",
+            decision.implementation_blockers,
+        )
+
+    def test_product_receipt_set_requires_both_exact_lanes(self) -> None:
+        facts = replace(
+            self.facts(),
+            merge_product_receipt_digest="",
+        )
+        decision = evaluate_production_readiness(facts)
+        self.assertFalse(decision.production_implementation_ready)
+        self.assertIn("merge_product_receipt_invalid", decision.implementation_blockers)
+
+        mismatched = replace(
+            self.facts(),
+            orchestration_product_receipt_digest="f" * 64,
+        )
+        decision = evaluate_production_readiness(mismatched)
+        self.assertFalse(decision.production_implementation_ready)
+        self.assertIn(
+            "orchestration_product_receipt_set_mismatch",
             decision.implementation_blockers,
         )
 
