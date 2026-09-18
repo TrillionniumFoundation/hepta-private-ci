@@ -12,7 +12,7 @@ The product shell uses `eframe 0.36.2` / `egui` with the native `winit` integrat
 | macOS arm64/x86_64 | first-class | AccessKit | native winit | open/reveal/clipboard/notification launcher | CI unsigned archive; signing/notarization external |
 | Linux x86_64 | first-class | AccessKit | X11/Wayland via winit | open/reveal/clipboard/`notify-send` | CI unsigned archive |
 
-The shell does not embed a browser and does not create a second Hepta execution spine. Runtime facts continue to come from the existing loopback-only Rust native gateway/runtime owners.
+The shell does not embed a browser and does not create a second Hepta execution spine. Runtime facts continue to come from the existing loopback-only Rust native gateway/runtime owners. The product shell requires the gateway's `keyring_bearer_v1` mode and refuses the legacy unauthenticated canary mode.
 
 ## 2. Source layout
 
@@ -20,7 +20,7 @@ The shell does not embed a browser and does not create a second Hepta execution 
 - `src/journal.rs` — bounded durable operation journal.
 - `src/security.rs` — trusted Ed25519 key set and final-payload-bound grant verification.
 - `src/platform.rs` — narrow local policy and OS adapters.
-- `src/backend.rs` — loopback gateway client used for the native presentation state.
+- `src/backend.rs` — authenticated loopback gateway client used for the native presentation state.
 - `src/session_store.rs` — opaque session-reference persistence in the OS keyring.
 - `src/updater.rs` — signed manifest verification, staging, predecessor backup and rollback.
 - `src/bin/hepta-native-updater.rs` — separate update activator; the running GUI never self-replaces.
@@ -71,11 +71,15 @@ The shell verifies an Ed25519 signature from an explicit absolute trusted-key-se
 
 The local platform policy is a second ceiling, not authority. Paths must be absolute, canonicalizable and underneath one of the explicitly configured roots. Clipboard/notification classes are disabled unless their local policy switches are present.
 
-## 5. Session/keychain boundary
+## 5. Session/keychain and loopback authentication boundary
 
-Only opaque `SessionIncarnation` references and the manifest digest are persisted through `codex-keyring-store`, which uses the platform keyring backend. Domain facts, model/provider credentials and signing private keys are never stored by `ui.native`.
+Only opaque `SessionIncarnation` references, the manifest digest, and a random loopback gateway bearer capability are persisted through `codex-keyring-store`, which uses the platform keyring backend. Domain facts, model/provider credentials and signing private keys are never stored by `ui.native`.
 
-A keyring error fails application bootstrap instead of silently falling back to a plaintext credentials file.
+The gateway bearer capability is provisioned by the separate `hepta-native-credential` helper using the OS CSPRNG. The helper prints only the keyring account and SHA-256 token digest; the bearer itself never appears on stdout. The existing Rust gateway accepts `--auth-keyring-account ACCOUNT`, loads the same secret from service `hepta.native.gateway.v1`, and requires `Authorization: Bearer ...` before serving authenticated product-shell requests.
+
+The endpoint configuration is separately signed as `hepta.endpoint-manifest.v1`. Its digest/signature bind endpoint ID, loopback address, protocol version, gateway keyring account, issue/expiry times and trusted signing key. The GUI verifies that manifest before reading the bearer from the keyring. A process merely listening on the expected localhost port therefore cannot satisfy the new product-shell bootstrap unless it also proves the configured bearer capability.
+
+A keyring error, unsigned/tampered endpoint manifest, legacy `native_auth=disabled` health response, or credential mismatch fails application bootstrap instead of silently falling back to plaintext credentials or trusting localhost.
 
 ## 6. Signed updater and rollback
 
@@ -114,16 +118,31 @@ Optional local ceilings:
 - `--allow-clipboard`
 - `--allow-notifications`
 
-Endpoint manifest example:
+Provision the gateway capability first:
+
+```sh
+cargo run --bin hepta-native-credential -- provision gateway.local
+hepta --serve-ui --listen 127.0.0.1:7373 --auth-keyring-account gateway.local
+```
+
+Signed endpoint manifest shape:
 
 ```json
 {
+  "schema": "hepta.endpoint-manifest.v1",
   "endpoint_id": "runtime.local",
   "address": "127.0.0.1:7373",
-  "manifest_digest": "<non-zero lowercase sha256>",
-  "protocol_version": 1
+  "protocol_version": 1,
+  "gateway_credential_account": "gateway.local",
+  "issued_unix_ms": 0,
+  "expires_unix_ms": 0,
+  "key_id": "release.key.1",
+  "manifest_digest": "<sha256 of the canonical endpoint payload>",
+  "signature_base64": "<Ed25519 signature>"
 }
 ```
+
+The zero timestamps above are shape placeholders only and will fail verification; an actual manifest must carry a current bounded issue/expiry window and valid signature.
 
 Trusted public keys example:
 
