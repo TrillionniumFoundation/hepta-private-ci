@@ -31,6 +31,10 @@ struct Fixture {
 
 impl Fixture {
     fn new() -> Self {
+        Self::new_with_observer_evaluator_collision(false)
+    }
+
+    fn new_with_observer_evaluator_collision(observer_evaluator_controller_collision: bool) -> Self {
         let keys = [
             SigningKey::from_bytes(&[41; 32]),
             SigningKey::from_bytes(&[42; 32]),
@@ -59,7 +63,11 @@ impl Fixture {
                 .enumerate()
                 .map(|(index, (principal, key))| TrustedLearningSignerV1 {
                     principal: principal.clone(),
-                    controller_id: id(&format!("topology-controller-{index}")),
+                    controller_id: if observer_evaluator_controller_collision && index == 2 {
+                        principals[1].principal_id.clone()
+                    } else {
+                        id(&format!("topology-controller-{index}"))
+                    },
                     verifying_key: key.verifying_key().to_bytes(),
                     roles: vec![match index {
                         0 => LearningEvidenceRoleV1::Generator,
@@ -356,6 +364,30 @@ fn topology_product_bootstrap_rejects_nonempty_file() {
         result,
         Err(DurableTopologyProposalRegistryError::BootstrapRequiresEmptyFile)
     ));
+}
+
+#[test]
+fn topology_product_rejects_observer_evaluator_controller_collision() {
+    let fixture = Fixture::new_with_observer_evaluator_collision(true);
+    let mut writer = writer();
+    let mut anchor_committer = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let result = propose_authenticated_topology_plasticity_v1(
+        fixture.request(),
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_committer,
+        50,
+    );
+    assert!(matches!(
+        result,
+        Err(TopologyPlasticityProductErrorV1::Evaluation(
+            SignedEvaluationError::Evidence(SignedEvidenceError::ControllerCollision)
+        ))
+    ));
+    assert_eq!(writer.record_count().expect("count"), 0);
 }
 
 #[test]
