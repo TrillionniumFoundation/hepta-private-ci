@@ -7,6 +7,7 @@ import { SameOriginHttpTransport } from "../src/http-transport.js";
 import { LocalStoragePendingStore } from "../src/pending-store.js";
 import { ERROR_CODES } from "../src/protocol.js";
 import { RuntimeClient } from "../src/runtime-client.js";
+import { acquireControlPlaneLease } from "../src/web-main.js";
 
 const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
@@ -44,7 +45,7 @@ async function connectWithSnapshot(client, sessionId = "session.1", generation =
   });
 }
 
-test("in-flight acknowledgement is verified against immutable request provenance after reconnect", async () => {
+test("close drains in-flight acknowledgement under immutable origin provenance before reconnect", async () => {
   let connection = 0;
   let requestResolve;
   let requestStartedResolve;
@@ -71,8 +72,16 @@ test("in-flight acknowledgement is verified against immutable request provenance
     displayedView: displayedViewBinding(),
   });
   const started = await requestStarted;
-  await client.close();
-  await client.connect({ endpointId: "runtime.1", protocolVersion: 1, manifestDigest: D1 });
+  let closeSettled = false;
+  const firstClose = client.close().then(() => { closeSettled = true; });
+  const secondClose = client.close();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(closeSettled, false);
+  await assert.rejects(
+    client.connect({ endpointId: "runtime.1", protocolVersion: 1, manifestDigest: D1 }),
+    (error) => error.code === ERROR_CODES.NOT_CONNECTED,
+  );
+
   requestResolve({
     accepted: true,
     method: started.method,
@@ -83,9 +92,17 @@ test("in-flight acknowledgement is verified against immutable request provenance
     semanticDigest: started.input.semanticDigest,
   });
   const ack = await submission;
+  await Promise.all([firstClose, secondClose]);
   assert.equal(ack.accepted, true);
   assert.equal(ack.originSessionId, "session.1");
-  assert.equal(client.readView().pending, 1);
+
+  const session = await client.connect({
+    endpointId: "runtime.1",
+    protocolVersion: 1,
+    manifestDigest: D1,
+  });
+  assert.equal(session.sessionId, "session.2");
+  assert.equal(session.pendingReconciliation, 1);
 });
 
 test("durable pending identity survives reload without persisting request payload", async () => {
@@ -941,5 +958,51 @@ test("displayed-view and stop-scope accessors fail without invoking getters", as
   );
   assert.equal(scopeGetterCalls, 0);
   assert.equal(requestCalls, 0);
+});
+
+test("browser writer lease permits only one durable writer for a persistence domain", async () => {
+  const held = new Set();
+  const lockManager = {
+    async request(name, options, callback) {
+      assert.deepEqual(options, { mode: "exclusive", ifAvailable: true });
+      if (held.has(name)) return callback(null);
+      held.add(name);
+      try {
+        return await callback({ name, mode: "exclusive" });
+      } finally {
+        held.delete(name);
+      }
+    },
+  };
+
+  const first = await acquireControlPlaneLease({
+    lockManager,
+    name: "hepta.ui.control.writer.test-domain",
+  });
+  assert.ok(first);
+  const second = await acquireControlPlaneLease({
+    lockManager,
+    name: "hepta.ui.control.writer.test-domain",
+  });
+  assert.equal(second, null);
+
+  first.release();
+  await new Promise((resolve) => setImmediate(resolve));
+  const third = await acquireControlPlaneLease({
+    lockManager,
+    name: "hepta.ui.control.writer.test-domain",
+  });
+  assert.ok(third);
+  third.release();
+});
+
+test("browser writer lease fails closed when Web Locks are unavailable", async () => {
+  await assert.rejects(
+    acquireControlPlaneLease({
+      lockManager: null,
+      name: "hepta.ui.control.writer.test-domain",
+    }),
+    (error) => error.code === ERROR_CODES.PERSISTENCE_UNAVAILABLE,
+  );
 });
 
