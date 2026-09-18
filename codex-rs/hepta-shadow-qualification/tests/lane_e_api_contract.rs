@@ -5,7 +5,7 @@ use codex_hepta_intelligence_eval::HoldoutFenceStoreV1;
 struct TestFence;
 impl HoldoutFenceStoreV1 for TestFence {
     fn load(&mut self) -> Result<HoldoutFenceStateV1, DurableHoldoutError> {
-        unreachable!("compile-time linkage fixture")
+        Err(DurableHoldoutError::Indeterminate)
     }
 
     fn compare_and_swap(
@@ -13,7 +13,7 @@ impl HoldoutFenceStoreV1 for TestFence {
         _expected: HoldoutFenceStateV1,
         _desired: HoldoutFenceStateV1,
     ) -> Result<bool, DurableHoldoutError> {
-        unreachable!("compile-time linkage fixture")
+        Err(DurableHoldoutError::Indeterminate)
     }
 }
 
