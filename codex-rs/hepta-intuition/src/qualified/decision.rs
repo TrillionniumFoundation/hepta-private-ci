@@ -5,6 +5,7 @@ use crate::calibrated::CalibratedActionCandidateV1;
 use crate::calibrated::CalibratedIntuitionReceiptV1;
 use crate::calibrated::decide_calibrated_v2;
 
+use super::QualificationMacKeyV1;
 use super::QualificationTrustV1;
 use super::QualifiedDecisionRequestV1;
 use super::QualifiedError;
@@ -166,7 +167,21 @@ fn validate_trust_roles(trust: &QualificationTrustV1<'_>) -> Result<(), Qualifie
     if artifact == scorer || artifact == assignment || scorer == assignment {
         return Err(QualifiedError::AuthenticationKeyRoleConflict);
     }
+    if same_key_material(trust.artifact_key, trust.scorer_key)
+        || same_key_material(trust.artifact_key, trust.assignment_key)
+        || same_key_material(trust.scorer_key, trust.assignment_key)
+    {
+        return Err(QualifiedError::AuthenticationKeyRoleConflict);
+    }
     Ok(())
+}
+
+fn same_key_material(left: &QualificationMacKeyV1, right: &QualificationMacKeyV1) -> bool {
+    let mut different = 0_u8;
+    for (left, right) in left.secret.iter().zip(right.secret.iter()) {
+        different |= *left ^ *right;
+    }
+    different == 0
 }
 
 fn validate_profile(

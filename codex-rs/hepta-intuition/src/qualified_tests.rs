@@ -378,6 +378,45 @@ fn qualification_roles_require_distinct_key_identities() {
 }
 
 #[test]
+fn qualification_roles_require_distinct_key_material() {
+    let mut fixture = Fixture::new().unwrap_or_else(|error| panic!("fixture: {error:?}"));
+    fixture.assignment_key = QualificationMacKeyV1::from_trusted_bytes(
+        id("qualification:key:assignment-alias"),
+        12,
+        [0x22; 32],
+        false,
+    );
+    assert_eq!(
+        fixture.decide(),
+        Err(QualifiedError::AuthenticationKeyRoleConflict)
+    );
+}
+
+#[test]
+fn assignment_abstain_and_mode_tampering_require_assignment_authority() {
+    let mut abstain_fixture =
+        Fixture::new().unwrap_or_else(|error| panic!("fixture: {error:?}"));
+    if let AssignmentModeV1::CounterBased {
+        abstain_probability,
+        ..
+    } = &mut abstain_fixture.request.assignment
+    {
+        *abstain_probability = probability_ppm(1);
+    }
+    assert_eq!(
+        abstain_fixture.decide(),
+        Err(QualifiedError::AuthenticationPayloadMismatch)
+    );
+
+    let mut mode_fixture = Fixture::new().unwrap_or_else(|error| panic!("fixture: {error:?}"));
+    mode_fixture.request.assignment = AssignmentModeV1::Deterministic;
+    assert_eq!(
+        mode_fixture.decide(),
+        Err(QualifiedError::AuthenticationPayloadMismatch)
+    );
+}
+
+#[test]
 fn calibrated_bound_kernel_rejects_nonzero_omission_bound_itself() {
     let mut fixture = Fixture::new().unwrap_or_else(|error| panic!("fixture: {error:?}"));
     fixture.request.completeness.omitted_count_bound = 1;

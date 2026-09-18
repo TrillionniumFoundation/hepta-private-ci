@@ -126,7 +126,7 @@ artifacts → policy-decision chain.
 
 ## Key rotation and revocation
 
-A production host should treat `(key_id, key_epoch)` as the admitted key identity for each of the artifact, scorer and assignment roles. The three roles require distinct key identifiers. Rotation
+A production host should treat `(key_id, key_epoch)` as the admitted key identity for each of the artifact, scorer and assignment roles. The three roles require distinct key identifiers and distinct secret material; reusing the same HMAC secret under different identifiers is rejected. Rotation
 increments the epoch or changes the key identifier. Old epochs are not accepted by a trust
 configuration holding the new epoch. Emergency revocation sets the trusted key record to
 revoked; both issuance helpers and verification then fail closed.
