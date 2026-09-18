@@ -150,6 +150,12 @@ The in-process `HmacTrustStore` is a reference verifier, not production key
 custody. Production signing keys remain outside this module under an independently
 controlled keystore/HSM or equivalent custody boundary.
 
+Critical production roles use distinct custodied keys. In particular,
+`source_authority`, `ci_executor`, `independent_evaluator` and
+`engineering_evidence_binder` may not be collapsed onto one HSM/KMS key even
+when that key is hardware backed; hardware custody does not replace identity
+separation.
+
 A key rotation must:
 
 1. enroll a new signing identity through the external trust authority;
