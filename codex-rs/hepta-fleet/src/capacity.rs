@@ -62,6 +62,42 @@ pub struct ObservedFleetCapacityV1 {
 }
 
 impl ObservedFleetCapacityV1 {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        host_id: impl Into<String>,
+        failure_domain_id: impl Into<String>,
+        host_generation: u64,
+        observation_revision: u64,
+        observed_at_ms: u64,
+        valid_until_ms: u64,
+        capacity: FleetResourceVectorV1,
+    ) -> Result<Self, CapacityObservationError> {
+        let host_id = host_id.into();
+        let failure_domain_id = failure_domain_id.into();
+        let observation_digest = observation_digest(
+            &host_id,
+            &failure_domain_id,
+            host_generation,
+            observation_revision,
+            observed_at_ms,
+            valid_until_ms,
+            capacity,
+        )?;
+        let observation = Self {
+            schema_version: FLEET_CAPACITY_OBSERVATION_SCHEMA_VERSION,
+            host_id,
+            failure_domain_id,
+            host_generation,
+            observation_revision,
+            observed_at_ms,
+            valid_until_ms,
+            capacity,
+            observation_digest,
+        };
+        observation.validate(observed_at_ms)?;
+        Ok(observation)
+    }
+
     pub fn validate(&self, now_ms: u64) -> Result<(), CapacityObservationError> {
         validate_identifier(&self.host_id)?;
         validate_identifier(&self.failure_domain_id)?;
@@ -182,26 +218,15 @@ impl FleetCapacityObserver for LocalSystemCapacityObserver {
             .now_ms
             .checked_add(self.policy.observation_ttl_ms)
             .ok_or(CapacityObservationError::InvalidObservation)?;
-        let observation_digest = observation_digest(
-            &request.host_id,
-            &request.failure_domain_id,
+        ObservedFleetCapacityV1::new(
+            request.host_id.clone(),
+            request.failure_domain_id.clone(),
             request.host_generation,
             request.observation_revision,
             request.now_ms,
             valid_until_ms,
             capacity,
-        )?;
-        Ok(ObservedFleetCapacityV1 {
-            schema_version: FLEET_CAPACITY_OBSERVATION_SCHEMA_VERSION,
-            host_id: request.host_id.clone(),
-            failure_domain_id: request.failure_domain_id.clone(),
-            host_generation: request.host_generation,
-            observation_revision: request.observation_revision,
-            observed_at_ms: request.now_ms,
-            valid_until_ms,
-            capacity,
-            observation_digest,
-        })
+        )
     }
 }
 
