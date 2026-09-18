@@ -1,52 +1,176 @@
 # secrets.heptabao: implementation design
 
 Parent: `docs/modules/secrets.heptabao/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: authorized exact-version KV v2 HTTPS read consumer implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: exact-version KV-v2 consumption and the module-owned provider-native
+SecretLease lifecycle are source-implemented. Product activation, exact-provider
+dynamic-engine qualification and independent acceptance remain separate gates.
+Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`.
 
 ## 1. Source and work envelope
 
 Roots: `external/HeptaBao`, `codex-rs/hepta-bao-adapter`.
-Packages: `HEPTABAO-1-SECRET-BOUNDARY`.
+Package: `HEPTABAO-1-SECRET-BOUNDARY`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+This module owns secret-lease metadata and its operation ledger. It does not own
+kernel final-use replay/revocation truth, provider credential values, operator
+approval keys or product-process activation.
 
 ## 2. Public operations and contract details
 
-`request_secret_lease(secret_reference, capability, operation_id) -> SecretLeaseMetadata`; `renew(lease_id, grant) -> LeaseMetadata`; `revoke(lease_id, grant) -> RevocationObservation`. Deliver an authorized secret only through the dedicated consumer channel; ordinary receipts contain references and lease metadata, never raw values. Freeze the external source pin/API version and verify it before enabling an adapter.
+Implemented source operations:
+
+- `consume_kv_v2` — exact-version KV-v2 string-field consumption;
+- `request_secret_lease` — provider-native dynamic-secret issuance;
+- `renew_secret_lease` — provider lease renewal;
+- `revoke_secret_lease` — synchronous provider lease revocation;
+- `reconcile_secret_lease` — provider lookup reconciliation for an
+  indeterminate renew/revoke;
+- `SecretLeaseStore::reconcile_issue_observation` — trusted external
+  observation path for an issuance ambiguity when no lease ID reached the
+  caller.
+
+All provider operations require the registered `BaoFinalUseHost` composition
+for product use. The host binds a signed final-use grant, independent approval,
+signed revocation feed and closed registered-consumer identity.
+
+Ordinary returned records contain metadata only. Raw KV values or dynamic
+provider credential data may enter only the registered consumer channel.
 
 ## 3. State records and transaction design
 
-The external secret authority remains the source of secret values and leases. Local `secret_metadata` and `secret_lease` records contain external identity, consumer scope, expiry, rotation generation and revocation status only. Any cache is sealed, strictly TTL/generation-bound and excluded from learning/export paths; its protection and erasure are independently tested.
+The external Bao/OpenBao authority remains the source of provider secret values
+and provider lease truth.
 
-## 4. Deterministic algorithm and scheduling
+Local `heptabao_leases_1.sqlite3` contains:
 
-Validate host-authenticated grant and quota; resolve the enrolled external authority; bind final request and operation; call the typed adapter; observe external lease identity and expiry. Lost acknowledgement yields indeterminate until the external authority is queried. Rotation invalidates dependent caches and cannot silently reuse a revoked generation.
+- provider lease ID, mount and namespace;
+- registered consumer ID;
+- exact request/scope digests;
+- keyed secret fingerprint and fingerprint-key ID;
+- renewable bit, issue/expiry timestamps;
+- monotone rotation generation;
+- state and revision.
 
-## 5. Capacity and performance profile
+It does not contain the provider credential JSON.
 
-Pilot metadata <= 16 KiB, one external operation per request, bounded TTL and renewals from policy. Separate secret-provider latency from metadata cache latency. Fail closed when the external authority or revocation frontier is unavailable.
+The operation ledger contains operation ID, operation kind, optional provider
+lease ID, semantic digest, state, bounded provider-observation digest and
+timestamps. States are `prepared`, `dispatching`, `applied`,
+`not_applied` and `indeterminate`.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+An identical operation ID + semantic digest is idempotent before dispatch.
+Reusing an operation ID with changed semantics conflicts.
 
-## 6. Concrete verification cases
+## 4. Deterministic algorithm, linearization and recovery
 
-- BAO-01: raw secret bytes are absent from logs, receipts, learning rows, exceptions and exports.
-- BAO-02: key/lease rotation invalidates the previous generation across process restart.
-- BAO-03: lost acknowledgement is reconciled without issuing duplicate unrestricted leases.
-- BAO-04: expired/revoked caller scope is rejected before the external API call.
+For issue/renew/revoke:
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+1. validate the typed request and exact consumer/lease binding;
+2. prepare the durable operation identity;
+3. validate/claim final-use authorization;
+4. durably change `prepared -> dispatching`;
+5. perform one provider request with no protocol retry;
+6. classify a definitely rejected request as `not_applied`;
+7. commit provider-observed metadata as `applied`, or retain
+   `indeterminate` when the provider outcome cannot be proved.
 
-## 7. Integration, rollback and capability ceiling
+A restart that finds `dispatching` or `indeterminate` does not resend the
+operation.
 
-Run first against an isolated fake or enrolled non-production authority. Real authority use requires exact provider identity, consent and independent acceptance. Rollback preserves current revocations and cannot restore secret values from an old general-purpose backup.
+For renew/revoke ambiguity, the local lease is fenced as
+`renew_indeterminate` or `revoke_indeterminate`. Provider lookup settles the
+current truth:
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+- active provider lease: update observed TTL/renewability; renew becomes
+  `applied`, revoke becomes `not_applied`;
+- absent/zero-TTL provider lease: local state becomes `revoked`; revoke becomes
+  `applied`, renew becomes `not_applied`.
 
-## 8. Current native implementation
+Issuance ambiguity is intentionally different. If the provider created a
+dynamic credential but the lease-ID response was lost, a generic provider
+lookup has no stable lease ID. The implementation therefore requires an
+independently trusted provider/audit observation. Unknown stays indeterminate;
+it never creates another dynamic credential as a probe.
 
-- **Implemented entrypoints:** `consume_kv_v2` in [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); `binding` in [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs). Authorized exact-version KV v2 HTTPS read consumer implemented.
-- **State and recovery:** BaoReadRequest binds one mount/path/version/string field, expected digest and consumer identity. The client owns no secret database or lease registry: it uses pinned direct HTTPS, a 1 MiB response cap, zeroizing buffers and kernel-owned durable nonce/revocation state.
-- **Source tests:** [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs), [codex-rs/hepta-bao-adapter/qa/real_service_smoke.py](../../../codex-rs/hepta-bao-adapter/qa/real_service_smoke.py). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-bao-adapter/README.md](../../../codex-rs/hepta-bao-adapter/README.md).
-- **Remaining work:** request_secret_lease, renew and revoke in section 2 are target operations, not implemented adapter APIs. The external HeptaBao service owns its own wider capabilities and must be assessed at its own source pin. Bind the real registered host consumer; the callback and trust configuration are trusted host inputs. Existing recorded tests are tied to their recorded candidates, not this documentation revision.
+Rotation generation is allocated transactionally and monotonically for one
+provider mount + namespace + consumer + scope tuple.
+
+## 5. Secret handling and fingerprint policy
+
+Dynamic provider response bodies are bounded to one mebibyte and stored in a
+zeroizing byte buffer. The provider `data` JSON is borrowed from that buffer
+and is passed only to the final registered consumer callback.
+
+Durable secret-derived metadata is HMAC-SHA-256 under host-provisioned
+`BaoReceiptKey`; it is not a plain value SHA-256. The key is not persisted by
+the adapter and its `Debug` representation is redacted. Fingerprints remain
+sensitive correlation metadata and require host retention/access policy.
+
+Zeroization covers adapter-owned buffers only. It is not a claim that TLS,
+HTTP, allocator or operating-system internals never retain transient copies.
+
+## 6. Capacity and performance profile
+
+Current module-owned bounds:
+
+- response body: <= 1 MiB;
+- one provider operation per API call;
+- renewal request increment: 1..604800 seconds;
+- accepted provider lease duration: 1..2678400 seconds;
+- local lease records: <= 250000;
+- local operation records: <= 1000000;
+- reconciliation page: 1..1024 operations.
+
+The SQLite ledger uses indexed point operations and `BEGIN IMMEDIATE`
+transactions; one claim does not rewrite the whole lease registry.
+
+These bounds do not change the shared kernel-authority replay compatibility
+store. Its replay capacity/storage/HA work is separately owned by
+`kernel.authority`.
+
+## 7. Concrete verification cases
+
+- BAO-01: raw secret bytes are absent from durable lease rows, ordinary return
+  values and debug formatting;
+- BAO-02: rotation generation is monotone for the same scope;
+- BAO-03: a dispatching operation survives restart and cannot be blindly
+  reissued;
+- BAO-04: renew ambiguity fences use until provider lookup reconciliation;
+- BAO-05: revoke ambiguity + provider absence becomes terminally revoked;
+- BAO-06: an issuance ambiguity without a received lease ID requires a trusted
+  observation and cannot auto-retry;
+- BAO-07: keyed fingerprint changes with the receipt key and does not expose
+  the HMAC key through `Debug`;
+- BAO-08: dynamic issuance delivers provider data only to the final-use
+  consumer while persisted metadata contains no credential value.
+
+Source test identities:
+`src/https_consumer_tests.rs`, `src/lease_client_tests.rs`,
+`src/lease_store_tests.rs`, and registered-host tests in
+`src/final_use_host.rs`.
+
+## 8. Current native implementation and remaining integration
+
+Implemented source:
+
+- `codex-rs/hepta-bao-adapter/src/https_consumer.rs`;
+- `codex-rs/hepta-bao-adapter/src/lease_client.rs`;
+- `codex-rs/hepta-bao-adapter/src/lease_store.rs`;
+- `codex-rs/hepta-bao-adapter/src/final_use_host.rs`;
+- `codex-rs/hepta-bao-adapter/migrations/0001_secret_lease.sql`.
+
+Remaining integration/evidence work is not an unimplemented module API:
+
+- select a named product-process caller and production state root;
+- provision `BaoReceiptKey` and authority/approval/revocation trust through
+  protected host/KMS/operator channels;
+- exercise provider-native dynamic issue/renew/revoke/lookup against the exact
+  enrolled OpenBao/HeptaBao source pin;
+- retain exact-head and deterministic synthetic-merge execution receipts;
+- qualify target-host recovery, backup/anti-rollback and operator procedures;
+- close the separately owned `kernel.authority` replay scalability and
+  distributed active-active boundary;
+- independent acceptance, canary, promotion and release.
+
+No source document or passing repository-owned test grants those external
+states.
