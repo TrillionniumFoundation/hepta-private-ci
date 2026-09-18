@@ -838,10 +838,9 @@ fn add_rrf_channel(
         let aggregate = ranked.entry(memory.clone()).or_default();
         aggregate.score += RRF_SCALE / (RRF_K + rank);
         aggregate.channels.insert(source);
-        aggregate.channel_ranks.insert(
-            source,
-            u32::try_from(index + 1).unwrap_or(u32::MAX),
-        );
+        aggregate
+            .channel_ranks
+            .insert(source, u32::try_from(index + 1).unwrap_or(u32::MAX));
     }
 }
 
