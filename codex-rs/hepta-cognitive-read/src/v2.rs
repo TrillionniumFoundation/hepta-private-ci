@@ -1,5 +1,11 @@
 //! Owner-local, module-native bounded read projection.
 //!
+//! `read_v2` is the lower-level projection primitive. It validates an
+//! immutable caller-supplied `CognitiveSnapshot`, but it does not prove that
+//! the snapshot came from a currently retained authoritative generation.
+//! Product callers that can affect delivered context must enter through
+//! `read_authoritative` and perform its final-use owner revalidation.
+//!
 //! This encoding is not registered in `CONTRACTS.json` or
 //! `PROTOCOL_SCHEMAS.json`, is not a `ModulePort`, and is not a durable or wire
 //! protocol.  It only gives this crate a deterministic byte representation for
