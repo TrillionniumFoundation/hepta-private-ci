@@ -3532,7 +3532,9 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-fleet",
+ "codex-hepta-operations",
  "codex-hepta-paths",
+ "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
  "pretty_assertions",
@@ -3594,7 +3596,12 @@ name = "codex-hepta-cognitive-store"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
+ "codex-hepta-contracts",
+ "codex-hepta-memory",
+ "codex-hepta-paths",
  "codex-hepta-types",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
@@ -3974,7 +3981,12 @@ dependencies = [
 name = "codex-hepta-operations"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "sqlx",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
