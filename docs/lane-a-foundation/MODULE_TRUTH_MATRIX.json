@@ -33,35 +33,54 @@
       "implementationDetail": "docs/lane-a-foundation/platform.types/PRIMITIVES_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "native_primitives",
+        "implementation": "native_contracts_v1",
         "durability": "none",
-        "qualification": "source_tests_present",
+        "qualification": "source_tests_and_cross_language_vectors_present",
         "activation": "library_only",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded identity and byte/text values",
-        "digest and monotonic revision/generation primitives",
-        "fixed-point probability and numeric-signal conversion"
+        "bounded byte/text values",
+        "profiled stable identifiers, monotonic values and non-authorizing posture",
+        "canonical digest framing and immutable schema/normalization registry",
+        "fixed-point probability and registry-gated numeric-signal conversion"
       ],
       "targetOnlyCapabilities": [
         "cross-language generated bindings",
-        "runtime schema registry"
+        "ambient mutable runtime schema registry",
+        "production numeric-profile admission and named product composition"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-types/src/lib.rs",
           "mustContain": [
             "#![forbid(unsafe_code)]",
-            "pub use identity::StableId;",
-            "pub use identity::IdentityError;",
-            "pub use numeric_conversion::rescale_signal;"
+            "pub use identity::IdProfileV1;",
+            "pub use identity::NonAuthorizingPosture;",
+            "pub use canonical_digest::canonical_digest_v1;",
+            "pub use registry::ContractRegistryV1;",
+            "pub use numeric_conversion::rescale_signal_registered;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+          "mustContain": [
+            "const DOMAIN_PREFIX_V1: &[u8] = b\"HEPTA-CANONICAL-DIGEST-V1\\0\";",
+            "pub fn canonical_digest_v1("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/CANONICAL_DIGEST_V1.md",
+          "mustContain": [
+            "Canonical digest V1",
+            "Rust, Python and Node"
           ]
         },
         {
           "path": "codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md",
           "mustContain": [
             "Native numeric signal conversion V1",
+            "rescale_signal_registered",
             "Unknown profile IDs reject"
           ]
         }
