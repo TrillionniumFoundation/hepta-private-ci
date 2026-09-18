@@ -199,3 +199,204 @@ impl From<ObjectivePublicationStoreErrorV1> for ObjectiveProductErrorV1 {
         Self::Store(value)
     }
 }
+
+}
+
+pub struct ObjectiveProductCallerV1 {
+    store: DurableObjectivePublicationStoreV1,
+}
+
+impl ObjectiveProductCallerV1 {
+    pub fn create(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+    ) -> Result<Self, ObjectivePublicationStoreErrorV1> {
+        Ok(Self {
+            store: DurableObjectivePublicationStoreV1::create(file, binding, max_records)?,
+        })
+    }
+
+    pub fn recover(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+        recovery: ObjectivePublicationRecoveryV1,
+    ) -> Result<Self, ObjectivePublicationStoreErrorV1> {
+        Ok(Self {
+            store: DurableObjectivePublicationStoreV1::recover(
+                file,
+                binding,
+                max_records,
+                recovery,
+            )?,
+        })
+    }
+
+    pub fn admit_compile_publish(
+        &mut self,
+        request: ObjectiveProductRequestV1,
+    ) -> Result<ObjectiveProductReceiptV1, ObjectiveProductErrorV1> {
+        validate_run_bindings(&request.run)?;
+        let admitted = admit_objective_v1(&request.envelope, &request.profile, &request.context)?;
+        let admission = admitted.receipt().clone();
+        let outcome = compile_admitted_objective_v1(admitted)?;
+        let objective = outcome
+            .compile_result
+            .map_err(|conflict| ObjectiveProductErrorV1::ObjectiveConflict(conflict.conflict_digest))?;
+        let run_start = RunStartSnapshotV1 {
+            run_id: request.run.run_id,
+            objective_digest: objective.objective.semantic_digest,
+            hard_constraint_digest: objective.objective.hard_constraint_digest,
+            preference_state_digest: request.run.preference_state_digest,
+            model_tuple_digest: request.run.model_tuple_digest,
+            prompt_registry_digest: request.run.prompt_registry_digest,
+            artifact_set_digest: request.run.artifact_set_digest,
+            authority_epoch: request.run.authority_epoch,
+            generation: request.run.generation,
+            fence_digest: request.run.fence_digest,
+        };
+        let (publication, disposition) =
+            self.store.publish(admission, objective, run_start)?;
+        Ok(ObjectiveProductReceiptV1 {
+            publication,
+            disposition,
+            authority: AuthorityPosture::DENY_ALL,
+        })
+    }
+
+    pub fn records(
+        &self,
+    ) -> Result<&[ObjectivePublicationV1], ObjectivePublicationStoreErrorV1> {
+        self.store.records()
+    }
+
+    pub fn publication_for_run(
+        &self,
+        run_id: &StableId,
+    ) -> Result<Option<&ObjectivePublicationV1>, ObjectivePublicationStoreErrorV1> {
+        self.store.publication_for_run(run_id)
+    }
+
+    pub fn anchor(&self) -> Result<ObjectivePublicationAnchorV1, ObjectivePublicationStoreErrorV1> {
+        self.store.anchor()
+    }
+}
+
+pub struct DurableObjectivePublicationStoreV1 {
+    file: LockedFile,
+    records: Vec<ObjectivePublicationV1>,
+    max_records: usize,
+    durable_length: u64,
+    poisoned: bool,
+}
+
+impl DurableObjectivePublicationStoreV1 {
+    pub fn create(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+    ) -> Result<Self, ObjectivePublicationStoreErrorV1> {
+        validate_store_domain(binding, max_records)?;
+        let mut file = LockedFile::acquire(file)?;
+        if file.metadata()?.len() != 0 {
+            return Err(ObjectivePublicationStoreErrorV1::AlreadyInitialized);
+        }
+        let mut header = MAGIC.to_vec();
+        header.extend_from_slice(binding.as_array());
+        header.extend_from_slice(Digest32::of_bytes(&header).as_array());
+        file.seek(SeekFrom::Start(0))?;
+        file.write_all(&header)
+            .and_then(|()| file.sync_all())
+            .map_err(|_| ObjectivePublicationStoreErrorV1::Indeterminate)?;
+        Ok(Self {
+            file,
+            records: Vec::new(),
+            max_records,
+            durable_length: HEADER_BYTES as u64,
+            poisoned: false,
+        })
+    }
+
+    pub fn recover(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+        recovery: ObjectivePublicationRecoveryV1,
+    ) -> Result<Self, ObjectivePublicationStoreErrorV1> {
+        validate_store_domain(binding, max_records)?;
+        validate_recovery(recovery, max_records)?;
+        let mut file = LockedFile::acquire(file)?;
+        let (records, cursor, length) = replay(&mut file, binding, max_records)?;
+        validate_anchor(&records, recovery)?;
+        if cursor != length {
+            file.set_len(cursor)
+                .map_err(|_| ObjectivePublicationStoreErrorV1::Indeterminate)?;
+        }
+        file.sync_all()
+            .map_err(|_| ObjectivePublicationStoreErrorV1::Indeterminate)?;
+        Ok(Self {
+            file,
+            records,
+            max_records,
+            durable_length: cursor,
+            poisoned: false,
+        })
+    }
+
+    fn publish(
+        &mut self,
+        admission: ObjectiveAdmissionReceiptV1,
+        objective: ObjectiveCompileReceipt,
+        run_start: RunStartSnapshotV1,
+    ) -> Result<
+        (ObjectivePublicationV1, ObjectivePublicationDispositionV1),
+        ObjectivePublicationStoreErrorV1,
+    > {
+        if self.poisoned {
+            return Err(ObjectivePublicationStoreErrorV1::Poisoned);
+        }
+        validate_publication_semantics(&admission, &objective, &run_start)?;
+        let body = StoredPublicationBody::from_typed(&admission, &objective, &run_start);
+        let payload =
+            serde_json::to_vec(&body).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?;
+        if payload.len() > MAX_PAYLOAD_BYTES {
+            return Err(ObjectivePublicationStoreErrorV1::Capacity);
+        }
+        let publication_digest = Digest32::of_bytes(&payload);
+
+        for existing in &self.records {
+            if existing.run_start.run_id == run_start.run_id {
+                if existing.publication_digest == publication_digest {
+                    return Ok((
+                        existing.clone(),
+                        ObjectivePublicationDispositionV1::IdempotentReplay,
+                    ));
+                }
+                return Err(ObjectivePublicationStoreErrorV1::Conflict);
+            }
+            if existing.objective.objective.request_id == objective.objective.request_id
+                && existing.objective.objective.revision == objective.objective.revision
+                && (existing.objective.objective.semantic_digest
+                    != objective.objective.semantic_digest
+                    || existing.admission.intent_digest != admission.intent_digest
+                    || existing.admission.profile_digest != admission.profile_digest
+                    || existing.admission.admitted_source_digest != admission.admitted_source_digest)
+            {
+                return Err(ObjectivePublicationStoreErrorV1::Conflict);
+            }
+        }
+        if self.records.len() >= self.max_records {
+            return Err(ObjectivePublicationStoreErrorV1::Capacity);
+        }
+
+        let sequence = self.records.len() as u64 + 1;
+        let predecessor_chain_digest = self
+            .records
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest);
+        let chain_digest =
+            publication_chain_digest(sequence, predecessor_chain_digest, publication_digest);
+        let frame = encode_frame(
+            sequence,
+            predecessor_chain_digest,
