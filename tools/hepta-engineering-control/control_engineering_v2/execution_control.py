@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 import time
+import tempfile
 
 from .control_plane import EngineeringError, bounded_tuple, checked_id, semantic_digest
 
@@ -18,6 +19,7 @@ except ImportError:  # pragma: no cover - production strong sandbox is Linux.
 MAX_PARALLEL_SANDBOXES = 8
 MAX_INFRASTRUCTURE_RETRIES = 2
 MAX_MUTATION_PROBES = 256
+SANDBOX_LOCK_DIRECTORY_ENV = "HEPTA_ENGINEERING_SANDBOX_LOCK_DIR"
 _RETRYABLE_INFRA_CODES = frozenset(
     {
         "network_isolation_unavailable",
@@ -46,6 +48,26 @@ class SandboxSlotLease:
 
     def __exit__(self, exc_type, exc, traceback) -> None:
         self.close()
+
+
+def default_host_sandbox_limiter(
+    maximum_slots: int = MAX_PARALLEL_SANDBOXES,
+) -> "HostSandboxLimiter":
+    """Return the canonical cross-process limiter for authoritative host execution.
+
+    The optional environment override is an operator configuration input.  In its
+    absence every process on the host converges on one stable temporary-directory
+    namespace, so separate CLI/library processes cannot each create an independent
+    eight-slot pool.
+    """
+
+    raw = os.environ.get(SANDBOX_LOCK_DIRECTORY_ENV)
+    directory = (
+        Path(raw)
+        if raw
+        else Path(tempfile.gettempdir()) / "hepta-engineering-sandbox-slots-v1"
+    )
+    return HostSandboxLimiter(directory, maximum_slots=maximum_slots)
 
 
 class HostSandboxLimiter:
