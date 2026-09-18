@@ -54,7 +54,7 @@ The module has independent source, composition and activation states:
 | durable owner / reopen / migration | source implemented |
 | reviewer-signature admission compatibility | source implemented, non-authoritative compatibility/test verifier |
 | kernel final-use authenticated admission and lifecycle mutation | source implemented |
-| payload-backed realization and exact dereference | source implemented |
+| FinalUse-governed payload-backed realization and exact dereference | source implemented |
 | named non-test source consumer | source composed in `intelligence.control` |
 | deployed runtime owner / product activation | not established |
 | terminal real-model payload observation | not proved |
