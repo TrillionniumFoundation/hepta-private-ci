@@ -20,7 +20,9 @@ from .control_plane import (
     EngineeringStore,
     WorkEnvelope,
     WorkPackage,
+    _validate_package,
     bounded_tuple,
+    canonical_json,
     checked_id,
     checked_sha256,
     canonical_paths,
@@ -301,33 +303,16 @@ def plan_engineering_work(
     generation_id: str,
     now_ns: int | None = None,
 ) -> EngineeringPlan:
-    """Produce a deterministic resource-aware plan from authenticated facts."""
+    """Atomically publish the exact resource-aware assignment generation."""
     now = time.time_ns() if now_ns is None else now_ns
     if type(now) is not int or now < 0:
         raise EngineeringError("invalid_time")
+    if not isinstance(store, EngineeringStore):
+        raise EngineeringError("invalid_engineering_store")
     checked_id(generation_id, "generation_id")
     if not isinstance(envelope, WorkEnvelope):
         raise EngineeringError("invalid_envelope")
-    persisted = store._get_envelope(envelope.envelope_id, now)
-    persisted_allowed = tuple(
-        json.loads(bytes(persisted["allowed_paths_json"]).decode("utf-8"))
-    )
-    persisted_denied = tuple(
-        json.loads(bytes(persisted["denied_authorities_json"]).decode("utf-8"))
-    )
-    if (
-        str(persisted["source_commit"]) != envelope.source_commit
-        or str(persisted["source_tree"]) != envelope.source_tree
-        or str(persisted["objective_digest"]) != envelope.objective_digest
-        or str(persisted["contract_digest"]) != envelope.contract_digest
-        or str(persisted["owner"]) != envelope.owner
-        or persisted_allowed != canonical_paths(envelope.allowed_paths)
-        or persisted_denied != tuple(sorted(envelope.denied_authorities))
-        or int(persisted["maximum_assignments"]) != envelope.maximum_assignments
-        or int(persisted["expires_unix_ns"]) != envelope.expires_unix_ns
-        or int(persisted["revision"]) != envelope.revision
-    ):
-        raise EngineeringError("orchestration_envelope_binding_mismatch")
+
     package_values = bounded_tuple(packages, 4096, "package_limit_exceeded")
     worker_values = bounded_tuple(workers, MAX_WORKERS, "worker_limit_exceeded")
     receipt_values = bounded_tuple(
@@ -335,7 +320,12 @@ def plan_engineering_work(
     )
     if not isinstance(capacity, EngineeringCapacity):
         raise EngineeringError("invalid_engineering_capacity")
-    if type(capacity.ci_units) is not int or not 0 <= capacity.ci_units <= MAX_CAPACITY_UNITS:
+    if (
+        type(capacity.ci_units) is not int
+        or not 0 <= capacity.ci_units <= MAX_CAPACITY_UNITS
+        or not isinstance(capacity.review, tuple)
+        or len(capacity.review) > MAX_REVIEW_ROLES
+    ):
         raise EngineeringError("invalid_ci_capacity")
 
     if any(not isinstance(value, EngineeringWorkPackage) for value in package_values):
@@ -355,7 +345,10 @@ def plan_engineering_work(
     worker_scopes: dict[str, tuple[str, ...]] = {}
     for worker in worker_values:
         checked_id(worker.worker_id, "worker_id")
-        if type(worker.capacity_units) is not int or not 0 <= worker.capacity_units <= MAX_CAPACITY_UNITS:
+        if (
+            type(worker.capacity_units) is not int
+            or not 0 <= worker.capacity_units <= MAX_CAPACITY_UNITS
+        ):
             raise EngineeringError("invalid_worker_capacity")
         if (
             not isinstance(worker.skills, tuple)
@@ -373,34 +366,26 @@ def plan_engineering_work(
             raise EngineeringError("invalid_worker_paths")
         worker_scopes[worker.worker_id] = canonical_paths(worker.allowed_paths)
 
-    review_remaining: dict[str, int] = {}
-    if len(capacity.review) > MAX_REVIEW_ROLES:
-        raise EngineeringError("review_role_limit_exceeded")
+    review_template: dict[str, int] = {}
     for row in capacity.review:
         if not isinstance(row, ReviewCapacity):
             raise EngineeringError("invalid_review_capacity")
         checked_id(row.role, "review_role")
         if (
-            row.role in review_remaining
+            row.role in review_template
             or type(row.slots) is not int
             or not 0 <= row.slots <= MAX_CAPACITY_UNITS
         ):
             raise EngineeringError("invalid_review_capacity")
-        review_remaining[row.role] = row.slots
+        review_template[row.role] = row.slots
 
-    completed: dict[str, CompletionReceipt] = {}
-    for receipt in receipt_values:
-        if receipt.package_id in completed:
-            raise EngineeringError("duplicate_completion_receipt")
-        _verify_completion(receipt, envelope, store, trust_store, now)
-        completed[receipt.package_id] = receipt
-
-    base_packages: list[WorkPackage] = []
-    already_completed: set[str] = set(completed)
+    normalized_packages: list[tuple[EngineeringWorkPackage, WorkPackage]] = []
     for package in package_values:
         checked_id(package.package_id, "package_id")
         if (
-            type(package.capacity_units) is not int
+            not isinstance(package.predecessors, tuple)
+            or not isinstance(package.write_paths, tuple)
+            or type(package.capacity_units) is not int
             or not 1 <= package.capacity_units <= MAX_CAPACITY_UNITS
             or type(package.ci_units) is not int
             or not 0 <= package.ci_units <= MAX_CAPACITY_UNITS
@@ -417,115 +402,280 @@ def plan_engineering_work(
         for role in package.review_roles:
             checked_id(role, "required_review_role")
         _score(package)
-        if package.package_id not in already_completed:
-            base_packages.append(
-                WorkPackage(
-                    package.priority,
+        native = _validate_package(
+            WorkPackage(
+                package.priority,
+                package.package_id,
+                package.predecessors,
+                package.write_paths,
+            )
+        )
+        normalized_packages.append((package, native))
+
+    completed: dict[str, CompletionReceipt] = {}
+    for receipt in receipt_values:
+        if receipt.package_id in completed:
+            raise EngineeringError("duplicate_completion_receipt")
+        _verify_completion(receipt, envelope, store, trust_store, now)
+        completed[receipt.package_id] = receipt
+
+    completed_ids = frozenset(completed)
+    store._verify_package_graph(
+        tuple(native for _, native in normalized_packages),
+        completed_ids,
+    )
+
+    normalized_package_rows = []
+    for package, native in normalized_packages:
+        row = asdict(package)
+        row["predecessors"] = native.predecessors
+        row["write_paths"] = native.write_paths
+        normalized_package_rows.append(row)
+    normalized_worker_rows = []
+    for worker in worker_values:
+        row = asdict(worker)
+        row["allowed_paths"] = worker_scopes[worker.worker_id]
+        normalized_worker_rows.append(row)
+
+    with store._transaction():
+        persisted = store._get_envelope(envelope.envelope_id, now)
+        try:
+            persisted_allowed = tuple(
+                json.loads(bytes(persisted["allowed_paths_json"]).decode("utf-8"))
+            )
+            persisted_denied = tuple(
+                json.loads(
+                    bytes(persisted["denied_authorities_json"]).decode("utf-8")
+                )
+            )
+        except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+            raise EngineeringError("orchestration_envelope_state_invalid") from None
+        if (
+            str(persisted["source_commit"]) != envelope.source_commit
+            or str(persisted["source_tree"]) != envelope.source_tree
+            or str(persisted["objective_digest"]) != envelope.objective_digest
+            or str(persisted["contract_digest"]) != envelope.contract_digest
+            or str(persisted["owner"]) != envelope.owner
+            or persisted_allowed != canonical_paths(envelope.allowed_paths)
+            or persisted_denied != tuple(sorted(envelope.denied_authorities))
+            or int(persisted["maximum_assignments"]) != envelope.maximum_assignments
+            or int(persisted["expires_unix_ns"]) != envelope.expires_unix_ns
+            or int(persisted["revision"]) != envelope.revision
+        ):
+            raise EngineeringError("orchestration_envelope_binding_mismatch")
+
+        store._expire_leases(now)
+        active_rows = store._active_lease_rows(now)
+        active_paths: list[str] = []
+        for row in active_rows:
+            try:
+                active_paths.extend(
+                    json.loads(bytes(row["paths_json"]).decode("utf-8"))
+                )
+            except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+                raise EngineeringError("invalid_lease_paths_encoding") from None
+
+        worker_remaining = {
+            row.worker_id: row.capacity_units for row in worker_values
+        }
+        review_remaining = dict(review_template)
+        ci_remaining = capacity.ci_units
+        selected_paths: list[str] = []
+        assignments: list[EngineeringAssignment] = []
+        blocked: dict[str, str] = {}
+
+        for package, _native in normalized_packages:
+            if package.package_id in completed_ids:
+                blocked[package.package_id] = "already_completed"
+
+        ready: list[tuple[EngineeringWorkPackage, WorkPackage]] = []
+        for package, native in normalized_packages:
+            if package.package_id in completed_ids:
+                continue
+            missing = tuple(sorted(set(native.predecessors) - completed_ids))
+            if missing:
+                blocked[package.package_id] = "missing_predecessor:" + missing[0]
+                continue
+            if path_sets_overlap(native.write_paths, tuple(active_paths)):
+                blocked[package.package_id] = "active_path_lease"
+                continue
+            ready.append((package, native))
+
+        ordered = sorted(
+            ready,
+            key=lambda item: (
+                -_score(item[0]),
+                item[0].priority,
+                item[0].package_id,
+            ),
+        )
+        assignment_limit = min(
+            int(persisted["maximum_assignments"]),
+            128,
+        )
+        for package, native in ordered:
+            if len(assignments) >= assignment_limit:
+                blocked[package.package_id] = "assignment_limit"
+                continue
+            if path_sets_overlap(native.write_paths, tuple(selected_paths)):
+                blocked[package.package_id] = "batch_path_conflict"
+                continue
+
+            required = set(package.required_skills)
+            eligible_workers = []
+            for worker in worker_values:
+                if not required.issubset(set(worker.skills)):
+                    continue
+                if any(
+                    not path_is_within(path, worker_scopes[worker.worker_id])
+                    for path in native.write_paths
+                ):
+                    continue
+                if worker_remaining[worker.worker_id] < package.capacity_units:
+                    continue
+                eligible_workers.append(worker)
+            if not eligible_workers:
+                blocked[package.package_id] = "worker_skill_or_capacity"
+                continue
+            if ci_remaining < package.ci_units:
+                blocked[package.package_id] = "ci_capacity"
+                continue
+            missing_review = next(
+                (
+                    role
+                    for role in package.review_roles
+                    if review_remaining.get(role, 0) <= 0
+                ),
+                None,
+            )
+            if missing_review is not None:
+                blocked[package.package_id] = "review_capacity:" + missing_review
+                continue
+
+            worker = sorted(
+                eligible_workers,
+                key=lambda row: (
+                    -worker_remaining[row.worker_id],
+                    row.worker_id,
+                ),
+            )[0]
+            worker_remaining[worker.worker_id] -= package.capacity_units
+            ci_remaining -= package.ci_units
+            for role in package.review_roles:
+                review_remaining[role] -= 1
+            selected_paths.extend(native.write_paths)
+            assignments.append(
+                EngineeringAssignment(
                     package.package_id,
-                    package.predecessors,
-                    package.write_paths,
+                    worker.worker_id,
+                    _score(package),
+                    package.ci_units,
+                    tuple(sorted(package.review_roles)),
                 )
             )
 
-    # The durable owner still publishes the exact DAG/path/frontier proposal.
-    base = store.schedule_ready_packages(
-        envelope.envelope_id,
-        tuple(base_packages),
-        tuple(completed),
-        generation_id=generation_id,
-        now_ns=now,
-    )
-    base_assigned = set(base.assigned)
-    blocked: dict[str, str] = dict(base.blocked)
-    for identity in sorted(already_completed & set(package_ids)):
-        blocked[identity] = "already_completed"
-    worker_remaining = {row.worker_id: row.capacity_units for row in worker_values}
-    worker_paths: dict[str, list[str]] = {row.worker_id: [] for row in worker_values}
-    ci_remaining = capacity.ci_units
-    assignments: list[EngineeringAssignment] = []
-
-    by_id = {value.package_id: value for value in package_values}
-    ordered = sorted(
-        (by_id[identity] for identity in base.assigned),
-        key=lambda item: (-_score(item), item.priority, item.package_id),
-    )
-    for package in ordered:
-        score = _score(package)
-        eligible_workers = []
-        required = set(package.required_skills)
-        for worker in worker_values:
-            if not required.issubset(set(worker.skills)):
-                continue
-            if any(
-                not path_is_within(path, worker_scopes[worker.worker_id])
-                for path in package.write_paths
-            ):
-                continue
-            if worker_remaining[worker.worker_id] < package.capacity_units:
-                continue
-            if path_sets_overlap(package.write_paths, tuple(worker_paths[worker.worker_id])):
-                continue
-            eligible_workers.append(worker)
-        if not eligible_workers:
-            blocked[package.package_id] = "worker_skill_or_capacity"
-            continue
-        if ci_remaining < package.ci_units:
-            blocked[package.package_id] = "ci_capacity"
-            continue
-        missing_review = next(
-            (
-                role
-                for role in package.review_roles
-                if review_remaining.get(role, 0) <= 0
-            ),
-            None,
-        )
-        if missing_review is not None:
-            blocked[package.package_id] = "review_capacity:" + missing_review
-            continue
-        worker = sorted(
-            eligible_workers,
-            key=lambda row: (-worker_remaining[row.worker_id], row.worker_id),
-        )[0]
-        worker_remaining[worker.worker_id] -= package.capacity_units
-        worker_paths[worker.worker_id].extend(package.write_paths)
-        ci_remaining -= package.ci_units
-        for role in package.review_roles:
-            review_remaining[role] -= 1
-        assignments.append(
-            EngineeringAssignment(
-                package.package_id,
-                worker.worker_id,
-                score,
-                package.ci_units,
-                tuple(sorted(package.review_roles)),
+        assigned = tuple(row.package_id for row in assignments)
+        blocked_rows = tuple(sorted(blocked.items()))
+        integration_order = assigned
+        merge_queue = tuple(
+            MergeQueueProposal(
+                index + 1,
+                row.package_id,
+                "awaiting_candidate_evidence",
+                row.score_q32,
             )
+            for index, row in enumerate(assignments)
+        )
+        completion_frontier_digest = semantic_digest(
+            [asdict(completed[key]) for key in sorted(completed)]
         )
 
-    assignment_ids = {row.package_id for row in assignments}
-    for identity in base_assigned - assignment_ids:
-        blocked.setdefault(identity, "advanced_capacity")
+        from .hardening import bind_assignment_frontier
 
-    integration_order = tuple(row.package_id for row in assignments)
-    merge_queue = tuple(
-        MergeQueueProposal(
-            index + 1,
-            row.package_id,
-            "awaiting_candidate_evidence",
-            row.score_q32,
+        bind_assignment_frontier(store, persisted, generation_id, now)
+        generation_digest = semantic_digest(
+            {
+                "profile": "resource-aware-engineering-v1",
+                "envelopeId": envelope.envelope_id,
+                "packages": sorted(
+                    normalized_package_rows,
+                    key=lambda row: row["package_id"],
+                ),
+                "workers": sorted(
+                    normalized_worker_rows,
+                    key=lambda row: row["worker_id"],
+                ),
+                "capacity": {
+                    "ciUnits": capacity.ci_units,
+                    "review": [
+                        asdict(row)
+                        for row in sorted(
+                            capacity.review,
+                            key=lambda row: row.role,
+                        )
+                    ],
+                },
+                "completionFrontierDigest": completion_frontier_digest,
+                "assigned": assigned,
+                "blocked": blocked_rows,
+                "assignments": [asdict(row) for row in assignments],
+                "integrationOrder": integration_order,
+                "mergeQueue": [asdict(row) for row in merge_queue],
+            }
         )
-        for index, row in enumerate(assignments)
-    )
-    completion_frontier_digest = semantic_digest(
-        [asdict(completed[key]) for key in sorted(completed)]
-    )
+        existing = store.connection.execute(
+            "SELECT semantic_digest,assigned_json,blocked_json,created_unix_ns "
+            "FROM assignment_generations WHERE generation_id=?",
+            (generation_id,),
+        ).fetchone()
+        if existing is not None:
+            if str(existing["semantic_digest"]) != generation_digest:
+                raise EngineeringError("generation_identity_conflict")
+            try:
+                stored_assigned = tuple(
+                    json.loads(bytes(existing["assigned_json"]).decode("utf-8"))
+                )
+                stored_blocked = tuple(
+                    tuple(item)
+                    for item in json.loads(
+                        bytes(existing["blocked_json"]).decode("utf-8")
+                    )
+                )
+            except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+                raise EngineeringError("assignment_generation_invalid") from None
+            if stored_assigned != assigned or stored_blocked != blocked_rows:
+                raise EngineeringError("assignment_generation_invalid")
+        else:
+            store.connection.execute(
+                "INSERT INTO assignment_generations VALUES(?,?,?,?,?,?)",
+                (
+                    generation_id,
+                    envelope.envelope_id,
+                    generation_digest,
+                    canonical_json(assigned),
+                    canonical_json(blocked_rows),
+                    now,
+                ),
+            )
+            store._append_audit(
+                "assignment_generation_published",
+                {
+                    "generationId": generation_id,
+                    "envelopeId": envelope.envelope_id,
+                    "semanticDigest": generation_digest,
+                    "profile": "resource-aware-engineering-v1",
+                },
+                now,
+            )
+
     return EngineeringPlan(
         generation_id,
         envelope.envelope_id,
         tuple(assignments),
-        tuple(sorted(blocked.items())),
+        blocked_rows,
         integration_order,
         merge_queue,
-        semantic_digest(asdict(base)),
+        generation_digest,
         completion_frontier_digest,
     )
+
