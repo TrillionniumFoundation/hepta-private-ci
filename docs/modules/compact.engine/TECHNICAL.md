@@ -191,8 +191,9 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs): deletion non-resurrection, protected-reference retention/missing-reference failure, deterministic ordering, record/byte/token budgets, semantic snapshot/tokenizer binding, payload budget and evaluator/attestation proof binding.
+- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs): deletion non-resurrection, protected-reference retention/missing-reference failure, deterministic ordering, record/byte/token budgets, 4,096-record bounded regression, semantic snapshot/tokenizer binding, payload budget and evaluator/attestation proof binding.
 - `codex-rs/hepta-memory/src/qualified_compact_store_tests.rs`: idempotent publish, predecessor CAS, concurrent same-generation winner, crash-before-commit rollback/reopen and corrupt-row fail-closed recovery.
+- `codex-rs/hepta-agentd/src/production_writer_host_tests.rs`: authorized Agentd host -> qualified engine -> durable SQLite publication -> reopen round trip.
 - `codex-rs/hepta-cognitive-types/src/lane_c_tests.rs`: V2 proof digest/provenance binding.
 
 Exact-head test identities are generated at CI runtime by
