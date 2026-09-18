@@ -375,7 +375,10 @@ def _verify_product_receipt(
         or canonical.get("allowedWritePaths")
         != ["tools/hepta-engineering-control/**"]
         or canonical.get("developmentAfter")
-        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
+        != [
+            "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+            "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+        ]
         or canonical.get("activationAfter")
         != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
     ):
