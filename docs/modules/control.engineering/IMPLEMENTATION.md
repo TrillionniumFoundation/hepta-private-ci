@@ -38,7 +38,7 @@ must provide the separate owner authorization required by its own contract.
 | `closure.py` | Source-tree and freshness-window binding, dormant assimilation | Seal and public facade |
 | `seal.py` | Signed evidence seals, replay prevention, review and durable eligibility | Public package and facade |
 | `external_controls.py` | Distributed fencing, external audit anchor and HSM/KMS custody receipt admission | Production worker/deployment composition |
-| `product_gate.py` | Named repository CI product caller over the v2 durable owner/orchestrator | `hepta-consolidated-source.yml` |
+| `product_gate.py` | Named repository CI product caller over the v2 durable owner/orchestrator; PR qualification emits separate source-head and base-merge execution receipts | `hepta-consolidated-source.yml` |
 | `cli.py` | Bounded JSON ingress and local operations | `python -m control_engineering_v2`, installed CLI |
 
 There are no import-time store patches or alternate clone sandbox owners. The
