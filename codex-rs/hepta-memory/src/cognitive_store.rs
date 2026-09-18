@@ -1,6 +1,7 @@
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -1250,13 +1251,54 @@ fn valid_recovered_database_filename(value: &str) -> bool {
 
 fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreError> {
     let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
-    let value = match fs::read_to_string(&pointer) {
-        Ok(value) => value,
+
+    #[cfg(unix)]
+    let mut pointer_file = {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::OpenOptionsExt;
+
+        let file = match OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+            .open(&pointer)
+        {
+            Ok(file) => file,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                return Ok(root.join(COGNITIVE_DB_FILENAME));
+            }
+            Err(error) => return Err(unavailable(error)),
+        };
+        let metadata = file.metadata().map_err(unavailable)?;
+        if !metadata.is_file()
+            || metadata.nlink() != 1
+            || metadata.mode() & 0o7777 != 0o600
+            || metadata.len() > 256
+        {
+            return Err(CognitiveStoreError::Corrupt(
+                "cognitive active database pointer is not one private regular file".to_string(),
+            ));
+        }
+        file
+    };
+    #[cfg(not(unix))]
+    let mut pointer_file = match File::open(&pointer) {
+        Ok(file) => file,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
             return Ok(root.join(COGNITIVE_DB_FILENAME));
         }
         Err(error) => return Err(unavailable(error)),
     };
+
+    let mut value = String::new();
+    pointer_file
+        .take(257)
+        .read_to_string(&mut value)
+        .map_err(unavailable)?;
+    if value.len() > 256 {
+        return Err(CognitiveStoreError::Corrupt(
+            "cognitive active database pointer exceeds its bound".to_string(),
+        ));
+    }
     let value = value.trim();
     if !valid_recovered_database_filename(value) {
         return Err(CognitiveStoreError::Corrupt(
@@ -1275,6 +1317,16 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
         return Err(CognitiveStoreError::Corrupt(
             "cognitive active database escapes the private root".to_string(),
         ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let metadata = fs::metadata(&canonical).map_err(unavailable)?;
+        if !metadata.is_file() || metadata.nlink() != 1 || metadata.mode() & 0o7777 != 0o600 {
+            return Err(CognitiveStoreError::Corrupt(
+                "active cognitive database is not one private regular file".to_string(),
+            ));
+        }
     }
     Ok(path)
 }
@@ -1298,9 +1350,14 @@ pub(crate) fn publish_active_database(
             )
         })?;
     let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
+    let generation = file_name
+        .strip_prefix(COGNITIVE_RECOVERED_DB_PREFIX)
+        .and_then(|value| value.strip_suffix(".sqlite3"))
+        .unwrap_or("invalid");
     let temporary = root.join(format!(
-        "{COGNITIVE_ACTIVE_DB_POINTER}.tmp-{}",
-        std::process::id()
+        "{COGNITIVE_ACTIVE_DB_POINTER}.tmp-{}-{}",
+        std::process::id(),
+        &generation[..generation.len().min(16)]
     ));
 
     #[cfg(unix)]
