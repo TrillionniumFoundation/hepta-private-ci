@@ -482,6 +482,15 @@ async fn handle_request<D: ProcessDriver>(
                 safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
             }
         },
+        SupervisordMethod::ReleaseSelection { agent_id } => {
+            let supervisor = state.supervisor.lock().await;
+            match supervisor.release_selection_snapshot(&agent_id) {
+                Ok(selection) => SupervisordPayload::ReleaseSelection { selection },
+                Err(error) => {
+                    safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
+                }
+            }
+        }
         SupervisordMethod::ProductionMutationStatus { agent_id } => {
             let supervisor = state.supervisor.lock().await;
             match supervisor.production_mutation_receipt(&agent_id) {
