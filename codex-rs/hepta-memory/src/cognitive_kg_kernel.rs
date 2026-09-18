@@ -366,6 +366,21 @@ pub(crate) async fn backfill_kernel_receipts(
     pool: &SqlitePool,
 ) -> Result<(), CognitiveStoreError> {
     let mut transaction = pool.begin().await.map_err(unavailable)?;
+    let missing_receipts: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM kg_projection_generation_receipts r
+         LEFT JOIN kg_projection_kernel_receipts k
+           ON k.projection_scope = r.projection_scope
+          AND k.generation = r.generation
+         WHERE k.projection_scope IS NULL",
+    )
+    .fetch_one(&mut *transaction)
+    .await
+    .map_err(unavailable)?;
+    if missing_receipts == 0 {
+        transaction.commit().await.map_err(unavailable)?;
+        return Ok(());
+    }
     let rows = sqlx::query(
         "SELECT projection_scope, generation
          FROM kg_projection_generation_receipts
