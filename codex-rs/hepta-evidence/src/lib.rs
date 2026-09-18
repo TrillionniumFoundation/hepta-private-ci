@@ -103,6 +103,10 @@ mod historical_tests;
 mod authbus_control_tests;
 
 #[cfg(test)]
+#[path = "authbus_provider_guard_tests.rs"]
+mod authbus_provider_guard_tests;
+
+#[cfg(test)]
 #[path = "authbus_outbox_tests.rs"]
 mod authbus_outbox_tests;
 
