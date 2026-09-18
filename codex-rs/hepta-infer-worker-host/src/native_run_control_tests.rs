@@ -146,7 +146,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
 }
 
 #[tokio::test]
-async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims() {
+async fn pre_dispatch_cancellation_and_missing_authority_release_without_usage_claims() {
     for cancelled in [true, false] {
         let (driver, path) = fixture(if cancelled { "cancel" } else { "connection" });
         let mut control = DurableInferenceControl::open(&path, 8).unwrap();
