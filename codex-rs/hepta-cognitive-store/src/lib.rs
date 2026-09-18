@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+mod durable;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -17,6 +18,27 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
+
+pub use durable::DURABLE_BACKEND_ID;
+pub use durable::DURABLE_DATABASE_BASENAME;
+pub use durable::DURABLE_SINGLE_WRITER;
+pub use durable::CognitiveRecoveryAnchor;
+pub use durable::CognitiveRecoveryError;
+pub use durable::CognitiveRecoveryRequirement;
+pub use durable::DurableCognitiveStore;
+pub use durable::DurableCognitiveStoreError;
+pub use durable::ProductionAuthorityLease;
+pub use durable::ProductionAuthorityToken;
+pub use durable::ProductionAuthorityVerifier;
+pub use durable::ProductionDispatchFuture;
+pub use durable::ProductionDispatchReceipt;
+pub use durable::ProductionDispatchRequest;
+pub use durable::ProductionDurableWriter;
+pub use durable::ProductionOutboxDispatcher;
+pub use durable::ProductionOutboxTarget;
+pub use durable::ProductionQueuedReceipt;
+pub use durable::ProductionWriterError;
+pub use durable::RecoveredCognitiveReadOnly;
 
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
