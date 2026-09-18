@@ -6,6 +6,7 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical_projection;
 mod compiler;
 mod error;
 mod feasibility;
@@ -21,6 +22,17 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
+pub use canonical_projection::ObjectiveActionProjectionV1;
+pub use canonical_projection::ObjectiveConstraintProjectionV1;
+pub use canonical_projection::ObjectiveEvidenceProjectionV1;
+pub use canonical_projection::ObjectiveFunctionV1;
+pub use canonical_projection::ObjectivePredicateProjectionV1;
+pub use canonical_projection::ObjectivePrincipalScopeV1;
+pub use canonical_projection::ObjectiveProjectionError;
+pub use canonical_projection::ObjectiveResourceEndowmentV1;
+pub use canonical_projection::ObjectiveRiskProjectionV1;
+pub use canonical_projection::ObjectiveSoftUtilityProjectionV1;
+pub use canonical_projection::project_objective_function_v1;
 pub use compiler::compile;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
