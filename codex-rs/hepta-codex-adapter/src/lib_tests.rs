@@ -56,7 +56,6 @@ fn payload_drift_is_rejected() {
     );
 }
 
-
 #[test]
 fn prompt_delivery_v1_requires_exact_terminal_provider_request() {
     let intent = intent();
@@ -68,13 +67,8 @@ fn prompt_delivery_v1_requires_exact_terminal_provider_request() {
         observed_token_positions: Some(vec![0, 3, 7]),
         truncation_observed: false,
     };
-    let value = observe_prompt_delivery_v1(
-        1_000,
-        &intent,
-        id("compilation:1"),
-        observation,
-    )
-    .expect("exact terminal delivery");
+    let value = observe_prompt_delivery_v1(1_000, &intent, id("compilation:1"), observation)
+        .expect("exact terminal delivery");
     assert!(value.delivered);
     assert_eq!(value.provider_request_digest, intent.payload_digest);
     assert_eq!(value.observed_token_positions, Some(vec![0, 3, 7]));
@@ -113,8 +107,8 @@ fn prompt_delivery_v1_rejects_digest_drift_and_nonterminal_claims() {
 #[test]
 fn prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions() {
     let intent = intent();
-    let reason = PromptDeliveryRejectReasonV1::new(id("provider_rejected"))
-        .expect("bounded reason");
+    let reason =
+        PromptDeliveryRejectReasonV1::new(id("provider_rejected")).expect("bounded reason");
     let rejected = PromptProviderTerminalObservationV1 {
         terminal_observed: true,
         observed_provider_request_digest: intent.payload_digest,
@@ -123,13 +117,8 @@ fn prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions(
         observed_token_positions: Some(vec![1, 4]),
         truncation_observed: true,
     };
-    let value = observe_prompt_delivery_v1(
-        1_000,
-        &intent,
-        id("compilation:4"),
-        rejected,
-    )
-    .expect("terminal rejection");
+    let value = observe_prompt_delivery_v1(1_000, &intent, id("compilation:4"), rejected)
+        .expect("terminal rejection");
     assert!(!value.delivered);
     assert!(value.rejected_reason.is_some());
 
@@ -142,12 +131,7 @@ fn prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions(
         truncation_observed: false,
     };
     assert_eq!(
-        observe_prompt_delivery_v1(
-            1_000,
-            &intent,
-            id("compilation:5"),
-            duplicate_positions,
-        ),
+        observe_prompt_delivery_v1(1_000, &intent, id("compilation:5"), duplicate_positions,),
         Err(Error::InvalidPromptDeliveryObservation)
     );
 }

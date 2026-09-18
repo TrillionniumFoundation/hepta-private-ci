@@ -1491,31 +1491,44 @@ mod tests {
         drop(file);
 
         let durable = DurablePromptRegistry::open_state_dir(&root, 64).expect("migrate registry");
-        let factor = durable.registry().expect("registry").factor(&id("factor:1")).expect("factor");
+        let factor = durable
+            .registry()
+            .expect("registry")
+            .factor(&id("factor:1"))
+            .expect("factor");
         assert_eq!(factor.lifecycle, Lifecycle::Revoked);
-        assert_eq!(durable.registry().expect("registry").revocation_frontier(), 4);
+        assert_eq!(
+            durable.registry().expect("registry").revocation_frontier(),
+            4
+        );
         assert_eq!(
             durable
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .realization(&id("realization:legacy"))
                 .map(|record| record.active),
             Some(false)
         );
         assert_eq!(
             durable
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .lifecycle_events()
                 .last()
                 .map(|event| event.kind),
             Some(LifecycleEventKind::Imported)
         );
         assert_eq!(
-            durable.registry().expect("registry").factor_protocol_v1(&id("factor:1")),
+            durable
+                .registry()
+                .expect("registry")
+                .factor_protocol_v1(&id("factor:1")),
             Err(crate::ProtocolCodecError::MissingAuthoritativeLineage)
         );
         assert_eq!(
             durable
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .realization_protocol_v1(&id("realization:legacy")),
             Err(crate::ProtocolCodecError::MissingAuthoritativeLineage)
         );
@@ -1524,7 +1537,8 @@ mod tests {
             DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen migrated registry");
         assert_eq!(
             reopened
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .realization(&id("realization:legacy"))
                 .map(|record| record.active),
             Some(false)
@@ -1600,7 +1614,8 @@ mod tests {
             DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen active registry");
         assert_eq!(
             reopened
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .realization(&id("realization:active-reopen"))
                 .map(|record| record.active),
             Some(true)
@@ -1736,21 +1751,20 @@ mod tests {
         let reopened = DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen registry");
         assert_eq!(
             reopened
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .factor(&factor.factor_id)
                 .map(|record| record.lifecycle),
             Some(Lifecycle::Revoked)
         );
         assert!(
-            reopened
-                .registry()
-                .expect("registry")
-                .revocation_frontier()
+            reopened.registry().expect("registry").revocation_frontier()
                 > old_snapshot.revocation_frontier
         );
         assert!(
             reopened
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .lifecycle_events()
                 .iter()
                 .any(|event| event.kind == LifecycleEventKind::Admitted
@@ -1759,14 +1773,16 @@ mod tests {
         );
         assert_eq!(
             reopened
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .realization(&id("realization:durable"))
                 .map(|record| record.active),
             Some(false)
         );
         assert_eq!(
             reopened
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .realization_payloads
                 .get(&id("realization:durable")),
             Some(&payload)
@@ -1852,7 +1868,8 @@ mod tests {
             .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
             .expect("final-use admission");
         let event = durable
-            .registry().expect("registry")
+            .registry()
+            .expect("registry")
             .lifecycle_events()
             .last()
             .expect("admission event");
@@ -1925,7 +1942,8 @@ mod tests {
         ));
         assert_eq!(
             durable
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .factor(&second_factor.factor_id)
                 .map(|factor| factor.lifecycle),
             Some(Lifecycle::Draft)
@@ -2013,7 +2031,8 @@ mod tests {
         let reason = digest("reason:revoke:lifecycle");
         let cutoff = now + 5_000;
         let admitted_factor = durable
-            .registry().expect("registry")
+            .registry()
+            .expect("registry")
             .factor(&factor.factor_id)
             .cloned()
             .expect("admitted factor");
@@ -2050,7 +2069,8 @@ mod tests {
             .expect("revoke factor through final-use authority");
 
         let event = durable
-            .registry().expect("registry")
+            .registry()
+            .expect("registry")
             .lifecycle_events()
             .last()
             .expect("revocation event");
@@ -2064,13 +2084,15 @@ mod tests {
             DurablePromptRegistry::open_state_dir(&registry_root, 64).expect("reopen registry");
         assert_eq!(
             reopened
-                .registry().expect("registry")
+                .registry()
+                .expect("registry")
                 .factor(&factor.factor_id)
                 .map(|record| record.lifecycle),
             Some(Lifecycle::Revoked)
         );
         let persisted = reopened
-            .registry().expect("registry")
+            .registry()
+            .expect("registry")
             .lifecycle_events()
             .last()
             .expect("persisted revocation event");
@@ -2148,7 +2170,13 @@ mod tests {
         let reopened =
             DurablePromptRegistry::open_state_dir(&root, 64).expect("reconcile by reopen");
         assert!(!reopened.requires_reopen());
-        assert_eq!(reopened.registry().expect("registry").factor(&factor.factor_id), Some(&factor));
+        assert_eq!(
+            reopened
+                .registry()
+                .expect("registry")
+                .factor(&factor.factor_id),
+            Some(&factor)
+        );
     }
 
     #[test]
@@ -2189,8 +2217,8 @@ mod tests {
         let reviewer = id("reviewer:grant-target");
         let scope = digest("scope:grant-target");
         let evidence = digest("evidence:grant-target");
-        let binding =
-            crate::final_use_admission_binding(&target, &reviewer, scope, evidence).expect("binding");
+        let binding = crate::final_use_admission_binding(&target, &reviewer, scope, evidence)
+            .expect("binding");
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("clock")
@@ -2229,13 +2257,8 @@ mod tests {
             Err(DurableRegistryError::IndeterminateDurability)
         ));
         assert!(matches!(
-            durable.admit_factor_final_use(
-                &authority,
-                &signed,
-                &target.factor_id,
-                scope,
-                evidence,
-            ),
+            durable
+                .admit_factor_final_use(&authority, &signed, &target.factor_id, scope, evidence,),
             Err(DurableRegistryError::ReopenRequired)
         ));
 
@@ -2243,13 +2266,7 @@ mod tests {
         let mut reopened =
             DurablePromptRegistry::open_state_dir(&registry_root, 64).expect("reopen registry");
         reopened
-            .admit_factor_final_use(
-                &authority,
-                &signed,
-                &target.factor_id,
-                scope,
-                evidence,
-            )
+            .admit_factor_final_use(&authority, &signed, &target.factor_id, scope, evidence)
             .expect("same grant remains unused after poisoned rejection");
         assert_eq!(
             reopened
@@ -2280,10 +2297,9 @@ mod tests {
             .expect("register factor");
 
         let mut orphan_payload = registry.clone();
-        orphan_payload.realization_payloads.insert(
-            id("realization:orphan"),
-            b"orphan payload".to_vec(),
-        );
+        orphan_payload
+            .realization_payloads
+            .insert(id("realization:orphan"), b"orphan payload".to_vec());
         assert!(matches!(
             validate_restored(&orphan_payload),
             Err(DurableRegistryError::Corrupt)
@@ -2326,9 +2342,7 @@ mod tests {
                 semantic_purpose: format!("capacity fixture factor {index}"),
                 authority_class: "registered_prompt_factor".to_owned(),
                 eligible_objective_dimensions: vec![id("dimension:capacity")],
-                content_digest: Digest32::of_bytes(
-                    format!("factor-content:{index}").as_bytes(),
-                ),
+                content_digest: Digest32::of_bytes(format!("factor-content:{index}").as_bytes()),
                 source: FactorSource::GovernedInternal,
                 lifecycle: Lifecycle::Draft,
             };
