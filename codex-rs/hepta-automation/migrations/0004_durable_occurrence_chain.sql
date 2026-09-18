@@ -116,6 +116,7 @@ SELECT
         ELSE 'materialized'
     END,
     r.queued_submission_id,
+    CASE WHEN r.state = 'cancelled' THEN 'legacy_cancelled_before_terminal_tracking' ELSE NULL END,
     t.created_at_ms,
     COALESCE(r.submitted_at_ms, o.observed_at_ms, t.updated_at_ms)
 FROM automation_runs r
