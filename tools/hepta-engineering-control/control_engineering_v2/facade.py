@@ -25,7 +25,7 @@ from .evidence import (
     EvidenceDecision,
     EvaluatorIndependenceReceipt,
     ExecutionReceipt,
-    HmacTrustStore,
+    SignatureVerifier,
     verify_integration_evidence as _verify_integration_evidence,
 )
 
@@ -96,7 +96,7 @@ def verify_integration_evidence(
     source_execution: ExecutionReceipt,
     merge_execution: ExecutionReceipt,
     independence: EvaluatorIndependenceReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     *,
     expected_document_set_digest: str,
     now_ns: int | None = None,
