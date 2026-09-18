@@ -76,7 +76,7 @@ class ExternalControlTests(unittest.TestCase):
                     ),
                 )
                 digest = verify_distributed_fence(
-                    lease, self.envelope, receipt, self.trust, now_ns=self.now
+                    lease, self.envelope, receipt, self.trust, store=store, now_ns=self.now
                 )
                 self.assertEqual(len(digest), 64)
                 with self.assertRaisesRegex(ValueError, "distributed_fence_binding_mismatch"):
@@ -85,6 +85,7 @@ class ExternalControlTests(unittest.TestCase):
                         self.envelope,
                         replace(receipt, fencing_token=lease.fencing_token + 1),
                         self.trust,
+                        store=store,
                         now_ns=self.now,
                     )
                 widened = replace(
@@ -102,7 +103,7 @@ class ExternalControlTests(unittest.TestCase):
                     ValueError, "distributed_fence_window_exceeds_owner"
                 ):
                     verify_distributed_fence(
-                        lease, self.envelope, widened, self.trust, now_ns=self.now
+                        lease, self.envelope, widened, self.trust, store=store, now_ns=self.now
                     )
                 with self.assertRaisesRegex(
                     ValueError, "distributed_fence_envelope_mismatch"
@@ -112,6 +113,25 @@ class ExternalControlTests(unittest.TestCase):
                         self.envelope,
                         receipt,
                         self.trust,
+                        store=store,
+                        now_ns=self.now,
+                    )
+                store.transition_path_lease(
+                    lease.lease_id,
+                    expected_revision=lease.revision,
+                    authority_epoch=lease.epoch,
+                    disposition="revoke",
+                    now_ns=self.now,
+                )
+                with self.assertRaisesRegex(
+                    ValueError, "distributed_fence_local_lease_stale"
+                ):
+                    verify_distributed_fence(
+                        lease,
+                        self.envelope,
+                        receipt,
+                        self.trust,
+                        store=store,
                         now_ns=self.now,
                     )
 
@@ -197,7 +217,7 @@ class ExternalControlTests(unittest.TestCase):
             signature=self.trust.sign(receipt, receipt.issuer, receipt.signing_identity),
         )
         self.assertEqual(
-            len(verify_external_key_custody(receipt, self.trust, now_ns=self.now)),
+            len(verify_external_key_custody(receipt, self.trust, store=store, now_ns=self.now)),
             64,
         )
         with self.assertRaisesRegex(ValueError, "key_custody_boundary"):
