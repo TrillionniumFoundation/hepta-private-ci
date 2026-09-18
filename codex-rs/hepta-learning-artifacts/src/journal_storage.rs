@@ -382,7 +382,7 @@ fn encode_id(value: &StableId) -> String {
 }
 
 fn decode_id(value: &str) -> Result<StableId, JournalStorageError> {
-    if value.len() % 2 != 0 {
+    if !value.len().is_multiple_of(2) {
         return Err(JournalStorageError::Corrupt);
     }
     let mut bytes = Vec::with_capacity(value.len() / 2);
