@@ -205,6 +205,11 @@ impl QualificationEvidenceEnvelopeV1 {
         if self.schema_version != QUALIFICATION_EVIDENCE_SCHEMA_VERSION {
             return invalid("qualification evidence schema version is unsupported");
         }
+        if self.claim_class == EvidenceClaimClassV1::IndependentReview
+            && !self.issuer_role.is_independent_decision_role()
+        {
+            return invalid("independent review evidence requires an independent issuer role");
+        }
         validate_id(&self.receipt_id, "qualification receipt id")?;
         self.candidate.validate()?;
         validate_id(&self.issuer_principal, "issuer principal")?;
@@ -1312,6 +1317,41 @@ pub(crate) async fn verify_qualification_evidence_rows(
     .map_err(classify_sqlx_error)?;
     for row in rows {
         verify_qualification_row(&row)?;
+    }
+
+    let invalid_link_count: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM qualification_evidence AS current
+         LEFT JOIN qualification_evidence AS predecessor
+           ON predecessor.receipt_id = current.predecessor_receipt_id
+         LEFT JOIN qualification_evidence AS revoked
+           ON revoked.receipt_id = current.revokes_receipt_id
+         WHERE (
+             current.predecessor_receipt_id IS NOT NULL
+             AND (
+                 predecessor.receipt_id IS NULL
+                 OR predecessor.candidate_id != current.candidate_id
+                 OR predecessor.source_commit != current.source_commit
+                 OR predecessor.source_tree != current.source_tree
+             )
+         )
+         OR (
+             current.revokes_receipt_id IS NOT NULL
+             AND (
+                 revoked.receipt_id IS NULL
+                 OR revoked.candidate_id != current.candidate_id
+                 OR revoked.source_commit != current.source_commit
+                 OR revoked.source_tree != current.source_tree
+             )
+         )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(classify_sqlx_error)?;
+    if invalid_link_count != 0 {
+        return Err(EvidenceError::Corrupt(
+            "qualification evidence contains a missing or cross-candidate stored link".to_string(),
+        ));
     }
 
     let decisions = sqlx::query(

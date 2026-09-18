@@ -188,6 +188,24 @@ async fn target_append_and_query_are_exact_candidate_and_claim_class_bound() {
     );
 }
 
+#[test]
+fn independent_review_requires_an_independent_issuer_role() {
+    let (_, generator) = authenticated_issuer(
+        EvidenceIssuerRoleV1::Generator,
+        "principal:generator-review",
+        "key:generator-review",
+        21,
+    );
+    let review = envelope(
+        "qe:invalid-independent-review:1",
+        &generator,
+        EvidenceClaimClassV1::IndependentReview,
+        Sha256Digest::for_bytes(b"not-independent"),
+        EXPIRES,
+    );
+    assert!(review.validate().is_err());
+}
+
 #[tokio::test]
 async fn one_principal_cannot_satisfy_two_independent_roles() {
     let temp = TempDir::new().expect("temp dir");
@@ -462,6 +480,92 @@ async fn corrupted_qualification_payload_fails_closed_after_reopen() {
         .await
         .err()
         .expect("corruption must fail closed");
+    assert!(matches!(error, crate::EvidenceError::Corrupt(_)));
+}
+
+#[tokio::test]
+async fn cross_candidate_predecessor_corruption_fails_closed_after_reopen() {
+    let temp = TempDir::new().expect("temp dir");
+    let sqlite = sqlite_config(&temp);
+    let store = HeptaEvidenceStore::open(&sqlite).await.expect("open");
+    let (signing, issuer) = authenticated_issuer(
+        EvidenceIssuerRoleV1::CiExecutor,
+        "principal:ci-link-corrupt",
+        "key:ci-link-corrupt",
+        22,
+    );
+
+    let first = signed_envelope(
+        &signing,
+        envelope(
+            "qe:link-source:1",
+            &issuer,
+            EvidenceClaimClassV1::SourceExecution,
+            Sha256Digest::for_bytes(b"source"),
+            EXPIRES,
+        ),
+    );
+    store
+        .append_receipt(&first, &issuer)
+        .await
+        .expect("append source receipt");
+
+    let mut other_envelope = envelope(
+        "qe:link-other:1",
+        &issuer,
+        EvidenceClaimClassV1::SourceExecution,
+        Sha256Digest::for_bytes(b"other"),
+        EXPIRES,
+    );
+    other_envelope.candidate.candidate_id = "candidate:kernel-evidence:other".to_string();
+    other_envelope.candidate.source_tree = "c".repeat(40);
+    let other = signed_envelope(&signing, other_envelope);
+    store
+        .append_receipt(&other, &issuer)
+        .await
+        .expect("append other candidate receipt");
+
+    let mut forged_envelope = other.envelope.clone();
+    forged_envelope.predecessor_receipt_id = Some(first.envelope.receipt_id.clone());
+    let forged = signed_envelope(&signing, forged_envelope);
+    let envelope_bytes =
+        crate::canonical::canonical_json(&forged.envelope).expect("canonical envelope");
+    let envelope_json = String::from_utf8(envelope_bytes.clone()).expect("utf-8 envelope");
+    let envelope_sha256 = Sha256Digest::for_bytes(&envelope_bytes);
+
+    sqlx::query("DROP TRIGGER qualification_evidence_no_update")
+        .execute(&store.pool)
+        .await
+        .expect("drop immutable trigger for corruption fixture");
+    sqlx::query(
+        "UPDATE qualification_evidence
+         SET predecessor_receipt_id = ?, envelope_json = ?, envelope_sha256 = ?, signature = ?
+         WHERE receipt_id = ?",
+    )
+    .bind(first.envelope.receipt_id.as_str())
+    .bind(&envelope_json)
+    .bind(envelope_sha256.as_str())
+    .bind(&forged.signature)
+    .bind(other.envelope.receipt_id.as_str())
+    .execute(&store.pool)
+    .await
+    .expect("forge cross-candidate predecessor");
+    sqlx::query(
+        "CREATE TRIGGER IF NOT EXISTS qualification_evidence_no_update
+         BEFORE UPDATE ON qualification_evidence
+         BEGIN
+             SELECT RAISE(ABORT, 'qualification evidence is immutable');
+         END",
+    )
+    .execute(&store.pool)
+    .await
+    .expect("restore immutable trigger");
+    store.pool.close().await;
+
+    let error = HeptaEvidenceStore::open(&sqlite)
+        .await
+        .err()
+        .expect("cross-candidate stored link must fail closed");
     assert!(matches!(error, crate::EvidenceError::Corrupt(_)));
 }
 
