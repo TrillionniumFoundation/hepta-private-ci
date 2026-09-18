@@ -16,6 +16,16 @@ This page describes executable behavior in the source, including gaps that requi
 
 The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-control`, and `hepta-matrix-send-observer` entry points exit 64 with the real owner or missing integration named. Their former empty mains returned success without doing work. Existing component tests now run as library tests, with sibling test sources.
 
+## Runtime supervisor production-closure source path
+
+`hepta-supervisord` now has a distinct production release-transition mode selected only when the host supplies the complete externally pinned grant/H7 verifier tuple and a non-zero revocation frontier. In that mode unsigned `Upgrade` and `Rollback` control requests reject; signed requests bind the exact source/target release manifest, agentd and optional matrixd executable digests, compatibility receipt, H7 artifact, control/lifecycle fences, authority epoch and the pinned frontier. The supervisor persists the signed intent and a first-class release-selection record before changing the child process. A queued receipt is not a healthy/terminal receipt.
+
+The lifecycle driver no longer implements drain as an alias for `SIGTERM`. It sends the owning Agentd an exact `Drain` RPC after the supervisor has advanced the lifecycle to Draining, and accepts only an acknowledgement for the same Agent, spawn generation and expected Draining generation. Agentd closes its admission gate and cancels its runtime host path; process exit remains the terminal lifecycle observation. The drain acknowledgement does **not** claim every previously dispatched turn/effect completed: unknown work remains under the App Server/effect owner's durable recovery or indeterminate semantics. Target-host drain latency and provider/effect reconciliation still require deployment evidence.
+
+Readiness is split from liveness. Agentd reports critical-store, revocation-baseline, required-port and admission gates; App Server liveness alone cannot promote the process. The current Agentd revocation gate is explicitly the zero-ambient-effect-authority baseline after mandatory owner-local state opens. Any effect-authorized product composition must supply its live authority/revocation owner rather than treating this baseline as a global revocation distributor.
+
+Unexpected Agent exits use a persisted restart window, exponential backoff and fixed attempt ceiling. If process-lease publication fails after spawn, the child remains tracked in a hard-kill quarantine path until exit is observed; a failed first kill cannot discard the only process handle. Release rollback re-resolves the current Fleet allowance/catalog provenance, and signed rollback additionally requires the supervisor's current host-pinned frontier to match the durable selection. An ambiguous signed mutation becomes `recovery_required`; read-only status stays available and only an independently signed recovery decision bound to observed release bytes and current fences may terminalize it.
+
 ## Canonical memory to actual model execution
 
 `AgentdMethod::CognitiveContext { query, limit }` and `AgentdClient::cognitive_context` use the normal owner/generation-fenced local protocol. The host selects its own Agent identity and private scope; callers cannot supply another scope or a success receipt.
