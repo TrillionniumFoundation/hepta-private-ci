@@ -225,9 +225,7 @@ impl PromptRealizationV1 {
     }
 }
 
-pub(crate) fn validate_factor_semantics(
-    factor: &PromptFactor,
-) -> Result<(), ProtocolCodecError> {
+pub(crate) fn validate_factor_semantics(factor: &PromptFactor) -> Result<(), ProtocolCodecError> {
     validate_factor_fields(
         &factor.semantic_purpose,
         &factor.authority_class,
@@ -256,8 +254,7 @@ fn validate_factor_fields(
         .iter()
         .map(ToString::to_string)
         .collect::<Vec<_>>();
-    let encoded =
-        serde_json::to_vec(&dimensions).map_err(|_| ProtocolCodecError::InvalidJson)?;
+    let encoded = serde_json::to_vec(&dimensions).map_err(|_| ProtocolCodecError::InvalidJson)?;
     if encoded.len() > MAX_ELIGIBLE_DIMENSIONS_BYTES {
         return Err(ProtocolCodecError::InvalidField);
     }
