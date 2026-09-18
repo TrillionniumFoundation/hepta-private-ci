@@ -145,6 +145,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 },
                 events: slot.events.items.iter().cloned().collect(),
                 logs: slot.logs.items.iter().cloned().collect(),
+                automatic_restart_attempt: slot.restart_attempt,
+                automatic_restart_pending: slot.restart_retry_at.is_some(),
                 control_revision: slot.control_revision,
                 restart_pending: slot.restart_pending,
                 release_state_generation: slot.release_state_generation,
@@ -354,7 +356,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "agent {agent_id} has no explicit active release identity"
             ))
         })?;
-        if current.identity() == target.identity() || current.command() == target.command() {
+        if current.identity() == target.identity()
+            || (current.command() == target.command()
+                && current.matrixd_command() == target.matrixd_command())
+        {
             return Err(SupervisorError::TargetReleaseUnchanged(agent_id.clone()));
         }
         if record.lifecycle.lifecycle != AgentLifecycle::Running {
