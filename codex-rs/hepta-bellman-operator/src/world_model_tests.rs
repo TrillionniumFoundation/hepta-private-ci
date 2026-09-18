@@ -76,14 +76,20 @@ fn op_04_prediction_is_synthetic_and_unsupported_pairs_abstain() {
         Ok(model) => model,
         Err(error) => panic!("valid transition model failed: {error}"),
     };
-    let prediction = match predict_transition(&model, &model_pin(&model), &id("state-a"), &id("action-a")) {
-        Ok(prediction) => prediction,
-        Err(error) => panic!("supported prediction failed: {error}"),
-    };
+    let prediction =
+        match predict_transition(&model, &model_pin(&model), &id("state-a"), &id("action-a")) {
+            Ok(prediction) => prediction,
+            Err(error) => panic!("supported prediction failed: {error}"),
+        };
     assert!(prediction.synthetic);
     assert!(!prediction.authority.grants_any());
     assert_eq!(
-        predict_transition(&model, &model_pin(&model), &id("state-unknown"), &id("action-a")),
+        predict_transition(
+            &model,
+            &model_pin(&model),
+            &id("state-unknown"),
+            &id("action-a")
+        ),
         Err(WorldModelError::UnsupportedStateAction)
     );
 }
@@ -134,10 +140,12 @@ fn world_model_loaded_pin_authenticates_identity_and_structure() {
     let loaded = LoadedTabularWorldModelV1::from_pinned_model(model.clone(), &pin)
         .expect("pinned model admitted");
     assert_eq!(loaded.model_id(), &id("world-model-loaded"));
-    assert!(loaded
-        .predict(&id("state-a"), &id("action-a"))
-        .expect("predict")
-        .synthetic);
+    assert!(
+        loaded
+            .predict(&id("state-a"), &id("action-a"))
+            .expect("predict")
+            .synthetic
+    );
 
     let mut tampered = model;
     tampered.estimates[0].sample_count += 1;
