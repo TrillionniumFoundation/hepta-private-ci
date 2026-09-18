@@ -69,13 +69,59 @@ def parse_entrypoints(module: str):
     return entries
 
 
+def module_status_overrides(mid: str) -> dict:
+    if mid != "auth.authbus":
+        return {}
+    return {
+        "sourceBaseSemantics": (
+            "shared implementation-map generation baseline; current candidate "
+            "identity is proved by exact-head and synthetic-merge execution receipts"
+        ),
+        "productCallerState": "narrow_agentd_composed_general_effect_not_production_composed",
+        "productionWriterState": "not_established",
+        "composition": {
+            "semanticOwner": "auth.authbus",
+            "coreSourceOwner": {
+                "module": "auth.authbus",
+                "root": "codex-rs/hepta-authbus",
+            },
+            "durableStateOwner": {
+                "module": "kernel.evidence",
+                "root": "codex-rs/hepta-evidence",
+                "surfaces": [
+                    "replay",
+                    "outbox",
+                    "auth_policy",
+                    "quota_registry",
+                    "quota_reservation",
+                    "issuer_lifecycle",
+                    "rollback_checkpoint",
+                ],
+            },
+            "hostIntegrations": [
+                {
+                    "module": "runtime.agentd",
+                    "root": "codex-rs/hepta-agentd",
+                    "profile": "signed_text_existing_thread",
+                    "state": "narrow_product_composed_not_production_effect_authority",
+                }
+            ],
+            "effectIntegrations": [
+                {
+                    "module": "kernel.evidence",
+                    "symbol": "dispatch_provider_effect_with_authbus_qualification",
+                    "state": "qualification_only_not_production_caller",
+                }
+            ],
+        },
+    }
+
+
 def map_for(module: dict, source_base: dict, lanes: dict):
     mid = module["id"]
     roots = [x["path"] for x in module["rootBindings"]]
     operations = parse_entrypoints(mid)
     if not operations:
-        # Keep the map explicit even where the dossier has not named a native
-        # entrypoint.  This is a handoff blocker, not a production claim.
         operations = [
             {
                 "operation": "native_mapping_pending",
@@ -87,7 +133,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
                 "sourcePathExists": False,
             }
         ]
-    return {
+    value = {
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
@@ -124,7 +170,8 @@ def map_for(module: dict, source_base: dict, lanes: dict):
             "release": False,
         },
     }
-
+    value.update(module_status_overrides(mid))
+    return value
 
 def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
     """Upgrade legacy v1/v2 maps without discarding implementation evidence.
@@ -234,6 +281,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
+    migrated.update(module_status_overrides(module["id"]))
     return migrated
 
 
