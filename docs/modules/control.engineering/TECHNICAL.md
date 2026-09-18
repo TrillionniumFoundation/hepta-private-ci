@@ -74,10 +74,16 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `work-envelope scheduler`
+- `authenticated source/envelope issuer`
+- `multidimensional work-envelope scheduler`
 - `path-lease arbiter`
-- `integration decision engine`
+- `authenticated predecessor-completion verifier`
+- `candidate bundle and strong-sandbox qualification pipeline`
+- `integration decision engine and sealed evidence binder`
+- `host sandbox capacity/retry controller`
+- `external coordination, audit-anchor and key-custody verifier`
 - `audit projection`
+- `named repository product caller`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -147,7 +153,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to the canonical `control_engineering_v2` package and the linked implementation components. The host execution controller enforces at most eight concurrent sandboxes and at most two retries for enumerated infrastructure failures; multi-host concurrency remains gated by an externally signed leader/fencing receipt.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -167,6 +173,8 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [tools/hepta-engineering-control/test_control_engineering_v2.py](../../../tools/hepta-engineering-control/test_control_engineering_v2.py); named case: `test_fenced_lease_schedule_reopen_and_audit`.
+- [tools/hepta-engineering-control/test_full_orchestration_closure.py](../../../tools/hepta-engineering-control/test_full_orchestration_closure.py); covers signed predecessor completion, worker/review/CI capacity, oracle immutability, multi-file bundles, sandbox concurrency, mutation admission, distributed fencing, external audit anchoring and key custody.
+- [tools/hepta-engineering-control/test_production_readiness.py](../../../tools/hepta-engineering-control/test_production_readiness.py); covers implementation/deployment claim gates.
 - [tools/hepta-engineering-control/assimilation/discovery/tests/test_cli.py](../../../tools/hepta-engineering-control/assimilation/discovery/tests/test_cli.py); named case: `test_real_subprocess_emits_bounded_non_authoritative_candidate`.
 
 From `tools/hepta-engineering-control`, run `python3 -m unittest test_control_engineering_v2`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) separately labels target acceptance designs.
@@ -201,7 +209,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
-For `control.engineering`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+For `control.engineering`, the repository now contains a named read-only CI product caller that composes the v2 boundary, but product execution is not claimed until the exact source/synthetic-merge job succeeds. This document grants no runtime, production-writer, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
 ### Work-package execution envelopes
 
@@ -387,7 +395,7 @@ None.
 
 #### `ECP-1-ENGINEERING-CONTROL-PLANE`
 
-- State: `planned`; priority: `2`; parallel class: `independent_engineering_tooling`.
+- State: `source_implemented`; priority: `2`; parallel class: `independent_engineering_tooling`.
 - Owner/deputy: `developer-productivity` / `architecture`.
 - Allowed write paths:
 - `tools/hepta-engineering-control/**`
@@ -416,6 +424,7 @@ None.
 #### `SELF-1-CODE-CANDIDATE-PIPELINE`
 
 - State: `planned`; priority: `4`; parallel class: `independent_engineering_tooling`.
+- Implemented subset: atomic multi-file/rename candidate bundles, unconditional test/evaluator path protection, strong-sandbox qualification, host sandbox concurrency control, infrastructure-only retry bounds and mutation-test admission. The work package remains `planned` because its registered cross-module predecessors and full governed self-iteration lifecycle are not closed by this module alone.
 - Owner/deputy: `developer-productivity` / `architecture`.
 - Allowed write paths:
 - `tools/hepta-engineering-control/**`
