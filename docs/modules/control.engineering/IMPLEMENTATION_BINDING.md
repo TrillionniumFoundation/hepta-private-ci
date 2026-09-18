@@ -7,7 +7,8 @@ directly owns the SQLite v6 schema/transactions; `orchestration.py` owns verifie
 source issuance, signed predecessor completion and multidimensional planning;
 `candidate.py` owns exact Git materialization/strong isolation while
 `candidate_bundle.py` adds atomic multi-file/rename grammar; `execution_control.py`
-owns host sandbox slots/retry/mutation admission; `external_control.py` persists
+owns host sandbox slots/retry/mutation admission and the public facade/CLI route every
+strong candidate and bundle through that host-wide control; `external_control.py` persists
 the highest admitted external worker fence, verifies store-bound external audit
 anchors, and binds subject-specific hardware key custody to the production signing
 port; and `product_caller.py` is the named read-only repository caller. `cli.py`
