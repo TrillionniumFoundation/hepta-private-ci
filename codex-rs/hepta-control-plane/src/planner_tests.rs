@@ -197,8 +197,9 @@ fn essential_floor_survives_overload_before_ndu_evaluation() {
     ));
     let mut request = planning_request(9);
     request.resource_reservations[0].essential_floor = q32(2);
-    request.resource_profile_digest =
-        must(canonical_resource_profile_digest(&request.resource_reservations));
+    request.resource_profile_digest = must(canonical_resource_profile_digest(
+        &request.resource_reservations,
+    ));
     let prepared = must(prepare_plan(&snapshot, request));
 
     assert_eq!(prepared.resource_rejected_candidate_ids, vec![id("work")]);
