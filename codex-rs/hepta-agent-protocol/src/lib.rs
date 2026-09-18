@@ -740,3 +740,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "objective_tests.rs"]
+mod objective_tests;
