@@ -21,11 +21,12 @@ The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-cont
 `AgentdMethod::CognitiveContext { query, limit }` and `AgentdClient::cognitive_context` use the normal owner/generation-fenced local protocol. The host selects its own Agent identity and private scope; callers cannot supply another scope or a success receipt.
 
 1. Obtain a read transaction cut through `CognitiveStore::lane_c_snapshot`.
-2. Execute the new bounded `ReadRequestV2` port on that cut.
-3. Rank with the existing SQLite retrieval provider and accept only exact record ID, revision and content digest matches admitted by the cut.
-4. Return the original verified memory text, then revalidate the owner cut and runtime generation before response publication.
+2. Execute the bounded `ReadRequestV2` port on that cut.
+3. Ask the same SQLite owner for `observe_memory_retrieval`, intersect every observed candidate with the exact record ID/revision/content digest admitted by the cut, and pass that bounded observation through `memory.retrieval::rank_owner_candidates`. The adapter binds the owner's aggregate RRF score and observation digest without relabelling it as a lexical/vector/graph score.
+4. Optionally let the externally selected `PinnedCognitiveRanker` permute only those memory.retrieval-admitted candidates; it cannot add a record.
+5. Apply the response result/byte budget, batch-revalidate the exact selected memory/source/citation/KG bindings, then revalidate the owner cut and runtime generation before response publication.
 
-The query is 1–2048 bytes and the requested result limit is 1–4. The Lane C read admits at most 1024 records and 1 MiB of canonical encoding. Intersecting that bounded record prefix with search candidates can omit relevant records outside the prefix; `omitted_records` reports the read truncation. The complete context payload is bounded to 24 KiB of JSON encoding, including escaping and its envelope. Oversized items are omitted, not silently truncated. This is verified memory retrieval, not evidence of learned model weights or complete recall.
+The query is 1–2048 bytes and the requested result limit is 1–4. The Lane C read admits at most 1024 records and 1 MiB of canonical encoding. The SQLite owner observation is bounded by its channel limits, and memory.retrieval admits at most 512 candidates and 16 ranked results before any learned reranking. Intersecting these bounded surfaces can omit relevant records; `omitted_records` reports the Lane C read truncation, not complete generator recall. The complete context payload is bounded to 24 KiB of JSON encoding, including escaping and its envelope. Oversized items are omitted, not silently truncated. This is verified memory retrieval, not evidence of learned model weights or complete recall.
 
 The worker uses this context as **untrusted additional context** on the actual App Server turn. The model attachment has an additional 8 KiB encoded byte limit and larger attachments reject before model dispatch. This new fragment can exceed 1,000 tokens; the repository's P0 context review checked its byte limit, untrusted classification, private scope, exact content/revision matching, cut revalidation and absence of history rewriting. No attachment is unbounded. It checks ready/fenced state and generation through Agentd, verifies the App Server's owning home, requests the exact configured model without fallback, creates a fresh ephemeral read-only thread, and declines approval requests. During execution it monitors owner readiness. It observes matching thread/turn output and usage events; only a matching terminal notification can establish completion.
 
@@ -86,10 +87,12 @@ read-only files, and a `CurrentCognitiveRegistry` implementation. There is no
 implicit CLI selection, trusted file generator or evaluator self-authorization.
 The operator and artifact registry retain their existing owners.
 
-The consumer ranks only records admitted by the same SQLite snapshot. Query
-sensors are exact query hashes; actions bind memory ID, revision and content
-hash. It scores before the result limit, keeps original order for ties, and
-abstains for the entire ranking when any cell is unsupported. A missing or
+The consumer ranks only records already admitted by the same SQLite/Lane C cut
+and the memory.retrieval owner-observation ranker. Query sensors are exact query
+hashes; actions bind memory ID, revision and content hash. It scores before the
+final 1–4 result limit but after the memory.retrieval 16-result ceiling, keeps
+the canonical owner-rank order for ties, and abstains for the entire learned
+reranking when any cell is unsupported. A missing or
 revoked current view closes the consumer instead of falling back to a stale
 model. Registry I/O runs on the blocking pool; the trusted host must bound it.
 The memory cut and artifact view are rechecked before returning context.
