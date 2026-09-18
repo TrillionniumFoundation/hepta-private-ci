@@ -65,7 +65,8 @@ def _sha1(value: str, label: str) -> str:
     return value
 
 
-def _document_set_digest(repository: Path) -> str:
+def _document_set_digest(repository: Path, commit: str) -> str:
+    """Digest the registered document bytes from one exact Git commit."""
     digest = hashlib.sha256()
     paths = (
         "docs/DEVELOPMENT.md",
@@ -76,7 +77,17 @@ def _document_set_digest(repository: Path) -> str:
         "docs/modules/control.engineering/TRACEABILITY.json",
     )
     for relative in paths:
-        data = (repository / relative).read_bytes()
+        process = subprocess.run(
+            ["git", "show", f"{commit}:{relative}"],
+            cwd=repository,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+            timeout=30,
+        )
+        if process.returncode != 0:
+            raise ValueError("document_set_git_read_failed")
+        data = process.stdout
         digest.update(relative.encode("utf-8"))
         digest.update(b"\x00")
         digest.update(hashlib.sha256(data).digest())
@@ -145,7 +156,7 @@ def build_product_receipt(
     now = time.time_ns()
     expires = now + 300_000_000_000
     trust = _reference_trust_store()
-    document_digest = _document_set_digest(repository)
+    document_digest = _document_set_digest(repository, source_sha)
     source_receipt = CanonicalSourceReceipt(
         repository_full_name,
         source_sha,
