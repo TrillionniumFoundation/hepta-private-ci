@@ -371,7 +371,8 @@
         "maximumCiUnits": 64,
         "maximumPackages": 4096
       },
-      "rollback": "discard the plan or publish a new immutable generation; proposals grant no worker-write or merge authority"
+      "rollback": "discard the plan or publish a new immutable generation; proposals grant no worker-write or merge authority",
+      "physicalState": "SQLite assignment_generations, assignment_generation_frontiers and orchestration_generations committed atomically"
     },
     {
       "id": "atomic-candidate-bundle",
