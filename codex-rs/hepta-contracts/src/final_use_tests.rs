@@ -283,3 +283,75 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
         FinalUseError::Revoked
     );
 }
+
+
+#[test]
+fn nonce_journal_appends_one_fixed_record_and_epoch_rotation_compacts() {
+    let (authority, signed, directory) = fixture().unwrap();
+    let claims = directory.path().join("authority.claims");
+    assert_eq!(std::fs::metadata(&claims).unwrap().len(), 0);
+
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    drop(token);
+    assert_eq!(std::fs::metadata(&claims).unwrap().len(), 32);
+
+    let persisted: serde_json::Value = serde_json::from_slice(
+        &std::fs::read(directory.path().join("authority.json")).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(persisted["schema"], 2);
+    assert!(persisted.get("state").is_none());
+    assert!(persisted.get("head").is_some());
+
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 10,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::new(),
+        })
+        .unwrap();
+    assert_eq!(std::fs::metadata(&claims).unwrap().len(), 0);
+}
+
+#[test]
+fn schema_one_state_migrates_without_refunding_claimed_nonce() {
+    let (authority, signed, directory) = fixture().unwrap();
+    drop(authority);
+
+    let legacy = serde_json::json!({
+        "schema": 1,
+        "signer_id": "security-owner",
+        "verifying_key": SigningKey::from_bytes(&[47; 32]).verifying_key().to_bytes(),
+        "state": {
+            "head": {
+                "authority_epoch": 9,
+                "revision": 1,
+                "revoked_grant_ids": []
+            },
+            "used_nonces": [signed.grant.nonce]
+        }
+    });
+    std::fs::write(
+        directory.path().join("authority.json"),
+        serde_json::to_vec(&legacy).unwrap(),
+    )
+    .unwrap();
+    let _ = std::fs::remove_file(directory.path().join("authority.claims"));
+
+    let reopened = reopen(directory.path()).unwrap();
+    assert_eq!(
+        reopened.claim(&signed, &signed.grant.binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+    assert_eq!(
+        std::fs::metadata(directory.path().join("authority.claims"))
+            .unwrap()
+            .len(),
+        32
+    );
+    let persisted: serde_json::Value = serde_json::from_slice(
+        &std::fs::read(directory.path().join("authority.json")).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(persisted["schema"], 2);
+}
