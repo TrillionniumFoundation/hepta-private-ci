@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "owner_adapter_exposed_recall_not_composed",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -56,11 +56,69 @@
       "designOperation": "recall",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "compile_cue",
+      "nativeSymbol": "compile_cue",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_cue",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "adapt_owner_observation",
+      "nativeSymbol": "adapt_owner_observation",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/owner_adapter.rs",
+      "state": "source_implemented_host_adapter_exposed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/owner_adapter_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_retrieval_adapter_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retrieve",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_candidate_union_from_batches",
+      "nativeSymbol": "build_candidate_union_from_batches",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator_contract.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_contract_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retrieve",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "recall_from_batches",
+      "nativeSymbol": "recall_from_batches",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator_contract.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_contract_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recall",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Supply the complete host-frozen Lane-C generation vector, objective and approved-context digests from their actual owners, then invoke compile_cue and recall_from_batches at the product attachment boundary.",
+    "Add real Vector, Causal, Procedural and ContradictionSupport producers without relabeling SQLite lexical/entity/recency evidence.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the production/activation claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
