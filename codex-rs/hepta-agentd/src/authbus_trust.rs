@@ -44,7 +44,9 @@ pub(crate) fn load_external_replay_checkpoint(
         || projection.agent_id != identity.agent_id.as_str()
         || projection.generation == 0
     {
-        return Err(invalid("external replay checkpoint owner or schema is invalid"));
+        return Err(invalid(
+            "external replay checkpoint owner or schema is invalid",
+        ));
     }
     let replay_digest = Digest32::from_array(hex_bytes::<32>(&projection.replay_digest_hex)?);
     if replay_digest.is_zero() {
@@ -257,9 +259,13 @@ fn read_external_checkpoint_file(
             "external replay checkpoint must be outside the Agent home and run root",
         ));
     }
-    let parent = path.parent().ok_or_else(|| invalid("checkpoint parent is missing"))?;
+    let parent = path
+        .parent()
+        .ok_or_else(|| invalid("checkpoint parent is missing"))?;
     if parent.canonicalize()? != parent || path.canonicalize()? != path {
-        return Err(invalid("external replay checkpoint path must be canonical and symlink-free"));
+        return Err(invalid(
+            "external replay checkpoint path must be canonical and symlink-free",
+        ));
     }
     let owner = std::fs::metadata(&identity.home_root)?;
     let parent_meta = std::fs::metadata(parent)?;
