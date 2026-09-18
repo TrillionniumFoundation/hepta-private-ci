@@ -9,6 +9,7 @@
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
+use std::fs::File;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
@@ -37,6 +38,7 @@ use crate::LearningLedger;
 use crate::LedgerAnchor;
 use crate::LedgerError;
 use crate::LedgerEvent;
+use crate::LedgerSegmentCheckpoint;
 use crate::LedgerSnapshot;
 use crate::LedgerWitnessFrontier;
 use crate::LedgerWitnessStore;
@@ -169,7 +171,7 @@ impl LedgerWriter {
 
     fn new(
         backend: LedgerBackend,
-        witness: LedgerWitnessStore,
+        mut witness: LedgerWitnessStore,
         trust: ActivatedLearningTrustV1,
     ) -> Result<Self, ProductionLedgerError> {
         if backend.binding() != witness.binding() {
@@ -177,6 +179,13 @@ impl LedgerWriter {
         }
         let snapshot = backend.snapshot()?;
         let ledger_frontier = backend.frontier()?;
+        let witness_frontier = witness.frontier()?;
+        if ledger_frontier.anchor.sequence == witness_frontier.anchor.sequence
+            && ledger_frontier.anchor.chain_digest == witness_frontier.anchor.chain_digest
+            && ledger_frontier != witness_frontier
+        {
+            witness.advance(witness_frontier, ledger_frontier)?;
+        }
         let witness_frontier = witness.frontier()?;
         validate_witness_state(&snapshot, ledger_frontier, witness_frontier)?;
         Ok(Self {
@@ -207,6 +216,35 @@ impl LedgerWriter {
 
     pub fn witness_frontier(&self) -> Result<LedgerWitnessFrontier, ProductionLedgerError> {
         self.witness.frontier().map_err(Into::into)
+    }
+
+    pub fn segmented_checkpoint(
+        &self,
+    ) -> Result<Option<LedgerSegmentCheckpoint>, ProductionLedgerError> {
+        match &self.backend {
+            LedgerBackend::Durable(_) => Ok(None),
+            LedgerBackend::Segmented(value) => value.checkpoint().map(Some).map_err(Into::into),
+        }
+    }
+
+    pub fn rotate_segment(
+        &mut self,
+        next_segment: File,
+        expected: LedgerAnchor,
+    ) -> Result<LedgerSegmentCheckpoint, ProductionLedgerError> {
+        let before = self.witness.frontier()?;
+        let LedgerBackend::Segmented(ledger) = &mut self.backend else {
+            return Err(ProductionLedgerError::UnsupportedBackend);
+        };
+        ledger.rotate(next_segment, expected)?;
+        let after = self.backend.frontier()?;
+        if let Err(witness_error) = self.witness.advance(before, after) {
+            return Err(ProductionLedgerError::IndeterminateAfterTopologyChange {
+                witness_error,
+            });
+        }
+        self.segmented_checkpoint()?
+            .ok_or(ProductionLedgerError::UnsupportedBackend)
     }
 
     pub fn append_decision(
@@ -927,8 +965,12 @@ pub enum ProductionLedgerError {
     AuthenticatedDecisionRequired,
     OutcomeWatermarkRequired,
     WitnessLag,
+    UnsupportedBackend,
     IndeterminateAfterLedgerCommit {
         receipt: AppendReceipt,
+        witness_error: DurableLedgerError,
+    },
+    IndeterminateAfterTopologyChange {
         witness_error: DurableLedgerError,
     },
 }
