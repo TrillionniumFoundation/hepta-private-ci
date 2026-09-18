@@ -356,14 +356,9 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         }
         evaluator_id.get_or_insert(this_evaluator);
 
-        let decision = decide_with_signed_evidence_v2(
-            bundle,
-            metric_roles,
-            &evidence,
-            verifier,
-            now,
-        )
-        .map_err(E::Evaluation)?;
+        let decision =
+            decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, verifier, now)
+                .map_err(E::Evaluation)?;
         if decision.decision.disposition
             != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
@@ -466,8 +461,14 @@ fn validate_admission_binding(
     for (label, digest) in [
         ("objective", evidence.objective_digest),
         ("selected artifact", evidence.selected_artifact_digest),
-        ("artifact registry binding", evidence.artifact_registry_binding),
-        ("artifact registry head", evidence.artifact_registry_head_digest),
+        (
+            "artifact registry binding",
+            evidence.artifact_registry_binding,
+        ),
+        (
+            "artifact registry head",
+            evidence.artifact_registry_head_digest,
+        ),
         (
             "qualification evidence head",
             evidence.qualification_evidence_head_digest,
@@ -520,12 +521,8 @@ mod tests {
         let mut file = tempfile().expect("tempfile");
         file.write_all(b"history").expect("write");
         file.seek(SeekFrom::Start(0)).expect("seek");
-        let result = AnchoredPlasticityWriterV1::bootstrap_new(
-            file,
-            Digest32::of_bytes(b"scope"),
-            1,
-            8,
-        );
+        let result =
+            AnchoredPlasticityWriterV1::bootstrap_new(file, Digest32::of_bytes(b"scope"), 1, 8);
         assert!(matches!(
             result,
             Err(AnchoredPlasticityWriterErrorV1::Registry(

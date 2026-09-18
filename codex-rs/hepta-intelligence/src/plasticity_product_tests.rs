@@ -97,7 +97,8 @@ impl Fixture {
                     minimum_delta: FixedQ32::from_raw(-(1_i64 << 24)),
                     maximum_delta: FixedQ32::from_raw(1_i64 << 24),
                 }],
-            ).expect("mutation grammar"),
+            )
+            .expect("mutation grammar"),
             update_scales: vec![FixedQ32::ONE],
             signals: vec![ParameterPlasticitySignalV3 {
                 layer_id: id("layer:1"),
@@ -249,9 +250,7 @@ impl Fixture {
             payload_digest: Digest32::of_bytes(payload),
             signature: [0; 64],
         };
-        evidence.signature = self.keys[signer]
-            .sign(&evidence.signing_bytes())
-            .to_bytes();
+        evidence.signature = self.keys[signer].sign(&evidence.signing_bytes()).to_bytes();
         evidence
     }
 
@@ -274,8 +273,7 @@ impl Fixture {
         let evaluator_bundle = self.sign(
             2,
             LearningEvidenceRoleV1::Evaluator,
-            &evaluation_signing_payload_v2(&self.bundle, &self.roles)
-                .expect("evaluation payload"),
+            &evaluation_signing_payload_v2(&self.bundle, &self.roles).expect("evaluation payload"),
         );
         ParameterPlasticityProductRequestV1 {
             proposal_id: id("plasticity-proposal:1"),
@@ -348,13 +346,25 @@ fn authenticated_product_path_generates_evaluates_appends_and_commits_anchor() {
     )
     .expect("authenticated proposal");
 
-    assert_eq!(receipt.proposal.proposer_id, fixture.principals[0].principal_id);
-    assert_eq!(receipt.proposal.evaluator_id, fixture.principals[2].principal_id);
+    assert_eq!(
+        receipt.proposal.proposer_id,
+        fixture.principals[0].principal_id
+    );
+    assert_eq!(
+        receipt.proposal.evaluator_id,
+        fixture.principals[2].principal_id
+    );
     assert!(!receipt.proposal.authority.grants_any());
     assert_eq!(writer.record_count().expect("count"), 1);
-    assert_eq!(anchor_committer.scope, Some(digest("plasticity-registry-scope")));
+    assert_eq!(
+        anchor_committer.scope,
+        Some(digest("plasticity-registry-scope"))
+    );
     assert_eq!(anchor_committer.fence, Some(17));
-    assert_eq!(anchor_committer.anchor, Some(receipt.committed_registry_anchor));
+    assert_eq!(
+        anchor_committer.anchor,
+        Some(receipt.committed_registry_anchor)
+    );
 }
 
 #[test]
@@ -423,5 +433,8 @@ fn anchor_commit_failure_poison_writer_after_durable_append() {
         result,
         Err(ParameterPlasticityProductErrorV1::AnchorPersistenceFailed)
     ));
-    assert_eq!(writer.record_count(), Err(DurableProposalRegistryError::Poisoned));
+    assert_eq!(
+        writer.record_count(),
+        Err(DurableProposalRegistryError::Poisoned)
+    );
 }

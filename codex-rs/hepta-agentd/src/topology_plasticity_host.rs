@@ -424,8 +424,12 @@ pub fn bootstrap_agentd_topology_writer_v1(
         return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
     }
     let fence = anchor_store.issue_next_fence()?;
-    let registry =
-        DurableTopologyProposalRegistryV1::bootstrap_empty(registry_file, scope, fence, maximum_records)?;
+    let registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
+        registry_file,
+        scope,
+        fence,
+        maximum_records,
+    )?;
     Ok((
         AgentdTopologyWriterV1 {
             registry,
@@ -482,9 +486,8 @@ mod tests {
     fn topology_anchor_store_preserves_fence_and_anchor() {
         let file = tempfile().expect("file");
         let scope = digest(b"topology-scope");
-        let mut store =
-            AgentdTopologyAnchorStoreV1::open(file.try_clone().expect("clone"), scope)
-                .expect("open");
+        let mut store = AgentdTopologyAnchorStoreV1::open(file.try_clone().expect("clone"), scope)
+            .expect("open");
         let fence = store.issue_next_fence().expect("fence");
         assert_eq!(fence, 1);
         let anchor = DurableTopologyRegistryAnchorV1 {

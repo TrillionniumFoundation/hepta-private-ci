@@ -12,10 +12,10 @@ use std::fs::TryLockError;
 use std::io::{Read, Seek, SeekFrom, Write};
 
 use codex_hepta_intelligence::{
-    AnchoredPlasticityWriterErrorV1, AnchoredPlasticityWriterV1,
-    ParameterPlasticityProductErrorV1, ParameterPlasticityProductReceiptV1,
-    ParameterPlasticityProductRequestV1, PlasticityAdmissionEvidenceV1,
-    PlasticityAnchorCommitterV1, propose_authenticated_parameter_plasticity_v1,
+    AnchoredPlasticityWriterErrorV1, AnchoredPlasticityWriterV1, ParameterPlasticityProductErrorV1,
+    ParameterPlasticityProductReceiptV1, ParameterPlasticityProductRequestV1,
+    PlasticityAdmissionEvidenceV1, PlasticityAnchorCommitterV1,
+    propose_authenticated_parameter_plasticity_v1,
 };
 use codex_hepta_learning_artifacts::{ArtifactKind, ArtifactRegistry};
 use codex_hepta_learning_ledger::{DurableLedger, DurableLedgerError, LearningEvidenceVerifierV1};
@@ -303,8 +303,10 @@ pub fn resolve_agentd_plasticity_admission_v1(
     if !artifacts.is_eligible(&input.baseline_id) {
         return Err(AgentdPlasticityHostErrorV1::ArtifactIneligible);
     }
-    if !matches!(manifest.kind, ArtifactKind::Parameters | ArtifactKind::Model)
-        || manifest.content_digest != input.generated.selected_artifact_digest
+    if !matches!(
+        manifest.kind,
+        ArtifactKind::Parameters | ArtifactKind::Model
+    ) || manifest.content_digest != input.generated.selected_artifact_digest
         || manifest.objective_digest != input.objective_digest
         || manifest.generation != input.baseline_generation
         || input.baseline_generation.next() != Ok(input.candidate_generation)
@@ -367,14 +369,8 @@ pub fn propose_agentd_plasticity_v1(
         return Err(AgentdPlasticityHostErrorV1::AdmissionDrift);
     }
     request.admission = resolved;
-    propose_authenticated_parameter_plasticity_v1(
-        request,
-        verifier,
-        writer,
-        anchor_store,
-        now,
-    )
-    .map_err(Into::into)
+    propose_authenticated_parameter_plasticity_v1(request, verifier, writer, anchor_store, now)
+        .map_err(Into::into)
 }
 
 pub fn bootstrap_agentd_plasticity_writer_v1(
@@ -382,10 +378,8 @@ pub fn bootstrap_agentd_plasticity_writer_v1(
     anchor_file: File,
     registry_scope_digest: Digest32,
     maximum_records: usize,
-) -> Result<
-    (AnchoredPlasticityWriterV1, AgentdPlasticityAnchorStoreV1),
-    AgentdPlasticityHostErrorV1,
-> {
+) -> Result<(AnchoredPlasticityWriterV1, AgentdPlasticityAnchorStoreV1), AgentdPlasticityHostErrorV1>
+{
     let mut anchor_store = AgentdPlasticityAnchorStoreV1::open(anchor_file, registry_scope_digest)?;
     if anchor_store.anchor().is_some() {
         return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
@@ -405,10 +399,8 @@ pub fn reopen_agentd_plasticity_writer_v1(
     anchor_file: File,
     registry_scope_digest: Digest32,
     maximum_records: usize,
-) -> Result<
-    (AnchoredPlasticityWriterV1, AgentdPlasticityAnchorStoreV1),
-    AgentdPlasticityHostErrorV1,
-> {
+) -> Result<(AnchoredPlasticityWriterV1, AgentdPlasticityAnchorStoreV1), AgentdPlasticityHostErrorV1>
+{
     let anchor_store = AgentdPlasticityAnchorStoreV1::open(anchor_file, registry_scope_digest)?;
     let anchor = anchor_store
         .anchor()
@@ -440,11 +432,9 @@ mod tests {
     fn anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state() {
         let anchor_file = tempfile().expect("anchor file");
         let scope = digest(b"scope");
-        let mut store = AgentdPlasticityAnchorStoreV1::open(
-            anchor_file.try_clone().expect("clone"),
-            scope,
-        )
-        .expect("open");
+        let mut store =
+            AgentdPlasticityAnchorStoreV1::open(anchor_file.try_clone().expect("clone"), scope)
+                .expect("open");
         assert_eq!(store.issue_next_fence().expect("fence"), 1);
         let expected = DurableRegistryAnchorV1 {
             sequence: 1,
@@ -453,8 +443,7 @@ mod tests {
         assert!(store.persist_anchor(scope, 1, expected));
         drop(store);
 
-        let reopened =
-            AgentdPlasticityAnchorStoreV1::open(anchor_file, scope).expect("reopen");
+        let reopened = AgentdPlasticityAnchorStoreV1::open(anchor_file, scope).expect("reopen");
         assert_eq!(reopened.fence(), 1);
         assert_eq!(reopened.anchor(), Some(expected));
     }

@@ -13,10 +13,10 @@ use codex_hepta_learning_ledger::{
 };
 use codex_hepta_plasticity::{
     DurableTopologyAppendReceiptV1, DurableTopologyProposalRegistryV1,
-    DurableTopologyRegistryAnchorV1, DurableTopologyRegistryErrorV1,
-    GovernedTopologyProposalV1, TopologyChangeV2, TopologyGovernanceErrorV1,
-    TopologyProposalErrorV2, TopologyProposalRequestV2, ProposalWindowV2,
-    WriterHandoffPlanV1, admit_governed_topology_v1, propose_topology_v2,
+    DurableTopologyRegistryAnchorV1, DurableTopologyRegistryErrorV1, GovernedTopologyProposalV1,
+    ProposalWindowV2, TopologyChangeV2, TopologyGovernanceErrorV1, TopologyProposalErrorV2,
+    TopologyProposalRequestV2, WriterHandoffPlanV1, admit_governed_topology_v1,
+    propose_topology_v2,
 };
 use codex_hepta_types::{Digest32, Generation, StableId};
 
@@ -153,9 +153,7 @@ pub fn topology_generation_signing_payload_v1(
     Ok(bytes)
 }
 
-pub fn topology_admission_signing_payload_v1(
-    evidence: &TopologyAdmissionEvidenceV1,
-) -> Vec<u8> {
+pub fn topology_admission_signing_payload_v1(evidence: &TopologyAdmissionEvidenceV1) -> Vec<u8> {
     let mut bytes = b"hepta.intelligence.topology-admission.v1\0".to_vec();
     push_id(&mut bytes, &evidence.baseline_id);
     for digest in [
@@ -175,13 +173,11 @@ pub fn topology_admission_signing_payload_v1(
     bytes
 }
 
-pub fn topology_evaluation_signing_payload_v1(
-    evidence: &TopologyAdmissionEvidenceV1,
-) -> Vec<u8> {
+pub fn topology_evaluation_signing_payload_v1(evidence: &TopologyAdmissionEvidenceV1) -> Vec<u8> {
     let mut bytes = b"hepta.intelligence.topology-evaluation.v1\0".to_vec();
-    bytes.extend_from_slice(Digest32::of_bytes(
-        &topology_admission_signing_payload_v1(evidence),
-    ).as_array());
+    bytes.extend_from_slice(
+        Digest32::of_bytes(&topology_admission_signing_payload_v1(evidence)).as_array(),
+    );
     bytes.extend_from_slice(evidence.evaluation_receipt_digest.as_array());
     bytes
 }
@@ -203,7 +199,10 @@ pub fn propose_authenticated_topology_plasticity_v1(
         || request.admission.candidate_generation != request.candidate_generation
         || request.admission.objective_digest.is_zero()
         || request.admission.artifact_registry_head_digest.is_zero()
-        || request.admission.qualification_evidence_head_digest.is_zero()
+        || request
+            .admission
+            .qualification_evidence_head_digest
+            .is_zero()
         || request.admission.evaluation_receipt_digest.is_zero()
     {
         return Err(E::Binding("topology admission"));
@@ -322,16 +321,13 @@ fn push_optional_digest(bytes: &mut Vec<u8>, value: Option<Digest32>) {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use codex_hepta_learning_ledger::{
         AuthenticatedPrincipalV1, LearningEvidenceTrustV1, TrustedLearningSignerV1,
     };
-    use codex_hepta_plasticity::{
-        TopologyOperationV2, build_writer_handoff_plan_v1,
-    };
+    use codex_hepta_plasticity::{TopologyOperationV2, build_writer_handoff_plan_v1};
     use ed25519_dalek::{Signer, SigningKey};
     use tempfile::tempfile;
 
