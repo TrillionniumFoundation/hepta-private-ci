@@ -19,6 +19,7 @@ from control_engineering_v2.external_controls import (
     verify_distributed_revocation_frontier,
     verify_external_audit_anchor,
     verify_external_key_custody,
+    verify_production_controls,
 )
 
 
@@ -341,6 +342,53 @@ class ExternalControlTests(unittest.TestCase):
                         self.trust,
                         now_ns=self.now,
                     )
+
+    def test_production_controls_compose_current_fence_anchor_and_separate_keys(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                lease = store.acquire_path_lease(
+                    "lease",
+                    "env",
+                    "worker",
+                    ("src/a",),
+                    authority_epoch=7,
+                    expires_unix_ns=self.now + 500,
+                    now_ns=self.now,
+                )
+                frontier = self.frontier()
+                fence = self.fence(lease, frontier)
+                anchor = store.audit_anchor()
+                audit = self.sign(
+                    AuditAnchorAttestation(
+                        sequence=anchor["sequence"],
+                        event_digest=anchor["eventDigest"],
+                        envelope_id=self.envelope.envelope_id,
+                        source_commit=self.envelope.source_commit,
+                        source_tree=self.envelope.source_tree,
+                        issuer="audit_anchor_service",
+                        signing_identity="audit-key",
+                        observed_unix_ns=self.now - 1,
+                        expires_unix_ns=self.now + 100,
+                    )
+                )
+                decision = verify_production_controls(
+                    store,
+                    self.envelope,
+                    lease,
+                    fence,
+                    frontier,
+                    audit,
+                    self.custody_set(),
+                    self.trust,
+                    now_ns=self.now,
+                )
+                self.assertEqual(len(decision.distributed_fence_digest), 64)
+                self.assertEqual(len(decision.audit_anchor_digest), 64)
+                self.assertEqual(len(decision.key_custody_digest), 64)
+                self.assertFalse(decision.runtime_authority)
+                self.assertFalse(decision.merge_authority)
+                self.assertFalse(decision.release_authority)
 
     def custody_receipt(self, role: str, key_id: str) -> KeyCustodyReceipt:
         return self.sign(
