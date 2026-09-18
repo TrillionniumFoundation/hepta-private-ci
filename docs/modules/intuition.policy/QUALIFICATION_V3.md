@@ -27,7 +27,7 @@ This supports model replacement under stable policy semantics, policy/profile re
 
 `ScoringCommitmentV1` binds:
 
-- decision/state/generation/sequence;
+- decision/objective/objective-class/state/generation/sequence;
 - model artifact and scorer contract;
 - feature snapshot/schema;
 - output schema and score semantics;
