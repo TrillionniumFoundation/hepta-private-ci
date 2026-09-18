@@ -143,10 +143,25 @@ pub struct ProviderDispatchReceipt {
     pub observation: AutomationProviderObservation,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum ProviderDispatchOutcome {
+    Observed(ProviderDispatchReceipt),
+    /// The provider may have accepted or completed the effect, but the caller
+    /// cannot prove the terminal result. The digest binds the durable evidence
+    /// used by later reconciliation; this outcome must never be blindly retried.
+    Indeterminate {
+        observation_digest: Sha256Digest,
+    },
+}
+
 pub trait AutomationEffectProvider: Send + Sync {
+    /// Error is reserved for failures proven to have happened before the
+    /// provider admission seam. Anything that may have crossed that seam must
+    /// return an indeterminate outcome.
     fn dispatch(
         &self,
         request: ProviderDispatchRequest,
         authority: &VerifiedFinalUseAuthority,
-    ) -> EffectFuture<'_, ProviderDispatchReceipt>;
+    ) -> EffectFuture<'_, ProviderDispatchOutcome>;
 }
