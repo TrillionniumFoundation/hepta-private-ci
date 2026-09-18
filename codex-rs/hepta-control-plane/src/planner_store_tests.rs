@@ -1,5 +1,7 @@
 use std::fs::OpenOptions;
 use std::io::Write;
+use std::path::Path;
+use std::path::PathBuf;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -38,6 +40,36 @@ fn digest(value: &str) -> Digest32 {
 
 fn q32(value: i64) -> FixedQ32 {
     FixedQ32::from_raw(value << 32)
+}
+
+struct TestRoot {
+    path: PathBuf,
+}
+
+impl TestRoot {
+    fn new(name: &str) -> Self {
+        use std::os::unix::fs::DirBuilderExt;
+
+        let path = std::env::temp_dir().join(format!(
+            "hepta-control-runtime-{name}-{}",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_dir_all(&path);
+        let mut builder = std::fs::DirBuilder::new();
+        builder.mode(0o700);
+        builder.create(&path).expect("create private test root");
+        Self { path }
+    }
+
+    fn path(&self) -> &Path {
+        &self.path
+    }
+}
+
+impl Drop for TestRoot {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.path);
+    }
 }
 
 fn fixture() -> (
@@ -135,7 +167,7 @@ fn fixture() -> (
 
 #[test]
 fn durable_store_round_trips_and_rejects_older_backup_against_trusted_head() {
-    let temp = tempfile::tempdir().expect("tempdir");
+    let temp = TestRoot::new("rollback");
     let (snapshot, _prepared, receipt) = fixture();
     let backup;
     let trusted_after_revoke;
@@ -164,7 +196,7 @@ fn durable_store_round_trips_and_rejects_older_backup_against_trusted_head() {
 fn bare_v0_journal_is_migrated_atomically_to_store_envelope() {
     use std::os::unix::fs::OpenOptionsExt;
 
-    let temp = tempfile::tempdir().expect("tempdir");
+    let temp = TestRoot::new("migration");
     let mut journal = PlannerJournalV1::new();
     journal
         .append(
@@ -193,7 +225,7 @@ fn bare_v0_journal_is_migrated_atomically_to_store_envelope() {
 
 #[test]
 fn live_writer_lock_excludes_a_second_store() {
-    let temp = tempfile::tempdir().expect("tempdir");
+    let temp = TestRoot::new("writer-lock");
     let _first = PlannerJournalStoreV1::open(temp.path()).expect("first writer");
     assert!(matches!(
         PlannerJournalStoreV1::open(temp.path()),
