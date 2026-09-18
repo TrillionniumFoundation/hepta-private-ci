@@ -7,6 +7,7 @@ receipts a production worker must present before those claims are accepted.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 import json
 import time
@@ -14,6 +15,7 @@ import time
 from .control_plane import (
     EngineeringError,
     EngineeringStore,
+    bounded_tuple,
     LeaseReceipt,
     WorkEnvelope,
     checked_id,
@@ -330,7 +332,7 @@ def verify_external_audit_anchor(
 
 
 def verify_external_key_custody(
-    receipt: KeyCustodyReceipt,
+    receipts: KeyCustodyReceipt | Iterable[KeyCustodyReceipt],
     trust_store: SignatureTrustStore,
     *,
     required_roles: tuple[str, ...] = (
@@ -341,20 +343,16 @@ def verify_external_key_custody(
     ),
     now_ns: int | None = None,
 ) -> str:
+    """Verify external hardware custody with role-separated production keys.
+
+    The custody authority may attest several keys with one of its own signing
+    identities, but the keys *being custodied* for the critical engineering
+    roles must be distinct. Hardware-backing a single omnipotent key does not
+    satisfy generator/evaluator/evidence separation.
+    """
     now = time.time_ns() if now_ns is None else now_ns
-    checked_id(receipt.provider, "key_provider")
-    checked_id(receipt.key_id, "key_id")
-    if receipt.issuer != "key_custody_authority":
-        raise EngineeringError("key_custody_issuer_role")
-    if (
-        not isinstance(receipt.roles, tuple)
-        or not receipt.roles
-        or len(receipt.roles) > MAX_KEY_CUSTODY_ROLES
-        or len(set(receipt.roles)) != len(receipt.roles)
-    ):
-        raise EngineeringError("key_custody_roles")
-    for role in receipt.roles:
-        checked_id(role, "key_custody_role")
+    if type(now) is not int or now < 0:
+        raise EngineeringError("invalid_time")
     if (
         not isinstance(required_roles, tuple)
         or not required_roles
@@ -364,24 +362,71 @@ def verify_external_key_custody(
         raise EngineeringError("key_custody_required_roles")
     for role in required_roles:
         checked_id(role, "required_key_custody_role")
-    if (
-        receipt.hardware_backed is not True
-        or receipt.external_to_engineering is not True
-    ):
-        raise EngineeringError("key_custody_boundary")
-    if not set(required_roles).issubset(set(receipt.roles)):
-        raise EngineeringError("key_custody_roles")
-    if not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now):
-        raise EngineeringError("key_custody_stale")
-    if not trust_store.verify(
-        receipt,
-        receipt.issuer,
-        receipt.signing_identity,
-        receipt.signature,
-    ):
-        raise EngineeringError("key_custody_signature")
-    return semantic_digest(asdict(receipt))
 
+    if isinstance(receipts, KeyCustodyReceipt):
+        values = (receipts,)
+    else:
+        values = bounded_tuple(
+            receipts,
+            MAX_KEY_CUSTODY_ROLES,
+            "key_custody_receipt_limit",
+        )
+    if not values or any(not isinstance(value, KeyCustodyReceipt) for value in values):
+        raise EngineeringError("key_custody_receipts")
+
+    required = set(required_roles)
+    bindings: dict[str, tuple[str, str]] = {}
+    seen_receipt_keys: set[tuple[str, str]] = set()
+    canonical: list[KeyCustodyReceipt] = []
+    for receipt in values:
+        checked_id(receipt.provider, "key_provider")
+        checked_id(receipt.key_id, "key_id")
+        if receipt.issuer != "key_custody_authority":
+            raise EngineeringError("key_custody_issuer_role")
+        if (
+            not isinstance(receipt.roles, tuple)
+            or not receipt.roles
+            or len(receipt.roles) > MAX_KEY_CUSTODY_ROLES
+            or len(set(receipt.roles)) != len(receipt.roles)
+        ):
+            raise EngineeringError("key_custody_roles")
+        for role in receipt.roles:
+            checked_id(role, "key_custody_role")
+        if (
+            receipt.hardware_backed is not True
+            or receipt.external_to_engineering is not True
+        ):
+            raise EngineeringError("key_custody_boundary")
+        if not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now):
+            raise EngineeringError("key_custody_stale")
+        if not trust_store.verify(
+            receipt,
+            receipt.issuer,
+            receipt.signing_identity,
+            receipt.signature,
+        ):
+            raise EngineeringError("key_custody_signature")
+
+        key = (receipt.provider, receipt.key_id)
+        critical_roles = required.intersection(receipt.roles)
+        if len(critical_roles) > 1:
+            raise EngineeringError("key_custody_role_separation")
+        if critical_roles:
+            role = next(iter(critical_roles))
+            if role in bindings:
+                raise EngineeringError("key_custody_roles")
+            if key in seen_receipt_keys:
+                raise EngineeringError("key_custody_role_separation")
+            bindings[role] = key
+            seen_receipt_keys.add(key)
+        canonical.append(receipt)
+
+    if set(bindings) != required:
+        raise EngineeringError("key_custody_roles")
+    if len(set(bindings.values())) != len(required_roles):
+        raise EngineeringError("key_custody_role_separation")
+    canonical.sort(key=lambda item: (item.provider, item.key_id, item.roles))
+    return semantic_digest([asdict(item) for item in canonical])
 
 def verify_production_controls(
     lease: LeaseReceipt,
@@ -390,7 +435,7 @@ def verify_production_controls(
     revocation_frontier: DistributedRevocationFrontierReceipt,
     store: EngineeringStore,
     audit: AuditAnchorAttestation,
-    custody: KeyCustodyReceipt,
+    custody: KeyCustodyReceipt | Iterable[KeyCustodyReceipt],
     trust_store: SignatureTrustStore,
     *,
     now_ns: int | None = None,
