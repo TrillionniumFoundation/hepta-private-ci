@@ -410,6 +410,15 @@ impl FederatedEvidenceResultV1 {
     pub fn validate(&self) -> Result<(), LaneCContractError> {
         self.observed_snapshot.validate()?;
         self.coverage.validate()?;
+        if matches!(self.completeness, FederatedCompletenessV1::Complete)
+            && (self.coverage.completed_peers != self.coverage.requested_peers
+                || self.coverage.failed_peers != 0
+                || self.coverage.truncated_items != 0)
+        {
+            return Err(LaneCContractError::InvalidState(
+                "federated_complete_coverage",
+            ));
+        }
         if self.items.len() > MAX_FEDERATED_RESULT_ITEMS {
             return Err(LaneCContractError::LimitExceeded {
                 field: "federated_items",
