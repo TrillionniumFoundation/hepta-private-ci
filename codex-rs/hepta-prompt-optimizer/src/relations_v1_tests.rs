@@ -1,5 +1,6 @@
 use super::*;
 use crate::PromptCandidateBindingV1;
+use crate::PromptCandidateRoleV1;
 use crate::PromptCandidateEnumerationRequestV1;
 use crate::PromptCandidateSourceAuthenticatorV1;
 use crate::PromptCandidateSourceV1;
@@ -33,6 +34,7 @@ fn candidate_set(count: usize) -> PromptCandidateSetReceiptV1 {
             candidate_id: id(&format!("candidate:{index:03}")),
             factor_id: id(&format!("factor:{index:03}")),
             realization_id: id(&format!("realization:{index:03}")),
+            role: PromptCandidateRoleV1::DeveloperInstruction,
             payload_digest: digest(&format!("payload:{index}")),
             admission_digest: digest(&format!("admission:{index}")),
             support_digest: digest(&format!("support:{index}")),
