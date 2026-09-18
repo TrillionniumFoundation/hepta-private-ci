@@ -244,6 +244,115 @@ async fn step_outbox_lifecycle_is_durable_fenced_and_idempotent() {
 }
 
 #[tokio::test]
+async fn reconciled_step_remains_readable_after_run_projection_refence() {
+    let fixture = Fixture::new();
+    let (store, owner, intent, payload) = prepared_store(&fixture).await;
+    store
+        .prepare_taskflow_step(
+            "step-run",
+            "work",
+            /*attempt*/ 1,
+            &owner,
+            &intent,
+            &payload,
+            "recovery-prepare",
+            /*now_ms*/ 21,
+        )
+        .await
+        .expect("prepare");
+    store
+        .claim_taskflow_step(
+            "step-run",
+            "work",
+            /*attempt*/ 1,
+            &owner,
+            &intent,
+            &payload,
+            "recovery-claim",
+            /*now_ms*/ 22,
+        )
+        .await
+        .expect("claim");
+    store
+        .record_taskflow_step(
+            "step-run",
+            "work",
+            /*attempt*/ 1,
+            &owner,
+            &intent,
+            &payload,
+            "recovery-record",
+            &Sha256Digest::for_bytes(b"unknown"),
+            TaskFlowStepObservation::Indeterminate,
+            /*now_ms*/ 23,
+        )
+        .await
+        .expect("record");
+    store
+        .reconcile_taskflow_step(
+            "step-run",
+            "work",
+            /*attempt*/ 1,
+            &owner,
+            &intent,
+            &payload,
+            "recovery-reconcile",
+            &Sha256Digest::for_bytes(b"terminal"),
+            TaskFlowReconcileOutcome::Succeeded,
+            /*now_ms*/ 24,
+        )
+        .await
+        .expect("reconcile");
+
+    // Simulate the recovery crash window: the immutable step is terminal under
+    // generation 1, then a newer generation reclaims only the still-Running
+    // run projection and crashes before writing its quarantine/terminal events.
+    let recovery = fence(/*generation*/ 2);
+    store
+        .claim_taskflow_run(
+            "step-run",
+            &recovery,
+            /*now_ms*/ 2_000,
+            /*lease_duration_ms*/ 1_000,
+        )
+        .await
+        .expect("re-fence run projection");
+
+    let historical = store
+        .read_taskflow_step("step-run", "work", /*attempt*/ 1, &owner)
+        .await
+        .expect("historical terminal step remains readable")
+        .expect("step exists");
+    assert_eq!(historical.state, TaskFlowStepState::Reconciled);
+    assert_eq!(
+        historical.final_outcome,
+        Some(TaskFlowReconcileOutcome::Succeeded)
+    );
+    assert!(matches!(
+        store
+            .read_taskflow_step("step-run", "work", /*attempt*/ 1, &recovery)
+            .await,
+        Err(codex_hepta_automation::TaskFlowError::StaleFence)
+    ));
+    assert!(matches!(
+        store
+            .claim_taskflow_step(
+                "step-run",
+                "work",
+                /*attempt*/ 1,
+                &owner,
+                &intent,
+                &payload,
+                "recovery-illegal-mutation",
+                /*now_ms*/ 2_001,
+            )
+            .await,
+        Err(codex_hepta_automation::TaskFlowError::StaleFence)
+    ));
+    store.close().await;
+}
+
+#[tokio::test]
 async fn step_outbox_rejects_wrong_order_and_append_only_tamper() {
     let fixture = Fixture::new();
     let (store, owner, intent, payload) = prepared_store(&fixture).await;
