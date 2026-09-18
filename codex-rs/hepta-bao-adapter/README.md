@@ -12,6 +12,32 @@ An empty namespace denotes root and omits the namespace header.
 The supported consumer contract is one string field from one exact KV v2
 version. Other field types and other secrets engines are not silently coerced.
 
+## Dynamic SecretLease control-plane
+
+The adapter also exposes `BaoClient::request_secret_lease`,
+`renew_secret_lease`, and `revoke_secret_lease`. These are real provider
+mutations, not aliases for KV reads. They use `LeaseRegistry` to durably record
+operation identity and lifecycle state before dispatch.
+
+Dynamic issuance calls `POST /v1/{provider_path}`; renewal and revocation call
+`PUT /v1/sys/leases/renew` and `PUT /v1/sys/leases/revoke`. An operation that
+may have been applied but lacks a trustworthy acknowledgement moves to
+`Unknown`; the adapter never blindly retries it. Reconciliation requires a
+trusted observation of Active, Revoked, or NotApplied. Reusing an operation ID
+with different semantics is rejected.
+
+The registry persists provider lease identity, scope, expiry, generation and
+secret-data digest only. Raw dynamic secret values are not journaled. Dynamic
+secret response fields are accepted as a bounded string map and released only
+through the final-use callback. The caller supplies a maximum TTL and source
+currently caps issue/renew intervals at 86,400 seconds.
+
+The local lease registry is append-only and fsynced, but single-active per state
+directory. Active-active operation requires a strongly consistent external
+owner; sharing this local directory over unqualified NFS is not supported. See
+`docs/modules/secrets.heptabao/CURRENT_IMPLEMENTATION.md`,
+`SECRET_LEASE_DESIGN.md`, `FAILURE_RECOVERY.md`, and `HA_AND_STORAGE.md`.
+
 The adapter uses the approved `codex-http-client` owner through
 `HttpClientBuilder::build_pinned_https_direct`; it has no direct `reqwest`
 dependency. This narrow host-enrolled transport trusts only the supplied CA,
@@ -86,8 +112,9 @@ five minutes. Signing material remains outside the adapter and normal runtime.
 `FinalUseAuthority::update_revocations` accepts only monotonic trusted host
 updates. Within one epoch, revoked IDs cannot be removed. `open_state_dir`
 requires a Unix owner-only state directory (0700), creates private regular
-files (0600), and holds an operating-system process lock until exit. Claims
-and revocation updates are synced and atomically replaced before success.
+files (0600), and holds an operating-system process lock until exit. Revocation heads are atomically replaced before success. Claims are appended
+and fsynced to `claims.log` before dispatch admission; they no longer rewrite
+the complete authority snapshot.
 The example automatically reopens this state: used nonces remain rejected
 after restart without a manual epoch change. Corrupt, missing previously
 initialized state, unsafe permissions, or a concurrent owner cause denial.
@@ -95,16 +122,17 @@ Storage errors fence that authority instance until recovery. Preserve this
 state across deployments; deleting or restoring it from an old backup is an
 authority reset and requires an independently changed issuer trust/epoch.
 Other platforms fail closed until an equivalent owner ACL store exists.
-The 16,384-entry registry never evicts claims silently; exhaustion rejects new
-dispatch until a trusted epoch transition. A failed/timeout request does not
+The current per-epoch claim ceiling is 1,000,000 and claims are never silently
+evicted. Revoked grant IDs retain a separate 16,384-entry bound. Exhaustion
+rejects new dispatch until a trusted epoch transition. A failed/timeout request does not
 refund its nonce or retry automatically. A new grant requires owner action.
 
 Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
 malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+Dynamic lease mutations use durable operation identity and explicit
+indeterminate/reconciliation states; they do not reuse read retry rules.
 
 ## Verification
 
