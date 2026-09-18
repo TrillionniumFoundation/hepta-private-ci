@@ -80,13 +80,8 @@ where
         else {
             return Ok(AutomationTick::Idle);
         };
-        // Materialize the semantic occurrence before crossing any external
-        // seam. Its identity is schedule-revision + scheduled instant and it
-        // remains non-terminal after queue admission.
-        self.store
-            .materialize_causal_occurrence(&lease, now_ms)
-            .await?;
-
+        // claim_due atomically materializes the semantic occurrence before
+        // this scheduler can cross any external seam.
         // Persist the dispatch intent before crossing the App Server seam.
         // If this process dies after admission (or while the request is still
         // in flight) the successor must observe a durable unknown outcome and
