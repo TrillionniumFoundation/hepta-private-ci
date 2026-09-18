@@ -103,6 +103,7 @@ pub use signed_authority::H7H89ProductionGrantVerifier;
 pub use signed_authority::H7H89ProductionTransition;
 pub use signed_authority::ProductionMutationReceipt;
 pub use signed_authority::ProductionMutationStatus;
+pub use signed_authority::ReleaseSelectionBinding;
 pub use signed_authority::SIGNED_AUTHORITY_NAMESPACE;
 pub use signed_authority::SIGNED_AUTHORITY_SCHEMA_VERSION;
 pub use signed_authority::authority_epoch_for_supervisor_epoch;
