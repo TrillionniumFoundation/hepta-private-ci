@@ -162,8 +162,18 @@ impl Fixture {
     fn writer(&self) -> LedgerWriter {
         let ledger = DurableLedger::create(self.file("ledger"), binding(), 64).unwrap();
         let witness = LedgerWitnessStore::create(self.file("witness"), binding()).unwrap();
-        let verifier = LearningEvidenceVerifierV1::new(trust()).unwrap();
-        LedgerWriter::from_durable(ledger, witness, verifier).unwrap()
+        let trust = activate_learning_trust(
+            LearningTrustDistributionV1 {
+                distribution_id: id("trust-distribution"),
+                generation: 1,
+                effective_at: 20,
+                trust: trust(),
+            },
+            None,
+            50,
+        )
+        .unwrap();
+        LedgerWriter::from_durable(ledger, witness, trust).unwrap()
     }
 }
 
@@ -398,8 +408,18 @@ fn production_writer_recovers_against_independent_witness() {
     )
     .unwrap();
     let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
-    let verifier = LearningEvidenceVerifierV1::new(trust()).unwrap();
-    let recovered = LedgerWriter::from_durable(ledger, witness, verifier).unwrap();
+    let trust = activate_learning_trust(
+        LearningTrustDistributionV1 {
+            distribution_id: id("trust-distribution"),
+            generation: 1,
+            effective_at: 20,
+            trust: trust(),
+        },
+        None,
+        50,
+    )
+    .unwrap();
+    let recovered = LedgerWriter::from_durable(ledger, witness, trust).unwrap();
     assert_eq!(
         recovered.witness_frontier().unwrap().anchor.chain_digest,
         receipt.chain_digest
