@@ -468,3 +468,113 @@ fn paged_snapshot_binds_one_ledger_root_and_rejects_midstream_mutation() {
         Err(CognitiveStoreV2Error::DigestMismatch("ledger_root"))
     );
 }
+
+
+#[test]
+fn paged_snapshot_proves_same_record_ancestry_and_rejects_forged_tombstone_boundary() {
+    let mut store = store();
+    let first = candidate("memory:chain", "content:v1", MemoryAdmissionKind::Observation);
+    let first_intent = intent(&store, "intent:chain:1", &first);
+    store
+        .append_admitted(&Verifier, first, first_intent)
+        .expect("append first");
+
+    let second = candidate("memory:chain", "content:v2", MemoryAdmissionKind::Observation);
+    let second_intent = intent(&store, "intent:chain:2", &second);
+    store
+        .append_admitted(&Verifier, second, second_intent)
+        .expect("append second");
+
+    store
+        .forget(
+            &Verifier,
+            ForgetIntentV2 {
+                intent_id: id("forget:chain"),
+                record_id: id("memory:chain"),
+                expected_snapshot: store.snapshot_key().clone(),
+                writer_fence_digest: digest("writer-fence"),
+                authorization_digest: digest("authorization"),
+                reason_digest: digest("delete-chain"),
+            },
+        )
+        .expect("tombstone chain");
+
+    let snapshot = SnapshotOpenRequestV2 {
+        request_id: id("snapshot-page:chain"),
+        scope_id: id("scope:store"),
+        purpose_id: id("purpose:memory"),
+        minimum_memory_frontier: store.snapshot_key().vector.memory_ledger_frontier,
+        minimum_tombstone_frontier: store.snapshot_key().vector.tombstone_frontier,
+        authority_epoch: 1,
+        deadline_unix_ms: 1_000,
+        lease_duration_ms: 100,
+    };
+    let first_page = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: snapshot.clone(),
+                cursor: 0,
+                maximum_records: 1,
+                expected_ledger_digest: None,
+            },
+        )
+        .expect("first page");
+    let second_page = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: snapshot.clone(),
+                cursor: 1,
+                maximum_records: 1,
+                expected_ledger_digest: Some(first_page.ledger_digest),
+            },
+        )
+        .expect("second page");
+    let anchor = second_page
+        .previous_record
+        .as_ref()
+        .expect("cross-page predecessor");
+    assert_eq!(anchor.record_id, id("memory:chain"));
+    assert_eq!(anchor.revision, revision(1));
+    assert_eq!(anchor.state, RecordState::Live);
+    assert_eq!(
+        second_page.records[0].predecessor_digest,
+        Some(anchor.record_digest)
+    );
+
+    let third_page = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot,
+                cursor: 2,
+                maximum_records: 1,
+                expected_ledger_digest: Some(first_page.ledger_digest),
+            },
+        )
+        .expect("third page");
+    assert_eq!(third_page.records[0].state, RecordState::Tombstone);
+    assert_eq!(
+        third_page
+            .previous_record
+            .as_ref()
+            .expect("third page predecessor")
+            .revision,
+        revision(2)
+    );
+
+    let mut forged = second_page;
+    forged
+        .previous_record
+        .as_mut()
+        .expect("forged predecessor")
+        .state = RecordState::Tombstone;
+    forged.page_digest = forged.compute_page_digest();
+    assert_eq!(
+        forged.validate(10),
+        Err(CognitiveStoreV2Error::ResurrectionDenied(
+            "memory:chain".to_string()
+        ))
+    );
+}
