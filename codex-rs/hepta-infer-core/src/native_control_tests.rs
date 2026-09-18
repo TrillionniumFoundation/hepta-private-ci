@@ -184,7 +184,7 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
     assert_eq!(stopped.state, NativeReservationState::Released);
     assert_eq!(stopped.observation, None);
     assert_eq!(
-        control.dispatch_native("r1", dispatch(id)),
+        control.dispatch_native("r1", dispatch("r1")),
         Err(Error::InvalidTransition)
     );
     start(&mut control, "r2");
