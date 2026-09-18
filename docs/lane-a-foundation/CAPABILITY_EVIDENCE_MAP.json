@@ -414,8 +414,11 @@
       ],
       "durability": "local_fsync_stores_with_host_frontier",
       "activation": "source_composed_runtime_fleet_not_product_activated",
-      "productionCaller": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "receiptStatus": "native_workflow_required"
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required",
+      "sourceComposition": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ]
     },
     {
       "capabilityId": "kernel.authority.nonserial-verified-use.v2",
@@ -489,8 +492,11 @@
       ],
       "durability": "local_fsync_stores_with_host_frontier",
       "activation": "source_composed_runtime_fleet_not_product_activated",
-      "productionCaller": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "receiptStatus": "native_workflow_required"
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required",
+      "sourceComposition": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ]
     },
     {
       "capabilityId": "kernel.authority.independent-control.v1",
@@ -624,8 +630,11 @@
       ],
       "durability": "local_authority_durable_fleet_convergence_state_in_memory",
       "activation": "source_composed_wire_transport_external",
-      "productionCaller": "codex-rs/hepta-fleet/src/revocation_control.rs",
-      "receiptStatus": "native_workflow_required"
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required",
+      "sourceComposition": [
+        "codex-rs/hepta-fleet/src/revocation_control.rs"
+      ]
     },
     {
       "capabilityId": "kernel.operations.bounded-state-model.v1",
