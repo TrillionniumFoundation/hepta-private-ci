@@ -314,9 +314,10 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `pending` |
-| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `pending` |
+| `operationledger` | `OperationLedger` | `codex-rs/hepta-operations/src/ledger.rs` | `codex-rs/hepta-operations/src/ledger_tests.rs` |
+| `outbox` | `Outbox` | `codex-rs/hepta-operations/src/outbox.rs` | `codex-rs/hepta-operations/src/outbox_tests.rs` |
+| `durableoperationstore` | `DurableOperationStore` | `codex-rs/hepta-operations/src/durable.rs` | `codex-rs/hepta-operations/src/durable_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- The durable local owner store is source-implemented; a named authenticated product caller and a real destination-owned atomic dedupe/apply + terminal observer remain explicit composition follow-up.
+- Production composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
