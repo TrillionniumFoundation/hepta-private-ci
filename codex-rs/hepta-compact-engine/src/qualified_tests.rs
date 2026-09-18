@@ -377,3 +377,63 @@ fn qualification_requires_signature_verification_receipt() {
         ))
     );
 }
+
+
+#[test]
+fn large_input_remains_deterministic_and_bounded() {
+    const SOURCE_RECORDS: usize = 4_096;
+    const RETAINED_RECORDS: u32 = 512;
+    const RECORD_BYTES: u64 = 32;
+    const RECORD_TOKENS: u64 = 4;
+
+    let inputs = (0..SOURCE_RECORDS)
+        .map(|index| {
+            input_with_cost(
+                record(
+                    &format!("memory:bulk:{index:04}"),
+                    1,
+                    None,
+                    RecordState::Live,
+                ),
+                u32::try_from(SOURCE_RECORDS - index).expect("bounded priority"),
+                RECORD_BYTES,
+                RECORD_TOKENS,
+            )
+        })
+        .collect::<Vec<_>>();
+    let mut reversed = inputs.clone();
+    reversed.reverse();
+
+    let policy = CompactionPolicyV2 {
+        policy_id: id("policy:compact:large"),
+        algorithm_digest: digest("algorithm:large"),
+        compatibility_digest: digest("compatibility:large"),
+        maximum_retained_records: RETAINED_RECORDS,
+        maximum_retained_bytes: u64::from(RETAINED_RECORDS) * RECORD_BYTES,
+        maximum_retained_tokens: u64::from(RETAINED_RECORDS) * RECORD_TOKENS,
+        maximum_payload_bytes: 2_048,
+        maximum_payload_tokens: 256,
+        protected_record_ids: Vec::new(),
+    };
+    let left = build(&policy, inputs).expect("large candidate");
+    let right = build(&policy, reversed).expect("order-independent large candidate");
+
+    assert_eq!(left, right);
+    assert_eq!(left.loss_report.live_source_heads, SOURCE_RECORDS as u64);
+    assert_eq!(
+        left.loss_report.retained_records,
+        u64::from(RETAINED_RECORDS)
+    );
+    assert_eq!(
+        left.loss_report.omitted_live_records,
+        SOURCE_RECORDS as u64 - u64::from(RETAINED_RECORDS)
+    );
+    assert_eq!(
+        left.loss_report.retained_bytes,
+        u64::from(RETAINED_RECORDS) * RECORD_BYTES
+    );
+    assert_eq!(
+        left.loss_report.retained_tokens,
+        u64::from(RETAINED_RECORDS) * RECORD_TOKENS
+    );
+}
