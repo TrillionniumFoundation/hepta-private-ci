@@ -13,6 +13,7 @@ use tokio::io::BufReader;
 use tokio::time::timeout;
 
 use crate::ProductionMutationReceipt;
+use crate::ProductionRecoveryDecision;
 use crate::SupervisorError;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
@@ -75,6 +76,22 @@ impl SupervisordClient {
             .await?
         {
             SupervisordPayload::ProductionMutationStatus { receipt } => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn resolve_production_recovery(
+        &self,
+        fence: SupervisordControlFence,
+        decision: ProductionRecoveryDecision,
+    ) -> Result<ProductionMutationReceipt, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ResolveProductionRecovery { fence, decision })
+            .await?
+        {
+            SupervisordPayload::ProductionMutationStatus {
+                receipt: Some(receipt),
+            } => Ok(receipt),
             payload => unexpected(payload),
         }
     }
