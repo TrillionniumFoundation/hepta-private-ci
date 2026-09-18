@@ -172,6 +172,37 @@ jobs:
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
 
+      - name: Emit exact-head Lane E qualification evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s .hepta-evidence/learning-eval.lcov
+          test -s .hepta-evidence/learning-eval-stress.log
+          test -s .hepta-evidence/learning-eval-e2e.log
+          SOURCE_TREE="$(git rev-parse "${SOURCE_SHA}^{tree}")"
+          python3 scripts/hepta-lane-e-evidence.py emit \
+            --mode exact-head \
+            --source-sha "${SOURCE_SHA}" \
+            --candidate-sha "${SOURCE_SHA}" \
+            --tree-sha "${SOURCE_TREE}" \
+            --base-sha "${BASE_SHA:-}" \
+            --coverage .hepta-evidence/learning-eval.lcov \
+            --stress .hepta-evidence/learning-eval-stress.log \
+            --e2e .hepta-evidence/learning-eval-e2e.log \
+            --output .hepta-evidence/lane-e-exact-head.json
+          python3 scripts/hepta-lane-e-evidence.py verify \
+            --receipt .hepta-evidence/lane-e-exact-head.json
+
+      - name: Retain exact-head Lane E qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-e-exact-head-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+
   synthetic-merge:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -293,3 +324,29 @@ jobs:
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+
+      - name: Emit synthetic-merge Lane E qualification evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s .hepta-evidence/learning-eval-synthetic-e2e.log
+          python3 scripts/hepta-lane-e-evidence.py emit \
+            --mode synthetic-merge \
+            --source-sha "${SOURCE_SHA}" \
+            --candidate-sha "${MERGE_COMMIT}" \
+            --tree-sha "${MERGE_TREE}" \
+            --base-sha "${BASE_SHA}" \
+            --e2e .hepta-evidence/learning-eval-synthetic-e2e.log \
+            --output .hepta-evidence/lane-e-synthetic-merge.json
+          python3 scripts/hepta-lane-e-evidence.py verify \
+            --receipt .hepta-evidence/lane-e-synthetic-merge.json
+
+      - name: Retain synthetic-merge Lane E qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-e-synthetic-merge-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
