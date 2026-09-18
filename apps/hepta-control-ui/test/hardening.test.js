@@ -160,6 +160,23 @@ test("reconnect does not reconcile an operation while its original mutation disp
   assert.equal(reconnected.sessionId, "session.2");
   assert.equal(reconnected.pendingReconciliation, 1);
   assert.equal(reconcileCalls, 0);
+  assert.throws(
+    () =>
+      client.reconcile({
+        operationId: started.input.operationId,
+        semanticDigest: started.input.semanticDigest,
+        method: started.method,
+        sessionId: "session.2",
+        connectionGeneration: 2,
+        originSessionId: started.input.sessionId,
+        originConnectionGeneration: started.input.connectionGeneration,
+        runtimeGeneration: started.input.runtimeGeneration,
+        status: "succeeded",
+        terminalObserved: true,
+        outcomeDigest: D3,
+      }),
+    (error) => error.code === ERROR_CODES.RECONCILIATION_MISMATCH,
+  );
 
   requestResolve({
     accepted: true,
