@@ -11,9 +11,10 @@ signer and the legacy Bao metadata projection keep their existing semantics.
 ## Ownership and trust
 
 `final_use.rs` owns validation and the non-constructible `VerifiedUseToken`.
-`final_use_store.rs` owns durable nonce/revocation state. The host supplies one
-pinned Ed25519 public key, signer identity, initial revocation head and private
-state directory through its protected configuration channel. There is no
+`final_use_store.rs` owns durable nonce/revocation state. The compatibility path supplies one pinned Ed25519 public key. Production
+composition may instead supply a bounded `FinalUseIssuerTrustKey` ring with
+inclusive authority-epoch windows, plus signer identity, initial revocation
+head and private state directory through its protected configuration channel. There is no
 permissive default, signing key in the verifier, or conversion from a boolean,
 `Granted` projection or unsigned proposal to a verified token.
 
@@ -27,11 +28,14 @@ approval and revocation-distributor roles defined in `FINAL_USE_CONTROL.md` so
 possession of the grant-issuer key alone is insufficient on that path.
 
 The Rust callback, public-key configuration and state location are trusted host
-inputs. This library is not a sandbox for untrusted code in the same process
-or Unix account. The registered Bao host binds signed `consumer_id` values to a
-closed process-local callback registry; a signed consumer-name string cannot
-authenticate a closure supplied by a plugin. Protect the configuration,
-directory ancestors, clock and all issuer/approver/distributor trust material.
+inputs. Production construction additionally binds an `AuthorityClock` and an
+externally durable `AuthorityFrontierStore<FinalUseFrontier>`. The local store
+is not allowed to manufacture either trust fact. This library is not a sandbox
+for untrusted code in the same process or Unix account. The registered Bao host
+binds signed `consumer_id` values to a closed process-local callback registry;
+a signed consumer-name string cannot authenticate a closure supplied by a
+plugin. Protect the configuration, directory ancestors, clock, external
+frontier and all issuer/approver/distributor trust material.
 
 ## Wire and signing schemas
 
@@ -108,12 +112,18 @@ fences every old grant and clears the previous nonce set. There is no silent
 nonce eviction: 16,384 claims fill the epoch and reject further claims until a
 trusted epoch transition.
 
-These files are not an external anti-rollback oracle. Deleting the entire
-store, restoring an old filesystem snapshot, or switching its configured
-location is an authority reset. Recovery must independently rotate issuer
-trust or advance the authoritative epoch before accepting new grants; do not
-restore a former epoch alongside still-valid grants. No automatic repair may
-turn missing/corrupt state into an empty registry.
+These files are not an external anti-rollback oracle. For production
+composition, `open_state_dir_with_trust` additionally requires an externally
+durable `FinalUseFrontier` whose digest covers the complete revocation head and
+claimed-nonce set. Every claim/head mutation CAS-advances that external frontier
+before the local fsync/rename. A restored local snapshot therefore mismatches
+the external frontier and fails closed. If external CAS succeeds but the local
+commit fails, the owner remains fenced and recovery is explicit. Deleting or
+switching the local store is never permission to reset replay history.
+
+The compatibility `open_state_dir` path uses the process system clock and no
+external rollback oracle. It remains useful for qualification/backward source
+compatibility but is not a production anti-rollback or attested-time claim.
 
 ## Admission, concurrency and recovery
 
@@ -130,6 +140,12 @@ turn missing/corrupt state into an empty registry.
    releases the mutex before invoking the already selected synchronous
    callback. The successful final validation is the consumer-entry
    linearization point.
+6. Callers that need revocation to linearize with a short local irreversible
+   transition use `dispatch_final_use` / `with_dispatch_boundary`. That path
+   holds the mutex only while durable intent is published or the already
+   selected local adapter/worker boundary is crossed, then releases it. Network
+   waits, terminal provider observation, reconciliation and arbitrary plugin or
+   user code are forbidden inside that callback.
 
 A revocation committed before that linearization point denies entry. A
 revocation committed after it is ordered after entry and cannot retroactively
@@ -153,14 +169,20 @@ callback panics occur after the final authority lock has been released.
 
 | API / result | Host action |
 | --- | --- |
-| `open_state_dir` | Pin trust, validate private storage, acquire the process lock and load/initialize state |
+| `open_state_dir` | Compatibility/test open using the system clock and local durability only |
+| `open_state_dir_with_clock` | Bind an explicit host clock; still has no external rollback oracle |
+| `open_state_dir_with_trust` | Single-issuer compatibility open binding explicit clock plus external CAS frontier |
+| `open_state_dir_with_issuer_keys` | Production-oriented open binding epoch-window issuer key ring, explicit clock and external CAS frontier; durable schema V2 pins the complete trust-set digest |
+| `issuer_key_ids` | Read configured issuer key identifiers for audit/operations; grants no authority |
+| `frontier` | Read the current rollback-protection digest/epoch/revision projection |
 | `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
 | `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
-| `with_verified_use` | Revalidate, linearize entry, release the authority lock, then consume the token at the final synchronous secret-use boundary |
+| `with_verified_use` | Revalidate, linearize entry, release the authority lock, then consume the token at the final synchronous boundary |
+| `dispatch_final_use` / `with_dispatch_boundary` | Revalidate and hold the lock only across one short local irreversible dispatch boundary |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use |
 | `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
-| `InvalidTrust`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner configuration/storage without resetting authority implicitly |
+| `InvalidTrust`, `AntiRollbackViolation`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner clock/frontier/configuration/storage without resetting authority implicitly |
 | `StaleRevocationHead` | Reject a rollback/inconsistent host update |
 
 Bao additionally distinguishes provider denial, missing data, transport failure,
@@ -194,12 +216,14 @@ keys and confer no authority merely by being built.
 
 ## Verification and rollout boundary
 
-Kernel tests cover field/key substitution, expiry, epoch fences, monotonic
-revocation, cross-restart replay rejection, concurrent owners, missing state,
-unsafe permissions/symlinks, newer startup heads, SIGKILL of a lock holder while
-retaining its persisted claim, and re-entrant revocation from a final callback
-without deadlocking the authority mutex. Control tests cover exact independent
-approval, authenticated signed revocation ingestion and forged-feed rejection.
+Kernel tests cover field/key substitution, injected trusted time, expiry,
+epoch fences, monotonic revocation, cross-restart replay rejection, concurrent
+owners, missing state, unsafe permissions/symlinks, external-frontier restored
+snapshot rejection, newer compatibility-startup heads, SIGKILL of a lock holder
+while retaining its persisted claim, and final/dispatch linearization. Control
+tests cover exact independent approval, bounded epoch key rotation, signed-feed
+freshness, authenticated monotonic revocation ingestion and forged-feed
+rejection.
 Adapter tests cover real loopback TLS, exact headers/version, bad trust,
 forged/denied grants, response bounds, revocation during network wait, timeout
 and consumer uncertainty. Registered-host tests cover closed and unique

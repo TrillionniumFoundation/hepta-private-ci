@@ -2,6 +2,7 @@
 
 mod agent_id;
 pub mod authority_lease;
+pub mod authority_trust;
 mod authbus;
 #[cfg(feature = "authbus-local-qualification")]
 pub mod authbus_b3_adapter;
@@ -25,23 +26,39 @@ mod qualification_receipt;
 mod receipt;
 mod stable_id;
 
+pub use authority_trust::AuthorityClock;
+pub use authority_trust::AuthorityFrontierStore;
+pub use authority_trust::AuthorityTrustError;
+pub use authority_trust::SystemAuthorityClock;
+
 pub use final_use::FinalUseAuthority;
 pub use final_use::FinalUseBinding;
 pub use final_use::FinalUseCapacity;
 pub use final_use::FinalUseError;
 pub use final_use::FinalUseGrant;
+pub use final_use::FinalUseIssuerTrustKey;
+pub use final_use::FinalUseFrontier;
 pub use final_use::FinalUseRevocations;
 pub use final_use::SignedFinalUseGrant;
 pub use final_use::VerifiedUseToken;
 pub use final_use::claim_final_use;
 pub use final_use::deliver_final_use;
+pub use final_use::dispatch_final_use;
 pub use final_use_control::FinalUseApproval;
 pub use final_use_control::FinalUseApprovalVerifier;
 pub use final_use_control::FinalUseControlError;
 pub use final_use_control::FinalUseRevocationFeedVerifier;
+pub use final_use_control::FinalUseRevocationAck;
+pub use final_use_control::FinalUseRevocationConvergenceReport;
+pub use final_use_control::FinalUseRevocationConvergenceVerifier;
+pub use final_use_control::FinalUseRevocationNodeTrust;
+pub use final_use_control::FinalUseRevocationReceipt;
 pub use final_use_control::FinalUseRevocationUpdate;
+pub use final_use_control::FinalUseTrustKey;
 pub use final_use_control::SignedFinalUseApproval;
 pub use final_use_control::SignedFinalUseRevocationUpdate;
+pub use final_use_control::SignedFinalUseRevocationAck;
+pub use final_use_control::MAX_REVOCATION_FEED_LIFETIME_MS;
 
 pub use agent_id::AgentId;
 pub use agent_id::AgentIdParseError;

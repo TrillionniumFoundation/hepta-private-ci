@@ -47,7 +47,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); observed identifiers include `FinalUseAuthority`, `VerifiedUseToken`, `claim`, `with_verified_use`, `verify_strict`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.authority.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs); the general lease owner is [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs), and external trust interfaces are in [authority_trust.rs](../../../codex-rs/hepta-contracts/src/authority_trust.rs). This is source navigation, not proof that every target port or production consumer exists. The canonical target → native API → product caller → test → qualification status is [TRACEABILITY.md](TRACEABILITY.md). The V1 general-lease trust model is frozen by [ADR-0001](ADR-0001-LEASE-TRUST-MODEL.md), and final-use ordering is normative in [LINEARIZATION.md](LINEARIZATION.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -87,7 +87,7 @@ Configuration is immutable for one process generation. Changes affecting authori
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+Produced target contracts (registration does not imply current product composition; see the traceability table):
 
 - `DomainRead::authority_leaseV1`
 - `DomainRead::capability_revocationV1`
@@ -126,7 +126,7 @@ Read-only data dependencies:
 
 None.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation. Online lease pruning may reclaim expired unrevoked payloads, but it retains the last lease revision in a bounded, frontier-covered retired-id lineage. Same-epoch reuse of a pruned lease id must advance from that revision; GC never resets an authority identity to revision 1.
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
@@ -134,7 +134,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.authority.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md).
+The [current native implementation](../../lane-a-foundation/kernel.authority/CURRENT_IMPLEMENTATION.md) identifies the actual state owners and lock/transaction boundaries. General V1 leases are registry-authoritative online references, with non-cloneable admin authority and a cloneable read/verify attenuation. FinalUse supports consumer-entry and bounded local-dispatch linearization as specified in [LINEARIZATION.md](LINEARIZATION.md). Product composition must follow [TRACEABILITY.md](TRACEABILITY.md); target contract registration alone is not runtime composition.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -156,13 +156,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs), [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs) and the linked implementation components. General lease capacity independently bounds live leases, revocations and compact retired-id lineage; exhaustion fails closed and requires bounded pruning or a stronger epoch rollover rather than silent history eviction.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Embed FinalUseAuthority behind a trusted host boundary. Open its owner-only state directory before accepting grants, keep its process lock and preserve nonce/revocation state across restarts. Replacing old state is an authority reset requiring a new trusted epoch, not ordinary backup restore.
+Embed authority owners behind a trusted host boundary. Production construction binds an `AuthorityClock` plus an externally durable CAS `AuthorityFrontierStore`; the owner-only local directory remains the crash-durable state store and must not be treated as the rollback oracle. The convenience constructor that supplies only an external frontier still uses `SystemAuthorityClock` and is rollback-hardened compatibility, not trusted-time production composition. A restored local snapshot behind the external frontier fails closed. Compatibility constructors without external trust are not production qualification.
 
 Current operating and state-format references:
 
@@ -400,8 +400,11 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `finaluseauthority` | `FinalUseAuthority` | `codex-rs/hepta-contracts/src/final_use.rs` | `pending` |
-| `store` | `Store` | `codex-rs/hepta-contracts/src/final_use_store.rs` | `pending` |
+| `finaluseauthority` | `FinalUseAuthority`, `VerifiedUseToken`, `dispatch_final_use` | `codex-rs/hepta-contracts/src/final_use.rs` | `final_use_tests.rs`, `tests/final_use_linearization.rs` |
+| `store` | `Store` | `codex-rs/hepta-contracts/src/final_use_store.rs` | `final_use_tests.rs` |
+| `authority_lease` / `capability_revocation` | `AuthorityLeaseRegistry`, `AuthorityLeaseVerifier` | `codex-rs/hepta-contracts/src/authority_lease.rs` | inline unit tests |
+| trusted time / anti-rollback interface | `AuthorityClock`, `AuthorityFrontierStore` | `codex-rs/hepta-contracts/src/authority_trust.rs` | lease + FinalUse restored-snapshot tests |
+| independent approval / revocation feed | `FinalUseApprovalVerifier`, `FinalUseRevocationFeedVerifier`, `FinalUseTrustKey` | `codex-rs/hepta-contracts/src/final_use_control.rs` | inline unit tests |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
