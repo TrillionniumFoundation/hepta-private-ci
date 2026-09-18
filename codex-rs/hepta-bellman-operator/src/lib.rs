@@ -68,6 +68,7 @@ pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
 pub use world_model::fit_transition_model;
 pub use world_model::predict_transition;
+pub use world_model::world_model_payload_digest_v1;
 
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;
