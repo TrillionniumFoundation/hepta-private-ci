@@ -19,7 +19,6 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
-pub use compiler::compile;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
 pub use feasibility_model::AtomPrecedenceV1;
@@ -48,6 +47,19 @@ pub use model::SoftDirection;
 pub use model::SoftPreference;
 pub use model::SourceTrust;
 pub use model::SuccessPredicate;
+
+/// Qualification-only compatibility entrypoint for already validated legacy native envelopes.
+///
+/// Normal/product callers must enter through `admit_and_compile_objective_v1`, which binds
+/// authenticated source context, principal scope, profile, freshness and semantic digests.
+/// This function intentionally requires an explicit non-default Cargo feature so downstream
+/// code cannot accidentally bypass admission.
+#[cfg(feature = "qualification-legacy-objective-compile")]
+pub fn compile_prevalidated_legacy_objective(
+    source: ObjectiveSourceEnvelope,
+) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
+    compiler::compile(source)
+}
 pub use objective_admission::ObjectiveAbstentionRuleProfileV1;
 pub use objective_admission::ObjectiveActionProfileV1;
 pub use objective_admission::ObjectiveAdmissionContextV1;
