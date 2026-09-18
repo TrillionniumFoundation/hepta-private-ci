@@ -9,6 +9,8 @@ CREATE TABLE secret_lease_records (
         CHECK (length(lease_key) BETWEEN 1 AND 256),
     provider_id TEXT NOT NULL
         CHECK (length(provider_id) BETWEEN 1 AND 256),
+    provider_namespace TEXT NOT NULL
+        CHECK (length(provider_namespace) BETWEEN 0 AND 1024),
     provider_path TEXT NOT NULL
         CHECK (length(provider_path) BETWEEN 1 AND 2048),
     request_sha256 TEXT NOT NULL
@@ -43,6 +45,7 @@ BEFORE UPDATE ON secret_lease_records
 WHEN
     NEW.lease_key != OLD.lease_key
     OR NEW.provider_id != OLD.provider_id
+    OR NEW.provider_namespace != OLD.provider_namespace
     OR NEW.provider_path != OLD.provider_path
     OR NEW.request_sha256 != OLD.request_sha256
     OR NEW.revision != OLD.revision + 1
