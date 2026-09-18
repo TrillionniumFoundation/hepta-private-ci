@@ -2,8 +2,9 @@
 
 ## Current executable contract
 
-`platform.wire` implements exactly one immutable, transport-neutral HPTA
-envelope version. It does not negotiate versions.
+HPTA V1 is one immutable, transport-neutral envelope version. The V1 codec
+itself does not negotiate versions. `platform.wire` now provides negotiation as
+a separate protocol layer so V1 bytes and meanings remain frozen.
 
 | Offset | Width | Field | Encoding and invariant |
 | ---: | ---: | --- | --- |
@@ -37,10 +38,12 @@ success.
 
 ## Target-only design
 
-Version negotiation, streaming decode, multi-version adapters and an
-authenticated complete-envelope digest are target-only. A future version must
-use a new version value and frozen vectors; V1 bytes and meanings cannot be
-reinterpreted in place.
+V1 itself remains fixed and payload-digest-only. The module's separate
+negotiation and streaming layers may select or carry V1 without altering its
+bytes. HPTA V2 uses a new version value and frozen vector to bind metadata and
+payload in a full semantic-frame digest. Authentication/signature/MAC semantics
+remain outside both codecs; V1 bytes and meanings cannot be reinterpreted in
+place.
 
 ## Known limits and non-claims
 
