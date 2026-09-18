@@ -453,7 +453,7 @@ async fn production_read_fail_closes_when_owner_changes_after_authoritative_acqu
         "join ranker gate wait",
     );
     if let Err(error) = gate_wait {
-        let _ = release_tx.send(());
+        drop(release_tx.send(()));
         panic!("wait for ranker gate: {error}");
     }
 
