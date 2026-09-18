@@ -73,8 +73,11 @@ The withdrawal and lifecycle adapters are independent create-only durable stores
 Their receipts bind the external scope binding, complete file digest, record count
 and chain head; withdrawal receipts additionally bind the scoped withdrawal-domain
 digest. Reload performs bounded reads, full semantic replay and canonical
-re-encoding. These stores do not discover a newest generation or grant publication
-authority by themselves.
+re-encoding. Lifecycle reload reconstructs the persisted snapshot through
+historical replay validation: recorded actor evidence is checked against the
+recorded event time, not the restart wall clock; current-time credential validity
+remains mandatory for new lifecycle mutations. These stores do not discover a
+newest generation or grant publication authority by themselves.
 
 ## Failure and retry semantics
 
@@ -115,8 +118,8 @@ independent evaluation/decision -> separately owned next-run selection.
 
 `ArtifactPublicationTransactionV1` makes that host transaction contract
 executable without claiming impossible cross-file atomicity. It binds the V3
-admission, scoped withdrawal frontier, exact registry append, snapshot receipt
-and current-head witness. Recovery has only four phases:
+admission, scoped withdrawal frontier, artifact-registry namespace identity,
+exact registry append, snapshot receipt and current-head witness. Recovery has only four phases:
 `Prepared -> SnapshotDurable -> WitnessDurable -> Acknowledged`. A source
 acknowledgement is forbidden before `WitnessDurable`. Two synced files are still
 not a distributed transaction; restart reconstructs progress from durable receipts
