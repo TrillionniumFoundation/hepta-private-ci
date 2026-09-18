@@ -126,7 +126,6 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
     Ok(event)
 }
 
-
 fn decode_run_start(reader: &mut Reader<'_>) -> Result<RunStartPublicationV1, DurableLedgerError> {
     let record_id = reader.id()?;
     let profile_id = reader.id()?;
