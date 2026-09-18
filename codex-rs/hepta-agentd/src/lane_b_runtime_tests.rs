@@ -393,3 +393,20 @@ fn shutdown_preserves_dispatch_uncertainty_and_closes_safe_work() {
         Some("agentd_shutdown_before_dispatch")
     );
 }
+
+
+#[test]
+fn recovered_state_rejects_impossible_phase_fields() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition(3)).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit run");
+
+    coordinator
+        .runs
+        .get_mut("run.1")
+        .expect("run record")
+        .phase = RunPhase::Dispatched;
+    assert_eq!(
+        coordinator.validate_recovered_state(),
+        Err(AgentRunError::InvalidTransition)
+    );
+}
