@@ -41,7 +41,7 @@ pub struct Supervisor<D: ProcessDriver> {
     pub(crate) registry: FleetRegistry,
     pub(crate) driver: D,
     pub(crate) config: SupervisorConfig,
-    slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
+    pub(crate) slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
 }
 
 #[cfg(test)]
@@ -73,7 +73,16 @@ impl<D: ProcessDriver> Supervisor<D> {
         for (agent_id, record) in snapshot.agents {
             let result = supervisor.with_slot(&agent_id, |supervisor, slot| {
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
+                slot.topology_candidate =
+                    crate::topology_candidate::read_latest_topology_candidate(
+                        record.layout.run_root(),
+                    )?;
                 supervisor.recover_slot(&agent_id, slot, &record, now)?;
+                supervisor.reconcile_topology_candidate_after_recovery(
+                    &agent_id,
+                    slot,
+                    &record,
+                )?;
                 supervisor.recover_signed_intent(&agent_id, slot, &record)
             });
             if let Err(error) = result {
@@ -351,7 +360,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         Self::preflight_upgrade_slot(agent_id, slot, &record, target)
     }
 
-    fn preflight_upgrade_slot(
+    pub(crate) fn preflight_upgrade_slot(
         agent_id: &AgentId,
         slot: &AgentSlot<D::Process>,
         record: &AgentRecord,
@@ -752,7 +761,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         report
     }
 
-    fn with_slot<R>(
+    pub(crate) fn with_slot<R>(
         &mut self,
         agent_id: &AgentId,
         operation: impl FnOnce(&mut Self, &mut AgentSlot<D::Process>) -> Result<R, SupervisorError>,

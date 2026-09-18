@@ -426,6 +426,7 @@ pub enum RuntimeTopologyStageV1 {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct RuntimeTopologyCandidateV1 {
     pub proposal_digest: String,
+    pub predecessor_release: String,
     pub target_release: String,
     pub predecessor_generation: u64,
     pub candidate_generation: u64,
@@ -446,6 +447,7 @@ impl RuntimeTopologyCandidateV1 {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         proposal_digest: String,
+        predecessor_release: String,
         target_release: String,
         predecessor_generation: u64,
         candidate_generation: u64,
@@ -461,7 +463,12 @@ impl RuntimeTopologyCandidateV1 {
         ] {
             validate_digest(digest)?;
         }
-        if target_release.is_empty() || target_release.len() > 256 {
+        if predecessor_release.is_empty()
+            || predecessor_release.len() > 256
+            || target_release.is_empty()
+            || target_release.len() > 256
+            || predecessor_release == target_release
+        {
             return Err(RuntimeModuleErrorV1::InvalidIdentity);
         }
         if predecessor_generation == 0
@@ -476,6 +483,7 @@ impl RuntimeTopologyCandidateV1 {
         }
         Ok(Self {
             proposal_digest,
+            predecessor_release,
             target_release,
             predecessor_generation,
             candidate_generation,
@@ -567,6 +575,7 @@ impl RuntimeTopologyCandidateV1 {
     pub fn validate_recovered(&self) -> Result<(), RuntimeModuleErrorV1> {
         let _ = Self::new(
             self.proposal_digest.clone(),
+            self.predecessor_release.clone(),
             self.target_release.clone(),
             self.predecessor_generation,
             self.candidate_generation,

@@ -96,6 +96,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                         }
                     };
                     slot.event(generation, kind);
+                    if change.explicit_rollback {
+                        self.commit_topology_rollback_if_pending(agent_id, slot)?;
+                    }
                 }
                 ReleaseChangePhase::AutomaticRollbackStarting => {
                     slot.previous_release = change.prior_previous;
@@ -106,6 +109,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                             restored: change.origin.identity().to_string(),
                         },
                     );
+                    self.reject_topology_candidate_after_automatic_rollback(
+                        agent_id,
+                        slot,
+                        change.target.identity(),
+                        generation,
+                    )?;
                 }
                 ReleaseChangePhase::WaitingForTargetExit => {
                     slot.release_change = Some(change);

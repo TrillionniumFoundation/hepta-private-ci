@@ -7,6 +7,7 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::RuntimeModuleSetV1;
+use codex_hepta_fleet::RuntimeTopologyCandidateV1;
 
 use crate::AgentCommand;
 use crate::AgentRelease;
@@ -167,6 +168,8 @@ pub(crate) struct AgentSlot<P> {
     pub signed_intent: Option<SignedSupervisorIntent>,
     /// Generic runtime-module projection for the child process generation.
     pub runtime_modules: Option<RuntimeModuleSetV1>,
+    /// Durable topology/source-evolution candidate currently under observation.
+    pub topology_candidate: Option<RuntimeTopologyCandidateV1>,
 }
 
 impl<P> AgentSlot<P> {
@@ -193,6 +196,7 @@ impl<P> AgentSlot<P> {
             logs: BoundedQueue::new(config.log_capacity),
             signed_intent: None,
             runtime_modules: None,
+            topology_candidate: None,
         }
     }
 

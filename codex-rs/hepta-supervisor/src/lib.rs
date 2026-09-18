@@ -28,6 +28,8 @@ mod signed_intent;
 mod supervisor;
 mod supervisor_qualification;
 mod tick;
+mod topology;
+mod topology_candidate;
 mod writer_handoff;
 
 #[cfg(unix)]
@@ -132,6 +134,8 @@ pub use signed_intent::read_intent as read_signed_intent;
 pub use signed_intent::read_recovery_directive as read_signed_intent_recovery_directive;
 pub use signed_intent::write_recovery_directive as write_signed_intent_recovery_directive;
 pub use supervisor::Supervisor;
+pub use codex_hepta_fleet::RuntimeTopologyCandidateV1;
+pub use codex_hepta_fleet::RuntimeTopologyStageV1;
 pub use supervisor_qualification::H8_H9_SHADOW_EFFECT_AUTHORITY;
 pub use supervisor_qualification::H8_H9_SHADOW_EXECUTE_ALLOWED;
 pub use supervisor_qualification::H8_H9_SHADOW_EXTERNAL_EFFECTS;

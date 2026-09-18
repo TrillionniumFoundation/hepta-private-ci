@@ -4,6 +4,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::RuntimeModuleSetV1;
 use codex_hepta_fleet::runtime_module_binding_digest_v1;
+use crate::topology::topology_generation_for_release;
 use codex_hepta_fleet::AgentRecord;
 
 use crate::AdoptSpec;
@@ -148,16 +149,18 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
-        let mut runtime_modules = RuntimeModuleSetV1::new(starting.generation)
+        let release_identity = lease.release_id.to_string();
+        let topology_generation =
+            topology_generation_for_release(slot, &release_identity, starting.generation);
+        let mut runtime_modules = RuntimeModuleSetV1::new(topology_generation)
             .map_err(|error| SupervisorError::Invalid(format!("runtime module catalog: {error}")))?;
         let agent = agent_id.to_string();
-        let release_identity = lease.release_id.to_string();
-        let module_generation = starting.generation.to_string();
+        let module_generation = topology_generation.to_string();
         for module in ["runtime.agentd", "runtime.codex"] {
             runtime_modules
                 .ensure_registered(
                     module,
-                    starting.generation,
+                    topology_generation,
                     runtime_module_binding_digest_v1(&[
                         module,
                         &agent,
@@ -266,16 +269,18 @@ impl<D: ProcessDriver> Supervisor<D> {
                         RuntimePhase::Killing
                     }
                 };
-                let mut runtime_modules = RuntimeModuleSetV1::new(lease.spawn_generation)
+                let release_identity = lease.release_id.to_string();
+                let topology_generation =
+                    topology_generation_for_release(slot, &release_identity, lease.spawn_generation);
+                let mut runtime_modules = RuntimeModuleSetV1::new(topology_generation)
                     .map_err(|error| SupervisorError::Invalid(format!("runtime module catalog: {error}")))?;
                 let agent = agent_id.to_string();
-                let release_identity = lease.release_id.to_string();
-                let module_generation = lease.spawn_generation.to_string();
+                let module_generation = topology_generation.to_string();
                 for module in ["runtime.agentd", "runtime.codex"] {
                     runtime_modules
                         .ensure_registered(
                             module,
-                            lease.spawn_generation,
+                            topology_generation,
                             runtime_module_binding_digest_v1(&[
                                 module,
                                 &agent,

@@ -59,6 +59,7 @@ fn topology_candidate_requires_shadow_canary_and_fresh_generation_rollback() {
     let predecessor = digest("topology-11");
     let mut candidate = RuntimeTopologyCandidateV1::new(
         digest("proposal"),
+        "release-11".to_string(),
         "release-12".to_string(),
         11,
         12,
@@ -80,6 +81,7 @@ fn rollback_generation_never_resurrects_predecessor_generation() {
     let predecessor = digest("topology-4");
     let mut candidate = RuntimeTopologyCandidateV1::new(
         digest("proposal-5"),
+        "release-4".to_string(),
         "release-5".to_string(),
         4,
         5,
