@@ -72,7 +72,7 @@ impl RealizationDeliveryV2 {
 }
 
 impl PromptRegistry {
-    pub fn register_realization_payload_v2(
+    pub(crate) fn register_realization_payload_v2(
         &mut self,
         binding: PromptRealizationBindingV2,
         payload: Vec<u8>,
