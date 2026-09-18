@@ -75,6 +75,7 @@ pub enum OwnerAdapterErrorV1 {
     DuplicateOwnerChannel(OwnerRetrievalChannelV1),
     MissingOwnerChannel(OwnerRetrievalChannelV1),
     MissingCanonicalChannel(RetrievalChannelV1),
+    EmptyOwnerCandidateChannels(String),
     DuplicateOwnerCandidateChannel(String),
     InvalidOwnerRank(String),
     CandidateCountMismatch(OwnerRetrievalChannelV1),
@@ -228,6 +229,11 @@ pub fn adapt_owner_observation(
             .map_err(|error| OwnerAdapterErrorV1::InvalidRecord(error.to_string()))?;
         if candidate.support_digest.is_zero() {
             return Err(OwnerAdapterErrorV1::EmptySupportDigest);
+        }
+        if candidate.channel_ranks.is_empty() {
+            return Err(OwnerAdapterErrorV1::EmptyOwnerCandidateChannels(
+                candidate.record.record_id.to_string(),
+            ));
         }
         let mut seen_physical = BTreeSet::new();
         let mut best_canonical_rank = BTreeMap::<RetrievalChannelV1, u32>::new();
