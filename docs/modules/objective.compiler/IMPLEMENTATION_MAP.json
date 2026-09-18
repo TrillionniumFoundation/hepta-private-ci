@@ -12,7 +12,7 @@
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "composed_unqualified",
   "productionWriterState": "not_applicable_stateless",
   "operations": [
     {
@@ -110,7 +110,7 @@
         "ObjectiveCompileReceiptV1",
         "ObjectiveConflictReceiptV1"
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "deny_all",
       "tests": [
         {
@@ -207,6 +207,61 @@
       ],
       "sourcePathExists": true,
       "compatibilityRecheck": "legacy scalar feasibility defense-in-depth after public V1 general-feasibility gate"
+    },
+    {
+      "operation": "project_objective_function_v1",
+      "nativeSymbol": "codex_hepta_objective::project_objective_function_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveAdmissionOutcomeV1"
+      ],
+      "outputs": [
+        "canonical ObjectiveFunctionV1 JSON projection"
+      ],
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+          "symbol": "canonical_decode_rejects_reformatted_or_unknown_json"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/production_objective_tests.rs",
+          "symbol": "product objective publication and replay tests"
+        }
+      ],
+      "designOperation": "project_objective_function_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "bind_run_start_snapshot_v1",
+      "nativeSymbol": "codex_hepta_objective::RunStartSnapshotV1::bind",
+      "sourcePath": "codex-rs/hepta-objective/src/run_start.rs",
+      "inputs": [
+        "compiled ObjectiveFunction",
+        "canonical ObjectiveFunctionV1 digest",
+        "frozen run bindings"
+      ],
+      "outputs": [
+        "RunStartSnapshotV1"
+      ],
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/production_objective_tests.rs",
+          "symbol": "product objective publication and replay tests"
+        }
+      ],
+      "designOperation": "bind_run_start_snapshot_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "validate_compiled_objective_v1"
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -219,9 +274,9 @@
     "specification": "candidate_aligned_with_current_source_boundary",
     "source": "candidate_implemented",
     "exactHeadQualification": "required_current_candidate_workflows",
-    "canonicalObjectiveFunctionV1Projection": "not_established",
-    "runStartSnapshotPersistence": "not_established",
-    "productComposition": "not_established",
+    "canonicalObjectiveFunctionV1Projection": "source_implemented_and_product_composed",
+    "runStartSnapshotPersistence": "source_implemented_and_product_composed",
+    "productComposition": "source_composed_unqualified",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -234,15 +289,15 @@
     "codex-rs/hepta-objective"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
+  "productionImplementation": true,
   "claimBoundary": {
     "nativeV1ScalarAdmissionMapped": true,
     "generalFeasibilityGateOnPublicAdmission": true,
     "generalFeasibilityRichDomainsSourceRepresentable": false,
-    "canonicalObjectiveFunctionV1ProjectionComplete": false,
-    "runStartSnapshotPersistenceComplete": false,
+    "canonicalObjectiveFunctionV1ProjectionComplete": true,
+    "runStartSnapshotPersistenceComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -253,16 +308,76 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Align the canonical readiness protocol registry with the enforced V1 aggregate/source bounds or version the source protocol before merge.",
     "Define a versioned source grammar with explicit enum-set and positive action-implication payloads before claiming those rich solver domains on the source-to-objective path.",
-    "Implement the exact canonical ObjectiveFunctionV1 wire projection.",
-    "Bind admission to a named authenticated production consumer and owner store and atomically persist/reconcile ObjectiveFunctionV1 plus RunStartSnapshotV1.",
     "Replace manual profile byte estimation with exact canonical encoded-byte enforcement if the 256 KiB profile ceiling remains protocol-hard.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge product-composition qualification before setting productExecutionProved."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "status": {
+    "implemented": true,
+    "composed": true,
+    "qualified": false
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/production_objective.rs",
+      "symbol": "prepare_intelligence_run_v1",
+      "role": "authenticated_compile_canonical_projection_and_atomic_run_start_publication"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_host.rs",
+      "symbol": "start_intelligence_run_v1",
+      "role": "durable_host_envelope_runtime_consumer"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_host.rs",
+      "object": "93645fe67c92763b31952291861ab664d664460c"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/production_objective.rs",
+      "object": "2c36fc8055119b465c8d4677f148462f9a3caf72"
+    },
+    {
+      "path": "codex-rs/hepta-objective",
+      "object": "195544d910979bbd14080f6627be577d74093c27"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/compiler.rs",
+      "object": "2c9e6432c9e5535af0a08e4403c248087b2d936b"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/feasibility.rs",
+      "object": "c540d050dfdc59688d3ef5406537b1a3c32471db"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "object": "7ebcb31d8a5c4d6689f88e5a13b9684290f2c2d1"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/objective_admission_gate.rs",
+      "object": "9f2905afe3cab56915d057dffe790eb510b04c4e"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "object": "ce4aae37b52b302f6767ad958a6cd94dd1b10e0d"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/run_start.rs",
+      "object": "912424eb5b8546bd274a430034b4368b3ca18800"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/source_envelope_json.rs",
+      "object": "335290b26709bd7d4364faada5e763dcb7b4abbd"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/source_envelope_validation.rs",
+      "object": "669930084f7248cc0a58d56a040330f00891cf41"
+    }
   ]
 }
