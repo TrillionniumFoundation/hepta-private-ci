@@ -65,7 +65,6 @@ fn unexpected_success_fails_qualification() {
     );
 }
 
-
 #[test]
 fn qualification_rejects_mixed_execution_provenance() {
     let mut value = cases();
@@ -87,7 +86,6 @@ fn qualification_rejects_failed_or_unbound_execution() {
     }
     assert_eq!(qualify(invalid), Err(Error::InvalidExecutionProvenance));
 }
-
 
 #[test]
 fn native_negative_matrix_executes_before_qualification() {
