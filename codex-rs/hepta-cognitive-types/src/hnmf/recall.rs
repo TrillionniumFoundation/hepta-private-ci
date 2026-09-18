@@ -8,6 +8,7 @@ use super::CanonicalDigestV1;
 use super::ContractErrorV1;
 use super::EngramPopulationV1;
 use super::EventIdV1;
+use super::MAX_CUE_SEEDS;
 use super::ModalityKindV1;
 use super::NodeIdV1;
 use super::SynapseRelationV1;
@@ -15,7 +16,6 @@ use super::validate_nonzero;
 use super::validate_ppm;
 use super::validate_semantic_keys;
 use super::validate_signed_ppm;
-use super::MAX_CUE_SEEDS;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
@@ -56,6 +56,7 @@ impl ResourceBudgetV1 {
         Ok(value)
     }
 
+    #[must_use]
     pub fn hnmf_default() -> Self {
         Self {
             maximum_candidate_events: 512,
@@ -120,17 +121,7 @@ impl ResourceReceiptV1 {
         budget: &ResourceBudgetV1,
     ) -> Result<Self, ContractErrorV1> {
         budget.validate()?;
-        if candidate_events > budget.maximum_candidate_events
-            || expanded_nodes > budget.maximum_nodes
-            || traversed_synapses > budget.maximum_synapses
-            || active_nodes > budget.maximum_active_nodes
-            || recurrent_steps > budget.maximum_recurrent_steps
-            || returned_events > budget.maximum_recall_events
-            || activation_paths > budget.maximum_activation_paths
-        {
-            return Err(ContractErrorV1::BoundExceeded("resource receipt"));
-        }
-        Ok(Self {
+        let value = Self {
             candidate_events,
             expanded_nodes,
             traversed_synapses,
@@ -139,7 +130,28 @@ impl ResourceReceiptV1 {
             returned_events,
             activation_paths,
             truncated,
-        })
+        };
+        value.validate_against(budget)?;
+        Ok(value)
+    }
+
+    pub fn validate_absolute(&self) -> Result<(), ContractErrorV1> {
+        self.validate_against(&ResourceBudgetV1::hnmf_default())
+    }
+
+    pub fn validate_against(&self, budget: &ResourceBudgetV1) -> Result<(), ContractErrorV1> {
+        budget.validate()?;
+        if self.candidate_events > budget.maximum_candidate_events
+            || self.expanded_nodes > budget.maximum_nodes
+            || self.traversed_synapses > budget.maximum_synapses
+            || self.active_nodes > budget.maximum_active_nodes
+            || self.recurrent_steps > budget.maximum_recurrent_steps
+            || self.returned_events > budget.maximum_recall_events
+            || self.activation_paths > budget.maximum_activation_paths
+        {
+            return Err(ContractErrorV1::BoundExceeded("resource receipt"));
+        }
+        Ok(())
     }
 }
 
@@ -218,13 +230,18 @@ impl ActiveNodeV1 {
         population: EngramPopulationV1,
         activation_ppm: i32,
     ) -> Result<Self, ContractErrorV1> {
-        validate_nonzero(node_id, "active node id must be non-zero")?;
-        validate_signed_ppm(activation_ppm, "active node activation")?;
-        Ok(Self {
+        let value = Self {
             node_id,
             population,
             activation_ppm,
-        })
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), ContractErrorV1> {
+        validate_nonzero(self.node_id, "active node id must be non-zero")?;
+        validate_signed_ppm(self.activation_ppm, "active node activation")
     }
 }
 
@@ -244,18 +261,25 @@ impl ActivationPathV1 {
         relation: SynapseRelationV1,
         contribution_ppm: i32,
     ) -> Result<Self, ContractErrorV1> {
-        validate_nonzero(source_node_id, "activation path source must be non-zero")?;
-        validate_nonzero(target_node_id, "activation path target must be non-zero")?;
-        if source_node_id == target_node_id {
-            return Err(ContractErrorV1::Invalid("activation path endpoints must be distinct"));
-        }
-        validate_signed_ppm(contribution_ppm, "activation contribution")?;
-        Ok(Self {
+        let value = Self {
             source_node_id,
             target_node_id,
             relation,
             contribution_ppm,
-        })
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), ContractErrorV1> {
+        validate_nonzero(self.source_node_id, "activation path source must be non-zero")?;
+        validate_nonzero(self.target_node_id, "activation path target must be non-zero")?;
+        if self.source_node_id == self.target_node_id {
+            return Err(ContractErrorV1::Invalid(
+                "activation path endpoints must be distinct",
+            ));
+        }
+        validate_signed_ppm(self.contribution_ppm, "activation contribution")
     }
 }
 
@@ -267,16 +291,27 @@ pub struct ContradictionV1 {
 }
 
 impl ContradictionV1 {
-    pub fn try_new(left_node_id: NodeIdV1, right_node_id: NodeIdV1) -> Result<Self, ContractErrorV1> {
-        validate_nonzero(left_node_id, "contradiction left node must be non-zero")?;
-        validate_nonzero(right_node_id, "contradiction right node must be non-zero")?;
-        if left_node_id == right_node_id {
-            return Err(ContractErrorV1::Invalid("contradiction endpoints must be distinct"));
-        }
-        Ok(Self {
+    pub fn try_new(
+        left_node_id: NodeIdV1,
+        right_node_id: NodeIdV1,
+    ) -> Result<Self, ContractErrorV1> {
+        let value = Self {
             left_node_id,
             right_node_id,
-        })
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), ContractErrorV1> {
+        validate_nonzero(self.left_node_id, "contradiction left node must be non-zero")?;
+        validate_nonzero(self.right_node_id, "contradiction right node must be non-zero")?;
+        if self.left_node_id == self.right_node_id {
+            return Err(ContractErrorV1::Invalid(
+                "contradiction endpoints must be distinct",
+            ));
+        }
+        Ok(())
     }
 }
 
@@ -322,28 +357,7 @@ impl RecallPacketV1 {
         abstain: Option<RecallAbstainReasonV1>,
         resource_receipt: ResourceReceiptV1,
     ) -> Result<Self, ContractErrorV1> {
-        if selected_events.len() > 16 || selected_events.contains(&0) {
-            return Err(ContractErrorV1::BoundExceeded("recall selected events"));
-        }
-        if active_nodes.len() > 4096 {
-            return Err(ContractErrorV1::BoundExceeded("recall active nodes"));
-        }
-        if activation_paths.len() > 32 {
-            return Err(ContractErrorV1::BoundExceeded("recall activation paths"));
-        }
-        validate_ppm(coverage_ppm, "recall coverage")?;
-        validate_ppm(confidence_ppm, "recall confidence")?;
-        validate_ppm(ood_ppm, "recall ood")?;
-        let mut seen = BTreeSet::new();
-        if selected_events.iter().any(|event_id| !seen.insert(*event_id)) {
-            return Err(ContractErrorV1::Conflict("duplicate selected event"));
-        }
-        if !contradictions.is_empty() && abstain.is_none() {
-            return Err(ContractErrorV1::Conflict(
-                "unresolved contradiction requires abstention",
-            ));
-        }
-        Ok(Self {
+        let value = Self {
             cue_digest,
             event_snapshot_digest,
             engram_snapshot_digest,
@@ -356,7 +370,75 @@ impl RecallPacketV1 {
             ood_ppm,
             abstain,
             resource_receipt,
-        })
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), ContractErrorV1> {
+        if self.selected_events.len() > 16 || self.selected_events.contains(&0) {
+            return Err(ContractErrorV1::BoundExceeded("recall selected events"));
+        }
+        let mut selected = BTreeSet::new();
+        if self
+            .selected_events
+            .iter()
+            .any(|event_id| !selected.insert(*event_id))
+        {
+            return Err(ContractErrorV1::Conflict("duplicate selected event"));
+        }
+
+        if self.active_nodes.len() > 4096 {
+            return Err(ContractErrorV1::BoundExceeded("recall active nodes"));
+        }
+        let mut active_node_ids = BTreeSet::new();
+        for node in &self.active_nodes {
+            node.validate()?;
+            if !active_node_ids.insert(node.node_id) {
+                return Err(ContractErrorV1::Conflict("duplicate active node"));
+            }
+        }
+
+        if self.activation_paths.len() > 32 {
+            return Err(ContractErrorV1::BoundExceeded("recall activation paths"));
+        }
+        let mut paths = BTreeSet::new();
+        for path in &self.activation_paths {
+            path.validate()?;
+            if !paths.insert((path.source_node_id, path.target_node_id, path.relation)) {
+                return Err(ContractErrorV1::Conflict("duplicate activation path"));
+            }
+        }
+
+        let mut contradictions = BTreeSet::new();
+        for contradiction in &self.contradictions {
+            contradiction.validate()?;
+            let ordered = if contradiction.left_node_id < contradiction.right_node_id {
+                (contradiction.left_node_id, contradiction.right_node_id)
+            } else {
+                (contradiction.right_node_id, contradiction.left_node_id)
+            };
+            if !contradictions.insert(ordered) {
+                return Err(ContractErrorV1::Conflict("duplicate contradiction"));
+            }
+        }
+
+        validate_ppm(self.coverage_ppm, "recall coverage")?;
+        validate_ppm(self.confidence_ppm, "recall confidence")?;
+        validate_ppm(self.ood_ppm, "recall ood")?;
+        self.resource_receipt.validate_absolute()?;
+
+        if !self.contradictions.is_empty() && self.abstain.is_none() {
+            return Err(ContractErrorV1::Conflict(
+                "unresolved contradiction requires abstention",
+            ));
+        }
+        if self.selected_events.is_empty() && self.abstain.is_none() {
+            return Err(ContractErrorV1::Conflict(
+                "empty recall result requires an abstention reason",
+            ));
+        }
+        Ok(())
     }
 }
 
@@ -365,14 +447,6 @@ impl CanonicalContractV1 for RecallPacketV1 {
     const MAX_ENCODED_BYTES: usize = 262_144;
 
     fn validate_contract(&self) -> Result<(), ContractErrorV1> {
-        validate_ppm(self.coverage_ppm, "recall coverage")?;
-        validate_ppm(self.confidence_ppm, "recall confidence")?;
-        validate_ppm(self.ood_ppm, "recall ood")?;
-        if !self.contradictions.is_empty() && self.abstain.is_none() {
-            return Err(ContractErrorV1::Conflict(
-                "unresolved contradiction requires abstention",
-            ));
-        }
-        Ok(())
+        self.validate()
     }
 }
