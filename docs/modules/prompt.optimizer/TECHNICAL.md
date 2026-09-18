@@ -43,6 +43,11 @@ Declared roots not yet present:
 None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `prompt.optimizer`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+### Current source interpretation
+
+The current candidate separates registered V1 wire contracts from richer source/audit receipts. `policy.rs` owns exact-field `PromptCandidateSetReceiptV1`, `PromptPricingReceiptV1`, `PromptPortfolioReceiptV1` and `PromptExerciseDecisionV1` surfaces matching the canonical protocol registry. The exact-registry pipeline uses `PromptCandidateSetAuditV1`, `PromptPricingSetAuditV1`, `PromptPortfolioAuditV1` and `PromptExerciseAuditV1` so registry revision, revocation frontier, model/context profile, selected realization identity and binding digests can be carried without widening V1 wire meaning.
+
+A named source-level consumer exists in `hepta-intelligence`: it authenticates a `DurablePromptRegistry` owner view, revalidates the exercise audit, dereferences exactly the selected realization bytes and makes that selected portfolio mandatory during context compilation. This is source composition only; it is not an activated runtime caller or terminal provider-delivery proof.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -185,8 +190,10 @@ Read-only optimizer library; provide admitted candidates, cost/support data and 
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-prompt-optimizer/src/lib.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib.rs).
-- [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs).
+- [codex-rs/hepta-prompt-optimizer/src/policy.rs](../../../codex-rs/hepta-prompt-optimizer/src/policy.rs) — registered V1 wire-contract policy plus richer audit wrappers.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_v1.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_v1.rs), [pricing_v1.rs](../../../codex-rs/hepta-prompt-optimizer/src/pricing_v1.rs), [portfolio_v1.rs](../../../codex-rs/hepta-prompt-optimizer/src/portfolio_v1.rs) and [exercise_v1.rs](../../../codex-rs/hepta-prompt-optimizer/src/exercise_v1.rs) — authenticated exact-registry source/audit pipeline.
+- [codex-rs/hepta-prompt-optimizer/src/local_shadow.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow.rs) — legacy/local compatibility surface.
+- [codex-rs/hepta-intelligence/src/prompt_registry_adapter_v1.rs](../../../codex-rs/hepta-intelligence/src/prompt_registry_adapter_v1.rs) and [prompt_delivery.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery.rs) — named source-level owner adapter and exercise-bound context composition.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -194,8 +201,10 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-prompt-optimizer/src/lib_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib_tests.rs); named case: `illegal_and_unadmitted_candidates_are_never_selected`.
-- [codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs); named case: `legacy_v1_surface_keeps_its_original_selection_limit`.
+- [codex-rs/hepta-prompt-optimizer/src/policy_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/policy_tests.rs); covers exact registered V1 field shapes, pricing decomposition, prerequisite bundles, sparse 128-candidate selection and exercise drift.
+- [codex-rs/hepta-prompt-optimizer/src/canonical_v1_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/canonical_v1_tests.rs), [pricing_v1_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/pricing_v1_tests.rs), [portfolio_v1_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/portfolio_v1_tests.rs) and [exercise_v1_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/exercise_v1_tests.rs); cover authenticated source/audit receipts, bounded pricing/selection and delivery-boundary revalidation.
+- [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs); verifies exact selected registry bindings and payload bytes survive exercise revalidation and mandatory context compilation.
+- [codex-rs/hepta-prompt-optimizer/src/lib_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/lib_tests.rs) and [local_shadow_tests.rs](../../../codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs); retain legacy compatibility behavior.
 
 In `codex-rs`, run `just test -p codex-hepta-prompt-optimizer`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.optimizer.md) separately labels target acceptance designs.
 
@@ -221,6 +230,8 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
+Status axes remain separate. `PIM-0-PROMPT-INTERVENTION-CONTRACTS` and `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW` are source implemented; `PIM-1-PROMPT-FACTOR-REGISTRY` is source implemented with exact-candidate execution pending in its owning module; `PIM-3-FACTOR-EVOLUTION` remains planned. The current source has a named `hepta-intelligence` caller, but runtime activation, terminal provider delivery, causal-efficacy evidence and independent acceptance remain open.
+
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `prompt.optimizer`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
@@ -229,7 +240,7 @@ For `prompt.optimizer`, this document grants no runtime, production, model, prov
 
 #### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -261,7 +272,7 @@ For `prompt.optimizer`, this document grants no runtime, production, model, prov
 
 #### `PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `performance`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-optimizer/**`
