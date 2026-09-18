@@ -294,10 +294,7 @@ impl AppServerModelDriver {
     /// Attach the trusted-host final-use port. The port must obtain a
     /// kernel.authority VerifiedUseToken for the exact binding supplied here;
     /// runtime.codex never receives an issuer private key.
-    pub fn with_turn_start_authorizer(
-        mut self,
-        authorizer: Arc<dyn TurnStartAuthorizer>,
-    ) -> Self {
+    pub fn with_turn_start_authorizer(mut self, authorizer: Arc<dyn TurnStartAuthorizer>) -> Self {
         self.turn_start_authorizer = Some(authorizer);
         self
     }
@@ -615,8 +612,7 @@ impl AppServerModelDriver {
             environments: Some(Vec::new()),
             ..Default::default()
         };
-        let exact_turn_payload_digest =
-            control::digest(&serde_json::to_vec(&turn_start_params)?);
+        let exact_turn_payload_digest = control::digest(&serde_json::to_vec(&turn_start_params)?);
         let (codex_now_ms, codex_deadline_ms) = codex_deadline(self.config.timeout)?;
         let codex_intent = codex_intent(
             request_id,
@@ -701,8 +697,7 @@ impl AppServerModelDriver {
             return Err(error);
         }
 
-        let authority_witness =
-            Digest32::from_array(verified_use.witness_sha256()).to_string();
+        let authority_witness = Digest32::from_array(verified_use.witness_sha256()).to_string();
         // Final revocation/expiry checking happens after every authority and
         // owner-generation await. If this fails, no durable dispatch marker
         // exists and the reservation is released as definitely unsent.
