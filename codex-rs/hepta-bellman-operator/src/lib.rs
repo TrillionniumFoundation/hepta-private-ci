@@ -28,6 +28,7 @@ mod reference;
 mod world_model;
 
 pub use learned::LearnedOperatorError;
+pub use learned::TabularArtifactPinV1;
 pub use learned::TabularOperatorArtifactV1;
 pub use learned::TabularOperatorCellV1;
 pub use learned::TabularOperatorPlanV1;
