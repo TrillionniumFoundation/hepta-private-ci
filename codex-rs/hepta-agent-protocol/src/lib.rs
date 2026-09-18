@@ -155,11 +155,7 @@ impl AgentdRequest {
         }
     }
 
-    pub fn objective_status(
-        request_id: u64,
-        spawn_generation: u64,
-        delivery_id: String,
-    ) -> Self {
+    pub fn objective_status(request_id: u64, spawn_generation: u64, delivery_id: String) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
