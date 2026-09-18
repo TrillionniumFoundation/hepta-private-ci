@@ -111,7 +111,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         name: "authbus_policy_heads",
         object_type: "table",
         table_name: "authbus_policy_heads",
-        required_sql_fragments: &["create table", "policy_id", "revision", "revoked", "without rowid"],
+        required_sql_fragments: &["create table", "policy_id", "revision", "policy_digest", "revoked", "without rowid"],
     },
     SchemaObjectSpec {
         name: "authbus_policy_rules",
