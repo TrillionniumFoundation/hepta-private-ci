@@ -86,9 +86,15 @@
     },
     {
       "code": "OBJ-E007",
-      "stableMeaning": "freshness, deadline or bounded feasibility budget is unavailable",
+      "stableMeaning": "locale, freshness, deadline or bounded feasibility availability condition",
       "outcomeClass": "unavailable",
       "retryable": true,
+      "blindRetrySafe": false,
+      "variantPolicyRequired": true,
+      "retryPolicyRef": "docs/contracts/OBJECTIVE_RETRY_POLICY.json",
+      "sameInputRetryableRustVariants": [
+        "ObjectiveError::FeasibilityBudgetExhausted"
+      ],
       "rustVariants": [
         "ObjectiveError::FeasibilityBudgetExhausted",
         "ObjectiveAdmissionError::LocaleNotAllowed",

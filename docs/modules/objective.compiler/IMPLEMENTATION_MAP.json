@@ -7,6 +7,7 @@
   "technicalGuide": "docs/modules/objective.compiler/TECHNICAL.md",
   "executionSpecification": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
   "canonicalErrorRegistry": "docs/contracts/OBJECTIVE_ERRORS.json",
+  "retryPolicyRegistry": "docs/contracts/OBJECTIVE_RETRY_POLICY.json",
   "sourceRoot": [
     "codex-rs/hepta-objective"
   ],
@@ -30,6 +31,10 @@
         {
           "path": "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
           "symbol": "decodes_all_fields_without_loss_or_semantic_admission"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
+          "symbol": "retains_structural_count_text_and_semantic_key_checks_after_decoding"
         }
       ],
       "designOperation": "decode_source_envelope_json_v1",
@@ -45,7 +50,7 @@
         "ObjectiveSourceEnvelopeV1"
       ],
       "outputs": [
-        "validated owner-local structure"
+        "validated owner-local structure and aggregate native-capacity reservation"
       ],
       "state": "source_implemented",
       "authority": "none",
@@ -53,6 +58,14 @@
         {
           "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
           "symbol": "text_limits_count_utf8_bytes_for_every_source_field"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+          "symbol": "predicate_arrays_share_the_native_aggregate_capacity"
+        },
+        {
+          "path": "codex-rs/hepta-objective/tests/admission_closure.rs",
+          "symbol": "source_constraint_bound_reserves_ten_generated_constraint_slots"
         }
       ],
       "designOperation": "validate_structure",
@@ -86,7 +99,7 @@
     {
       "operation": "admit_and_compile_objective_v1",
       "nativeSymbol": "codex_hepta_objective::admit_and_compile_objective_v1",
-      "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_admission_gate.rs",
       "inputs": [
         "ObjectiveSourceEnvelopeV1",
         "ObjectiveAdmissionProfileV1",
@@ -94,8 +107,8 @@
       ],
       "outputs": [
         "ObjectiveAdmissionReceiptV1",
-        "ObjectiveCompileReceipt",
-        "ObjectiveConflictReceipt"
+        "ObjectiveCompileReceiptV1",
+        "ObjectiveConflictReceiptV1"
       ],
       "state": "source_implemented_not_product_composed",
       "authority": "deny_all",
@@ -109,18 +122,27 @@
           "symbol": "untrusted_evidence_reaches_native_authority_rejection"
         },
         {
-          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-          "symbol": "oversized_profile_mapping_set_is_rejected"
+          "path": "codex-rs/hepta-objective/tests/admission_closure.rs",
+          "symbol": "public_admission_returns_inclusion_minimal_profile_bound_conflict"
         },
         {
-          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-          "symbol": "risk_profile_ordering_is_monotone"
+          "path": "codex-rs/hepta-objective/tests/admission_closure.rs",
+          "symbol": "zero_caller_actions_reaches_explicit_abstain_through_bounded_admission"
         }
       ],
       "designOperation": "admit_and_compile_objective_v1",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "mappingClass": "owner_native_gate",
+      "delegatedCallees": [
+        "check_feasibility_v1",
+        "objective_admission::admit_and_compile_objective_v1",
+        "compile"
+      ],
+      "sourcePathExists": true,
+      "sourceDialect": "ObjectiveSourceEnvelopeV1 scalar hard-constraint subset",
+      "richSolverCapabilitiesNotYetSourceRepresentable": [
+        "finite-enum set payloads",
+        "positive action implication payloads"
+      ]
     },
     {
       "operation": "check_feasibility_v1",
@@ -159,8 +181,8 @@
         "ObjectiveSourceEnvelope"
       ],
       "outputs": [
-        "ObjectiveCompileReceipt",
-        "ObjectiveConflictReceipt"
+        "ObjectiveCompileReceiptV1",
+        "ObjectiveConflictReceiptV1"
       ],
       "state": "source_implemented",
       "authority": "none",
@@ -180,8 +202,11 @@
       ],
       "designOperation": "compile",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "delegatedCallees": [
+        "scalar_adapter::scalar_conflict"
+      ],
+      "sourcePathExists": true,
+      "compatibilityRecheck": "legacy scalar feasibility defense-in-depth after public V1 general-feasibility gate"
     }
   ],
   "canonicalReadinessProtocols": [
@@ -191,9 +216,11 @@
     "ObjectiveCompileReceiptV1"
   ],
   "completion": {
-    "specification": "complete",
+    "specification": "candidate_aligned_with_current_source_boundary",
     "source": "candidate_implemented",
-    "exactHeadQualification": "required",
+    "exactHeadQualification": "required_current_candidate_workflows",
+    "canonicalObjectiveFunctionV1Projection": "not_established",
+    "runStartSnapshotPersistence": "not_established",
     "productComposition": "not_established",
     "independentAcceptance": "not_established",
     "activation": "not_established",
@@ -209,7 +236,11 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
+    "nativeV1ScalarAdmissionMapped": true,
+    "generalFeasibilityGateOnPublicAdmission": true,
+    "generalFeasibilityRichDomainsSourceRepresentable": false,
+    "canonicalObjectiveFunctionV1ProjectionComplete": false,
+    "runStartSnapshotPersistenceComplete": false,
     "sourceRootPresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
@@ -222,7 +253,11 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Align the canonical readiness protocol registry with the enforced V1 aggregate/source bounds or version the source protocol before merge.",
+    "Define a versioned source grammar with explicit enum-set and positive action-implication payloads before claiming those rich solver domains on the source-to-objective path.",
+    "Implement the exact canonical ObjectiveFunctionV1 wire projection.",
+    "Bind admission to a named authenticated production consumer and owner store and atomically persist/reconcile ObjectiveFunctionV1 plus RunStartSnapshotV1.",
+    "Replace manual profile byte estimation with exact canonical encoded-byte enforcement if the 256 KiB profile ceiling remains protocol-hard.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
