@@ -17,7 +17,11 @@ impl MatrixOutboundObserver for MatrixSdkClient {
         event_id: &'a MatrixEventId,
     ) -> MatrixObserveFuture<'a> {
         Box::pin(async move {
-            if !self.config().binding.allowed_rooms.contains(&record.room_id)
+            if !self
+                .config()
+                .binding
+                .allowed_rooms
+                .contains(&record.room_id)
                 || record.binding_revision != self.config().binding.revision
                 || record.generation != self.config().matrix_generation
             {
