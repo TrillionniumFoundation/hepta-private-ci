@@ -349,10 +349,7 @@ impl NeuronTickInputV1 {
         ] {
             require_digest(name, digest)?;
         }
-        if self
-            .modulator_digest
-            .is_some_and(Digest32::is_zero)
-        {
+        if self.modulator_digest.is_some_and(|digest| digest.is_zero()) {
             return Err(ProtocolError::InvalidOptionalDigest("modulator"));
         }
         if !(1..=usize::try_from(MAX_ACTIVATION_STATE).map_err(|_| ProtocolError::Arithmetic)?)
