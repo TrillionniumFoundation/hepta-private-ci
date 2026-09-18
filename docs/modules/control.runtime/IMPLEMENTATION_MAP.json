@@ -369,6 +369,36 @@
       ],
       "sourcePathExists": true,
       "nonClaim": "control.runtime neither signs FinalUseGrant nor constructs VerifiedUseToken directly"
+    },
+    {
+      "operation": "admit_durable_owner_summary_v1",
+      "nativeSymbol": "codex_hepta_control_plane::admit_durable_owner_summary_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/global_plane.rs",
+      "inputs": [
+        "OwnerSummaryV1",
+        "owner SignedMessage",
+        "host-pinned IssuerRegistration",
+        "durable AuthBus VerificationReceipt"
+      ],
+      "outputs": [
+        "AdmittedOwnerSummaryV1"
+      ],
+      "state": "source_implemented_durable_replay_receipt_binding_not_named_product_host",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/global_plane_tests.rs",
+          "symbol": "durable_owner_admission_requires_the_exact_store_receipt"
+        }
+      ],
+      "designOperation": "admit_durable_owner_summary_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "auth.authbus::SignedMessage::authenticate",
+        "kernel.evidence::HeptaEvidenceStore::admit_authbus_message"
+      ],
+      "sourcePathExists": true,
+      "nonClaim": "control.runtime verifies the durable receipt binding; kernel.evidence remains the replay-state owner"
     }
   ],
   "canonicalDomainContracts": [
@@ -389,7 +419,7 @@
     "ownerLocalDurabilityReference": "source_implemented",
     "durableOwnerStore": "source_implemented_local_unix_not_product_hosted",
     "canonicalResourceProfileBinding": "source_implemented",
-    "authenticatedOwnerAdmission": "source_implemented",
+    "authenticatedOwnerAdmission": "source_implemented_ephemeral_and_durable_receipt_paths",
     "realNduComposition": "source_implemented",
     "narrowProductCaller": "agentd_context_composed",
     "globalSourceComposition": "source_implemented",
@@ -419,7 +449,8 @@
     "exactHeadQualificationCurrent": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "durableOwnerReplayReceiptBindingImplemented": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
@@ -427,7 +458,7 @@
   },
   "repositoryControlledGaps": [
     "Name and compose a production host for the global multi-owner planner path; the existing Agentd caller is request-local context planning only.",
-    "Admit a canonical external wire/producer protocol for global owner summaries where cross-process composition is required.",
+    "Compose durable AuthBus replay admission and the global planner through a named product host; cross-process global wire admission remains separate if needed.",
     "Complete exact-head plus deterministic synthetic-merge qualification for the final PR head and record named-host resource/latency/recovery measurements."
   ],
   "externalEvidenceGates": [
