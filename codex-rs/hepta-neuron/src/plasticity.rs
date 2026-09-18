@@ -223,8 +223,7 @@ fn validate_sample(
     eligibility_width: usize,
     modulator_width: usize,
 ) -> Result<(), PlasticityError> {
-    if sample.checkpoint_digest.is_zero()
-        || sample.independent_modulator_evidence_digest.is_zero()
+    if sample.checkpoint_digest.is_zero() || sample.independent_modulator_evidence_digest.is_zero()
     {
         return Err(PlasticityError::EmptyDigest);
     }
