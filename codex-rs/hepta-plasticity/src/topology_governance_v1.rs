@@ -11,7 +11,8 @@ use std::fmt;
 use codex_hepta_types::{Digest32, Generation, StableId};
 
 use crate::{
-    TopologyCandidateKindV2, TopologyChangeV2, TopologyProposalV2, verify_topology_proposal_v2,
+    TopologyCandidateKindV2, TopologyChangeV2, TopologyOperationV2, TopologyProposalV2,
+    verify_topology_proposal_v2,
 };
 
 const MAX_PROTECTED_TOPOLOGY_MODULES: usize = 256;
@@ -80,6 +81,7 @@ impl StdError for TopologyMutationPolicyErrorV1 {}
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TopologyWriterHandoffV1 {
     pub module_id: StableId,
+    pub operation: TopologyOperationV2,
     pub source_writer_id: StableId,
     pub destination_writer_id: StableId,
     pub source_domain_digest: Digest32,
@@ -304,7 +306,7 @@ pub fn verify_topology_writer_handoffs_v1(
             ));
         }
         used[*index] = true;
-        if handoff.module_id != change.module_id {
+        if handoff.module_id != change.module_id || handoff.operation != change.operation {
             return Err(TopologyGovernanceErrorV1::HandoffDigestMismatch(
                 change.module_id.to_string(),
             ));
@@ -376,6 +378,7 @@ fn digest_handoff(
 ) -> Result<Digest32, TopologyGovernanceErrorV1> {
     let mut bytes = b"hepta.plasticity.topology-writer-handoff.v1\0".to_vec();
     push_id(&mut bytes, &handoff.module_id)?;
+    bytes.push(topology_operation_tag(handoff.operation));
     push_id(&mut bytes, &handoff.source_writer_id)?;
     push_id(&mut bytes, &handoff.destination_writer_id)?;
     bytes.extend_from_slice(handoff.source_domain_digest.as_array());
@@ -385,6 +388,18 @@ fn digest_handoff(
     bytes.extend_from_slice(handoff.migration_digest.as_array());
     bytes.extend_from_slice(handoff.rollback_digest.as_array());
     Ok(Digest32::of_bytes(&bytes))
+}
+
+fn topology_operation_tag(operation: TopologyOperationV2) -> u8 {
+    match operation {
+        TopologyOperationV2::Add => 0,
+        TopologyOperationV2::Remove => 1,
+        TopologyOperationV2::Replace => 2,
+        TopologyOperationV2::Split => 3,
+        TopologyOperationV2::Merge => 4,
+        TopologyOperationV2::Rewire => 5,
+        TopologyOperationV2::Retire => 6,
+    }
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), TopologyGovernanceErrorV1> {
@@ -421,6 +436,7 @@ mod tests {
     fn typed_handoff_binds_structural_candidate_without_applying_it() {
         let handoff = bind_topology_writer_handoff_v1(TopologyWriterHandoffV1 {
             module_id: id("module:a"),
+            operation: TopologyOperationV2::Replace,
             source_writer_id: id("writer:old"),
             destination_writer_id: id("writer:new"),
             source_domain_digest: digest("domain:old"),
@@ -469,6 +485,7 @@ mod tests {
         let selected = digest("artifact:alternatives");
         let first = bind_topology_writer_handoff_v1(TopologyWriterHandoffV1 {
             module_id: id("module:a"),
+            operation: TopologyOperationV2::Replace,
             source_writer_id: id("writer:old"),
             destination_writer_id: id("writer:new"),
             source_domain_digest: digest("domain:old"),
@@ -482,6 +499,7 @@ mod tests {
         .expect("first handoff");
         let second = bind_topology_writer_handoff_v1(TopologyWriterHandoffV1 {
             module_id: id("module:a"),
+            operation: TopologyOperationV2::Rewire,
             source_writer_id: id("writer:old"),
             destination_writer_id: id("writer:new"),
             source_domain_digest: digest("domain:old"),
