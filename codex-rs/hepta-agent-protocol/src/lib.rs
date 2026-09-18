@@ -878,6 +878,70 @@ mod tests {
     }
 
     #[test]
+    fn run_lifecycle_wire_binds_complete_snapshot_and_cancel_reason() {
+        let snapshot = RunSnapshot {
+            run_id: "run.1".to_string(),
+            request_digest: "1".repeat(64),
+            objective_digest: "2".repeat(64),
+            body_digest: "3".repeat(64),
+            artifact_set_digest: "4".repeat(64),
+            authority_epoch: 9,
+            deadline_ms: 12_345,
+        };
+        let start = AgentdRequest::run_start(21, 3, snapshot.clone());
+        let bytes = serde_json::to_vec(&start).expect("serialize run start");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse run start"),
+            start
+        );
+
+        let attachment = ContextAttachment {
+            run_id: snapshot.run_id.clone(),
+            request_digest: snapshot.request_digest.clone(),
+            objective_digest: snapshot.objective_digest.clone(),
+            body_digest: snapshot.body_digest.clone(),
+            artifact_set_digest: snapshot.artifact_set_digest.clone(),
+            authority_epoch: snapshot.authority_epoch,
+            deadline_ms: snapshot.deadline_ms,
+            context_digest: "5".repeat(64),
+            compilation_receipt_digest: "6".repeat(64),
+        };
+        let attach = AgentdRequest::run_attach_context(22, 3, 1, attachment);
+        let attach_bytes = serde_json::to_vec(&attach).expect("serialize attach");
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&attach_bytes).expect("parse attach"),
+            attach
+        );
+
+        let cancel =
+            AgentdRequest::run_cancel(23, 3, snapshot.run_id, 2, "operator_requested".to_string());
+        let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancel");
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&cancel_bytes).expect("parse cancel"),
+            cancel
+        );
+
+        let payload = AgentdPayload::RunCancellation {
+            disposition: CancellationDisposition::CancellingAfterDispatch,
+            receipt: RunReceipt {
+                run_id: "run.1".to_string(),
+                revision: 3,
+                phase: RunPhase::Cancelling,
+                context_digest: Some("5".repeat(64)),
+                terminal_observed: false,
+                idempotent: false,
+                cancel_reason: Some("operator_requested".to_string()),
+            },
+        };
+        let payload_bytes = serde_json::to_vec(&payload).expect("serialize run payload");
+        assert_eq!(
+            serde_json::from_slice::<AgentdPayload>(&payload_bytes).expect("parse run payload"),
+            payload
+        );
+    }
+
+    #[test]
     fn host_turn_authority_binding_is_strict_and_fail_closed() {
         let owner = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("owner id");
         let binding = HostTurnAuthorityBinding::new(
