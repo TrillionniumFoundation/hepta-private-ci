@@ -96,6 +96,7 @@ export class RuntimeClient {
   #timerDueAt = null;
   #connectAttempt = 0;
   #closing = false;
+  #closePromise = null;
   #activeIo = 0;
   #drainWaiters = [];
   #session = null;
@@ -381,11 +382,18 @@ export class RuntimeClient {
   }
 
   async close() {
-    this.#connectAttempt += 1;
-    if (this.#closing) {
-      await this.#waitForIoDrain();
-      return;
+    if (this.#closePromise) return this.#closePromise;
+    const closing = this.#closeInternal();
+    this.#closePromise = closing;
+    try {
+      return await closing;
+    } finally {
+      if (this.#closePromise === closing) this.#closePromise = null;
     }
+  }
+
+  async #closeInternal() {
+    this.#connectAttempt += 1;
     this.#closing = true;
     const closingSession = this.#session ? Object.freeze({ ...this.#session }) : null;
     this.#cancelReconciliationTimer();
