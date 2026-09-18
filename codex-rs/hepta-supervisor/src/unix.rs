@@ -635,10 +635,69 @@ fn query_agent_health_once(
         && health.workspace == identity.workspace
         && health.home_root == identity.home_root
         && health.run_root == identity.run_root;
+    let readiness_request_id = request_id.wrapping_add(1).max(1);
+    let readiness = query_agent_readiness_once(
+        identity,
+        readiness_request_id,
+        response.current_generation,
+    )?;
+    let readiness_gates = readiness.critical_stores_ready
+        && readiness.revocation_ready
+        && readiness.required_ports_ready;
+    let admission_matches = health.lifecycle != AgentLifecycle::Running || readiness.admission_open;
     Ok(HealthProbeObservation {
         exact_identity,
-        ready: exact_identity && readiness_matches,
+        ready: exact_identity && readiness_matches && readiness_gates && admission_matches,
     })
+}
+
+fn query_agent_readiness_once(
+    identity: &AgentHealthProbeIdentity,
+    request_id: u64,
+    expected_current_generation: u64,
+) -> Result<codex_hepta_agent_protocol::ReadinessSnapshot, ProcessDriverError> {
+    let request = AgentdRequest::readiness(request_id, identity.spawn_generation);
+    let mut bytes = serde_json::to_vec(&request)?;
+    bytes.push(b'\n');
+    if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
+        return Err(ProcessDriverError::new(
+            "agentd readiness request exceeded control frame bound",
+        ));
+    }
+    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.write_all(&bytes)?;
+    stream.shutdown(Shutdown::Write)?;
+
+    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
+    let mut response_bytes = Vec::new();
+    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
+        return Err(ProcessDriverError::new(
+            "agentd readiness response was not a bounded frame",
+        ));
+    }
+    let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
+    if response.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
+        || response.request_id != request_id
+        || response.agent_id != identity.agent_id
+        || response.spawn_generation != identity.spawn_generation
+        || response.current_generation != expected_current_generation
+    {
+        return Err(ProcessDriverError::new(
+            "agentd readiness response identity mismatch",
+        ));
+    }
+    match response.payload {
+        AgentdPayload::Readiness(snapshot) => Ok(snapshot),
+        AgentdPayload::Error { code, message } => Err(ProcessDriverError::new(format!(
+            "agentd readiness rejected ({code}): {message}"
+        ))),
+        _ => Err(ProcessDriverError::new(
+            "agentd readiness response had unexpected payload",
+        )),
+    }
 }
 
 fn query_matrix_health_once(
