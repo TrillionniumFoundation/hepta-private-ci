@@ -42,6 +42,12 @@ pub struct LaneFShadowReceipt {
 /// no model, provider, tool, filesystem, network, selection, promotion, release
 /// or production-writer capability.
 pub fn run_lane_f_shadow() -> Result<LaneFShadowReceipt, String> {
+    run_lane_f_shadow_for_objective(digest(b"lane-f-objective"))
+}
+
+pub fn run_lane_f_shadow_for_objective(
+    objective_digest: Digest32,
+) -> Result<LaneFShadowReceipt, String> {
     let neuron_config = SparseConfig {
         model_digest: digest(b"lane-f-model"),
         normalization_digest: digest(b"lane-f-normalization"),
@@ -64,7 +70,7 @@ pub fn run_lane_f_shadow() -> Result<LaneFShadowReceipt, String> {
     };
     let neuron_tick = SparseTick {
         scope_digest: digest(b"lane-f-scope"),
-        objective_digest: digest(b"lane-f-objective"),
+        objective_digest,
         ndu_digest: digest(b"lane-f-ndu"),
         body_digest: digest(b"lane-f-body"),
         input_digest: digest(b"lane-f-input"),
