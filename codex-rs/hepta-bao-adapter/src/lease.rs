@@ -300,7 +300,12 @@ impl BaoClient {
                     operation_sha256,
                 });
             }
-            _ => return Err(BaoClientError::InvalidResponse),
+            _ => {
+                persist_indeterminate(registry, operation_sha256).await?;
+                return Ok(SecretLeaseIssueOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
         }
 
         let body = match read_bounded_body(&mut response).await {
@@ -427,9 +432,13 @@ impl BaoClient {
             .begin_operation(operation_sha256, "renew", now_unix_ms()?)
             .await
             .map_err(BaoClientError::LeaseRegistry)?;
-        authority
-            .with_verified_use(verified, &binding, || ())
-            .map_err(BaoClientError::Authority)?;
+        if let Err(error) = authority.with_verified_use(verified, &binding, || ()) {
+            registry
+                .mark_rejected(operation_sha256, now_unix_ms()?)
+                .await
+                .map_err(BaoClientError::LeaseRegistry)?;
+            return Err(BaoClientError::Authority(error));
+        }
 
         let url = self.system_lease_url("renew")?;
         let payload = LeaseRenewPayload {
@@ -473,7 +482,12 @@ impl BaoClient {
                     operation_sha256,
                 });
             }
-            _ => return Err(BaoClientError::InvalidResponse),
+            _ => {
+                persist_indeterminate(registry, operation_sha256).await?;
+                return Ok(SecretLeaseMutationOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
         }
         let body = match read_bounded_body(&mut response).await {
             Ok(body) => body,
@@ -679,9 +693,13 @@ impl BaoClient {
             expires_at_unix_ms,
             renewable: decoded.data.renewable,
         };
-        authority
-            .with_verified_use(verified, &binding, || ())
-            .map_err(BaoClientError::Authority)?;
+        if let Err(error) = authority.with_verified_use(verified, &binding, || ()) {
+            registry
+                .mark_rejected(operation_sha256, now_unix_ms()?)
+                .await
+                .map_err(BaoClientError::LeaseRegistry)?;
+            return Err(BaoClientError::Authority(error));
+        }
         registry
             .observe_active(
                 handle.lease_id_sha256(),
@@ -788,7 +806,12 @@ impl BaoClient {
                     operation_sha256,
                 })
             }
-            _ => Err(BaoClientError::InvalidResponse),
+            _ => {
+                persist_indeterminate(registry, operation_sha256).await?;
+                Ok(SecretLeaseMutationOutcome::Indeterminate {
+                    operation_sha256,
+                })
+            }
         }
     }
 
