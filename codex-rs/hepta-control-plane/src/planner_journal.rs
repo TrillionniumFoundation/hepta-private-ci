@@ -276,6 +276,8 @@ impl PlannerJournalV1 {
         }
 
         let mut journal = Self::new();
+        let mut decision_digests = BTreeSet::new();
+        let mut revoked_digests = BTreeSet::new();
         let mut offset = 12;
         for index in 0..count {
             let sequence = read_u64(bytes, &mut offset)?;
@@ -310,6 +312,23 @@ impl PlannerJournalV1 {
             }
             if identity_digest.is_zero() || payload_digest.is_zero() {
                 return Err(PlannerJournalError::EmptyDigest);
+            }
+            match kind {
+                PlannerJournalKindV1::Decision => {
+                    decision_digests.insert(payload_digest);
+                }
+                PlannerJournalKindV1::Revocation => {
+                    revoked_digests.insert(payload_digest);
+                }
+                PlannerJournalKindV1::SelectedPlan => {
+                    if !decision_digests.contains(&payload_digest) {
+                        return Err(PlannerJournalError::DecisionNotRecorded);
+                    }
+                    if revoked_digests.contains(&payload_digest) {
+                        return Err(PlannerJournalError::RevokedPlan);
+                    }
+                }
+                PlannerJournalKindV1::Snapshot => {}
             }
             if journal.identities.contains_key(&identity_digest) {
                 return Err(PlannerJournalError::DuplicateSerializedIdentity);
