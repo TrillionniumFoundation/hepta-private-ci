@@ -1,3 +1,4 @@
+use std::fmt;
 use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -163,12 +164,24 @@ impl DispatchEnvelope {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct DispatchLease {
     envelope: DispatchEnvelope,
     payload: Vec<u8>,
     worker_id: StableId,
     expires_at_ms: i64,
+}
+
+impl fmt::Debug for DispatchLease {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("DispatchLease")
+            .field("envelope", &self.envelope)
+            .field("payload_len", &self.payload.len())
+            .field("worker_id", &self.worker_id)
+            .field("expires_at_ms", &self.expires_at_ms)
+            .finish()
+    }
 }
 
 impl DispatchLease {
@@ -990,7 +1003,7 @@ pub fn execute_with_final_use<T>(
         .map_err(OperationError::Authority)
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 struct OutboxRow {
     state: String,
     payload: Vec<u8>,
@@ -1370,7 +1383,50 @@ async fn verify_schema(pool: &SqlitePool) -> Result<(), OperationError> {
             )));
         }
     }
+    verify_relational_invariants(pool).await?;
     verify_quick_check(pool).await
+}
+
+async fn verify_relational_invariants(pool: &SqlitePool) -> Result<(), OperationError> {
+    let missing_active_outbox: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM operation_ledger AS ledger
+         LEFT JOIN cross_owner_outbox AS outbox
+           ON outbox.operation_id = ledger.operation_id
+         WHERE ledger.state NOT IN ('applied','not_applied','quarantined')
+           AND outbox.operation_id IS NULL",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(storage)?;
+    if missing_active_outbox != 0 {
+        return Err(OperationError::Corrupt(
+            "active operation ledger row is missing its outbox".into(),
+        ));
+    }
+
+    let mismatched_rows: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM operation_ledger AS ledger
+         JOIN cross_owner_outbox AS outbox
+           ON outbox.operation_id = ledger.operation_id
+         WHERE ledger.destination IS NOT outbox.destination
+            OR ledger.semantic_digest IS NOT outbox.semantic_digest
+            OR ledger.payload_digest IS NOT outbox.payload_digest
+            OR ledger.writer_fence != outbox.fence
+            OR ledger.attempts != outbox.attempts
+            OR (ledger.state = 'pending' AND outbox.state NOT IN ('queued','leased'))
+            OR (ledger.state != 'pending' AND ledger.state != outbox.state)",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(storage)?;
+    if mismatched_rows != 0 {
+        return Err(OperationError::Corrupt(
+            "operation ledger/outbox relational invariant mismatch".into(),
+        ));
+    }
+    Ok(())
 }
 
 fn stored_id(row: &SqliteRow, column: &str) -> Result<StableId, OperationError> {
