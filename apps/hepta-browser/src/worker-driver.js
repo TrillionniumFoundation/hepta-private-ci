@@ -1010,6 +1010,7 @@ export class PooledSubprocessBrowserDriver {
     profileRoot,
     launcher,
     persistedReconciler = null,
+    allowPrivateNetworkForTests = false,
     maxProfiles = DEFAULT_MAX_POOL_PROFILES,
   }) {
     positiveInteger(maxProfiles, "maxProfiles");
@@ -1023,6 +1024,7 @@ export class PooledSubprocessBrowserDriver {
       profileRoot,
       launcher,
       persistedReconciler,
+      allowPrivateNetworkForTests,
     };
     this.#recoveryDriver = new SubprocessBrowserDriver(this.#config);
   }

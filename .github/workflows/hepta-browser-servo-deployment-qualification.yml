@@ -136,6 +136,12 @@ jobs:
           assert receipt['linuxSandboxProbe']['resourceLimitsEnforced'] is True
           assert receipt['realWorkerSmoke']['currentPinWorkerBooted'] is True
           assert receipt['realWorkerSmoke']['privateProtocolRoundTrip'] is True
+          assert receipt['realBrowserE2E']['openNavigateObserveTypeClickClose'] is True
+          assert receipt['realBrowserE2E']['crossOriginSubresourceDenied'] is True
+          assert receipt['realBrowserE2E']['crossProfileCookieIsolation'] is True
+          assert receipt['realBrowserE2E']['persistedCrashReconciliation'] is True
+          assert receipt['realBrowserSoak']['cycles'] == 32
+          assert receipt['realBrowserSoak']['boundedFdGrowth'] is True
           PY
           chmod 0555 worker-evidence/hepta-servo-worker
           cp worker-evidence/build-receipt.json deployment-evidence/source-build-receipt.json
@@ -161,6 +167,20 @@ jobs:
           node apps/hepta-browser/scripts/real-worker-smoke.js \
             worker-evidence/hepta-servo-worker \
             | tee deployment-evidence/real-worker-smoke.json
+
+      - name: Re-run real Browser lifecycle and profile isolation on trusted target
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/real-browser-e2e.js worker-evidence/hepta-servo-worker | tee deployment-evidence/real-browser-e2e.json
+          python3 - <<'PY'
+          import json, pathlib
+          result = json.loads(pathlib.Path("deployment-evidence/real-browser-e2e.json").read_text())
+          assert result["openNavigateObserveTypeClickClose"] is True
+          assert result["crossOriginSubresourceDenied"] is True
+          assert result["crossProfileCookieIsolation"] is True
+          assert result["persistedCrashReconciliation"] is True
+          PY
 
       - name: Re-run bounded Browser resource soak on trusted target
         shell: bash
@@ -191,6 +211,7 @@ jobs:
               'workerSha256': os.environ['EXPECTED_WORKER_SHA256'],
               'sandboxProbeSha256': digest(root / 'linux-sandbox-probe.json'),
               'realWorkerSmokeSha256': digest(root / 'real-worker-smoke.json'),
+              'realBrowserE2ESha256': digest(root / 'real-browser-e2e.json'),
               'realBrowserSoakSha256': digest(root / 'real-browser-soak.json'),
               'operatorAcceptance': False,
               'promotion': False,

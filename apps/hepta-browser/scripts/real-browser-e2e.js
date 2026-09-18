@@ -13,6 +13,7 @@ import { createFilePersistedEffectReconciler } from "../src/persisted-reconciler
 import { BrowserProfileHost } from "../src/runtime.js";
 import {
   LinuxBubblewrapLauncher,
+  PooledSubprocessBrowserDriver,
   SubprocessBrowserDriver,
 } from "../src/worker-driver.js";
 
@@ -99,6 +100,7 @@ const [bwrapBytes, prlimitBytes] = await Promise.all([
 const root = await mkdtemp(join(tmpdir(), "hepta-browser-real-e2e-"));
 await chmod(root, 0o700);
 let forbiddenHits = 0;
+let profileBCookieHeader = null;
 const hanging = new Set();
 
 const forbidden = await listen((_request, response) => {
@@ -108,6 +110,20 @@ const forbidden = await listen((_request, response) => {
 const forbiddenOrigin = `http://127.0.0.1:${forbidden.address().port}`;
 
 const app = await listen((request, response) => {
+  if (request.url === "/cookie-set") {
+    response.writeHead(200, {
+      "content-type": "text/html; charset=utf-8",
+      "set-cookie": "heptaProfile=alpha; Path=/; SameSite=Lax",
+    });
+    response.end("<html><body>cookie-set</body></html>");
+    return;
+  }
+  if (request.url === "/cookie-echo") {
+    profileBCookieHeader = request.headers.cookie ?? "";
+    response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    response.end("<html><body>cookie-echo</body></html>");
+    return;
+  }
   if (request.url === "/never") {
     response.writeHead(200, { "content-type": "text/html" });
     response.write("<html><body>never terminal</body>");
@@ -135,6 +151,17 @@ function launcher() {
     bwrapDigest: sha(bwrapBytes),
     prlimitPath,
     prlimitDigest: sha(prlimitBytes),
+  });
+}
+
+function realPool(profileRoot, maxProfiles = 2) {
+  return new PooledSubprocessBrowserDriver({
+    workerPath,
+    workerDigest: sha(workerBytes),
+    profileRoot,
+    launcher: launcher(),
+    maxProfiles,
+    allowPrivateNetworkForTests: true,
   });
 }
 
@@ -277,6 +304,87 @@ try {
   });
   assert.equal(closed.terminalObserved, true);
 
+  // Two simultaneous profile generations must not share cookies.
+  const isolationDriver = realPool(join(root, "profiles-isolation"), 2);
+  const isolationHost = new BrowserProfileHost({
+    driver: isolationDriver,
+    authority: authority(),
+    journal: new FileBrowserOperationJournal(join(root, "isolation-journal.log")),
+    driverCallTimeoutMs: 10_000,
+    maxActiveProfiles: 2,
+  });
+  const isoAAction = {
+    kind: "navigate",
+    url: `${origin}/cookie-set`,
+    policyDigest: D1,
+    expectedRevision: 11,
+  };
+  const isoBAction = {
+    kind: "navigate",
+    url: `${origin}/cookie-echo`,
+    policyDigest: D1,
+    expectedRevision: 12,
+  };
+  const isoAGrant = grant("navigate", browserActionDigest(isoAAction), origin, "iso-a");
+  const isoBGrant = grant("navigate", browserActionDigest(isoBAction), origin, "iso-b");
+  await isolationHost.openProfile({
+    profileId: "profile.iso.a",
+    principalId: "principal.iso.a",
+    manifestDigest: D1,
+    grantDigest: D2,
+    generation: 1,
+    expiresAtMs: Date.now() + 120_000,
+    allowedOrigins: [origin],
+    effectGrants: [isoAGrant],
+  });
+  await isolationHost.openProfile({
+    profileId: "profile.iso.b",
+    principalId: "principal.iso.b",
+    manifestDigest: D1,
+    grantDigest: D2,
+    generation: 1,
+    expiresAtMs: Date.now() + 120_000,
+    allowedOrigins: [origin],
+    effectGrants: [isoBGrant],
+  });
+  const isoAInput = operation({
+    profileId: "profile.iso.a",
+    principalId: "principal.iso.a",
+    generation: 1,
+    operationId: "operation.iso.a",
+    pageGeneration: 0,
+    typedAction: isoAAction,
+    origin,
+    effectGrant: isoAGrant,
+  });
+  const isoBInput = operation({
+    profileId: "profile.iso.b",
+    principalId: "principal.iso.b",
+    generation: 1,
+    operationId: "operation.iso.b",
+    pageGeneration: 0,
+    typedAction: isoBAction,
+    origin,
+    effectGrant: isoBGrant,
+  });
+  assert.equal((await settle(isolationHost, isoAInput, await isolationHost.navigateOrAct(isoAInput))).status, "succeeded");
+  assert.equal((await settle(isolationHost, isoBInput, await isolationHost.navigateOrAct(isoBInput))).status, "succeeded");
+  assert.equal(
+    profileBCookieHeader?.includes("heptaProfile=alpha"),
+    false,
+    "profile B must not receive profile A cookie",
+  );
+  await isolationHost.closeProfile({
+    profileId: "profile.iso.a",
+    principalId: "principal.iso.a",
+    generation: 1,
+  });
+  await isolationHost.closeProfile({
+    profileId: "profile.iso.b",
+    principalId: "principal.iso.b",
+    generation: 1,
+  });
+
   // Crash/worker-loss path: preserve indeterminate identity, then converge only
   // through a separately supplied trusted persisted observation.
   const crashDriver = realDriver(join(root, "profiles-crash"));
@@ -369,6 +477,7 @@ try {
       exactOriginEgressObserved: true,
       crossOriginSubresourceDenied: true,
       persistedCrashReconciliation: true,
+      crossProfileCookieIsolation: true,
       workerSha256: sha(workerBytes),
     }) + "\n",
   );

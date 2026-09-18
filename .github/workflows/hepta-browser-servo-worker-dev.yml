@@ -189,6 +189,7 @@ jobs:
           assert result["exactOriginEgressObserved"] is True
           assert result["crossOriginSubresourceDenied"] is True
           assert result["persistedCrashReconciliation"] is True
+          assert result["crossProfileCookieIsolation"] is True
           PY
 
       - name: Run bounded real-worker resource soak
