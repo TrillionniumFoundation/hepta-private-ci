@@ -821,6 +821,14 @@ def run_self_test() -> list[Finding]:
         "free-function symbol resolver failed",
     )
     findings.require(
+        verify_symbol(
+            "pub struct Generic<T>(T); impl<T> Generic<T> { pub fn execute(&self) {} }",
+            "crate::Generic::execute",
+        ),
+        "self_test_generic_method",
+        "generic method symbol resolver failed",
+    )
+    findings.require(
         not verify_symbol("pub fn another() {}", "crate::execute"),
         "self_test_false_positive",
         "symbol resolver accepted a missing function",
