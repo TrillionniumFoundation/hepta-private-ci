@@ -37,6 +37,10 @@ pub enum KnowledgeRelationKindV2 {
     PromptComplements,
     PromptSubstitutes,
     PromptConflicts,
+    PromptRequires,
+    PromptDominates,
+    PromptRedundant,
+    PromptSupersedes,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -679,6 +683,10 @@ const fn relation_code(value: KnowledgeRelationKindV2) -> u8 {
         KnowledgeRelationKindV2::PromptComplements => 7,
         KnowledgeRelationKindV2::PromptSubstitutes => 8,
         KnowledgeRelationKindV2::PromptConflicts => 9,
+        KnowledgeRelationKindV2::PromptRequires => 10,
+        KnowledgeRelationKindV2::PromptDominates => 11,
+        KnowledgeRelationKindV2::PromptRedundant => 12,
+        KnowledgeRelationKindV2::PromptSupersedes => 13,
     }
 }
 
