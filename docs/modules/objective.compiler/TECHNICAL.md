@@ -142,7 +142,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as measured performance. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs) and the linked implementation components. The executable target-host procedure is [OBJECTIVE_TARGET_HOST_MEASUREMENT.md](../../readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md) with recorder `scripts/hepta-objective-target-measure.py`; its ordinary authenticated-admission and maximum-conflict paths are measured separately. CI compiles the ignored fixtures and self-tests the recorder but does not close the target-host evidence gate.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
