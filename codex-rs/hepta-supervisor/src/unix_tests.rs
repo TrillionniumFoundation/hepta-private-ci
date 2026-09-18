@@ -83,6 +83,72 @@ fn unix_wrapper_captures_bounded_stdout_and_stderr() {
 }
 
 #[test]
+fn unix_drain_and_stop_use_distinct_process_signals() {
+    let temp = tempfile::tempdir().expect("temporary directory");
+    let drain_exit = run_signal_probe(temp.path(), "drain", true);
+    let stop_exit = run_signal_probe(temp.path(), "stop", false);
+    assert_eq!(drain_exit, Some(41), "drain must deliver SIGUSR1");
+    assert_eq!(stop_exit, Some(42), "stop must deliver SIGTERM");
+}
+
+fn run_signal_probe(root: &Path, name: &str, drain: bool) -> Option<i32> {
+    let workspace = root.join(name);
+    let run_root = workspace.join("run");
+    std::fs::create_dir_all(&run_root).expect("create signal-probe directories");
+    let ready = workspace.join("ready");
+    let script = format!(
+        "trap 'exit 41' USR1; trap 'exit 42' TERM; : > {}; while :; do sleep 1; done",
+        shell_quote(&ready)
+    );
+    let command = AgentCommand::new(
+        "/bin/sh",
+        vec![OsString::from("-c"), OsString::from(script)],
+    )
+    .expect("valid signal probe command");
+    let spec = SpawnSpec {
+        agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("valid agent id"),
+        generation: 1,
+        fleet_root: root.join("fleet"),
+        workspace: workspace.clone(),
+        home_root: workspace.join("home"),
+        run_root: run_root.clone(),
+        control_socket: run_root.join("missing-agentd-control.sock"),
+        logs_root: workspace.join("logs"),
+        command,
+    };
+    let mut process = UnixProcessDriver::new(8)
+        .expect("valid driver")
+        .spawn(&spec)
+        .expect("spawn signal probe")
+        .process;
+    let ready_deadline = Instant::now() + Duration::from_secs(2);
+    while !ready.exists() {
+        assert!(Instant::now() < ready_deadline, "signal probe did not arm traps");
+        std::thread::sleep(Duration::from_millis(5));
+    }
+    if drain {
+        process.request_drain().expect("request drain");
+    } else {
+        process.request_stop().expect("request stop");
+    }
+    let exit_deadline = Instant::now() + Duration::from_secs(2);
+    loop {
+        match process.poll(8).expect("poll signal probe").state {
+            ProcessState::Exited(exit) => return exit.code,
+            ProcessState::Running { .. } => {
+                assert!(Instant::now() < exit_deadline, "signal probe did not exit");
+                std::thread::sleep(Duration::from_millis(5));
+            }
+        }
+    }
+}
+
+fn shell_quote(path: &Path) -> String {
+    let value = path.to_string_lossy();
+    format!("'{}'", value.replace('\'', "'\\''"))
+}
+
+#[test]
 fn unix_spawn_overrides_polluted_sqlite_home_for_two_agents() {
     if std::env::var_os(SQLITE_HOME_POLLUTION_CHILD_ENV).is_none() {
         let output = Command::new(std::env::current_exe().expect("current test executable"))
