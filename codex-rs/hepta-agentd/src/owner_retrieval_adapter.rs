@@ -22,7 +22,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 
-pub(crate) fn adapt_owner_retrieval(
+pub fn adapt_owner_retrieval(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
     read: &AuthoritativeReadResultV1,
