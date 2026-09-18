@@ -517,6 +517,7 @@ fn as_i64(value: u64) -> Result<i64, SecretLeaseRegistryError> {
 
 #[cfg(unix)]
 fn prepare_private_database_file(path: &Path) -> Result<(), SecretLeaseRegistryError> {
+    use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::OpenOptionsExt;
     use std::os::unix::fs::PermissionsExt;
 
@@ -525,6 +526,8 @@ fn prepare_private_database_file(path: &Path) -> Result<(), SecretLeaseRegistryE
             if metadata.file_type().is_symlink()
                 || !metadata.is_file()
                 || metadata.permissions().mode() & 0o077 != 0
+                || metadata.nlink() != 1
+                || metadata.uid() != rustix::process::geteuid().as_raw()
             {
                 return Err(SecretLeaseRegistryError::UnsafeDirectory);
             }
