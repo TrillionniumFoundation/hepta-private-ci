@@ -3,7 +3,8 @@
 //! This is a native Rust boundary, not a registered wire protocol. Producers
 //! identify the exact generation vector and generator profile that produced a
 //! bounded channel batch, and state whether their own source enumeration was
-//! exhausted or truncated. memory.retrieval still grants no authority.
+//! exhausted, bound-limited, or provably truncated. memory.retrieval still
+//! grants no authority.
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
