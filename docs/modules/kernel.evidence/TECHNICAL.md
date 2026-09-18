@@ -46,7 +46,18 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs); observed identifiers include `StoredProviderEffect`, `append_provider_effect_intent`, `dispatch_provider_effect_qualification`, `append_provider_effect_ack`, `mark_provider_effect_indeterminate`, `reconcile_provider_effect_lookup`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) for the implemented subset and remaining product work.
+The registered source root is `codex-rs/hepta-evidence`. The qualification
+contract is implemented in
+[codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs)
+with native `append_receipt`, `verify_chain`, `query_claim`,
+`append_independent_decision_receipt` and durable issuer-key revocation. The
+logical anti-rollback boundary is in
+[codex-rs/hepta-evidence/src/checkpoint.rs](../../../codex-rs/hepta-evidence/src/checkpoint.rs).
+Provider-effect intent/acknowledgement/reconciliation remains in
+[codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs).
+The real product composition is the existing
+[codex-hepta-governance GovernanceState](../../../codex-rs/ext/hepta-governance/src/state.rs);
+no parallel authority or execution spine was introduced.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -88,6 +99,7 @@ Configuration is immutable for one process generation. Changes affecting authori
 Produced contracts:
 
 - `DomainRead::qualification_evidenceV1`
+- `IndependentDecisionReceiptV1`
 - `ModulePort::kernel.evidence::control.engineering`
 - `ModulePort::kernel.evidence::control.runtime`
 - `ModulePort::kernel.evidence::learning.eval`
@@ -119,6 +131,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `IndependentDecisionReceiptV1`
 - `EvaluationReceiptV1`
 - `LocalModelRuntimeReceiptV1`
 - `LongitudinalEvaluationReceiptV1`
@@ -133,6 +146,7 @@ Rust types and canonical JSON represent identical semantics. Tests cover round t
 Owned authoritative or rebuildable domains:
 
 - `qualification_evidence`
+- `independent_decision_receipt_v1`
 
 Read-only data dependencies:
 
@@ -178,7 +192,10 @@ Operate through the existing evidence store and its migrations. Keep candidate, 
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs).
+- [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs);
+- [codex-rs/hepta-evidence/src/checkpoint.rs](../../../codex-rs/hepta-evidence/src/checkpoint.rs);
+- [docs/lane-a-foundation/kernel.evidence/STORE_V1.md](../../lane-a-foundation/kernel.evidence/STORE_V1.md);
+- [docs/lane-a-foundation/kernel.evidence/CHECKPOINT_V1.md](../../lane-a-foundation/kernel.evidence/CHECKPOINT_V1.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -186,10 +203,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-evidence/src/qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs): exact-candidate and claim-class binding, EVID-01 principal collision, expiry, independent-decision projection, durable key revocation, corruption/reopen fail-closed and database rollback checkpoint rejection.
+- [codex-rs/ext/hepta-governance/src/qualification_product_tests.rs](../../../codex-rs/ext/hepta-governance/src/qualification_product_tests.rs): authenticated product-host writer, reader, terminal observer and checkpoint composition.
 - [codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs); named case: `current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers`.
 - [codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs); named case: `quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement`.
 
-In `codex-rs`, run `just test -p codex-hepta-evidence`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) separately labels target acceptance designs.
+In `codex-rs`, run `cargo test --locked -p codex-hepta-contracts -p codex-hepta-evidence -p codex-hepta-governance`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
