@@ -42,6 +42,7 @@ or filesystem namespace. Those capabilities remain host-owned.
 | persist/reopen withdrawal frontier | `write_dataset_withdrawal_snapshot`, `read_dataset_withdrawal_snapshot` | `src/storage.rs` | implemented |
 | persist/reopen lifecycle journal | `write_lifecycle_journal_snapshot`, `read_lifecycle_journal_snapshot` | `src/storage.rs` | implemented |
 | project V3 admission into V1 registry event | `artifact_registry_event_for_admission_v3` | `src/publication.rs` | implemented |
+| stage V3 publication without mutating current registry | `stage_artifact_publication_v1`, `StagedArtifactPublicationV1` | `src/publication.rs` | implemented |
 | prepare/recover publication transaction | `prepare_artifact_publication_v1`, `recover_artifact_publication_v1` | `src/publication.rs` | implemented |
 | reject publication operation reuse with changed semantics | `validate_artifact_publication_retry_v1` | `src/publication.rs` | implemented |
 | governed iteration transition | `validate_iteration_transition` | `src/iteration.rs` | implemented |
@@ -73,6 +74,8 @@ registry snapshot receipt and the current-head witness receipt. A host must reta
 or reconstruct the prior contract for an operation identity and call
 `validate_artifact_publication_retry_v1` (or enforce an equivalent durable
 operation ledger rule); identical retries pass and changed semantics conflict.
+
+`stage_artifact_publication_v1` performs current admission validation and the V1 append on a clone of the caller's registry, returning that staged next registry together with the exact append receipt and durable publication transaction. A staging failure cannot leave a rejected event in the caller's current working registry.
 
 `DatasetWithdrawalRegistry` is append-only, digest-chained and replayable from a
 snapshot. A production V3 registry is scoped by `DatasetWithdrawalDomainV1`;
