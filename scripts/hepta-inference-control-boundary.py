@@ -103,6 +103,40 @@ def verify() -> None:
         if needle not in policy:
             raise SystemExit(f"native inference policy missing required invariant: {needle}")
 
+    # The App Server turn gate is not the physical network boundary. Hepta
+    # product hosts must also install enforce-mode provider governance, and
+    # Core must reject a Hepta-governed send when a host forgets that
+    # contributor instead of silently falling back to NoPolicy.
+    for host_path in (
+        "codex-rs/app-server/src/extensions.rs",
+        "codex-rs/mcp-server/src/message_processor.rs",
+    ):
+        host = (ROOT / host_path).read_text(encoding="utf-8")
+        if "codex_hepta_governance::install_enforced(" not in host:
+            raise SystemExit(
+                f"Hepta product host is not using enforce-mode provider governance: {host_path}"
+            )
+
+    lifecycle = (
+        ROOT / "codex-rs/core/src/model_provider_policy/lifecycle.rs"
+    ).read_text(encoding="utf-8")
+    for needle in (
+        "pub(crate) fn needs_gate(&self) -> bool",
+        "self.required || !self.contributors.is_empty()",
+        '"model_provider_policy_required_missing"',
+    ):
+        if needle not in lifecycle:
+            raise SystemExit(f"physical provider-policy fail-closed gate missing: {needle}")
+
+    physical_client = (ROOT / "codex-rs/core/src/client.rs").read_text(encoding="utf-8")
+    for needle in (
+        "context.require_active_policy",
+        "active.needs_gate()",
+        "provider_policy_context.require_active_policy",
+    ):
+        if needle not in physical_client:
+            raise SystemExit(f"physical provider send missing required-policy gate: {needle}")
+
 
 def self_test() -> None:
     import tempfile
