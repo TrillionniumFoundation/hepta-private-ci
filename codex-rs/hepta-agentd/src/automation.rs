@@ -111,8 +111,8 @@ impl AgentdAutomationQueue {
             ));
         }
         let input = automation_input(&admission);
-        let expected_payload_sha256 = automation_recovery::input_digest(&input)
-            .map_err(QueueFailure::BeforeAdmission)?;
+        let expected_payload_sha256 =
+            automation_recovery::input_digest(&input).map_err(QueueFailure::BeforeAdmission)?;
         let response: ThreadQueueReconcileResponse = client
             .request_handle()
             .request_typed(ClientRequest::ThreadQueueReconcile {
@@ -154,8 +154,7 @@ impl AgentdAutomationQueue {
         .map_err(|_| QueueFailure::OutcomeUnknown)?;
         let queued_submission_id = match response.outcome {
             ThreadQueueReconcileOutcome::Queued {
-                queued_submission,
-                ..
+                queued_submission, ..
             } => {
                 if queued_submission.client_user_message_id != admission.client_user_message_id
                     || queued_submission.id.is_empty()
@@ -264,13 +263,8 @@ pub(crate) async fn run_automation_scheduler(
         // Reconcile one durable historical occurrence before admitting new
         // work. This is bounded to one item/turn-page chain per tick and does
         // not prevent an overlap-allowed scheduler from also making progress.
-        if let Err(error) = automation_recovery::reconcile_one(
-            scheduler.store(),
-            &state,
-            &identity,
-            now_ms,
-        )
-        .await
+        if let Err(error) =
+            automation_recovery::reconcile_one(scheduler.store(), &state, &identity, now_ms).await
         {
             return stop_after_recovery_error(error, &state);
         }
