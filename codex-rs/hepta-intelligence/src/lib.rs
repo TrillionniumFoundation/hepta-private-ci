@@ -35,6 +35,12 @@ pub use learning_v3::OutcomeCreditClosureRequestV3;
 pub use learning_v3::append_decision_v3;
 pub use learning_v3::append_outcome_and_credit_v3;
 
+mod native_v3;
+
+pub use native_v3::NativeCompositionInputsV3;
+pub use native_v3::NativeCompositionPortsV3;
+pub use native_v3::NativeNeuronInputV3;
+
 mod evaluated_shadow;
 
 pub use evaluated_shadow::EvaluatedShadowError;
