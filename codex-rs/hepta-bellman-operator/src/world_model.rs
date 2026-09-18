@@ -248,9 +248,15 @@ impl LoadedTabularWorldModelV1 {
 /// selected candidates should be admitted through `LoadedTabularWorldModelV1`.
 pub fn predict_transition(
     model: &TabularWorldModelV1,
+    pin: &WorldModelPinV1,
     state_id: &StableId,
     action_id: &StableId,
 ) -> Result<WorldModelPredictionV1, WorldModelError> {
+    require_digest(pin.model_digest, "world-model pin")?;
+    require_digest(pin.dataset_digest, "world-model dataset pin")?;
+    if model.model_digest != pin.model_digest || model.dataset_digest != pin.dataset_digest {
+        return Err(WorldModelError::InvalidModel);
+    }
     validate_world_model(model)?;
     predict_validated_transition(model, state_id, action_id)
 }
