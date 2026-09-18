@@ -15,6 +15,7 @@ mod scheduler;
 mod store;
 mod taskflow;
 mod taskflow_execution_boundary;
+mod taskflow_effect_runtime;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;
 mod taskflow_step;
@@ -72,6 +73,13 @@ pub use taskflow_execution_boundary::TaskFlowBoundaryUnavailableReason;
 pub use taskflow_execution_boundary::TaskFlowExecutionUnavailableV1;
 pub use taskflow_execution_boundary::assess_local_taskflow_boundary;
 pub use taskflow_execution_boundary::assess_local_taskflow_boundary_json;
+pub use taskflow_effect_runtime::TaskFlowAuthorizedDispatch;
+pub use taskflow_effect_runtime::TaskFlowAuthorizedDispatchResult;
+pub use taskflow_effect_runtime::TaskFlowEffectFuture;
+pub use taskflow_effect_runtime::TaskFlowEffectProvider;
+pub use taskflow_effect_runtime::TaskFlowEffectRuntimeError;
+pub use taskflow_effect_runtime::TaskFlowProviderObservation;
+pub use taskflow_effect_runtime::TaskFlowProviderRequest;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TASKFLOW_STRUCTURAL_EFFECTS;
 #[cfg(feature = "taskflow-structural-qualification")]
