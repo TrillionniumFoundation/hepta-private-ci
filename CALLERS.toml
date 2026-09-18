@@ -72,6 +72,16 @@ required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
+path = "codex-rs/hepta-evidence/src/authbus_provider_guard.rs"
+required = ["dispatch_provider_effect_guarded_qualification", "authorize_and_reserve", "begin_reserved_effect", "OperationBindingMismatch"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-evidence/src/provider_effect_store.rs"
+required = ["pub(crate) async fn dispatch_provider_effect_qualification"]
+forbidden = ["pub async fn dispatch_provider_effect_qualification"]
+
+[[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"
 required = ["impl ProviderEffectAdapter for HttpProviderEffectAdapter"]
 forbidden = ["impl Default for HttpProviderEffectAdapter"]
