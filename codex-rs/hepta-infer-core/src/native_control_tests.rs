@@ -87,6 +87,52 @@ fn concurrent_handles_share_budget_without_holding_the_lock_during_execution() {
 }
 
 #[test]
+fn compaction_archives_full_history_and_preserves_indeterminate_fences() {
+    let path = path("compact");
+    let mut control = DurableInferenceControl::open(&path, 16).unwrap();
+
+    start(&mut control, "r1");
+    let indeterminate = control
+        .settle_native("r1", output(NativeRunStatus::Indeterminate, None))
+        .unwrap();
+
+    control.reserve_native(request("r2"), 2).unwrap();
+    let mut d2 = dispatch();
+    d2.thread_id = "thread-2".to_string();
+    control.dispatch_native("r2", d2).unwrap();
+    control.native_started("r2", "turn-2".to_string()).unwrap();
+    let mut terminal = output(NativeRunStatus::Completed, Some(9));
+    terminal.thread_id = "thread-2".to_string();
+    terminal.turn_id = "turn-2".to_string();
+    let released = control.settle_native("r2", terminal).unwrap();
+
+    let bytes_before = std::fs::read(&path).unwrap();
+    let archive = control.compact_with_archive().unwrap();
+    assert!(archive.is_file());
+    assert_eq!(std::fs::read(&archive).unwrap(), bytes_before);
+    assert!(std::fs::metadata(&path).unwrap().len() < bytes_before.len() as u64);
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 16).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&indeterminate));
+    assert_eq!(reopened.native_record("r2"), Some(&released));
+    // The unknown external outcome still owns a slot after compaction; no
+    // journal rotation can make it replayable or pretend it terminated.
+    assert_eq!(
+        reopened.reserve_native(request("r3"), 1),
+        Err(Error::Conflict)
+    );
+    drop(reopened);
+    std::fs::remove_file(&path).unwrap();
+    std::fs::remove_file(&archive).unwrap();
+    let lock = path.with_file_name(format!(
+        "{}.writer.lock",
+        path.file_name().unwrap().to_string_lossy()
+    ));
+    let _ = std::fs::remove_file(lock);
+}
+
+#[test]
 fn duplicate_reopen_preserves_exact_binding_and_reserves_only_once() {
     let path = path("duplicate");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
