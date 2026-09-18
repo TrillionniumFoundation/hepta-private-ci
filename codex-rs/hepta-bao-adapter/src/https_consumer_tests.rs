@@ -561,6 +561,60 @@ async fn dynamic_lease_issue_delivers_only_to_consumer_and_returns_opaque_metada
 }
 
 #[tokio::test]
+async fn dynamic_lease_consumer_indeterminate_preserves_recovery_handle() {
+    let dynamic_body = serde_json::json!({
+        "lease_id": "database/creds/read-only/provider-lease-consumer-indeterminate",
+        "renewable": true,
+        "lease_duration": 60,
+        "data": {
+            "username": "dynamic-user",
+            "password": "dynamic-password"
+        }
+    })
+    .to_string();
+    let (endpoint, ca, task) = server(200, dynamic_body, || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture-provider-token".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = crate::SecretLeaseRequest {
+        subject_id: "agent-one".into(),
+        consumer_id: "database-client".into(),
+        operation_id: "issue-consumer-indeterminate".into(),
+        namespace: "team/one".into(),
+        mount: "database".into(),
+        role: "read-only".into(),
+    };
+    let binding = client.secret_lease_binding(&request).unwrap();
+    let (authority, signed, directory) =
+        lease_grant(&client, binding, "lease-consumer-indeterminate", [25; 32]).unwrap();
+    let registry = crate::SecretLeaseRegistry::open(directory.path()).await.unwrap();
+
+    let outcome = client
+        .request_secret_lease(&authority, &signed, &registry, &request, |secret| {
+            let text = std::str::from_utf8(secret).unwrap();
+            assert!(text.contains("dynamic-password"));
+            Err(())
+        })
+        .await
+        .unwrap();
+
+    let crate::SecretLeaseIssueOutcome::ConsumerIndeterminate { handle, metadata } = outcome else {
+        panic!("expected consumer-indeterminate dynamic lease");
+    };
+    let digest = handle.lease_id_sha256();
+    assert_eq!(digest, metadata.lease_id_sha256);
+    let recovered = registry.recover_lease(digest).await.unwrap().unwrap();
+    assert_eq!(recovered.handle.lease_id_sha256(), digest);
+    assert_eq!(recovered.state, crate::RegisteredSecretLeaseState::Active);
+    let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
+    assert!(observed.starts_with("get /v1/database/creds/read-only http/1.1\r\n"));
+}
+
+#[tokio::test]
 async fn dynamic_lease_body_timeout_is_indeterminate_and_burns_grant() {
     let dynamic_body = serde_json::json!({
         "lease_id": "database/creds/read-only/provider-lease-timeout",
@@ -694,6 +748,52 @@ async fn renew_uses_sys_lease_endpoint_and_persists_new_expiry() {
 }
 
 #[tokio::test]
+async fn lookup_uses_post_and_observes_known_lease_without_replaying_mutation() {
+    let response_body = serde_json::json!({
+        "data": {
+            "ttl": 90,
+            "renewable": true
+        }
+    })
+    .to_string();
+    let (endpoint, ca, task) = server(200, response_body, || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture-provider-token".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let handle =
+        crate::SecretLeaseHandle(zeroize::Zeroizing::new("database/creds/role/lookup-id".into()));
+    let request = crate::SecretLeaseLookupRequest {
+        subject_id: "agent-one".into(),
+        consumer_id: "database-client".into(),
+        operation_id: "lookup-001".into(),
+        namespace: "team/one".into(),
+    };
+    let binding = client.secret_lease_lookup_binding(&handle, &request).unwrap();
+    let (authority, signed, directory) =
+        lease_grant(&client, binding, "lease-lookup", [26; 32]).unwrap();
+    let registry = crate::SecretLeaseRegistry::open(directory.path()).await.unwrap();
+    seed_registered_lease(&registry, &handle, &request.namespace).await;
+
+    let outcome = client
+        .lookup_secret_lease(&authority, &signed, &registry, &handle, &request)
+        .await
+        .unwrap();
+    let crate::SecretLeaseLookupOutcome::Active(observation) = outcome else {
+        panic!("expected active lease observation");
+    };
+    assert_eq!(observation.lease_id_sha256, handle.lease_id_sha256());
+    assert!(observation.expires_at_unix_ms > observation.observed_at_unix_ms);
+
+    let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
+    assert!(observed.starts_with("post /v1/sys/leases/lookup http/1.1\r\n"));
+    assert!(observed.contains("x-vault-namespace: team/one\r\n"));
+}
+
+#[tokio::test]
 async fn revoke_uses_sys_lease_endpoint_and_persists_revoked_state() {
     let (endpoint, ca, task) = server(204, String::new(), || async {}).await.unwrap();
     let client = BaoClient::new(
@@ -733,4 +833,5 @@ async fn revoke_uses_sys_lease_endpoint_and_persists_revoked_state() {
     assert_eq!(recovered.state, crate::RegisteredSecretLeaseState::Revoked);
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
     assert!(observed.starts_with("post /v1/sys/leases/revoke http/1.1\r\n"));
+    assert!(observed.contains("\"sync\":true"));
 }
