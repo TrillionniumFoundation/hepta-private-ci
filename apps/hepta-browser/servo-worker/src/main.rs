@@ -314,6 +314,9 @@ impl Browser {
             .get("kind")
             .and_then(Value::as_str)
             .ok_or_else(|| "typedAction.kind must be a string".to_string())?;
+        if matches!(kind, "credential" | "upload" | "download") {
+            return Err("typedAction capability is not connected".to_string());
+        }
         validate_dispatch_snapshot_state(
             &frame.payload,
             kind,
@@ -361,7 +364,7 @@ impl Browser {
             "scroll" => fixed_scroll(action).and_then(|script| self.fixed_script(script, "scroll")),
             "wait" => self.wait(action),
             "credential" | "upload" | "download" => {
-                Ok(failed(kind, "capability_not_connected"))
+                Err("future capability crossed worker admission unexpectedly".to_string())
             }
             _ => Err("typedAction.kind is not registered by worker".to_string()),
         };

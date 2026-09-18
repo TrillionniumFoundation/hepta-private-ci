@@ -137,24 +137,12 @@ export function normalizeBrowserAction(value) {
         text: boundedString(action.text, "typedAction.text", MAX_TEXT_BYTES, { allowEmpty: true }),
       });
     }
-    case "credential": {
-      exactKeys(action, ["kind", "selector", "credentialRef"], "credential action");
-      return Object.freeze({
-        kind: "credential",
-        selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
-        credentialRef: stableId(action.credentialRef, "typedAction.credentialRef"),
-      });
-    }
-    case "upload": {
-      exactKeys(action, ["kind", "selector", "fileRef", "fileDigest", "maxBytes"], "upload action");
-      return Object.freeze({
-        kind: "upload",
-        selector: boundedString(action.selector, "typedAction.selector", MAX_SELECTOR_BYTES),
-        fileRef: stableId(action.fileRef, "typedAction.fileRef"),
-        fileDigest: digest(action.fileDigest, "typedAction.fileDigest"),
-        maxBytes: positiveInteger(action.maxBytes, "typedAction.maxBytes", 1_073_741_824),
-      });
-    }
+    case "credential":
+    case "upload":
+    case "download":
+      throw new TypeError(
+        `typedAction.${action.kind} is a future capability and is not connected`,
+      );
     case "focus": {
       exactKeys(action, ["kind", "selector"], "focus action");
       return Object.freeze({
@@ -182,14 +170,6 @@ export function normalizeBrowserAction(value) {
         timeoutMs: positiveInteger(action.timeoutMs, "typedAction.timeoutMs", MAX_WAIT_MS),
       });
     }
-    case "download": {
-      exactKeys(action, ["kind", "url", "maxBytes"], "download action");
-      return Object.freeze({
-        kind: "download",
-        url: webUrl(action.url, "typedAction.url"),
-        maxBytes: positiveInteger(action.maxBytes, "typedAction.maxBytes", 1_073_741_824),
-      });
-    }
     default:
       throw new TypeError("typedAction.kind is not registered");
   }
@@ -202,7 +182,7 @@ export function browserActionDigest(value) {
 
 export function browserActionDestinationOrigin(value) {
   const normalized = normalizeBrowserAction(value);
-  if (normalized.kind !== "navigate" && normalized.kind !== "download") {
+  if (normalized.kind !== "navigate") {
     return null;
   }
   return new URL(normalized.url).origin;
