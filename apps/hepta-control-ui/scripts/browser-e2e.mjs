@@ -95,6 +95,13 @@ try {
   if (!focused || focused.textContent !== "Retry runtime.agentd") throw new Error("focus was not restored to the initiating action");
   if (root.getAttribute("aria-busy") !== "false") throw new Error("busy state was not cleared");
 
+  const reconcilePending = [...document.querySelectorAll("button")]
+    .find((button) => button.textContent === "Refresh pending operation status");
+  if (!reconcilePending) throw new Error("pending-operation reconciliation control missing");
+  reconcilePending.click();
+  await waitForAsync(async () => (await stats()).reconcileCount >= 1);
+  if ((await stats()).requestCount !== 1) throw new Error("read-only reconciliation replayed a mutation");
+
   const quarantine = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Quarantine "));
   quarantine.click();
   const blockedDialog = await waitFor(() => document.querySelector("dialog[data-hepta-confirm='operation']"));
