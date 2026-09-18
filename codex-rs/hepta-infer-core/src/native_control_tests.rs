@@ -26,6 +26,11 @@ fn dispatch() -> NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
+        codex_request_digest: None,
+        codex_connection_digest: None,
+        codex_session_generation: None,
+        codex_protocol_version: None,
+        codex_deadline_ms: None,
     }
 }
 
@@ -41,6 +46,7 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         observed_output_tokens: tokens,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        codex_boundary: None,
     }
 }
 
