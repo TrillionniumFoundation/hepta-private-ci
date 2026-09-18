@@ -566,6 +566,16 @@ pub(super) async fn record_compat_sent_tx(
     .execute(&mut **transaction)
     .await
     .map_err(unavailable)?;
+    let current = dispatch_by_txn_tx(transaction, &record.stable_txn_id)
+        .await?
+        .ok_or(MatrixDurableError::Corrupt)?;
+    if !matches!(
+        current.state,
+        MatrixDispatchState::ObservedTerminal | MatrixDispatchState::Redacted
+    ) || current.terminal_event_id.as_ref() != Some(event_id)
+    {
+        return Err(MatrixDurableError::Corrupt);
+    }
     Ok(())
 }
 
@@ -589,6 +599,12 @@ pub(super) async fn record_compat_failure_tx(
     .execute(&mut **transaction)
     .await
     .map_err(unavailable)?;
+    let current = dispatch_by_txn_tx(transaction, &record.stable_txn_id)
+        .await?
+        .ok_or(MatrixDurableError::Corrupt)?;
+    if current.state != MatrixDispatchState::TerminalFailure {
+        return Err(MatrixDurableError::Corrupt);
+    }
     Ok(())
 }
 
