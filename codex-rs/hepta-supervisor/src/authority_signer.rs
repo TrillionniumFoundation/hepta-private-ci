@@ -15,6 +15,8 @@ use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantSigner;
 use crate::signed_authority::H7H89ProductionTransition;
 use crate::signed_authority::ReleaseSelectionBinding;
+use crate::signed_authority::ProductionRecoveryDecision;
+use crate::signed_authority::ProductionRecoveryOutcome;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::H7Artifact;
@@ -68,6 +70,20 @@ pub enum SignRequest {
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     },
+    ProductionRecovery {
+        signer_id: String,
+        signer_epoch: u64,
+        agent_id: String,
+        grant_sha256: Sha256Digest,
+        intent_sha256: Sha256Digest,
+        observed_release: String,
+        outcome: ProductionRecoveryOutcome,
+        expected_control_revision: u64,
+        expected_lifecycle_generation: u64,
+        authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    },
 }
 
 /// Typed output from [`sign_request`].  The caller may serialize the selected
@@ -77,6 +93,7 @@ pub enum SignRequest {
 pub enum SignResponse {
     H7Envelope { envelope: H7SignedArtifactEnvelope },
     ProductionGrant { grant: H7H89ProductionGrant },
+    ProductionRecovery { decision: ProductionRecoveryDecision },
 }
 
 #[derive(Debug, Error)]
@@ -268,6 +285,44 @@ pub fn sign_request(
                 )
                 .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
             Ok(SignResponse::ProductionGrant { grant })
+        }
+        SignRequest::ProductionRecovery {
+            signer_id,
+            signer_epoch,
+            agent_id,
+            grant_sha256,
+            intent_sha256,
+            observed_release,
+            outcome,
+            expected_control_revision,
+            expected_lifecycle_generation,
+            authority_epoch,
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+        } => {
+            let agent = AgentId::parse(agent_id.clone())
+                .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            let signer = H7H89ProductionGrantSigner::new(
+                signer_id.clone(),
+                *signer_epoch,
+                signing_key.clone(),
+            )
+            .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            let decision = signer
+                .sign_recovery(
+                    &agent,
+                    grant_sha256.clone(),
+                    intent_sha256.clone(),
+                    observed_release.clone(),
+                    *outcome,
+                    *expected_control_revision,
+                    *expected_lifecycle_generation,
+                    *authority_epoch,
+                    *issued_at_unix_seconds,
+                    *expires_at_unix_seconds,
+                )
+                .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            Ok(SignResponse::ProductionRecovery { decision })
         }
     }
 }
