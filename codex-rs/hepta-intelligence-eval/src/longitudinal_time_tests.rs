@@ -259,7 +259,6 @@ fn time_policy_observer_and_future_collection_cannot_be_substituted() {
     assert!(fixture.decide(&evidence).is_err());
 }
 
-
 #[test]
 fn evaluator_cannot_also_attest_as_longitudinal_observer() {
     let mut fixture = Fixture::new();
