@@ -65,8 +65,12 @@ fn record(run_id: &str, sequence: u64) -> StoredObjectiveRun {
         runtime_body_digest: digest(&format!("body:{run_id}")),
         deadline_ms: 100_000,
         disposition: "compiled".to_string(),
-        run_start_digest: snapshot.semantic_digest().expect("snapshot digest").to_string(),
-        publication_digest: objective_run_publication_digest_v1(publication_json.as_bytes()).to_string(),
+        run_start_digest: snapshot
+            .semantic_digest()
+            .expect("snapshot digest")
+            .to_string(),
+        publication_digest: objective_run_publication_digest_v1(publication_json.as_bytes())
+            .to_string(),
         publication_json,
     }
 }
@@ -102,8 +106,12 @@ fn restart_recovery_restores_replay_frontier_and_active_snapshot() {
     let temp = TempDir::new().expect("temp");
     prepare_store(temp.path()).expect("store");
     let first = record("run.1", 7);
-    write_record_atomically(temp.path(), &record_path(temp.path(), &first.run_id), &first)
-        .expect("write");
+    write_record_atomically(
+        temp.path(),
+        &record_path(temp.path(), &first.run_id),
+        &first,
+    )
+    .expect("write");
 
     let mut recovered = state();
     recover_store(temp.path(), 1_000, &mut recovered).expect("recover");
@@ -113,7 +121,8 @@ fn restart_recovery_restores_replay_frontier_and_active_snapshot() {
             .get(&("issuer.test".to_string(), 1)),
         Some(&7)
     );
-    let replay = commit_or_replay(temp.path(), &first, &mut recovered, 1_000).expect("exact replay");
+    let replay =
+        commit_or_replay(temp.path(), &first, &mut recovered, 1_000).expect("exact replay");
     assert!(replay.idempotent);
     assert!(commit_or_replay(temp.path(), &record("run.2", 7), &mut recovered, 1_000).is_err());
 }
