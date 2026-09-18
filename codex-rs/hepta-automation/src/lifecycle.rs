@@ -42,20 +42,16 @@ impl AutomationMissedRunPolicy {
         match kind {
             "skip" if maximum == 0 => Ok(Self::Skip),
             "coalesce" if maximum == 0 => Ok(Self::Coalesce),
-            "catch_up" if (1..=MAX_CATCH_UP).contains(&maximum) => {
-                Ok(Self::CatchUp {
-                    max_occurrences: maximum,
-                })
-            }
+            "catch_up" if (1..=MAX_CATCH_UP).contains(&maximum) => Ok(Self::CatchUp {
+                max_occurrences: maximum,
+            }),
             _ => Err(AutomationError::Corrupt),
         }
     }
 
     fn validate(self) -> Result<(), AutomationError> {
         match self {
-            Self::CatchUp { max_occurrences }
-                if !(1..=MAX_CATCH_UP).contains(&max_occurrences) =>
-            {
+            Self::CatchUp { max_occurrences } if !(1..=MAX_CATCH_UP).contains(&max_occurrences) => {
                 Err(AutomationError::Invalid)
             }
             _ => Ok(()),
@@ -297,13 +293,9 @@ impl AutomationStore {
         }
         let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
         ensure_schedule_metadata(&mut transaction, self, lease.task.task_id).await?;
-        if let Some(current) = load_occurrence_row(
-            &mut transaction,
-            self,
-            lease.task.task_id,
-            lease.occurrence,
-        )
-        .await?
+        if let Some(current) =
+            load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
+                .await?
         {
             if current.scheduled_for_ms != lease.scheduled_for_ms
                 || current.client_user_message_id != lease.client_user_message_id
@@ -345,19 +337,18 @@ impl AutomationStore {
                     None,
                     None,
                     None,
-                    &format!("occurrence:reclaim:{}:{}", lease.occurrence, lease.lease_generation),
+                    &format!(
+                        "occurrence:reclaim:{}:{}",
+                        lease.occurrence, lease.lease_generation
+                    ),
                     now_ms,
                 )
                 .await?;
             }
-            let current = load_occurrence_row(
-                &mut transaction,
-                self,
-                lease.task.task_id,
-                lease.occurrence,
-            )
-            .await?
-            .ok_or(AutomationError::Corrupt)?;
+            let current =
+                load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
+                    .await?
+                    .ok_or(AutomationError::Corrupt)?;
             transaction.commit().await.map_err(unavailable)?;
             return Ok(current);
         }
@@ -406,18 +397,17 @@ impl AutomationStore {
             None,
             None,
             None,
-            &format!("occurrence:claim:{}:{}", lease.occurrence, lease.lease_generation),
+            &format!(
+                "occurrence:claim:{}:{}",
+                lease.occurrence, lease.lease_generation
+            ),
             now_ms,
         )
         .await?;
-        let current = load_occurrence_row(
-            &mut transaction,
-            self,
-            lease.task.task_id,
-            lease.occurrence,
-        )
-        .await?
-        .ok_or(AutomationError::Corrupt)?;
+        let current =
+            load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
+                .await?
+                .ok_or(AutomationError::Corrupt)?;
         transaction.commit().await.map_err(unavailable)?;
         Ok(current)
     }
@@ -438,14 +428,10 @@ impl AutomationStore {
             return Err(AutomationError::AccessDenied);
         }
         let mut transaction = self.taskflow_pool().begin().await.map_err(unavailable)?;
-        let current = load_occurrence_row(
-            &mut transaction,
-            self,
-            lease.task.task_id,
-            lease.occurrence,
-        )
-        .await?
-        .ok_or(AutomationError::Conflict)?;
+        let current =
+            load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
+                .await?
+                .ok_or(AutomationError::Conflict)?;
         if current.state != AutomationOccurrenceState::Claimed
             || current.claim_generation != lease.lease_generation
         {
@@ -564,14 +550,10 @@ impl AutomationStore {
                 .await?;
             }
         }
-        let next = load_occurrence_row(
-            &mut transaction,
-            self,
-            lease.task.task_id,
-            lease.occurrence,
-        )
-        .await?
-        .ok_or(AutomationError::Corrupt)?;
+        let next =
+            load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
+                .await?
+                .ok_or(AutomationError::Corrupt)?;
         transaction.commit().await.map_err(unavailable)?;
         Ok(next)
     }
@@ -696,7 +678,10 @@ impl AutomationStore {
             current.queued_submission_id.as_deref(),
             current.turn_id.as_deref(),
             Some(receipt_digest.as_str()),
-            &format!("occurrence:indeterminate:{occurrence}:{}", receipt_digest.as_str()),
+            &format!(
+                "occurrence:indeterminate:{occurrence}:{}",
+                receipt_digest.as_str()
+            ),
             observed_at_ms,
         )
         .await?;
@@ -823,7 +808,10 @@ impl AutomationStore {
             current.queued_submission_id.as_deref(),
             current.turn_id.as_deref(),
             Some(receipt_digest.as_str()),
-            &format!("occurrence:terminal:{occurrence}:{event_kind}:{}", receipt_digest.as_str()),
+            &format!(
+                "occurrence:terminal:{occurrence}:{event_kind}:{}",
+                receipt_digest.as_str()
+            ),
             completed_at_ms,
         )
         .await?;
@@ -882,8 +870,12 @@ impl AutomationStore {
         let mut work = Vec::with_capacity(rows.len());
         for row in rows {
             let occurrence = occurrence_from_row(&row, self.taskflow_owner_agent_id().as_str())?;
-            let thread_id: String = row.try_get("thread_id").map_err(|_| AutomationError::Corrupt)?;
-            let prompt: String = row.try_get("prompt").map_err(|_| AutomationError::Corrupt)?;
+            let thread_id: String = row
+                .try_get("thread_id")
+                .map_err(|_| AutomationError::Corrupt)?;
+            let prompt: String = row
+                .try_get("prompt")
+                .map_err(|_| AutomationError::Corrupt)?;
             work.push(AutomationOccurrenceWork {
                 admission: AutomationAdmission {
                     agent_id: self.taskflow_owner_agent_id().clone(),
@@ -967,7 +959,10 @@ async fn load_schedule_policy(
     .await
     .map_err(unavailable)?
     .ok_or(AutomationError::AccessDenied)?;
-    let revision = to_u64(row.try_get("revision").map_err(|_| AutomationError::Corrupt)?)?;
+    let revision = to_u64(
+        row.try_get("revision")
+            .map_err(|_| AutomationError::Corrupt)?,
+    )?;
     let maximum = to_u16(
         row.try_get("max_catch_up_occurrences")
             .map_err(|_| AutomationError::Corrupt)?,
@@ -1009,11 +1004,15 @@ fn occurrence_from_row(
     row: &sqlx::sqlite::SqliteRow,
     expected_owner: &str,
 ) -> Result<AutomationOccurrence, AutomationError> {
-    let owner: String = row.try_get("owner_agent_id").map_err(|_| AutomationError::Corrupt)?;
+    let owner: String = row
+        .try_get("owner_agent_id")
+        .map_err(|_| AutomationError::Corrupt)?;
     if owner != expected_owner {
         return Err(AutomationError::AccessDenied);
     }
-    let task_raw: String = row.try_get("task_id").map_err(|_| AutomationError::Corrupt)?;
+    let task_raw: String = row
+        .try_get("task_id")
+        .map_err(|_| AutomationError::Corrupt)?;
     let task_id = AutomationTaskId::parse(&task_raw).map_err(|_| AutomationError::Corrupt)?;
     let state_raw: String = row.try_get("state").map_err(|_| AutomationError::Corrupt)?;
     let overlap_raw: String = row
@@ -1030,7 +1029,10 @@ fn occurrence_from_row(
         .transpose()?;
     Ok(AutomationOccurrence {
         task_id,
-        occurrence: to_u64(row.try_get("occurrence").map_err(|_| AutomationError::Corrupt)?)?,
+        occurrence: to_u64(
+            row.try_get("occurrence")
+                .map_err(|_| AutomationError::Corrupt)?,
+        )?,
         occurrence_id: row
             .try_get("occurrence_id")
             .map_err(|_| AutomationError::Corrupt)?,
@@ -1068,7 +1070,9 @@ fn occurrence_from_row(
         provider_payload_sha256: row
             .try_get("provider_payload_sha256")
             .map_err(|_| AutomationError::Corrupt)?,
-        turn_id: row.try_get("turn_id").map_err(|_| AutomationError::Corrupt)?,
+        turn_id: row
+            .try_get("turn_id")
+            .map_err(|_| AutomationError::Corrupt)?,
         terminal_receipt_digest,
         updated_at_ms: to_u64(
             row.try_get("updated_at_ms")
@@ -1255,15 +1259,8 @@ async fn advance_schedule(
                         reset_catch_up(tx, store, task_id, observed_at_ms).await?;
                         first_after(baseline, interval, observed_at_ms)?
                     } else {
-                        set_catch_up_state(
-                            tx,
-                            store,
-                            task_id,
-                            true,
-                            remaining - 1,
-                            observed_at_ms,
-                        )
-                        .await?;
+                        set_catch_up_state(tx, store, task_id, true, remaining - 1, observed_at_ms)
+                            .await?;
                         baseline
                     }
                 } else {
@@ -1277,15 +1274,7 @@ async fn advance_schedule(
                     let allowed = overdue_count.min(u64::from(max_occurrences));
                     let remaining = u16::try_from(allowed.saturating_sub(1))
                         .map_err(|_| AutomationError::Invalid)?;
-                    set_catch_up_state(
-                        tx,
-                        store,
-                        task_id,
-                        true,
-                        remaining,
-                        observed_at_ms,
-                    )
-                    .await?;
+                    set_catch_up_state(tx, store, task_id, true, remaining, observed_at_ms).await?;
                     baseline
                 }
             }
@@ -1326,11 +1315,7 @@ fn first_after(baseline: u64, interval: u64, now_ms: u64) -> Result<u64, Automat
         .ok_or(AutomationError::Invalid)
 }
 
-fn latest_not_after(
-    baseline: u64,
-    interval: u64,
-    now_ms: u64,
-) -> Result<u64, AutomationError> {
+fn latest_not_after(baseline: u64, interval: u64, now_ms: u64) -> Result<u64, AutomationError> {
     if baseline > now_ms {
         return Ok(baseline);
     }
@@ -1339,7 +1324,11 @@ fn latest_not_after(
         .ok_or(AutomationError::Invalid)?
         / interval;
     baseline
-        .checked_add(missed.checked_mul(interval).ok_or(AutomationError::Invalid)?)
+        .checked_add(
+            missed
+                .checked_mul(interval)
+                .ok_or(AutomationError::Invalid)?,
+        )
         .ok_or(AutomationError::Invalid)
 }
 
@@ -1406,7 +1395,9 @@ async fn reset_catch_up(
 }
 
 fn digest_suffix(value: &str) -> String {
-    Sha256Digest::for_bytes(value.as_bytes()).as_str().to_string()
+    Sha256Digest::for_bytes(value.as_bytes())
+        .as_str()
+        .to_string()
 }
 
 fn push_text(bytes: &mut Vec<u8>, value: &str) {
@@ -1444,7 +1435,9 @@ fn unavailable(_: sqlx::Error) -> AutomationError {
 
 fn constraint_or_unavailable(error: sqlx::Error) -> AutomationError {
     match &error {
-        sqlx::Error::Database(database) if database.is_unique_violation() => AutomationError::Conflict,
+        sqlx::Error::Database(database) if database.is_unique_violation() => {
+            AutomationError::Conflict
+        }
         _ => AutomationError::Unavailable,
     }
 }
@@ -1455,8 +1448,8 @@ mod tests {
 
     #[test]
     fn deterministic_occurrence_identity_binds_revision_and_instant() {
-        let task = AutomationTaskId::parse("019153a4-3088-7000-a56a-9b1964f75007")
-            .expect("task id");
+        let task =
+            AutomationTaskId::parse("019153a4-3088-7000-a56a-9b1964f75007").expect("task id");
         let first = deterministic_occurrence_id("agent-1", task, 1, 1000);
         assert_eq!(first, deterministic_occurrence_id("agent-1", task, 1, 1000));
         assert_ne!(first, deterministic_occurrence_id("agent-1", task, 2, 1000));
