@@ -71,11 +71,7 @@ rollback and any same-revision change to the complete trust projection. The proj
 digest covers issuer, key epoch/key, revoked state, thread allowlist and optional replay
 checkpoint.
 
-An optional externally governed replay checkpoint can be supplied in the trust
-projection and is verified on every admission/dispatch trust refresh. A checkpoint
-stored only with the same filesystem snapshot as the SQLite database is not an
-independent anti-rollback oracle; production provisioning must retain it outside the
-restored state boundary.
+Agentd can load the expected replay checkpoint from `--authbus-replay-checkpoint-file`. The protected file must be outside the Agent home and run root and is verified on every admission/dispatch trust refresh as a rollback watermark. Normal replay growth after the checkpoint is allowed; restoring a database whose stored checkpoint predecessor is older than the independently retained expected checkpoint fails closed. A checkpoint stored only with the same backup/restore set as SQLite is not an independent anti-rollback oracle.
 
 ## Public source bindings
 
