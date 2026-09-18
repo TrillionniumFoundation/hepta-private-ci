@@ -1421,6 +1421,7 @@ async fn replay_digest_tx(
     .map_err(classify_sqlx_error)?;
     let mut bytes = b"hepta.authbus.replay-checkpoint.v1\0".to_vec();
     for row in rows {
+        bytes.push(0);
         push_text(
             &mut bytes,
             &row.try_get::<String, _>("issuer_id")
@@ -1435,6 +1436,23 @@ async fn replay_digest_tx(
         bytes.extend_from_slice(blob_digest(&row, "scope_digest")?.as_array());
         bytes.extend_from_slice(&blob_u64(&row, "sequence")?.to_be_bytes());
         bytes.extend_from_slice(blob_digest(&row, "envelope_digest")?.as_array());
+    }
+    let retired = sqlx::query(
+        "SELECT issuer_id, key_epoch, checkpoint_generation
+         FROM authbus_retired_epochs ORDER BY issuer_id, key_epoch",
+    )
+    .fetch_all(&mut **tx)
+    .await
+    .map_err(classify_sqlx_error)?;
+    for row in retired {
+        bytes.push(1);
+        push_text(
+            &mut bytes,
+            &row.try_get::<String, _>("issuer_id")
+                .map_err(classify_sqlx_error)?,
+        );
+        bytes.extend_from_slice(&blob_u64(&row, "key_epoch")?.to_be_bytes());
+        bytes.extend_from_slice(&blob_u64(&row, "checkpoint_generation")?.to_be_bytes());
     }
     Ok(Digest32::of_bytes(&bytes))
 }
