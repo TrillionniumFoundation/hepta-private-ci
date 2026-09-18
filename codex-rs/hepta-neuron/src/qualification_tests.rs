@@ -1,5 +1,6 @@
 use super::*;
 
+use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Generation;
 
 const Q: i64 = 1 << 24;

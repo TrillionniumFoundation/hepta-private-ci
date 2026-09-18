@@ -193,11 +193,11 @@ pub fn apply_calibration(
         ));
     };
     artifact.validate()?;
-    if artifact.observation.config_digest != observation.config_digest
+    if artifact.config_digest != observation.config_digest
         || artifact.policy_digest != policy.digest()?
-        || artifact.observation.model_identity_digest != observation.model_identity_digest
+        || artifact.model_identity_digest != observation.model_identity_digest
         || artifact.detector_digest != observation.ood_detector_digest
-        || artifact.observation.generation != observation.generation
+        || artifact.generation != observation.generation
     {
         return Ok(fallback(
             Some(artifact),
