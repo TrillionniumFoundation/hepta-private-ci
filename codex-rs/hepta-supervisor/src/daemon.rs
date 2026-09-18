@@ -203,7 +203,7 @@ async fn run_supervisord_inner(
     let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let (supervisor, recovery) = Supervisor::recover(
+    let (mut supervisor, recovery) = Supervisor::recover(
         registry.clone(),
         driver,
         SupervisorConfig::local_default(),
@@ -231,16 +231,27 @@ async fn run_supervisord_inner(
                 })?
                 .to_string();
             let status = status_from(&supervisor_epoch, record, runtime_snapshot)?;
-            let grant = fleet_allocator.reserve_agent_start(
+            let grant = match fleet_allocator.reserve_agent_start(
                 agent_id,
                 &record.manifest.resources,
                 record.lifecycle.generation,
                 &active_release,
                 status.control_fence.state_digest.as_str(),
                 now_ms,
-            )?;
+            ) {
+                Ok(grant) => grant,
+                Err(error) => {
+                    stop_ungranted_recovered_runtimes(&mut supervisor);
+                    return Err(error.into());
+                }
+            };
             let read = fleet_allocator.read_grants(now_ms);
-            require_projected_grant(&read, &grant.allocation_id, &grant.semantic_digest)?;
+            if let Err(error) =
+                require_projected_grant(&read, &grant.allocation_id, &grant.semantic_digest)
+            {
+                stop_ungranted_recovered_runtimes(&mut supervisor);
+                return Err(error);
+            }
         }
     }
     let state = Arc::new(DaemonState {
@@ -280,6 +291,18 @@ async fn run_supervisord_inner(
     cancellation.cancel();
     let _ = ticker.await;
     result
+}
+
+#[cfg(unix)]
+fn stop_ungranted_recovered_runtimes<D: ProcessDriver>(supervisor: &mut Supervisor<D>) {
+    for agent_id in supervisor.agent_ids() {
+        if supervisor
+            .snapshot(&agent_id)
+            .is_some_and(|snapshot| snapshot.active)
+        {
+            let _ = supervisor.kill(&agent_id);
+        }
+    }
 }
 
 #[cfg(not(unix))]

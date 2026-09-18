@@ -397,6 +397,12 @@ impl FleetRuntimeAllocator {
         }
 
         let mut ledger = self.store.current().ledger.clone();
+        let committed = ledger.committed_resources(&self.host_id, now_ms)?;
+        if !committed.fits(observed.capacity) {
+            return Err(FleetRuntimeAllocatorError::Lease(
+                LeaseError::CapacityExceeded,
+            ));
+        }
         ledger.admit_host(HostObservation {
             schema_version: FLEET_LEASE_LEDGER_SCHEMA_VERSION,
             host_id: observed.host_id,

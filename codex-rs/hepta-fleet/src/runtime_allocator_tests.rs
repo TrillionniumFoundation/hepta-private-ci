@@ -240,6 +240,59 @@ fn fleet_04_observer_cannot_enroll_a_discovered_peer() {
 }
 
 #[test]
+fn capacity_shrink_below_live_commitment_fails_without_persisting_overcommit() {
+    let (_temp, registry) = registry();
+    let shrunken = FleetResourceVectorV1 {
+        concurrent_turns: 1,
+        memory_mib: 1,
+        tool_processes: 1,
+        turn_queue_slots: 1,
+    };
+    let mut allocator = FleetRuntimeAllocator::open_with_observer(
+        &registry,
+        7,
+        100,
+        Box::new(ScriptedObserver {
+            capacities: VecDeque::from([Ok(capacity()), Ok(shrunken)]),
+            ttl_ms: 30_000,
+        }),
+    )
+    .expect("allocator");
+    let agent = AgentId::parse("00000000-0000-4000-8000-000000000001").expect("agent");
+    allocator
+        .reserve_agent_start(
+            &agent,
+            &ResourceBudget::local_default(),
+            1,
+            "release.one",
+            &digest(),
+            200,
+        )
+        .expect("grant");
+    let before = allocator
+        .state()
+        .ledger
+        .host(&allocator.host_id)
+        .expect("host")
+        .capacity;
+    assert_eq!(
+        allocator.maintain(&[agent.to_string()], 10_000),
+        Err(FleetRuntimeAllocatorError::Lease(
+            LeaseError::CapacityExceeded
+        ))
+    );
+    assert_eq!(
+        allocator
+            .state()
+            .ledger
+            .host(&allocator.host_id)
+            .expect("host")
+            .capacity,
+        before
+    );
+}
+
+#[test]
 fn failed_capacity_refresh_blocks_lease_maintenance() {
     let (_temp, registry) = registry();
     let mut allocator = FleetRuntimeAllocator::open_with_observer(
