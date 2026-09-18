@@ -36,11 +36,11 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
-use codex_hepta_infer_core::durable_control::native::NativeRequest;
-pub use codex_hepta_infer_core::durable_control::native::native_final_use_binding;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
+use codex_hepta_infer_core::durable_control::native::NativeRequest;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+pub use codex_hepta_infer_core::durable_control::native::native_final_use_binding;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
