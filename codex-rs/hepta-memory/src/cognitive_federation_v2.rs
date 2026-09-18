@@ -153,7 +153,11 @@ impl FederationTransportV2 for ProductFederationTransport<'_> {
                 FederatedCompletenessV2::Complete
             };
             let response = RemoteFederatedResponseV2 {
-                peer_id: product_agent_id(self.reader.capability.owner_agent_id())?,
+                peer_id: product_agent_id(self.reader.capability.owner_agent_id())
+                    .map_err(|error| {
+                        remember_product_error(&self.state, error);
+                        FederationV2Error::TransportRejected
+                    })?,
                 scope_digest: product_scope_digest(&self.reader.capability),
                 purpose_digest: Digest32::of_bytes(PRODUCT_PURPOSE_DOMAIN),
                 generation_vector_digest: product_generation_digest(
@@ -495,9 +499,9 @@ impl FederatedMemoryReader {
     }
 }
 
-fn product_agent_id(agent_id: &AgentId) -> Result<StableId, FederationV2Error> {
+fn product_agent_id(agent_id: &AgentId) -> Result<StableId, CognitiveStoreError> {
     StableId::new(format!("agent:{}", agent_id.as_str()))
-        .map_err(|_| FederationV2Error::TransportRejected)
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))
 }
 
 fn product_scope_digest(capability: &FederationCapability) -> Digest32 {
