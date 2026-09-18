@@ -105,8 +105,9 @@ pub struct NativeRunRecord {
     pub dispatch: Option<NativeDispatch>,
     pub turn_id: Option<String>,
     pub cancel_requested: bool,
-    /// A locally proven pre-dispatch stop releases a slot without pretending
-    /// to have observed a provider terminal event or zero token consumption.
+    /// A locally proven pre-dispatch or pre-admission stop releases a slot
+    /// without pretending to have observed a provider terminal event or zero
+    /// token consumption.
     pub pre_dispatch_stop: Option<String>,
     pub observation: Option<NativeRunOutput>,
 }
@@ -483,13 +484,28 @@ fn pre_admission_rejection_marker(
     reason: &str,
 ) -> Result<String, Error> {
     let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
-    Ok(format!(
-        "{PRE_ADMISSION_REJECTION_PREFIX}|{}|{}|{}|{}",
+    let prefix = pre_admission_rejection_binding(record, dispatch);
+    let marker = format!("{prefix}{reason}");
+    if marker.len() > 4096 {
+        return Err(Error::CapacityExceeded);
+    }
+    Ok(marker)
+}
+
+fn pre_admission_rejection_binding(
+    record: &NativeRunRecord,
+    dispatch: &NativeDispatch,
+) -> String {
+    format!(
+        "{PRE_ADMISSION_REJECTION_PREFIX}|{}|{}|{}|{}|{}|{}|{}|",
+        record.request.request_id,
+        record.request.worker_generation,
+        record.request.model,
         record.request.payload_digest,
-        dispatch.context_digest,
         dispatch.thread_id,
-        reason
-    ))
+        dispatch.model_provider,
+        dispatch.context_digest
+    )
 }
 
 fn pre_admission_rejection_reason<'a>(
@@ -506,11 +522,9 @@ fn pre_admission_rejection_reason<'a>(
         return None;
     }
     let dispatch = record.dispatch.as_ref()?;
-    let expected = format!(
-        "{PRE_ADMISSION_REJECTION_PREFIX}|{}|{}|{}|",
-        record.request.payload_digest, dispatch.context_digest, dispatch.thread_id
-    );
-    output.stop_reason.as_deref()?.strip_prefix(&expected)
+    let expected = pre_admission_rejection_binding(record, dispatch);
+    let reason = output.stop_reason.as_deref()?.strip_prefix(&expected)?;
+    (!reason.is_empty()).then_some(reason)
 }
 
 fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
