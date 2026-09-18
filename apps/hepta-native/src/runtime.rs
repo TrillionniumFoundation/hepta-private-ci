@@ -200,7 +200,12 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
         };
         match self
             .journal
-            .begin_dispatch(&key, action.clone(), &binding.payload_digest)?
+            .begin_dispatch(
+                &key,
+                action.clone(),
+                &binding.resource_digest,
+                &binding.payload_digest,
+            )?
         {
             DispatchDisposition::Terminal(decision) => return Ok(decision),
             DispatchDisposition::Indeterminate => {
@@ -208,6 +213,7 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
                     key,
                     action,
                     payload,
+                    &binding.resource_digest,
                     &binding.payload_digest,
                 );
             }
@@ -220,6 +226,7 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
             self.journal.finish(
                 &decision.key,
                 action,
+                &binding.resource_digest,
                 &binding.payload_digest,
                 decision.clone(),
             )?;
@@ -231,6 +238,7 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
             self.journal.finish(
                 &decision.key,
                 action,
+                &binding.resource_digest,
                 &binding.payload_digest,
                 decision.clone(),
             )?;
@@ -261,6 +269,7 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
         self.journal.finish(
             &decision.key,
             action,
+            &binding.resource_digest,
             &binding.payload_digest,
             decision.clone(),
         )?;
@@ -272,6 +281,7 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
         key: OperationKey,
         action: PlatformAction,
         payload: &PlatformPayload,
+        resource_digest: &str,
         payload_digest: &str,
     ) -> Result<PlatformDecision, RuntimeError> {
         let Some(observed) = self.platform.reconcile(&key, action.clone(), payload)? else {
@@ -304,7 +314,13 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
         let decision =
             PlatformDecision::new(key, action.clone(), status, true, observed.outcome_digest);
         self.journal
-            .finish(&decision.key, action, payload_digest, decision.clone())?;
+            .finish(
+                &decision.key,
+                action,
+                resource_digest,
+                payload_digest,
+                decision.clone(),
+            )?;
         Ok(decision)
     }
 

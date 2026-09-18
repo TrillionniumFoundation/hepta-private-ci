@@ -25,7 +25,7 @@ pub enum JournalError {
     Io(#[from] std::io::Error),
     #[error("journal is malformed or exceeds a bound")]
     Invalid,
-    #[error("operation identity was reused with changed payload or action")]
+    #[error("operation identity was reused with changed resource, payload, or action")]
     IdentityReuse,
     #[error("terminal reconciliation must be an observed terminal result")]
     InvalidTerminal,
@@ -44,6 +44,7 @@ struct OperationRecord {
     schema: String,
     key: OperationKey,
     action: PlatformAction,
+    resource_digest: String,
     payload_digest: String,
     phase: RecordPhase,
 }
@@ -73,11 +74,14 @@ impl OperationJournal {
         &self,
         key: &OperationKey,
         action: PlatformAction,
+        resource_digest: &str,
         payload_digest: &str,
     ) -> Result<DispatchDisposition, JournalError> {
         self.with_locked_records(|file, records| {
             if let Some(record) = records.iter().rev().find(|record| record.key == *key) {
-                if record.payload_digest != payload_digest || record.action != action {
+                if record.resource_digest != resource_digest
+                    || record.payload_digest != payload_digest
+                    || record.action != action {
                     return Err(JournalError::IdentityReuse);
                 }
                 return Ok(match &record.phase {
@@ -91,6 +95,7 @@ impl OperationJournal {
                 schema: "hepta.native.operation-journal.v1".to_string(),
                 key: key.clone(),
                 action,
+                resource_digest: resource_digest.to_string(),
                 payload_digest: payload_digest.to_string(),
                 phase: RecordPhase::Dispatching,
             };
@@ -103,6 +108,7 @@ impl OperationJournal {
         &self,
         key: &OperationKey,
         action: PlatformAction,
+        resource_digest: &str,
         payload_digest: &str,
         decision: PlatformDecision,
     ) -> Result<(), JournalError> {
@@ -119,7 +125,10 @@ impl OperationJournal {
                 .rev()
                 .find(|record| record.key == *key)
                 .ok_or(JournalError::Invalid)?;
-            if prior.payload_digest != payload_digest || prior.action != action {
+            if prior.resource_digest != resource_digest
+                || prior.payload_digest != payload_digest
+                || prior.action != action
+            {
                 return Err(JournalError::IdentityReuse);
             }
             if let RecordPhase::Terminal { decision: existing } = &prior.phase {
@@ -132,6 +141,7 @@ impl OperationJournal {
                 schema: "hepta.native.operation-journal.v1".to_string(),
                 key: key.clone(),
                 action,
+                resource_digest: resource_digest.to_string(),
                 payload_digest: payload_digest.to_string(),
                 phase: RecordPhase::Terminal { decision },
             };
@@ -143,13 +153,16 @@ impl OperationJournal {
         &self,
         key: &OperationKey,
         action: PlatformAction,
+        resource_digest: &str,
         payload_digest: &str,
     ) -> Result<Option<DispatchDisposition>, JournalError> {
         self.with_locked_records(|_, records| {
             let Some(record) = records.iter().rev().find(|record| record.key == *key) else {
                 return Ok(None);
             };
-            if record.payload_digest != payload_digest || record.action != action {
+            if record.resource_digest != resource_digest
+                    || record.payload_digest != payload_digest
+                    || record.action != action {
                 return Err(JournalError::IdentityReuse);
             }
             Ok(Some(match &record.phase {

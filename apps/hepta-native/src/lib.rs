@@ -77,8 +77,14 @@ pub fn self_test() -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         session_generation: 1,
         operation_id: "self-test.operation".to_string(),
     };
-    let digest = sha256_hex(b"self-test-payload");
-    let start = journal.begin_dispatch(&key, PlatformAction::CopyText, &digest)?;
+    let resource_digest = sha256_hex(b"self-test-resource");
+    let payload_digest = sha256_hex(b"self-test-payload");
+    let start = journal.begin_dispatch(
+        &key,
+        PlatformAction::CopyText,
+        &resource_digest,
+        &payload_digest,
+    )?;
     let ok = matches!(start, crate::journal::DispatchDisposition::Started);
     let _ = std::fs::remove_dir_all(&root);
     Ok(serde_json::json!({

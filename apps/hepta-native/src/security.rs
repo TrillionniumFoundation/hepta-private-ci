@@ -156,8 +156,7 @@ impl GrantVerifier {
             .map_err(|_| GrantError::InvalidSignature)?;
         let signature =
             Signature::from_slice(&signature_bytes).map_err(|_| GrantError::InvalidSignature)?;
-        let mut message = DOMAIN.to_vec();
-        message.extend(serde_json::to_vec(grant).map_err(|_| GrantError::Invalid)?);
+        let message = grant_signing_bytes(grant).map_err(|_| GrantError::Invalid)?;
         self.key
             .verify_strict(&message, &signature)
             .map_err(|_| GrantError::InvalidSignature)?;

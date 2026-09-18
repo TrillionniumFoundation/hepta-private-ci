@@ -391,3 +391,64 @@ fn tampered_grant_is_terminally_rejected_without_invocation() {
     assert_eq!(state.lock().unwrap().invokes, 0);
     let _ = std::fs::remove_dir_all(root);
 }
+
+#[test]
+fn reused_operation_with_changed_resource_fails_closed() {
+    let root = root("resource-drift");
+    std::fs::create_dir_all(&root).unwrap();
+    let key = SigningKey::from_bytes(&[13_u8; 32]);
+    let state = Arc::new(Mutex::new(PlatformState::default()));
+    let mut runtime = shell(&root, 5, Arc::clone(&state), true, false, &key);
+    runtime.connect(&manifest()).unwrap();
+    let view = runtime.refresh_view().unwrap();
+    let payload = PlatformPayload::Text {
+        text: "same payload".to_string(),
+    };
+
+    let first_binding = runtime
+        .prepare_binding(
+            "operation.resource",
+            PlatformAction::CopyText,
+            "clipboard.primary",
+            &payload,
+            view.revision,
+        )
+        .unwrap();
+    let first_grant = signed_grant(first_binding, "nonce.resource.first", &key);
+    runtime.allow_once(PlatformAction::CopyText);
+    runtime
+        .request_platform_capability(
+            "operation.resource",
+            PlatformAction::CopyText,
+            "clipboard.primary",
+            &payload,
+            view.revision,
+            &first_grant,
+        )
+        .unwrap();
+
+    let second_binding = runtime
+        .prepare_binding(
+            "operation.resource",
+            PlatformAction::CopyText,
+            "clipboard.secondary",
+            &payload,
+            view.revision,
+        )
+        .unwrap();
+    let second_grant = signed_grant(second_binding, "nonce.resource.second", &key);
+    runtime.allow_once(PlatformAction::CopyText);
+    let error = runtime
+        .request_platform_capability(
+            "operation.resource",
+            PlatformAction::CopyText,
+            "clipboard.secondary",
+            &payload,
+            view.revision,
+            &second_grant,
+        )
+        .unwrap_err();
+    assert!(error.to_string().contains("reused"));
+    assert_eq!(state.lock().unwrap().invokes, 1);
+    let _ = std::fs::remove_dir_all(root);
+}
