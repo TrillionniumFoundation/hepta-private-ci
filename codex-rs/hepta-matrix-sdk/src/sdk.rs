@@ -300,6 +300,7 @@ impl MatrixSdkClient {
                 &response,
                 self.config.binding.revision,
                 self.config.matrix_generation,
+                &self.config.binding.expected_mxid,
                 observed_at_ms,
             )
             .await?;
