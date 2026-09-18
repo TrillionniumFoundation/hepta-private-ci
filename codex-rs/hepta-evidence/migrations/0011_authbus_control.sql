@@ -127,6 +127,14 @@ BEGIN
     SELECT RAISE(ABORT, 'AuthBus issuer identity is immutable');
 END;
 
+CREATE TRIGGER authbus_issuer_registry_state_transition BEFORE UPDATE OF state
+    ON authbus_issuer_registry
+WHEN (OLD.state = 'revoked' AND NEW.state NOT IN ('revoked', 'retired'))
+    OR (OLD.state = 'retired' AND NEW.state != 'retired')
+BEGIN
+    SELECT RAISE(ABORT, 'invalid AuthBus issuer state transition');
+END;
+
 CREATE TRIGGER authbus_issuer_registry_no_delete BEFORE DELETE ON authbus_issuer_registry
 BEGIN
     SELECT RAISE(ABORT, 'AuthBus issuer registry entries cannot be deleted');
