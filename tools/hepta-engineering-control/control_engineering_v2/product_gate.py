@@ -9,6 +9,7 @@ authority.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 from dataclasses import asdict
 import hashlib
 import json
@@ -291,6 +292,210 @@ def build_product_receipt(
         json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
     return receipt
+
+
+def _verify_product_receipt(
+    value: Mapping[str, object],
+    *,
+    expected_lane: str,
+) -> str:
+    if not isinstance(value, Mapping):
+        raise ValueError("product_receipt_shape")
+    if (
+        value.get("schema") != "hepta.control-engineering-product-execution.v2"
+        or value.get("mode") != expected_lane
+        or value.get("productCallerComposed") is not True
+        or value.get("productTestsUpstreamRequired") is not True
+    ):
+        raise ValueError("product_receipt_identity")
+    for authority in (
+        "runtimeAuthority",
+        "mergeAuthority",
+        "activationAuthority",
+        "promotionAuthority",
+        "releaseAuthority",
+        "externalEffectAuthority",
+    ):
+        if value.get(authority) is not False:
+            raise ValueError("product_receipt_authority_delta")
+    digest = value.get("receiptDigest")
+    if not isinstance(digest, str) or _SHA256.fullmatch(digest) is None:
+        raise ValueError("product_receipt_digest")
+    unsigned = dict(value)
+    unsigned.pop("receiptDigest", None)
+    expected_digest = hashlib.sha256(
+        json.dumps(unsigned, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if digest != expected_digest:
+        raise ValueError("product_receipt_digest_mismatch")
+
+    identity = value.get("ciIdentity")
+    if not isinstance(identity, Mapping):
+        raise ValueError("product_receipt_ci_identity")
+    if identity.get("executionLane") != expected_lane:
+        raise ValueError("product_receipt_lane_mismatch")
+    canonical = value.get("canonicalWorkPackage")
+    if not isinstance(canonical, Mapping):
+        raise ValueError("product_receipt_canonical_binding")
+    if (
+        canonical.get("path") != CANONICAL_WORK_PACKAGE_PATH.as_posix()
+        or canonical.get("packageId") != CANONICAL_ENGINEERING_PACKAGE
+        or canonical.get("state") != "source_implemented"
+        or canonical.get("authorityDelta") != "none"
+        or canonical.get("developmentAfter")
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
+        or canonical.get("activationAfter")
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
+    ):
+        raise ValueError("product_receipt_canonical_binding")
+    blob_oid = canonical.get("blobOid")
+    if (
+        not isinstance(blob_oid, str)
+        or _SHA1.fullmatch(blob_oid) is None
+        or blob_oid == "0" * 40
+    ):
+        raise ValueError("product_receipt_canonical_blob")
+    for key in ("registryDigest", "packageDigest"):
+        item = canonical.get(key)
+        if not isinstance(item, str) or _SHA256.fullmatch(item) is None:
+            raise ValueError("product_receipt_canonical_digest")
+
+    plan = value.get("plan")
+    if not isinstance(plan, Mapping):
+        raise ValueError("product_receipt_plan")
+    assignments = plan.get("assignments")
+    if (
+        not isinstance(assignments, list)
+        or len(assignments) != 1
+        or not isinstance(assignments[0], Mapping)
+        or assignments[0].get("package_id")
+        != "control.engineering.repository-product-gate"
+    ):
+        raise ValueError("product_receipt_plan")
+    for authority in ("runtime_authority", "merge_authority", "release_authority"):
+        if plan.get(authority) is not False:
+            raise ValueError("product_receipt_plan_authority_delta")
+    return digest
+
+
+def verify_product_receipt_pair(
+    source_head: Mapping[str, object],
+    base_merge: Mapping[str, object],
+    *,
+    expected_repository: str,
+    expected_repository_id: int,
+    expected_run_id: int,
+    expected_run_attempt: int,
+    expected_source_sha: str,
+    expected_base_sha: str,
+    expected_pull_request_number: int,
+) -> dict[str, object]:
+    """Verify the two independently executed PR product-caller lanes."""
+    expected_source_sha = _sha(expected_source_sha, "source_sha")
+    expected_base_sha = _sha(expected_base_sha, "base_sha")
+    source_digest = _verify_product_receipt(
+        source_head,
+        expected_lane="source-head",
+    )
+    merge_digest = _verify_product_receipt(
+        base_merge,
+        expected_lane="base-merge",
+    )
+
+    source_identity = source_head["ciIdentity"]
+    merge_identity = base_merge["ciIdentity"]
+    assert isinstance(source_identity, Mapping)
+    assert isinstance(merge_identity, Mapping)
+    for identity in (source_identity, merge_identity):
+        if (
+            identity.get("repository") != expected_repository
+            or identity.get("repositoryId") != expected_repository_id
+            or identity.get("runId") != expected_run_id
+            or identity.get("runAttempt") != expected_run_attempt
+            or identity.get("eventName") != "pull_request"
+            or identity.get("pullRequestNumber") != expected_pull_request_number
+            or identity.get("job") != EXPECTED_JOB
+        ):
+            raise ValueError("product_receipt_pair_ci_identity")
+        workflow_ref = identity.get("workflowRef")
+        if (
+            not isinstance(workflow_ref, str)
+            or EXPECTED_WORKFLOW_SUFFIX not in workflow_ref
+        ):
+            raise ValueError("product_receipt_pair_workflow_identity")
+
+    if (
+        source_head.get("sourceSha") != expected_source_sha
+        or base_merge.get("sourceSha") != expected_source_sha
+        or source_head.get("testedSha") != expected_source_sha
+    ):
+        raise ValueError("product_receipt_pair_source_identity")
+    source_tree = source_head.get("sourceTree")
+    if (
+        not isinstance(source_tree, str)
+        or _SHA1.fullmatch(source_tree) is None
+        or source_head.get("testedTree") != source_tree
+        or base_merge.get("sourceTree") != source_tree
+    ):
+        raise ValueError("product_receipt_pair_source_tree")
+    merge_sha = base_merge.get("testedSha")
+    merge_tree = base_merge.get("testedTree")
+    if (
+        not isinstance(merge_sha, str)
+        or _SHA1.fullmatch(merge_sha) is None
+        or merge_sha in {expected_base_sha, expected_source_sha}
+        or not isinstance(merge_tree, str)
+        or _SHA1.fullmatch(merge_tree) is None
+        or base_merge.get("orderedParents")
+        != [expected_base_sha, expected_source_sha]
+    ):
+        raise ValueError("product_receipt_pair_merge_identity")
+
+    source_canonical = source_head["canonicalWorkPackage"]
+    merge_canonical = base_merge["canonicalWorkPackage"]
+    assert isinstance(source_canonical, Mapping)
+    assert isinstance(merge_canonical, Mapping)
+    for key in ("blobOid", "registryDigest", "packageDigest"):
+        if source_canonical.get(key) != merge_canonical.get(key):
+            raise ValueError("product_receipt_pair_canonical_drift")
+
+    pair = {
+        "schema": "hepta.control-engineering-product-receipt-pair.v1",
+        "repository": expected_repository,
+        "repositoryId": expected_repository_id,
+        "runId": expected_run_id,
+        "runAttempt": expected_run_attempt,
+        "pullRequestNumber": expected_pull_request_number,
+        "sourceSha": expected_source_sha,
+        "sourceTree": source_tree,
+        "baseSha": expected_base_sha,
+        "mergeSha": merge_sha,
+        "mergeTree": merge_tree,
+        "sourceProductReceiptDigest": source_digest,
+        "mergeProductReceiptDigest": merge_digest,
+        "canonicalWorkPackageBlobOid": source_canonical["blobOid"],
+        "canonicalWorkPackageDigest": source_canonical["packageDigest"],
+        "runtimeAuthority": False,
+        "mergeAuthority": False,
+        "releaseAuthority": False,
+    }
+    pair["pairDigest"] = semantic_pair_digest = hashlib.sha256(
+        json.dumps(pair, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    expected_readiness_digest = hashlib.sha256(
+        json.dumps(
+            {
+                "baseMerge": merge_digest,
+                "sourceHead": source_digest,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    pair["readinessReceiptSetDigest"] = expected_readiness_digest
+    if semantic_pair_digest == expected_readiness_digest:
+        raise ValueError("product_receipt_pair_domain_collision")
+    return pair
 
 
 def main(argv: list[str] | None = None) -> int:
