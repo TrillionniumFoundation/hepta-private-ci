@@ -242,7 +242,9 @@ pub fn verify_resource_grant(
     grant: ResourceGrant,
 ) -> Result<VerifiedResourceGrant, Error> {
     validate_grant(now_ms, &grant)?;
-    if signed.grant.authority_epoch != grant.authority_epoch {
+    if signed.grant.authority_epoch != grant.authority_epoch
+        || signed.grant.grant_id != grant.grant_id
+    {
         return Err(Error::GrantAuthorityInvalid);
     }
     let binding = resource_grant_binding(worker_id, &grant)?;
