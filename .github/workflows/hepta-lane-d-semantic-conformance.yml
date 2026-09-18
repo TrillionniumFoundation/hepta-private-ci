@@ -63,6 +63,31 @@ jobs:
           python3 scripts/hepta-lane-d-semantic-conformance.py self-test
           python3 scripts/hepta-lane-d-semantic-conformance.py verify
 
+      - name: Reject new legacy NDU evaluator callers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          allowed = {
+              Path("codex-rs/hepta-ndu/src/evaluator.rs"),
+              Path("codex-rs/hepta-ndu/src/evaluator_tests.rs"),
+          }
+          offenders = []
+          for path in Path("codex-rs").rglob("*.rs"):
+              if path in allowed:
+                  continue
+              for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                  if "evaluate_candidates(" in line:
+                      offenders.append(f"{path}:{number}:{line.strip()}")
+          if offenders:
+              raise SystemExit(
+                  "legacy evaluate_candidates caller(s) are forbidden; use "
+                  "evaluate_candidates_with_policy:\n" + "\n".join(offenders)
+              )
+          PY
+
       - name: Verify bounded change policy
         if: github.event_name == 'pull_request'
         shell: bash
