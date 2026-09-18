@@ -119,8 +119,11 @@ async fn exact_signed_grant_becomes_one_entry_verified_token() -> Result<()> {
     let directory = tempfile::tempdir()?;
     let (listener, socket) = listener(directory.path(), "authority.sock").await?;
     let signer = SigningKey::from_bytes(&[41; 32]);
-    let authorizer =
-        UnixFinalUseAuthorizer::from_config(config(directory.path(), socket, signer.verifying_key().to_bytes()))?;
+    let authorizer = UnixFinalUseAuthorizer::from_config(config(
+        directory.path(),
+        socket,
+        signer.verifying_key().to_bytes(),
+    ))?;
     let expected = binding(11);
     let server_signer = signer.clone();
     let server = tokio::spawn(async move {
