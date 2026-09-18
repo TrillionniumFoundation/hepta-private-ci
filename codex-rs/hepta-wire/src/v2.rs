@@ -169,34 +169,35 @@ fn compute_integrity_digest(
 
 #[cfg(test)]
 mod tests {
+    use std::error::Error;
+
     use super::*;
 
-    fn envelope() -> WireEnvelopeV2 {
-        WireEnvelopeV2::new(
-            StableId::new("hepta.test.v2").expect("schema"),
-            StableId::new("platform.wire").expect("producer"),
-            Generation::new(7).expect("generation"),
+    fn envelope() -> Result<WireEnvelopeV2, Box<dyn Error>> {
+        Ok(WireEnvelopeV2::new(
+            StableId::new("hepta.test.v2")?,
+            StableId::new("platform.wire")?,
+            Generation::new(7)?,
             b"bounded-payload".to_vec(),
-        )
-        .expect("envelope")
+        )?)
     }
 
     #[test]
-    fn v2_round_trip_is_exact() {
-        let envelope = envelope();
+    fn v2_round_trip_is_exact() -> Result<(), Box<dyn Error>> {
+        let envelope = envelope()?;
         let encoded = envelope.encode();
         assert_eq!(WireEnvelopeV2::decode(&encoded), Ok(envelope));
+        Ok(())
     }
 
     #[test]
-    fn metadata_and_payload_tamper_fail_integrity() {
+    fn metadata_and_payload_tamper_fail_integrity() -> Result<(), Box<dyn Error>> {
         let envelope = WireEnvelopeV2::new(
-            StableId::new("schema-a").expect("schema"),
-            StableId::new("producer-a").expect("producer"),
-            Generation::new(9).expect("generation"),
+            StableId::new("schema-a")?,
+            StableId::new("producer-a")?,
+            Generation::new(9)?,
             vec![1, 2, 3],
-        )
-        .expect("envelope");
+        )?;
 
         let mut schema_tamper = envelope.encode();
         schema_tamper[HEADER_FIXED_BYTES] = b'b';
@@ -227,10 +228,11 @@ mod tests {
             WireEnvelopeV2::decode(&payload_tamper),
             Err(WireError::IntegrityMismatch { .. })
         ));
+        Ok(())
     }
 
     #[test]
-    fn v2_matches_independent_frozen_vector() {
+    fn v2_matches_independent_frozen_vector() -> Result<(), Box<dyn Error>> {
         let golden: [u8; 59] = [
             0x48, 0x50, 0x54, 0x41, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x11, 0x1f, 0x5b, 0xfd,
@@ -240,13 +242,13 @@ mod tests {
             b'p', 0x01, 0x02, 0x03,
         ];
         let expected = WireEnvelopeV2::new(
-            StableId::new("s").expect("schema"),
-            StableId::new("p").expect("producer"),
-            Generation::new(1).expect("generation"),
+            StableId::new("s")?,
+            StableId::new("p")?,
+            Generation::new(1)?,
             vec![1, 2, 3],
-        )
-        .expect("envelope");
+        )?;
         assert_eq!(expected.encode(), golden);
         assert_eq!(WireEnvelopeV2::decode(&golden), Ok(expected));
+        Ok(())
     }
 }
