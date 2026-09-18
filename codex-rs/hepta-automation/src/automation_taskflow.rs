@@ -89,6 +89,7 @@ impl AutomationStore {
                 now_ms,
             )
             .await?;
+        let expected_owner_id = format!("automation.scheduler:{}", lease.task.task_id);
         let fence = match run.state {
             TaskFlowRunState::Queued => {
                 run = self
@@ -98,8 +99,7 @@ impl AutomationStore {
             }
             TaskFlowRunState::Running
                 if run.generation == Some(lease.lease_generation)
-                    && run.owner_id.as_deref()
-                        == Some(format!("automation.scheduler:{}", lease.task.task_id).as_str())
+                    && run.owner_id.as_deref() == Some(expected_owner_id.as_str())
                     && run.lease_expires_at_ms.is_some_and(|expires| expires > now_ms) =>
             {
                 TaskFlowFence {
