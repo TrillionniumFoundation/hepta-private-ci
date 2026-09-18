@@ -22,6 +22,8 @@ pub struct NativeQuotaBinding {
     pub reserved_requests: u64,
     pub reserved_tokens: u64,
     pub reserved_concurrency: u32,
+    /// Owner-defined economic budget units held by this quota reservation.
+    pub reserved_day_budget: u64,
     pub authority_epoch: u64,
     pub expires_at_unix_seconds: u64,
 }
@@ -57,6 +59,11 @@ pub struct NativeRequest {
     /// refine it; missing usage keeps the full hold.
     #[serde(default)]
     pub maximum_output_tokens: u64,
+    /// Conservative owner-defined economic budget hold for this request.
+    /// This is not a provider billing assertion; absent billing reconciliation
+    /// retains the full hold after a possible dispatch.
+    #[serde(default)]
+    pub maximum_budget_units: u64,
     /// Legacy native-v1 records omit this. Production provider dispatch must
     /// carry a quota/resource binding and a matching final-use witness.
     #[serde(default)]
@@ -708,7 +715,7 @@ fn validate_snapshot_record(
 fn validate_admission_binding(request: &NativeRequest) -> Result<(), Error> {
     match &request.admission {
         None => {
-            if request.maximum_output_tokens != 0 {
+            if request.maximum_output_tokens != 0 || request.maximum_budget_units != 0 {
                 return Err(Error::InvalidTransition);
             }
             Ok(())
@@ -720,9 +727,11 @@ fn validate_admission_binding(request: &NativeRequest) -> Result<(), Error> {
             validate_digest(&binding.resource.resource_digest, "native resource")?;
             validate_identity(&binding.resource.provider_id, "native provider")?;
             if request.maximum_output_tokens == 0
+                || request.maximum_budget_units == 0
                 || binding.quota.reserved_requests == 0
                 || binding.quota.reserved_tokens < request.maximum_output_tokens
                 || binding.quota.reserved_concurrency == 0
+                || binding.quota.reserved_day_budget < request.maximum_budget_units
                 || binding.quota.authority_epoch == 0
                 || binding.quota.expires_at_unix_seconds == 0
                 || binding.resource.generation == 0
@@ -748,6 +757,14 @@ fn held_tokens(record: &NativeRunRecord) -> Result<u64, Error> {
         .unwrap_or(record.request.maximum_output_tokens))
 }
 
+fn held_budget_units(record: &NativeRunRecord) -> u64 {
+    if record.pre_dispatch_stop.is_some() {
+        0
+    } else {
+        record.request.maximum_budget_units
+    }
+}
+
 fn enforce_quota(records: &BTreeMap<String, NativeRunRecord>, request: &NativeRequest) -> Result<(), Error> {
     let Some(binding) = &request.admission else {
         return Ok(());
@@ -755,6 +772,7 @@ fn enforce_quota(records: &BTreeMap<String, NativeRunRecord>, request: &NativeRe
     let mut requests = 1_u64;
     let mut active = 1_u64;
     let mut tokens = request.maximum_output_tokens;
+    let mut budget_units = request.maximum_budget_units;
     for record in records.values() {
         let Some(existing) = &record.request.admission else {
             continue;
@@ -777,10 +795,14 @@ fn enforce_quota(records: &BTreeMap<String, NativeRunRecord>, request: &NativeRe
         tokens = tokens
             .checked_add(held_tokens(record)?)
             .ok_or(Error::ArithmeticOverflow)?;
+        budget_units = budget_units
+            .checked_add(held_budget_units(record))
+            .ok_or(Error::ArithmeticOverflow)?;
     }
     if requests > binding.quota.reserved_requests
         || active > u64::from(binding.quota.reserved_concurrency)
         || tokens > binding.quota.reserved_tokens
+        || budget_units > binding.quota.reserved_day_budget
     {
         return Err(Error::CapacityExceeded);
     }
