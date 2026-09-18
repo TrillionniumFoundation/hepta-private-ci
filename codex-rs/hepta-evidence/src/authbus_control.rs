@@ -1,5 +1,7 @@
 use std::collections::BTreeMap;
 
+use codex_hepta_authbus::AUTHBUS_MAX_ACTIVE_RESERVATIONS_PER_POLICY;
+use codex_hepta_authbus::AUTHBUS_MAX_EXPIRY_SWEEP_ROWS;
 use codex_hepta_authbus::AUTHBUS_MAX_RESERVATION_TTL_MS;
 use codex_hepta_authbus::AuthBusReplayCheckpoint;
 use codex_hepta_authbus::AuthBusTrustHead;
@@ -46,6 +48,8 @@ pub enum AuthBusControlError {
     StaleQuotaRevision,
     #[error("AuthBus quota is exhausted")]
     QuotaExceeded,
+    #[error("AuthBus principal active-reservation limit is exhausted")]
+    ActiveReservationLimitExceeded,
     #[error("AuthBus reservation was not found")]
     ReservationNotFound,
     #[error("AuthBus reservation identity conflicts with existing state")]
@@ -76,7 +80,7 @@ impl HeptaEvidenceStore {
             .await
             .map_err(classify_sqlx_error)?;
         let current = sqlx::query(
-            "SELECT revision, effect, record_digest FROM authbus_policy_heads
+            "SELECT revision, effect, max_active_reservations, record_digest FROM authbus_policy_heads
              WHERE principal_id = ? AND action_id = ? AND scope_digest = ?",
         )
         .bind(rule.principal_id.as_str())
@@ -99,14 +103,16 @@ impl HeptaEvidenceStore {
         let effect = effect_str(rule.effect);
         sqlx::query(
             "INSERT INTO authbus_policy_history
-             (principal_id, action_id, scope_digest, revision, effect, record_digest, recorded_at_ms)
-             VALUES (?, ?, ?, ?, ?, ?, ?)",
+             (principal_id, action_id, scope_digest, revision, effect, max_active_reservations,
+              record_digest, recorded_at_ms)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         )
         .bind(rule.principal_id.as_str())
         .bind(rule.action_id.as_str())
         .bind(rule.scope_digest.as_array().as_slice())
         .bind(rule.revision.to_be_bytes().as_slice())
         .bind(effect)
+        .bind(i64::from(rule.max_active_reservations))
         .bind(digest.as_array().as_slice())
         .bind(now)
         .execute(&mut *tx)
@@ -114,11 +120,13 @@ impl HeptaEvidenceStore {
         .map_err(classify_sqlx_error)?;
         sqlx::query(
             "INSERT INTO authbus_policy_heads
-             (principal_id, action_id, scope_digest, revision, effect, record_digest, updated_at_ms)
-             VALUES (?, ?, ?, ?, ?, ?, ?)
+             (principal_id, action_id, scope_digest, revision, effect, max_active_reservations,
+              record_digest, updated_at_ms)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT(principal_id, action_id, scope_digest) DO UPDATE SET
                revision = excluded.revision,
                effect = excluded.effect,
+               max_active_reservations = excluded.max_active_reservations,
                record_digest = excluded.record_digest,
                updated_at_ms = excluded.updated_at_ms",
         )
@@ -127,6 +135,7 @@ impl HeptaEvidenceStore {
         .bind(rule.scope_digest.as_array().as_slice())
         .bind(rule.revision.to_be_bytes().as_slice())
         .bind(effect)
+        .bind(i64::from(rule.max_active_reservations))
         .bind(digest.as_array().as_slice())
         .bind(now)
         .execute(&mut *tx)
@@ -144,10 +153,10 @@ impl HeptaEvidenceStore {
         policy_revision: u64,
     ) -> Result<PolicyDecision, AuthBusControlError> {
         let mut tx = self.pool.begin().await.map_err(classify_sqlx_error)?;
-        let decision =
+        let evaluation =
             authorize_tx(&mut tx, principal_id, action_id, scope_digest, policy_revision).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
-        Ok(decision)
+        Ok(evaluation.decision)
     }
 
     pub async fn put_quota_registry(
@@ -281,7 +290,7 @@ impl HeptaEvidenceStore {
             .await
             .map_err(classify_sqlx_error)?;
         sweep_expired_reserved_tx(&mut tx, now).await?;
-        let decision = authorize_tx(
+        let evaluation = authorize_tx(
             &mut tx,
             &request.principal_id,
             &request.action_id,
@@ -289,7 +298,7 @@ impl HeptaEvidenceStore {
             request.policy_revision,
         )
         .await?;
-        if decision != PolicyDecision::Allowed {
+        if evaluation.decision != PolicyDecision::Allowed {
             return Err(AuthBusControlError::PolicyDenied);
         }
         let quota = load_quota_tx(&mut tx, &request.quota_key).await?;
@@ -305,12 +314,24 @@ impl HeptaEvidenceStore {
             ));
         }
 
+        let active: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_quota_reservations
+             WHERE principal_id = ? AND state IN ('reserved', 'in_flight', 'quarantined')",
+        )
+        .bind(request.principal_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if active >= i64::from(evaluation.max_active_reservations) {
+            return Err(AuthBusControlError::ActiveReservationLimitExceeded);
+        }
+
         if let Some(existing) = load_reservation_by_operation_tx(&mut tx, &request.operation_id).await?
         {
             if reservation_matches_request(&existing, request) {
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Ok(EffectAdmission {
-                    decision,
+                    decision: evaluation.decision,
                     reservation: existing,
                 });
             }
@@ -358,7 +379,7 @@ impl HeptaEvidenceStore {
         let reservation = load_reservation_tx(&mut tx, reservation_id).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(EffectAdmission {
-            decision,
+            decision: evaluation.decision,
             reservation,
         })
     }
@@ -392,8 +413,14 @@ impl HeptaEvidenceStore {
         )
         .await;
         match authorization {
-            Ok(PolicyDecision::Allowed) => {}
-            Ok(PolicyDecision::Denied) => {
+            Ok(PolicyEvaluation {
+                decision: PolicyDecision::Allowed,
+                ..
+            }) => {}
+            Ok(PolicyEvaluation {
+                decision: PolicyDecision::Denied,
+                ..
+            }) => {
                 cancel_reserved_tx(&mut tx, &reservation, None, now).await?;
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Err(AuthBusControlError::PolicyDenied);
@@ -928,20 +955,26 @@ pub(crate) async fn verify_authbus_control_invariants(
     Ok(())
 }
 
+#[derive(Clone, Copy)]
+struct PolicyEvaluation {
+    decision: PolicyDecision,
+    max_active_reservations: u32,
+}
+
 async fn authorize_tx(
     tx: &mut Transaction<'_, Sqlite>,
     principal_id: &StableId,
     action_id: &StableId,
     scope_digest: Digest32,
     policy_revision: u64,
-) -> Result<PolicyDecision, AuthBusControlError> {
+) -> Result<PolicyEvaluation, AuthBusControlError> {
     if policy_revision == 0 || scope_digest.is_zero() {
         return Err(AuthBusControlError::InvalidRequest(
-            "policy revision and scope must be nonzero",
+            "policy revision, scope and active reservation limit are invalid",
         ));
     }
     let row = sqlx::query(
-        "SELECT revision, effect FROM authbus_policy_heads
+        "SELECT revision, effect, max_active_reservations FROM authbus_policy_heads
          WHERE principal_id = ? AND action_id = ? AND scope_digest = ?",
     )
     .bind(principal_id.as_str())
@@ -954,17 +987,33 @@ async fn authorize_tx(
     if blob_u64(&row, "revision")? != policy_revision {
         return Err(AuthBusControlError::StalePolicyRevision);
     }
-    match row
+    let max_active = row
+        .try_get::<i64, _>("max_active_reservations")
+        .map_err(classify_sqlx_error)?;
+    let max_active_reservations = u32::try_from(max_active)
+        .map_err(|_| EvidenceError::Corrupt("invalid AuthBus active reservation limit".into()))?;
+    if max_active_reservations == 0
+        || max_active_reservations > AUTHBUS_MAX_ACTIVE_RESERVATIONS_PER_POLICY
+    {
+        return Err(EvidenceError::Corrupt(
+            "AuthBus active reservation limit exceeds owner bound".into(),
+        )
+        .into());
+    }
+    let decision = match row
         .try_get::<String, _>("effect")
         .map_err(classify_sqlx_error)?
         .as_str()
     {
-        "allow" => Ok(PolicyDecision::Allowed),
-        "deny" => Ok(PolicyDecision::Denied),
-        _ => Err(EvidenceError::Corrupt("invalid AuthBus policy effect".into()).into()),
-    }
+        "allow" => PolicyDecision::Allowed,
+        "deny" => PolicyDecision::Denied,
+        _ => return Err(EvidenceError::Corrupt("invalid AuthBus policy effect".into()).into()),
+    };
+    Ok(PolicyEvaluation {
+        decision,
+        max_active_reservations,
+    })
 }
-
 async fn load_quota_tx(
     tx: &mut Transaction<'_, Sqlite>,
     quota_key: &StableId,
@@ -1214,9 +1263,10 @@ async fn sweep_expired_reserved_tx(
     let rows = sqlx::query(
         "SELECT * FROM authbus_quota_reservations
          WHERE state = 'reserved' AND expires_at_ms <= ?
-         ORDER BY expires_at_ms, reservation_id",
+         ORDER BY expires_at_ms, reservation_id LIMIT ?",
     )
     .bind(u64_to_i64(now)?)
+    .bind(i64::from(AUTHBUS_MAX_EXPIRY_SWEEP_ROWS))
     .fetch_all(&mut **tx)
     .await
     .map_err(classify_sqlx_error)?;
@@ -1256,7 +1306,11 @@ fn reservation_matches_request(
 }
 
 fn validate_policy(rule: &AuthPolicyRule) -> Result<(), AuthBusControlError> {
-    if rule.revision == 0 || rule.scope_digest.is_zero() {
+    if rule.revision == 0
+        || rule.scope_digest.is_zero()
+        || rule.max_active_reservations == 0
+        || rule.max_active_reservations > AUTHBUS_MAX_ACTIVE_RESERVATIONS_PER_POLICY
+    {
         return Err(AuthBusControlError::InvalidRequest(
             "policy revision and scope must be nonzero",
         ));
@@ -1313,6 +1367,7 @@ fn policy_digest(rule: &AuthPolicyRule) -> Digest32 {
         PolicyEffect::Allow => 1,
         PolicyEffect::Deny => 0,
     });
+    bytes.extend_from_slice(&rule.max_active_reservations.to_be_bytes());
     Digest32::of_bytes(&bytes)
 }
 
