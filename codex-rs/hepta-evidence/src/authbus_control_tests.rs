@@ -336,6 +336,54 @@ async fn operation_retry_binds_full_authorization_and_effect_semantics() {
 }
 
 #[tokio::test]
+async fn begin_effect_racing_cancel_has_one_linearization_and_never_double_refunds() {
+    let temp = TempDir::new().unwrap();
+    let sqlite = config(&temp);
+    let first = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    seed(&first, 5).await;
+    let second = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let reservation = reserve(&first, "begin-cancel-race", 4).await.unwrap().1;
+
+    let begin = first.begin_authbus_effect(
+        &reservation.reservation_id,
+        &id("principal:one"),
+        &id("action:effect"),
+        Digest32::of_bytes(b"scope"),
+        effect("begin-cancel-race"),
+    );
+    let cancel = second.cancel_authbus_reservation(&reservation.reservation_id);
+    let (begun, cancelled) = tokio::join!(begin, cancel);
+    assert_eq!(
+        usize::from(begun.is_ok()) + usize::from(cancelled.is_ok()),
+        1
+    );
+
+    first
+        .reconcile_authbus_quota(&id("quota:one"))
+        .await
+        .unwrap();
+    let row = sqlx::query(
+        "SELECT state FROM authbus_quota_reservations WHERE reservation_id=?",
+    )
+    .bind(reservation.reservation_id.as_str())
+    .fetch_one(&first.pool)
+    .await
+    .unwrap();
+    let state: String = row.try_get("state").unwrap();
+    let reserved: Vec<u8> =
+        sqlx::query_scalar("SELECT reserved FROM authbus_quota_registry WHERE quota_key=?")
+            .bind("quota:one")
+            .fetch_one(&first.pool)
+            .await
+            .unwrap();
+    match state.as_str() {
+        "effect_started" => assert_eq!(decode_counter(reserved), 4),
+        "cancelled" => assert_eq!(decode_counter(reserved), 0),
+        other => panic!("unexpected race terminal state: {other}"),
+    }
+}
+
+#[tokio::test]
 async fn owner_clock_rejects_already_expired_reservation() {
     let temp = TempDir::new().unwrap();
     let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();

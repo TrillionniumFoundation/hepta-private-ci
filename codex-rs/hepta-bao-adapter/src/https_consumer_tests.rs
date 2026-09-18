@@ -727,6 +727,104 @@ async fn authbus_consumer_indeterminate_can_be_reconciled_to_terminal_settlement
     task.await.unwrap().unwrap();
 }
 
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn authbus_effect_occurs_but_settlement_failure_stays_recoverable() {
+    let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = read_request();
+    let (authority, grant, _authority_dir) = grant(&client, &request).unwrap();
+    let evidence_dir = tempfile::tempdir().unwrap();
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
+    );
+    let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let reservation_id =
+        reserve_authbus_for_request(&evidence, &client, &request, "settlement-failure").await;
+
+    // Inject a durable-store failure only for the post-effect settlement state.
+    // EffectStarted remains legal, so the HTTPS request and consumer run first.
+    let fault_pool = sqlite
+        .open_durable_evidence_pool(evidence.path())
+        .await
+        .unwrap();
+    sqlx::query(
+        "CREATE TRIGGER authbus_test_fail_settlement
+         BEFORE UPDATE ON authbus_quota_reservations
+         WHEN NEW.state = 'settled'
+         BEGIN
+             SELECT RAISE(ABORT, 'injected AuthBus settlement failure');
+         END",
+    )
+    .execute(&fault_pool)
+    .await
+    .unwrap();
+    fault_pool.close().await;
+
+    let consumed = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let observed = std::sync::Arc::clone(&consumed);
+    assert_eq!(
+        client
+            .consume_kv_v2_with_authbus(
+                &evidence,
+                &reservation_id,
+                &authority,
+                &grant,
+                &request,
+                move |bytes| {
+                    assert_eq!(bytes, SECRET.as_bytes());
+                    observed.store(true, std::sync::atomic::Ordering::SeqCst);
+                    Ok(())
+                },
+            )
+            .await,
+        Err(BaoClientError::AuthBusControl)
+    );
+    assert!(consumed.load(std::sync::atomic::Ordering::SeqCst));
+    task.await.unwrap().unwrap();
+
+    let pending = evidence
+        .pending_authbus_effect_reservations(
+            &StableId::new("quota:bao:settlement-failure").unwrap(),
+            8,
+        )
+        .await
+        .unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].state, ReservationState::EffectStarted);
+    assert!(matches!(
+        evidence.cancel_authbus_reservation(&reservation_id).await,
+        Err(AuthBusControlError::InvalidTransition)
+    ));
+
+    let cleanup_pool = sqlite
+        .open_durable_evidence_pool(evidence.path())
+        .await
+        .unwrap();
+    sqlx::query("DROP TRIGGER authbus_test_fail_settlement")
+        .execute(&cleanup_pool)
+        .await
+        .unwrap();
+    cleanup_pool.close().await;
+    evidence
+        .quarantine_authbus_reservation(&reservation_id)
+        .await
+        .unwrap();
+    evidence
+        .settle_authbus_reservation(
+            &reservation_id,
+            1,
+            Digest32::of_bytes(b"reconciled-after-storage-failure"),
+        )
+        .await
+        .unwrap();
+}
+
 #[tokio::test]
 async fn authbus_success_settles_exact_bound_request() {
     let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
