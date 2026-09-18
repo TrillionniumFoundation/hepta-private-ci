@@ -20,7 +20,6 @@ from .candidate import (
     MutationSet,
     SandboxReceipt,
     generate_candidates,
-    sandbox_candidate,
 )
 from .control_plane import (
     EngineeringError,
@@ -117,6 +116,11 @@ from .seal import (
     request_independent_review,
     verify_sealed_candidate_evidence,
 )
+
+# Historical root sandbox name is preserved as a controlled alias.  The raw
+# candidate executor remains internal to candidate.py so public callers cannot
+# bypass host admission or retry policy.
+sandbox_candidate = execute_candidate_sandbox
 
 # Legacy public names use the current authenticated boundary too. Lower-layer
 # composition helpers are implementation details, not an alternate public gate.
