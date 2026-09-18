@@ -32,7 +32,7 @@ override these machine status facts.
 | `durableproposalregistry` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 1 |
 | `authenticated_product_composition` | `adapter_implemented_agentd_host_called_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
 | `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
-| `parameter_mutation_policy` | `source_implemented_authority_free_typed_parameter_allowlist_protected_surfaces` | `codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs` | 1 |
+| `parameter_mutation_policy` | `source_implemented_authority_free_typed_parameter_allowlist_protected_surfaces` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 1 |
 | `agentd_parameter_host` | `host_callsite_source_implemented_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |
 | `topology_governed_admission` | `source_implemented_typed_writer_handoff_validated` | `codex-rs/hepta-plasticity/src/topology_governance.rs` | 2 |
 | `durable_topology_registry` | `source_implemented_anchored_governed_topology_registry` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 1 |
@@ -48,7 +48,7 @@ override these machine status facts.
 | --- | --- | --- |
 | Parameter V2 canonical proposal envelope | **Implemented** | `codex-rs/hepta-plasticity/src/parameter_v2.rs` |
 | Deterministic generator-relative candidate completeness | **Implemented** | `generate_parameter_candidates_v3` in `generator_v3.rs` |
-| Typed parameter mutation policy / protected surfaces | **Implemented** | `ParameterMutationPolicyV1` in `mutation_grammar_v1.rs` |
+| Typed parameter mutation policy / protected surfaces | **Implemented** | `ParameterMutationPolicyV1` in `parameter_mutation_policy_v1.rs` |
 | Artifact/window-bound content candidate identity | **Implemented** | `generator_v3.rs` and `topology_v2.rs` |
 | Per-layer/global parameter trust regions | **Implemented** | V2 verifier and V3 generator |
 | Durable append-only proposal registry | **Implemented** | `DurableProposalRegistry` |
