@@ -1,3 +1,4 @@
+use std::time::Duration;
 use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
@@ -26,6 +27,9 @@ use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 use crate::runtime::is_live_lifecycle;
+use crate::restart_budget::clear_restart_budget;
+use crate::restart_budget::read_restart_budget;
+use crate::restart_budget::unix_millis_now;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn restore_release_state(
@@ -55,6 +59,66 @@ impl<D: ProcessDriver> Supervisor<D> {
             .active_release
             .as_ref()
             .map(|release| release.command().clone());
+        Ok(())
+    }
+
+    pub(crate) fn restore_restart_budget(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        record: &AgentRecord,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        let Some(budget) = read_restart_budget(record.layout.run_root(), agent_id)? else {
+            return Ok(());
+        };
+        let wall_now = unix_millis_now()?;
+        let window_ms = u64::try_from(self.config.restart_window.as_millis()).unwrap_or(u64::MAX);
+        let elapsed_ms = wall_now.saturating_sub(budget.window_started_unix_ms);
+        if elapsed_ms >= window_ms {
+            clear_restart_budget(record.layout.run_root())?;
+            slot.restart_attempts = 0;
+            slot.restart_window_started_at = None;
+            slot.restart_not_before = None;
+            slot.automatic_restart = false;
+            return Ok(());
+        }
+
+        slot.restart_attempts = budget.attempts;
+        slot.restart_window_started_at = now.checked_sub(Duration::from_millis(elapsed_ms));
+
+        if budget.attempts >= self.config.max_restart_attempts {
+            slot.restart_pending = false;
+            slot.automatic_restart = false;
+            slot.restart_not_before = None;
+            slot.event(
+                record.lifecycle.generation,
+                SupervisorEventKind::RestartBudgetExhausted {
+                    attempts: budget.attempts,
+                },
+            );
+            return Ok(());
+        }
+
+        // An adopted live process keeps its current generation. The restored
+        // attempt counter still fences the next crash inside this window.
+        if slot.runtime.is_some() {
+            return Ok(());
+        }
+        if !matches!(
+            record.lifecycle.lifecycle,
+            AgentLifecycle::Stopped | AgentLifecycle::Failed
+        ) {
+            return Ok(());
+        }
+
+        let remaining_ms = budget.not_before_unix_ms.saturating_sub(wall_now);
+        slot.restart_pending = true;
+        slot.automatic_restart = true;
+        slot.restart_not_before = Some(
+            now.checked_add(Duration::from_millis(remaining_ms))
+                .ok_or_else(|| SupervisorError::Invalid("restart deadline overflow".to_string()))?,
+        );
         Ok(())
     }
 
