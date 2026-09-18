@@ -555,6 +555,55 @@ mod tests {
     }
 
     #[test]
+    fn handoff_operation_must_match_candidate_operation() {
+        let selected = digest("artifact:operation-mismatch");
+        let handoff = bind_topology_writer_handoff_v1(TopologyWriterHandoffV1 {
+            module_id: id("module:a"),
+            operation: TopologyOperationV2::Replace,
+            source_writer_id: id("writer:old"),
+            destination_writer_id: id("writer:new"),
+            source_domain_digest: digest("domain:old"),
+            destination_domain_digest: digest("domain:new"),
+            baseline_generation: generation(14),
+            candidate_generation: generation(15),
+            migration_digest: digest("migration"),
+            rollback_digest: digest("rollback"),
+            handoff_digest: Digest32::ZERO,
+        })
+        .expect("handoff");
+        let proposal = propose_topology_v2(TopologyProposalRequestV2 {
+            proposal_id: id("topology:operation-mismatch"),
+            proposer_id: id("generator"),
+            evaluator_id: id("evaluator"),
+            selected_artifact_digest: selected,
+            window: ProposalWindowV2 {
+                window_id: id("window:operation-mismatch"),
+                window_digest: digest("window:operation-mismatch"),
+            },
+            baseline_generation: generation(14),
+            candidate_generation: generation(15),
+            evaluation_digest: digest("evaluation"),
+            rollback_predecessor_digest: selected,
+            changes: vec![TopologyChangeV2 {
+                module_id: id("module:a"),
+                operation: TopologyOperationV2::Rewire,
+                predecessor_digest: Some(digest("old")),
+                candidate_digest: Some(digest("new")),
+                migration_digest: handoff.migration_digest,
+                rollback_digest: handoff.rollback_digest,
+                writer_handoff_digest: handoff.handoff_digest,
+                evidence_digest: digest("evidence"),
+            }],
+        })
+        .expect("proposal");
+        assert!(matches!(
+            verify_topology_writer_handoffs_v1(&proposal, &[handoff]),
+            Err(TopologyGovernanceErrorV1::HandoffDigestMismatch(module))
+                if module == "module:a"
+        ));
+    }
+
+    #[test]
     fn topology_policy_rejects_protected_evaluator_surface() {
         let selected = digest("artifact:policy");
         let policy = build_topology_mutation_policy_v1(
