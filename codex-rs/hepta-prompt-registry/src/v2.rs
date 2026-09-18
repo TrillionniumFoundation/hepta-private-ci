@@ -259,7 +259,8 @@ impl CompatibleRealizationSetV2 {
 }
 
 impl PromptRegistry {
-    pub fn register_realization_v2(
+    #[cfg(test)]
+    pub(crate) fn register_realization_v2(
         &mut self,
         binding: PromptRealizationBindingV2,
     ) -> Result<RegistryReceipt, Error> {
