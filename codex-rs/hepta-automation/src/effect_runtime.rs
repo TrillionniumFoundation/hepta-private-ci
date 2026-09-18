@@ -105,6 +105,30 @@ where
         .ok_or(AutomationError::Corrupt)?;
 
     if matches!(current.state, TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled) {
+        if current.state == TaskFlowStepState::Recorded {
+            if let (Some(receipt_digest), Some(observation)) =
+                (&current.receipt_digest, current.observation)
+            {
+                let occurrence_observation = match observation {
+                    TaskFlowStepObservation::Succeeded => AutomationProviderObservation::Succeeded,
+                    TaskFlowStepObservation::Failed => AutomationProviderObservation::Failed,
+                    TaskFlowStepObservation::Indeterminate => {
+                        AutomationProviderObservation::Indeterminate
+                    }
+                };
+                store
+                    .record_provider_observation(
+                        &request.occurrence_id,
+                        &request.run_id,
+                        &request.step_id,
+                        request.attempt,
+                        receipt_digest,
+                        occurrence_observation,
+                        request.now_ms,
+                    )
+                    .await?;
+            }
+        }
         return Ok(DurableStepExecutionResult {
             step: current,
             provider_dispatched: false,
