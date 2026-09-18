@@ -24,6 +24,7 @@ const RECEIPT_DOMAIN: &[u8] = b"hepta.memory.retrieval.owner-rank.receipt.v1";
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OwnerRankCandidateV1 {
     pub record: MemoryRecord,
+    pub snapshot_digest: Digest32,
     pub owner_score: u64,
     /// Digest of the owner observation/support from which this candidate came.
     pub support_digest: Digest32,
@@ -63,6 +64,7 @@ pub enum OwnerRankErrorV1 {
     InvalidMaximumResults,
     CandidateLimitExceeded,
     DuplicateRecord(String),
+    SnapshotMismatch(String),
     InvalidRecord(String),
     TombstoneRecord(String),
 }
@@ -141,6 +143,11 @@ fn validate_request(request: &OwnerRankRequestV1) -> Result<(), OwnerRankErrorV1
     }
     let mut seen = BTreeSet::new();
     for candidate in &request.candidates {
+        if candidate.snapshot_digest != request.snapshot_digest {
+            return Err(OwnerRankErrorV1::SnapshotMismatch(
+                candidate.record.record_id.to_string(),
+            ));
+        }
         candidate
             .record
             .validate()
@@ -175,6 +182,7 @@ fn request_binding_digest(request: &OwnerRankRequestV1) -> Digest32 {
     for candidate in candidates {
         push_id(&mut bytes, &candidate.record.record_id);
         push_digest(&mut bytes, candidate.record.record_digest());
+        push_digest(&mut bytes, candidate.snapshot_digest);
         push_u64(&mut bytes, candidate.owner_score);
         push_digest(&mut bytes, candidate.support_digest);
     }
