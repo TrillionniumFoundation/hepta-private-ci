@@ -64,6 +64,7 @@ pub use model::LedgerSnapshot;
 pub use model::OutcomeFinality;
 pub use model::OutcomeObservation;
 pub use model::Revocation;
+pub use model::RunStartPublicationV1;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;
