@@ -534,7 +534,7 @@ fn validate_authority_observation(
             "authority_query_binding",
         ));
     }
-    if observation.lease_epoch == 0 || observation.lease_epoch != query.lease_epoch {
+    if observation.lease_epoch == 0 {
         return Err(FederationV2Error::LeaseEpochMismatch);
     }
     if observation.expires_unix_ms == 0 {
@@ -548,6 +548,9 @@ fn validate_authority_observation(
     }
     if observation.generation_vector_digest != query.generation_vector_digest {
         return Ok(AuthorityDispositionV2::StaleGeneration);
+    }
+    if observation.lease_epoch != query.lease_epoch {
+        return Err(FederationV2Error::LeaseEpochMismatch);
     }
     Ok(AuthorityDispositionV2::Current)
 }
