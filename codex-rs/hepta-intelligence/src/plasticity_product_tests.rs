@@ -67,7 +67,7 @@ impl Fixture {
                     principal: principal.clone(),
                     controller_id: if index == 2 {
                         evaluator_controller_collision_with
-                            .map(|other| principals[other].principal_id.clone())
+                            .map(|other| id(&format!("plasticity-controller-{other}")))
                             .unwrap_or_else(|| id(&format!("plasticity-controller-{index}")))
                     } else {
                         id(&format!("plasticity-controller-{index}"))
