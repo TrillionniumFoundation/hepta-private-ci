@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass
+import json
 from pathlib import Path
 import subprocess
 import time
@@ -41,6 +42,7 @@ class CompletionReceipt:
     source_commit: str
     source_tree: str
     generation_id: str
+    generation_digest: str
     result_digest: str
     issuer: str
     signing_identity: str
@@ -206,11 +208,13 @@ def issue_signed_work_envelope(
 def _verify_completion(
     receipt: CompletionReceipt,
     envelope: WorkEnvelope,
+    store: EngineeringStore,
     trust_store: SignatureTrustStore,
     now: int,
 ) -> None:
     checked_id(receipt.package_id, "package_id")
     checked_id(receipt.generation_id, "generation_id")
+    checked_sha256(receipt.generation_digest, "generation_digest")
     checked_sha256(receipt.result_digest, "result_digest")
     if receipt.source_commit != envelope.source_commit or receipt.source_tree != envelope.source_tree:
         raise EngineeringError("completion_source_mismatch")
@@ -226,6 +230,39 @@ def _verify_completion(
         receipt, receipt.issuer, receipt.signing_identity, receipt.signature
     ):
         raise EngineeringError("completion_receipt_signature")
+    generation = store.connection.execute(
+        "SELECT envelope_id,semantic_digest,assigned_json "
+        "FROM assignment_generations WHERE generation_id=?",
+        (receipt.generation_id,),
+    ).fetchone()
+    if generation is None:
+        raise EngineeringError("completion_generation_unknown")
+    if (
+        str(generation["envelope_id"]) != envelope.envelope_id
+        or str(generation["semantic_digest"]) != receipt.generation_digest
+    ):
+        raise EngineeringError("completion_generation_mismatch")
+    assigned_raw = generation["assigned_json"]
+    if isinstance(assigned_raw, str):
+        assigned_text = assigned_raw
+    else:
+        try:
+            assigned_text = bytes(assigned_raw).decode("utf-8")
+        except (TypeError, UnicodeDecodeError):
+            raise EngineeringError("completion_generation_invalid") from None
+    try:
+        assigned = json.loads(assigned_text)
+    except json.JSONDecodeError:
+        raise EngineeringError("completion_generation_invalid") from None
+    if not isinstance(assigned, list) or receipt.package_id not in assigned:
+        raise EngineeringError("completion_package_not_assigned")
+    frontier = store.assignment_frontier(receipt.generation_id)
+    if (
+        frontier["envelopeId"] != envelope.envelope_id
+        or frontier["sourceCommit"] != envelope.source_commit
+        or frontier["sourceTree"] != envelope.source_tree
+    ):
+        raise EngineeringError("completion_frontier_mismatch")
 
 
 def _score(package: EngineeringWorkPackage) -> int:
@@ -307,7 +344,7 @@ def plan_engineering_work(
     for receipt in receipt_values:
         if receipt.package_id in completed:
             raise EngineeringError("duplicate_completion_receipt")
-        _verify_completion(receipt, envelope, trust_store, now)
+        _verify_completion(receipt, envelope, store, trust_store, now)
         completed[receipt.package_id] = receipt
 
     base_packages: list[WorkPackage] = []
