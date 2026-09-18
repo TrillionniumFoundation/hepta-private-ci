@@ -66,9 +66,11 @@ Eligibility-to-parameter-group accumulation accepts samples derived from actual
 `SparseCheckpoint` state and binds an independent-modulator evidence digest before
 bounded low-dimensional modulation. It produces next-snapshot sufficient
 statistics only; selected weights, topology and current-run artifacts are never
-mutated. Real-model execution,
-target-host resource measurements, ablation outcomes and longitudinal efficacy
-remain external evidence, not consequences of unit tests.
+mutated. Real-model execution and target-host resource measurements remain external evidence,
+not consequences of unit tests. The qualification surface can execute deterministic
+mechanism lesions and bind preregistered future-window, retention, unlearning and
+independent-evaluator evidence, but those bindings do not self-certify empirical
+superiority or longitudinal efficacy.
 
 ## Verification and rollback
 
@@ -76,5 +78,7 @@ Run `just test --locked -p codex-hepta-neuron`, locked all-target compilation,
 strict selected-package Clippy and formatting checks at both exact source and
 actual-base synthetic merge. Tests cover canonical tie/order, inhibition,
 homeostasis, L1 projection, signed rounding, clock/sequence/scope/config drift,
-checkpoint corruption, extreme input and 2048-step bounded replay. Rollback
+checkpoint corruption, extreme input and 2048-step bounded replay. Qualification
+tests additionally execute full/no-temporal/no-inhibition/no-homeostasis/no-eligibility
+lesions and reject incomplete longitudinal evidence bindings. Rollback
 removes the additive export; the old API and callers remain unchanged.
