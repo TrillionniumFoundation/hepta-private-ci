@@ -161,6 +161,88 @@ fn ready_owner() -> HealthSnapshot {
     }
 }
 
+#[test]
+fn post_authority_fence_rejects_deadline_cancel_owner_and_ingress_drift() {
+    let health = ready_owner();
+    let expected = PathBuf::from("/run/agent/app-server.sock");
+    assert!(
+        validate_post_authority_fence(
+            &health,
+            &expected,
+            &expected,
+            false,
+            99,
+            100
+        )
+        .is_ok()
+    );
+    assert!(remaining_from(99, 100).is_ok());
+    assert!(remaining_from(100, 100).is_err());
+    assert!(remaining_from(101, 100).is_err());
+
+    assert!(
+        validate_post_authority_fence(
+            &health,
+            &expected,
+            &expected,
+            true,
+            99,
+            100
+        )
+        .is_err()
+    );
+    assert!(
+        validate_post_authority_fence(
+            &health,
+            &expected,
+            PathBuf::from("/run/agent/replaced.sock").as_path(),
+            false,
+            99,
+            100
+        )
+        .is_err()
+    );
+
+    let mut fenced = ready_owner();
+    fenced.fenced = true;
+    assert!(
+        validate_post_authority_fence(
+            &fenced,
+            &expected,
+            &expected,
+            false,
+            99,
+            100
+        )
+        .is_err()
+    );
+
+    let mut not_ready = ready_owner();
+    not_ready.ready = false;
+    assert!(
+        validate_post_authority_fence(
+            &not_ready,
+            &expected,
+            &expected,
+            false,
+            99,
+            100
+        )
+        .is_err()
+    );
+    assert!(
+        validate_post_authority_fence(
+            &health,
+            &expected,
+            &expected,
+            false,
+            100,
+            100
+        )
+        .is_err()
+    );
+}
+
 #[tokio::test]
 async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
     let mut not_ready = ready_owner();
