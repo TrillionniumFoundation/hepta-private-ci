@@ -19,7 +19,8 @@ use codex_hepta_intelligence_eval::{
 };
 use codex_hepta_learning_ledger::{
     LearningEvidenceRoleV1, LearningEvidenceVerifierV1, SignedEvidenceError,
-    SignedLearningEvidenceV1, verify_signed_role_separation,
+    SignedLearningEvidenceV1, verify_signed_independent_roles_v1,
+    verify_signed_role_separation,
 };
 use codex_hepta_plasticity::{
     DurableProposalAppendReceiptV1, DurableProposalRegistry, DurableProposalRegistryError,
@@ -373,7 +374,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         if evaluator.principal() != &bundle.evaluator {
             return Err(E::Evaluation(SignedEvaluationError::IdentityBinding));
         }
-        verify_signed_role_separation(&observer, &evaluator, now)
+        verify_signed_independent_roles_v1(&observer, &evaluator, now)
             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
 
         let decision =
