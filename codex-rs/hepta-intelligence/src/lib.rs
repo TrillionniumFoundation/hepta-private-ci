@@ -7,12 +7,18 @@
 #![forbid(unsafe_code)]
 
 mod evaluated_shadow;
+mod production_objective;
 
 pub use evaluated_shadow::EvaluatedShadowError;
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+pub use production_objective::IntelligenceHostEnvelopeV1;
+pub use production_objective::ProductionObjectiveDispositionV1;
+pub use production_objective::ProductionObjectiveError;
+pub use production_objective::ProductionRunBindingsV1;
+pub use production_objective::prepare_intelligence_run_v1;
 
 mod capability_snapshot;
 
