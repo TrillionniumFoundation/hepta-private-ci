@@ -125,6 +125,132 @@ pub fn evaluated_candidate_signing_payload_v1(
     Ok(bytes)
 }
 
+/// Build the exact production decision that the generator must sign before the
+/// evaluated-shadow pipeline is allowed to invoke host ports.
+pub fn evaluated_shadow_production_decision_v2(
+    run: &LaneFRunRequestV1,
+    intuition_request: &CalibratedDecisionRequestV1,
+    episode_id: &StableId,
+    generator_id: &StableId,
+    dataset_digest: Digest32,
+    candidate_evidence_payload_digest: Digest32,
+) -> Result<ProductionDecisionV2, EvaluatedShadowError> {
+    let intuition =
+        decide_calibrated_v2(intuition_request.clone()).map_err(EvaluatedShadowError::Intuition)?;
+    production_decision_from_receipt(
+        run,
+        intuition_request,
+        &intuition,
+        episode_id,
+        generator_id,
+        dataset_digest,
+        candidate_evidence_payload_digest,
+    )
+}
+
+fn production_decision_from_receipt(
+    run: &LaneFRunRequestV1,
+    intuition_request: &CalibratedDecisionRequestV1,
+    intuition: &CalibratedIntuitionReceiptV1,
+    episode_id: &StableId,
+    generator_id: &StableId,
+    dataset_digest: Digest32,
+    candidate_evidence_payload_digest: Digest32,
+) -> Result<ProductionDecisionV2, EvaluatedShadowError> {
+    if intuition_request.completeness.omitted_count_bound != 0
+        || intuition_request.candidates.len() > 126
+    {
+        return Err(EvaluatedShadowError::Binding("candidate completeness"));
+    }
+    let abstain = StableId::new(ABSTAIN.to_owned())
+        .map_err(|_| EvaluatedShadowError::Binding("abstain id"))?;
+    let slow_path = StableId::new(SLOW_PATH.to_owned())
+        .map_err(|_| EvaluatedShadowError::Binding("slow-path id"))?;
+    if intuition_request
+        .candidates
+        .iter()
+        .any(|candidate| matches!(candidate.candidate_id.as_str(), ABSTAIN | SLOW_PATH))
+    {
+        return Err(EvaluatedShadowError::Binding("reserved candidate"));
+    }
+
+    let (selected_candidate_id, selected_propensity) = match &intuition.disposition {
+        CalibratedDispositionV1::Selected(candidate) => {
+            let propensity = intuition
+                .propensities
+                .iter()
+                .find(|row| &row.candidate_id == candidate)
+                .map(|row| row.probability)
+                .filter(|value| value.raw() > 0)
+                .ok_or(EvaluatedShadowError::Binding("selected propensity"))?;
+            (candidate.clone(), propensity)
+        }
+        CalibratedDispositionV1::Abstained(_) => {
+            if intuition.abstain_probability.raw() == 0 {
+                return Err(EvaluatedShadowError::Binding("abstain propensity"));
+            }
+            (abstain.clone(), intuition.abstain_probability)
+        }
+        CalibratedDispositionV1::SlowPath(_) => {
+            if intuition.slow_path_probability.raw() == 0 {
+                return Err(EvaluatedShadowError::Binding("slow-path propensity"));
+            }
+            (slow_path.clone(), intuition.slow_path_probability)
+        }
+    };
+
+    let mut candidate_ids = intuition_request
+        .candidates
+        .iter()
+        .map(|candidate| candidate.candidate_id.clone())
+        .collect::<Vec<_>>();
+    candidate_ids.push(abstain);
+    candidate_ids.push(slow_path);
+
+    let snapshot_digest = run
+        .snapshot
+        .digest()
+        .map_err(EvaluatedShadowError::Pipeline)?;
+    let mut support = b"hepta.intelligence.production-shadow-decision.v2\0".to_vec();
+    for digest in [
+        run.request_digest,
+        snapshot_digest,
+        dataset_digest,
+        candidate_evidence_payload_digest,
+        intuition.receipt_digest,
+        intuition_request.completeness.receipt_digest,
+    ] {
+        support.extend_from_slice(digest.as_array());
+    }
+
+    Ok(ProductionDecisionV2 {
+        record_id: run.run_id.clone(),
+        episode_id: episode_id.clone(),
+        run_snapshot_digest: snapshot_digest,
+        objective_digest: intuition_request.objective_digest,
+        policy_digest: intuition_request.policy_digest,
+        candidate_ids: candidate_ids.clone(),
+        selected_candidate_id,
+        selected_propensity,
+        completeness: CandidateSetCompletenessReceiptV1 {
+            set_id: intuition_request.decision_id.clone(),
+            state_digest: intuition_request.state_digest,
+            generator_id: generator_id.clone(),
+            generator_code_digest: intuition_request.completeness.generator_digest,
+            grammar_digest: intuition_request.completeness.grammar_digest,
+            hard_filter_digest: intuition_request.completeness.hard_filter_digest,
+            truncation_digest: intuition_request.completeness.truncation_digest,
+            candidates_digest: candidate_ids_digest_v2(&candidate_ids),
+            candidate_count: u32::try_from(candidate_ids.len())
+                .map_err(|_| EvaluatedShadowError::Binding("candidate count"))?,
+            omitted_count_bound: 0,
+            canonical_order_digest: candidate_order_digest_v2(&candidate_ids),
+            complete_for_generator: true,
+        },
+        support_digest: Digest32::of_bytes(&support),
+    })
+}
+
 /// Authenticate before invoking any host port. Host ports must be proposal-only
 /// and honor their budgets. The synchronous coordinator cannot interrupt them.
 /// Dataset verification recomputes its manifest identity; the host still owns
