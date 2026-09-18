@@ -5,6 +5,12 @@
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
+use std::time::Duration;
 
 use codex_hepta_bellman_operator::TabularOperatorPlanV1;
 use codex_hepta_bellman_operator::TabularOperatorSampleV1;
@@ -34,13 +40,30 @@ use crate::PinnedCognitiveRanker;
 use crate::cognitive_action_id;
 use crate::cognitive_sensor_id;
 
+struct CurrentViewGate {
+    calls: AtomicUsize,
+    entered: Sender<()>,
+    release: Mutex<Receiver<()>>,
+}
+
 struct CurrentView {
     path: PathBuf,
     receipt: RegistrySnapshotReceipt,
+    gate: Option<CurrentViewGate>,
 }
 
 impl CurrentCognitiveRegistry for CurrentView {
     fn current(&self) -> Result<(File, RegistrySnapshotReceipt), String> {
+        if let Some(gate) = &self.gate
+            && gate.calls.fetch_add(1, Ordering::SeqCst) == 1
+        {
+            gate.entered.send(()).map_err(|error| error.to_string())?;
+            gate.release
+                .lock()
+                .map_err(|_| "current-view gate lock poisoned".to_string())?
+                .recv()
+                .map_err(|error| error.to_string())?;
+        }
         Ok((
             File::open(&self.path).map_err(|error| error.to_string())?,
             self.receipt,
@@ -62,6 +85,15 @@ fn hash(value: &str) -> Digest32 {
 }
 
 fn fitted_ranker(owner: AgentId, items: &[CognitiveContextItem], scores: &[i64]) -> RankerFixture {
+    fitted_ranker_with_gate(owner, items, scores, None)
+}
+
+fn fitted_ranker_with_gate(
+    owner: AgentId,
+    items: &[CognitiveContextItem],
+    scores: &[i64],
+    gate: Option<CurrentViewGate>,
+) -> RankerFixture {
     assert_eq!(items.len(), scores.len());
     let directory = tempfile::tempdir().unwrap();
     let sensor = cognitive_sensor_id("lemon").unwrap();
@@ -145,6 +177,7 @@ fn fitted_ranker(owner: AgentId, items: &[CognitiveContextItem], scores: &[i64])
     let current = Arc::new(CurrentView {
         path: snapshot.clone(),
         receipt: registry_receipt,
+        gate,
     });
     let ranker = Arc::new(
         PinnedCognitiveRanker::load(
