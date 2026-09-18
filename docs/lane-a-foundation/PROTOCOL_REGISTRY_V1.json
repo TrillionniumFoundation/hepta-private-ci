@@ -57,21 +57,33 @@
       ]
     },
     {
-      "protocolId": "hepta.kernel.operations.reference-model.v1",
+      "protocolId": "hepta.kernel.operations.durable-ledger-outbox.v1",
       "module": "kernel.operations",
-      "kind": "bounded_in_memory_reference_state_machine",
+      "kind": "sqlite_durable_operation_ledger_and_transactional_outbox",
       "source": [
-        "codex-rs/hepta-operations/src/model.rs",
-        "codex-rs/hepta-operations/src/ledger.rs",
-        "codex-rs/hepta-operations/src/outbox.rs"
+        "codex-rs/hepta-operations/src/durable/model.rs",
+        "codex-rs/hepta-operations/src/durable/store.rs",
+        "codex-rs/hepta-operations/src/durable/dispatcher.rs",
+        "codex-rs/hepta-operations/src/durable/reconcile.rs",
+        "codex-rs/hepta-operations/migrations/0001_operation_store.sql",
+        "codex-rs/hepta-operations/migrations/0002_retired_identity_tombstones.sql",
+        "codex-rs/hepta-automation/src/operation_destination.rs",
+        "codex-rs/hepta-automation/migrations/0004_kernel_operation_dedupe.sql"
       ],
       "invariants": [
-        "reference witness digest binds operation payload generation and expiry",
-        "authorization replay revalidates the complete live witness",
-        "terminal observation is owner-generation fenced",
-        "acknowledged outbox state retains owner generation and acknowledgement digest",
-        "the model provides no durability or production authority"
-      ]
+        "operation intent and source outbox are co-committed in one BEGIN IMMEDIATE transaction",
+        "scoped semantic identity binds predecessor destination and exact payload while owner generation remains an execution fence",
+        "claims are bounded leased generation-fenced and stale workers cannot renew retry or acknowledge a newer fence",
+        "dispatched state is persisted before final-use effect entry and acknowledgement loss becomes indeterminate rather than blindly retried",
+        "a real non-serializable kernel.authority final-use token is consumed immediately around adapter entry",
+        "terminal applied not-applied or quarantined state requires matching destination evidence",
+        "a higher owner generation may adopt only unresolved dispatched or indeterminate work while settling terminal evidence; lower generations remain stale",
+        "automation.taskflow commits its domain mutation and immutable destination dedupe receipt in one destination-owner transaction",
+        "terminal source and generic destination pruning preserve immutable semantic tombstones before removing live rows",
+        "the retained in-memory reference model is an oracle and grants no production authority",
+        "source implementation does not grant product activation independent acceptance promotion or release"
+      ],
+      "legacyProtocolId": "hepta.kernel.operations.reference-model.v1"
     },
     {
       "protocolId": "hepta.kernel.evidence.sqlite-lineage.v1",
