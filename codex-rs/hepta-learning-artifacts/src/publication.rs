@@ -755,17 +755,14 @@ mod tests {
         let first =
             crate::admit_manifest_at_withdrawal_head_v3(&registry, head, manifest.clone(), 20)
                 .expect("first admission");
-        let second =
-            crate::admit_manifest_at_withdrawal_head_v3(&registry, head, manifest, 21)
-                .expect("second admission");
+        let second = crate::admit_manifest_at_withdrawal_head_v3(&registry, head, manifest, 21)
+            .expect("second admission");
         let operation_id = id("operation");
         let predecessor = digest("previous-head");
-        let first_event =
-            artifact_registry_event_for_admission_v3(operation_id.clone(), &first)
-                .expect("first projection");
-        let second_event =
-            artifact_registry_event_for_admission_v3(operation_id.clone(), &second)
-                .expect("second projection");
+        let first_event = artifact_registry_event_for_admission_v3(operation_id.clone(), &first)
+            .expect("first projection");
+        let second_event = artifact_registry_event_for_admission_v3(operation_id.clone(), &second)
+            .expect("second projection");
         assert_eq!(digest_event(&first_event), digest_event(&second_event));
         assert_eq!(first_event.event_id(), &operation_id);
         assert_eq!(second_event.event_id(), &operation_id);
