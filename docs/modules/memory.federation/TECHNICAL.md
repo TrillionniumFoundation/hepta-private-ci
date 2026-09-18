@@ -298,9 +298,12 @@ The current local product path is:
 `FederatedCognitiveExtension -> FederatedRecallSet -> retrieve_reader_through_canonical_v2 -> execute_once -> CanonicalReaderTransport -> FederatedMemoryReader`.
 
 `CanonicalReaderAuthority` reuses the durable capability/revocation state already
-owned by `hepta-memory`. The local transport preserves the current per-agent cognitive
-SQLite ownership boundary and does not imply a network federation service. Any future
-network or fleet transport remains independently qualified.
+owned by `hepta-memory`. The local transport preserves the current per-agent cognitive SQLite ownership
+boundary and does not imply a network federation service. It observes the owner's
+append-only memory-revision frontier before and after the retrieval; any frontier drift
+turns the attempt indeterminate rather than binding a capability revision as if it were
+a memory frontier. Any future network or fleet transport remains independently
+qualified.
 
 Legacy aggregation no longer silently converts an unavailable reader or a failed
 dynamic-owner discovery into an indistinguishable empty result.
@@ -324,7 +327,7 @@ canonical response ordering, restored-result coverage invariants, explicit
 failed-source coverage and dynamic-discovery uncertainty.
 
 The implementation map records PR #693 and frozen code candidate
-`8f8d75ad8eb57d7b40275b41c376592a13714ac6` separately from
+`a27de7b0a6e269187f0254751e2b469b719cfdba` separately from
 the repository-wide generated `sourceBase`. The generated source base intentionally
 remains common across all module maps; changing only this module's `sourceBase` would
 create invalid closed-world provenance drift.
