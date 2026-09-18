@@ -7,9 +7,12 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
+#[cfg(test)]
 use codex_hepta_cognitive_read::ReadRequestV2;
+#[cfg(test)]
 use codex_hepta_cognitive_read::ReadResultV2;
 use codex_hepta_cognitive_read::SnapshotProviderError;
+#[cfg(test)]
 use codex_hepta_cognitive_read::read_v2;
 use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::CognitiveSnapshot;
@@ -92,6 +95,7 @@ impl DurableCognitiveSnapshot {
 
     /// Owner-crate projection primitive used by focused snapshot tests. Product
     /// callers compose this cut through `bind_context` and `read_authoritative`.
+    #[cfg(test)]
     pub(crate) fn read(
         &self,
         request: ReadRequestV2,
