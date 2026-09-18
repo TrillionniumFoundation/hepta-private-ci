@@ -69,6 +69,69 @@ fn reopens_exact_committed_state() {
 }
 
 #[test]
+fn committed_transition_retries_are_exactly_idempotent() {
+    let path = path("exact-idempotence");
+    let mut control = DurableInferenceControl::open(&path, 32).expect("open");
+    control.submit(100, request()).expect("submit");
+
+    let reserved = control
+        .reserve(100, "request.1", 1, reservation())
+        .expect("reserve");
+    let after_reserve = fs::read(&path).expect("reserve bytes");
+    let reserve_replay = control
+        .reserve(100, "request.1", 1, reservation())
+        .expect("reserve replay");
+    assert!(reserve_replay.idempotent);
+    assert_eq!(reserve_replay.revision, reserved.revision);
+    assert_eq!(fs::read(&path).expect("reserve replay bytes"), after_reserve);
+
+    let assigned = control
+        .assign("request.1", 2, assignment())
+        .expect("assign");
+    let after_assign = fs::read(&path).expect("assign bytes");
+    let assign_replay = control
+        .assign("request.1", 2, assignment())
+        .expect("assign replay");
+    assert!(assign_replay.idempotent);
+    assert_eq!(assign_replay.revision, assigned.revision);
+    assert_eq!(fs::read(&path).expect("assign replay bytes"), after_assign);
+
+    let cancelling = control.cancel("request.1", 3).expect("cancel");
+    let after_cancel = fs::read(&path).expect("cancel bytes");
+    let cancel_replay = control.cancel("request.1", 3).expect("cancel replay");
+    assert!(cancel_replay.idempotent);
+    assert_eq!(cancel_replay.revision, cancelling.revision);
+    assert_eq!(fs::read(&path).expect("cancel replay bytes"), after_cancel);
+
+    let observation = TerminalObservation {
+        request_id: "request.1".to_string(),
+        reservation_id: "reservation.1".to_string(),
+        worker_id: "worker.1".to_string(),
+        worker_generation: 2,
+        model_digest: "1".repeat(64),
+        payload_digest: "2".repeat(64),
+        terminal_observed: true,
+        terminal_status: Some(RequestState::Completed),
+        output_digest: Some("5".repeat(64)),
+        consumed_tokens: 64,
+        usage_units: 50,
+    };
+    let settled = control
+        .settle("request.1", 4, "6".repeat(64), observation.clone())
+        .expect("settle");
+    let after_settle = fs::read(&path).expect("settle bytes");
+    let settle_replay = control
+        .settle("request.1", 4, "6".repeat(64), observation)
+        .expect("settle replay");
+    assert!(settle_replay.idempotent);
+    assert_eq!(settle_replay.revision, settled.revision);
+    assert_eq!(fs::read(&path).expect("settle replay bytes"), after_settle);
+
+    drop(control);
+    fs::remove_file(path).expect("cleanup");
+}
+
+#[test]
 fn cancellation_after_assignment_waits_for_observation_and_accounts_usage() {
     let path = path("cancel-race");
     let mut control = DurableInferenceControl::open(&path, 32).expect("open");
