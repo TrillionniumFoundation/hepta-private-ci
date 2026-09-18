@@ -57,6 +57,29 @@ fn stable_profile_exhaustively_matches_the_v1_ascii_alphabet() {
 }
 
 #[test]
+fn stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation() {
+    let mut state = 0x9e37_79b9_7f4a_7c15_u64;
+    for length in 0..=140 {
+        for _ in 0..32 {
+            let mut value = String::with_capacity(length);
+            for _ in 0..length {
+                state ^= state << 13;
+                state ^= state >> 7;
+                state ^= state << 17;
+                let byte = 0x20_u8 + u8::try_from(state % 95).unwrap_or(0);
+                value.push(char::from(byte));
+            }
+            assert_eq!(
+                StableId::new(value.clone()),
+                validate_id(&value, IdProfileV1::Stable),
+                "owned and borrowed stable-ID admission diverged for {value:?}"
+            );
+        }
+    }
+}
+
+
+#[test]
 fn identity_bounds_and_monotonic_overflow_fail_closed() {
     assert!(StableId::new("a".repeat(128)).is_ok());
     assert_eq!(
