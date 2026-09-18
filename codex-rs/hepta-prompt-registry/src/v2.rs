@@ -15,12 +15,17 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+#[cfg(test)]
 use crate::Error;
+#[cfg(test)]
 use crate::FactorSource;
 use crate::Lifecycle;
+#[cfg(test)]
 use crate::MutationDisposition;
+#[cfg(test)]
 use crate::PromptRealization;
 use crate::PromptRegistry;
+#[cfg(test)]
 use crate::RegistryReceipt;
 
 pub const MAX_COMPATIBLE_REALIZATIONS_V2: usize = 128;
