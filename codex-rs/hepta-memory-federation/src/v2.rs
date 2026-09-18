@@ -428,10 +428,13 @@ impl FederatedResultV2 {
         if self.expires_unix_ms == 0 {
             return Err(FederationV2Error::ZeroValue("result_expiry"));
         }
-        if self.coverage.requested_peers != 1
-            || u64::from(self.coverage.completed_peers) + u64::from(self.coverage.failed_peers) > 1
-        {
+        let observed_peers =
+            u64::from(self.coverage.completed_peers) + u64::from(self.coverage.failed_peers);
+        if self.coverage.requested_peers != 1 || observed_peers != 1 {
             return Err(FederationV2Error::InvalidCoverage);
+        }
+        if let Some(remote_response_digest) = self.remote_response_digest {
+            ensure_digest("remote_response", remote_response_digest)?;
         }
         if self.items.len() > MAX_FEDERATED_RESULTS_V2 {
             return Err(FederationV2Error::ResultLimitExceeded);
@@ -443,9 +446,16 @@ impl FederatedResultV2 {
         if indeterminate
             && (!self.items.is_empty()
                 || self.observed_frontier.is_some()
-                || self.remote_response_digest.is_some())
+                || self.remote_response_digest.is_some()
+                || self.coverage.completed_peers != 0
+                || self.coverage.failed_peers != 1)
         {
             return Err(FederationV2Error::InvalidCompleteness);
+        }
+        if !indeterminate
+            && (self.coverage.completed_peers != 1 || self.coverage.failed_peers != 0)
+        {
+            return Err(FederationV2Error::InvalidCoverage);
         }
         if matches!(self.validity, FederatedValidityV2::StaleGeneration) && !self.items.is_empty() {
             return Err(FederationV2Error::StaleEvidenceExposed);
