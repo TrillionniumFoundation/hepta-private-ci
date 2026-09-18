@@ -25,6 +25,9 @@ Repository-local composition follows this sequence:
 1. verify the exact Git source with `issue_repository_work_envelope` or authenticate a
    `CanonicalSourceReceipt` with `issue_signed_work_envelope`;
 2. consume only fresh signed `CompletionReceipt` objects when satisfying predecessor
+   edges; each receipt must reference a real immutable assignment generation in the
+   owner store, bind that generation semantic digest, and name a package actually
+   assigned under the same envelope/source frontier;
    work;
 3. run `plan_engineering_work` with explicit worker skills/path scope/capacity,
    CI capacity, review topology, expected value, architecture debt and rollback cost;
