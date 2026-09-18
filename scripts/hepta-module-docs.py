@@ -113,6 +113,66 @@ def verify_local_links(path, text):
             need(anchor in anchors, str(path) + " missing anchor " + target)
 
 
+def sync_views(check):
+    """Generate duplicated module source/status views from MODULES.json.
+
+    MODULES.json is the only hand-maintained source for module identity, roots,
+    lifecycle, source status and bootstrap ownership. SOURCE_BINDINGS.json and
+    the duplicated status fields in MODULE_DOCS.json are generated projections.
+    """
+    modules = load("docs/modules/MODULES.json")
+    bindings = load("docs/modules/SOURCE_BINDINGS.json")
+    docs = load("docs/modules/MODULE_DOCS.json")
+    bmap = {row["module"]: row for row in bindings["bindings"]}
+    dmap = {row["module"]: row for row in docs["modules"]}
+    changed = []
+    for module in modules["modules"]:
+        mid = module["id"]
+        need(mid in bmap and mid in dmap, mid + " generated view row")
+        declared = [binding["path"] for binding in module["rootBindings"]]
+        existing = [path for path in declared if (ROOT / path).exists()]
+        missing = [path for path in declared if not (ROOT / path).exists()]
+        binding = bmap[mid]
+        binding.update(
+            lifecycle=module["lifecycle"],
+            sourceStatus=module["sourceStatus"],
+            source_root_present=bool(existing),
+            production_implementation=module["production_implementation"],
+            declaredRoots=declared,
+            existingDeclaredRoots=existing,
+            sourceEvidenceRoots=module.get("sourceEvidenceRoots", []),
+            missingDeclaredRoots=missing,
+            bootstrapWorkPackage=module["bootstrapWorkPackage"],
+            technicalDocument=module["technicalDocument"],
+        )
+        row = dmap[mid]
+        row.update(
+            path=module["technicalDocument"],
+            sourceStatus=module["sourceStatus"],
+            source_root_present=bool(existing),
+            production_implementation=module["production_implementation"],
+            bootstrapWorkPackage=module["bootstrapWorkPackage"],
+        )
+
+    rendered = {
+        "docs/modules/SOURCE_BINDINGS.json": json.dumps(
+            bindings, indent=2, ensure_ascii=False
+        ) + "\\n",
+        "docs/modules/MODULE_DOCS.json": json.dumps(
+            docs, indent=2, ensure_ascii=False
+        ) + "\\n",
+    }
+    for relative, text in rendered.items():
+        path = ROOT / relative
+        if path.read_text(encoding="utf-8") != text:
+            changed.append(relative)
+            if not check:
+                path.write_text(text, encoding="utf-8")
+    need(not check or not changed, "generated module view drift: " + ", ".join(changed))
+    print(json.dumps({"updatedViews": changed, "checkOnly": check}, sort_keys=True))
+    return 0
+
+
 def refresh_indexes(check):
     """Recompute derived bytes/counts/digests without changing claims or scope."""
     specs = [
@@ -344,13 +404,18 @@ def self_test():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["verify", "self-test", "refresh-indexes"])
+    p.add_argument(
+        "command",
+        choices=["verify", "self-test", "refresh-indexes", "sync-views"],
+    )
     p.add_argument("--check", action="store_true")
     args = p.parse_args()
     if args.command == "refresh-indexes":
         return refresh_indexes(args.check)
+    if args.command == "sync-views":
+        return sync_views(args.check)
     if args.check:
-        p.error("--check applies only to refresh-indexes")
+        p.error("--check applies only to refresh-indexes or sync-views")
     return verify() if args.command == "verify" else self_test()
 
 
