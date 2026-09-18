@@ -21,6 +21,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  rustfmt-diagnostic:
+    name: Rustfmt source diagnostic
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Install pinned Rust formatter
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          rustup override set 1.95.0
+
+      - name: Generate canonical rustfmt patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path apps/hepta-native/Cargo.toml
+          git diff --binary -- apps/hepta-native/src apps/hepta-native/tests > rustfmt.patch
+
+      - name: Retain canonical rustfmt patch
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-native-rustfmt-${{ github.event.pull_request.head.sha || github.sha }}
+          path: rustfmt.patch
+          if-no-files-found: error
+
+      - name: Require committed source to be formatted
+        shell: bash
+        run: test ! -s rustfmt.patch
+
   native:
     name: Rust native / ${{ matrix.os }}
     strategy:
