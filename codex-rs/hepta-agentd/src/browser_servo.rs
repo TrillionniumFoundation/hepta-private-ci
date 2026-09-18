@@ -722,7 +722,7 @@ pub struct BrowserServoHostConfig {
 
 pub fn open_browser_servo_port_from_file(
     path: &Path,
-) -> Result<BrowserServoPort<ChildBrowserTransport>, BrowserServoError> {
+) -> Result<PersistentBrowserServoControl, BrowserServoError> {
     let metadata = fs::symlink_metadata(path).map_err(|error| {
         BrowserServoError::Invalid(format!(
             "cannot inspect Browser runtime config {}: {error}",
@@ -791,9 +791,84 @@ pub fn open_browser_servo_port_from_file(
         max_processes: config.max_processes,
         driver_timeout_ms: config.driver_timeout_ms,
     };
-    let frame_timeout = process.parent_frame_timeout()?;
-    let transport = ChildBrowserTransport::spawn(&process)?;
-    BrowserServoPort::with_frame_timeout(authority, transport, frame_timeout)
+    PersistentBrowserServoControl::new(authority, process)
+}
+
+pub struct PersistentBrowserServoControl {
+    authority: FinalUseAuthority,
+    process: BrowserServoProcessConfig,
+    frame_timeout: Duration,
+    port: Mutex<Option<BrowserServoPort<ChildBrowserTransport>>>,
+}
+
+impl fmt::Debug for PersistentBrowserServoControl {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("PersistentBrowserServoControl")
+            .field("process", &self.process)
+            .field("port", &"[PRIVATE RESTARTABLE BROWSER CHILD]")
+            .finish()
+    }
+}
+
+impl PersistentBrowserServoControl {
+    pub fn new(
+        authority: FinalUseAuthority,
+        process: BrowserServoProcessConfig,
+    ) -> Result<Self, BrowserServoError> {
+        process.validate()?;
+        let frame_timeout = process.parent_frame_timeout()?;
+        let transport = ChildBrowserTransport::spawn(&process)?;
+        let port = BrowserServoPort::with_frame_timeout(
+            authority.clone(),
+            transport,
+            frame_timeout,
+        )?;
+        Ok(Self {
+            authority,
+            process,
+            frame_timeout,
+            port: Mutex::new(Some(port)),
+        })
+    }
+
+    pub fn call(&self, call: BrowserServoCall) -> Result<Value, BrowserServoError> {
+        let mut guard = self
+            .port
+            .lock()
+            .map_err(|_| BrowserServoError::Unavailable(
+                "persistent Browser owner mutex is poisoned".into(),
+            ))?;
+        if guard.is_none() {
+            let transport = ChildBrowserTransport::spawn(&self.process)?;
+            *guard = Some(BrowserServoPort::with_frame_timeout(
+                self.authority.clone(),
+                transport,
+                self.frame_timeout,
+            )?);
+        }
+        let result = guard
+            .as_ref()
+            .ok_or_else(|| BrowserServoError::Unavailable(
+                "persistent Browser child is unavailable".into(),
+            ))?
+            .call(call);
+        if result.as_ref().err().is_some_and(browser_error_requires_child_reset) {
+            // Never retry the current semantic call. Dropping the port contains
+            // the private child; the next caller may start a clean service and
+            // explicitly reconcile any durable indeterminate operation.
+            *guard = None;
+        }
+        result
+    }
+}
+
+fn browser_error_requires_child_reset(error: &BrowserServoError) -> bool {
+    matches!(
+        error,
+        BrowserServoError::Protocol(_)
+            | BrowserServoError::Indeterminate(_)
+            | BrowserServoError::Unavailable(_)
+    )
 }
 
 fn parse_digest_text(value: &str, name: &str) -> Result<[u8; 32], BrowserServoError> {
@@ -1706,6 +1781,25 @@ mod tests {
             harness.outbound.recv_timeout(Duration::from_millis(25)),
             Err(mpsc::RecvTimeoutError::Timeout)
         ));
+    }
+
+    #[test]
+    fn persistent_owner_resets_only_channel_or_indeterminate_failures() {
+        assert!(browser_error_requires_child_reset(&BrowserServoError::Protocol(
+            "bad frame".into()
+        )));
+        assert!(browser_error_requires_child_reset(&BrowserServoError::Indeterminate(
+            "unknown effect".into()
+        )));
+        assert!(browser_error_requires_child_reset(&BrowserServoError::Unavailable(
+            "child exited".into()
+        )));
+        assert!(!browser_error_requires_child_reset(&BrowserServoError::Rejected(
+            "application rejection".into()
+        )));
+        assert!(!browser_error_requires_child_reset(&BrowserServoError::Invalid(
+            "caller input".into()
+        )));
     }
 
     #[test]

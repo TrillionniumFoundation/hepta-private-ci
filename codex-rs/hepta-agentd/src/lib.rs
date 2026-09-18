@@ -28,6 +28,7 @@ pub use browser_servo::BrowserFinalUseInvocation;
 pub use browser_servo::BrowserServoCall;
 pub use browser_servo::BrowserServoError;
 pub use browser_servo::BrowserServoHostConfig;
+pub use browser_servo::PersistentBrowserServoControl;
 pub use browser_servo::BrowserServoMethod;
 pub use browser_servo::BrowserServoPort;
 pub use browser_servo::BrowserServoProcessConfig;
