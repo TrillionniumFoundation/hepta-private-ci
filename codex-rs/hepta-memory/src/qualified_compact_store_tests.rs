@@ -331,6 +331,66 @@ async fn corrupt_persisted_checkpoint_fails_store_reopen() {
     ));
 }
 
+#[tokio::test]
+async fn unknown_checkpoint_image_field_fails_store_reopen() {
+    let (temp, store, _lease, _fence) = prepared().await;
+    let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "unknown-field");
+    let proof = proof(&checkpoint, "unknown-field");
+    let mut checkpoint_value = serde_json::to_value(CheckpointImageV1::from_contract(&checkpoint))
+        .expect("serialize checkpoint image");
+    checkpoint_value
+        .as_object_mut()
+        .expect("checkpoint image object")
+        .insert(
+            "unexpected_critical_field".to_string(),
+            serde_json::Value::String("must-not-be-ignored".to_string()),
+        );
+    let checkpoint_json =
+        serde_json::to_string(&checkpoint_value).expect("encode checkpoint with unknown field");
+    let proof_json = serde_json::to_string(&ProofImageV2::from_contract(&proof))
+        .expect("serialize proof image");
+    let publication = publication_digest(&checkpoint, &proof);
+
+    sqlx::query(
+        "INSERT INTO cognitive_qualified_compact_checkpoints (
+            owner_agent_id, scope_id, purpose_id, generation,
+            checkpoint_digest, predecessor_digest, candidate_digest, proof_digest,
+            source_snapshot_digest, tokenizer_digest, publication_digest,
+            checkpoint_json, proof_json, published_at_unix_seconds
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(store.owner_agent_id().as_str())
+    .bind(checkpoint.source_snapshot.vector.scope_id.as_str())
+    .bind(checkpoint.source_snapshot.vector.purpose_id.as_str())
+    .bind(i64::try_from(checkpoint.generation.get()).expect("generation"))
+    .bind(checkpoint.checkpoint_digest.to_string())
+    .bind(checkpoint.predecessor_digest.map(|value| value.to_string()))
+    .bind(proof.candidate_digest.to_string())
+    .bind(proof.proof_digest.to_string())
+    .bind(checkpoint.source_snapshot.vector_digest.to_string())
+    .bind(
+        checkpoint
+            .source_snapshot
+            .vector
+            .tokenizer_digest
+            .to_string(),
+    )
+    .bind(publication.to_string())
+    .bind(checkpoint_json)
+    .bind(proof_json)
+    .bind(i64::try_from(unix_seconds()).expect("time"))
+    .execute(&store.pool)
+    .await
+    .expect("inject otherwise-valid row with unknown field");
+    drop(store);
+
+    let owner = agent_id(84);
+    assert!(matches!(
+        CognitiveStore::open(&layout(&temp, &owner)).await,
+        Err(CognitiveStoreError::Corrupt(_))
+    ));
+}
+
 #[test]
 fn publication_contract_is_authority_free() {
     let checkpoint = checkpoint(2, digest("bootstrap-predecessor"), "one");
