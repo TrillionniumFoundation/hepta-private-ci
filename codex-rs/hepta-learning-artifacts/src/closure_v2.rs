@@ -278,6 +278,13 @@ impl DatasetWithdrawalRegistry {
         self.withdrawn_datasets.contains_key(&dataset_digest)
     }
 
+    #[must_use]
+    pub fn head_digest(&self) -> Digest32 {
+        self.records
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest)
+    }
+
     pub fn admit_manifest(
         &self,
         manifest: LearningArtifactManifestV2,
@@ -299,10 +306,7 @@ impl DatasetWithdrawalRegistry {
     pub fn snapshot(&self) -> DatasetWithdrawalRegistrySnapshotV1 {
         DatasetWithdrawalRegistrySnapshotV1 {
             records: self.records.clone(),
-            head_digest: self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |record| record.chain_digest),
+            head_digest: self.head_digest(),
         }
     }
 
