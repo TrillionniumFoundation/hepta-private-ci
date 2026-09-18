@@ -1,7 +1,11 @@
 # kernel.evidence: implementation design
 
 Parent: `docs/modules/kernel.evidence/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: SQLite provider-effect intent, acknowledgement and reconciliation source implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: target qualification append/query/chain verification, authenticated issuer roles,
+independent-decision projection, durable revocation and logical anti-rollback
+checkpoint are implemented and composed through the existing governance product
+host. Exact-candidate execution evidence and independent acceptance remain
+separate as listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +49,47 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `append_provider_effect_intent` in [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs); `reconcile_provider_effect_lookup` in [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs). SQLite provider-effect intent, acknowledgement and reconciliation source implemented.
-- **State and recovery:** HeptaEvidenceStore stores canonical JSON and digests in existing SQLite tables; BEGIN IMMEDIATE makes exact intent retries idempotent and rejects changed payloads. Dispatch uncertainty remains distinct from provider acknowledgement and ambiguous timestamp order remains indeterminate.
-- **Source tests:** [codex-rs/hepta-evidence/src/provider_effect_tests.rs](../../../codex-rs/hepta-evidence/src/provider_effect_tests.rs), [codex-rs/hepta-evidence/src/provider_claim_tests.rs](../../../codex-rs/hepta-evidence/src/provider_claim_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/kernel.evidence/STORE_V1.md](../../../docs/lane-a-foundation/kernel.evidence/STORE_V1.md).
-- **Remaining work:** dispatch_provider_effect_qualification remains an injected qualification seam; authenticated production providers, terminal observers and target recovery evidence must be supplied separately.
+- **Target contract entrypoints:** `HeptaEvidenceStore::append_receipt`,
+  `HeptaEvidenceStore::verify_chain` and `HeptaEvidenceStore::query_claim` in
+  [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs).
+  The former governance receipt append was renamed
+  `append_governance_receipt` so the two meanings cannot be confused.
+- **Independent verification records:** `append_independent_decision_receipt`
+  persists the registered `IndependentDecisionReceiptV1` projection only when
+  candidate, registered role, principal, signing identity, evidence-set digest,
+  expiry and the detached signed envelope agree. Same-principal or same-key
+  identities cannot satisfy two required independent roles.
+- **Issuer authentication and revocation:** host-created
+  `AuthenticatedEvidenceIssuerV1` values require a certificate signed by a
+  pinned root and a current external revocation head. Durable
+  `append_issuer_key_revocation` facts invalidate subsequent chain
+  verification without rewriting receipts.
+- **State and recovery:** migration `0011_qualification_evidence.sql` stores
+  canonical signed envelopes, predecessor/revocation lineage and independent
+  decision projections append-only. Store reopen revalidates canonical bytes,
+  projections and Ed25519 signatures. Existing provider-effect uncertainty
+  remains separate from terminal provider acknowledgement.
+- **Anti-rollback:** `capture_external_checkpoint`,
+  `verify_external_checkpoint` and `open_with_external_checkpoint` in
+  [codex-rs/hepta-evidence/src/checkpoint.rs](../../../codex-rs/hepta-evidence/src/checkpoint.rs)
+  bind the migration prefix and complete qualification-evidence prefix. The
+  checkpoint must be retained outside the SQLite failure domain.
+- **Product composition:** the existing
+  [codex-hepta-governance GovernanceState](../../../codex-rs/ext/hepta-governance/src/state.rs)
+  authenticates issuers and exposes the qualification writer, query verifier,
+  terminal-observer path and checkpoint boundary to named product callers.
+- **Source tests:** [qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs)
+  implements EVID-01..04 plus revocation, independent-decision, corruption and
+  rollback-checkpoint cases; [qualification_product_tests.rs](../../../codex-rs/ext/hepta-governance/src/qualification_product_tests.rs)
+  proves the named product host composition. Test sources are not execution
+  receipts.
+- **Execution evidence:** Lane A CI emits exact-source and deterministic
+  synthetic-merge source/native receipts. See
+  [kernel.evidence traceability](kernel.evidence.traceability.md) for the
+  requirement-to-receipt mapping.
+- **Remaining external gates:** an independently controlled actor must still
+  supply a current signed independent decision for the exact candidate.
+  Operator acceptance, physical target qualification, trust-root ceremony,
+  promotion and release remain external. The provider-effect dispatch facade
+  remains qualification-only and is not promoted into a production effect
+  authority by this module.
