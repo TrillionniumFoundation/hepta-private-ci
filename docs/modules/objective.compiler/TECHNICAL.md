@@ -121,7 +121,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The compiler itself remains stateless. The current product-composition candidate is `prepare_intelligence_run_v1` in `codex-rs/hepta-intelligence`: it performs authenticated admission, revalidates the compiled objective, binds `RunStartSnapshotV1`, and appends one atomic `RunStartPublicationV1` through the sealed `learning.ledger` durable owner port. `runtime.agentd` consumes the resulting deny-all `IntelligenceHostEnvelopeV1` into an ephemeral `RunSnapshot`; it does not own the objective facts. Exact-head qualification of that cross-owner composition remains required before the caller is considered established.
+The compiler itself remains stateless. `prepare_intelligence_run_v1` in `codex-rs/hepta-intelligence` performs authenticated admission, revalidates the compiled objective, binds `RunStartSnapshotV1`, and appends one atomic `RunStartPublicationV1` through the sealed `learning.ledger` durable owner port. The named product-host candidate is `runtime.agentd::prepare_and_start_intelligence_run_v1`, which composes that durable publication with runtime admission in a fixed order and retains the opaque publication receipt on post-fsync runtime failure. Agentd admits only matching authority epoch, generation and fence state and never owns the objective facts. Exact-head qualification of this cross-owner composition remains required before the caller is considered established.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -150,7 +150,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library. The repository now contains a bounded caller candidate in `intelligence.control` that publishes the immutable objective/run snapshot through `learning.ledger`, followed by a digest-only `runtime.agentd` consumer seam. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+Stateless compiler/admission library. The repository now contains a bounded compiler caller in `intelligence.control` and a named product-host candidate `runtime.agentd::prepare_and_start_intelligence_run_v1` that publishes the immutable objective/run snapshot through `learning.ledger` before admitting the digest-bound runtime snapshot. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
 
 Current operating and state-format references:
 
