@@ -92,9 +92,67 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
         Err(WorldModelError::DuplicateSample("sample-1".to_owned()))
     );
 
+    let mut replayed = sample("sample-2", "state-c", 20);
+    replayed.evidence_digest = duplicate.evidence_digest;
+    let relabelled = WorldModelSampleV1 {
+        sample_id: id("sample-3"),
+        ..replayed
+    };
+    assert_eq!(
+        fit_transition_model(
+            id("world-model-replay"),
+            digest("dataset"),
+            vec![duplicate.clone(), relabelled],
+        ),
+        Err(WorldModelError::DuplicateEvidence)
+    );
+
     let invalid = sample("sample-2", "state-b", FixedQ32::ONE.raw() + 1);
     assert_eq!(
         fit_transition_model(id("world-model-2"), digest("dataset"), vec![invalid],),
         Err(WorldModelError::InvalidOutcome)
+    );
+}
+
+#[test]
+fn world_model_loaded_pin_authenticates_identity_and_structure() {
+    let model = fit_transition_model(
+        id("world-model-loaded"),
+        digest("dataset-loaded"),
+        vec![sample("sample-loaded", "state-b", 10)],
+    )
+    .expect("fit");
+    let pin = WorldModelPinV1 {
+        model_digest: model.model_digest,
+        dataset_digest: model.dataset_digest,
+    };
+    let loaded = LoadedTabularWorldModelV1::from_pinned_model(model.clone(), &pin)
+        .expect("pinned model admitted");
+    assert_eq!(loaded.model_id(), &id("world-model-loaded"));
+    assert!(loaded
+        .predict(&id("state-a"), &id("action-a"))
+        .expect("predict")
+        .synthetic);
+
+    let mut tampered = model;
+    tampered.estimates[0].sample_count += 1;
+    assert_eq!(
+        LoadedTabularWorldModelV1::from_pinned_model(tampered, &pin),
+        Err(WorldModelError::InvalidModel)
+    );
+}
+
+#[test]
+fn raw_world_model_prediction_rejects_tampered_model() {
+    let mut model = fit_transition_model(
+        id("world-model-raw"),
+        digest("dataset-raw"),
+        vec![sample("sample-raw", "state-b", 10)],
+    )
+    .expect("fit");
+    model.estimates[0].sample_count += 1;
+    assert_eq!(
+        predict_transition(&model, &id("state-a"), &id("action-a")),
+        Err(WorldModelError::InvalidModel)
     );
 }
