@@ -8,6 +8,7 @@ publish = false
 [workspace]
 
 [dependencies]
+codex-hepta-agentd = { path = "../../codex-rs/hepta-agentd" }
 codex-hepta-types = { path = "../../codex-rs/hepta-types" }
 codex-hepta-neuron = { path = "../../codex-rs/hepta-neuron" }
 codex-hepta-prompt-optimizer = { path = "../../codex-rs/hepta-prompt-optimizer" }
