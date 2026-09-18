@@ -102,6 +102,17 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "productionImplementation": False,
         "productCallerState": "not_composed",
         "productionWriterState": "not_established",
+        "statusDimensions": {
+            "planningState": "work_package_registry_controls",
+            "sourceImplementationState": (
+                "source_root_present"
+                if all((ROOT / x).exists() for x in roots)
+                else "source_root_missing"
+            ),
+            "compositionState": "not_composed",
+            "qualificationState": "not_proved_by_implementation_map",
+            "liveProductState": "not_established",
+        },
         "operations": operations,
         "repositoryControlledGaps": [
             "Bind every operation to an authenticated consumer callsite and owner store.",
@@ -197,6 +208,22 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "productionWriterState": row.get(
                 "productionWriterState", "not_established"
             ),
+            "statusDimensions": row.get("statusDimensions")
+            or {
+                "planningState": "work_package_registry_controls",
+                "sourceImplementationState": (
+                    "source_root_present"
+                    if all((ROOT / x).exists() for x in declared)
+                    else "source_root_missing"
+                ),
+                "compositionState": row.get("productCallerState", "not_composed"),
+                "qualificationState": "not_proved_by_implementation_map",
+                "liveProductState": (
+                    "source_claim_only"
+                    if row.get("productionImplementation", False)
+                    else "not_established"
+                ),
+            },
             "operations": operations,
         }
     )
