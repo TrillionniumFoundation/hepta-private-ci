@@ -797,7 +797,7 @@ mod tests {
         .expect("admission");
         let current = ArtifactRegistry::new();
 
-        assert_eq!(
+        assert!(matches!(
             stage_artifact_publication_v1(
                 &current,
                 id("artifacts"),
@@ -807,9 +807,9 @@ mod tests {
                 20,
             ),
             Err(ArtifactPublicationError::Registry(
-                ArtifactRegistryError::PredecessorNotFound("missing-parent".to_owned())
-            ))
-        );
+                ArtifactRegistryError::PredecessorNotFound(ref predecessor)
+            )) if predecessor == "missing-parent"
+        ));
         assert!(current.records().is_empty());
     }
 
