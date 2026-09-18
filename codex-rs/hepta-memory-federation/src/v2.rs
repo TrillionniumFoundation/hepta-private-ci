@@ -207,7 +207,9 @@ impl RemoteFederatedResponseV2 {
         if !self.terminal_observed {
             return Err(FederationV2Error::MissingTerminalObservation);
         }
-        if self.observed_frontier == 0 {
+        if self.observed_frontier == 0
+            && !matches!(self.completeness, FederatedCompletenessV2::Empty)
+        {
             return Err(FederationV2Error::ZeroValue("observed_frontier"));
         }
         if self.expires_unix_ms == 0 {
@@ -290,6 +292,7 @@ impl RemoteFederatedResponseV2 {
         &self,
         query_binding_digest: Digest32,
     ) -> Result<(), FederationV2Error> {
+        ensure_digest("query_binding", query_binding_digest)?;
         self.validate_shape()?;
         if self.response_digest != self.compute_response_digest(query_binding_digest) {
             return Err(FederationV2Error::DigestMismatch("response"));
