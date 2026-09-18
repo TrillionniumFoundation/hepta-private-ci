@@ -81,7 +81,6 @@ fn unknown_version_and_empty_payload_are_rejected() {
     assert_eq!(WireEnvelope::decode(&encoded), Err(WireError::Version(2)));
 }
 
-
 #[test]
 fn v1_payload_digest_does_not_claim_metadata_integrity() {
     let envelope = WireEnvelope::new(
