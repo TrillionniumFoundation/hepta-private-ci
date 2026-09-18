@@ -474,13 +474,14 @@ async fn reserve_authbus_for_request(
     request: &BaoReadRequest,
     suffix: &str,
 ) -> StableId {
+    let binding = client.binding(request).unwrap();
     let policy_id = StableId::new(format!("policy:bao:{suffix}")).unwrap();
-    let principal = StableId::new("principal:bao").unwrap();
+    let principal = StableId::new(binding.subject_id.clone()).unwrap();
     let action = StableId::new("action:bao-read").unwrap();
     let quota = StableId::new(format!("quota:bao:{suffix}")).unwrap();
     let reservation_id = StableId::new(format!("reservation:bao:{suffix}")).unwrap();
     let operation_id = StableId::new(format!("operation:bao:{suffix}")).unwrap();
-    let scope = Digest32::of_bytes(b"bao-read-scope");
+    let scope = Digest32::from_array(binding.scope_sha256);
     evidence
         .install_authbus_policy(
             &PolicyRevision {
@@ -565,12 +566,7 @@ async fn authbus_wrapper_cancels_reservation_when_request_fails_before_effect() 
         Err(BaoClientError::InvalidRequest)
     );
     assert!(matches!(
-        evidence
-            .begin_authbus_effect(
-                &reservation_id,
-                client.authbus_effect_digest(&valid_request).unwrap()
-            )
-            .await,
+        evidence.cancel_authbus_reservation(&reservation_id).await,
         Err(AuthBusControlError::InvalidTransition)
     ));
 }

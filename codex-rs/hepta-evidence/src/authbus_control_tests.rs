@@ -10,6 +10,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use sqlx::Row;
 use tempfile::TempDir;
 
 use super::*;
@@ -116,6 +117,22 @@ async fn reserve(
     reserve_with(store, suffix, amount, u64::MAX - 1, effect(suffix)).await
 }
 
+async fn begin_effect(
+    store: &HeptaEvidenceStore,
+    reservation: &codex_hepta_authbus::Reservation,
+    effect_digest: Digest32,
+) -> Result<codex_hepta_authbus::Reservation, AuthBusControlError> {
+    store
+        .begin_authbus_effect(
+            &reservation.reservation_id,
+            &id("principal:one"),
+            &id("action:effect"),
+            Digest32::of_bytes(b"scope"),
+            effect_digest,
+        )
+        .await
+}
+
 #[tokio::test]
 async fn bus_01_simultaneous_last_unit_reservations_cannot_both_succeed() {
     let temp = TempDir::new().unwrap();
@@ -136,7 +153,13 @@ async fn bus_02_duplicate_settlement_is_idempotent_and_altered_cost_conflicts() 
     seed(&store, 10).await;
     let reservation = reserve(&store, "settle", 7).await.unwrap().1;
     store
-        .begin_authbus_effect(&reservation.reservation_id, effect("settle"))
+        .begin_authbus_effect(
+            &reservation.reservation_id,
+            &id("principal:one"),
+            &id("action:effect"),
+            Digest32::of_bytes(b"scope"),
+            effect("settle"),
+        )
         .await
         .unwrap();
     let evidence = Digest32::of_bytes(b"terminal");
@@ -176,7 +199,13 @@ async fn bus_03_expiry_after_effect_start_cannot_refund_observed_effect() {
         .unwrap()
         .1;
     store
-        .begin_authbus_effect(&reservation.reservation_id, effect("race"))
+        .begin_authbus_effect(
+            &reservation.reservation_id,
+            &id("principal:one"),
+            &id("action:effect"),
+            Digest32::of_bytes(b"scope"),
+            effect("race"),
+        )
         .await
         .unwrap();
 
@@ -205,8 +234,8 @@ async fn bus_03_expiry_after_effect_start_cannot_refund_observed_effect() {
         .fetch_one(&store.pool)
         .await
         .unwrap();
-    let reserved: Vec<u8> = sqlx::Row::try_get(&row, "reserved").unwrap();
-    let consumed: Vec<u8> = sqlx::Row::try_get(&row, "consumed").unwrap();
+    let reserved: Vec<u8> = row.try_get("reserved").unwrap();
+    let consumed: Vec<u8> = row.try_get("consumed").unwrap();
     assert_eq!(decode_counter(reserved), 0);
     assert_eq!(decode_counter(consumed), 4);
 }
@@ -223,7 +252,13 @@ async fn bus_04_revocation_blocks_effect_start_and_new_reservations() {
         .unwrap();
     assert!(matches!(
         store
-            .begin_authbus_effect(&reservation.reservation_id, effect("revoked"))
+            .begin_authbus_effect(
+                &reservation.reservation_id,
+                &id("principal:one"),
+                &id("action:effect"),
+                Digest32::of_bytes(b"scope"),
+                effect("revoked"),
+            )
             .await,
         Err(AuthBusControlError::Denied)
     ));
@@ -273,13 +308,27 @@ async fn operation_retry_binds_full_authorization_and_effect_semantics() {
         store
             .begin_authbus_effect(
                 &first.reservation_id,
-                Digest32::of_bytes(b"different-effect")
+                &id("principal:one"),
+                &id("action:effect"),
+                Digest32::of_bytes(b"scope"),
+                Digest32::of_bytes(b"different-effect"),
             )
             .await,
         Err(AuthBusControlError::InvalidTransition)
     ));
-    let started = store
-        .begin_authbus_effect(&first.reservation_id, effect("binding"))
+    assert!(matches!(
+        store
+            .begin_authbus_effect(
+                &first.reservation_id,
+                &id("principal:one"),
+                &id("action:other"),
+                Digest32::of_bytes(b"scope"),
+                effect("binding"),
+            )
+            .await,
+        Err(AuthBusControlError::InvalidTransition)
+    ));
+    let started = begin_effect(&store, &first, effect("binding"))
         .await
         .unwrap();
     assert_eq!(started.state, ReservationState::EffectStarted);
@@ -438,7 +487,13 @@ async fn sqlite_triggers_fail_closed_on_binding_transition_and_delete() {
     );
 
     store
-        .begin_authbus_effect(&reservation.reservation_id, effect("sql"))
+        .begin_authbus_effect(
+            &reservation.reservation_id,
+            &id("principal:one"),
+            &id("action:effect"),
+            Digest32::of_bytes(b"scope"),
+            effect("sql"),
+        )
         .await
         .unwrap();
     assert!(
@@ -458,7 +513,13 @@ async fn effect_start_survives_reopen_and_failed_settlement_without_refund() {
     seed(&store, 20).await;
     let reservation = reserve(&store, "reopen", 8).await.unwrap().1;
     store
-        .begin_authbus_effect(&reservation.reservation_id, effect("reopen"))
+        .begin_authbus_effect(
+            &reservation.reservation_id,
+            &id("principal:one"),
+            &id("action:effect"),
+            Digest32::of_bytes(b"scope"),
+            effect("reopen"),
+        )
         .await
         .unwrap();
 
