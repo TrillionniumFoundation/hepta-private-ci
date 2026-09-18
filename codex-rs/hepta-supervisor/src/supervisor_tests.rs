@@ -172,6 +172,7 @@ struct FakeWorld {
     reject_spawn_programs: BTreeSet<PathBuf>,
     lease_obstacle_on_spawn: BTreeSet<AgentId>,
     kill_failures_remaining: BTreeMap<AgentId, usize>,
+    poll_failures_remaining: BTreeMap<AgentId, usize>,
 }
 
 struct FakeState {
@@ -295,6 +296,16 @@ impl FakeControl {
             .lock()
             .expect("fake world lock")
             .kill_failures_remaining
+            .entry(agent_id)
+            .or_insert(0) += 1;
+    }
+
+    fn fail_next_poll(&self, agent_id: AgentId) {
+        *self
+            .world
+            .lock()
+            .expect("fake world lock")
+            .poll_failures_remaining
             .entry(agent_id)
             .or_insert(0) += 1;
     }
@@ -468,6 +479,18 @@ impl ProcessDriver for FakeDriver {
 impl ManagedProcess for FakeProcess {
     fn poll(&mut self, max_logs: usize) -> Result<ProcessObservation, ProcessDriverError> {
         let mut world = self.world.lock().expect("fake world lock");
+        let agent_id = world
+            .processes
+            .get(&self.id)
+            .expect("fake process")
+            .agent_id
+            .clone();
+        if let Some(remaining) = world.poll_failures_remaining.get_mut(&agent_id)
+            && *remaining > 0
+        {
+            *remaining -= 1;
+            return Err(ProcessDriverError::new("injected poll failure"));
+        }
         let state = world.processes.get_mut(&self.id).expect("fake process");
         let logs = (0..max_logs)
             .filter_map(|_| state.logs.pop_front())
@@ -812,6 +835,7 @@ fn lease_publication_failure_keeps_child_tracked_until_exit() -> Result<(), Supe
 
     control.obstruct_next_agent_lease(fleet.first.clone());
     control.fail_next_kill(fleet.first.clone());
+    control.fail_next_poll(fleet.first.clone());
     assert!(matches!(
         supervisor.start(&fleet.first, command()?, now),
         Err(SupervisorError::Driver { .. })
@@ -829,8 +853,13 @@ fn lease_publication_failure_keeps_child_tracked_until_exit() -> Result<(), Supe
         AgentLifecycle::Starting
     );
 
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    let report = supervisor.tick(now);
+    assert_eq!(report.faults.len(), 1);
+    assert_eq!(report.faults[0].agent_id, fleet.first);
+    // Emergency kill is retried before poll, so the injected observation
+    // failure cannot block cleanup pressure.
     assert_eq!(control.counts(&fleet.first), (0, 0, 2));
+    assert!(supervisor.snapshot(&fleet.first).expect("snapshot").active);
     control.set_exit(&fleet.first);
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(1)),
