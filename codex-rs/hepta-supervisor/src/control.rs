@@ -74,6 +74,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.restart_pending = false;
         slot.automatic_restart = false;
         slot.restart_not_before = None;
+        slot.restart_attempts = 0;
+        slot.restart_window_started_at = None;
+        let record = self.record(agent_id)?;
+        clear_restart_budget(record.layout.run_root())?;
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
             return Ok(());
         }
@@ -102,6 +106,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.restart_pending = false;
         slot.automatic_restart = false;
         slot.restart_not_before = None;
+        slot.restart_attempts = 0;
+        slot.restart_window_started_at = None;
+        let record = self.record(agent_id)?;
+        clear_restart_budget(record.layout.run_root())?;
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
