@@ -15,6 +15,9 @@ use std::path::PathBuf;
 use std::thread;
 use std::time::Duration;
 
+use sha2::Digest;
+use sha2::Sha256;
+
 #[path = "native_control.rs"]
 pub mod native;
 
@@ -153,6 +156,7 @@ pub enum Error {
     Io(String),
     ArithmeticOverflow,
     WriterUnavailable,
+    ArchivedRequest,
 }
 
 impl fmt::Display for Error {
@@ -220,11 +224,123 @@ impl DurableInferenceControlStore {
     pub fn journal_path(&self) -> &Path {
         &self.path
     }
+
+    /// Compact a native-only journal without losing audit bytes. The complete
+    /// predecessor journal is retained under a content-addressed archive name;
+    /// released rows become small tombstones while active/indeterminate rows
+    /// are replayable in full.
+    pub fn compact_native_history(&mut self) -> Result<NativeCompactionReceipt, Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        if !self.records.is_empty() {
+            return Err(Error::InvalidTransition);
+        }
+        let before = fs::read(&self.path)?;
+        let archive_digest = format!("{:x}", Sha256::digest(&before));
+        let archive_path = archive_path(&self.path, &archive_digest)?;
+        if archive_path.exists() {
+            let existing = fs::read(&archive_path)?;
+            if format!("{:x}", Sha256::digest(&existing)) != archive_digest {
+                return Err(Error::CorruptJournal("archive digest"));
+            }
+        } else {
+            let mut options = OpenOptions::new();
+            options.create_new(true).write(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                options.mode(0o600);
+            }
+            let mut archive = options.open(&archive_path)?;
+            archive.write_all(&before)?;
+            archive.flush()?;
+            archive.sync_all()?;
+        }
+
+        let compacted = self.native.compacted_lines(&archive_digest)?;
+        if compacted.len() as u64 > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+        let file_name = self
+            .path
+            .file_name()
+            .ok_or(Error::InvalidIdentity("journal path"))?;
+        let mut temp_name = file_name.to_os_string();
+        temp_name.push(".compact.tmp");
+        let temp_path = self.path.with_file_name(temp_name);
+        if temp_path.exists() {
+            fs::remove_file(&temp_path)?;
+        }
+        let mut options = OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut temp = options.open(&temp_path)?;
+        temp.write_all(compacted.as_bytes())?;
+        temp.flush()?;
+        temp.sync_all()?;
+        fs::rename(&temp_path, &self.path)?;
+        let parent = self
+            .path
+            .parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        File::open(parent)?.sync_all()?;
+
+        let mut replacement_options = OpenOptions::new();
+        replacement_options.append(true).read(true);
+        self.file = replacement_options.open(&self.path)?;
+        self.journal_bytes = compacted.len() as u64;
+        let mut next = native::NativeJournal::default();
+        for line in compacted.lines() {
+            let json = line
+                .strip_prefix(native::JOURNAL_PREFIX)
+                .ok_or(Error::CorruptJournal("native compact prefix"))?;
+            next.replay(json)?;
+        }
+        let archived_records = self.native.released_count();
+        self.native = next;
+        Ok(NativeCompactionReceipt {
+            archive_digest,
+            archive_path,
+            before_bytes: before.len() as u64,
+            after_bytes: self.journal_bytes,
+            archived_records,
+            active_records: self.native.active_count(),
+            tombstones: self.native.tombstones.len(),
+        })
+    }
+
+    pub(crate) fn maybe_compact_native_history(&mut self) -> Result<(), Error> {
+        let record_pressure = self.native.records.len() >= self.capacity;
+        let byte_pressure =
+            self.journal_bytes > MAX_JOURNAL_BYTES - 2 * MAX_JOURNAL_LINE_BYTES as u64;
+        if self.native.released_count() > 0 && (record_pressure || byte_pressure) {
+            self.compact_native_history()?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeCompactionReceipt {
+    pub archive_digest: String,
+    pub archive_path: PathBuf,
+    pub before_bytes: u64,
+    pub after_bytes: u64,
+    pub archived_records: usize,
+    pub active_records: usize,
+    pub tombstones: usize,
 }
 
 #[derive(Debug)]
 pub struct DurableInferenceControl {
     path: PathBuf,
+    _lock_file: File,
     file: File,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
@@ -242,6 +358,25 @@ impl DurableInferenceControl {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
         }
+        // Lock a stable sidecar rather than the journal inode itself. The
+        // journal can then be atomically replaced during compaction without a
+        // rename window in which another writer can lock the new inode.
+        let file_name = path
+            .file_name()
+            .ok_or(Error::InvalidIdentity("journal path"))?;
+        let mut lock_name = file_name.to_os_string();
+        lock_name.push(".lock");
+        let lock_path = path.with_file_name(lock_name);
+        let mut lock_options = OpenOptions::new();
+        lock_options.create(true).read(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            lock_options.mode(0o600);
+        }
+        let lock_file = lock_options.open(&lock_path)?;
+        lock_file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
         #[cfg(unix)]
@@ -250,8 +385,6 @@ impl DurableInferenceControl {
             options.mode(0o600);
         }
         let file = options.open(&path)?;
-        // Lock before replay: two owners must never admit from the same stale cut.
-        file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
@@ -286,7 +419,7 @@ impl DurableInferenceControl {
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > capacity
+            if records.len() + native.active_count() > capacity
                 || records.keys().any(|id| native.records.contains_key(id))
             {
                 return Err(Error::CapacityExceeded);
@@ -302,6 +435,7 @@ impl DurableInferenceControl {
         }
         Ok(Self {
             path,
+            _lock_file: lock_file,
             file,
             records,
             native,
@@ -677,6 +811,17 @@ fn require_revision(record: &RequestRecord, expected: u64, replay: bool) -> Resu
 
 fn next_revision(value: u64) -> Result<u64, Error> {
     value.checked_add(1).ok_or(Error::ArithmeticOverflow)
+}
+
+fn archive_path(path: &Path, digest: &str) -> Result<PathBuf, Error> {
+    validate_digest(digest, "archive digest")?;
+    let file_name = path
+        .file_name()
+        .ok_or(Error::InvalidIdentity("journal path"))?;
+    let mut name = file_name.to_os_string();
+    name.push(".archive.");
+    name.push(digest);
+    Ok(path.with_file_name(name))
 }
 
 fn validate_request(now_ms: u64, request: &InferenceRequest) -> Result<(), Error> {
