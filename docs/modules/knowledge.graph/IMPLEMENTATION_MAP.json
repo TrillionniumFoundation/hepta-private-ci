@@ -14,12 +14,13 @@
     "codex-rs/hepta-kg"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-kg"
+    "codex-rs/hepta-kg",
+    "codex-rs/hepta-memory"
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "partially_composed",
+  "productionWriterState": "store_composed_no_independent_acceptance",
   "operations": [
     {
       "operation": "build_complete_generation",
@@ -56,11 +57,28 @@
       "designOperation": "publish_generation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "materialize_durable_projection",
+      "nativeSymbol": "durable_projection_digest_v2",
+      "sourcePath": "codex-rs/hepta-kg/src/durable.rs",
+      "state": "source_implemented_product_store_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-kg/src/durable_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "publish_generation",
+      "mappingClass": "owner_native_composed",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_kg_store.rs::refresh_scope_projection_tx"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Complete product-callsite composition for relation query consumers and prompt-factor adapters.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the product-execution or acceptance claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
