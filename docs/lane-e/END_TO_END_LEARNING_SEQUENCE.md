@@ -75,12 +75,32 @@ host reserves a create-only artifact identity
   -> LearningArtifactManifestV2 binds bytes, datasets, complete lineage,
      predecessors, training code, runtime, device, objective, schema,
      normalization, compatibility, expiry and rollback predecessor
-  -> DatasetWithdrawalRegistry is checked before admission
-  -> registry event is staged against the exact predecessor head
-  -> registry snapshot is durably published
+  -> scoped DatasetWithdrawalRegistry binds registry, tenant/fleet scope and
+     withdrawal-authority domain and is checked before V3 admission
+  -> WithdrawalBoundArtifactAdmissionV3 binds the normalized manifest to the
+     exact withdrawal-domain digest and withdrawal head
+  -> stage_artifact_publication_v1 clones the current V1 registry, revalidates
+     the exact V3 withdrawal frontier, projects and appends one V1 Register
+     event only to that staged copy; staging failure leaves the current registry
+     untouched
+  -> for one-source dataset-derived artifacts the V1 support digest remains the
+     exact dataset digest and the event ID remains the exact publication
+     operation ID; multi-dataset or multi-predecessor V2 manifests fail closed
+     at this V1 bridge
+  -> the staged registry append receipt is verified against the projected event
+     digest, predecessor head, sequence and successor-chain digest
+  -> ArtifactPublicationTransactionV1 derives snapshot_binding from operation,
+     admission/manifest, withdrawal frontier and exact registry append
+  -> a retry under an existing operation ID must match the prior immutable
+     contract via validate_artifact_publication_retry_v1 (or equivalent durable
+     operation-ledger enforcement)
+  -> registry snapshot is durably published with that binding
   -> independent RegistryHeadWitnessV1 binds generation, predecessor head and
      authority epoch
-  -> producer is acknowledged only after the witness is durable
+  -> the current-head witness receipt must carry the same contract binding
+  -> ArtifactPublicationTransactionV1 advances Prepared -> SnapshotDurable ->
+     WitnessDurable
+  -> producer is acknowledged only after WitnessDurable
 ```
 
 Readers must use a current independently retained head witness. A self-consistent
@@ -88,11 +108,13 @@ old snapshot is not sufficient. Generation rollback, authority-epoch rollback,
 predecessor mismatch and expired witnesses fail closed.
 
 Payload publication and registry publication are a bounded saga rather than an
-assumed distributed transaction. A crash after payload synchronization but
-before registry publication leaves an orphan candidate. It does not create a
-selected artifact. Orphan collection requires a separately fenced retention
-operation and must not delete bytes referenced by any current or historical
-registry head.
+assumed distributed transaction. Restart reconstructs publication only from
+durable snapshot/current-witness receipts; snapshot-only state is not published,
+and a current witness without its bound snapshot is rejected. A crash after
+payload synchronization but before registry publication leaves an orphan
+candidate. It does not create a selected artifact. Orphan collection requires a
+separately fenced retention operation and must not delete bytes referenced by
+any current or historical registry head.
 
 ## 4. Evaluation and independent decision
 
@@ -149,7 +171,11 @@ bounded early state -> quarantined
 
 The producer may record training completion but cannot evaluate, accept or
 select its own candidate. Each state change binds an actor credential, evidence,
-authority epoch and time. Skipping mandatory states fails.
+authority epoch and time. Skipping mandatory states fails. The lifecycle journal
+has a create-only durable snapshot/reopen adapter, but historical replay time is
+still an explicit repository blocker: restart must eventually validate actor
+evidence at the historical evidence/event time rather than requiring that the
+credential remain unexpired at restart.
 
 Selection is consumed by a different supervisor or selector. A new process
 loads an exact manifest and payload against the current registry head and current

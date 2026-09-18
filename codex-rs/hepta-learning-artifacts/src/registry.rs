@@ -17,7 +17,6 @@ use crate::RegistryAppendReceipt;
 use crate::StateChange;
 
 const MAX_ARTIFACT_BYTES: u64 = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 1_000_000;
 const EVENT_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.event.v1";
 const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.chain.v1";
 
@@ -65,7 +64,7 @@ impl ArtifactRegistry {
             ));
         }
 
-        if self.records.len() >= MAX_RECORDS {
+        if self.records.len() >= crate::MAX_DURABLE_RECORDS {
             return Err(ArtifactRegistryError::RecordLimitExceeded);
         }
         self.validate_event(&event)?;
@@ -336,7 +335,7 @@ fn event_tag(event: &ArtifactEvent) -> u8 {
     }
 }
 
-fn digest_event(event: &ArtifactEvent) -> Digest32 {
+pub(crate) fn digest_event(event: &ArtifactEvent) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(EVENT_DIGEST_DOMAIN);
     bytes.push(event_tag(event));
@@ -352,7 +351,7 @@ fn digest_event(event: &ArtifactEvent) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn digest_chain(
+pub(crate) fn digest_chain(
     predecessor: Digest32,
     sequence: LogicalSequence,
     event_digest: Digest32,

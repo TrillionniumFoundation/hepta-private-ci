@@ -189,8 +189,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs); named case: `art_01_manifest_v2_normalizes_complete_lineage`.
-- [codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs); named case: `batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input`.
+- [codex-rs/hepta-learning-artifacts/src/registry_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/registry_tests.rs) for immutable lineage and state transitions.
+- [codex-rs/hepta-learning-artifacts/src/storage_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/storage_tests.rs) for canonical storage, auxiliary durable reopen, path containment and orphan handling.
+- [codex-rs/hepta-learning-artifacts/src/pinned_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/pinned_tests.rs) for exact pinned candidate loading.
+- [codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs) for V2 manifests, withdrawal and lifecycle contract validation.
+- [codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs) for dataset-driven artifact invalidation.
+- `src/admission_v3.rs`, `src/lifecycle_journal.rs`, `src/publication.rs`, `src/iteration.rs` and `src/iteration_ledger.rs` contain colocated unit tests for scoped admission, lifecycle journaling, crash-recoverable publication and governed iteration.
 
 In `codex-rs`, run `just test -p codex-hepta-learning-artifacts`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md) separately labels target acceptance designs.
 
@@ -415,7 +419,7 @@ This generated projection binds `learning.artifacts` to the current canonical co
 
 <!-- END GENERATED EXACT REGISTRY PROJECTION -->
 
-## 16. V8.2 pre-coding implementation-readiness overlay
+## 16. V8.2 implementation-readiness overlay
 
 The canonical readiness overlay binds `learning.artifacts` to primary lane `LANE-E-LEARNING`. The following implementation-level specifications are mandatory alongside Sections 1–15:
 
@@ -444,3 +448,73 @@ The bootstrap source-location obligation for `learning.artifacts` is implemented
 - `codex-rs/hepta-learning-artifacts`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+The `sourceBase` in `IMPLEMENTATION_MAP.json` is the immutable historical source baseline used by repository provenance checks. It is not a claim that the candidate HEAD equals that baseline. Current source coverage is represented by the operation map, source paths, test paths and exact-candidate qualification evidence.
+
+## 18. Current native implementation and transaction boundary
+
+The current crate is no longer only a V1 registry shell. It contains the following source-implemented surfaces:
+
+- the append-only V1 `ArtifactRegistry`, create-only candidate payload storage, canonical registry snapshot/reopen, current-head witness channel and pinned load;
+- `LearningArtifactManifestV2` validation with explicit provenance, lineage, runtime, schema, normalization, compatibility, producer and expiry facts;
+- `DatasetWithdrawalRegistry` with replayable tombstones and an optional `DatasetWithdrawalDomainV1` binding registry identity, host-authenticated scope and authority domain;
+- V3 admission receipts that bind the validated manifest to both the withdrawal domain digest and exact withdrawal chain head;
+- `ArtifactLifecycleJournalV2` with predecessor-bound lifecycle evidence, independent actor roles and append-only replay;
+- create-only durable withdrawal and lifecycle snapshot adapters with independent receipts and canonical reopen validation;
+- non-mutating `stage_artifact_publication_v1` staging so rejected publication work cannot contaminate the caller's current registry;
+- a crash-recoverable `ArtifactPublicationTransactionV1` contract for the sequence `Prepared -> SnapshotDurable -> WitnessDurable -> Acknowledged`;
+- bounded governed self-iteration records and `IterationLedgerV1`, including externally evidenced transitions and snapshot replay;
+- contained final-component creation and conservative zero-length orphan reconciliation helpers.
+
+### 18.1 Withdrawal authority domain
+
+A withdrawal head digest is not a namespace. Two independent empty registries can both have the zero head, and two registries can otherwise reproduce the same event sequence. Production V3 admission therefore requires a scoped withdrawal registry. `DatasetWithdrawalDomainV1` binds:
+
+- `registry_id`;
+- `scope_digest`;
+- `authority_domain_digest`.
+
+Scoped withdrawal chains use a domain-separated chain digest. `WithdrawalBoundArtifactAdmissionV3` carries that domain digest as well as the exact withdrawal head. Publication validation rejects a changed domain even if the head value is otherwise equal. The legacy unscoped registry constructor remains available for compatibility, but it is not valid V3 publication authority.
+
+### 18.2 Publication atomicity model
+
+The crate does not claim that two independent files are a single filesystem transaction. `stage_artifact_publication_v1` first builds the next `ArtifactRegistry` on a clone of the caller's current registry, performs current V3 withdrawal-frontier validation, projects and appends the V1 event there, and prepares the publication contract. Any staging or preparation failure leaves the caller's current registry untouched, so a rejected publication cannot leak into a later snapshot through a contaminated in-memory working set. The returned staged registry is still not published state. `ArtifactPublicationTransactionV1` is the hard durable host transaction contract. One operation binds:
+
+1. the V3 admission digest and validated manifest digest;
+2. the withdrawal domain and exact withdrawal head;
+3. the artifact-registry namespace identity plus the exact append event, sequence and predecessor/successor heads;
+4. a deterministic publication-contract binding carried by the durable snapshot receipt;
+5. the independently validated current-head witness carrying the same contract binding.
+
+`artifact_registry_event_for_admission_v3` is the only crate-defined V3-to-V1 publication projection. Payload, objective, producer, compatibility and generation are projected from the normalized V2 manifest. For a dataset-derived artifact, publication is allowed only when the V2 manifest names exactly one source dataset, and that exact dataset digest remains the V1 `support_digest` so a later `prepare_dataset_revocation` can still find and revoke the already-published artifact. Dataset-independent artifacts use the admission digest as the V1 support witness. The V1 `Register` event ID remains the exact publication operation ID, preserving registry-level idempotency. Full publication semantics are stricter: a host must retain or deterministically reconstruct the prior contract for an operation identity and apply `validate_artifact_publication_retry_v1` (or an equivalent durable operation-ledger rule); identical retries pass, while the same operation identity with any changed contract field conflicts. Stable V1 cannot simultaneously encode the complete V3 admission frontier in the event while preserving the dataset support slot, so `prepare_artifact_publication_v1` derives `snapshot_binding` from the operation ID, registry namespace, V3 admission/manifest digests, withdrawal domain/head and exact registry predecessor/successor/sequence/event digest. The durable registry snapshot and current-head witness receipt must carry that same binding. Recovery recomputes it from the supplied contract before accepting either receipt, so contract semantic drift, a different append, or a different registry namespace fails closed. The stable V1 registry can enforce only one artifact predecessor and cannot losslessly encode multiple source datasets, so the bridge rejects multi-predecessor and multi-dataset manifests rather than silently dropping revocation or eligibility edges.
+
+The host persists only the staged registry returned by `stage_artifact_publication_v1`; callers that manually assemble `append` + `prepare_artifact_publication_v1` retain the obligation to discard any provisional in-memory append if preparation fails. The host may acknowledge the producer/source only after the current-head witness is durable. Restart recovery requires the immutable publication contract (or an authenticated deterministic reconstruction of it) plus durable receipts; the contract binding is recomputed before receipt replay. A snapshot without its current witness is not published state, and a witness without its bound snapshot is rejected. Product composition must execute these transitions under one authenticated writer fence and must synchronize containing directories according to the selected filesystem contract.
+
+### 18.3 Durable auxiliary stores
+
+The authoritative in-memory record ceiling and canonical file snapshot ceiling are aligned at 4096 records so the owner cannot accept a state that its supported snapshot writer is guaranteed to reject solely because of record count.
+
+`write_dataset_withdrawal_snapshot` / `read_dataset_withdrawal_snapshot` and `write_lifecycle_journal_snapshot` / `read_lifecycle_journal_snapshot` use create-only files, bounded reads, independent receipts, canonical re-encoding and full replay validation. The lifecycle-journal V2 chain binds the stable lifecycle-event digest together with producer identity and the complete actor evidence tuple (actor, credential, role, authority epoch, verification time and expiry), so the journal head commits the authorization semantics replayed later. Lifecycle restart rebuilds the recorded snapshot through historical replay validation: actor evidence must have been valid for the recorded event time, while current-time credential validity is required only for a new append. These adapters establish a crate-native restart proof for the two auxiliary histories; they do not provide newest-generation discovery or product-level writer fencing.
+
+### 18.4 Governed iteration
+
+`iteration.rs` owns bounded iteration envelope/candidate shape and monotonic state transitions. `iteration_ledger.rs` owns an append-only evidence ledger for candidate transitions. External sandbox, evaluation, review, selection, promotion and release evidence remains host/control-plane owned; recording such evidence is not authority to perform those actions.
+
+### 18.5 Storage hardening and host boundary
+
+`CreateOnlyArtifactFile::create_in` rejects lexical traversal, nested final names and a direct symlink parent before the existing atomic `create_new` open. `remove_zero_length_orphan_in` removes only a locked, zero-length, regular-file orphan under the same contained naming rule. The caller must independently prove that no successful receipt references the orphan.
+
+These helpers do not replace directory-handle/`openat2`-equivalent containment against hostile ancestor replacement, parent-directory fsync, encryption, quota/retention, backup erasure, current witness discovery or target-filesystem power-loss qualification. Those remain host and target-platform obligations.
+
+### 18.6 Known repository-controlled blockers
+
+The following items remain open and must not be inferred closed from the source additions above:
+
+- no authenticated product host currently composes the publication contract, writer fence, current-witness service, source acknowledgement and directory durability as one production path;
+- exact-head, strict-lint and synthetic-merge qualification must be green for the candidate being accepted;
+- target-OS directory-handle containment and power-loss behavior require platform qualification.
+
+### 18.7 Current focused source tests
+
+The crate contains focused tests for registry lineage, storage canonicality and corruption, pinned load, dataset revocation, V2 closure, scoped V3 admission, lifecycle journal semantics, publication crash recovery, iteration ledger transitions, durable withdrawal/lifecycle reopen and contained-path/orphan hardening. Test source is not a pass receipt; exact-candidate CI output is the qualification evidence.
+

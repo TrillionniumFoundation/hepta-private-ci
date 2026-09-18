@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+pub(crate) const MAX_DURABLE_RECORDS: usize = 4_096;
+
 mod admission_v3;
 mod closure_v2;
 mod dataset_revocation;
@@ -14,6 +16,7 @@ mod iteration_ledger;
 mod lifecycle_journal;
 mod model;
 mod pinned;
+mod publication;
 mod registry;
 mod storage;
 
@@ -25,6 +28,7 @@ pub use admission_v3::verify_artifact_admission_v3;
 pub use closure_v2::ArtifactClosureError;
 pub use closure_v2::ArtifactLifecycleEventV1;
 pub use closure_v2::ArtifactLifecycleStateV1;
+pub use closure_v2::DatasetWithdrawalDomainV1;
 pub use closure_v2::DatasetWithdrawalNoticeV1;
 pub use closure_v2::DatasetWithdrawalReceiptV1;
 pub use closure_v2::DatasetWithdrawalRecordV1;
@@ -77,14 +81,32 @@ pub use pinned::PinnedCandidateLoadError;
 pub use pinned::PinnedCandidateSpec;
 pub use pinned::RevalidatingCandidate;
 pub use pinned::load_pinned_candidate;
+pub use publication::ArtifactPublicationContractV1;
+pub use publication::ArtifactPublicationError;
+pub use publication::ArtifactPublicationPhaseV1;
+pub use publication::ArtifactPublicationRegistryBindingV1;
+pub use publication::ArtifactPublicationTransactionV1;
+pub use publication::StagedArtifactPublicationV1;
+pub use publication::artifact_registry_event_for_admission_v3;
+pub use publication::prepare_artifact_publication_v1;
+pub use publication::recover_artifact_publication_v1;
+pub use publication::stage_artifact_publication_v1;
+pub use publication::validate_artifact_publication_retry_v1;
 pub use registry::ArtifactRegistry;
 pub use storage::ArtifactStorageError;
 pub use storage::CreateOnlyArtifactFile;
+pub use storage::DatasetWithdrawalSnapshotReceiptV1;
+pub use storage::LifecycleJournalSnapshotReceiptV2;
 pub use storage::RegistryHeadWitnessReceipt;
 pub use storage::RegistrySnapshotReceipt;
 pub use storage::read_candidate_payload;
+pub use storage::read_dataset_withdrawal_snapshot;
+pub use storage::read_lifecycle_journal_snapshot;
 pub use storage::read_registry_head_witness;
 pub use storage::read_registry_snapshot;
+pub use storage::remove_zero_length_orphan_in;
 pub use storage::write_candidate_payload;
+pub use storage::write_dataset_withdrawal_snapshot;
+pub use storage::write_lifecycle_journal_snapshot;
 pub use storage::write_registry_head_witness;
 pub use storage::write_registry_snapshot;

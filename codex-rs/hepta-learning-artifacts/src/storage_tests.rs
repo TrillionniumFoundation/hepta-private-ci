@@ -38,6 +38,7 @@ impl TestFile {
 impl Drop for TestFile {
     fn drop(&mut self) {
         let _ = fs::remove_file(&self.0);
+        let _ = fs::remove_dir_all(&self.0);
     }
 }
 
@@ -414,4 +415,134 @@ fn zero_binding_leaves_created_file_empty_for_host_reconciliation() {
         Err(ArtifactStorageError::InvalidBinding)
     );
     assert_eq!(fs::metadata(&file.0).unwrap().len(), 0);
+}
+
+#[test]
+fn withdrawal_registry_round_trips_through_create_only_durable_snapshot() {
+    let mut registry = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalDomainV1 {
+        registry_id: id("withdrawal-registry"),
+        scope_digest: Digest32::of_bytes(b"tenant-a"),
+        authority_domain_digest: Digest32::of_bytes(b"dataset-authority"),
+    })
+    .unwrap();
+    registry
+        .append(DatasetWithdrawalNoticeV1 {
+            notice_id: id("withdrawal-1"),
+            dataset_digest: Digest32::of_bytes(b"dataset"),
+            source_tombstone_digest: Digest32::of_bytes(b"tombstone"),
+            authority_id: id("dataset-owner"),
+            credential_chain_digest: Digest32::of_bytes(b"credential"),
+            signing_key_digest: Digest32::of_bytes(b"key"),
+            authority_epoch: 2,
+            issued_at: 20,
+        })
+        .unwrap();
+
+    let file = TestFile::new();
+    let receipt =
+        write_dataset_withdrawal_snapshot(file.create().unwrap(), &registry, binding()).unwrap();
+    let reopened = read_dataset_withdrawal_snapshot(file.open(), receipt).unwrap();
+    assert_eq!(reopened.snapshot(), registry.snapshot());
+    assert_eq!(
+        reopened.domain_binding_digest().unwrap(),
+        registry.domain_binding_digest().unwrap()
+    );
+}
+
+#[test]
+fn lifecycle_journal_round_trips_through_create_only_durable_snapshot() {
+    let producer_id = id("producer");
+    let artifact_id = id("artifact");
+    let actor = LifecycleActorEvidenceV2 {
+        actor_id: producer_id.clone(),
+        credential_digest: Digest32::of_bytes(b"producer-credential"),
+        role: LifecycleActorRoleV2::Producer,
+        authority_epoch: 3,
+        verified_at: 10,
+        expires_at: 100,
+    };
+    let event = ArtifactLifecycleEventV1 {
+        event_id: id("trained"),
+        artifact_id,
+        prior_state: ArtifactLifecycleStateV1::Proposed,
+        next_state: ArtifactLifecycleStateV1::Trained,
+        actor_id: actor.actor_id.clone(),
+        actor_credential_digest: actor.credential_digest,
+        evidence_digest: Digest32::of_bytes(b"training-evidence"),
+        authority_epoch: actor.authority_epoch,
+        occurred_at: 20,
+    };
+    let mut journal = ArtifactLifecycleJournalV2::new();
+    journal
+        .append(Digest32::ZERO, &producer_id, actor, event, 20)
+        .unwrap();
+
+    let file = TestFile::new();
+    let receipt =
+        write_lifecycle_journal_snapshot(file.create().unwrap(), &journal, binding()).unwrap();
+    // Restart after the historical actor credential has expired. Durable replay
+    // validates the recorded event-time binding, not current mutation authority.
+    let reopened = read_lifecycle_journal_snapshot(file.open(), receipt, 101).unwrap();
+    assert_eq!(reopened.snapshot(), journal.snapshot());
+}
+
+#[test]
+fn durable_auxiliary_snapshot_receipts_fail_closed_on_cross_file_reuse() {
+    let registry = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalDomainV1 {
+        registry_id: id("withdrawal-registry"),
+        scope_digest: Digest32::of_bytes(b"tenant-a"),
+        authority_domain_digest: Digest32::of_bytes(b"dataset-authority"),
+    })
+    .unwrap();
+    let first = TestFile::new();
+    let second = TestFile::new();
+    let receipt =
+        write_dataset_withdrawal_snapshot(first.create().unwrap(), &registry, binding()).unwrap();
+    write_dataset_withdrawal_snapshot(second.create().unwrap(), &registry, binding()).unwrap();
+    fs::write(&second.0, b"tampered").unwrap();
+    assert!(read_dataset_withdrawal_snapshot(second.open(), receipt).is_err());
+}
+
+#[test]
+fn contained_create_rejects_traversal_and_reconciles_only_empty_orphans() {
+    let parent = TestFile::new();
+    fs::create_dir(&parent.0).unwrap();
+
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in(&parent.0, "../escape").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in(&parent.0, "nested/file").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+
+    let orphan = parent.0.join("orphan");
+    drop(CreateOnlyArtifactFile::create_in(&parent.0, "orphan").unwrap());
+    assert!(orphan.exists());
+    remove_zero_length_orphan_in(&parent.0, "orphan").unwrap();
+    assert!(!orphan.exists());
+
+    let retained = parent.0.join("retained");
+    fs::write(&retained, b"not-an-orphan").unwrap();
+    assert_eq!(
+        remove_zero_length_orphan_in(&parent.0, "retained"),
+        Err(ArtifactStorageError::NotOrphan)
+    );
+    assert_eq!(fs::read(retained).unwrap(), b"not-an-orphan");
+}
+
+#[cfg(unix)]
+#[test]
+fn contained_create_rejects_symlink_parent() {
+    use std::os::unix::fs::symlink;
+
+    let real = TestFile::new();
+    fs::create_dir(&real.0).unwrap();
+    let linked = TestFile::new();
+    symlink(&real.0, &linked.0).unwrap();
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in(&linked.0, "child").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
 }

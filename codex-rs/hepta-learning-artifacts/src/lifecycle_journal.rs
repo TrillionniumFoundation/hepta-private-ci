@@ -18,7 +18,7 @@ use crate::ArtifactLifecycleEventV1;
 use crate::ArtifactLifecycleStateV1;
 use crate::validate_artifact_lifecycle_transition;
 
-const MAX_LIFECYCLE_RECORDS: usize = 1_000_000;
+const MAX_LIFECYCLE_RECORDS: usize = crate::MAX_DURABLE_RECORDS;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LifecycleActorRoleV2 {
@@ -122,14 +122,10 @@ impl ArtifactLifecycleJournalV2 {
         if expected_head_digest != self.head_digest {
             return Err(ArtifactLifecycleJournalError::HeadMismatch);
         }
-        validate_actor(&actor, now)?;
-        if event.actor_id != actor.actor_id
-            || event.actor_credential_digest != actor.credential_digest
-            || event.authority_epoch != actor.authority_epoch
-            || event.occurred_at < actor.verified_at
-            || event.occurred_at > actor.expires_at
-        {
-            return Err(ArtifactLifecycleJournalError::ActorBindingMismatch);
+        validate_actor_current(&actor, now)?;
+        validate_actor_event_binding(&actor, &event)?;
+        if event.occurred_at > now {
+            return Err(ArtifactLifecycleJournalError::EventTimeWindow);
         }
         let event_digest = validate_artifact_lifecycle_transition(producer_id, &event)?;
         if let Some(existing_digest) = self.event_digests.get(&event.event_id) {
@@ -170,7 +166,13 @@ impl ArtifactLifecycleJournalV2 {
             .checked_add(1)
             .ok_or(ArtifactLifecycleJournalError::Arithmetic)?;
         let predecessor_head_digest = self.head_digest;
-        let chain_digest = digest_chain(sequence, predecessor_head_digest, event_digest);
+        let chain_digest = digest_chain(
+            sequence,
+            predecessor_head_digest,
+            producer_id,
+            &actor,
+            event_digest,
+        );
         let record = ArtifactLifecycleJournalRecordV2 {
             sequence,
             predecessor_head_digest,
@@ -206,48 +208,116 @@ impl ArtifactLifecycleJournalV2 {
 
     pub fn from_snapshot(
         snapshot: ArtifactLifecycleJournalSnapshotV2,
-        now: u64,
+        _now: u64,
     ) -> Result<Self, ArtifactLifecycleJournalError> {
         let expected_head = snapshot.head_digest;
         let mut journal = Self::new();
         for expected in snapshot.records {
-            if expected.predecessor_head_digest != journal.head_digest {
-                return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
-            }
-            let receipt = journal.append(
-                journal.head_digest,
-                &expected.producer_id,
-                expected.actor.clone(),
-                expected.event.clone(),
-                now,
-            )?;
-            let actual = journal
-                .records
-                .last()
-                .ok_or(ArtifactLifecycleJournalError::InternalInvariant)?;
-            if receipt.disposition != LifecycleAppendDispositionV2::Appended || actual != &expected
-            {
-                return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
-            }
+            journal.replay_record(expected)?;
         }
         if journal.head_digest != expected_head {
             return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
         }
         Ok(journal)
     }
+
+    fn replay_record(
+        &mut self,
+        expected: ArtifactLifecycleJournalRecordV2,
+    ) -> Result<(), ArtifactLifecycleJournalError> {
+        if expected.predecessor_head_digest != self.head_digest {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+        validate_actor_replay(&expected.actor)?;
+        validate_actor_event_binding(&expected.actor, &expected.event)?;
+
+        let event_digest =
+            validate_artifact_lifecycle_transition(&expected.producer_id, &expected.event)?;
+        if event_digest != expected.event_digest {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+        if self.event_digests.contains_key(&expected.event.event_id) {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+        if self.records.len() >= MAX_LIFECYCLE_RECORDS {
+            return Err(ArtifactLifecycleJournalError::RecordLimit);
+        }
+
+        let current = self
+            .states
+            .get(&expected.event.artifact_id)
+            .copied()
+            .unwrap_or(ArtifactLifecycleStateV1::Proposed);
+        if current != expected.event.prior_state
+            || !role_allows(expected.actor.role, &expected.producer_id, &expected.event)
+        {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+
+        let sequence = u64::try_from(self.records.len())
+            .map_err(|_| ArtifactLifecycleJournalError::Arithmetic)?
+            .checked_add(1)
+            .ok_or(ArtifactLifecycleJournalError::Arithmetic)?;
+        if sequence != expected.sequence {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+        let chain_digest = digest_chain(
+            sequence,
+            expected.predecessor_head_digest,
+            &expected.producer_id,
+            &expected.actor,
+            expected.event_digest,
+        );
+        if chain_digest != expected.chain_digest {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+
+        self.states.insert(
+            expected.event.artifact_id.clone(),
+            expected.event.next_state,
+        );
+        self.event_digests
+            .insert(expected.event.event_id.clone(), expected.event_digest);
+        self.head_digest = expected.chain_digest;
+        self.records.push(expected);
+        Ok(())
+    }
 }
 
-fn validate_actor(
+fn validate_actor_replay(
     actor: &LifecycleActorEvidenceV2,
-    now: u64,
 ) -> Result<(), ArtifactLifecycleJournalError> {
     if actor.credential_digest.is_zero()
         || actor.authority_epoch == 0
         || actor.verified_at > actor.expires_at
-        || now < actor.verified_at
-        || now > actor.expires_at
     {
         return Err(ArtifactLifecycleJournalError::InvalidActorEvidence);
+    }
+    Ok(())
+}
+
+fn validate_actor_current(
+    actor: &LifecycleActorEvidenceV2,
+    now: u64,
+) -> Result<(), ArtifactLifecycleJournalError> {
+    validate_actor_replay(actor)?;
+    if now < actor.verified_at || now > actor.expires_at {
+        return Err(ArtifactLifecycleJournalError::InvalidActorEvidence);
+    }
+    Ok(())
+}
+
+fn validate_actor_event_binding(
+    actor: &LifecycleActorEvidenceV2,
+    event: &ArtifactLifecycleEventV1,
+) -> Result<(), ArtifactLifecycleJournalError> {
+    if event.actor_id != actor.actor_id
+        || event.actor_credential_digest != actor.credential_digest
+        || event.authority_epoch != actor.authority_epoch
+        || event.occurred_at < actor.verified_at
+        || event.occurred_at > actor.expires_at
+    {
+        return Err(ArtifactLifecycleJournalError::ActorBindingMismatch);
     }
     Ok(())
 }
@@ -298,13 +368,39 @@ fn role_allows(
 fn digest_chain(
     sequence: u64,
     predecessor_head_digest: Digest32,
+    producer_id: &StableId,
+    actor: &LifecycleActorEvidenceV2,
     event_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = b"hepta.learning-artifacts.lifecycle-journal.v2".to_vec();
     bytes.extend_from_slice(&sequence.to_be_bytes());
     bytes.extend_from_slice(predecessor_head_digest.as_array());
+    push_id(&mut bytes, producer_id);
+    push_id(&mut bytes, &actor.actor_id);
+    bytes.extend_from_slice(actor.credential_digest.as_array());
+    bytes.push(match actor.role {
+        LifecycleActorRoleV2::Producer => 0,
+        LifecycleActorRoleV2::Evaluator => 1,
+        LifecycleActorRoleV2::ShadowOperator => 2,
+        LifecycleActorRoleV2::CanaryOperator => 3,
+        LifecycleActorRoleV2::HumanOperator => 4,
+        LifecycleActorRoleV2::Selector => 5,
+        LifecycleActorRoleV2::QuarantineAuthority => 6,
+        LifecycleActorRoleV2::RevocationAuthority => 7,
+        LifecycleActorRoleV2::RetirementAuthority => 8,
+    });
+    bytes.extend_from_slice(&actor.authority_epoch.to_be_bytes());
+    bytes.extend_from_slice(&actor.verified_at.to_be_bytes());
+    bytes.extend_from_slice(&actor.expires_at.to_be_bytes());
     bytes.extend_from_slice(event_digest.as_array());
     Digest32::of_bytes(&bytes)
+}
+
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
+    let raw = value.as_str().as_bytes();
+    let len = u64::try_from(raw.len()).unwrap_or(u64::MAX);
+    bytes.extend_from_slice(&len.to_be_bytes());
+    bytes.extend_from_slice(raw);
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -313,6 +409,7 @@ pub enum ArtifactLifecycleJournalError {
     HeadMismatch,
     InvalidActorEvidence,
     ActorBindingMismatch,
+    EventTimeWindow,
     ActorRoleDenied,
     StatePredecessorMismatch,
     EventIdentityConflict,
@@ -335,6 +432,7 @@ impl StdError for ArtifactLifecycleJournalError {
             Self::HeadMismatch
             | Self::InvalidActorEvidence
             | Self::ActorBindingMismatch
+            | Self::EventTimeWindow
             | Self::ActorRoleDenied
             | Self::StatePredecessorMismatch
             | Self::EventIdentityConflict
@@ -394,6 +492,78 @@ mod tests {
             authority_epoch: actor.authority_epoch,
             occurred_at,
         }
+    }
+
+    #[test]
+    fn art_06_snapshot_replay_survives_historical_actor_expiry() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        journal
+            .append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    20,
+                ),
+                20,
+            )
+            .expect("historical append succeeds while credential is current");
+
+        let snapshot = journal.snapshot();
+        let mut reopened =
+            ArtifactLifecycleJournalV2::from_snapshot(snapshot, 101).expect("historical replay");
+        assert_eq!(reopened.head_digest(), journal.head_digest());
+
+        assert_eq!(
+            reopened.append(
+                reopened.head_digest(),
+                &producer_id,
+                producer.clone(),
+                event(
+                    "late-replay",
+                    &id("artifact-late"),
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    100,
+                ),
+                101,
+            ),
+            Err(ArtifactLifecycleJournalError::InvalidActorEvidence)
+        );
+    }
+
+    #[test]
+    fn art_06_new_lifecycle_event_cannot_be_future_dated() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        assert_eq!(
+            journal.append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "future-trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    21,
+                ),
+                20,
+            ),
+            Err(ArtifactLifecycleJournalError::EventTimeWindow)
+        );
     }
 
     #[test]
@@ -472,6 +642,37 @@ mod tests {
                 ArtifactClosureError::InvalidLifecycleTransition
             ))
         );
+    }
+
+    #[test]
+    fn art_06_lifecycle_head_binds_actor_evidence_window() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        journal
+            .append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    20,
+                ),
+                20,
+            )
+            .expect("append succeeds");
+
+        let mut tampered = journal.snapshot();
+        tampered.records[0].actor.verified_at = 11;
+        assert!(matches!(
+            ArtifactLifecycleJournalV2::from_snapshot(tampered, 20),
+            Err(ArtifactLifecycleJournalError::SnapshotMismatch)
+        ));
     }
 
     #[test]

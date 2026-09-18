@@ -3,6 +3,7 @@
 
 use std::error::Error;
 use std::fmt;
+use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::TryLockError;
@@ -13,6 +14,7 @@ use std::io::SeekFrom;
 use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
+use std::path::Component;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -22,8 +24,18 @@ use codex_hepta_types::StableId;
 
 use crate::ArtifactEvent;
 use crate::ArtifactKind;
+use crate::ArtifactLifecycleEventV1;
+use crate::ArtifactLifecycleJournalRecordV2;
+use crate::ArtifactLifecycleJournalSnapshotV2;
+use crate::ArtifactLifecycleJournalV2;
+use crate::ArtifactLifecycleStateV1;
 use crate::ArtifactManifest;
 use crate::ArtifactRegistry;
+use crate::DatasetWithdrawalDomainV1;
+use crate::DatasetWithdrawalNoticeV1;
+use crate::DatasetWithdrawalRegistry;
+use crate::LifecycleActorEvidenceV2;
+use crate::LifecycleActorRoleV2;
 use crate::RegistryAppendDisposition;
 use crate::RegistryHeadRequirementV1;
 use crate::RegistryHeadWitnessV1;
@@ -31,10 +43,11 @@ use crate::StateChange;
 
 const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
 const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 4096;
 const MAX_HEAD: usize = 4096;
 const MAGIC: &str = "HEPTAR01";
 const HEAD_MAGIC: &str = "HEPTAH01";
+const WITHDRAWAL_MAGIC: &str = "HEPTAW01";
+const LIFECYCLE_MAGIC: &str = "HEPTAL02";
 
 /// A file proven to have been atomically created by this module.
 ///
@@ -64,6 +77,19 @@ impl CreateOnlyArtifactFile {
             Err(error) => Err(error.into()),
         }
     }
+
+    /// Create one final component under a host-authorized, non-symlink parent.
+    ///
+    /// This closes lexical traversal and direct parent-symlink mistakes. It does
+    /// not replace target-OS directory-handle/openat2 qualification for hostile
+    /// ancestor replacement.
+    pub fn create_in(
+        parent: impl AsRef<Path>,
+        file_name: impl AsRef<Path>,
+    ) -> Result<Self, ArtifactStorageError> {
+        let path = contained_child(parent.as_ref(), file_name.as_ref())?;
+        Self::create(path)
+    }
 }
 
 /// Exact bytes and history witness. This is not a signature or acceptance.
@@ -91,8 +117,28 @@ pub struct RegistryHeadWitnessReceipt {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct DatasetWithdrawalSnapshotReceiptV1 {
+    pub binding: Digest32,
+    pub domain_digest: Digest32,
+    pub head_digest: Digest32,
+    pub file_digest: Digest32,
+    pub records: usize,
+    pub encoded_bytes: usize,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct LifecycleJournalSnapshotReceiptV2 {
+    pub binding: Digest32,
+    pub head_digest: Digest32,
+    pub file_digest: Digest32,
+    pub records: usize,
+    pub encoded_bytes: usize,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactStorageError {
     InvalidBinding,
+    InvalidPath,
     InvalidReceipt,
     InvalidHeadWitness,
     HeadWitnessMismatch,
@@ -104,6 +150,7 @@ pub enum ArtifactStorageError {
     Semantic,
     Unavailable,
     PayloadMismatch,
+    NotOrphan,
     Indeterminate,
     Io(io::ErrorKind),
 }
@@ -118,6 +165,50 @@ impl From<io::Error> for ArtifactStorageError {
     fn from(value: io::Error) -> Self {
         Self::Io(value.kind())
     }
+}
+
+fn contained_child(
+    parent: &Path,
+    file_name: &Path,
+) -> Result<std::path::PathBuf, ArtifactStorageError> {
+    let parent_metadata = fs::symlink_metadata(parent).map_err(ArtifactStorageError::from)?;
+    if !parent_metadata.is_dir() || parent_metadata.file_type().is_symlink() {
+        return Err(ArtifactStorageError::InvalidPath);
+    }
+    let mut components = file_name.components();
+    let valid =
+        matches!(components.next(), Some(Component::Normal(_))) && components.next().is_none();
+    if !valid || file_name.as_os_str().is_empty() {
+        return Err(ArtifactStorageError::InvalidPath);
+    }
+    Ok(parent.join(file_name))
+}
+
+/// Remove only a zero-length regular-file orphan under a trusted parent.
+///
+/// The caller must have independently established that no successful receipt
+/// references this path. Non-empty files, symlinks, directories and multi-level
+/// names fail closed.
+pub fn remove_zero_length_orphan_in(
+    parent: impl AsRef<Path>,
+    file_name: impl AsRef<Path>,
+) -> Result<(), ArtifactStorageError> {
+    let path = contained_child(parent.as_ref(), file_name.as_ref())?;
+    let metadata = fs::symlink_metadata(&path).map_err(ArtifactStorageError::from)?;
+    if !metadata.is_file() || metadata.file_type().is_symlink() || metadata.len() != 0 {
+        return Err(ArtifactStorageError::NotOrphan);
+    }
+    let file = OpenOptions::new().read(true).write(true).open(&path)?;
+    let guard = lock(file, LockKind::Exclusive)?;
+    let locked = guard.0.metadata()?;
+    if !locked.is_file() || locked.len() != 0 {
+        return Err(ArtifactStorageError::NotOrphan);
+    }
+    // Windows cannot unlink an ordinary file while this handle is open.
+    // The host is required to serialize reconciliation under its writer fence;
+    // release the cooperative lock/handle only after the final zero-length check.
+    drop(guard);
+    fs::remove_file(&path).map_err(ArtifactStorageError::from)
 }
 
 /// Write a new immutable snapshot; an existing file is never overwritten.
@@ -212,7 +303,7 @@ pub fn read_registry_snapshot(
 ) -> Result<ArtifactRegistry, ArtifactStorageError> {
     if expected.binding.is_zero()
         || expected.file_digest.is_zero()
-        || expected.records > MAX_RECORDS
+        || expected.records > crate::MAX_DURABLE_RECORDS
         || expected.encoded_bytes > MAX_SNAPSHOT
         || expected.encoded_bytes == 0
         || (expected.records == 0) != expected.head_digest.is_zero()
@@ -255,6 +346,111 @@ pub fn read_registry_snapshot(
         return Err(ArtifactStorageError::Corrupt);
     }
     Ok(registry)
+}
+
+pub fn write_dataset_withdrawal_snapshot(
+    file: CreateOnlyArtifactFile,
+    registry: &DatasetWithdrawalRegistry,
+    binding: Digest32,
+) -> Result<DatasetWithdrawalSnapshotReceiptV1, ArtifactStorageError> {
+    if binding.is_zero() {
+        return Err(ArtifactStorageError::InvalidBinding);
+    }
+    let bytes = encode_withdrawal_snapshot(registry, binding)?;
+    let snapshot = registry.snapshot();
+    let domain_digest = registry
+        .domain_binding_digest()
+        .map_err(|_| ArtifactStorageError::Semantic)?
+        .unwrap_or(Digest32::ZERO);
+    let receipt = DatasetWithdrawalSnapshotReceiptV1 {
+        binding,
+        domain_digest,
+        head_digest: snapshot.head_digest,
+        file_digest: Digest32::of_bytes(&bytes),
+        records: snapshot.records().len(),
+        encoded_bytes: bytes.len(),
+    };
+    write_new(file, &bytes)?;
+    Ok(receipt)
+}
+
+pub fn read_dataset_withdrawal_snapshot(
+    file: File,
+    expected: DatasetWithdrawalSnapshotReceiptV1,
+) -> Result<DatasetWithdrawalRegistry, ArtifactStorageError> {
+    if expected.binding.is_zero()
+        || expected.file_digest.is_zero()
+        || expected.records > crate::MAX_DURABLE_RECORDS
+        || expected.encoded_bytes == 0
+        || expected.encoded_bytes > MAX_SNAPSHOT
+        || (expected.records == 0) != expected.head_digest.is_zero()
+    {
+        return Err(ArtifactStorageError::InvalidReceipt);
+    }
+    let bytes = read_bounded(
+        file,
+        MAX_SNAPSHOT,
+        expected.encoded_bytes as u64,
+        ArtifactStorageError::Corrupt,
+    )?;
+    if Digest32::of_bytes(&bytes) != expected.file_digest {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    let registry = decode_withdrawal_snapshot(&bytes, expected)?;
+    if encode_withdrawal_snapshot(&registry, expected.binding)? != bytes {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    Ok(registry)
+}
+
+pub fn write_lifecycle_journal_snapshot(
+    file: CreateOnlyArtifactFile,
+    journal: &ArtifactLifecycleJournalV2,
+    binding: Digest32,
+) -> Result<LifecycleJournalSnapshotReceiptV2, ArtifactStorageError> {
+    if binding.is_zero() {
+        return Err(ArtifactStorageError::InvalidBinding);
+    }
+    let bytes = encode_lifecycle_snapshot(journal, binding)?;
+    let receipt = LifecycleJournalSnapshotReceiptV2 {
+        binding,
+        head_digest: journal.head_digest(),
+        file_digest: Digest32::of_bytes(&bytes),
+        records: journal.records().len(),
+        encoded_bytes: bytes.len(),
+    };
+    write_new(file, &bytes)?;
+    Ok(receipt)
+}
+
+pub fn read_lifecycle_journal_snapshot(
+    file: File,
+    expected: LifecycleJournalSnapshotReceiptV2,
+    replay_now: u64,
+) -> Result<ArtifactLifecycleJournalV2, ArtifactStorageError> {
+    if expected.binding.is_zero()
+        || expected.file_digest.is_zero()
+        || expected.records > crate::MAX_DURABLE_RECORDS
+        || expected.encoded_bytes == 0
+        || expected.encoded_bytes > MAX_SNAPSHOT
+        || (expected.records == 0) != expected.head_digest.is_zero()
+    {
+        return Err(ArtifactStorageError::InvalidReceipt);
+    }
+    let bytes = read_bounded(
+        file,
+        MAX_SNAPSHOT,
+        expected.encoded_bytes as u64,
+        ArtifactStorageError::Corrupt,
+    )?;
+    if Digest32::of_bytes(&bytes) != expected.file_digest {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    let journal = decode_lifecycle_snapshot(&bytes, expected, replay_now)?;
+    if encode_lifecycle_snapshot(&journal, expected.binding)? != bytes {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    Ok(journal)
 }
 
 /// Persist exactly the bytes of a currently eligible candidate, never select it.
@@ -465,12 +661,314 @@ fn decode_head_witness(
     })
 }
 
+fn encode_withdrawal_snapshot(
+    registry: &DatasetWithdrawalRegistry,
+    binding: Digest32,
+) -> Result<Vec<u8>, ArtifactStorageError> {
+    let snapshot = registry.snapshot();
+    if snapshot.records().len() > crate::MAX_DURABLE_RECORDS {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    let domain_line = match registry.domain() {
+        Some(domain) => format!(
+            "S|{}|{}|{}",
+            domain.registry_id, domain.scope_digest, domain.authority_domain_digest
+        ),
+        None => "U".to_string(),
+    };
+    let mut text = format!(
+        "{WITHDRAWAL_MAGIC}\n{binding}\n{domain_line}\n{}\n{}\n",
+        snapshot.records().len(),
+        snapshot.head_digest
+    );
+    for record in snapshot.records() {
+        let n = &record.notice;
+        text.push_str(&format!(
+            "W|{}|{}|{}|{}|{}|{}|{}|{}\n",
+            n.notice_id,
+            n.dataset_digest,
+            n.source_tombstone_digest,
+            n.authority_id,
+            n.credential_chain_digest,
+            n.signing_key_digest,
+            n.authority_epoch,
+            n.issued_at,
+        ));
+    }
+    if text.len() > MAX_SNAPSHOT {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    Ok(text.into_bytes())
+}
+
+fn decode_withdrawal_snapshot(
+    bytes: &[u8],
+    expected: DatasetWithdrawalSnapshotReceiptV1,
+) -> Result<DatasetWithdrawalRegistry, ArtifactStorageError> {
+    let text = std::str::from_utf8(bytes).map_err(|_| ArtifactStorageError::Corrupt)?;
+    let mut lines = text.lines();
+    if lines.next() != Some(WITHDRAWAL_MAGIC)
+        || lines.next() != Some(expected.binding.to_string().as_str())
+    {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    let domain_line = lines.next().ok_or(ArtifactStorageError::Corrupt)?;
+    let mut registry = if domain_line == "U" {
+        if !expected.domain_digest.is_zero() {
+            return Err(ArtifactStorageError::Corrupt);
+        }
+        DatasetWithdrawalRegistry::new()
+    } else {
+        let fields: Vec<_> = domain_line.split('|').collect();
+        if fields.len() != 4 || fields[0] != "S" {
+            return Err(ArtifactStorageError::Corrupt);
+        }
+        let domain = DatasetWithdrawalDomainV1 {
+            registry_id: parse_id(fields[1])?,
+            scope_digest: parse_digest(fields[2])?,
+            authority_domain_digest: parse_digest(fields[3])?,
+        };
+        let observed = domain
+            .binding_digest()
+            .map_err(|_| ArtifactStorageError::Semantic)?;
+        if observed != expected.domain_digest {
+            return Err(ArtifactStorageError::Corrupt);
+        }
+        DatasetWithdrawalRegistry::new_scoped(domain).map_err(|_| ArtifactStorageError::Semantic)?
+    };
+    let count = parse_usize(lines.next().ok_or(ArtifactStorageError::Corrupt)?)?;
+    let head = parse_digest(lines.next().ok_or(ArtifactStorageError::Corrupt)?)?;
+    if count != expected.records || head != expected.head_digest {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    for line in lines {
+        if registry.snapshot().records().len() >= count {
+            return Err(ArtifactStorageError::Corrupt);
+        }
+        let fields: Vec<_> = line.split('|').collect();
+        if fields.len() != 9 || fields[0] != "W" {
+            return Err(ArtifactStorageError::Corrupt);
+        }
+        registry
+            .append(DatasetWithdrawalNoticeV1 {
+                notice_id: parse_id(fields[1])?,
+                dataset_digest: parse_digest(fields[2])?,
+                source_tombstone_digest: parse_digest(fields[3])?,
+                authority_id: parse_id(fields[4])?,
+                credential_chain_digest: parse_digest(fields[5])?,
+                signing_key_digest: parse_digest(fields[6])?,
+                authority_epoch: parse_u64(fields[7])?,
+                issued_at: parse_u64(fields[8])?,
+            })
+            .map_err(|_| ArtifactStorageError::Semantic)?;
+    }
+    let snapshot = registry.snapshot();
+    if snapshot.records().len() != count || snapshot.head_digest != head {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    Ok(registry)
+}
+
+fn encode_lifecycle_snapshot(
+    journal: &ArtifactLifecycleJournalV2,
+    binding: Digest32,
+) -> Result<Vec<u8>, ArtifactStorageError> {
+    if journal.records().len() > crate::MAX_DURABLE_RECORDS {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    let mut text = format!(
+        "{LIFECYCLE_MAGIC}\n{binding}\n{}\n{}\n",
+        journal.records().len(),
+        journal.head_digest()
+    );
+    for record in journal.records() {
+        let a = &record.actor;
+        let e = &record.event;
+        text.push_str(&format!(
+            "L|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}|{}\n",
+            record.sequence,
+            record.predecessor_head_digest,
+            record.event_digest,
+            record.chain_digest,
+            record.producer_id,
+            a.actor_id,
+            a.credential_digest,
+            lifecycle_role_tag(a.role),
+            a.authority_epoch,
+            a.verified_at,
+            a.expires_at,
+            e.event_id,
+            e.artifact_id,
+            lifecycle_state_tag(e.prior_state),
+            lifecycle_state_tag(e.next_state),
+            e.actor_id,
+            e.actor_credential_digest,
+            e.evidence_digest,
+            e.authority_epoch,
+            e.occurred_at,
+        ));
+    }
+    if text.len() > MAX_SNAPSHOT {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    Ok(text.into_bytes())
+}
+
+fn decode_lifecycle_snapshot(
+    bytes: &[u8],
+    expected: LifecycleJournalSnapshotReceiptV2,
+    replay_now: u64,
+) -> Result<ArtifactLifecycleJournalV2, ArtifactStorageError> {
+    let text = std::str::from_utf8(bytes).map_err(|_| ArtifactStorageError::Corrupt)?;
+    let mut lines = text.lines();
+    if lines.next() != Some(LIFECYCLE_MAGIC)
+        || lines.next() != Some(expected.binding.to_string().as_str())
+    {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    let count = parse_usize(lines.next().ok_or(ArtifactStorageError::Corrupt)?)?;
+    let head = parse_digest(lines.next().ok_or(ArtifactStorageError::Corrupt)?)?;
+    if count != expected.records || head != expected.head_digest {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    let mut records = Vec::with_capacity(count);
+    for line in lines {
+        if records.len() >= count {
+            return Err(ArtifactStorageError::Corrupt);
+        }
+        let fields: Vec<_> = line.split('|').collect();
+        if fields.len() != 21 || fields[0] != "L" {
+            return Err(ArtifactStorageError::Corrupt);
+        }
+        let actor = LifecycleActorEvidenceV2 {
+            actor_id: parse_id(fields[6])?,
+            credential_digest: parse_digest(fields[7])?,
+            role: parse_lifecycle_role(fields[8])?,
+            authority_epoch: parse_u64(fields[9])?,
+            verified_at: parse_u64(fields[10])?,
+            expires_at: parse_u64(fields[11])?,
+        };
+        let event = ArtifactLifecycleEventV1 {
+            event_id: parse_id(fields[12])?,
+            artifact_id: parse_id(fields[13])?,
+            prior_state: parse_lifecycle_state(fields[14])?,
+            next_state: parse_lifecycle_state(fields[15])?,
+            actor_id: parse_id(fields[16])?,
+            actor_credential_digest: parse_digest(fields[17])?,
+            evidence_digest: parse_digest(fields[18])?,
+            authority_epoch: parse_u64(fields[19])?,
+            occurred_at: parse_u64(fields[20])?,
+        };
+        records.push(ArtifactLifecycleJournalRecordV2 {
+            sequence: parse_u64(fields[1])?,
+            predecessor_head_digest: parse_digest(fields[2])?,
+            event_digest: parse_digest(fields[3])?,
+            chain_digest: parse_digest(fields[4])?,
+            producer_id: parse_id(fields[5])?,
+            actor,
+            event,
+        });
+    }
+    let journal = ArtifactLifecycleJournalV2::from_snapshot(
+        ArtifactLifecycleJournalSnapshotV2 {
+            records,
+            head_digest: head,
+        },
+        replay_now,
+    )
+    .map_err(|_| ArtifactStorageError::Semantic)?;
+    if journal.records().len() != count || journal.head_digest() != head {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    Ok(journal)
+}
+
+fn lifecycle_role_tag(role: LifecycleActorRoleV2) -> u8 {
+    match role {
+        LifecycleActorRoleV2::Producer => 0,
+        LifecycleActorRoleV2::Evaluator => 1,
+        LifecycleActorRoleV2::ShadowOperator => 2,
+        LifecycleActorRoleV2::CanaryOperator => 3,
+        LifecycleActorRoleV2::HumanOperator => 4,
+        LifecycleActorRoleV2::Selector => 5,
+        LifecycleActorRoleV2::QuarantineAuthority => 6,
+        LifecycleActorRoleV2::RevocationAuthority => 7,
+        LifecycleActorRoleV2::RetirementAuthority => 8,
+    }
+}
+
+fn parse_lifecycle_role(value: &str) -> Result<LifecycleActorRoleV2, ArtifactStorageError> {
+    match value {
+        "0" => Ok(LifecycleActorRoleV2::Producer),
+        "1" => Ok(LifecycleActorRoleV2::Evaluator),
+        "2" => Ok(LifecycleActorRoleV2::ShadowOperator),
+        "3" => Ok(LifecycleActorRoleV2::CanaryOperator),
+        "4" => Ok(LifecycleActorRoleV2::HumanOperator),
+        "5" => Ok(LifecycleActorRoleV2::Selector),
+        "6" => Ok(LifecycleActorRoleV2::QuarantineAuthority),
+        "7" => Ok(LifecycleActorRoleV2::RevocationAuthority),
+        "8" => Ok(LifecycleActorRoleV2::RetirementAuthority),
+        _ => Err(ArtifactStorageError::Corrupt),
+    }
+}
+
+fn lifecycle_state_tag(state: ArtifactLifecycleStateV1) -> u8 {
+    match state {
+        ArtifactLifecycleStateV1::Proposed => 0,
+        ArtifactLifecycleStateV1::Trained => 1,
+        ArtifactLifecycleStateV1::Evaluated => 2,
+        ArtifactLifecycleStateV1::Shadow => 3,
+        ArtifactLifecycleStateV1::Canary => 4,
+        ArtifactLifecycleStateV1::OperatorAccepted => 5,
+        ArtifactLifecycleStateV1::Selected => 6,
+        ArtifactLifecycleStateV1::Quarantined => 7,
+        ArtifactLifecycleStateV1::Revoked => 8,
+        ArtifactLifecycleStateV1::Retired => 9,
+    }
+}
+
+fn parse_lifecycle_state(value: &str) -> Result<ArtifactLifecycleStateV1, ArtifactStorageError> {
+    match value {
+        "0" => Ok(ArtifactLifecycleStateV1::Proposed),
+        "1" => Ok(ArtifactLifecycleStateV1::Trained),
+        "2" => Ok(ArtifactLifecycleStateV1::Evaluated),
+        "3" => Ok(ArtifactLifecycleStateV1::Shadow),
+        "4" => Ok(ArtifactLifecycleStateV1::Canary),
+        "5" => Ok(ArtifactLifecycleStateV1::OperatorAccepted),
+        "6" => Ok(ArtifactLifecycleStateV1::Selected),
+        "7" => Ok(ArtifactLifecycleStateV1::Quarantined),
+        "8" => Ok(ArtifactLifecycleStateV1::Revoked),
+        "9" => Ok(ArtifactLifecycleStateV1::Retired),
+        _ => Err(ArtifactStorageError::Corrupt),
+    }
+}
+
+fn parse_id(value: &str) -> Result<StableId, ArtifactStorageError> {
+    StableId::new(value.to_owned()).map_err(|_| ArtifactStorageError::Corrupt)
+}
+
+fn parse_digest(value: &str) -> Result<Digest32, ArtifactStorageError> {
+    Digest32::from_str(value).map_err(|_| ArtifactStorageError::Corrupt)
+}
+
+fn parse_u64(value: &str) -> Result<u64, ArtifactStorageError> {
+    value
+        .parse::<u64>()
+        .map_err(|_| ArtifactStorageError::Corrupt)
+}
+
+fn parse_usize(value: &str) -> Result<usize, ArtifactStorageError> {
+    value
+        .parse::<usize>()
+        .map_err(|_| ArtifactStorageError::Corrupt)
+}
+
 fn encode_snapshot(
     registry: &ArtifactRegistry,
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     let count = registry.records().len();
-    if count > MAX_RECORDS {
+    if count > crate::MAX_DURABLE_RECORDS {
         return Err(ArtifactStorageError::Capacity);
     }
     let mut text = format!("{MAGIC}\n{binding}\n{count}\n");

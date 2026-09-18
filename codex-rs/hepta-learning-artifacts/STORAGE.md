@@ -28,6 +28,12 @@ write_registry_snapshot(CreateOnlyArtifactFile, &ArtifactRegistry, Digest32)
 write_candidate_payload(CreateOnlyArtifactFile, &ArtifactRegistry, &StableId, &[u8])
 write_registry_head_witness(CreateOnlyArtifactFile, &RegistryHeadWitnessV1, &RegistryHeadRequirementV1, Digest32)
 read_registry_head_witness(File, RegistryHeadWitnessReceipt, &RegistryHeadRequirementV1)
+write_dataset_withdrawal_snapshot(CreateOnlyArtifactFile, &DatasetWithdrawalRegistry, Digest32)
+read_dataset_withdrawal_snapshot(File, DatasetWithdrawalSnapshotReceiptV1)
+write_lifecycle_journal_snapshot(CreateOnlyArtifactFile, &ArtifactLifecycleJournalV2, Digest32)
+read_lifecycle_journal_snapshot(File, LifecycleJournalSnapshotReceiptV2, replay_now)
+CreateOnlyArtifactFile::create_in(parent, file_name)
+remove_zero_length_orphan_in(parent, file_name)
 ```
 
 `write_registry_snapshot` writes one new empty target and syncs it before
@@ -56,9 +62,25 @@ selection or activation authority.
 
 Candidate payload functions verify current registry eligibility, byte length and
 content digest. A revoked ancestor blocks loading descendants. Stored code or
-model bytes are never executed. Snapshot limits are 4096 events and 8 MiB;
-payloads are bounded by 64 MiB. Snapshot creation is O(history), bounded by the
-pilot cap; this is not a high-frequency journal or hard-real-time controller.
+model bytes are never executed. Artifact, withdrawal and lifecycle owner histories
+share a 4096-record durable ceiling; canonical snapshot files are bounded by 8 MiB
+and payloads by 64 MiB. Aligning the in-memory ceiling with supported durable
+serialization prevents the owner from accepting record-count state that it cannot
+later persist. Snapshot creation is O(history), bounded by the pilot cap; this is
+not a high-frequency journal or hard-real-time controller.
+
+The withdrawal and lifecycle adapters are independent create-only durable stores.
+Their receipts bind the external scope binding, complete file digest, record count
+and chain head; withdrawal receipts additionally bind the scoped withdrawal-domain
+digest. Reload performs bounded reads, full semantic replay and canonical
+re-encoding. The lifecycle V2 journal head commits producer identity plus the
+full actor evidence tuple as well as the stable lifecycle-event digest, preventing
+a replay from changing authorization semantics while retaining the same chain
+head. Lifecycle reload reconstructs the persisted snapshot through historical
+replay validation: recorded actor evidence is checked against the recorded event
+time, not the restart wall clock; current-time credential validity remains
+mandatory for new lifecycle mutations. These stores do not discover a
+newest generation or grant publication authority by themselves.
 
 ## Failure and retry semantics
 
@@ -67,6 +89,14 @@ artifact bytes are written. Invalid binding, ineligible artifact or payload
 mismatch therefore leaves a zero-length orphan for host reconciliation. It does
 not authorize reusing that path: a second `create` must return
 `AlreadyExists`.
+
+For host-authorized flat namespaces, `CreateOnlyArtifactFile::create_in` rejects
+lexical traversal, nested final names and a direct symlink parent before the final
+`create_new`. `remove_zero_length_orphan_in` can reconcile only a zero-length
+regular file under that same naming rule, after an exclusive cooperative lock and
+a second length/type check. The host must independently prove that no successful
+receipt references the path. Nonempty files, symlinks and directories are never
+treated as orphans.
 
 After successful atomic creation, a nonzero length observed before the guarded
 write indicates interference and returns `Indeterminate`. Lock contention
@@ -86,15 +116,37 @@ deletion. This module cannot infer the latest state from the suspect file. Never
 use an older snapshot to make a revoked predecessor appear eligible for rollback.
 
 Create payload -> sync -> create canonical registry snapshot -> sync -> durably
-publish the receipt/witness -> independent evaluation/decision -> separately
-owned next-run selection. Cross-store atomicity requires a host transaction or
-outbox reconciliation; two synced files are not an atomic multi-store transaction.
-A crash before witness publication may leave an orphan candidate, not a selected
-artifact.
+publish the receipt/current-head witness -> acknowledge the producer/source ->
+independent evaluation/decision -> separately owned next-run selection.
 
-`create_new` protects the final path component from an existence-check race; it
-does not authenticate ancestor traversal, retain a path-to-inode binding after
-return, synchronize the parent directory or isolate hostile writers. The host
+`stage_artifact_publication_v1` first validates the current withdrawal frontier and applies the projected V1 append to a clone of the caller's current `ArtifactRegistry`. It returns that staged registry, exact append receipt and prepared transaction together; any error leaves the caller's current registry untouched. Only the returned staged registry is eligible for the subsequent durable write.
+
+`ArtifactPublicationTransactionV1` makes the remaining host transaction contract
+executable without claiming impossible cross-file atomicity. It binds the V3
+admission, scoped withdrawal frontier, artifact-registry namespace identity,
+exact registry append, snapshot receipt and current-head witness. The V3-to-V1
+projection preserves the exact dataset digest as V1 `support_digest` for a
+dataset-derived artifact with one source dataset, while keeping the V1 event ID
+equal to the exact host operation ID. The complete V3 admission frontier is bound
+instead by a deterministic `snapshot_binding` over the operation, registry
+namespace, admission/manifest, withdrawal frontier and exact registry append.
+Both the durable registry snapshot receipt and current-head witness receipt must
+carry that binding. The host must also retain/reconstruct the previous contract for
+each operation ID and apply `validate_artifact_publication_retry_v1` (or an
+equivalent durable operation-ledger rule), so identity reuse with changed semantics
+conflicts instead of becoming a second publication interpretation. Multi-dataset or
+multi-predecessor V2 manifests fail closed at this V1 bridge rather than losing
+durable semantics. Recovery has only four phases:
+`Prepared -> SnapshotDurable -> WitnessDurable -> Acknowledged`. A source
+acknowledgement is forbidden before `WitnessDurable`. Two synced files are still
+not a distributed transaction; restart requires the immutable publication contract
+(or an authenticated deterministic reconstruction) plus durable receipts, verifies
+the contract binding, and refuses to reinterpret snapshot-only state as published.
+
+`create_new` protects the final path component from an existence-check race;
+`create_in` additionally catches lexical escape and a direct symlink parent. These
+APIs still do not retain an ancestor directory-handle binding against hostile
+replacement, synchronize the parent directory or isolate hostile writers. The host
 owns trusted parent traversal, containing-directory sync, encryption,
 quota/retention, revocation freshness, physical erasure, backup deletion,
 independent witness storage and selection/rollback. File locks fence cooperative
