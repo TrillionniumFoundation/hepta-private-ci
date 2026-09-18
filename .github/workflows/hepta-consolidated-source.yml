@@ -300,6 +300,60 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Emit exact-candidate secrets receipt
+        if: always()
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          PRIOR_STATUS: ${{ job.status }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-verification"
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          tested_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          tested_tree = subprocess.check_output(
+              ["git", "rev-parse", "HEAD^{tree}"], text=True
+          ).strip()
+          expected = os.environ["TESTED_SHA"]
+          if tested_sha != expected:
+              raise SystemExit(
+                  f"tested SHA drift: expected {expected}, observed {tested_sha}"
+              )
+          receipt = {
+              "schema": "hepta.secrets-verification-receipt.v1",
+              "module": "secrets.heptabao",
+              "sourceSha": os.environ["SOURCE_SHA"],
+              "testedSha": tested_sha,
+              "testedTree": tested_tree,
+              "lane": os.environ["HEPTA_CI_LANE"],
+              "workflowRunId": os.environ["GITHUB_RUN_ID"],
+              "workflowRunAttempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "jobStatusAtReceipt": os.environ["PRIOR_STATUS"],
+              "qualificationScope": "source_and_candidate_tests_not_release_authority",
+          }
+          path = Path(os.environ["RUNNER_TEMP"]) / "hepta-verification" / (
+              f"secrets-heptabao-{os.environ['HEPTA_CI_LANE']}.json"
+          )
+          path.write_text(
+              json.dumps(receipt, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Retain exact-candidate secrets receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-secrets-receipt-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-verification/secrets-heptabao-${{ matrix.lane }}.json
+          if-no-files-found: error
+          retention-days: 90
       - name: Retain real command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
