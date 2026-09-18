@@ -17,6 +17,7 @@ use codex_hepta_contracts::FinalUseApprovalVerifier;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseControlError;
 use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
+use codex_hepta_contracts::FinalUseRevocationReceipt;
 use codex_hepta_contracts::SignedFinalUseApproval;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
@@ -130,7 +131,7 @@ impl BaoFinalUseHost {
     pub fn apply_revocation_update(
         &self,
         update: &SignedFinalUseRevocationUpdate,
-    ) -> Result<(), BaoFinalUseHostError> {
+    ) -> Result<FinalUseRevocationReceipt, BaoFinalUseHostError> {
         let now_unix_ms = self
             .clock
             .now_unix_ms()
@@ -143,8 +144,8 @@ impl BaoFinalUseHost {
             .revocation_fresh_until_unix_ms
             .lock()
             .map_err(|_| BaoFinalUseHostError::Unavailable)?;
-        *fresh_until = receipt.valid_until_unix_ms;
-        Ok(())
+        *fresh_until = receipt.valid_until_unix_ms();
+        Ok(receipt)
     }
 
     /// Production composition boundary. The request's signed `consumer_id`
