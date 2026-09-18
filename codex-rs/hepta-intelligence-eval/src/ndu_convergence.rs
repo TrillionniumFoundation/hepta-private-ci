@@ -6,8 +6,8 @@ use codex_hepta_types::StableId;
 
 const MAX_ITERATIONS: u32 = 64;
 const MAXIMUM_RESIDUAL_RAW: i64 = 1_i64 << 12;
-// floor(0.95 * 2^32). Accepted certificates must remain strictly below 0.95.
-const SPECTRAL_RADIUS_UPPER_95_LIMIT_RAW: i64 = 4_080_218_931;
+// ceil(0.95 * 2^32). Values at or above this raw integer are not < 0.95.
+const SPECTRAL_RADIUS_UPPER_95_REJECT_AT_RAW: i64 = 4_080_218_932;
 const CONSERVATION_RESIDUAL_LIMIT_RAW: i64 = 1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -34,6 +34,7 @@ pub enum NduMultipleSolutionDispositionV1 {
     Unique,
     PredecessorNearestCertified,
     MultipleSolutionUnresolved,
+    InvalidEvaluatorIdentity,
 }
 
 impl NduMultipleSolutionDispositionV1 {
@@ -75,7 +76,8 @@ pub struct NduConvergenceCertificateV1 {
     pub spectral_radius_upper_95_raw: i64,
     pub conservation_residual_raw: i64,
     pub multiple_solution_disposition: NduMultipleSolutionDispositionV1,
-    pub evaluator_identity: StableId,
+    /// Canonical protocol permits bounded UTF-8 up to 256 bytes.
+    pub evaluator_identity: String,
     pub decision: NduConvergenceDecisionV1,
 }
 
@@ -137,7 +139,10 @@ pub fn admit_ndu_convergence_certificate_v1(
     if certificate.solver_digest != context.expected_solver_digest {
         return Err(NduConvergenceAdmissionError::SolverMismatch);
     }
-    if certificate.evaluator_identity == context.candidate_producer_identity {
+    if certificate.evaluator_identity.is_empty() || certificate.evaluator_identity.len() > 256 {
+        return Err(NduConvergenceAdmissionError::InvalidEvaluatorIdentity);
+    }
+    if certificate.evaluator_identity.as_str() == context.candidate_producer_identity.as_str() {
         return Err(NduConvergenceAdmissionError::SelfEvaluation);
     }
     if certificate.iterations > MAX_ITERATIONS {
@@ -154,7 +159,7 @@ pub fn admit_ndu_convergence_certificate_v1(
         if certificate.maximum_residual_raw > MAXIMUM_RESIDUAL_RAW {
             return Err(NduConvergenceAdmissionError::ResidualGate);
         }
-        if certificate.spectral_radius_upper_95_raw >= SPECTRAL_RADIUS_UPPER_95_LIMIT_RAW {
+        if certificate.spectral_radius_upper_95_raw >= SPECTRAL_RADIUS_UPPER_95_REJECT_AT_RAW {
             return Err(NduConvergenceAdmissionError::SpectralRadiusGate);
         }
         if certificate.conservation_residual_raw > CONSERVATION_RESIDUAL_LIMIT_RAW {
@@ -196,13 +201,17 @@ fn digest_certificate(certificate: &NduConvergenceCertificateV1) -> Digest32 {
     bytes.extend_from_slice(&certificate.spectral_radius_upper_95_raw.to_be_bytes());
     bytes.extend_from_slice(&certificate.conservation_residual_raw.to_be_bytes());
     bytes.push(certificate.multiple_solution_disposition.tag());
-    push_id(&mut bytes, &certificate.evaluator_identity);
+    push_text(&mut bytes, &certificate.evaluator_identity);
     bytes.push(certificate.decision.tag());
     Digest32::of_bytes(&bytes)
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    let raw = value.as_str().as_bytes();
+    push_text(bytes, value.as_str());
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    let raw = value.as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
@@ -233,7 +242,7 @@ mod tests {
             spectral_radius_upper_95_raw: 4_000_000_000,
             conservation_residual_raw: 1,
             multiple_solution_disposition: NduMultipleSolutionDispositionV1::Unique,
-            evaluator_identity: id("independent-evaluator"),
+            evaluator_identity: "independent-evaluator".to_string(),
             decision: NduConvergenceDecisionV1::Accepted,
         }
     }
@@ -258,7 +267,7 @@ mod tests {
     #[test]
     fn self_evaluation_and_binding_drift_fail_closed() {
         let mut self_evaluated = certificate();
-        self_evaluated.evaluator_identity = id("ndu-producer");
+        self_evaluated.evaluator_identity = "ndu-producer".to_string();
         assert_eq!(
             admit_ndu_convergence_certificate_v1(self_evaluated, &context())
                 .expect_err("self evaluation must reject"),
@@ -277,7 +286,7 @@ mod tests {
     #[test]
     fn accepted_decision_must_pass_every_convergence_gate() {
         let mut spectral = certificate();
-        spectral.spectral_radius_upper_95_raw = SPECTRAL_RADIUS_UPPER_95_LIMIT_RAW;
+        spectral.spectral_radius_upper_95_raw = SPECTRAL_RADIUS_UPPER_95_REJECT_AT_RAW;
         assert_eq!(
             admit_ndu_convergence_certificate_v1(spectral, &context())
                 .expect_err("spectral boundary must reject"),
@@ -307,6 +316,25 @@ mod tests {
             admit_ndu_convergence_certificate_v1(multiple, &context())
                 .expect_err("unresolved multiple solution must reject"),
             NduConvergenceAdmissionError::MultipleSolutionUnresolved
+        );
+    }
+
+    #[test]
+    fn evaluator_identity_follows_canonical_utf8_bound() {
+        let mut empty = certificate();
+        empty.evaluator_identity.clear();
+        assert_eq!(
+            admit_ndu_convergence_certificate_v1(empty, &context())
+                .expect_err("empty evaluator identity must reject"),
+            NduConvergenceAdmissionError::InvalidEvaluatorIdentity
+        );
+
+        let mut oversized = certificate();
+        oversized.evaluator_identity = "x".repeat(257);
+        assert_eq!(
+            admit_ndu_convergence_certificate_v1(oversized, &context())
+                .expect_err("oversized evaluator identity must reject"),
+            NduConvergenceAdmissionError::InvalidEvaluatorIdentity
         );
     }
 
