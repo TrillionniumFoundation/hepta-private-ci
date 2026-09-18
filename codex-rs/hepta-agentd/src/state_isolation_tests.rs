@@ -201,12 +201,11 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
     let (_temp, registry, state) = fixture().expect("runtime fixture");
     let mut identity = state.identity.clone();
     identity.resources.turn_queue_capacity += 1;
-    let changed = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)
-        .expect("changed launch identity");
-    assert!(matches!(
-        changed.refresh_generation(),
-        Err(AgentdError::GenerationFenced(_))
-    ));
+    let changed = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16);
+    assert!(
+        matches!(changed, Err(AgentdError::Protocol(message)) if message.contains("Conflict")),
+        "same-generation composition drift reached a serving Agentd"
+    );
     registry
         .compare_and_transition(
             &state.identity.agent_id,
