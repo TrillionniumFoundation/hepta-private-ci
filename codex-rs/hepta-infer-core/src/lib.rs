@@ -1,11 +1,37 @@
-//! Durable-style inference request and reservation state machine.
+//! Inference-control state machines and the canonical durable owner.
 //!
-//! No function in this crate dispatches a provider or executes a model.
+//! Provider execution lives in hepta-infer-worker-host. The canonical production
+//! state owner in this crate is DurableInferenceControl; the older top-level
+//! InferenceLedger remains a bounded reference/contract model and must not be
+//! composed as a second production writer.
 
 #![forbid(unsafe_code)]
 
-/// Reusable state machine; does not install a second runtime owner.
+/// Canonical durable request/native-run owner used by production host composition.
 pub mod durable_control;
+
+/// Stable production-facing aliases. New runtime composition should import from
+/// this module instead of the top-level reference ledger.
+pub mod production {
+    pub use crate::durable_control::Assignment;
+    pub use crate::durable_control::ControlReceipt;
+    pub use crate::durable_control::DurableInferenceControl;
+    pub use crate::durable_control::Error as DurableControlError;
+    pub use crate::durable_control::InferenceRequest;
+    pub use crate::durable_control::RequestRecord;
+    pub use crate::durable_control::RequestState;
+    pub use crate::durable_control::Reservation;
+    pub use crate::durable_control::TerminalObservation;
+    pub use crate::durable_control::native::NativeDispatch;
+    pub use crate::durable_control::native::NativeFinalUseWitness;
+    pub use crate::durable_control::native::NativeOutputRedactionReceipt;
+    pub use crate::durable_control::native::NativeOwnerAuthority;
+    pub use crate::durable_control::native::NativeRequest;
+    pub use crate::durable_control::native::NativeReservationState;
+    pub use crate::durable_control::native::NativeRunOutput;
+    pub use crate::durable_control::native::NativeRunRecord;
+    pub use crate::durable_control::native::NativeRunStatus;
+}
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -81,6 +107,8 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Bounded in-memory reference model. It has no durable writer ownership and
+/// must not be used as the production provider-control choke point.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InferenceLedger {
     records: BTreeMap<StableId, RequestRecord>,
@@ -236,6 +264,19 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
+}
+
+/// Explicit namespace for the legacy/reference model. Existing top-level names
+/// remain source-compatible, but production composition should not import them.
+pub mod reference {
+    pub use super::Disposition;
+    pub use super::Error;
+    pub use super::InferenceLedger;
+    pub use super::InferenceRequest;
+    pub use super::LedgerReceipt;
+    pub use super::RequestRecord;
+    pub use super::RequestStatus;
+    pub use super::request_digest;
 }
 
 #[cfg(test)]
