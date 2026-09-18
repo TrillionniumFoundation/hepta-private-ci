@@ -309,40 +309,59 @@ fn replay_message(
 }
 
 #[tokio::test]
-async fn replay_checkpoint_detects_registry_rollback_or_drift() {
+async fn replay_checkpoint_detects_restore_before_latest_external_anchor() {
     let temp = TempDir::new().unwrap();
     let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
     let key = SigningKey::from_bytes(&[77; 32]);
     let issuer_id = id("issuer:checkpoint");
-    let (issuer, message) = replay_message(&key, &issuer_id, 1, 10);
+    let (issuer, first) = replay_message(&key, &issuer_id, 1, 10);
     store
         .admit_authbus_message(
             &issuer,
-            &message,
-            message.claims.scope_digest,
-            message.claims.payload_digest,
+            &first,
+            first.claims.scope_digest,
+            first.claims.payload_digest,
         )
         .await
         .unwrap();
-    let checkpoint = store.advance_authbus_replay_checkpoint(0).await.unwrap();
+    let first_checkpoint = store.advance_authbus_replay_checkpoint(0).await.unwrap();
+
+    let (_, second) = replay_message(&key, &issuer_id, 1, 11);
     store
-        .verify_authbus_replay_checkpoint(&checkpoint)
+        .admit_authbus_message(
+            &issuer,
+            &second,
+            second.claims.scope_digest,
+            second.claims.payload_digest,
+        )
+        .await
+        .unwrap();
+    // Legitimate replay growth after an anchor does not invalidate that anchor.
+    store
+        .verify_authbus_replay_checkpoint(&first_checkpoint)
         .await
         .unwrap();
 
+    let latest = store
+        .advance_authbus_replay_checkpoint(first_checkpoint.generation)
+        .await
+        .unwrap();
+    store.verify_authbus_replay_checkpoint(&latest).await.unwrap();
+
+    // Simulate restoring checkpoint metadata from the predecessor snapshot while
+    // the independently retained latest checkpoint remains outside the restore.
     sqlx::query(
-        "UPDATE authbus_replay_sequences SET sequence = ?
-         WHERE issuer_id = ? AND key_epoch = ?",
+        "UPDATE authbus_replay_checkpoint
+         SET generation = ?, replay_digest = ? WHERE singleton = 1",
     )
-    .bind(9_u64.to_be_bytes().as_slice())
-    .bind(issuer_id.as_str())
-    .bind(1_u64.to_be_bytes().as_slice())
+    .bind(first_checkpoint.generation.to_be_bytes().as_slice())
+    .bind(first_checkpoint.replay_digest.as_array().as_slice())
     .execute(&store.pool)
     .await
     .unwrap();
 
     assert!(matches!(
-        store.verify_authbus_replay_checkpoint(&checkpoint).await,
+        store.verify_authbus_replay_checkpoint(&latest).await,
         Err(AuthBusControlError::RollbackDetected)
     ));
 }
