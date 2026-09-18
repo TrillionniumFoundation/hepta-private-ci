@@ -313,15 +313,14 @@ impl ObjectiveRunFileStore {
         run_id: &StableId,
     ) -> Result<Option<(StoredObjectiveRunPublicationV1, Digest32)>, ObjectivePublicationError> {
         let path = self.path_for(run_id);
-        let mut file = match File::open(path) {
+        let file = match File::open(path) {
             Ok(file) => file,
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
             Err(error) => return Err(ObjectivePublicationError::Io(error)),
         };
         let mut encoded = Vec::new();
-        file.by_ref()
-            .take((MAX_PUBLICATION_BYTES + 1) as u64)
-            .read_to_end(&mut encoded)?;
+        let mut limited = file.take((MAX_PUBLICATION_BYTES + 1) as u64);
+        limited.read_to_end(&mut encoded)?;
         if encoded.len() > MAX_PUBLICATION_BYTES {
             return Err(ObjectivePublicationError::EncodedTooLarge {
                 actual: encoded.len(),
