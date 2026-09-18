@@ -64,12 +64,19 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
   `AuthenticatedEvidenceIssuerV1` values require a certificate signed by a
   pinned root and a current external revocation head. Durable
   `append_issuer_key_revocation` facts invalidate subsequent chain
-  verification without rewriting receipts.
+  verification without rewriting receipts. Authority-aware product queries
+  and chain verification additionally overlay the current external revocation
+  head so a newly revoked key cannot remain positive evidence merely because
+  an older receipt is still present.
 - **State and recovery:** migration `0011_qualification_evidence.sql` stores
   canonical signed envelopes, predecessor/revocation lineage and independent
-  decision projections append-only. Store reopen revalidates canonical bytes,
-  projections and Ed25519 signatures. Existing provider-effect uncertainty
-  remains separate from terminal provider acknowledgement.
+  decision projections append-only. Bare store reopen revalidates canonical
+  bytes, projections, exact-candidate links and Ed25519 receipt signatures
+  relative to persisted issuer certificates. Product qualification operations
+  additionally revalidate every persisted issuer certificate against the
+  externally configured `EvidenceIssuerAuthorityV1`; the database cannot
+  self-nominate a trust root. Existing provider-effect uncertainty remains
+  separate from terminal provider acknowledgement.
 - **Anti-rollback:** `capture_external_checkpoint`,
   `verify_external_checkpoint` and `open_with_external_checkpoint` in
   [codex-rs/hepta-evidence/src/checkpoint.rs](../../../codex-rs/hepta-evidence/src/checkpoint.rs)
@@ -77,8 +84,10 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
   checkpoint must be retained outside the SQLite failure domain.
 - **Product composition:** the existing
   [codex-hepta-governance GovernanceState](../../../codex-rs/ext/hepta-governance/src/state.rs)
-  exposes the qualification writer, query verifier, terminal-observer path and
-  checkpoint boundary. Issuer authentication requires a host-pinned
+  exposes the qualification writer, authority-aware query verifier,
+  terminal-observer path and checkpoint boundary. Before product
+  qualification reads, writes or checkpoint operations, stored issuer
+  certificates are revalidated against the host-pinned
   `EvidenceIssuerAuthorityV1` installed through
   `install_with_mode_and_qualification_authority`; an incoming request cannot
   choose a trust root. The default product installation intentionally has no
@@ -86,8 +95,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 - **Source tests:** [qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs)
   implements EVID-01..04 plus revocation, independent-decision, corruption and
   rollback-checkpoint cases; [qualification_product_tests.rs](../../../codex-rs/ext/hepta-governance/src/qualification_product_tests.rs)
-  proves the named product host composition. Test sources are not execution
-  receipts.
+  proves the named product host composition, external revocation-head overlay
+  and wrong-root rejection. Test sources are not execution receipts.
 - **Execution evidence:** Lane A CI emits exact-source and deterministic
   synthetic-merge source/native receipts. See
   [kernel.evidence traceability](../../kernel-evidence/TRACEABILITY.md) for the
