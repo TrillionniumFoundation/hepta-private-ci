@@ -77,8 +77,12 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
   checkpoint must be retained outside the SQLite failure domain.
 - **Product composition:** the existing
   [codex-hepta-governance GovernanceState](../../../codex-rs/ext/hepta-governance/src/state.rs)
-  authenticates issuers and exposes the qualification writer, query verifier,
-  terminal-observer path and checkpoint boundary to named product callers.
+  exposes the qualification writer, query verifier, terminal-observer path and
+  checkpoint boundary. Issuer authentication requires a host-pinned
+  `EvidenceIssuerAuthorityV1` installed through
+  `install_with_mode_and_qualification_authority`; an incoming request cannot
+  choose a trust root. The default product installation intentionally has no
+  qualification authority until the external trust-root ceremony supplies it.
 - **Source tests:** [qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs)
   implements EVID-01..04 plus revocation, independent-decision, corruption and
   rollback-checkpoint cases; [qualification_product_tests.rs](../../../codex-rs/ext/hepta-governance/src/qualification_product_tests.rs)
