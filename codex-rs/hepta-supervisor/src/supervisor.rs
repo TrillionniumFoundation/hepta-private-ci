@@ -37,6 +37,7 @@ use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
 use crate::signed_intent::write_intent;
 use crate::release_selection::ReleaseSelectionRecord;
+use crate::release_selection::ReleaseSelectionSnapshot;
 use crate::release_selection::ReleaseSelectionStatus;
 use crate::release_selection::read_release_selection;
 use crate::release_selection::write_release_selection;
@@ -793,6 +794,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         slot.signed_intent = Some(recovery);
         Ok(())
+    }
+
+    pub fn release_selection_snapshot(
+        &self,
+        agent_id: &AgentId,
+    ) -> Result<Option<ReleaseSelectionSnapshot>, SupervisorError> {
+        let record = self.record(agent_id)?;
+        Ok(read_release_selection(record.layout.run_root())?
+            .map(|selection| selection.snapshot()))
     }
 
     pub fn production_mutation_receipt(
