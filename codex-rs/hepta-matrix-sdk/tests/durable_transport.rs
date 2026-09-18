@@ -425,6 +425,54 @@ async fn expired_crash_lease_reuses_the_stable_transaction_after_reopen() -> Tes
 }
 
 #[tokio::test]
+async fn known_accepted_event_is_reconciled_before_any_resend() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent(FIRST_AGENT)?;
+    let layout = layout(&temp, &agent_id)?;
+    let store = prepared_store(&layout).await?;
+    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let accepted_event = event("$accepted-awaiting-observer")?;
+    let transport = FakeTransport::new([Ok(accepted_event.clone())]);
+    let config = OutboxDispatchConfig {
+        lease_ms: 20,
+        retry_delay_ms: 10,
+        max_retry_delay_ms: 40,
+        max_attempts: 3,
+        claim_limit: 1,
+        idle_poll: Duration::from_millis(10),
+    };
+    let cancel = CancellationToken::new();
+
+    let first = dispatch_outbox_once(&store, &transport, &config, &cancel, 10).await?;
+    assert_eq!(first.sent, 0);
+    assert_eq!(first.accepted_pending_observation, 1);
+    assert_eq!(transport.txn_ids()?, vec![original.stable_txn_id.clone()]);
+
+    // The first lease has expired, so the outbox can be claimed again. Because
+    // the durable ledger already knows the accepted event id, this pass must
+    // only reconcile that event and must not issue another Matrix PUT.
+    let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 31).await?;
+    assert_eq!(second.sent, 0);
+    assert_eq!(second.accepted_pending_observation, 1);
+    assert_eq!(second.retry_scheduled, 1);
+    assert_eq!(transport.txn_ids()?, vec![original.stable_txn_id.clone()]);
+
+    let pending = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted reconciliation row disappeared")?;
+    assert_eq!(pending.state, OutboxState::RetryScheduled);
+    let receipt = store
+        .matrix_dispatch_receipt(&original.stable_txn_id)
+        .await?
+        .ok_or("dispatch receipt disappeared")?;
+    assert_eq!(receipt.state, MatrixDispatchState::Indeterminate);
+    assert_eq!(receipt.accepted_event_id.as_ref(), Some(&accepted_event));
+    store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
 async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
