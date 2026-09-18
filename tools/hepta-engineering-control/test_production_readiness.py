@@ -45,6 +45,9 @@ class ProductionReadinessTests(unittest.TestCase):
             audit_anchor_receipt_digest="b" * 64,
             multi_host_execution=True,
             distributed_coordination_bound=True,
+            distributed_frontier_persisted=True,
+            audit_anchor_store_bound=True,
+            key_custody_identity_bound=True,
         )
 
     def test_complete_verified_fact_set_closes_both_readiness_dimensions(self) -> None:
@@ -91,6 +94,9 @@ class ProductionReadinessTests(unittest.TestCase):
             rollback_rehearsed=False,
             external_audit_anchor_observed=False,
             distributed_coordination_bound=False,
+            distributed_frontier_persisted=False,
+            audit_anchor_store_bound=False,
+            key_custody_identity_bound=False,
         )
         decision = evaluate_production_readiness(facts)
         self.assertTrue(decision.production_implementation_ready)
@@ -104,6 +110,9 @@ class ProductionReadinessTests(unittest.TestCase):
         self.assertIn("rollback_not_rehearsed", decision.deployment_blockers)
         self.assertIn("external_audit_anchor_missing", decision.deployment_blockers)
         self.assertIn("distributed_coordination_missing", decision.deployment_blockers)
+        self.assertIn("audit_anchor_store_unbound", decision.deployment_blockers)
+        self.assertIn("key_custody_identity_unbound", decision.deployment_blockers)
+        self.assertIn("distributed_frontier_not_persisted", decision.deployment_blockers)
 
     def test_non_boolean_claims_and_authority_delta_fail_closed(self) -> None:
         facts = replace(
