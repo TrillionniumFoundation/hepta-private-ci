@@ -23,9 +23,9 @@ fn main() -> anyhow::Result<()> {
                     let text = value
                         .to_str()
                         .ok_or_else(|| anyhow::anyhow!("AuthBus checkpoint must be UTF-8"))?;
-                    let (generation, digest) = text
-                        .split_once(':')
-                        .ok_or_else(|| anyhow::anyhow!("AuthBus checkpoint must be generation:digest"))?;
+                    let (generation, digest) = text.split_once(':').ok_or_else(|| {
+                        anyhow::anyhow!("AuthBus checkpoint must be generation:digest")
+                    })?;
                     let generation = generation.parse::<u64>()?;
                     let digest = digest
                         .parse::<Digest32>()

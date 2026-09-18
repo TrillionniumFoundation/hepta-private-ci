@@ -48,10 +48,7 @@ impl TextIngress {
             .await
             .map_err(|error| invalid(&error.to_string()))?;
         evidence
-            .initialize_authbus_restore_checkpoint(
-                restore_checkpoint.0,
-                restore_checkpoint.1,
-            )
+            .initialize_authbus_restore_checkpoint(restore_checkpoint.0, restore_checkpoint.1)
             .await
             .map_err(|error| invalid(&error.to_string()))?;
         Ok(Self {

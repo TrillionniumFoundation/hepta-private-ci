@@ -176,7 +176,6 @@ impl TextTrust {
         })
     }
 
-
     pub fn permits(&self, thread_id: &str) -> bool {
         !self.revoked && self.thread_ids.iter().any(|id| id == thread_id)
     }
