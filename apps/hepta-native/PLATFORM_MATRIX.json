@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.native.platform-matrix.v1",
+  "framework": {
+    "language": "rust",
+    "desktop": "eframe/egui",
+    "version": "0.36.2",
+    "accessibility": "AccessKit"
+  },
+  "targets": [
+    {
+      "os": "windows",
+      "minimum": "Windows 11",
+      "architectures": ["x86_64"],
+      "ci": "windows-2022",
+      "packageSigning": "Authenticode required for release",
+      "runtimeGrant": "Ed25519 PlatformGrantV1"
+    },
+    {
+      "os": "macos",
+      "minimum": "macOS 14",
+      "architectures": ["aarch64", "x86_64"],
+      "ci": "macos-14",
+      "packageSigning": "codesign + notarization required for release",
+      "runtimeGrant": "Ed25519 PlatformGrantV1"
+    },
+    {
+      "os": "linux",
+      "minimum": "Ubuntu 24.04",
+      "architectures": ["x86_64", "aarch64"],
+      "ci": "ubuntu-24.04",
+      "packageSigning": "pinned Ed25519 package manifest; distro signing may layer above",
+      "runtimeGrant": "Ed25519 PlatformGrantV1"
+    }
+  ],
+  "releaseRequires": [
+    "exact-head tests",
+    "native binary self-test",
+    "signed update negative tests",
+    "crash/restart reconciliation tests",
+    "interactive accessibility evidence",
+    "platform signing/notarization evidence where applicable"
+  ]
+}
