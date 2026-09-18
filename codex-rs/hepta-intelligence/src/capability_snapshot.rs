@@ -203,6 +203,14 @@ impl CapabilitySnapshotV2 {
     }
 
     #[must_use]
+    pub fn bound_generation(&self, capability: &str) -> Option<Generation> {
+        self.bindings
+            .iter()
+            .find(|(id, _)| id.as_str() == capability)
+            .map(|(_, binding)| binding.generation)
+    }
+
+    #[must_use]
     pub const fn objective_digest(&self) -> Digest32 {
         self.objective_digest
     }
