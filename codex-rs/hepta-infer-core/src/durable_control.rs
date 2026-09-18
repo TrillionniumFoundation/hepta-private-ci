@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
@@ -133,6 +134,13 @@ pub struct ControlReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeArchiveReceipt {
+    pub archived: usize,
+    pub remaining_native: usize,
+    pub journal_bytes: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Error {
     InvalidIdentity(&'static str),
     InvalidDigest(&'static str),
@@ -170,6 +178,7 @@ impl From<std::io::Error> for Error {
 #[derive(Debug)]
 pub struct DurableInferenceControl {
     path: PathBuf,
+    _lock_file: File,
     file: File,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
@@ -187,6 +196,22 @@ impl DurableInferenceControl {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
         }
+        // A stable sidecar lock survives atomic journal replacement during
+        // compaction. We also lock the journal inode for compatibility with
+        // older binaries that know only the original journal lock.
+        let lock_path = companion_path(&path, ".lock");
+        let mut lock_options = OpenOptions::new();
+        lock_options.create(true).append(true).read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            lock_options.mode(0o600);
+        }
+        let lock_file = lock_options.open(&lock_path)?;
+        lock_file
+            .try_lock()
+            .map_err(|_| Error::WriterUnavailable)?;
+
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
         #[cfg(unix)]
@@ -197,6 +222,10 @@ impl DurableInferenceControl {
         let file = options.open(&path)?;
         // Lock before replay: two owners must never admit from the same stale cut.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        let stale_compaction = companion_path(&path, ".compact.tmp");
+        if stale_compaction.exists() {
+            fs::remove_file(&stale_compaction)?;
+        }
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
@@ -247,6 +276,7 @@ impl DurableInferenceControl {
         }
         Ok(Self {
             path,
+            _lock_file: lock_file,
             file,
             records,
             native,
@@ -254,6 +284,180 @@ impl DurableInferenceControl {
             journal_bytes,
             poisoned: false,
         })
+    }
+
+    /// Move released native executions out of the hot journal while preserving
+    /// exact replay protection in owner-only per-request archive records. The
+    /// active journal is atomically replaced under a stable sidecar lock; active
+    /// and indeterminate executions are never archived.
+    pub fn archive_released_native(&mut self) -> Result<NativeArchiveReceipt, Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        let archived_ids = self
+            .native
+            .records
+            .iter()
+            .filter_map(|(id, record)| {
+                (record.state == native::NativeReservationState::Released).then(|| id.clone())
+            })
+            .collect::<BTreeSet<_>>();
+        if archived_ids.is_empty() {
+            return Ok(NativeArchiveReceipt {
+                archived: 0,
+                remaining_native: self.native.records.len(),
+                journal_bytes: self.journal_bytes,
+            });
+        }
+
+        let archive_dir = companion_path(&self.path, ".archive");
+        fs::create_dir_all(&archive_dir)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&archive_dir, fs::Permissions::from_mode(0o700))?;
+        }
+        for request_id in &archived_ids {
+            let record = self
+                .native
+                .records
+                .get(request_id)
+                .ok_or(Error::RequestNotFound)?;
+            self.persist_native_archive_record(&archive_dir, record)?;
+        }
+        File::open(&archive_dir)?.sync_all()?;
+        self.rewrite_without_archived_native(&archived_ids)?;
+        for request_id in &archived_ids {
+            self.native.records.remove(request_id);
+        }
+        Ok(NativeArchiveReceipt {
+            archived: archived_ids.len(),
+            remaining_native: self.native.records.len(),
+            journal_bytes: self.journal_bytes,
+        })
+    }
+
+    pub(super) fn archived_native_record(
+        &self,
+        request_id: &str,
+    ) -> Result<Option<native::NativeRunRecord>, Error> {
+        let archive_dir = companion_path(&self.path, ".archive");
+        let archive_path = archive_dir.join(format!("{}.json", hex_id(request_id)));
+        let bytes = match fs::read(&archive_path) {
+            Ok(bytes) => bytes,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+            Err(error) => return Err(error.into()),
+        };
+        if bytes.len() > MAX_JOURNAL_LINE_BYTES {
+            return Err(Error::CorruptJournal("native archive size"));
+        }
+        let record: native::NativeRunRecord = serde_json::from_slice(&bytes)
+            .map_err(|_| Error::CorruptJournal("native archive decode"))?;
+        if record.request.request_id != request_id
+            || record.state != native::NativeReservationState::Released
+        {
+            return Err(Error::CorruptJournal("native archive identity"));
+        }
+        Ok(Some(record))
+    }
+
+    fn persist_native_archive_record(
+        &self,
+        archive_dir: &Path,
+        record: &native::NativeRunRecord,
+    ) -> Result<(), Error> {
+        let archive_path = archive_dir.join(format!("{}.json", hex_id(&record.request.request_id)));
+        let encoded = serde_json::to_vec(record)
+            .map_err(|_| Error::CorruptJournal("native archive encode"))?;
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+        if archive_path.exists() {
+            let existing = fs::read(&archive_path)?;
+            if existing != encoded {
+                return Err(Error::Conflict);
+            }
+            return Ok(());
+        }
+        let mut options = OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut archive = options.open(&archive_path)?;
+        archive.write_all(&encoded)?;
+        archive.flush()?;
+        archive.sync_all()?;
+        Ok(())
+    }
+
+    fn rewrite_without_archived_native(
+        &mut self,
+        archived_ids: &BTreeSet<String>,
+    ) -> Result<(), Error> {
+        let source = File::open(&self.path)?;
+        let mut reader = BufReader::new(source);
+        let mut retained = Vec::new();
+        let mut line = Vec::new();
+        loop {
+            line.clear();
+            let count = reader.read_until(b'\n', &mut line)?;
+            if count == 0 {
+                break;
+            }
+            if count > MAX_JOURNAL_LINE_BYTES || line.last() != Some(&b'\n') {
+                return Err(Error::CorruptJournal("compaction line"));
+            }
+            let raw = std::str::from_utf8(&line[..line.len() - 1])
+                .map_err(|_| Error::CorruptJournal("compaction utf8"))?;
+            let skip = if let Some(json) = raw.strip_prefix(native::JOURNAL_PREFIX) {
+                archived_ids.contains(&native::journal_event_request_id(json)?)
+            } else {
+                false
+            };
+            if !skip {
+                retained.extend_from_slice(&line);
+            }
+            if retained.len() as u64 > MAX_JOURNAL_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
+        }
+
+        let temp_path = companion_path(&self.path, ".compact.tmp");
+        let mut options = OpenOptions::new();
+        options.create_new(true).write(true).read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut replacement = options.open(&temp_path)?;
+        let replacement_result = (|| -> Result<(), Error> {
+            replacement.write_all(&retained)?;
+            replacement.flush()?;
+            replacement.sync_all()?;
+            replacement
+                .try_lock()
+                .map_err(|_| Error::WriterUnavailable)?;
+            fs::rename(&temp_path, &self.path)?;
+            let parent = self
+                .path
+                .parent()
+                .filter(|parent| !parent.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new("."));
+            File::open(parent)?.sync_all()?;
+            Ok(())
+        })();
+        if let Err(error) = replacement_result {
+            self.poisoned = true;
+            let _ = fs::remove_file(&temp_path);
+            return Err(error);
+        }
+        self.file = replacement;
+        self.journal_bytes = retained.len() as u64;
+        Ok(())
     }
 
     pub fn submit(
@@ -883,6 +1087,21 @@ fn parse_u64(value: &str) -> Result<u64, Error> {
 
 fn parse_u32(value: &str) -> Result<u32, Error> {
     value.parse().map_err(|_| Error::CorruptJournal("u32"))
+}
+
+fn companion_path(path: &Path, suffix: &str) -> PathBuf {
+    let mut value = path.as_os_str().to_os_string();
+    value.push(suffix);
+    PathBuf::from(value)
+}
+
+fn hex_id(value: &str) -> String {
+    let mut encoded = String::with_capacity(value.len() * 2);
+    for byte in value.as_bytes() {
+        use std::fmt::Write as _;
+        let _ = write!(&mut encoded, "{byte:02x}");
+    }
+    encoded
 }
 
 #[cfg(test)]
