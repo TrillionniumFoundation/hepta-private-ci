@@ -106,11 +106,14 @@ fn proposal_and_handoff() -> (
 #[test]
 fn pls3_structural_canary_persists_candidate_without_runtime_mutation() {
     let (proposal, handoff) = proposal_and_handoff();
-    let handoff_set = verify_topology_writer_handoffs_v1(&proposal, &[handoff])
-        .expect("handoff set verifies");
+    let handoff_set =
+        verify_topology_writer_handoffs_v1(&proposal, &[handoff]).expect("handoff set verifies");
     assert!(!handoff_set.is_zero());
     assert!(!proposal.authority.grants_any());
-    assert_eq!(proposal.rollback_predecessor_digest, proposal.selected_artifact_digest);
+    assert_eq!(
+        proposal.rollback_predecessor_digest,
+        proposal.selected_artifact_digest
+    );
 
     let fixture = TestFile::new();
     let scope = digest("topology-registry-scope");
@@ -127,14 +130,9 @@ fn pls3_structural_canary_persists_candidate_without_runtime_mutation() {
             .expect("anchor exists")
     };
 
-    let reopened = DurableTopologyProposalRegistryV2::open_anchored(
-        fixture.open(),
-        scope,
-        41,
-        8,
-        anchor,
-    )
-    .expect("anchored reopen");
+    let reopened =
+        DurableTopologyProposalRegistryV2::open_anchored(fixture.open(), scope, 41, 8, anchor)
+            .expect("anchored reopen");
     assert_eq!(reopened.record_count(), Ok(1));
     assert_eq!(reopened.get(&proposal.proposal_id), Ok(Some(&proposal)));
 }
@@ -148,6 +146,9 @@ fn pls3_canary_abort_rejects_writer_handoff_drift_before_persistence() {
     // The canary has no apply API and no registry append is attempted after the
     // handoff gate fails. The current selected artifact therefore remains the
     // exact rollback predecessor named by the proposal.
-    assert_eq!(proposal.rollback_predecessor_digest, proposal.selected_artifact_digest);
+    assert_eq!(
+        proposal.rollback_predecessor_digest,
+        proposal.selected_artifact_digest
+    );
     assert!(!proposal.authority.grants_any());
 }
