@@ -124,6 +124,40 @@ JOIN automation_tasks t ON t.task_id = r.task_id
 LEFT JOIN automation_dispatch_outcomes o
   ON o.task_id = r.task_id AND o.occurrence = r.occurrence;
 
+-- Provider observations are append-only evidence.  Reconciliation consumes
+-- these durable facts; it never treats an in-memory callback as sufficient.
+CREATE TABLE automation_provider_observations (
+    observation_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    occurrence_id TEXT NOT NULL,
+    provider_kind TEXT NOT NULL CHECK (length(provider_kind) BETWEEN 1 AND 64),
+    provider_key TEXT NOT NULL CHECK (length(provider_key) BETWEEN 1 AND 256),
+    observation TEXT NOT NULL CHECK (
+        observation IN ('accepted', 'running', 'succeeded', 'failed', 'cancelled', 'indeterminate')
+    ),
+    receipt_digest TEXT NOT NULL CHECK (
+        length(receipt_digest) = 64 AND receipt_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    payload_json TEXT NOT NULL CHECK (length(payload_json) <= 65536),
+    observed_at_ms INTEGER NOT NULL CHECK (observed_at_ms >= 0),
+    FOREIGN KEY (occurrence_id) REFERENCES automation_occurrences(occurrence_id),
+    UNIQUE (occurrence_id, provider_kind, provider_key, observation, receipt_digest)
+);
+
+CREATE TRIGGER automation_provider_observations_no_update
+BEFORE UPDATE ON automation_provider_observations
+BEGIN
+    SELECT RAISE(ABORT, 'automation provider observations are append-only');
+END;
+
+CREATE TRIGGER automation_provider_observations_no_delete
+BEFORE DELETE ON automation_provider_observations
+BEGIN
+    SELECT RAISE(ABORT, 'automation provider observations are append-only');
+END;
+
+CREATE INDEX automation_provider_observation_occurrence_idx
+    ON automation_provider_observations(occurrence_id, observation_id);
+
 -- Promote the already-implemented durable TaskFlow step outbox into the normal
 -- migrated schema.  Its API still grants no provider authority by itself.
 CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
