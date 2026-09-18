@@ -227,14 +227,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let Some(runtime) = slot.runtime.as_ref() else {
-            if slot.fault_restart_retry_at.is_some() {
-                return Ok(());
-            }
-            return Err(SupervisorError::Invalid(format!(
-                "agent {agent_id} is not active"
-            )));
-        };
+        let runtime = slot
+            .runtime
+            .as_ref()
+            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
         if runtime.generation != record.lifecycle.generation {
             return Err(SupervisorError::GenerationFence {
                 agent_id: agent_id.clone(),
@@ -286,10 +282,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let runtime = slot
-            .runtime
-            .as_ref()
-            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
+        let Some(runtime) = slot.runtime.as_ref() else {
+            if slot.fault_restart_retry_at.is_some() {
+                return Ok(());
+            }
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} is not active"
+            )));
+        };
         if runtime.generation != record.lifecycle.generation {
             return Err(SupervisorError::GenerationFence {
                 agent_id: agent_id.clone(),
