@@ -40,6 +40,7 @@ pub enum ArtifactPublicationPhaseV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ArtifactPublicationContractV1 {
     pub operation_id: StableId,
+    pub registry_id: StableId,
     pub admission_digest: Digest32,
     pub manifest_digest: Digest32,
     pub withdrawal_domain_digest: Digest32,
@@ -122,7 +123,8 @@ impl ArtifactPublicationTransactionV1 {
         if self.snapshot_file_digest.is_none() {
             return Err(ArtifactPublicationError::SnapshotNotDurable);
         }
-        if witness.head_digest != self.contract.registry_successor_head_digest
+        if witness.registry_id != self.contract.registry_id
+            || witness.head_digest != self.contract.registry_successor_head_digest
             || witness.predecessor_head_digest != self.contract.registry_predecessor_head_digest
             || receipt.binding != self.contract.snapshot_binding
             || receipt.file_digest.is_zero()
@@ -131,7 +133,7 @@ impl ArtifactPublicationTransactionV1 {
             return Err(ArtifactPublicationError::WitnessReceiptMismatch);
         }
         let requirement = RegistryHeadRequirementV1 {
-            registry_id: witness.registry_id.clone(),
+            registry_id: self.contract.registry_id.clone(),
             minimum_generation: witness.generation,
             expected_predecessor_head_digest: self.contract.registry_predecessor_head_digest,
             minimum_authority_epoch: witness.authority_epoch,
@@ -218,6 +220,7 @@ pub fn artifact_registry_event_for_admission_v3(
 
 pub fn prepare_artifact_publication_v1(
     operation_id: StableId,
+    registry_id: StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
     withdrawal_registry: &DatasetWithdrawalRegistry,
     now: u64,
@@ -249,6 +252,7 @@ pub fn prepare_artifact_publication_v1(
     Ok(ArtifactPublicationTransactionV1 {
         contract: ArtifactPublicationContractV1 {
             operation_id,
+            registry_id,
             admission_digest: admission.admission_digest,
             manifest_digest: admission.validated_manifest.manifest_digest,
             withdrawal_domain_digest: admission.withdrawal_domain_digest,
@@ -437,6 +441,7 @@ mod tests {
         let binding = digest("binding");
         let contract = ArtifactPublicationContractV1 {
             operation_id: id("operation"),
+            registry_id: id("artifacts"),
             admission_digest: digest("admission"),
             manifest_digest: digest("manifest"),
             withdrawal_domain_digest: digest("domain"),
@@ -486,11 +491,60 @@ mod tests {
     }
 
     #[test]
+    fn durable_witness_from_wrong_registry_namespace_is_rejected() {
+        let binding = digest("binding");
+        let contract = ArtifactPublicationContractV1 {
+            operation_id: id("operation"),
+            registry_id: id("artifacts"),
+            admission_digest: digest("admission"),
+            manifest_digest: digest("manifest"),
+            withdrawal_domain_digest: digest("domain"),
+            withdrawal_head_digest: Digest32::ZERO,
+            registry_predecessor_head_digest: digest("previous-head"),
+            registry_successor_head_digest: digest("registry-head"),
+            registry_sequence: LogicalSequence::new(1).expect("sequence"),
+            registry_event_digest: digest("registry-event"),
+            snapshot_binding: binding,
+        };
+        let mut transaction = recover_artifact_publication_v1(
+            contract,
+            Some(snapshot_receipt(binding)),
+            None,
+        )
+        .expect("snapshot recovery");
+
+        let (mut wrong_registry, _) = witness(binding);
+        wrong_registry.registry_id = id("other-artifacts");
+        let validated = validate_registry_head_witness(
+            &wrong_registry,
+            &RegistryHeadRequirementV1 {
+                registry_id: wrong_registry.registry_id.clone(),
+                minimum_generation: wrong_registry.generation,
+                expected_predecessor_head_digest: wrong_registry.predecessor_head_digest,
+                minimum_authority_epoch: wrong_registry.authority_epoch,
+                now: wrong_registry.issued_at,
+            },
+        )
+        .expect("self-consistent witness for another registry");
+        let wrong_receipt = RegistryHeadWitnessReceipt {
+            binding,
+            witness_digest: validated.witness_digest,
+            file_digest: digest("other-witness-file"),
+            encoded_bytes: 100,
+        };
+        assert_eq!(
+            transaction.observe_witness_durable(&wrong_registry, wrong_receipt),
+            Err(ArtifactPublicationError::WitnessReceiptMismatch)
+        );
+    }
+
+    #[test]
     fn witness_without_snapshot_is_rejected_after_restart() {
         let binding = digest("binding");
         let (head, receipt) = witness(binding);
         let contract = ArtifactPublicationContractV1 {
             operation_id: id("operation"),
+            registry_id: id("artifacts"),
             admission_digest: digest("admission"),
             manifest_digest: digest("manifest"),
             withdrawal_domain_digest: digest("domain"),
@@ -523,6 +577,7 @@ mod tests {
         let receipt = append_receipt(operation_id.clone(), &admitted, predecessor);
         let transaction = prepare_artifact_publication_v1(
             operation_id.clone(),
+            id("artifacts"),
             &admitted,
             &registry,
             20,
@@ -532,6 +587,7 @@ mod tests {
         )
         .expect("publication contract");
         assert_eq!(transaction.contract().operation_id, operation_id);
+        assert_eq!(transaction.contract().registry_id, id("artifacts"));
         assert_eq!(transaction.contract().registry_sequence, receipt.sequence);
         assert_eq!(
             transaction.contract().registry_event_digest,
@@ -543,6 +599,7 @@ mod tests {
         assert_eq!(
             prepare_artifact_publication_v1(
                 id("operation"),
+                id("artifacts"),
                 &admitted,
                 &registry,
                 20,
@@ -558,6 +615,7 @@ mod tests {
         assert_eq!(
             prepare_artifact_publication_v1(
                 id("operation"),
+                id("artifacts"),
                 &admitted,
                 &registry,
                 20,
@@ -580,6 +638,7 @@ mod tests {
         assert!(matches!(
             prepare_artifact_publication_v1(
                 operation_id,
+                id("artifacts"),
                 &stale,
                 &registry,
                 20,
