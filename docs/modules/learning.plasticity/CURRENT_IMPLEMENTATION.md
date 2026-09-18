@@ -201,6 +201,14 @@ frame and truncates only one incomplete crash tail; a complete invalid frame sti
 fails closed as corruption. The source can enforce monotonic journal semantics; it
 cannot make two files physically independent by itself.
 
+Product-level reopen is stricter than raw registry recovery. The raw parameter/topology
+registries may preserve complete valid frames after the externally acknowledged anchor
+for explicit lost-ack reconciliation, but an anchored product writer enters
+`Healthy` only when the recovered current head exactly equals the supplied external
+anchor. A later complete tail causes a fail-closed conflict without truncating those
+bytes. An operator/reconciler must inspect and re-establish the acknowledged head
+before product writes resume.
+
 ## 7. Governed topology proposal path
 
 Topology V2 remains proposal-only. It supports bounded typed
@@ -271,9 +279,12 @@ Operational stop rules:
    writer fence, trust snapshot and artifact/evidence frontier receipts.
 3. Retire any `AppendPendingAnchor`, `Poisoned` or indeterminate writer handle.
 4. Reopen acknowledged history only with the independently retained anchor and exact
-   scope/fence. Never convert a failed external anchor commit into success from the
-   proposal file alone.
-5. Re-read the authoritative artifact registry and owner-evidence frontiers before
+   scope/fence. If the raw registry contains a complete later tail, the product writer
+   must remain closed until explicit reconciliation establishes a newly acknowledged
+   head; never convert a failed external anchor commit into success from the proposal
+   file alone.
+5. Re-read the authoritative artifact registry, typed dataset receipt and owner-evidence
+   frontiers before
    rebuilding signatures or evaluations.
 6. For topology proposals, revalidate the typed migration/rollback/writer-handoff set.
    Do not fall back to legacy topology writes and do not apply the proposal as a
