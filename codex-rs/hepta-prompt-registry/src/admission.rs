@@ -22,12 +22,16 @@ use serde::Serialize;
 
 use crate::FactorSource;
 use crate::PromptFactor;
+use crate::PromptRealizationBindingV2;
 
 const ADMISSION_DOMAIN: &[u8] = b"hepta.prompt-registry.admission.v1\0";
 const FINAL_USE_REQUEST_DOMAIN: &[u8] = b"hepta.prompt-registry.final-use-admission.v1\0";
 const FINAL_USE_DESTINATION: &str = "prompt.registry:admission";
 const FINAL_USE_RETIRE_DESTINATION: &str = "prompt.registry:retire";
 const FINAL_USE_REVOKE_DESTINATION: &str = "prompt.registry:revoke";
+const FINAL_USE_REALIZATION_DESTINATION: &str = "prompt.registry:realization";
+const FINAL_USE_REALIZATION_REQUEST_DOMAIN: &[u8] =
+    b"hepta.prompt-registry.final-use-realization.v1\0";
 const FINAL_USE_RETIRE_REQUEST_DOMAIN: &[u8] = b"hepta.prompt-registry.final-use-retire.v1\0";
 const FINAL_USE_REVOKE_REQUEST_DOMAIN: &[u8] = b"hepta.prompt-registry.final-use-revoke.v1\0";
 const MAX_ADMISSION_LIFETIME_MS: u64 = 300_000;
@@ -307,6 +311,42 @@ pub fn final_use_admission_binding(
     })
 }
 
+
+pub fn final_use_realization_binding(
+    factor: &PromptFactor,
+    actor_id: &StableId,
+    scope_digest: Digest32,
+    binding: &PromptRealizationBindingV2,
+    supersedes_realization_id: Option<&StableId>,
+) -> Result<FinalUseBinding, AdmissionError> {
+    if scope_digest.is_zero()
+        || factor.lifecycle != crate::Lifecycle::Admitted
+        || factor.factor_id != binding.factor_id
+    {
+        return Err(AdmissionError::ScopeMismatch);
+    }
+    binding.validate().map_err(|_| AdmissionError::InvalidGrant)?;
+    let mut request = FINAL_USE_REALIZATION_REQUEST_DOMAIN.to_vec();
+    push_id(&mut request, &factor.factor_id);
+    push_id(&mut request, &factor.proposer_id);
+    push_id(&mut request, &factor.semantic_version);
+    request.extend_from_slice(factor.content_digest.as_array());
+    request.extend_from_slice(binding.digest().as_array());
+    match supersedes_realization_id {
+        Some(predecessor) => {
+            request.push(1);
+            push_id(&mut request, predecessor);
+        }
+        None => request.push(0),
+    }
+    Ok(FinalUseBinding {
+        subject_id: actor_id.to_string(),
+        destination_id: FINAL_USE_REALIZATION_DESTINATION.to_owned(),
+        request_sha256: Digest32::of_bytes(&request).into_array(),
+        scope_sha256: scope_digest.into_array(),
+        payload_sha256: binding.payload_digest.into_array(),
+    })
+}
 
 pub fn final_use_retire_binding(
     factor: &PromptFactor,
