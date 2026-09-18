@@ -59,6 +59,8 @@ from .external import (
     verify_audit_anchor,
     verify_external_fact_receipts,
     verify_key_custody,
+    verify_key_custody_set,
+    verify_store_audit_anchor,
 )
 from .facade import (
     ReviewRequest,
@@ -122,6 +124,8 @@ hardened_record_integration_decision = record_integration_decision
 hardened_request_independent_review = request_independent_review
 
 __all__ = [
+    "verify_store_audit_anchor",
+    "verify_key_custody_set",
     "evaluate_authenticated_production_readiness",
     "run_mutation_testing",
     "MutationTestingReceipt",
