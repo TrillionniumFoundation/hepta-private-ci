@@ -46,10 +46,137 @@
       "designOperation": "binding",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "lease_issue_binding",
+      "nativeSymbol": "lease_issue_binding",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lease_issue_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "request_secret_lease",
+      "nativeSymbol": "request_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "request_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lease_renew_binding",
+      "nativeSymbol": "lease_renew_binding",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lease_renew_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "renew_secret_lease",
+      "nativeSymbol": "renew_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "renew_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lease_revoke_binding",
+      "nativeSymbol": "lease_revoke_binding",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lease_revoke_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_secret_lease",
+      "nativeSymbol": "revoke_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lookup_secret_lease",
+      "nativeSymbol": "lookup_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lookup_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "pending_secret_lease_operation",
+      "nativeSymbol": "pending_secret_lease_operation",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "pending_secret_lease_operation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lookup_secret_lease_by_operation",
+      "nativeSymbol": "lookup_secret_lease_by_operation",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lookup_secret_lease_by_operation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Accept and exact-pin the paired HeptaBao dynamic-secret runtime before lifecycle activation.",
+    "Bind every operation to an authenticated registered product consumer and provider reconciliation operator.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
