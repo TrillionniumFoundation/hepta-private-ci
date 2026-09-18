@@ -87,10 +87,7 @@ fn run_python(frame: &[u8]) -> std::process::Output {
 #[test]
 fn rust_python_wire_roundtrip_and_payload_fault_reject() {
     let schema = fixture(StableId::new("hepta.integration.v1"), "schema id");
-    let producer = fixture(
-        StableId::new("hepta-shadow-qualification"),
-        "producer id",
-    );
+    let producer = fixture(StableId::new("hepta-shadow-qualification"), "producer id");
     let generation = fixture(Generation::new(7), "generation");
     let payload = br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec();
     let envelope = fixture(
