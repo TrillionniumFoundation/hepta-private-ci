@@ -179,6 +179,7 @@ where
         require_lineage(&mut lineage, config.head_digest)?;
         if let Some(artifact) = calibration_artifact.as_ref() {
             artifact.validate()?;
+            require_calibration_lineage(&mut lineage, artifact)?;
         }
         let sparse_config = config.to_sparse_config(&native)?;
         if scope.scope_digest.is_zero()
@@ -251,6 +252,7 @@ where
         require_lineage(&mut lineage, config.head_digest)?;
         if let Some(artifact) = calibration_artifact.as_ref() {
             artifact.validate()?;
+            require_calibration_lineage(&mut lineage, artifact)?;
         }
         if scope.scope_digest.is_zero()
             || scope.objective_digest.is_zero()
@@ -558,6 +560,21 @@ pub fn open_file_witness(
         file,
         witness_context_digest(config_digest, scope),
     )?)
+}
+
+fn require_calibration_lineage<L: LineagePolicy>(
+    lineage: &mut L,
+    artifact: &NeuronCalibrationArtifactV1,
+) -> Result<(), RuntimeError> {
+    for digest in [
+        artifact.artifact_digest,
+        artifact.subgroup_audit_digest,
+        artifact.detector_digest,
+        artifact.support_digest,
+    ] {
+        require_lineage(lineage, digest)?;
+    }
+    Ok(())
 }
 
 fn require_lineage<L: LineagePolicy>(
