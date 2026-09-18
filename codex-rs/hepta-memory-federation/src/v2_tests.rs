@@ -361,6 +361,45 @@ fn response_digest_is_canonical_over_item_order() {
 }
 
 #[tokio::test]
+async fn overlimit_item_permutations_yield_identical_admitted_result() {
+    let query = query();
+    let response = terminal_response(&query);
+    let mut permuted = response.clone();
+    permuted.items.reverse();
+    permuted.response_digest = permuted.compute_response_digest(query.binding_digest());
+
+    let left = execute_once(
+        &FixtureTransport {
+            result: Ok(FederationTransportResultV2::Terminal(response)),
+        },
+        &current_authority(&query),
+        &NeverCancelledV2,
+        10,
+        query.clone(),
+        &lease(&query),
+    )
+    .await
+    .unwrap_or_else(|error| panic!("left result: {error}"));
+    let right = execute_once(
+        &FixtureTransport {
+            result: Ok(FederationTransportResultV2::Terminal(permuted)),
+        },
+        &current_authority(&query),
+        &NeverCancelledV2,
+        10,
+        query.clone(),
+        &lease(&query),
+    )
+    .await
+    .unwrap_or_else(|error| panic!("right result: {error}"));
+
+    assert_eq!(left.items, right.items);
+    assert_eq!(left.result_digest, right.result_digest);
+    assert_eq!(left.coverage.truncated_items, 1);
+    assert_eq!(right.coverage.truncated_items, 1);
+}
+
+#[tokio::test]
 async fn response_expiry_is_capped_by_authority_and_lease() {
     let query = query();
     let mut response = terminal_response(&query);
