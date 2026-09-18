@@ -39,8 +39,8 @@
       "operation": "verify_admission",
       "nativeSymbol": "AdmissionAuthority::verify",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/admission.rs",
-      "state": "source_implemented_not_runtime_activated",
-      "authority": "verifies_external_review_signature_only",
+      "state": "source_implemented_compatibility_only",
+      "authority": "none_non_authoritative_verifier",
       "tests": [
         "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
       ],
@@ -51,10 +51,10 @@
     },
     {
       "operation": "verify_final_use_admission",
-      "nativeSymbol": "FinalUseAdmissionAuthority::verify",
+      "nativeSymbol": "FinalUseAdmissionAuthority::with_verified_admission",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/admission.rs",
       "state": "source_implemented_not_runtime_activated",
-      "authority": "consumes_kernel_final_use_authority",
+      "authority": "consumes_kernel_final_use_authority_and_fences_durable_commit",
       "tests": [
         "codex-rs/hepta-prompt-registry/src/durable.rs"
       ],
