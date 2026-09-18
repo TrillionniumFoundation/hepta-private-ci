@@ -162,38 +162,106 @@
     },
     {
       "module": "kernel.operations",
-      "profile": "bounded_operation_reference_model",
+      "profile": "durable_operation_owner_with_reference_oracle",
       "formalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md",
+      "implementationDetail": "docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_reference_model",
-        "durability": "not_implemented",
-        "qualification": "model_tests_present",
-        "activation": "inactive",
+        "implementation": "sqlite_durable_operations_with_reference_oracle",
+        "durability": "sqlite_wal_full_transactional",
+        "qualification": "durable_source_tests_present",
+        "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded deterministic operation-state reference model",
-        "bounded in-memory outbox claim and acknowledgement model",
-        "generation-fenced idempotent terminal observation"
+        "atomic durable operation ledger and source outbox co-commit",
+        "bounded leased outbox claims with generation fencing and crash-reopen takeover",
+        "final-use authority dispatch admission with indeterminate recovery and terminal reconciliation",
+        "destination-owner transaction dedupe with immutable apply receipts",
+        "bounded retention tombstones and backlog metrics",
+        "deterministic in-memory reference oracle retained for transition parity"
       ],
       "targetOnlyCapabilities": [
-        "durable operation ledger",
-        "transactional durable outbox",
-        "claim lease expiry and crash-reopen takeover",
-        "background reconciliation service"
+        "enrolled production grant source and continuously hosted dispatcher/reconciler",
+        "destination-owner dedupe/apply/observer composition for every remaining registered effect port",
+        "target-host power-loss and real disk-exhaustion qualification",
+        "operator activation canary promotion and release acceptance"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-operations/src/lib.rs",
           "mustContain": [
-            "In-memory reference model",
-            "does not provide durable storage",
-            "ReferenceAuthorityWitness"
+            "pub use durable::DurableOperationStore;",
+            "pub use durable::DurableDispatcher;",
+            "pub use durable::DestinationReceipt;",
+            "pub use model::ReferenceAuthorityWitness;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable/store.rs",
+          "mustContain": [
+            "pub struct DurableOperationStore",
+            "begin_with(\"BEGIN IMMEDIATE\")",
+            "pub async fn prepare_intent(",
+            "pub async fn claim_outbox(",
+            "pub async fn prune_terminal("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable/dispatcher.rs",
+          "mustContain": [
+            "pub struct DurableDispatcher",
+            "pub async fn dispatch_authorized(",
+            "authority.with_verified_use(token, &binding"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable/reconcile.rs",
+          "mustContain": [
+            "pub async fn reconcile_destination_receipt(",
+            "if observer_generation < operation.owner_generation",
+            "UPDATE operation_ledger SET owner_generation = ?"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0001_operation_store.sql",
+          "mustContain": [
+            "CREATE TABLE operation_ledger",
+            "CREATE TABLE cross_owner_outbox",
+            "CREATE TABLE destination_operation_dedup"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0002_retired_identity_tombstones.sql",
+          "mustContain": [
+            "CREATE TABLE operation_tombstones",
+            "CREATE TABLE destination_operation_tombstones"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/operation_destination.rs",
+          "mustContain": [
+            "pub async fn create_task_from_operation(",
+            ".begin_with(\"BEGIN IMMEDIATE\")",
+            "INSERT INTO automation_tasks",
+            "INSERT INTO destination_operation_dedupe"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/kernel_operations_destination.rs",
+          "mustContain": [
+            "cross_owner_lost_ack_applies_once_and_reconciles_terminal",
+            "destination_payload_drift_conflicts_without_second_task"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable/fault_tests.rs",
+          "mustContain": [
+            "actual_process_crash_before_dispatch_recovers_same_identity_with_new_fence",
+            "actual_process_crash_after_dispatch_never_blindly_reclaims_and_can_reconcile"
           ]
         },
         {
@@ -203,21 +271,6 @@
             "pub struct OperationLedger",
             "pub fn observe_terminal",
             "terminal_matches"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-operations/src/outbox.rs",
-          "mustContain": [
-            "MAX_MODEL_OUTBOX_RECORDS",
-            "InvalidDigest(\"outbox payload\")",
-            "InvalidDigest(\"outbox acknowledgement\")"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-operations/src/model.rs",
-          "mustContain": [
-            "pub struct ReferenceAuthorityWitness",
-            "not a cryptographic credential"
           ]
         }
       ]
