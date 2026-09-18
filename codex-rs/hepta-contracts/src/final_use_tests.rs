@@ -57,6 +57,44 @@ fn signed_claim_is_single_use_and_delivers_under_same_owner() {
 }
 
 #[test]
+fn async_effect_entry_rechecks_revocation_and_consumes_the_token() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    let entered = authority.enter_verified_use(token, &binding).unwrap();
+    assert!(entered.matches(&binding));
+
+    // Once entry has happened, a later revocation fences future grants/entries
+    // but cannot retroactively erase the already-entered external effect.
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        })
+        .unwrap();
+    assert!(entered.matches(&binding));
+}
+
+#[test]
+fn async_effect_entry_is_denied_if_revoked_after_claim_before_entry() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        })
+        .unwrap();
+    assert_eq!(
+        authority.enter_verified_use(token, &binding).unwrap_err(),
+        FinalUseError::Revoked
+    );
+}
+
+#[test]
 fn changing_signed_data_or_substituting_a_key_does_not_authorize() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.binding.request_sha256 = [6; 32];
