@@ -72,7 +72,7 @@ async fn server_sequence(
             if !fixture.delay_body.is_zero() {
                 tokio::time::sleep(fixture.delay_body).await;
             }
-            stream.write_all(fixture.body.as_bytes()).await?;
+            let _ = stream.write_all(fixture.body.as_bytes()).await;
         }
         Ok::<Vec<String>, TestError>(requests)
     });
