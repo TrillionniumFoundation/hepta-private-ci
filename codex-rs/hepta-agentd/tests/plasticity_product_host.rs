@@ -86,6 +86,7 @@ struct Fixture {
     grammar: MutationGrammarManifestV1,
     profile: ParameterGeneratorProfileV3,
     generated: GeneratedParameterCandidateSetV3,
+    dataset: DatasetSnapshotReceiptV3,
     admission: PlasticityAdmissionEvidenceV1,
     bundle: IndependentEvaluationBundleV1,
     roles: Vec<MetricRoleContractV2>,
@@ -209,7 +210,28 @@ impl Fixture {
             .expect("update candidate")
             .candidate_id
             .clone();
-        let dataset_digest = digest("plasticity-dataset");
+        let dataset = freeze_dataset_receipt_v3(
+            DatasetFreezeRequestV1 {
+                snapshot_id: id("plasticity-dataset-snapshot"),
+                producer: principals[1].clone(),
+                ledger_head_digest: digest("plasticity-ledger-head"),
+                objective_digest,
+                eligible_frontier: 7,
+                outcome_watermark: 40,
+                correction_cut_digest: digest("plasticity-correction-cut"),
+                revocation_cut_digest: digest("plasticity-revocation-cut"),
+                inclusion_policy_digest: digest("plasticity-inclusion-policy"),
+                source_record_digests: vec![
+                    digest("plasticity-dataset-record:2"),
+                    digest("plasticity-dataset-record:1"),
+                ],
+                pending_outcomes: 0,
+                censored_outcomes: 0,
+            },
+            50,
+        )
+        .expect("dataset receipt");
+        let dataset_digest = dataset.snapshot.dataset_digest;
         let frontier = digest("qualification-evidence-frontier");
         let admission = PlasticityAdmissionEvidenceV1 {
             baseline_id: baseline_id.clone(),
@@ -319,6 +341,7 @@ impl Fixture {
             grammar,
             profile,
             generated,
+            dataset,
             admission,
             bundle,
             roles,
@@ -428,6 +451,7 @@ fn agentd_host_resolves_owner_state_and_persists_governed_proposal() {
     let receipt = host
         .propose_parameter_plasticity(
             fixture.request(),
+            &fixture.dataset,
             &fixture.verifier,
             &mut writer,
             &mut anchor_store,
@@ -443,6 +467,53 @@ fn agentd_host_resolves_owner_state_and_persists_governed_proposal() {
         anchor_store.state().anchor,
         Some(receipt.committed_registry_anchor)
     );
+}
+
+#[test]
+fn agentd_host_rejects_tampered_dataset_receipt_before_registry_append() {
+    let fixture = Fixture::new();
+    let resolver = OwnerResolver {
+        frontier: fixture.frontier,
+        stale: false,
+        owner_id: id("learning.owner"),
+        context_mismatch: false,
+    };
+    let policy = owner_policy(id("learning.owner"));
+    let host = AgentdPlasticityHostV1::new(&fixture.artifacts, &resolver, &policy);
+    let registry_scope = digest("plasticity-registry-scope:dataset-drift");
+    let anchor_file = NamedTempFile::new().expect("anchor journal");
+    let mut anchor_store =
+        AgentdPlasticityAnchorFenceStoreV1::open(open_file(anchor_file.path()), registry_scope)
+            .expect("anchor/fence store");
+    let fence = anchor_store
+        .issue_new_registry_fence()
+        .expect("new registry fence");
+    let mut writer = AnchoredPlasticityWriterV1::bootstrap_new(
+        tempfile().expect("proposal registry"),
+        registry_scope,
+        fence,
+        32,
+    )
+    .expect("proposal writer");
+    let mut dataset = fixture.dataset.clone();
+    dataset.correction_cut_digest = digest("tampered-correction-cut");
+
+    let result = host.propose_parameter_plasticity(
+        fixture.request(),
+        &dataset,
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_store,
+        50,
+    );
+    assert!(matches!(
+        result,
+        Err(codex_hepta_agentd::AgentdPlasticityHostErrorV1::Dataset(
+            DatasetReceiptError::DigestMismatch
+        ))
+    ));
+    assert_eq!(writer.record_count(), Ok(0));
+    assert_eq!(anchor_store.state().anchor, None);
 }
 
 #[test]
@@ -477,6 +548,7 @@ fn agentd_host_rejects_stale_owner_evidence_before_registry_append() {
     assert!(host
         .propose_parameter_plasticity(
             fixture.request(),
+            &fixture.dataset,
             &fixture.verifier,
             &mut writer,
             &mut anchor_store,
@@ -516,6 +588,7 @@ fn agentd_host_rejects_wrong_evidence_owner_before_registry_append() {
 
     let result = host.propose_parameter_plasticity(
         fixture.request(),
+        &fixture.dataset,
         &fixture.verifier,
         &mut writer,
         &mut anchor_store,
@@ -560,6 +633,7 @@ fn agentd_host_rejects_owner_receipt_context_substitution() {
 
     let result = host.propose_parameter_plasticity(
         fixture.request(),
+        &fixture.dataset,
         &fixture.verifier,
         &mut writer,
         &mut anchor_store,
