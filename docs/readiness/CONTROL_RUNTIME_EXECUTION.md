@@ -100,6 +100,8 @@ Both terms are non-negative fixed-point values, and the floor cannot exceed the 
 
 The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
 
+The resource-profile digest is no longer a caller-chosen label. `canonical_resource_profile_digest` stable-sorts every `ResourceReservationV1` and commits the axis, total endowment and essential floor. `prepare_plan` recomputes that digest after validation and fails with `ResourceProfileMismatch` before resource filtering if the supplied digest differs. Reordering an equal profile is stable; changing a floor or endowment changes the digest.
+
 `prepare_plan` filters resource-infeasible candidates before NDU evaluation and records their IDs in `resource_rejected_candidate_ids`. The intrinsic `abstain` candidate must remain feasible after this filter. The digest of the source candidate set and the digest of the feasible candidate set are both retained, so resource filtering cannot be hidden.
 
 ## 5. Typed NDU owner port
@@ -183,7 +185,9 @@ Each entry contains sequence, kind, idempotency identity, payload digest, predec
 - selected-plan projection;
 - revocation edges that prevent reselection and restart resurrection.
 
-A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention policy and backup/restore qualification.
+A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. `append` and `reopen` now apply the same Decision -> Selection -> Revocation semantic transition checks; a valid hash chain with an impossible selection or revocation is rejected.
+
+`PlannerJournalStoreV1` is the owner-local durable-store candidate. It wraps the bounded journal in a schema/version/digest envelope, writes through create-new temporary files, calls `sync_all`, atomically replaces the active file, syncs the directory on Unix and advances a separately synced committed frontier. A crash after replacing the active file but before advancing the frontier can restore only a backup matching the old committed frontier. Once a revocation frontier is committed, an older backup cannot cross that frontier and resurrect the selection. A raw `HCPJNL01` reference journal is migrated deterministically on first store open. Product composition still has to select the deployed state directory, retention/rotation policy and the owning writer callsite; this source implementation does not self-activate.
 
 ## 9. Failure and degradation semantics
 
@@ -223,6 +227,8 @@ All loops and allocations are bounded by these dimensions. Stable maps and sorti
 
 Target metrics include snapshot age, stale/missing owner counts, candidate and resource rejection counts, NDU disposition, Pareto size, uncertainty digest, preparation/finalization latency, journal reopen time and grant-request count. Latency targets become claims only when bound to a named host, compiler, fixture, build profile and exact source.
 
+The dedicated `.github/workflows/hepta-control-runtime-closure.yml` records that identity for both the exact source head and a deterministic synthetic merge. Its source-head lane runs the release-mode `control_runtime_probe` at the declared pilot ceilings of 32 owners, 128 candidates, 32 required owners per candidate, 32 resource axes and 4096 NDU contributions. The artifact records source/tree identity, runner OS/architecture, CPU, Rust/Cargo versions, p50/p95/p99/max latency and Linux process high-water RSS when available. Those measurements are candidate evidence, not a cross-host universal SLO.
+
 ## 11. Verification cases
 
 - `RCP-01`: a stale required owner cannot be treated as current or zero cost.
@@ -240,14 +246,19 @@ Target metrics include snapshot age, stale/missing owner counts, candidate and r
 - `RCP-13`: operation, payload, resource or required-owner mutation after finalization rejects before grant-request construction.
 - `RCP-14`: grant-request construction revalidates snapshot masks and digest.
 - `RCP-15`: the NDU evaluation policy and resource profile are frozen before evaluation and bound through the final receipt.
+- `RCP-16`: the canonical resource-profile digest changes with endowment/floor semantics and rejects label/content drift.
+- `RCP-17`: journal reopen rejects a semantically impossible selection/revocation even when its hash chain is internally consistent.
+- `RCP-18`: the durable journal store recovers only the committed frontier and cannot resurrect a committed revocation from an older backup.
+- `RCP-19`: `plan_global_v1` collects every required authenticated owner, executes the real NDU owner port, seals the receipt and emits only deny-all grant requests; missing owner ports and mixed clock bindings reject.
+- `RCP-20`: `claim_execution_grant_v1` requires an independently signed `kernel.authority` final-use grant binding the whole request set, operation scope and exact final payload; the non-cloneable token is revalidated immediately before the effect closure and its nonce is single-use.
 
 Native mappings and tests are recorded in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
 ## 12. Implementation sequence and completion state
 
-The source sequence is snapshot types and validation, resource-floor preparation, NDU owner-port binding, plan finalization, grant-request construction, journal integrity and restart fixtures, semantic conformance and exact-head CI.
+The source sequence is snapshot types and validation, canonical resource-profile binding, resource-floor preparation, authenticated owner-port composition, NDU owner-port evaluation, plan finalization, grant-request construction, independent kernel-authority claim bridging, semantic journal replay, fsync/frontier durability, named-host measurement, semantic conformance and exact-head plus deterministic-merge CI.
 
-Repository source completion requires every mapped native test, package check, strict lint, clean worktree, exact-head workflow and synthetic merge check to pass. Composition requires a named product caller and selected production store. Independent qualification, activation and release remain separate governed states and cannot be advanced by this document.
+Repository source completion requires every mapped native test, package check, strict lint, clean worktree, exact-head workflow and synthetic merge check to pass. The narrow Agentd cognitive-context caller is a named read-only product composition and now routes through the same `plan_global_v1` orchestrator. The general multi-owner global planner, durable store and independent authority bridge are source-implemented but still require selected concrete producer/effect adapters and a production writer callsite. Independent qualification, operator acceptance, activation and release remain separate governed states and cannot be advanced by this document.
 
 ## Appendix A. Contract mapping
 
@@ -298,3 +309,11 @@ global revocation frontier. Existing host authorization and generation checks
 remain required before and after the read. Context bytes exclude the planning
 metadata to avoid a self-referential digest; the host separately bounds the final
 response envelope. Neither helper grants effects or proves long-term improvement.
+
+## Final closure composition
+
+`plan_global_v1` is the common global orchestration path. It receives typed authenticated owner ports and a separately owned NDU port, requires the snapshot collection time and planning time to share one monotonic-domain value, samples only the declared required owners, verifies returned owner identity, calls the existing snapshot/resource/NDU/finalization code and returns the sealed receipt plus `GrantRequestSetV1`. The current Agentd context product caller reaches this path through `plan_observed_context`; its process-owned `Instant` origin replaces Unix wall-clock time for the planning lifetime.
+
+The physical authority boundary remains independent. `claim_execution_grant_v1` maps one immutable grant request to the existing `kernel.authority` `FinalUseAuthority`: the signed binding covers the complete request-set digest, a domain-separated operation/candidate/plan/objective/snapshot/revocation/expiry scope digest and the exact final-payload digest. Control runtime cannot construct `VerifiedUseToken`; only the authority owner can. The token is non-cloneable/non-serializable and `with_verified_use` revalidates current revocation/expiry immediately before the caller's effect closure.
+
+No source or CI artifact in this section grants effect, deployment, acceptance, promotion or release authority.
