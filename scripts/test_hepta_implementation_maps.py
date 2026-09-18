@@ -48,9 +48,36 @@ class ExactHeadImplementationEvidenceTests(unittest.TestCase):
                 tests,
             )
             self.assertTrue(
-                any("proof_binds_evaluator_attestation_and_candidate_identity" in test for test in tests),
+                any(
+                    "proof_binds_evaluator_attestation_and_candidate_identity" in test
+                    for test in tests
+                ),
                 tests,
             )
+            self.assertTrue(
+                any("large_input_remains_deterministic_and_bounded" in test for test in tests),
+                tests,
+            )
+            integration_tests = set(compact.get("integrationTests", []))
+            self.assertTrue(
+                any(
+                    test.endswith(
+                        "production_writer_host_tests.rs::agentd_compaction_checkpoint_round_trips_through_authorized_writer"
+                    )
+                    for test in integration_tests
+                ),
+                integration_tests,
+            )
+            self.assertTrue(
+                any(
+                    test.endswith(
+                        "qualified_compact_store_tests.rs::canonical_checkpoint_publication_is_idempotent_and_survives_reopen"
+                    )
+                    for test in integration_tests
+                ),
+                integration_tests,
+            )
+            self.assertTrue(integration_tests.issubset(set(payload["testInventory"])))
 
 
 if __name__ == "__main__":
