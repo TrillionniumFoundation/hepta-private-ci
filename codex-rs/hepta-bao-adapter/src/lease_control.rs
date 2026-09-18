@@ -54,6 +54,13 @@ pub enum LeaseOperationKind {
     Revoke,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DynamicLeaseMethod {
+    Get,
+    Post,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct SecretLeaseMetadata {
@@ -79,6 +86,7 @@ pub struct BaoDynamicLeaseRequest {
     pub consumer_id: String,
     pub namespace: String,
     pub provider_path: String,
+    pub method: DynamicLeaseMethod,
     pub operation_id: String,
     pub parameters: Value,
     pub max_ttl_seconds: u64,
@@ -325,6 +333,24 @@ impl LeaseRegistry {
         Ok(next)
     }
 
+    pub fn mark_not_applied(
+        &mut self,
+        local_lease_id: &str,
+    ) -> Result<SecretLeaseMetadata, BaoClientError> {
+        let mut next = self
+            .records
+            .get(local_lease_id)
+            .cloned()
+            .ok_or(BaoClientError::LeaseNotFound)?;
+        next.state = if next.provider_lease_id.is_some() {
+            LeaseState::Active
+        } else {
+            LeaseState::NotApplied
+        };
+        self.append(next.clone())?;
+        Ok(next)
+    }
+
     pub fn mark_unknown(
         &mut self,
         local_lease_id: &str,
@@ -383,16 +409,7 @@ impl LeaseRegistry {
                 )
                 .map(Some),
             ReconciliationObservation::Revoked => self.mark_revoked(local_lease_id).map(Some),
-            ReconciliationObservation::NotApplied => {
-                let mut next = current;
-                next.state = if next.provider_lease_id.is_some() {
-                    LeaseState::Active
-                } else {
-                    LeaseState::NotApplied
-                };
-                self.append(next.clone())?;
-                Ok(Some(next))
-            },
+            ReconciliationObservation::NotApplied => self.mark_not_applied(local_lease_id).map(Some),
         }
     }
 
@@ -449,6 +466,7 @@ impl BaoClient {
             self.ca_sha256,
             &request.namespace,
             &request.provider_path,
+            request.method,
             &request.operation_id,
             parameter_sha,
             request.max_ttl_seconds,
@@ -500,14 +518,17 @@ impl BaoClient {
             }
         }
         let token = self.token_header()?;
-        let mut network = self
-            .client
-            .post(url)
-            .header("X-Vault-Token", token)
-            .header("Content-Type", "application/json")
-            .header("Accept", "application/json")
-            .header("X-Hepta-Operation-Id", &request.operation_id)
-            .json(&request.parameters);
+        let mut network = match request.method {
+            DynamicLeaseMethod::Get => self.client.get(url).query(&request.parameters),
+            DynamicLeaseMethod::Post => self
+                .client
+                .post(url)
+                .header("Content-Type", "application/json")
+                .json(&request.parameters),
+        }
+        .header("X-Vault-Token", token)
+        .header("Accept", "application/json")
+        .header("X-Hepta-Operation-Id", &request.operation_id);
         if !request.namespace.is_empty() {
             network = network.header("X-Vault-Namespace", &request.namespace);
         }
@@ -526,8 +547,14 @@ impl BaoClient {
         };
         match response.status() {
             StatusCode::OK => {}
-            StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => return Err(BaoClientError::ProviderDenied),
-            StatusCode::NOT_FOUND => return Err(BaoClientError::NotFound),
+            StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => {
+                registry.mark_not_applied(&record.local_lease_id)?;
+                return Err(BaoClientError::ProviderDenied);
+            }
+            StatusCode::NOT_FOUND => {
+                registry.mark_not_applied(&record.local_lease_id)?;
+                return Err(BaoClientError::NotFound);
+            }
             _ => {
                 return registry
                     .mark_unknown(&record.local_lease_id)
@@ -627,7 +654,7 @@ impl BaoClient {
         url.set_path("/v1/sys/leases/renew");
         let mut network = self
             .client
-            .put(url)
+            .post(url)
             .header("X-Vault-Token", self.token_header()?)
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
@@ -736,11 +763,11 @@ impl BaoClient {
         url.set_path("/v1/sys/leases/revoke");
         let mut network = self
             .client
-            .put(url)
+            .post(url)
             .header("X-Vault-Token", self.token_header()?)
             .header("Content-Type", "application/json")
             .header("X-Hepta-Operation-Id", &request.operation_id)
-            .json(&serde_json::json!({"lease_id": provider_lease_id}));
+            .json(&serde_json::json!({"lease_id": provider_lease_id, "sync": true}));
         if !record.namespace.is_empty() {
             network = network.header("X-Vault-Namespace", &record.namespace);
         }
