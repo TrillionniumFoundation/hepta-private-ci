@@ -44,7 +44,7 @@ None.
 
 `existing_bound` is a source-location fact. It means the declared source root exists and is bound to this module; it does **not** itself prove focused tests, all-target compilation, strict lint, exact-head qualification or synthetic-merge qualification for the current candidate. Those are run-specific evidence and must be read from the exact candidate's qualification workflows.
 
-The current source candidate contains a strict JSON decoder, structural/aggregate bounds, authenticated/profile-bound admission, a general feasibility solver, a V1 feasibility gate, deterministic native compilation, typed conflict/abstain outcomes and deny-all receipts. The canonical readiness source bounds are aligned with those enforced limits, and `docs/contracts/PROTOCOL_SCHEMAS.json` remains the authoritative V1 field set. The candidate does not by itself activate `objective.compiler`, establish the canonical `ObjectiveFunctionV1` wire projection, create a production caller or owner store, persist `RunStartSnapshotV1`, issue independent acceptance, select/promote a candidate or authorize release.
+The current source candidate contains a strict JSON decoder, structural/aggregate bounds, authenticated/profile-bound admission, a general feasibility solver, a V1 feasibility gate, deterministic native compilation, typed conflict/abstain outcomes, canonical `ObjectiveFunctionV1` projection and `RunStartSnapshotV1` binding. Two named source-level composition paths now exist: the learning-ledger-backed `codex-hepta-intelligence::prepare_intelligence_run_v1` path consumed by Agentd, and `codex-rs/hepta-agentd/src/objective_runtime.rs::admit_publish_and_start_objective_run_v1`, which publishes an immutable caller-owned objective/run envelope before bounded runtime admission. These source compositions remain deny-all and do not by themselves establish deployment activation, current exact-head qualification, target-host qualification, independent acceptance, promotion or release.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -101,9 +101,7 @@ Critical protocol schemas:
 - `ObjectiveFunctionV1`
 - `RunStartSnapshotV1`
 
-Current native Rust output is not yet the exact canonical `ObjectiveFunctionV1` wire projection. Native `ObjectiveFunction` contains the deterministic compiled core (`constraints`, merged native success predicates, legal actions, soft preferences and digests); V1 admission lowers terminal/evidence/resource/risk semantics into those native rows. Their semantics are input- and digest-bound, but flattening is not proof that the Rust shape and canonical JSON shape are identical.
-
-`ObjectiveCompileReceiptV1` and `ObjectiveConflictReceiptV1` are exported Rust aliases for the native typed receipts so the stable public names match the registered V1 receipt identifiers. This naming alignment does not establish a canonical `ObjectiveFunctionV1` serializer or `RunStartSnapshotV1` persistence adapter.
+Native `ObjectiveFunction` remains the deterministic owner IR rather than the public wire object. `project_objective_function_v1` now validates that IR against the admitted source and emits the exact canonical JSON projection registered as `ObjectiveFunctionV1`; `RunStartSnapshotV1::bind` binds that projection digest to the frozen run identity. `ObjectiveCompileReceiptV1` and `ObjectiveConflictReceiptV1` remain stable Rust aliases for the native typed receipts. Product persistence is caller-owned: the learning-ledger path publishes the canonical projection and run-start lineage through its authoritative ledger, while the Agentd objective runtime uses a narrow immutable file publication store with fsync and atomic no-replace publication.
 
 Every eventual canonical producer must validate output before publication and bind semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -121,7 +119,7 @@ None.
 
 The compiler itself is stateless and owns no objective database. The product owner that publishes an objective must atomically or transactionally bind the canonical `ObjectiveFunctionV1`, matching `RunStartSnapshotV1`, admission/compile receipts and reconciliation identity so no run observes an objective revision without its matching start snapshot.
 
-No named production caller/owner store currently closes that boundary in this source candidate. The read-only vertical composition is an integration harness, not a production writer. Until a named owner store exists, persistence, crash recovery, replay conflict and reconciliation remain product-composition work rather than compiler-owned facts.
+The compiler still owns no durable store. Named caller-owned publication now exists in both the learning-ledger-backed intelligence path and the Agentd `ObjectiveRunFileStore` path. Both bind immutable objective/run identity before runtime admission, preserve identical replay, and reject semantic drift under a reused run identity. They are source-level product composition, not evidence of deployed activation or a new objective-owned database. Crash/restart, backpressure and latency on the selected target host remain qualification work.
 
 For every future owned durable domain, the owner is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
@@ -170,13 +168,15 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 The current admission profile-size guard still uses owner-local byte accounting rather than measuring an exact canonical profile wire encoding. If the 256 KiB profile ceiling remains protocol-hard, the exact canonical profile encoding and its measured byte length must replace that parallel estimator before the boundary is called canonical wire enforcement.
 
+The executable target-host procedure is [OBJECTIVE_TARGET_HOST_MEASUREMENT.md](../../readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md), recorded by `scripts/hepta-objective-target-measure.py`; ordinary admission and maximal conflict extraction are measured separately.
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
 `objective.compiler` is a stateless compiler/admission library. Embed it at a request boundary; do not deploy a private objective database or infer product persistence from the library.
 
-The currently demonstrated cross-module consumer is the read-only intelligence vertical. It proves bounded, authority-free composition, not production publication. A production integration must name the authenticated consumer, owner store, objective/run-snapshot transaction or atomic publication mechanism, reconciliation loop and host resource measurements.
+The current candidate has named source consumers at `codex-hepta-intelligence::prepare_intelligence_run_v1`, `codex-hepta-agentd::start_intelligence_run_v1`, and `codex-hepta-agentd::admit_publish_and_start_objective_run_v1`. The first path publishes through the sealed learning-ledger owner; the second consumes its deny-all host envelope; the third performs authenticated admission, immutable fsync+atomic publication and bounded AgentRunCoordinator admission directly in Agentd. These are source-composition facts only. Deployment still requires the authenticated ingress identity, target-host crash/restart/backpressure measurements and current exact-head/synthetic-merge qualification.
 
 Unsupported language, hard infeasibility, availability/retry conditions and explicit abstention remain distinct outcomes. Changing goal semantics requires a new authorized revision.
 
@@ -194,6 +194,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs); named case: `compilation_is_permutation_invariant`.
 - [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs); named case: `all_three_action_graphs_match_truth_table_and_have_minimal_conflicts`.
 - [codex-rs/hepta-objective/tests/admission_closure.rs](../../../codex-rs/hepta-objective/tests/admission_closure.rs); hostile aggregate-bound, zero-action abstain and public feasibility-conflict coverage.
+- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs); publish-before-run, idempotent replay, semantic-identity conflict and durable explicit-abstain coverage.
 
 In `codex-rs`, run `just test -p codex-hepta-objective`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips.
 

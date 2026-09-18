@@ -48,7 +48,7 @@ Free text is evidence for intent extraction, never the final authority represent
 
 `ObjectiveConstraintComparatorV1` preserves protocol spellings `eq`, `ne`, `lt`, `lte`, `gt`, `gte`, `in` and `not_in` so unknown/unrepresentable semantics fail closed instead of being rewritten. The V1 row has only `bound_q32`; it has no set payload. The native V1 adapter therefore accepts only `eq`, `lte` and `gte`. `ne`, strict inequalities, `in` and `not_in` return `UnsupportedComparator`. A terminal hard constraint remains unrepresentable by the native `Constraint` type and returns `TerminalConstraintUnsupported`.
 
-The owner-local native `ObjectiveFunction` deliberately remains smaller than the target canonical `ObjectiveFunctionV1` wire contract. Success predicates, terminal conditions and evidence requirements are currently lowered into one native success-predicate vector; resource/risk fields are lowered into native constraints; action allow/forbid semantics are lowered into the native action grammar. Their meaning remains digest-bound, but this lowering is **not** a canonical wire projection. The crate exports the Rust name `ObjectiveCompileReceiptV1` as a stable alias for the native receipt; an exact canonical `ObjectiveFunctionV1` wire adapter remains a product-integration gap and must not be inferred from that alias.
+The owner-local native `ObjectiveFunction` deliberately remains smaller than the canonical `ObjectiveFunctionV1` wire contract. Success predicates, terminal conditions, evidence requirements and resource/risk fields are lowered into the native owner IR for deterministic compilation, then `project_objective_function_v1` validates the admitted source/IR binding and emits the exact canonical JSON projection. `RunStartSnapshotV1::bind` binds its digest to the frozen run identity. The crate exports `ObjectiveCompileReceiptV1` as a stable alias for the native receipt; the public product path must use authenticated admission and the canonical projection rather than treating the internal IR as the wire object.
 
 Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and a nominal 256 KiB profile-size guard. V1 source bounds are intentionally tighter where admission adds native rows:
 
@@ -186,7 +186,7 @@ The following paths are measured separately:
 
 Pilot ceilings for bounded V1 admission are `<=246` source hard constraints plus exactly ten generated hard constraints, `<=128` aggregate success/terminal/evidence predicates, `<=127` caller legal actions, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. The in-crate canonical gate uses the deterministic call budget with wall-clock cancellation disabled; host latency budgets and measurements belong to product composition and must not alter semantic results.
 
-The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
+The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path. The target-host execution procedure is `docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md`, with recorder `scripts/hepta-objective-target-measure.py`.
 
 The current `profile_encoded_size()` guard is owner-local manual byte accounting rather than measurement of an exact canonical profile wire encoding. If 256 KiB remains a protocol-hard profile boundary, the exact canonical encoding must be defined and its actual byte length enforced before that boundary is called canonical.
 
@@ -212,16 +212,15 @@ Tests cover structural decoding, canonical ordering, unit conversion, conflict m
 
 Implemented/maintained V1 sequence: strict JSON decoder; owner-local source type; structural and aggregate validator; authenticated admission context; frozen profile mapping; profile-bound general-feasibility gate for all V1 hard scalar atoms; conflict minimizer; intrinsic legal-action grammar; native canonical digests; deny-all receipts.
 
-Remaining work must be kept separate instead of implied by solver capability:
+Remaining work must be kept separate instead of implied by source composition:
 
-1. align `PROTOCOLS.json` and any generated protocol schema projection with the enforced V1 source/aggregate bounds, or introduce a versioned source protocol before merge;
+1. keep `PROTOCOLS.json` and generated protocol projections aligned with the enforced V1 source/aggregate bounds;
 2. define a versioned source grammar that actually carries finite-enum set payloads and positive action implications before routing those domains from source to the general solver;
-3. implement an exact canonical `ObjectiveFunctionV1` wire projection rather than treating native lowering as the wire shape;
-4. bind the operations to a named authenticated production consumer and owner store;
-5. atomically persist/reconcile `ObjectiveFunctionV1 + RunStartSnapshotV1` with admission/compile receipts;
-6. replace manual profile-size estimation with an exact canonical encoded-byte bound if 256 KiB remains protocol-hard;
-7. remove or explicitly deprecate the success-path `removed_action_ids` field if no future successful disposition can populate it;
-8. complete exact-head, synthetic-merge and independent acceptance qualification before source completion/activation is claimed.
+3. replace manual profile-size estimation with an exact canonical encoded-byte bound if 256 KiB remains protocol-hard;
+4. remove or explicitly deprecate the success-path `removed_action_ids` field if no future successful disposition can populate it;
+5. obtain terminal exact-head and deterministic synthetic-merge evidence for the current combined candidate;
+6. qualify `admit_publish_and_start_objective_run_v1` on the named target host for crash/restart, concurrent publication, backpressure, ordinary-admission latency and conflict-extraction latency;
+7. keep independent acceptance, activation, promotion and release external to source qualification.
 
 Coding entry still requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, bounded work-package scope, mandatory fixtures, deterministic fallback and zero authority delta. Source completion does not establish activation, independent acceptance, promotion or release.
 
@@ -234,7 +233,7 @@ Coding entry still requires a current `CanonicalSourceReceiptV1`, frozen contrac
 - intrinsic `abstain`, hard-feasibility, aggregate-bound and conflict fixtures pass;
 - `PROTOCOLS.json` matches the enforced V1 source/aggregate bounds;
 - outputs remain deny-all and the durable caller boundary is named rather than inferred;
-- canonical wire projection and production snapshot persistence are proven separately;
+- canonical wire projection and caller-owned run-start publication remain source-implemented and are requalified on the exact candidate;
 - exact-head and synthetic-merge checks pass before source completion is claimed.
 
 ## Appendix A. Closed gap and protocol mapping
