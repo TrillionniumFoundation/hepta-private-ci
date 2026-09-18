@@ -281,10 +281,9 @@ async fn one_shot_periodic_disable_and_cancel_are_durable() {
         scheduler.tick(10).await.expect("one-shot tick"),
         AutomationTick::Submitted { occurrence: 1, .. }
     ));
-    assert_eq!(
-        store.task(one.task_id).await.expect("read").unwrap().state,
-        AutomationTaskState::Completed
-    );
+    let one_after_admission = store.task(one.task_id).await.expect("read").unwrap();
+    assert_eq!(one_after_admission.state, AutomationTaskState::Enabled);
+    assert_eq!(one_after_admission.next_run_at_ms, None);
 
     let periodic = draft(
         "019153a4-3088-7000-a56a-9b1964f75002",
@@ -300,7 +299,8 @@ async fn one_shot_periodic_disable_and_cancel_are_durable() {
             .expect("read")
             .unwrap()
             .next_run_at_ms,
-        Some(5_020)
+        None,
+        "recurring progression waits for semantic terminalization"
     );
     store
         .set_enabled(periodic.task_id, false, None, 21)
@@ -468,7 +468,7 @@ async fn successful_dispatch_upgrades_pre_admission_intent_atomically() {
             .expect("read task")
             .expect("task exists")
             .state,
-        AutomationTaskState::Completed
+        AutomationTaskState::Enabled
     );
 }
 
@@ -851,10 +851,10 @@ async fn uncertain_dispatch_requires_explicit_negative_provider_proof_before_ret
         store
             .task(task.task_id)
             .await
-            .expect("read completed task")
+            .expect("read admitted task")
             .expect("task exists")
             .state,
-        AutomationTaskState::Completed
+        AutomationTaskState::Enabled
     );
 }
 
@@ -862,7 +862,7 @@ async fn uncertain_dispatch_requires_explicit_negative_provider_proof_before_ret
 async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     let fixture = FleetFixture::new(1);
     let layout = &fixture.layouts[0];
-    let store = AutomationStore::open(layout).await.expect("open v2 store");
+    let store = AutomationStore::open(layout).await.expect("open latest store");
     let task = draft(
         "019153a4-3088-7000-a56a-9b1964f7500e",
         AutomationSchedule::Once,
@@ -892,9 +892,47 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop v2 table");
-    // The current opener also applies the qualification-only TaskFlow
-    // migration. Remove that schema and rewind its migration ledger so this
-    // test still exercises a genuine v1 -> latest upgrade path.
+    // Remove the v4 causal-chain schema first because it depends on both
+    // automation_tasks and taskflow_runs.
+    sqlx::query("DROP TRIGGER IF EXISTS taskflow_step_outbox_no_update")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop step outbox update trigger");
+    sqlx::query("DROP TRIGGER IF EXISTS taskflow_step_outbox_no_delete")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop step outbox delete trigger");
+    sqlx::query("DROP TABLE IF EXISTS taskflow_step_outbox")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop step outbox");
+    sqlx::query("DROP TABLE IF EXISTS automation_provider_observations")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop provider observations");
+    sqlx::query("DROP TABLE IF EXISTS automation_occurrences")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop causal occurrences");
+    sqlx::query("ALTER TABLE automation_tasks DROP COLUMN max_catch_up")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop v4 max catch-up column");
+    sqlx::query("ALTER TABLE automation_tasks DROP COLUMN missed_run_policy")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop v4 missed-run column");
+    sqlx::query("ALTER TABLE automation_tasks DROP COLUMN overlap_policy")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop v4 overlap column");
+    sqlx::query("ALTER TABLE automation_tasks DROP COLUMN schedule_revision")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop v4 schedule revision column");
+
+    // Remove TaskFlow v3 and dispatch v2 schema and rewind the migration ledger
+    // so this test still exercises a genuine v1 -> latest upgrade path.
     sqlx::query("DROP TRIGGER taskflow_events_no_update")
         .execute(&mut *rewind)
         .await
@@ -950,7 +988,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
 
     let migrated = AutomationStore::open(layout)
         .await
-        .expect("v1 to v2 migration");
+        .expect("v1 to latest migration");
     let migrated_task = migrated
         .task(task.task_id)
         .await
@@ -990,7 +1028,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
             .fetch_one(&pool)
             .await
             .expect("read migrated schema version");
-    assert_eq!(schema, 3);
+    assert_eq!(schema, 4);
     let outcomes: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE task_id = ?")
             .bind(task.task_id.to_string())
