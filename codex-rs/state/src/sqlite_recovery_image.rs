@@ -21,15 +21,6 @@ impl SqliteConfig {
     /// The 128 MiB limit is on input bytes, not total memory: the retained copy
     /// and SQLite-owned copy consume up to 256 MiB together, plus SQLite caches,
     /// query results and validation allocations. It is not a latency guarantee.
-    #[cfg_attr(
-        unix,
-        expect(
-            clippy::disallowed_methods,
-            reason = "this is codex-state's retained-descriptor cold-image connection shim"
-        )
-    )]
-
-
     /// Materialize one identity-bound recovery candidate from retained
     /// descriptors into a new private path under this SQLite home.
     ///
@@ -170,6 +161,13 @@ impl SqliteConfig {
         }
     }
 
+    #[cfg_attr(
+        unix,
+        expect(
+            clippy::disallowed_methods,
+            reason = "this is codex-state's retained-descriptor cold-image connection shim"
+        )
+    )]
     pub async fn open_cold_image_read_only_pool(
         &self,
         guard: &ExistingSqliteRecoveryGuard,
