@@ -1,3 +1,4 @@
+#![allow(clippy::expect_used, clippy::unwrap_used)] // deterministic qualification fixtures fail loudly
 //! A real Rust↔Python product-boundary test.
 //!
 //! The Rust producer emits the HPTA v1 frame consumed by a tiny Python
