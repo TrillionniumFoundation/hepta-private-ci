@@ -159,7 +159,11 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+/// Legacy structural comparison retained only for trusted in-process compatibility.
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
+pub fn evaluate_legacy_inprocess_v1(
+    mut request: EvaluationRequest,
+) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
     }
@@ -211,6 +215,7 @@ pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Err
     })
 }
 
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let raw = i128::from(left.raw()) - i128::from(right.raw());
     Ok(FixedQ32::from_raw(
@@ -218,6 +223,7 @@ fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     ))
 }
 
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[StableId]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.intelligence-eval.v1");
@@ -254,11 +260,18 @@ fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[Stabl
     Digest32::of_bytes(&bytes)
 }
 
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
+
+#[cfg(feature = "legacy-inprocess-eval")]
+#[deprecated(
+    note = "trusted in-process compatibility only; external/production admission must use decide_with_signed_evidence_v2 or decide_with_signed_longitudinal_evidence_v3"
+)]
+pub use evaluate_legacy_inprocess_v1 as evaluate;
 
 #[cfg(test)]
 #[path = "lib_tests.rs"]
