@@ -15,16 +15,19 @@ The complete native admission path is:
 bounded JSON bytes
 -> decode_source_envelope_json_v1
 -> ObjectiveSourceEnvelopeV1::validate_structure
+-> canonical_objective_intent_digest_v1
 -> authenticate source and principal scope
 -> bind exact ObjectiveAdmissionProfileV1 digest
--> normalize and map every represented semantic field
+-> admit_and_compile_objective_v1
+-> adapt_source (exact mapping or explicit rejection)
+-> compile (crate-private production core)
+-> scalar_conflict (legacy FixedQ32 compatibility profile)
 -> check_feasibility_v1
--> compile
 -> ObjectiveAdmissionReceiptV1
 -> ObjectiveCompileReceiptV1 | ObjectiveConflictReceiptV1
 ```
 
-No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
+No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. Source V1 syntax that has no exact native representation is deterministically rejected with `OBJ-E002`; see `docs/modules/objective.compiler/SEMANTIC_SUPPORT.md` and `.json` for the exact matrix. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
 
 ## 2. Input grammar and canonical IR
 
@@ -97,11 +100,11 @@ compute hard-constraint and objective semantic digests
 emit deny-all admission receipt and compile/conflict outcome
 ```
 
-Compilation is a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. Retry with identical inputs yields identical semantic bytes. Reuse of a durable request/revision identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
+Compilation is a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. Retry with identical inputs yields identical semantic objective bytes. The standalone feasibility API additionally accepts a finite wall-clock availability budget; that budget may change an outcome to `Exhausted` and its `elapsed` value is observational. Reuse of a durable request/revision or run identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
 
 ## 5. State machine and persistence
 
-The compiler owns no domain-fact store. The owning caller persists the immutable `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts. Publication occurs only after source, intent, profile, constraint and objective digests agree.
+The compiler owns no domain-fact store. The current product-composition candidate `prepare_intelligence_run_v1` performs authenticated admission, revalidates the compiler output, binds `RunStartSnapshotV1`, then appends one atomic `RunStartPublicationV1` through the sealed `learning.ledger` durable owner port. That frame contains the admission receipt, compile receipt/objective and run snapshot, so no crash can publish only one half of the pair. `runtime.agentd` consumes the resulting deny-all `IntelligenceHostEnvelopeV1` only into ephemeral runtime state. Publication occurs only after source, intent, profile, constraint, objective and run-snapshot digests agree.
 
 ```text
 received
@@ -115,7 +118,7 @@ received
 -> published by owning caller
 ```
 
-A crash before caller publication leaves no selected objective. A crash after durable publication is reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
+A crash before durable frame sync leaves no selected objective. A crash after frame sync is recovered by anchored learning-ledger replay; equal record retries are idempotent and reused run identities with different record semantics conflict. The recovered frame revalidates the compiled objective and `RunStartSnapshotV1` binding before becoming usable. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
 
 ## 6. Error taxonomy and fallback
 
@@ -157,7 +160,7 @@ The following paths are measured separately:
 
 Pilot ceilings are `<=256` constraints, `<=128` success predicates, `<=127` caller actions when abstain is implicit, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. CPU and wall-clock budgets are frozen before evaluation. Exceeding a bound rejects or returns unavailable; input is never truncated after semantic analysis.
 
-The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
+The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. `.github/workflows/hepta-objective-product-composition.yml` records a separate 32-sample `authenticated-admission+compile+durable-fsync` p50/p95/p99 measurement on its named GitHub Ubuntu host; this is qualification telemetry, not a production-target SLA. Conflict-extraction measurement remains a separate path. No network or synchronous central RPC is permitted on the deterministic compiler path.
 
 ## 9. Golden fixtures and tests
 
@@ -176,7 +179,7 @@ Tests cover structural round trips, canonical ordering, unit conversion, conflic
 
 ## 10. Implementation sequence
 
-Implement and maintain, in order: strict JSON decoder; owner-local source type; structural validator; authenticated admission context; frozen profile mapping; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; durable caller adapter; faults; benchmarks; exact-source and merge-candidate qualification.
+Implement and maintain, in order: strict JSON decoder; owner-local source type; structural validator; authenticated admission context; frozen profile mapping; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; compiled-output revalidation; typed `RunStartSnapshotV1`; atomic learning-ledger publication; Agentd digest consumer; faults; named-path measurements; exact-source and merge-candidate qualification.
 
 Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, a bounded work-package envelope, mandatory fixtures, deterministic fallback and zero authority delta. Source completion still does not establish a production caller, activation, independent acceptance, promotion or release.
 
@@ -186,7 +189,7 @@ Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/read
 - every profile collection and encoded profile is within its enforced bound;
 - all represented source semantics map without truncation or guessing;
 - intrinsic `abstain`, hard-feasibility and conflict fixtures pass;
-- outputs remain deny-all and the durable caller boundary is named;
+- outputs remain deny-all; the durable caller is `prepare_intelligence_run_v1`, its owner store is `learning.ledger`, and Agentd consumes only the published digest-bound host envelope;
 - exact-head and synthetic-merge checks pass before source completion is claimed.
 
 ## Appendix A. Closed gap and protocol mapping
