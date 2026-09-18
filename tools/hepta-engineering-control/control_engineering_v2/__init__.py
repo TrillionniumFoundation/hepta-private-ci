@@ -68,6 +68,10 @@ from .facade import (
     publish_audit_projection,
     schedule_ready_packages,
 )
+from .mutation_testing import (
+    MutationTestingReceipt,
+    run_mutation_testing,
+)
 from .orchestration import (
     CompletionReceipt,
     EngineeringPlan,
@@ -84,6 +88,7 @@ from .orchestration import (
 from .production import (
     ProductionReadinessDecision,
     ProductionReadinessFacts,
+    evaluate_authenticated_production_readiness,
     evaluate_production_readiness,
 )
 from .hardening import (
@@ -116,6 +121,9 @@ hardened_record_integration_decision = record_integration_decision
 hardened_request_independent_review = request_independent_review
 
 __all__ = [
+    "evaluate_authenticated_production_readiness",
+    "run_mutation_testing",
+    "MutationTestingReceipt",
     "verify_key_custody",
     "verify_external_fact_receipts",
     "verify_canonical_source_receipt",
