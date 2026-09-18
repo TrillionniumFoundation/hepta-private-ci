@@ -100,6 +100,17 @@ async fn product_writer_atomically_remembers_corrects_forgets_and_blocks_resurre
     .expect("first V2 generation digest");
     assert_eq!(first_generation_digest.len(), 64);
     assert_eq!(
+        sqlx::query_scalar::<_, String>(
+            "SELECT sqlite_output_sha256
+             FROM kg_projection_v2_publications
+             WHERE projection_scope = 'agent_private' AND generation = 1",
+        )
+        .fetch_one(&store.pool)
+        .await
+        .expect("first V2 SQLite output binding"),
+        first.projection.output_sha256.as_str()
+    );
+    assert_eq!(
         sqlx::query_scalar::<_, Option<i64>>(
             "SELECT predecessor_generation
              FROM kg_projection_v2_publications
