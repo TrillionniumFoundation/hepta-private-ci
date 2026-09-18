@@ -65,14 +65,22 @@ The module itself verifies:
 
 ### 2.2 Host-authenticated facts
 
-The compiler does not authenticate an upstream signature, TLS channel, provider
-identity, or durable latest-head witness by itself. The selected host must
-authenticate before constructing the corresponding typed inputs:
+The compiler does not implement an upstream signature scheme, TLS channel,
+provider identity system, or durable latest-head store by itself. Instead, raw
+admission state enters as `ContextAdmissionSnapshotEvidenceV2` and must pass a
+host-owned `ContextAdmissionVerifierV2` before the module can construct the
+private-field `ContextAdmissionSnapshotV2`. The verifier identity and returned
+nonzero verification digest are bound into the snapshot and downstream proofs.
 
-- `ContextAdmissionSnapshotV2.issuer_digest`;
-- `ContextAdmissionSnapshotV2.witness_digest`;
-- the freshness and durability of the revocation frontier represented by the
-  snapshot;
+The selected host must provide an authenticator that verifies:
+
+- the admission issuer represented by `issuer_digest`;
+- the latest-head/witness represented by `witness_digest`;
+- the freshness and durability of the revocation frontier;
+- the relationship between the raw evidence and the authoritative owner state.
+
+The selected host must also authenticate/qualify:
+
 - the implementation behind `ExactContextTokenizerV2`;
 - the implementation behind `ContextSerializerV2`;
 - the implementation behind `ContextDeliveryAdapterV2`;
@@ -160,14 +168,22 @@ Untrusted evidence does not become trusted merely by attaching an admission
 record. The admission-record validator rejects an
 `UntrustedEvidence` role for this trusted path.
 
-### 4.2 `ContextAdmissionSnapshotV2`
+### 4.2 Snapshot evidence and authentication
 
-The snapshot binds:
+Callers first supply `ContextAdmissionSnapshotEvidenceV2`: issuer, source
+snapshot, revocation frontier, witness, observation time and records.
+`verify_admission_snapshot_v2` validates record shape and then invokes
+`ContextAdmissionVerifierV2::verify_snapshot`. If authentication fails or the
+verifier returns a zero verification digest, no typed snapshot can exist.
+
+The resulting private-field `ContextAdmissionSnapshotV2` binds:
 
 - authenticated issuer identity digest;
 - upstream source snapshot digest;
 - current revocation frontier digest;
-- host-authenticated witness digest;
+- upstream witness digest;
+- verifier implementation identity digest;
+- verifier-produced authentication/verification digest;
 - observation time;
 - canonical admission records.
 
@@ -344,9 +360,10 @@ observe_delivery(... caller_observed_digest/status ...)
 The normative replacements are:
 
 ```text
+verify_admission_snapshot_v2(raw_snapshot_evidence, admission_verifier)
 TokenizationReceiptV2::measure(actual_bytes, tokenizer)
 serialize_context_v2(actual_selected_bytes, serializer, tokenizer)
-build_attachment(serialized, current_admission_snapshot)
+build_attachment(serialized, current_verified_admission_snapshot)
 deliver_attachment(attachment, delivery_adapter)
 ```
 
@@ -411,7 +428,7 @@ passed. Exact-head CI results remain the execution evidence.
 Source closure does not by itself establish product completion. A selected host
 must still demonstrate, at an exact commit:
 
-- authenticated admission issuer/witness construction from the actual owner;
+- a real `ContextAdmissionVerifierV2` authenticating issuer/latest-head witness and revocation state from the actual owner;
 - a real tokenizer implementation matching the selected model profile;
 - a real serializer matching actual Codex/provider request assembly;
 - current revocation-frontier reads at the attachment boundary;
