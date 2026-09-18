@@ -69,6 +69,9 @@ pub struct ParameterPlasticityProductRequestV1 {
     pub admission: PlasticityAdmissionEvidenceV1,
     pub admission_attestation: SignedLearningEvidenceV1,
     pub evaluations: Vec<CandidateEvaluationAdmissionV1>,
+    /// Canonical digest of the selected host's verified owner-evidence receipts
+    /// and owner policy. A selected host overwrites this with its own verification.
+    pub host_evidence_verification_digest: Digest32,
     pub expected_registry_predecessor: Digest32,
 }
 
@@ -377,6 +380,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
 
     let mut evaluator_id: Option<StableId> = None;
     let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v1\0".to_vec();
+    evaluation_binding.extend_from_slice(request.host_evidence_verification_digest.as_array());
     for candidate in update_candidates {
         let candidate_id = candidate.candidate_id.clone();
         let CandidateEvaluationAdmissionV1 {
@@ -533,6 +537,10 @@ fn validate_admission_binding(
         ("modulator broadcast", evidence.modulator_broadcast_digest),
         ("eligibility", evidence.eligibility_digest),
         ("generator", evidence.generator_digest),
+        (
+            "host evidence verification",
+            request.host_evidence_verification_digest,
+        ),
     ] {
         if digest.is_zero() {
             return Err(E::Binding(label));
