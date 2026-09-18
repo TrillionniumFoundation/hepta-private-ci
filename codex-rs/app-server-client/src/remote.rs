@@ -233,11 +233,23 @@ impl RemotePendingRequest {
     where
         T: DeserializeOwned,
     {
-        let method = self.method;
-        let response = self.wait().await.map_err(|source| TypedRequestError::Transport {
-            method: method.clone(),
-            source,
-        })?;
+        let Self {
+            method,
+            response_rx,
+        } = self;
+        let response = response_rx
+            .await
+            .map_err(|_| {
+                IoError::new(
+                    ErrorKind::BrokenPipe,
+                    "remote app-server request channel is closed after admission",
+                )
+            })
+            .and_then(|result| result)
+            .map_err(|source| TypedRequestError::Transport {
+                method: method.clone(),
+                source,
+            })?;
         let result = response.map_err(|source| TypedRequestError::Server {
             method: method.clone(),
             source,
