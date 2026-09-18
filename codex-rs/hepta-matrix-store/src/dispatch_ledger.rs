@@ -501,6 +501,19 @@ impl MatrixDurableStore {
             if observation.server_event_id.is_some() {
                 return Err(MatrixDispatchError::ObservationMismatch);
             }
+            let accepted_event_id: Option<String> = sqlx::query_scalar(
+                "SELECT accepted_event_id FROM matrix_dispatch_ledger WHERE operation_id = ?",
+            )
+            .bind(&observation.operation_id)
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(store_error)?;
+            if accepted_event_id.is_some() {
+                // A concrete Matrix event ID returned by the homeserver is
+                // stronger than a later negative terminal claim. Only an
+                // observed event/redaction may close this accepted send.
+                return Err(MatrixDispatchError::ObservationMismatch);
+            }
             append_observation_tx(
                 &mut transaction,
                 &observation.operation_id,
