@@ -97,6 +97,7 @@ Produced contracts:
 - `ModulePort::kernel.authority::inference.control`
 - `ModulePort::kernel.authority::inference.worker`
 - `ModulePort::kernel.authority::memory.federation`
+- `ModulePort::kernel.authority::prompt.registry`
 - `ModulePort::kernel.authority::runtime.codex`
 - `ModulePort::kernel.authority::runtime.fleet`
 - `ModulePort::kernel.authority::runtime.supervisor`
