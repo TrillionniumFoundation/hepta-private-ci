@@ -468,6 +468,81 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
 }
 
 #[test]
+fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
+    let issuer = SigningKey::from_bytes(&[59; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 6,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "failure-owner".into(),
+        authority_epoch: 6,
+        grant_id: "failure-use".into(),
+        nonce: [31; 32],
+        binding: FinalUseBinding {
+            subject_id: "agent-one".into(),
+            destination_id: "provider:heptabao".into(),
+            request_sha256: [32; 32],
+            scope_sha256: [33; 32],
+            payload_sha256: [34; 32],
+        },
+        not_before_unix_ms: 1_000,
+        expires_at_unix_ms: 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&head).unwrap(),
+    )));
+    let authority = FinalUseAuthority::open_state_dir_with_trust(
+        directory.path(),
+        "failure-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        head.clone(),
+        Arc::new(FixedClock(2_000)),
+        frontier_store.clone(),
+    )
+    .unwrap();
+
+    std::fs::create_dir(directory.path().join("authority.next")).unwrap();
+    assert_eq!(
+        authority
+            .claim(&signed, &signed.grant.binding)
+            .unwrap_err(),
+        FinalUseError::Unavailable
+    );
+    assert_eq!(authority.capacity().unwrap_err(), FinalUseError::Unavailable);
+    assert_ne!(
+        frontier_store.load("failure-owner").unwrap(),
+        FinalUseFrontier::for_initial_head(&head).unwrap()
+    );
+
+    std::fs::remove_dir(directory.path().join("authority.next")).unwrap();
+    drop(authority);
+    assert_eq!(
+        FinalUseAuthority::open_state_dir_with_trust(
+            directory.path(),
+            "failure-owner".into(),
+            issuer.verifying_key().to_bytes(),
+            head,
+            Arc::new(FixedClock(2_000)),
+            frontier_store,
+        )
+        .unwrap_err(),
+        FinalUseError::AntiRollbackViolation
+    );
+}
+
+#[test]
 fn replay_state_survives_owner_restart_and_prevents_concurrent_owners() {
     let (authority, signed, directory) = fixture().unwrap();
     assert_eq!(

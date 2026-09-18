@@ -1287,6 +1287,48 @@ mod tests {
     }
 
     #[test]
+    fn external_frontier_ahead_after_local_commit_failure_fences_reopen() {
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .unwrap();
+        let frontier_store = Arc::new(MemoryFrontierStore(Mutex::new(
+            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+        )));
+        let registry = AuthorityLeaseRegistry::open_state_dir_with_trust(
+            directory.path(),
+            "security-authority".into(),
+            Arc::new(FixedClock(2_000)),
+            frontier_store.clone(),
+        )
+        .unwrap();
+
+        std::fs::create_dir(directory.path().join("authority-leases.next")).unwrap();
+        assert_eq!(
+            registry.put_lease(lease(), 0).unwrap_err(),
+            AuthorityLeaseError::Unavailable
+        );
+        assert_eq!(
+            registry.capacity().unwrap_err(),
+            AuthorityLeaseError::Unavailable
+        );
+        let external = frontier_store.load("security-authority").unwrap();
+        assert_eq!(external.store_revision, 2);
+
+        std::fs::remove_dir(directory.path().join("authority-leases.next")).unwrap();
+        drop(registry);
+        assert_eq!(
+            AuthorityLeaseRegistry::open_state_dir_with_trust(
+                directory.path(),
+                "security-authority".into(),
+                Arc::new(FixedClock(2_000)),
+                frontier_store,
+            )
+            .unwrap_err(),
+            AuthorityLeaseError::AntiRollbackViolation
+        );
+    }
+
+    #[test]
     fn external_frontier_detects_old_snapshot_and_missing_store_reset() {
         let (registry, directory) = fixture();
         registry.put_lease(lease(), 0).unwrap();
