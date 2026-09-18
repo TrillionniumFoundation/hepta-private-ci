@@ -279,20 +279,7 @@ impl DurableInferenceControl {
         request: InferenceRequest,
     ) -> Result<ControlReceipt, Error> {
         validate_request(now_ms, &request)?;
-        if let Some(current) = self.records.get(&request.request_id) {
-            if current.request == request {
-                return Ok(receipt(current, /*idempotent*/ true));
-            }
-            return Err(Error::Conflict);
-        }
-        if self.native.records.contains_key(&request.request_id) {
-            return Err(Error::Conflict);
-        }
-        if self.records.len() + self.native.records.len() >= self.capacity {
-            return Err(Error::CapacityExceeded);
-        }
-        let event = Event::Submit(request);
-        self.commit(event)
+        self.commit(Event::Submit(request))
     }
 
     pub fn reserve(
@@ -304,21 +291,6 @@ impl DurableInferenceControl {
     ) -> Result<ControlReceipt, Error> {
         validate_identity(request_id, "request")?;
         validate_reservation(now_ms, &reservation)?;
-        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-        if record.revision != expected_revision {
-            return Err(Error::StaleRevision);
-        }
-        if record.state == RequestState::Reserved
-            && record.reservation.as_ref() == Some(&reservation)
-        {
-            return Ok(receipt(record, /*idempotent*/ true));
-        }
-        if record.state != RequestState::Pending {
-            return Err(Error::InvalidTransition);
-        }
-        if reservation.maximum_tokens < record.request.maximum_tokens {
-            return Err(Error::UsageExceeded);
-        }
         self.commit(Event::Reserve {
             request_id: request_id.to_string(),
             expected_revision,
@@ -334,17 +306,6 @@ impl DurableInferenceControl {
     ) -> Result<ControlReceipt, Error> {
         validate_identity(request_id, "request")?;
         validate_assignment(&assignment)?;
-        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-        if record.revision != expected_revision {
-            return Err(Error::StaleRevision);
-        }
-        if record.state == RequestState::Assigned && record.assignment.as_ref() == Some(&assignment)
-        {
-            return Ok(receipt(record, /*idempotent*/ true));
-        }
-        if record.state != RequestState::Reserved {
-            return Err(Error::InvalidTransition);
-        }
         self.commit(Event::Assign {
             request_id: request_id.to_string(),
             expected_revision,
@@ -358,16 +319,6 @@ impl DurableInferenceControl {
         expected_revision: u64,
     ) -> Result<ControlReceipt, Error> {
         validate_identity(request_id, "request")?;
-        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-        if record.revision != expected_revision {
-            return Err(Error::StaleRevision);
-        }
-        if record.state == RequestState::Cancelled || record.state == RequestState::Cancelling {
-            return Ok(receipt(record, /*idempotent*/ true));
-        }
-        if record.state.terminal() {
-            return Err(Error::InvalidTransition);
-        }
         self.commit(Event::Cancel {
             request_id: request_id.to_string(),
             expected_revision,
@@ -384,36 +335,6 @@ impl DurableInferenceControl {
         validate_identity(request_id, "request")?;
         validate_digest(&observation_digest, "observation")?;
         validate_observation(&observation)?;
-        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-        if record.revision != expected_revision {
-            return Err(Error::StaleRevision);
-        }
-        if record.terminal_observation_digest.as_ref() == Some(&observation_digest) {
-            return Ok(receipt(record, /*idempotent*/ true));
-        }
-        if record.state.terminal() {
-            return Err(Error::Conflict);
-        }
-        let reservation = record
-            .reservation
-            .as_ref()
-            .ok_or(Error::ReservationMismatch)?;
-        let assignment = record
-            .assignment
-            .as_ref()
-            .ok_or(Error::AssignmentMismatch)?;
-        if observation.request_id != record.request.request_id
-            || observation.reservation_id != reservation.reservation_id
-            || observation.worker_id != assignment.worker_id
-            || observation.worker_generation != assignment.worker_generation
-            || observation.model_digest != record.request.model_digest
-            || observation.payload_digest != record.request.payload_digest
-        {
-            return Err(Error::AssignmentMismatch);
-        }
-        if observation.consumed_tokens > reservation.maximum_tokens {
-            return Err(Error::UsageExceeded);
-        }
         if observation.terminal_observed {
             let status = observation
                 .terminal_status
@@ -604,8 +525,12 @@ impl DurableInferenceControl {
 
     fn commit(&mut self, event: Event) -> Result<ControlReceipt, Error> {
         let _writer_fence = self.reload_locked()?;
-        // Reject invalid transitions against the latest durable cut before
-        // append; concurrent workers never validate against a stale snapshot.
+        // Idempotence, capacity and record-bound validation are evaluated under
+        // the same writer fence as the append. A stale handle can therefore
+        // never return a receipt from its pre-refresh cache.
+        if let Some(existing) = self.validate_latest_event(&event)? {
+            return Ok(existing);
+        }
         let mut next = self.records.clone();
         apply_event(&mut next, &event, /*replay*/ false)?;
         let encoded = format!("{}\n", encode_event(&event));
@@ -617,6 +542,109 @@ impl DurableInferenceControl {
             .get(&request_id)
             .ok_or(Error::RequestNotFound)?;
         Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    fn validate_latest_event(&self, event: &Event) -> Result<Option<ControlReceipt>, Error> {
+        match event {
+            Event::Submit(request) => {
+                if self.native.records.contains_key(&request.request_id) {
+                    return Err(Error::Conflict);
+                }
+                if let Some(current) = self.records.get(&request.request_id) {
+                    if current.request == *request {
+                        return Ok(Some(receipt(current, /*idempotent*/ true)));
+                    }
+                    return Err(Error::Conflict);
+                }
+                if self.records.len() + self.native.records.len() >= self.capacity {
+                    return Err(Error::CapacityExceeded);
+                }
+            }
+            Event::Reserve {
+                request_id,
+                expected_revision,
+                reservation,
+            } => {
+                let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+                require_revision(record, *expected_revision, /*replay*/ false)?;
+                if record.state == RequestState::Reserved
+                    && record.reservation.as_ref() == Some(reservation)
+                {
+                    return Ok(Some(receipt(record, /*idempotent*/ true)));
+                }
+                if record.state != RequestState::Pending {
+                    return Err(Error::InvalidTransition);
+                }
+                if reservation.maximum_tokens < record.request.maximum_tokens {
+                    return Err(Error::UsageExceeded);
+                }
+            }
+            Event::Assign {
+                request_id,
+                expected_revision,
+                assignment,
+            } => {
+                let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+                require_revision(record, *expected_revision, /*replay*/ false)?;
+                if record.state == RequestState::Assigned
+                    && record.assignment.as_ref() == Some(assignment)
+                {
+                    return Ok(Some(receipt(record, /*idempotent*/ true)));
+                }
+                if record.state != RequestState::Reserved {
+                    return Err(Error::InvalidTransition);
+                }
+            }
+            Event::Cancel {
+                request_id,
+                expected_revision,
+            } => {
+                let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+                require_revision(record, *expected_revision, /*replay*/ false)?;
+                if matches!(record.state, RequestState::Cancelled | RequestState::Cancelling) {
+                    return Ok(Some(receipt(record, /*idempotent*/ true)));
+                }
+                if record.state.terminal() {
+                    return Err(Error::InvalidTransition);
+                }
+            }
+            Event::Settle {
+                request_id,
+                expected_revision,
+                observation_digest,
+                observation,
+            } => {
+                let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+                require_revision(record, *expected_revision, /*replay*/ false)?;
+                if record.terminal_observation_digest.as_ref() == Some(observation_digest) {
+                    return Ok(Some(receipt(record, /*idempotent*/ true)));
+                }
+                if record.state.terminal() {
+                    return Err(Error::Conflict);
+                }
+                let reservation = record
+                    .reservation
+                    .as_ref()
+                    .ok_or(Error::ReservationMismatch)?;
+                let assignment = record
+                    .assignment
+                    .as_ref()
+                    .ok_or(Error::AssignmentMismatch)?;
+                if observation.request_id != record.request.request_id
+                    || observation.reservation_id != reservation.reservation_id
+                    || observation.worker_id != assignment.worker_id
+                    || observation.worker_generation != assignment.worker_generation
+                    || observation.model_digest != record.request.model_digest
+                    || observation.payload_digest != record.request.payload_digest
+                {
+                    return Err(Error::AssignmentMismatch);
+                }
+                if observation.consumed_tokens > reservation.maximum_tokens {
+                    return Err(Error::UsageExceeded);
+                }
+            }
+        }
+        Ok(None)
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
