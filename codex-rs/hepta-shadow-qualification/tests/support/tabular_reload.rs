@@ -159,9 +159,7 @@ fn worker() {
                 },
             ));
             assert_eq!(
-                must(model.predict(&id("state"), &id("read")))
-                    .value
-                    .raw(),
+                must(model.predict(&id("state"), &id("read"))).value.raw(),
                 expected
             );
         }
