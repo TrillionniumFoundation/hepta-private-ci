@@ -1,7 +1,11 @@
 //! Source-aware context compiler.
 //!
-//! Trusted instructions and untrusted evidence remain separate sections. The
-//! compiler accepts digests, never raw secrets, and cannot call a model.
+//! V2 is the normative path for new integrations: admitted content is converted
+//! into opaque verified candidates, exact payload bytes are materialized only at
+//! serialization/attachment boundaries, and provider delivery is accepted only
+//! through a validated provider receipt plus an independent delivery-evidence
+//! verifier. Legacy V1 entrypoints remain compatibility-only and do not claim
+//! current-admission, exact-tokenizer, final-payload or provider-delivery proof.
 
 #![forbid(unsafe_code)]
 
@@ -24,25 +28,40 @@ pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;
 pub use v2::CompiledContextV2;
+pub use v2::ContextAdmissionClaimV2;
+pub use v2::ContextAdmissionDecisionV2;
+pub use v2::ContextAdmissionReceiptV2;
+pub use v2::ContextAdmissionSnapshotVerifierV2;
 pub use v2::ContextAttachmentV2;
+pub use v2::ContextCandidateDraftV2;
 pub use v2::ContextCandidateV2;
 pub use v2::ContextCompilationReceiptV2;
 pub use v2::ContextCompilationRequestV2;
 pub use v2::ContextCompilerV2Error;
 pub use v2::ContextDeliveryDispositionV2;
 pub use v2::ContextDeliveryObservationV2;
+pub use v2::ContextDeliveryReceiptV2;
+pub use v2::ContextMaterializedItemV2;
 pub use v2::ContextModelProfileV2;
+pub use v2::ContextProviderDeliveryDecisionV2;
+pub use v2::ContextProviderDeliveryVerifierV2;
 pub use v2::ContextRoleV2;
 pub use v2::ContextSerializationReceiptV2;
+pub use v2::ContextSerializerV2;
+pub use v2::ExactContextTokenizerV2;
 pub use v2::MAX_CONTEXT_CANDIDATES_V2;
 pub use v2::MAX_CONTEXT_GROUPS_V2;
+pub use v2::MAX_CONTEXT_ITEM_BYTES_V2;
+pub use v2::MAX_CONTEXT_SERIALIZED_BYTES_V2;
 pub use v2::MAX_CONTEXT_TOKENS_V2;
 pub use v2::MandatoryContextGroupV2;
+pub use v2::SerializedContextV2;
 pub use v2::TokenizationReceiptV2;
 pub use v2::build_attachment;
 pub use v2::compile_v2;
 pub use v2::observe_delivery;
-pub use v2::record_serialization;
+pub use v2::serialize_context_exact;
+pub use v2::verify_context_candidate_v2;
 
 const MAX_ITEMS: usize = 4_096;
 const MAX_TOKENS: u64 = 1_000_000;
@@ -114,8 +133,8 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-/// Compile with all trusted instructions treated as non-tradable context floors.
-/// Explicit provenance/contradiction groups use `compile_with_requirements`.
+/// Compatibility-only V1 compiler. New integrations must use compile_v2 and
+/// the admission/tokenizer/serialization/attachment/delivery proof chain.
 pub fn compile(request: CompilationRequest) -> Result<ContextCompilationReceipt, Error> {
     compile_internal(request, Requirements::InstructionsOnly)
 }
