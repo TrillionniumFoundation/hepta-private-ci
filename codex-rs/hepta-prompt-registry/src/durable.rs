@@ -417,6 +417,9 @@ fn restore_v2(
     }
     let revision = Revision::new(stored.revision).map_err(|_| DurableRegistryError::Corrupt)?;
     let configured_maximum = maximum_records.min(crate::MAX_RECORDS);
+    if stored.maximum_records != configured_maximum {
+        return Err(DurableRegistryError::ConfigurationMismatch);
+    }
     let mut factors = BTreeMap::new();
     for stored_factor in stored.factors {
         let factor = decode_factor(stored_factor)?;
@@ -515,6 +518,9 @@ fn migrate_v1(
     }
     let revision = Revision::new(stored.revision).map_err(|_| DurableRegistryError::Corrupt)?;
     let configured_maximum = maximum_records.min(crate::MAX_RECORDS);
+    if stored.maximum_records != configured_maximum {
+        return Err(DurableRegistryError::ConfigurationMismatch);
+    }
     let mut factors = BTreeMap::new();
     let migration_actor = StableId::new("migration:v1")
         .map_err(|_| DurableRegistryError::Corrupt)?;
@@ -964,6 +970,7 @@ pub enum DurableRegistryError {
     Read(PromptRegistryV2Error),
     Corrupt,
     CapacityExceeded,
+    ConfigurationMismatch,
     Unavailable,
     UnsafeStateDirectory,
     StateLocked,
@@ -1186,6 +1193,18 @@ mod tests {
                 8,
             ),
             Err(DurableRegistryError::Read(PromptRegistryV2Error::SnapshotStale))
+        ));
+    }
+
+
+    #[test]
+    fn reopen_rejects_resource_policy_drift() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry");
+        drop(DurablePromptRegistry::open_state_dir(&root, 64).expect("initialize registry"));
+        assert!(matches!(
+            DurablePromptRegistry::open_state_dir(&root, 65),
+            Err(DurableRegistryError::ConfigurationMismatch)
         ));
     }
 
