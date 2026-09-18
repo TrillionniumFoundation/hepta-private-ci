@@ -339,6 +339,15 @@ def verify_source_snapshot(
     if actual_tree != tree:
         failures.append(f"{mid}: source snapshot commit/tree mismatch")
         return
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+    if ancestor.returncode != 0:
+        failures.append(f"{mid}: source snapshot is not an ancestor of HEAD")
+        return
     if not tracked_paths or any(not valid_repo_path(path) for path in tracked_paths):
         failures.append(f"{mid}: source tracked paths")
         return
