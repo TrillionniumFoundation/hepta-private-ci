@@ -94,6 +94,7 @@ jobs:
           assert receipt['reproducibleIndependentBuilds'] is True
           assert receipt['linuxSandboxProbe']['externalNetworkDenied'] is True
           assert receipt['linuxSandboxProbe']['hostSecretHidden'] is True
+          assert receipt['linuxSandboxProbe']['parentDeathCleanupObserved'] is True
           assert receipt['realWorkerSmoke']['currentPinWorkerBooted'] is True
           assert receipt['realWorkerSmoke']['privateProtocolRoundTrip'] is True
           PY

@@ -4,6 +4,8 @@ import {
   buildAgentdBrowserFrame,
 } from "./agentd-protocol.js";
 
+const MAX_QUEUED_AGENTD_FRAMES = 64;
+
 const SERVICE_METHODS = new Set([
   "open_profile",
   "admit_effect_grant",
@@ -108,8 +110,17 @@ export class AgentdBrowserChannel {
         return;
       }
       const waiter = this.#waiters.shift();
-      if (waiter) waiter.resolve(frame);
-      else this.#queue.push(frame);
+      if (waiter) {
+        waiter.resolve(frame);
+      } else {
+        if (this.#queue.length >= MAX_QUEUED_AGENTD_FRAMES) {
+          this.#fail(
+            new Error("Agentd browser input queue capacity is exhausted"),
+          );
+          return;
+        }
+        this.#queue.push(frame);
+      }
     }
   }
 
@@ -128,6 +139,7 @@ export class AgentdBrowserChannel {
   #fail(error) {
     if (this.#failed) return;
     this.#failed = error instanceof Error ? error : new Error(String(error));
+    this.#queue.length = 0;
     for (const waiter of this.#waiters.splice(0)) waiter.reject(this.#failed);
   }
 }

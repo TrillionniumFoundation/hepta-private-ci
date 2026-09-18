@@ -158,3 +158,29 @@ test("Agentd service protocol rejects payload digest drift", () => {
   const encoded = encodeAgentdBrowserFrame(frame);
   assert.equal(encoded.readUInt32BE(0), encoded.length - 4);
 });
+
+
+test("Agentd browser channel applies bounded unread-frame backpressure", async () => {
+  const input = new PassThrough();
+  const output = new PassThrough();
+  const channel = new AgentdBrowserChannel({ input, output });
+  for (let sequence = 1; sequence <= 65; sequence += 1) {
+    input.write(
+      encodeAgentdBrowserFrame(
+        buildAgentdBrowserFrame({
+          sequence,
+          kind: "request",
+          requestId: `request.queue.${sequence}`,
+          payload: { method: "observe_page", input: { profileId: "profile.1" } },
+        }),
+      ),
+    );
+  }
+  await new Promise((resolve) => setImmediate(resolve));
+  await assert.rejects(
+    channel.nextFrame(),
+    /input queue capacity is exhausted/,
+  );
+  input.destroy();
+  output.destroy();
+});

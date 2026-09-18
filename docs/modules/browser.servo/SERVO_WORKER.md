@@ -125,7 +125,7 @@ Worker stderr is always drained so a full pipe cannot deadlock the process. Stde
 
 The launcher starts from an empty tmpfs root and does not bind host `/` or `/usr` wholesale. The allowlist is restricted to the worker's runtime closure and rendering data: runtime libraries, fonts/fontconfig data, loader/TLS configuration, fontconfig cache, private proc/dev/tmp/run/home/root views, one private writable profile and one exact verified worker artifact. General `/usr/bin`, `/usr/local`, `/var/lib`, service roots and ambient user homes are absent.
 
-`scripts/linux-sandbox-probe.js` compiles a tiny host-side C probe and executes it through the same production launcher. Inside the sandbox it requires host-secret invisibility, absence of `/usr/bin/sh` and `/usr/bin/python3`, denied direct external IPv4 connect, and writable/fsynced private profile state. Only that execution receipt on an exact host is enforcement evidence.
+`scripts/linux-sandbox-probe.js` compiles a tiny host-side C probe and executes it through the same production launcher. Inside the sandbox it requires host-secret invisibility, absence of `/usr/bin/sh` and `/usr/bin/python3`, denied direct external IPv4 connect, writable/fsynced private profile state, and observed `--die-with-parent` cleanup after a helper parent exits. Only that execution receipt on an exact host is enforcement evidence.
 
 ## 9. Resource and backpressure policy
 

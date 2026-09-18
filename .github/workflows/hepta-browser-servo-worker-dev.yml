@@ -128,6 +128,11 @@ jobs:
         run: |
           set -euo pipefail
           node apps/hepta-browser/scripts/linux-sandbox-probe.js | tee worker-evidence/linux-sandbox-probe.json
+          python3 - <<'PY'
+          import json, pathlib
+          probe = json.loads(pathlib.Path("worker-evidence/linux-sandbox-probe.json").read_text())
+          assert probe["parentDeathCleanupObserved"] is True
+          PY
 
       - name: Build worker twice from the same exact inputs
         shell: bash

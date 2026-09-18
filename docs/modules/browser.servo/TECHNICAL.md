@@ -120,7 +120,7 @@ Owned threat entry:
 
 Security controls include final payload/provenance binding, live revocation linearization, durable exactly-once/no-redispatch identity, principal-bound fresh profile roots, origin quarantine, exact worker artifact digest verification, bounded canonical private protocols, response echo binding, stderr drain and default-deny capability vocabularies.
 
-`LinuxBubblewrapLauncher` describes a **source launch contract**, not an independent statement that a target kernel enforced it. It starts from an empty tmpfs root, clears environment, uses `--unshare-all` without network sharing, exposes selected runtime libraries/fonts/TLS data rather than whole `/usr`, and hides general `/usr/bin`, `/usr/local`, `/var/lib`, user homes and service roots. `scripts/linux-sandbox-probe.js` exercises the same launcher on a real Linux host and checks host-secret invisibility, absence of general shell/Python binaries, denied direct external IPv4 connection and private-profile write/fsync.
+`LinuxBubblewrapLauncher` describes a **source launch contract**, not an independent statement that a target kernel enforced it. It starts from an empty tmpfs root, clears environment, uses `--unshare-all` without network sharing, exposes selected runtime libraries/fonts/TLS data rather than whole `/usr`, and hides general `/usr/bin`, `/usr/local`, `/var/lib`, user homes and service roots. `scripts/linux-sandbox-probe.js` exercises the same launcher on a real Linux host and checks host-secret invisibility, absence of general shell/Python binaries, denied direct external IPv4 connection, private-profile write/fsync and observed parent-death cleanup.
 
 ## 10. Performance, capacity and hot-path policy
 
