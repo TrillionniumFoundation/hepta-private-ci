@@ -13,13 +13,17 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::AdmissionError;
 use crate::Error;
+use crate::FinalUseAdmissionAuthority;
 use crate::FactorSource;
 use crate::Lifecycle;
 use crate::LifecycleEvent;
@@ -89,6 +93,33 @@ impl DurablePromptRegistry {
         now_unix_ms: u64,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
         self.commit(|registry| registry.admit_factor_verified(admission, now_unix_ms))
+    }
+
+    pub fn admit_factor_final_use(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        factor_id: &StableId,
+        reviewed_scope_digest: Digest32,
+        evidence_digest: Digest32,
+    ) -> Result<RegistryReceipt, DurableRegistryError> {
+        let factor = self
+            .registry
+            .factor(factor_id)
+            .cloned()
+            .ok_or_else(|| DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string())))?;
+        let admission = FinalUseAdmissionAuthority::new(authority)
+            .verify(
+                signed,
+                &factor,
+                reviewed_scope_digest,
+                evidence_digest,
+            )
+            .map_err(DurableRegistryError::Admission)?;
+        let verified_at_unix_ms = admission.verified_at_unix_ms();
+        self.commit(|registry| {
+            registry.admit_factor_verified(admission, verified_at_unix_ms)
+        })
     }
 
     pub fn register_realization_payload_v2(
@@ -987,6 +1018,7 @@ fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
 #[derive(Debug)]
 pub enum DurableRegistryError {
     Core(Error),
+    Admission(AdmissionError),
     Read(PromptRegistryV2Error),
     Corrupt,
     CapacityExceeded,
