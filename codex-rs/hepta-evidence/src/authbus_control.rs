@@ -4,6 +4,7 @@ use codex_hepta_authbus::QuotaConfig;
 use codex_hepta_authbus::Reservation;
 use codex_hepta_authbus::ReservationState;
 use codex_hepta_authbus::Settlement;
+use std::collections::BTreeSet;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use sqlx::Row;
@@ -46,18 +47,34 @@ impl HeptaEvidenceStore {
         if policy.revision == 0 || policy.rules.is_empty() || policy.rules.len() > 1024 {
             return Err(AuthBusControlError::Invalid("invalid policy revision"));
         }
+        let digest = canonical_policy_digest(policy)?;
         let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(classify_sqlx_error)?;
-        let previous: Option<Vec<u8>> = sqlx::query_scalar(
-            "SELECT revision FROM authbus_policy_heads WHERE policy_id = ?",
+        let previous = sqlx::query(
+            "SELECT revision, policy_digest, revoked FROM authbus_policy_heads WHERE policy_id = ?",
         )
         .bind(policy.policy_id.as_str())
         .fetch_optional(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
         if let Some(previous) = previous {
-            let previous = decode_u64(previous)?;
-            if policy.revision <= previous {
+            let previous_revision =
+                decode_u64(previous.try_get("revision").map_err(classify_sqlx_error)?)?;
+            let previous_digest =
+                digest32(previous.try_get("policy_digest").map_err(classify_sqlx_error)?)?;
+            let previous_revoked: i64 =
+                previous.try_get("revoked").map_err(classify_sqlx_error)?;
+            if policy.revision == previous_revision {
+                if previous_digest == digest && previous_revoked == if revoked { 1 } else { 0 } {
+                    tx.commit().await.map_err(classify_sqlx_error)?;
+                    return Ok(());
+                }
+                return Err(AuthBusControlError::IdempotencyConflict);
+            }
+            if policy.revision < previous_revision {
                 return Err(AuthBusControlError::StaleRevision);
+            }
+            if previous_revoked != 0 {
+                return Err(AuthBusControlError::Denied);
             }
         }
         for rule in &policy.rules {
@@ -77,13 +94,15 @@ impl HeptaEvidenceStore {
             .map_err(classify_sqlx_error)?;
         }
         sqlx::query(
-            "INSERT INTO authbus_policy_heads(policy_id, revision, revoked, updated_at_ms)
-             VALUES (?, ?, ?, ?)
+            "INSERT INTO authbus_policy_heads(policy_id, revision, policy_digest, revoked, updated_at_ms)
+             VALUES (?, ?, ?, ?, ?)
              ON CONFLICT(policy_id) DO UPDATE SET revision=excluded.revision,
-             revoked=excluded.revoked, updated_at_ms=excluded.updated_at_ms",
+             policy_digest=excluded.policy_digest, revoked=excluded.revoked,
+             updated_at_ms=excluded.updated_at_ms",
         )
         .bind(policy.policy_id.as_str())
         .bind(policy.revision.to_be_bytes().as_slice())
+        .bind(digest.as_array().as_slice())
         .bind(if revoked { 1_i64 } else { 0_i64 })
         .bind(now_millis()?)
         .execute(&mut *tx)
@@ -124,7 +143,7 @@ impl HeptaEvidenceStore {
         }
         let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(classify_sqlx_error)?;
         let row = sqlx::query(
-            "SELECT revision, reserved, consumed FROM authbus_quota_registry WHERE quota_key = ?",
+            "SELECT revision, endowment, reserved, consumed FROM authbus_quota_registry WHERE quota_key = ?",
         )
         .bind(quota.quota_key.as_str())
         .fetch_optional(&mut *tx)
@@ -132,7 +151,16 @@ impl HeptaEvidenceStore {
         .map_err(classify_sqlx_error)?;
         let (reserved, consumed) = if let Some(row) = row {
             let revision = decode_u64(row.try_get("revision").map_err(classify_sqlx_error)?)?;
-            if quota.revision <= revision {
+            let current_endowment =
+                decode_u64(row.try_get("endowment").map_err(classify_sqlx_error)?)?;
+            if quota.revision == revision {
+                if quota.endowment == current_endowment {
+                    tx.commit().await.map_err(classify_sqlx_error)?;
+                    return Ok(());
+                }
+                return Err(AuthBusControlError::IdempotencyConflict);
+            }
+            if quota.revision < revision {
                 return Err(AuthBusControlError::StaleRevision);
             }
             (
@@ -622,6 +650,36 @@ fn decode_reservation(row: sqlx::sqlite::SqliteRow) -> Result<Reservation, AuthB
         policy_revision: decode_u64(row.try_get("policy_revision").map_err(classify_sqlx_error)?)?,
         state,
     })
+}
+
+
+fn canonical_policy_digest(policy: &PolicyRevision) -> Result<Digest32, AuthBusControlError> {
+    let mut rows = BTreeSet::new();
+    for rule in &policy.rules {
+        let key = (
+            rule.principal_id.as_str().to_owned(),
+            rule.action_id.as_str().to_owned(),
+            rule.scope_digest,
+            rule.allow,
+        );
+        if !rows.insert(key) {
+            return Err(AuthBusControlError::Invalid("duplicate policy rule"));
+        }
+    }
+    let mut bytes = b"hepta.authbus.policy-revision.v1\0".to_vec();
+    push(&mut bytes, policy.policy_id.as_str());
+    bytes.extend_from_slice(&policy.revision.to_be_bytes());
+    for (principal, action, scope, allow) in rows {
+        push(&mut bytes, &principal);
+        push(&mut bytes, &action);
+        bytes.extend_from_slice(scope.as_array());
+        bytes.push(u8::from(allow));
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn digest32(bytes: Vec<u8>) -> Result<Digest32, AuthBusControlError> {
+    digest(bytes)
 }
 
 fn decode_u64(bytes: Vec<u8>) -> Result<u64, AuthBusControlError> {
