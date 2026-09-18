@@ -714,7 +714,9 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
                 return Err(LedgerError::InvalidAuthorityEpoch);
             }
             for (digest, label) in [
+                (value.run_snapshot_digest, "run snapshot"),
                 (value.objective_digest, "objective"),
+                (value.policy_digest, "policy"),
                 (value.generator_credential_chain_digest, "generator credential chain"),
                 (value.generator_signing_key_digest, "generator signing key"),
                 (value.generator_scope_digest, "generator scope"),
@@ -916,7 +918,9 @@ fn push_decision(bytes: &mut Vec<u8>, value: &EpisodeDecision) {
 fn push_authenticated_decision(bytes: &mut Vec<u8>, value: &AuthenticatedDecisionRecordV2) {
     push_id(bytes, &value.record_id);
     push_id(bytes, &value.episode_id);
+    push_digest(bytes, value.run_snapshot_digest);
     push_digest(bytes, value.objective_digest);
+    push_digest(bytes, value.policy_digest);
     push_id(bytes, &value.generator_id);
     push_id(bytes, &value.generator_controller_id);
     push_digest(bytes, value.generator_credential_chain_digest);
