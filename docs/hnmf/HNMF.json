@@ -89,7 +89,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
+      "conformanceClass": "two_sided_shared_fixture",
+      "referenceOracle": "qualification/hnmf-contract-reference"
     },
     {
       "id": "MemoryEventV1",
@@ -117,7 +119,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
+      "conformanceClass": "two_sided_shared_fixture",
+      "referenceOracle": "qualification/hnmf-contract-reference"
     },
     {
       "id": "CrossModalBindingV1",
@@ -138,7 +142,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
+      "conformanceClass": "two_sided_shared_fixture",
+      "referenceOracle": "qualification/hnmf-contract-reference"
     },
     {
       "id": "EngramNodeV1",
@@ -163,7 +169,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+      "conformanceClass": "production_strict_wire_with_runtime_semantic_oracle",
+      "referenceOracle": "qualification/hnmf-reference/src/lib.rs"
     },
     {
       "id": "SynapseV1",
@@ -187,7 +195,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+      "conformanceClass": "production_strict_wire_with_runtime_semantic_oracle",
+      "referenceOracle": "qualification/hnmf-reference/src/lib.rs"
     },
     {
       "id": "MemoryCueV1",
@@ -210,7 +220,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+      "conformanceClass": "production_strict_wire_with_runtime_semantic_oracle",
+      "referenceOracle": "qualification/hnmf-reference/src/lib.rs"
     },
     {
       "id": "RecallPacketV1",
@@ -237,7 +249,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+      "conformanceClass": "production_strict_wire_with_runtime_semantic_oracle",
+      "referenceOracle": "qualification/hnmf-reference/src/lib.rs"
     },
     {
       "id": "OutcomeSignalV1",
@@ -259,7 +273,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+      "conformanceClass": "production_strict_wire_with_runtime_semantic_oracle",
+      "referenceOracle": "qualification/hnmf-reference/src/lib.rs"
     },
     {
       "id": "ReplaySelectionReceiptV1",
@@ -279,7 +295,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+      "conformanceClass": "production_strict_wire_with_runtime_semantic_oracle",
+      "referenceOracle": "qualification/hnmf-reference/src/lib.rs"
     },
     {
       "id": "PlasticityBatchV1",
@@ -301,7 +319,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+      "conformanceClass": "production_strict_wire_with_runtime_semantic_oracle",
+      "referenceOracle": "qualification/hnmf-reference/src/lib.rs"
     },
     {
       "id": "TopologyProposalV1",
@@ -323,7 +343,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+      "conformanceClass": "production_strict_wire_with_runtime_semantic_oracle",
+      "referenceOracle": "qualification/hnmf-reference/src/lib.rs"
     },
     {
       "id": "ForgetPropagationReceiptV1",
@@ -345,7 +367,9 @@
       "unknownFieldPolicy": "reject",
       "unknownEnumPolicy": "reject",
       "canonicalBytePolicy": "exact_reserialization_match",
-      "productionConformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+      "productionConformanceTest": "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+      "conformanceClass": "production_strict_wire_with_runtime_semantic_oracle",
+      "referenceOracle": "qualification/hnmf-reference/src/lib.rs"
     }
   ],
   "dynamics": {
@@ -617,9 +641,34 @@
     "nonCanonicalBytesPolicy": "reject",
     "optionalFieldPolicy": "omit_when_none",
     "goldenVector": "codex-rs/hepta-cognitive-types/tests/data/modality_span_v1.canonical.json",
-    "referenceOracle": "qualification/hnmf-contract-reference",
     "conformanceTest": "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
     "qualificationWorkflow": ".github/workflows/hnmf-qualification.yml",
-    "productionActivationClaimed": false
+    "productionActivationClaimed": false,
+    "contractReferenceOracle": "qualification/hnmf-contract-reference",
+    "runtimeSemanticOracle": "qualification/hnmf-reference"
+  },
+  "conformanceEvidence": {
+    "sharedFixture": "codex-rs/hepta-cognitive-types/tests/data/hnmf_conformance_v1.json",
+    "twoSidedWireSemanticProtocols": [
+      "ModalitySpanRefV1",
+      "MemoryEventV1",
+      "CrossModalBindingV1"
+    ],
+    "fullProductionWireRoundTripProtocols": [
+      "ModalitySpanRefV1",
+      "MemoryEventV1",
+      "CrossModalBindingV1",
+      "EngramNodeV1",
+      "SynapseV1",
+      "MemoryCueV1",
+      "RecallPacketV1",
+      "OutcomeSignalV1",
+      "ReplaySelectionReceiptV1",
+      "PlasticityBatchV1",
+      "TopologyProposalV1",
+      "ForgetPropagationReceiptV1"
+    ],
+    "deterministicRuntimeSemanticOracle": "qualification/hnmf-reference/src/lib.rs",
+    "claim": "three structurally homologous protocols share one two-sided fixture; all twelve production protocols have strict canonical-wire round trips; remaining runtime behavior is checked by the deterministic semantic oracle"
   }
 }
