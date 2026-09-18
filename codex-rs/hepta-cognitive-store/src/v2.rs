@@ -355,8 +355,7 @@ impl AdmittedCognitiveStoreV2 {
         {
             return Err(CognitiveStoreV2Error::StaleMemoryFrontier);
         }
-        if self.snapshot_key.vector.tombstone_frontier
-            < snapshot_request.minimum_tombstone_frontier
+        if self.snapshot_key.vector.tombstone_frontier < snapshot_request.minimum_tombstone_frontier
         {
             return Err(CognitiveStoreV2Error::StaleTombstoneFrontier);
         }
@@ -386,8 +385,8 @@ impl AdmittedCognitiveStoreV2 {
         let page_end = cursor
             .checked_add(records.len())
             .ok_or(CognitiveStoreV2Error::SnapshotCursorOutOfRange)?;
-        let next_cursor = (page_end < total_records)
-            .then(|| u64::try_from(page_end).unwrap_or(u64::MAX));
+        let next_cursor =
+            (page_end < total_records).then(|| u64::try_from(page_end).unwrap_or(u64::MAX));
         let previous_record = if cursor == 0 {
             None
         } else {
@@ -428,9 +427,10 @@ impl AdmittedCognitiveStoreV2 {
 
     fn compute_ledger_digest(&self, total_records: usize) -> Digest32 {
         let mut bytes = Vec::with_capacity(
-            STORE_LEDGER_DOMAIN.len().saturating_add(48).saturating_add(
-                total_records.saturating_mul(std::mem::size_of::<Digest32>()),
-            ),
+            STORE_LEDGER_DOMAIN
+                .len()
+                .saturating_add(48)
+                .saturating_add(total_records.saturating_mul(std::mem::size_of::<Digest32>())),
         );
         bytes.extend_from_slice(STORE_LEDGER_DOMAIN);
         push_digest(&mut bytes, self.snapshot_key.vector_digest);
@@ -525,15 +525,11 @@ impl AdmittedCognitiveStoreV2 {
         })
     }
 
-    fn ensure_new_intent_capacity(
-        &self,
-        is_revocation: bool,
-    ) -> Result<(), CognitiveStoreV2Error> {
+    fn ensure_new_intent_capacity(&self, is_revocation: bool) -> Result<(), CognitiveStoreV2Error> {
         let limit = if is_revocation {
             MAX_V2_INTENT_JOURNAL_ENTRIES
         } else {
-            MAX_V2_INTENT_JOURNAL_ENTRIES
-                .saturating_sub(MAX_V2_REVOCATION_INTENT_RESERVE)
+            MAX_V2_INTENT_JOURNAL_ENTRIES.saturating_sub(MAX_V2_REVOCATION_INTENT_RESERVE)
         };
         if self.intent_journal.len() >= limit {
             return Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded);
@@ -764,10 +760,7 @@ impl SnapshotPageOpenRequestV2 {
         if self.maximum_records == 0 || self.maximum_records > MAX_V2_SNAPSHOT_PAGE_RECORDS {
             return Err(CognitiveStoreV2Error::InvalidSnapshotPageSize);
         }
-        if self
-            .expected_ledger_digest
-            .is_some_and(Digest32::is_zero)
-        {
+        if self.expected_ledger_digest.is_some_and(Digest32::is_zero) {
             return Err(CognitiveStoreV2Error::EmptyDigest("expected_ledger_root"));
         }
         Ok(())
@@ -978,7 +971,9 @@ impl CognitiveStoreImageV2 {
             .and_then(|count| count.checked_add(1))
             .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
         if self.snapshot_key.vector.knowledge_fact_frontier < minimum_fact_frontier {
-            return Err(CognitiveStoreV2Error::ImageFrontierMismatch("knowledge_fact"));
+            return Err(CognitiveStoreV2Error::ImageFrontierMismatch(
+                "knowledge_fact",
+            ));
         }
         let mut histories = BTreeMap::<StableId, Vec<MemoryRecord>>::new();
         for record in &self.records {
@@ -1009,10 +1004,9 @@ impl CognitiveStoreImageV2 {
             if entry.intent_id != entry.receipt.intent_id {
                 return Err(CognitiveStoreV2Error::JournalReceiptMismatch("intent_id"));
             }
-            if !committed_records.contains(&(
-                entry.receipt.record_id.clone(),
-                entry.receipt.record_digest,
-            )) {
+            if !committed_records
+                .contains(&(entry.receipt.record_id.clone(), entry.receipt.record_digest))
+            {
                 return Err(CognitiveStoreV2Error::JournalReceiptMismatch("record"));
             }
             if entry.receipt.committed_frontier
@@ -1022,10 +1016,7 @@ impl CognitiveStoreImageV2 {
                     "committed_frontier",
                 ));
             }
-            if !same_static_generation_fields(
-                &entry.receipt.snapshot_key,
-                &self.snapshot_key,
-            ) {
+            if !same_static_generation_fields(&entry.receipt.snapshot_key, &self.snapshot_key) {
                 return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
                     "snapshot_static_fields",
                 ));
