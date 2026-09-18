@@ -167,19 +167,14 @@ fn candidate(
     let source_digest = digest(&format!("source:{item_id}"));
     let tokenization = TokenizationReceiptV2::measure(id(item_id), content, &tokenizer())
         .unwrap_or_else(|error| panic!("valid tokenization: {error}"));
-    let trusted_admission = match role {
-        ContextRoleV2::TrustedInstruction | ContextRoleV2::Schema => Some(
-            admission_snapshot
-                .verify_trusted_binding(
-                    &id(item_id),
-                    role,
-                    tokenization.content_digest(),
-                    source_digest,
-                )
-                .unwrap_or_else(|error| panic!("valid admission: {error}")),
-        ),
-        ContextRoleV2::UntrustedEvidence => None,
-    };
+    let admission = admission_snapshot
+        .verify_binding(
+            &id(item_id),
+            role,
+            tokenization.content_digest(),
+            source_digest,
+        )
+        .unwrap_or_else(|error| panic!("valid admission: {error}"));
     ContextCandidateV2::new(
         id(item_id),
         role,
@@ -187,7 +182,7 @@ fn candidate(
         digest("generation-vector"),
         tokenization,
         expected_value,
-        trusted_admission,
+        admission,
         false,
     )
     .unwrap_or_else(|error| panic!("valid candidate: {error}"))
@@ -260,7 +255,32 @@ fn serialize_one_trusted(
 #[test]
 fn deterministic_selection_preserves_verified_trusted_floor() {
     let trusted_content = b"trust";
-    let admission_snapshot = trusted_snapshot(trusted_content, 10);
+    let evidence_a_content = b"aa";
+    let evidence_b_content = b"bbbb";
+    let admission_snapshot = snapshot(
+        vec![
+            admission_record(
+                "item:trusted",
+                ContextRoleV2::TrustedInstruction,
+                trusted_content,
+                digest("source:item:trusted"),
+            ),
+            admission_record(
+                "item:evidence-a",
+                ContextRoleV2::UntrustedEvidence,
+                evidence_a_content,
+                digest("source:item:evidence-a"),
+            ),
+            admission_record(
+                "item:evidence-b",
+                ContextRoleV2::UntrustedEvidence,
+                evidence_b_content,
+                digest("source:item:evidence-b"),
+            ),
+        ],
+        10,
+        "frontier:10",
+    );
     let trusted = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
@@ -271,14 +291,14 @@ fn deterministic_selection_preserves_verified_trusted_floor() {
     let evidence_a = candidate(
         "item:evidence-a",
         ContextRoleV2::UntrustedEvidence,
-        b"aa",
+        evidence_a_content,
         FixedQ32::ONE,
         &admission_snapshot,
     );
     let evidence_b = candidate(
         "item:evidence-b",
         ContextRoleV2::UntrustedEvidence,
-        b"bbbb",
+        evidence_b_content,
         FixedQ32::ONE,
         &admission_snapshot,
     );
@@ -332,7 +352,7 @@ fn admission_proof_cannot_be_reused_for_different_source_binding() {
     let tokenization = TokenizationReceiptV2::measure(id("item:trusted"), content, &tokenizer())
         .unwrap_or_else(|error| panic!("tokenization: {error}"));
     let admission = admission_snapshot
-        .verify_trusted_binding(
+        .verify_binding(
             &id("item:trusted"),
             ContextRoleV2::TrustedInstruction,
             tokenization.content_digest(),
@@ -346,7 +366,7 @@ fn admission_proof_cannot_be_reused_for_different_source_binding() {
         digest("generation-vector"),
         tokenization,
         FixedQ32::ONE,
-        Some(admission),
+        admission,
         false,
     )
     .unwrap_or_else(|error| panic!("shape remains constructible: {error}"));
@@ -371,7 +391,7 @@ fn revoked_admission_fails_at_compile() {
     record.revocation_digest = Some(digest("revocation"));
     let revoked_snapshot = snapshot(vec![record], 10, "frontier:revoked");
     assert_eq!(
-        revoked_snapshot.verify_trusted_binding(
+        revoked_snapshot.verify_binding(
             &id("item:trusted"),
             ContextRoleV2::TrustedInstruction,
             Digest32::of_bytes(content),
@@ -403,6 +423,60 @@ fn attachment_revalidates_current_revocation_frontier() {
         build_attachment(&compiled, serialized, &current, id("attachment:1")),
         Err(ContextCompilerV2Error::AdmissionRevoked(
             "item:trusted".to_string()
+        ))
+    );
+}
+
+#[test]
+fn attachment_revalidates_selected_untrusted_evidence_revocation() {
+    let content = b"evidence";
+    let initial = snapshot(
+        vec![admission_record(
+            "item:evidence",
+            ContextRoleV2::UntrustedEvidence,
+            content,
+            digest("source:item:evidence"),
+        )],
+        10,
+        "frontier:10",
+    );
+    let evidence = candidate(
+        "item:evidence",
+        ContextRoleV2::UntrustedEvidence,
+        content,
+        FixedQ32::ONE,
+        &initial,
+    );
+    let compiled = compile_v2(request(vec![evidence], initial, 100))
+        .unwrap_or_else(|error| panic!("valid evidence compilation: {error}"));
+    let serialized = serialize_context_v2(
+        &compiled,
+        id("serialization:evidence"),
+        vec![ContextPayloadItemV2::new(
+            id("item:evidence"),
+            content.to_vec(),
+        )],
+        &FramingSerializer {
+            identity: digest("serializer"),
+        },
+        &tokenizer(),
+    )
+    .unwrap_or_else(|error| panic!("valid evidence serialization: {error}"));
+
+    let mut revoked = admission_record(
+        "item:evidence",
+        ContextRoleV2::UntrustedEvidence,
+        content,
+        digest("source:item:evidence"),
+    );
+    revoked.revoked_at_unix_ms = Some(15);
+    revoked.revocation_digest = Some(digest("evidence-revoked"));
+    let current = snapshot(vec![revoked], 20, "frontier:20");
+
+    assert_eq!(
+        build_attachment(&compiled, serialized, &current, id("attachment:evidence")),
+        Err(ContextCompilerV2Error::AdmissionRevoked(
+            "item:evidence".to_string()
         ))
     );
 }
@@ -456,11 +530,21 @@ fn serialization_rejects_payload_bytes_that_do_not_match_selected_content() {
 
 #[test]
 fn mandatory_group_provenance_changes_receipt_even_when_selected_set_is_same() {
-    let admission_snapshot = snapshot(Vec::new(), 10, "frontier:10");
+    let evidence_content = b"e";
+    let admission_snapshot = snapshot(
+        vec![admission_record(
+            "item:evidence",
+            ContextRoleV2::UntrustedEvidence,
+            evidence_content,
+            digest("source:item:evidence"),
+        )],
+        10,
+        "frontier:10",
+    );
     let evidence = candidate(
         "item:evidence",
         ContextRoleV2::UntrustedEvidence,
-        b"e",
+        evidence_content,
         FixedQ32::ONE,
         &admission_snapshot,
     );
