@@ -5,7 +5,9 @@
 //! protocol: validate the withdrawal-bound admission, bind it to the exact
 //! registry append, make the registry snapshot durable, publish the independently
 //! authenticated current-head witness, and only then acknowledge the producer.
-//! A restart reconstructs progress exclusively from durable receipts.
+//! A restart reconstructs progress from an immutable publication contract plus
+//! durable receipts. The contract's deterministic binding is carried by the
+//! snapshot and witness receipts, so changed contract semantics fail closed.
 
 use std::error::Error;
 use std::fmt;
@@ -187,13 +189,16 @@ impl ArtifactPublicationTransactionV1 {
 /// post-publication dataset revocation sound, a dataset-derived admission is
 /// projectable only when it names exactly one source dataset; that exact digest
 /// remains the V1 support digest. Dataset-independent admissions use the
-/// admission digest as their non-dataset support witness. The registry event ID
-/// is derived from the caller operation ID plus the V3 admission digest, so the
-/// persisted V1 event still commits the exact admission frontier.
+/// admission digest as their non-dataset support witness. The V1 event ID stays
+/// equal to the caller's exact operation ID, preserving ordinary registry
+/// idempotency and identity-reuse conflict semantics.
 ///
-/// The stable V1 registry can enforce at most one artifact predecessor.
-/// Publication therefore rejects multi-dataset and multi-predecessor V2
-/// manifests instead of silently dropping revocation or eligibility edges.
+/// The complete V3 admission cannot be embedded losslessly into stable V1 while
+/// also preserving dataset revocation. The publication contract therefore derives
+/// the snapshot/witness binding from the admission frontier and exact V1 append.
+/// The stable V1 registry can enforce at most one artifact predecessor, so
+/// publication rejects multi-dataset and multi-predecessor V2 manifests instead
+/// of silently dropping revocation or eligibility edges.
 pub fn artifact_registry_event_for_admission_v3(
     operation_id: StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
@@ -217,9 +222,8 @@ pub fn artifact_registry_event_for_admission_v3(
             return Err(ArtifactPublicationError::InvalidBinding);
         }
     };
-    let event_id = publication_event_id(&operation_id, admission.admission_digest)?;
     Ok(ArtifactEvent::Register {
-        event_id,
+        event_id: operation_id,
         manifest: ArtifactManifest {
             artifact_id: manifest.artifact_id.clone(),
             kind: manifest.kind,
@@ -235,29 +239,10 @@ pub fn artifact_registry_event_for_admission_v3(
     })
 }
 
-fn publication_event_id(
-    operation_id: &StableId,
-    admission_digest: Digest32,
-) -> Result<StableId, ArtifactPublicationError> {
-    if admission_digest.is_zero() {
-        return Err(ArtifactPublicationError::InvalidBinding);
-    }
-    let mut bytes = b"hepta.learning-artifacts.publication-event-id.v1".to_vec();
-    let operation = operation_id.as_str().as_bytes();
-    let operation_len =
-        u64::try_from(operation.len()).map_err(|_| ArtifactPublicationError::InvalidBinding)?;
-    bytes.extend_from_slice(&operation_len.to_be_bytes());
-    bytes.extend_from_slice(operation);
-    bytes.extend_from_slice(admission_digest.as_array());
-    StableId::new(format!("artifact-publish:{}", Digest32::of_bytes(&bytes)))
-        .map_err(|_| ArtifactPublicationError::InvalidBinding)
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ArtifactPublicationRegistryBindingV1 {
     pub registry_id: StableId,
     pub predecessor_head_digest: Digest32,
-    pub snapshot_binding: Digest32,
 }
 
 pub fn prepare_artifact_publication_v1(
@@ -271,14 +256,10 @@ pub fn prepare_artifact_publication_v1(
     let ArtifactPublicationRegistryBindingV1 {
         registry_id,
         predecessor_head_digest: registry_predecessor_head_digest,
-        snapshot_binding,
     } = registry_binding;
     validate_artifact_publication_v3(admission, withdrawal_registry, now)
         .map_err(ArtifactPublicationError::Admission)?;
-    if append_receipt.event_digest.is_zero()
-        || append_receipt.chain_digest.is_zero()
-        || snapshot_binding.is_zero()
-    {
+    if append_receipt.event_digest.is_zero() || append_receipt.chain_digest.is_zero() {
         return Err(ArtifactPublicationError::InvalidBinding);
     }
     let expected_event = artifact_registry_event_for_admission_v3(operation_id.clone(), admission)?;
@@ -294,20 +275,22 @@ pub fn prepare_artifact_publication_v1(
     if append_receipt.chain_digest != expected_chain_digest {
         return Err(ArtifactPublicationError::RegistryChainMismatch);
     }
+    let mut contract = ArtifactPublicationContractV1 {
+        operation_id,
+        registry_id,
+        admission_digest: admission.admission_digest,
+        manifest_digest: admission.validated_manifest.manifest_digest,
+        withdrawal_domain_digest: admission.withdrawal_domain_digest,
+        withdrawal_head_digest: admission.withdrawal_head_digest,
+        registry_predecessor_head_digest,
+        registry_successor_head_digest: append_receipt.chain_digest,
+        registry_sequence: append_receipt.sequence,
+        registry_event_digest: append_receipt.event_digest,
+        snapshot_binding: Digest32::ZERO,
+    };
+    contract.snapshot_binding = publication_contract_binding(&contract);
     Ok(ArtifactPublicationTransactionV1 {
-        contract: ArtifactPublicationContractV1 {
-            operation_id,
-            registry_id,
-            admission_digest: admission.admission_digest,
-            manifest_digest: admission.validated_manifest.manifest_digest,
-            withdrawal_domain_digest: admission.withdrawal_domain_digest,
-            withdrawal_head_digest: admission.withdrawal_head_digest,
-            registry_predecessor_head_digest,
-            registry_successor_head_digest: append_receipt.chain_digest,
-            registry_sequence: append_receipt.sequence,
-            registry_event_digest: append_receipt.event_digest,
-            snapshot_binding,
-        },
+        contract,
         phase: ArtifactPublicationPhaseV1::Prepared,
         snapshot_file_digest: None,
         witness_digest: None,
@@ -319,6 +302,9 @@ pub fn recover_artifact_publication_v1(
     snapshot_receipt: Option<RegistrySnapshotReceipt>,
     witness: Option<(&RegistryHeadWitnessV1, RegistryHeadWitnessReceipt)>,
 ) -> Result<ArtifactPublicationTransactionV1, ArtifactPublicationError> {
+    if contract.snapshot_binding != publication_contract_binding(&contract) {
+        return Err(ArtifactPublicationError::ContractBindingMismatch);
+    }
     let mut transaction = ArtifactPublicationTransactionV1 {
         contract,
         phase: ArtifactPublicationPhaseV1::Prepared,
@@ -334,12 +320,35 @@ pub fn recover_artifact_publication_v1(
     Ok(transaction)
 }
 
+fn publication_contract_binding(contract: &ArtifactPublicationContractV1) -> Digest32 {
+    let mut bytes = b"hepta.learning-artifacts.publication-contract-binding.v1".to_vec();
+    push_stable_id(&mut bytes, &contract.operation_id);
+    push_stable_id(&mut bytes, &contract.registry_id);
+    bytes.extend_from_slice(contract.admission_digest.as_array());
+    bytes.extend_from_slice(contract.manifest_digest.as_array());
+    bytes.extend_from_slice(contract.withdrawal_domain_digest.as_array());
+    bytes.extend_from_slice(contract.withdrawal_head_digest.as_array());
+    bytes.extend_from_slice(contract.registry_predecessor_head_digest.as_array());
+    bytes.extend_from_slice(contract.registry_successor_head_digest.as_array());
+    bytes.extend_from_slice(&contract.registry_sequence.get().to_be_bytes());
+    bytes.extend_from_slice(contract.registry_event_digest.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn push_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
+    let raw = value.as_str().as_bytes();
+    let length = u64::try_from(raw.len()).unwrap_or(u64::MAX);
+    bytes.extend_from_slice(&length.to_be_bytes());
+    bytes.extend_from_slice(raw);
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ArtifactPublicationError {
     Admission(ArtifactAdmissionError),
     InvalidBinding,
     RegistryEventMismatch,
     RegistryChainMismatch,
+    ContractBindingMismatch,
     MultiDatasetProjectionUnsupported,
     MultiPredecessorProjectionUnsupported,
     SnapshotReceiptMismatch,
