@@ -16,6 +16,8 @@ const bytes = await readFile(workerPath);
 const workerDigest = createHash("sha256").update(bytes).digest("hex");
 const bwrapBytes = await readFile("/usr/bin/bwrap");
 const bwrapDigest = createHash("sha256").update(bwrapBytes).digest("hex");
+const prlimitBytes = await readFile("/usr/bin/prlimit");
+const prlimitDigest = createHash("sha256").update(prlimitBytes).digest("hex");
 const root = await mkdtemp(join(tmpdir(), "hepta-servo-worker-smoke-"));
 const driver = new SubprocessBrowserDriver({
   workerPath,
@@ -24,6 +26,8 @@ const driver = new SubprocessBrowserDriver({
   launcher: new LinuxBubblewrapLauncher({
     bwrapPath: "/usr/bin/bwrap",
     bwrapDigest,
+    prlimitPath: "/usr/bin/prlimit",
+    prlimitDigest,
   }),
 });
 const digest = "1".repeat(64);

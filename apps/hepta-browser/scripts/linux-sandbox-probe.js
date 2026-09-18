@@ -76,6 +76,7 @@ await writeFile(
   `#include <string.h>\n` +
   `#include <sys/socket.h>\n` +
   `#include <sys/stat.h>\n` +
+  `#include <sys/resource.h>\n` +
   `#include <sys/types.h>\n` +
   `#include <unistd.h>\n` +
   `int main(void) {\n` +
@@ -86,6 +87,11 @@ await writeFile(
   `  if (!home || strcmp(home, "/hepta-profile") != 0) return 11;\n` +
   `  if (!tmp || strcmp(tmp, "/tmp") != 0) return 12;\n` +
   `  if (access("/usr/bin/sh", F_OK) == 0 || access("/usr/bin/python3", F_OK) == 0) return 13;\n` +
+  `  struct rlimit limit;\n` +
+  `  if (getrlimit(RLIMIT_AS, &limit) != 0 || limit.rlim_cur != 8589934592ULL || limit.rlim_max != 8589934592ULL) return 20;\n` +
+  `  if (getrlimit(RLIMIT_CPU, &limit) != 0 || limit.rlim_cur != 300ULL || limit.rlim_max != 300ULL) return 21;\n` +
+  `  if (getrlimit(RLIMIT_NOFILE, &limit) != 0 || limit.rlim_cur != 4096ULL || limit.rlim_max != 4096ULL) return 22;\n` +
+  `  if (getrlimit(RLIMIT_NPROC, &limit) != 0 || limit.rlim_cur != 256ULL || limit.rlim_max != 256ULL) return 23;\n` +
   `  int sock = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);\n` +
   `  if (sock < 0) return 14;\n` +
   `  struct sockaddr_in addr; memset(&addr, 0, sizeof(addr));\n` +
@@ -178,9 +184,12 @@ await writeFile(
 
 try {
   const bwrapBytes = await readFile("/usr/bin/bwrap");
+  const prlimitBytes = await readFile("/usr/bin/prlimit");
   const launcher = new LinuxBubblewrapLauncher({
     bwrapPath: "/usr/bin/bwrap",
     bwrapDigest: createHash("sha256").update(bwrapBytes).digest("hex"),
+    prlimitPath: "/usr/bin/prlimit",
+    prlimitDigest: createHash("sha256").update(prlimitBytes).digest("hex"),
   });
   await launcher.verify();
   await mkdir(profileDir, { mode: 0o700 });
@@ -193,14 +202,16 @@ try {
   const deathProfileDir = join(root, "profile-parent-death");
   await mkdir(deathProfileDir, { mode: 0o700 });
   const readyMarker = join(deathProfileDir, "parent-death.ready");
+  const deathSpec = launcher.spawnSpec({
+    workerPath: lingerPath,
+    profileDir: deathProfileDir,
+  });
   const helper = spawn(
     process.execPath,
     [
       parentHelper,
-      launcher.bwrapPath,
-      JSON.stringify(
-        launcher.argv({ workerPath: lingerPath, profileDir: deathProfileDir }),
-      ),
+      deathSpec.command,
+      JSON.stringify(deathSpec.args),
       readyMarker,
     ],
     { stdio: ["ignore", "pipe", "pipe"] },
@@ -256,11 +267,13 @@ try {
   );
 
   process.stdout.write(JSON.stringify({
-    schema: "hepta.browser.linux-sandbox-probe.v3",
+    schema: "hepta.browser.linux-sandbox-probe.v4",
     externalNetworkDenied: true,
     hostSecretHidden: true,
     generalHostBinariesHidden: true,
     privateProfileWritable: true,
+    resourceLimitsEnforced: true,
+    resourceLimits: launcher.resourceLimits,
     parentDeathCleanupObserved: true,
     descendantCleanupObserved: true,
     posture: launcher.posture,

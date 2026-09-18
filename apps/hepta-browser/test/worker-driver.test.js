@@ -72,6 +72,7 @@ function fakeLauncher({
       userHomeHidden: true,
       hostFilesystemRestricted: true,
       parentDeathCleanup: true,
+      resourceLimitsConfigured: true,
     },
     spawn(spec) {
       const child = new EventEmitter();
@@ -439,6 +440,8 @@ test(
     const launcher = new LinuxBubblewrapLauncher({
       bwrapPath: "/usr/bin/bwrap",
       bwrapDigest: D1,
+      prlimitPath: "/usr/bin/prlimit",
+      prlimitDigest: D1,
     });
     const argv = launcher.argv({
       workerPath: "/opt/hepta/servo-worker",
@@ -472,6 +475,22 @@ test(
     assert.equal(argv.at(-1), "/hepta-worker");
     assert.equal(launcher.posture.sourceContractOnly, true);
     assert.equal(launcher.posture.hostFilesystemRestricted, true);
+    assert.equal(launcher.posture.resourceLimitsConfigured, true);
+    assert.deepEqual(launcher.resourceLimits, {
+      maxAddressSpaceBytes: 8 * 1024 * 1024 * 1024,
+      maxCpuSeconds: 300,
+      maxOpenFiles: 4096,
+      maxProcesses: 256,
+    });
+    const spec = launcher.spawnSpec({
+      workerPath: "/opt/hepta/servo-worker",
+      profileDir: "/var/lib/hepta/browser/profile-1",
+    });
+    assert.equal(spec.command, "/usr/bin/prlimit");
+    assert.equal(spec.args.includes("--as=8589934592:8589934592"), true);
+    assert.equal(spec.args.includes("--cpu=300:300"), true);
+    assert.equal(spec.args.includes("--nofile=4096:4096"), true);
+    assert.equal(spec.args.includes("--nproc=256:256"), true);
   },
 );
 
@@ -502,6 +521,7 @@ test("subprocess driver rejects launchers without the complete source isolation 
             userHomeHidden: true,
             hostFilesystemRestricted: false,
             parentDeathCleanup: true,
+            resourceLimitsConfigured: true,
           },
           spawn() {},
         },
@@ -542,18 +562,32 @@ test(
   async () => {
     const root = await mkdtemp(join(tmpdir(), "hepta-bwrap-identity-"));
     const bwrapPath = join(root, "bwrap");
-    const bytes = Buffer.from("fake-bwrap-exact-bytes", "utf8");
-    await writeFile(bwrapPath, bytes, { mode: 0o500 });
+    const prlimitPath = join(root, "prlimit");
+    const bwrapBytes = Buffer.from("fake-bwrap-exact-bytes", "utf8");
+    const prlimitBytes = Buffer.from("fake-prlimit-exact-bytes", "utf8");
+    await writeFile(bwrapPath, bwrapBytes, { mode: 0o500 });
+    await writeFile(prlimitPath, prlimitBytes, { mode: 0o500 });
     const launcher = new LinuxBubblewrapLauncher({
       bwrapPath,
-      bwrapDigest: digest(bytes),
+      bwrapDigest: digest(bwrapBytes),
+      prlimitPath,
+      prlimitDigest: digest(prlimitBytes),
     });
     await launcher.verify();
 
-    const mismatched = new LinuxBubblewrapLauncher({
+    const mismatchedBwrap = new LinuxBubblewrapLauncher({
       bwrapPath,
       bwrapDigest: D1,
+      prlimitPath,
+      prlimitDigest: digest(prlimitBytes),
     });
-    await assert.rejects(mismatched.verify(), /launcher digest mismatch/);
+    await assert.rejects(mismatchedBwrap.verify(), /Bubblewrap launcher digest mismatch/);
+    const mismatchedPrlimit = new LinuxBubblewrapLauncher({
+      bwrapPath,
+      bwrapDigest: digest(bwrapBytes),
+      prlimitPath,
+      prlimitDigest: D1,
+    });
+    await assert.rejects(mismatchedPrlimit.verify(), /prlimit launcher digest mismatch/);
   },
 );

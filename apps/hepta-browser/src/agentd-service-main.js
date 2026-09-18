@@ -59,6 +59,15 @@ const driver = new SubprocessBrowserDriver({
   launcher: new LinuxBubblewrapLauncher({
     bwrapPath: process.env.HEPTA_BROWSER_BWRAP_PATH ?? "/usr/bin/bwrap",
     bwrapDigest: requiredDigest("HEPTA_BROWSER_BWRAP_SHA256"),
+    prlimitPath: process.env.HEPTA_BROWSER_PRLIMIT_PATH ?? "/usr/bin/prlimit",
+    prlimitDigest: requiredDigest("HEPTA_BROWSER_PRLIMIT_SHA256"),
+    maxAddressSpaceBytes: optionalPositiveInteger(
+      "HEPTA_BROWSER_MAX_ADDRESS_SPACE_BYTES",
+      8 * 1024 * 1024 * 1024,
+    ),
+    maxCpuSeconds: optionalPositiveInteger("HEPTA_BROWSER_MAX_CPU_SECONDS", 300),
+    maxOpenFiles: optionalPositiveInteger("HEPTA_BROWSER_MAX_OPEN_FILES", 4096),
+    maxProcesses: optionalPositiveInteger("HEPTA_BROWSER_MAX_PROCESSES", 256),
   }),
 });
 const journal = new FileBrowserOperationJournal(

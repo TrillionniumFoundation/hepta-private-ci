@@ -20,7 +20,12 @@ const DIGEST = /^[0-9a-f]{64}$/;
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const MAX_WORKER_ARTIFACT_BYTES = 512 * 1024 * 1024;
 const MAX_BWRAP_ARTIFACT_BYTES = 64 * 1024 * 1024;
+const MAX_PRLIMIT_ARTIFACT_BYTES = 16 * 1024 * 1024;
 const MAX_ABANDONED_RESPONSES = 1024;
+const DEFAULT_MAX_ADDRESS_SPACE_BYTES = 8 * 1024 * 1024 * 1024;
+const DEFAULT_MAX_CPU_SECONDS = 300;
+const DEFAULT_MAX_OPEN_FILES = 4096;
+const DEFAULT_MAX_PROCESSES = 256;
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -83,14 +88,58 @@ function abortError(message = "browser worker request aborted") {
   return error;
 }
 
+async function verifyExactHostExecutable(path, expected, maximum, label) {
+  if ((await realpath(path)) !== path) {
+    throw new TypeError(`${label} path contains a symlink`);
+  }
+  const noFollow = constants.O_NOFOLLOW ?? 0;
+  const handle = await open(path, constants.O_RDONLY | noFollow);
+  try {
+    const info = await handle.stat();
+    if (!info.isFile() || info.size < 1 || info.size > maximum) {
+      throw new TypeError(`${label} must be a bounded regular file`);
+    }
+    const bytes = await handle.readFile();
+    if (sha256(bytes) !== expected) {
+      throw new TypeError(`${label} digest mismatch`);
+    }
+  } finally {
+    await handle.close();
+  }
+}
+
 export class LinuxBubblewrapLauncher {
-  constructor({ bwrapPath = "/usr/bin/bwrap", bwrapDigest } = {}) {
+  constructor({
+    bwrapPath = "/usr/bin/bwrap",
+    bwrapDigest,
+    prlimitPath = "/usr/bin/prlimit",
+    prlimitDigest,
+    maxAddressSpaceBytes = DEFAULT_MAX_ADDRESS_SPACE_BYTES,
+    maxCpuSeconds = DEFAULT_MAX_CPU_SECONDS,
+    maxOpenFiles = DEFAULT_MAX_OPEN_FILES,
+    maxProcesses = DEFAULT_MAX_PROCESSES,
+  } = {}) {
     if (process.platform !== "linux") {
       throw new TypeError("LinuxBubblewrapLauncher requires Linux");
     }
     if (!isAbsolute(bwrapPath)) throw new TypeError("bwrapPath must be absolute");
+    if (!isAbsolute(prlimitPath)) throw new TypeError("prlimitPath must be absolute");
+    for (const [value, name] of [
+      [maxAddressSpaceBytes, "maxAddressSpaceBytes"],
+      [maxCpuSeconds, "maxCpuSeconds"],
+      [maxOpenFiles, "maxOpenFiles"],
+      [maxProcesses, "maxProcesses"],
+    ]) positiveInteger(value, name);
     this.bwrapPath = resolve(bwrapPath);
     this.bwrapDigest = expectedDigest(bwrapDigest, "bwrapDigest");
+    this.prlimitPath = resolve(prlimitPath);
+    this.prlimitDigest = expectedDigest(prlimitDigest, "prlimitDigest");
+    this.resourceLimits = Object.freeze({
+      maxAddressSpaceBytes,
+      maxCpuSeconds,
+      maxOpenFiles,
+      maxProcesses,
+    });
     this.posture = Object.freeze({
       sourceContractOnly: true,
       inheritedPrivateChannel: true,
@@ -99,33 +148,23 @@ export class LinuxBubblewrapLauncher {
       userHomeHidden: true,
       hostFilesystemRestricted: true,
       parentDeathCleanup: true,
+      resourceLimitsConfigured: true,
     });
   }
 
   async verify() {
-    if ((await realpath(this.bwrapPath)) !== this.bwrapPath) {
-      throw new TypeError("Bubblewrap launcher path contains a symlink");
-    }
-    const noFollow = constants.O_NOFOLLOW ?? 0;
-    const handle = await open(this.bwrapPath, constants.O_RDONLY | noFollow);
-    try {
-      const info = await handle.stat();
-      if (
-        !info.isFile() ||
-        info.size < 1 ||
-        info.size > MAX_BWRAP_ARTIFACT_BYTES
-      ) {
-        throw new TypeError(
-          "Bubblewrap launcher must be a bounded regular file",
-        );
-      }
-      const bytes = await handle.readFile();
-      if (sha256(bytes) !== this.bwrapDigest) {
-        throw new TypeError("Bubblewrap launcher digest mismatch");
-      }
-    } finally {
-      await handle.close();
-    }
+    await verifyExactHostExecutable(
+      this.bwrapPath,
+      this.bwrapDigest,
+      MAX_BWRAP_ARTIFACT_BYTES,
+      "Bubblewrap launcher",
+    );
+    await verifyExactHostExecutable(
+      this.prlimitPath,
+      this.prlimitDigest,
+      MAX_PRLIMIT_ARTIFACT_BYTES,
+      "prlimit launcher",
+    );
   }
 
   argv({ workerPath, profileDir }) {
@@ -212,8 +251,25 @@ export class LinuxBubblewrapLauncher {
     ];
   }
 
+  spawnSpec({ workerPath, profileDir }) {
+    const limits = this.resourceLimits;
+    return Object.freeze({
+      command: this.prlimitPath,
+      args: Object.freeze([
+        `--as=${limits.maxAddressSpaceBytes}:${limits.maxAddressSpaceBytes}`,
+        `--cpu=${limits.maxCpuSeconds}:${limits.maxCpuSeconds}`,
+        `--nofile=${limits.maxOpenFiles}:${limits.maxOpenFiles}`,
+        `--nproc=${limits.maxProcesses}:${limits.maxProcesses}`,
+        "--",
+        this.bwrapPath,
+        ...this.argv({ workerPath, profileDir }),
+      ]),
+    });
+  }
+
   spawn({ workerPath, profileDir }) {
-    return spawn(this.bwrapPath, this.argv({ workerPath, profileDir }), {
+    const spec = this.spawnSpec({ workerPath, profileDir });
+    return spawn(spec.command, [...spec.args], {
       stdio: ["pipe", "pipe", "pipe"],
       env: {},
       shell: false,
@@ -510,6 +566,7 @@ export class SubprocessBrowserDriver {
       "userHomeHidden",
       "hostFilesystemRestricted",
       "parentDeathCleanup",
+      "resourceLimitsConfigured",
     ]) {
       if (posture[key] !== true) {
         throw new TypeError(`launcher source contract does not declare ${key}`);
