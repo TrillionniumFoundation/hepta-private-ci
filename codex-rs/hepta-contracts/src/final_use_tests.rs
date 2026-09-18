@@ -674,3 +674,96 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
         FinalUseError::Revoked
     );
 }
+
+
+#[test]
+fn external_replay_store_is_global_across_active_replicas() {
+    let issuer = SigningKey::from_bytes(&[83; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 12,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let replay_directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(
+        replay_directory.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    let replay = Arc::new(
+        crate::SqliteAuthorityReplayStore::open(replay_directory.path()).unwrap(),
+    );
+    replay.provision_owner_exact("shared-owner", 12).unwrap();
+    let frontier = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_external_replay_head(&head).unwrap(),
+    )));
+    let first_directory = tempfile::tempdir().unwrap();
+    let second_directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(
+        first_directory.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    std::fs::set_permissions(
+        second_directory.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+
+    let first = FinalUseAuthority::open_state_dir_with_trust_and_replay(
+        first_directory.path(),
+        "shared-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        head.clone(),
+        Arc::new(FixedClock(2_000)),
+        frontier.clone(),
+        replay.clone(),
+    )
+    .unwrap();
+    let second = FinalUseAuthority::open_state_dir_with_trust_and_replay(
+        second_directory.path(),
+        "shared-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        head,
+        Arc::new(FixedClock(2_000)),
+        frontier,
+        replay.clone(),
+    )
+    .unwrap();
+
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "shared-owner".into(),
+        authority_epoch: 12,
+        grant_id: "shared-use".into(),
+        nonce: [84; 32],
+        binding: FinalUseBinding {
+            subject_id: "agent-one".into(),
+            destination_id: "provider:heptabao".into(),
+            request_sha256: [85; 32],
+            scope_sha256: [86; 32],
+            payload_sha256: [87; 32],
+        },
+        not_before_unix_ms: 1_000,
+        expires_at_unix_ms: 3_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+
+    assert!(first.claim(&signed, &signed.grant.binding).is_ok());
+    assert_eq!(
+        second.claim(&signed, &signed.grant.binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+    assert_eq!(replay.claimed_count("shared-owner", 12).unwrap(), 1);
+
+    let capacity = first.capacity().unwrap();
+    assert!(capacity.claims_are_externally_owned());
+    assert_eq!(capacity.used_nonces, 1);
+    assert_eq!(capacity.max_claims, usize::MAX);
+}
