@@ -96,6 +96,11 @@ pub(super) struct GeneratedRetrieval {
     channels: Vec<RetrievalChannelObservation>,
 }
 
+struct ResolvedRetrievalCandidate {
+    candidate: RetrievalCandidate,
+    channel_ranks: Vec<RetrievalChannelRankObservation>,
+}
+
 impl CognitiveStore {
     /// Observe all bounded generator outputs before final top-four truncation.
     /// This optional slow read validates up to 4 * 32 candidate explanations in
@@ -110,8 +115,8 @@ impl CognitiveStore {
         let generated = self
             .generate_retrieval_tx(&mut transaction, access, request, &fts_query)
             .await?;
-        let ranked_candidates = self
-            .resolve_retrieval_tx(
+        let resolved = self
+            .resolve_retrieval_with_ranks_tx(
                 &mut transaction,
                 access,
                 request,
@@ -119,13 +124,17 @@ impl CognitiveStore {
                 4 * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             )
             .await?;
-        let mut observed = ranked_candidates
+        let ranked_candidates = resolved
             .iter()
-            .map(|candidate| ObservedRetrievalCandidate {
-                revalidation: candidate.revalidation.clone(),
-                reciprocal_rank_score: candidate.reciprocal_rank_score,
-                channels: candidate.channels.clone(),
-                channel_ranks: candidate.channel_ranks.clone(),
+            .map(|resolved| resolved.candidate.clone())
+            .collect::<Vec<_>>();
+        let mut observed = resolved
+            .iter()
+            .map(|resolved| ObservedRetrievalCandidate {
+                revalidation: resolved.candidate.revalidation.clone(),
+                reciprocal_rank_score: resolved.candidate.reciprocal_rank_score,
+                channels: resolved.candidate.channels.clone(),
+                channel_ranks: resolved.channel_ranks.clone(),
             })
             .collect::<Vec<_>>();
         observed.sort_by(|left, right| {
@@ -252,6 +261,28 @@ impl CognitiveStore {
         ranked: Vec<(MemoryKey, AggregatedRank)>,
         maximum_results: usize,
     ) -> Result<Vec<RetrievalCandidate>, CognitiveStoreError> {
+        Ok(self
+            .resolve_retrieval_with_ranks_tx(
+                transaction,
+                access,
+                request,
+                ranked,
+                maximum_results,
+            )
+            .await?
+            .into_iter()
+            .map(|resolved| resolved.candidate)
+            .collect())
+    }
+
+    async fn resolve_retrieval_with_ranks_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        request: &RetrievalRequest,
+        ranked: Vec<(MemoryKey, AggregatedRank)>,
+        maximum_results: usize,
+    ) -> Result<Vec<ResolvedRetrievalCandidate>, CognitiveStoreError> {
         let mut candidates = Vec::with_capacity(maximum_results);
         for (key, rank) in ranked {
             if candidates.len() == maximum_results {
@@ -267,16 +298,18 @@ impl CognitiveStore {
             {
                 continue;
             }
-            candidates.push(RetrievalCandidate {
-                memory: explanation.memory.clone(),
-                reciprocal_rank_score: rank.score,
-                channels: rank.channels.iter().copied().collect(),
+            candidates.push(ResolvedRetrievalCandidate {
+                candidate: RetrievalCandidate {
+                    memory: explanation.memory.clone(),
+                    reciprocal_rank_score: rank.score,
+                    channels: rank.channels.iter().copied().collect(),
+                    revalidation: binding_from_explanation(&explanation),
+                },
                 channel_ranks: rank
                     .channel_ranks
                     .into_iter()
                     .map(|(channel, rank)| RetrievalChannelRankObservation { channel, rank })
                     .collect(),
-                revalidation: binding_from_explanation(&explanation),
             });
         }
         Ok(candidates)
