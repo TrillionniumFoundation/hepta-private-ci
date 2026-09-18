@@ -283,7 +283,20 @@ async fn one_shot_periodic_disable_and_cancel_are_durable() {
     ));
     assert_eq!(
         store.task(one.task_id).await.expect("read").unwrap().state,
-        AutomationTaskState::Completed
+        AutomationTaskState::Enabled
+    );
+    let one_occurrence = store
+        .occurrence(one.task_id, 1)
+        .await
+        .expect("read one-shot occurrence")
+        .expect("one-shot occurrence");
+    assert_eq!(
+        one_occurrence.dispatch_state,
+        codex_hepta_automation::AutomationDispatchState::Submitted
+    );
+    assert_eq!(
+        one_occurrence.execution_state,
+        codex_hepta_automation::AutomationOccurrenceState::Materialized
     );
 
     let periodic = draft(
@@ -468,7 +481,16 @@ async fn successful_dispatch_upgrades_pre_admission_intent_atomically() {
             .expect("read task")
             .expect("task exists")
             .state,
-        AutomationTaskState::Completed
+        AutomationTaskState::Enabled
+    );
+    let occurrence = store
+        .occurrence(task.task_id, 1)
+        .await
+        .expect("read occurrence")
+        .expect("occurrence exists");
+    assert_eq!(
+        occurrence.execution_state,
+        codex_hepta_automation::AutomationOccurrenceState::Materialized
     );
 }
 
@@ -670,11 +692,20 @@ async fn unknown_provider_outcome_is_quarantined_across_store_recovery_until_rec
         queued_submission_id: "provider-receipt-unknown-recovered".to_string(),
         client_user_message_id: uncertain[0].client_user_message_id.clone(),
     };
-    let completed = reopened
+    let admitted = reopened
         .reconcile_dispatch(task.task_id, 1, &receipt, 200)
         .await
         .expect("reconcile provider receipt");
-    assert_eq!(completed.state, AutomationTaskState::Completed);
+    assert_eq!(admitted.state, AutomationTaskState::Enabled);
+    assert_eq!(
+        reopened
+            .occurrence(task.task_id, 1)
+            .await
+            .expect("read occurrence")
+            .expect("occurrence exists")
+            .execution_state,
+        codex_hepta_automation::AutomationOccurrenceState::Materialized
+    );
     assert!(
         reopened
             .uncertain_dispatches(10)
@@ -734,11 +765,15 @@ async fn stale_generation_recovery_is_owner_fenced() {
     .expect("insert foreign task");
     sqlx::query(
         "INSERT INTO automation_runs (
-             task_id, occurrence, scheduled_for_ms, client_user_message_id, state,
+             task_id, occurrence, occurrence_id, schedule_revision, scheduled_for_ms,
+             client_user_message_id, state, execution_state,
              lease_generation, lease_token, lease_expires_at_ms
-         ) VALUES (?, 1, ?, ?, 'leased', ?, ?, ?)",
+         ) VALUES (?, 1, ?, 1, ?, ?, 'leased', 'materialized', ?, ?, ?)",
     )
     .bind(foreign_task_id)
+    .bind(format!(
+        "hepta.automation.occurrence.v1:{foreign_task_id}:1:100"
+    ))
     .bind(100_i64)
     .bind("foreign-client-message")
     .bind(1_i64)
@@ -851,10 +886,10 @@ async fn uncertain_dispatch_requires_explicit_negative_provider_proof_before_ret
         store
             .task(task.task_id)
             .await
-            .expect("read completed task")
+            .expect("read admitted task")
             .expect("task exists")
             .state,
-        AutomationTaskState::Completed
+        AutomationTaskState::Enabled
     );
 }
 
@@ -892,9 +927,72 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop v2 table");
-    // The current opener also applies the qualification-only TaskFlow
-    // migration. Remove that schema and rewind its migration ledger so this
-    // test still exercises a genuine v1 -> latest upgrade path.
+    // Remove v4 causal-chain objects/columns and the TaskFlow schema, then
+    // rewind SQLx's migration ledger so reopening exercises v1 -> latest.
+    sqlx::query("DROP TRIGGER taskflow_step_outbox_no_update")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop step outbox update trigger");
+    sqlx::query("DROP TRIGGER taskflow_step_outbox_no_delete")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop step outbox delete trigger");
+    sqlx::query("DROP TABLE taskflow_step_outbox")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop step outbox");
+    sqlx::query("DROP TRIGGER automation_occurrence_taskflow_no_update")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop occurrence binding update trigger");
+    sqlx::query("DROP TRIGGER automation_occurrence_taskflow_no_delete")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop occurrence binding delete trigger");
+    sqlx::query("DROP TABLE automation_occurrence_taskflow")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop occurrence binding");
+    sqlx::query("DROP TRIGGER automation_runs_occurrence_id_required")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop occurrence id trigger");
+    sqlx::query("DROP INDEX automation_runs_occurrence_id_unique")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop occurrence id index");
+    sqlx::query("ALTER TABLE automation_runs DROP COLUMN terminal_at_ms")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop terminal column");
+    sqlx::query("ALTER TABLE automation_runs DROP COLUMN execution_state")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop execution state");
+    sqlx::query("ALTER TABLE automation_runs DROP COLUMN schedule_revision")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop run schedule revision");
+    sqlx::query("ALTER TABLE automation_runs DROP COLUMN occurrence_id")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop occurrence id");
+    sqlx::query("ALTER TABLE automation_tasks DROP COLUMN overlap_policy")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop overlap policy");
+    sqlx::query("ALTER TABLE automation_tasks DROP COLUMN max_catch_up_occurrences")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop catch-up bound");
+    sqlx::query("ALTER TABLE automation_tasks DROP COLUMN missed_run_policy")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop missed-run policy");
+    sqlx::query("ALTER TABLE automation_tasks DROP COLUMN schedule_revision")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop task schedule revision");
     sqlx::query("DROP TRIGGER taskflow_events_no_update")
         .execute(&mut *rewind)
         .await
@@ -990,7 +1088,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
             .fetch_one(&pool)
             .await
             .expect("read migrated schema version");
-    assert_eq!(schema, 3);
+    assert_eq!(schema, 4);
     let outcomes: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE task_id = ?")
             .bind(task.task_id.to_string())
@@ -1059,7 +1157,7 @@ async fn explicit_dispatch_failure_retries_same_occurrence_and_client_id() {
             .expect("read task")
             .unwrap()
             .state,
-        AutomationTaskState::Completed
+        AutomationTaskState::Enabled
     );
 }
 
