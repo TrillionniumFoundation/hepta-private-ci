@@ -458,3 +458,151 @@ async fn root_namespace_omits_namespace_header() {
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
     assert!(!observed.contains("x-vault-namespace:"));
 }
+
+
+fn lease_grant(
+    client: &BaoClient,
+    binding: FinalUseBinding,
+    grant_id: &str,
+    nonce: [u8; 32],
+) -> Result<(FinalUseAuthority, SignedFinalUseGrant, tempfile::TempDir), TestError> {
+    let issuer = SigningKey::from_bytes(&[73; 32]);
+    let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "owner".into(),
+        authority_epoch: 7,
+        grant_id: grant_id.into(),
+        nonce,
+        binding,
+        not_before_unix_ms: now - 1000,
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+    let directory = tempfile::tempdir()?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    let authority = FinalUseAuthority::open_state_dir(
+        directory.path(),
+        "owner".into(),
+        issuer.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 7,
+            revision: 1,
+            revoked_grant_ids: Default::default(),
+        },
+    )?;
+    Ok((
+        authority,
+        SignedFinalUseGrant { grant, signature },
+        directory,
+    ))
+}
+
+#[tokio::test]
+async fn dynamic_lease_issue_delivers_only_to_consumer_and_returns_opaque_metadata() {
+    let dynamic_body = serde_json::json!({
+        "lease_id": "database/creds/read-only/provider-lease-123",
+        "renewable": true,
+        "lease_duration": 60,
+        "data": {
+            "username": "dynamic-user",
+            "password": "dynamic-password"
+        }
+    })
+    .to_string();
+    let (endpoint, ca, task) = server(200, dynamic_body, || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture-provider-token".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = crate::SecretLeaseRequest {
+        subject_id: "agent-one".into(),
+        consumer_id: "database-client".into(),
+        operation_id: "issue-001".into(),
+        namespace: "team/one".into(),
+        mount: "database".into(),
+        role: "read-only".into(),
+    };
+    let binding = client.secret_lease_binding(&request).unwrap();
+    let (authority, signed, _directory) =
+        lease_grant(&client, binding, "lease-issue", [21; 32]).unwrap();
+    let mut consumed = false;
+    let outcome = client
+        .request_secret_lease(&authority, &signed, &request, |secret| {
+            let text = std::str::from_utf8(secret).unwrap();
+            assert!(text.contains("dynamic-user"));
+            assert!(text.contains("dynamic-password"));
+            consumed = true;
+            Ok(())
+        })
+        .await
+        .unwrap();
+    assert!(consumed);
+    let crate::SecretLeaseIssueOutcome::Delivered { handle, metadata } = outcome else {
+        panic!("expected delivered dynamic lease");
+    };
+    assert_ne!(handle.lease_id_sha256(), [0; 32]);
+    assert!(metadata.renewable);
+    let metadata_json = serde_json::to_string(&metadata).unwrap();
+    assert!(!metadata_json.contains("provider-lease-123"));
+    assert!(!metadata_json.contains("dynamic-password"));
+    let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
+    assert!(observed.starts_with("get /v1/database/creds/read-only http/1.1\r\n"));
+    assert!(observed.contains("x-vault-token: fixture-provider-token\r\n"));
+    assert!(observed.contains("x-vault-namespace: team/one\r\n"));
+}
+
+#[tokio::test]
+async fn dynamic_lease_body_timeout_is_indeterminate_and_burns_grant() {
+    let dynamic_body = serde_json::json!({
+        "lease_id": "database/creds/read-only/provider-lease-timeout",
+        "renewable": true,
+        "lease_duration": 60,
+        "data": {"password": "must-not-deliver"}
+    })
+    .to_string();
+    let (endpoint, ca, task) = server(200, dynamic_body, || async {
+        tokio::time::sleep(Duration::from_millis(150)).await;
+    })
+    .await
+    .unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture-provider-token".into()).unwrap(),
+        Duration::from_millis(50),
+    )
+    .unwrap();
+    let request = crate::SecretLeaseRequest {
+        subject_id: "agent-one".into(),
+        consumer_id: "database-client".into(),
+        operation_id: "issue-timeout".into(),
+        namespace: String::new(),
+        mount: "database".into(),
+        role: "read-only".into(),
+    };
+    let binding = client.secret_lease_binding(&request).unwrap();
+    let (authority, signed, _directory) =
+        lease_grant(&client, binding, "lease-timeout", [22; 32]).unwrap();
+    let outcome = client
+        .request_secret_lease(&authority, &signed, &request, |_| {
+            panic!("ambiguous lease response must not deliver secret")
+        })
+        .await
+        .unwrap();
+    assert!(matches!(
+        outcome,
+        crate::SecretLeaseIssueOutcome::Indeterminate { .. }
+    ));
+    assert_eq!(
+        client
+            .request_secret_lease(&authority, &signed, &request, |_| Ok(()))
+            .await,
+        Err(BaoClientError::Authority(FinalUseError::AlreadyClaimed))
+    );
+    task.abort();
+    let _ = task.await;
+}
