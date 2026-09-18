@@ -112,6 +112,11 @@ pub fn run_canonical_prompt_context_v1(
     .map_err(CanonicalPromptContextErrorV1::Prompt)?;
     let mut admitted_evidence = Vec::with_capacity(request.evidence.len());
     for evidence in request.evidence {
+        if evidence.signed.objective_digest != request.objective_digest {
+            return Err(CanonicalPromptContextErrorV1::SignedEvidence(
+                SignedEvidenceError::ContextMismatch,
+            ));
+        }
         let payload = candidate_evidence_signing_bytes(&evidence.pricing);
         request
             .evidence_verifier
