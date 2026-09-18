@@ -50,7 +50,13 @@ async fn reserve(
     store: &HeptaEvidenceStore,
     suffix: &str,
     amount: u64,
-) -> Result<(codex_hepta_authbus::PolicyDecision, codex_hepta_authbus::Reservation), AuthBusControlError> {
+) -> Result<
+    (
+        codex_hepta_authbus::PolicyDecision,
+        codex_hepta_authbus::Reservation,
+    ),
+    AuthBusControlError,
+> {
     store
         .authorize_and_reserve_authbus(
             &id("policy:one"),
@@ -107,7 +113,10 @@ async fn bus_02_duplicate_settlement_is_idempotent_and_altered_cost_conflicts() 
             .await,
         Err(AuthBusControlError::IdempotencyConflict)
     ));
-    store.reconcile_authbus_quota(&id("quota:one")).await.unwrap();
+    store
+        .reconcile_authbus_quota(&id("quota:one"))
+        .await
+        .unwrap();
 }
 
 #[tokio::test]
@@ -139,8 +148,14 @@ async fn bus_03_expiry_racing_terminal_result_preserves_conservation() {
     );
     let expire = store.expire_authbus_reservation(&reservation.reservation_id, 10);
     let (settled, expired) = tokio::join!(settle, expire);
-    assert_eq!(usize::from(settled.is_ok()) + usize::from(expired.is_ok()), 1);
-    store.reconcile_authbus_quota(&id("quota:one")).await.unwrap();
+    assert_eq!(
+        usize::from(settled.is_ok()) + usize::from(expired.is_ok()),
+        1
+    );
+    store
+        .reconcile_authbus_quota(&id("quota:one"))
+        .await
+        .unwrap();
 }
 
 #[tokio::test]
@@ -167,14 +182,16 @@ async fn bus_04_revocation_blocks_final_use_and_new_reservations() {
         .quarantine_authbus_reservation(&reservation.reservation_id)
         .await
         .unwrap();
-    store.reconcile_authbus_quota(&id("quota:one")).await.unwrap();
-    let state: String = sqlx::query_scalar(
-        "SELECT state FROM authbus_quota_reservations WHERE reservation_id=?",
-    )
-    .bind(reservation.reservation_id.as_str())
-    .fetch_one(&store.pool)
-    .await
-    .unwrap();
+    store
+        .reconcile_authbus_quota(&id("quota:one"))
+        .await
+        .unwrap();
+    let state: String =
+        sqlx::query_scalar("SELECT state FROM authbus_quota_reservations WHERE reservation_id=?")
+            .bind(reservation.reservation_id.as_str())
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
     assert_eq!(state, ReservationState::Quarantined.as_str());
 }
 
@@ -187,7 +204,10 @@ async fn control_state_survives_reopen_and_reconcile_repairs_derived_counters() 
     let reservation = reserve(&store, "reopen", 8).await.unwrap().1;
     store.pool.close().await;
     let reopened = HeptaEvidenceStore::open(&sqlite).await.unwrap();
-    reopened.reconcile_authbus_quota(&id("quota:one")).await.unwrap();
+    reopened
+        .reconcile_authbus_quota(&id("quota:one"))
+        .await
+        .unwrap();
     let active = reopened
         .validate_authbus_reservation_for_effect(&reservation.reservation_id, 1)
         .await
