@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `objective.compiler`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Dedicated objective and Lane-D workflows provide focused tests, all-target compilation and strict lint; exact-head qualification is an execution receipt for the current candidate, not a property inferred from this document. This status does not activate `objective.compiler`, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -72,6 +72,8 @@ The bounded components are:
 - `constraint validator`
 - `deterministic compiler`
 - `digest and receipt emitter`
+
+The admitted production path and the richer typed feasibility API are intentionally distinguished. See [`SEMANTIC_SUPPORT.md`](SEMANTIC_SUPPORT.md) and [`SEMANTIC_SUPPORT.json`](SEMANTIC_SUPPORT.json). The current native admitted call graph is `decode -> structural validation -> canonical intent digest -> authenticated admission -> adapt_source -> compile -> scalar_conflict -> check_feasibility_v1`. Unsupported Source V1 semantics are rejected explicitly rather than approximated. The legacy scalar compiler is crate-private by default; qualification fixtures must opt into `qualification-legacy-compiler`.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -119,13 +121,13 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md).
+The compiler itself remains stateless. The current product-composition candidate is `prepare_intelligence_run_v1` in `codex-rs/hepta-intelligence`: it performs authenticated admission, revalidates the compiled objective, binds `RunStartSnapshotV1`, and appends one atomic `RunStartPublicationV1` through the sealed `learning.ledger` durable owner port. `runtime.agentd` consumes the resulting deny-all `IntelligenceHostEnvelopeV1` into an ephemeral `RunSnapshot`; it does not own the objective facts. Exact-head qualification of that cross-owner composition remains required before the caller is considered established.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Compiler errors remain fail-closed and side-effect free. For a compiled product run, admission receipt, compiled objective and `RunStartSnapshotV1` are encoded into one learning-ledger frame; the existing durable journal syncs the frame before publishing it in memory. Equal record retries are idempotent, a reused run identity with different record semantics conflicts, and anchored reopen replays the same objective/snapshot binding. A durable journal receipt is still not runtime/effect authority, and external reconciliation/activation remain separately governed.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -142,13 +144,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm and pilot ceilings. `compile` is semantically deterministic and its scalar compatibility oracle uses `Duration::MAX`; the standalone `check_feasibility_v1` may instead use a finite wall-clock availability budget, so `Exhausted` near that deadline and its `elapsed` field are not canonical semantic state. The dedicated product-composition workflow separately measures authenticated admission + compile + durable fsync on its named GitHub host and retains the command record. That CI measurement is not a target-production-host claim.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library; embed it at a request boundary and preserve its immutable objective/run snapshot in the owning caller. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+Stateless compiler/admission library. The repository now contains a bounded caller candidate in `intelligence.control` that publishes the immutable objective/run snapshot through `learning.ledger`, followed by a digest-only `runtime.agentd` consumer seam. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
 
 Current operating and state-format references:
 
@@ -163,7 +165,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs); named case: `compilation_is_permutation_invariant`.
 - [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs); named case: `all_three_action_graphs_match_truth_table_and_have_minimal_conflicts`.
 
-In `codex-rs`, run `just test -p codex-hepta-objective`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-objective`. For repository evidence, `.github/workflows/hepta-objective-admission.yml` owns objective package test/lint/fmt checks; `.github/workflows/hepta-lane-d-semantic-conformance.yml` repeats Lane-D check/test/lint on Linux, macOS and Windows; `.github/workflows/hepta-objective-product-composition.yml` qualifies the cross-owner durable caller/runtime seam and emits the named-host measurement record. `.github/workflows/hepta-consolidated-source.yml` remains a broader repository/source-owner gate and must not be cited as the sole objective package-test receipt.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -180,7 +182,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+A named product-caller **candidate** now exists through the registered objective -> intelligence -> learning-ledger -> Agentd boundaries. It remains a candidate until exact-head and merge-candidate workflows pass; composition evidence is not activation. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and external evidence gates pass.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
@@ -279,4 +281,4 @@ The bootstrap source-location obligation for `objective.compiler` is implemented
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked directly by `.github/workflows/hepta-objective-admission.yml` and `.github/workflows/hepta-lane-d-semantic-conformance.yml`; the cross-owner caller is checked by `.github/workflows/hepta-objective-product-composition.yml`. The consolidated source workflow supplies broader repository/source-owner evidence but is not the objective package-test owner. These receipts are source/composition evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
