@@ -8,8 +8,8 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-hardening-final",
     "baseCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
-    "candidateHead": "3d03addb84beb016d1de3406aae4ff2e2dcc4dd3",
-    "headMeaning": "frozen implementation_final_adversarial_tests_hardened_documentation_and_pinned_focused_verification_definition_head_before_this_attestation_metadata_commit",
+    "candidateHead": "4b1ddcc89664e5b29979b5d48005a1fcf3ebaa0d",
+    "headMeaning": "frozen implementation_live_authority_ceiling_adversarial_tests_hardened_documentation_and_pinned_focused_verification_definition_head_before_this_attestation_metadata_commit",
     "status": "pending_exact_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -30,7 +30,9 @@
       "adversarial_race_integrity_and_product_composition_tests",
       "result_completeness_items_truncation_invariants",
       "nonzero_result_frontier",
-      "empty_result_zero_truncation_invariant"
+      "empty_result_zero_truncation_invariant",
+      "live_authority_expiry_ceiling",
+      "widened_lease_rejection"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
