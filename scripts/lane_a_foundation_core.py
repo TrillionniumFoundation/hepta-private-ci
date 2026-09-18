@@ -60,6 +60,7 @@ MIGRATIONS = [
     "0008_provider_effect_ack_source.sql",
     "0009_authbus_replay.sql",
     "0010_authbus_outbox.sql",
+    "0011_authbus_control.sql",
 ]
 PACKAGES = [
     "codex-hepta-types",
@@ -68,6 +69,7 @@ PACKAGES = [
     "codex-hepta-operations",
     "codex-hepta-evidence",
     "codex-hepta-authbus",
+    "codex-hepta-authbus-p1-3-qualification",
     "codex-hepta-bao-adapter",
 ]
 
@@ -282,6 +284,23 @@ def validate_source_specific(root: Path = ROOT) -> None:
             "pub async fn admit_authbus_message(",
             'begin_with("BEGIN IMMEDIATE")',
             "transaction.commit().await",
+        ],
+        "codex-rs/hepta-evidence/src/authbus_control_store.rs": [
+            "pub async fn install_authbus_policy(",
+            "pub async fn authorize_authbus(",
+            "pub async fn reserve_authbus_quota(",
+            "pub async fn settle_authbus_reservation(",
+            "pub async fn reconcile_authbus_reservation(",
+        ],
+        "codex-rs/hepta-evidence/src/authbus_trust_store.rs": [
+            "pub async fn install_authbus_issuer(",
+            "pub async fn verify_authbus_rollback_checkpoint(",
+            "pub async fn retire_authbus_replay_epoch(",
+        ],
+        "codex-rs/hepta-evidence/src/authbus_effect.rs": [
+            "dispatch_provider_effect_with_authbus_qualification",
+            "reconcile_authbus_provider_effect",
+            "ObservedCostEvidence",
         ],
     }
     for path, needles in required.items():
