@@ -31,10 +31,17 @@ pub use qualified::CanonicalPolicyProfileV1;
 pub use qualified::CanonicalRiskRuleV1;
 pub use qualified::LearnedScorerContractV1;
 pub use qualified::QualifiedCalibratedError;
+pub use qualified::ScoringCommitmentV1;
+pub use qualified::canonical_candidate_identity_digest_v1;
 pub use qualified::canonical_completeness_evidence_payload_v1;
 pub use qualified::canonical_policy_profile_digest_v1;
-pub use qualified::canonical_qualification_evidence_payload_v1;
+pub use qualified::canonical_profile_qualification_evidence_payload_v1;
+pub use qualified::canonical_random_assignment_evidence_payload_v1;
+pub use qualified::canonical_scored_candidates_digest_v1;
+pub use qualified::canonical_scoring_commitment_digest_v1;
+pub use qualified::canonical_scoring_evidence_payload_v1;
 pub use qualified::decide_calibrated_v3;
+pub use qualified::scoring_commitment_for_request_v1;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
