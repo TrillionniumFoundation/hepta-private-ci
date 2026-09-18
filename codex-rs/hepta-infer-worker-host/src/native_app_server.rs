@@ -42,6 +42,7 @@ use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_codex_adapter::AppServerObservation;
 use codex_hepta_codex_adapter::CodexAdapterReceipt;
 use codex_hepta_codex_adapter::CodexOperationIntent;
+use codex_hepta_codex_adapter::ObservationSource;
 use codex_hepta_codex_adapter::TerminalOutcome;
 use codex_hepta_codex_adapter::adapt;
 use codex_hepta_contracts::AgentId;
@@ -50,6 +51,7 @@ use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejectionKind;
 use codex_hepta_infer_core::durable_control::native::NativeCodexBoundaryReceipt;
+use codex_hepta_infer_core::durable_control::native::NativeCodexObservationSource;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
@@ -750,6 +752,12 @@ fn native_boundary_receipt(
     Ok(NativeCodexBoundaryReceipt {
         request_digest: receipt.request_digest.to_string(),
         response_digest: receipt.response_digest.map(|digest| digest.to_string()),
+        observation_source: receipt.observation_source.map(|source| match source {
+            ObservationSource::LiveTransport => NativeCodexObservationSource::LiveTransport,
+            ObservationSource::DurableThreadHistory => {
+                NativeCodexObservationSource::DurableThreadHistory
+            }
+        }),
         context_digest: receipt.context_digest.to_string(),
         connection_digest: receipt.connection_digest.to_string(),
         session_generation: receipt.session_generation,
