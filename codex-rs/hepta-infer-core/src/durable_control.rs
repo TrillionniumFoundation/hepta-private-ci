@@ -340,7 +340,11 @@ impl DurableInferenceControl {
 
         let next_path = parent.join(format!("{file_name}.compact-{nonce}.next"));
         let mut next_options = OpenOptions::new();
-        next_options.create_new(true).append(true).read(true).mode(0o600);
+        next_options
+            .create_new(true)
+            .append(true)
+            .read(true)
+            .mode(0o600);
         let mut next = match next_options.open(&next_path) {
             Ok(file) => file,
             Err(error) => {
