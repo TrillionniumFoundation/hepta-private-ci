@@ -499,6 +499,29 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
         Err(IntuitionQualificationError::MissingRandomSourceEvidence)
     );
 
+    let mut tampered_draw = request.clone();
+    tampered_draw.assignment = AssignmentModeV1::CounterBased {
+        random_stream_digest: digest("rng:intuition-frozen-v1"),
+        draw: ProbabilityQ32::ZERO,
+        abstain_probability: ProbabilityQ32::ZERO,
+    };
+    assert!(
+        decide_authenticated_intuition_v1(
+            tampered_draw,
+            profile.clone(),
+            scoring.clone(),
+            IntuitionQualificationEvidenceV1 {
+                completeness: &completeness_evidence,
+                scoring: &scoring_evidence,
+                profile_qualification: &profile_evidence,
+                assignment: Some(&assignment_evidence),
+            },
+            &verifier,
+            150,
+        )
+        .is_err()
+    );
+
     let receipt = decide_authenticated_intuition_v1(
         request,
         profile,
