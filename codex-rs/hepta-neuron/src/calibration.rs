@@ -27,7 +27,7 @@ pub struct CalibrationBinV1 {
 pub struct NeuronCalibrationArtifactV1 {
     pub artifact_digest: Digest32,
     pub config_digest: Digest32,
-    pub model_runtime_digest: Digest32,
+    pub model_identity_digest: Digest32,
     pub generation: Generation,
     pub valid_from_sequence: u64,
     pub expires_after_sequence: u64,
@@ -92,7 +92,7 @@ impl NeuronCalibrationArtifactV1 {
         let mut bytes = b"hepta.neuron.calibration-artifact.v1".to_vec();
         for digest in [
             self.config_digest,
-            self.model_runtime_digest,
+            self.model_identity_digest,
             self.subgroup_audit_digest,
             self.detector_digest,
             self.support_digest,
@@ -129,7 +129,7 @@ pub fn apply_calibration(
     policy: CalibrationPolicyV1,
     artifact: Option<&NeuronCalibrationArtifactV1>,
     config_digest: Digest32,
-    model_runtime_digest: Digest32,
+    model_identity_digest: Digest32,
     generation: Generation,
     sequence: u64,
     prediction_error_q24: i64,
@@ -168,7 +168,7 @@ pub fn apply_calibration(
     };
     artifact.validate()?;
     if artifact.config_digest != config_digest
-        || artifact.model_runtime_digest != model_runtime_digest
+        || artifact.model_identity_digest != model_identity_digest
         || artifact.generation != generation
     {
         return Ok(fallback(
@@ -241,7 +241,7 @@ fn validate_policy(policy: CalibrationPolicyV1) -> Result<(), CalibrationError> 
 fn validate_artifact_shape(artifact: &NeuronCalibrationArtifactV1) -> Result<(), CalibrationError> {
     for (name, digest) in [
         ("config", artifact.config_digest),
-        ("model runtime", artifact.model_runtime_digest),
+        ("model runtime", artifact.model_identity_digest),
         ("subgroup audit", artifact.subgroup_audit_digest),
         ("detector", artifact.detector_digest),
         ("support", artifact.support_digest),
