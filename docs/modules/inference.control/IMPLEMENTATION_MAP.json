@@ -140,10 +140,9 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Compose a named non-CLI production caller that obtains current quota/resource evidence and signed final-use grants from their owners; the explicit native worker CLI is a source/qualification host and does not activate the product."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
+    "activate the named hepta-infer-worker native-app-server entrypoint under the deployed Supervisor/Agentd composition with owner-issued current quota/resource evidence and signed final-use grants",
     "real provider deployment, crash/cancellation/reconciliation acceptance and provider-side retention behavior",
     "real economic billing reconciliation and measured device-capacity authority/qualification; source budget units and ResourceAdvertisement bindings do not prove provider charges or hardware availability",
     "independently operated final-use signer/revocation service and product activation",
@@ -153,7 +152,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -166,8 +165,8 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_entrypoint_ready_activation_pending",
+  "productionWriterState": "durable_single_writer_source_established",
   "owner": "inference-platform",
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/inference.control/TECHNICAL.md",
