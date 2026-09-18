@@ -78,12 +78,13 @@ fn admission_binding_binds_quota_resource_and_generation() {
     };
 
     let binding = policy
-        .admission_binding(now, "agent-inference", 7, "gpt-test", 512)
+        .admission_binding(now, "agent-inference", 7, "gpt-test", 512, 100)
         .expect("valid admission");
 
     assert_eq!(binding.quota.reserved_requests, 2);
     assert_eq!(binding.quota.reserved_tokens, 1024);
     assert_eq!(binding.quota.reserved_concurrency, 1);
+    assert_eq!(binding.quota.reserved_day_budget, 1024);
     assert_eq!(binding.quota.authority_epoch, 9);
     assert_eq!(binding.resource.provider_id, "openai");
     assert_eq!(binding.resource.model, "gpt-test");
@@ -99,7 +100,7 @@ fn admission_binding_rejects_token_budget_exhaustion() {
     };
 
     assert!(matches!(
-        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 1025),
+        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 1025, 100),
         Err(NativePolicyError::Invalid("quota/resource authority mismatch"))
     ));
 }
@@ -113,7 +114,7 @@ fn admission_binding_rejects_provider_subject_drift() {
     let policy = NativeExecutionPolicy { quota, resource };
 
     assert!(matches!(
-        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512),
+        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512, 100),
         Err(NativePolicyError::Invalid("subject or generation mismatch"))
     ));
 }
@@ -127,7 +128,7 @@ fn admission_binding_rejects_missing_resource_subject() {
     let policy = NativeExecutionPolicy { quota, resource };
 
     assert!(matches!(
-        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512),
+        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512, 100),
         Err(NativePolicyError::Invalid("subject or generation mismatch"))
     ));
 }
@@ -141,7 +142,20 @@ fn admission_binding_rejects_cross_contract_digest_drift() {
     let policy = NativeExecutionPolicy { quota, resource };
 
     assert!(matches!(
-        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512),
+        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512, 100),
         Err(NativePolicyError::Invalid("quota/resource digest mismatch"))
+    ));
+}
+
+#[test]
+fn admission_binding_rejects_economic_budget_exhaustion() {
+    let now = 2_000_000_000;
+    let quota = quota(now);
+    let resource = resource(now, &quota);
+    let policy = NativeExecutionPolicy { quota, resource };
+
+    assert!(matches!(
+        policy.admission_binding(now, "agent-inference", 7, "gpt-test", 512, 1025),
+        Err(NativePolicyError::Invalid("quota/resource authority mismatch"))
     ));
 }
