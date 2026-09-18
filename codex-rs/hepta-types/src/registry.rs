@@ -7,9 +7,11 @@ use crate::CanonicalDigestError;
 use crate::CanonicalFieldV1;
 use crate::CanonicalValueV1;
 use crate::Digest32;
+use crate::IdProfileV1;
 use crate::IdentityError;
 use crate::StableId;
 use crate::canonical_digest_v1;
+use crate::identity::validate_id_profile_raw;
 
 pub const MAX_REGISTRY_ENTRIES_V1: usize = 256;
 pub const MAX_REGISTRY_DEFINITION_BYTES_V1: usize = 4_096;
@@ -49,6 +51,8 @@ impl RegistryDefinitionV1 {
         if version == 0 {
             return Err(RegistryError::InvalidVersion);
         }
+        validate_id_profile_raw(id.as_str(), IdProfileV1::Namespaced)
+            .map_err(RegistryError::Identity)?;
         let definition = BoundedText::try_from_str(definition).map_err(RegistryError::Bounded)?;
         let type_id = StableId::new("platform.types:registry-definition-v1")
             .map_err(RegistryError::Identity)?;
