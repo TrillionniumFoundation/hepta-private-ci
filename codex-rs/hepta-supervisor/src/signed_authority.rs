@@ -750,7 +750,6 @@ impl H7H89ProductionGrant {
             || self.governance_bypass
             || self.h7_envelope_sha256 != *h7_envelope.digest()
             || self.artifact_sha256 != *h7_envelope.artifact_digest()
-            || self.release_selection.revocation_frontier != self.authority_epoch
         {
             return Err(ProductionAuthorityError::Boundary);
         }
