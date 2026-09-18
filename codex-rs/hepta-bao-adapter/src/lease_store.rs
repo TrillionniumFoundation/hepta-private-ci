@@ -55,11 +55,10 @@ pub(crate) enum PrepareDisposition {
 impl BaoLeaseStore {
     pub(crate) fn open(root: &Path) -> Result<Self, LeaseStoreError> {
         let root = prepare_directory(root)?;
-        let initialized = entry_exists(&root, "leases.lock")?;
         let store = Self { root };
-        let _guard = store.lock()?;
+        let (_guard, created_marker) = store.lock_initialization()?;
         if !entry_exists(&store.root, "leases.json")? {
-            if initialized {
+            if !created_marker {
                 return Err(LeaseStoreError::InvalidState);
             }
             store.persist(&Stored {
@@ -283,9 +282,15 @@ impl BaoLeaseStore {
     }
 
     fn lock(&self) -> Result<File, LeaseStoreError> {
-        let file = open_private(&self.root, "leases.lock", Access::Create)?;
+        let file = open_private(&self.root, "leases.lock", Access::ReadWrite)?;
         file.lock().map_err(|_| LeaseStoreError::Unavailable)?;
         Ok(file)
+    }
+
+    fn lock_initialization(&self) -> Result<(File, bool), LeaseStoreError> {
+        let (file, created) = create_or_open_lock(&self.root, "leases.lock")?;
+        file.lock().map_err(|_| LeaseStoreError::Unavailable)?;
+        Ok((file, created))
     }
 
     fn load(&self) -> Result<Stored, LeaseStoreError> {
@@ -322,7 +327,58 @@ impl BaoLeaseStore {
 
 enum Access {
     Read,
+    ReadWrite,
     Create,
+}
+
+#[cfg(unix)]
+fn create_or_open_lock(
+    directory: &File,
+    name: &str,
+) -> Result<(File, bool), LeaseStoreError> {
+    use rustix::fs::Mode;
+    use rustix::fs::OFlags;
+    use std::os::unix::fs::MetadataExt;
+
+    let flags = OFlags::RDWR
+        | OFlags::CREATE
+        | OFlags::EXCL
+        | OFlags::NOFOLLOW
+        | OFlags::CLOEXEC;
+    let (file, created): (File, bool) = match rustix::fs::openat(
+        directory,
+        name,
+        flags,
+        Mode::RUSR | Mode::WUSR,
+    ) {
+        Ok(fd) => (fd.into(), true),
+        Err(rustix::io::Errno::EXIST) => (
+            open_private(directory, name, Access::ReadWrite)?,
+            false,
+        ),
+        Err(_) => return Err(LeaseStoreError::Unavailable),
+    };
+    let metadata = file.metadata().map_err(|_| LeaseStoreError::Unavailable)?;
+    if !metadata.is_file()
+        || metadata.mode() & 0o077 != 0
+        || metadata.nlink() != 1
+        || metadata.uid() != rustix::process::geteuid().as_raw()
+    {
+        return Err(LeaseStoreError::UnsafeStateDirectory);
+    }
+    if created {
+        file.sync_all().map_err(|_| LeaseStoreError::Unavailable)?;
+        directory.sync_all().map_err(|_| LeaseStoreError::Unavailable)?;
+    }
+    Ok((file, created))
+}
+
+#[cfg(not(unix))]
+fn create_or_open_lock(
+    _directory: &File,
+    _name: &str,
+) -> Result<(File, bool), LeaseStoreError> {
+    Err(LeaseStoreError::UnsafeStateDirectory)
 }
 
 #[cfg(unix)]
@@ -368,6 +424,7 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Le
     use std::os::unix::fs::MetadataExt;
     let flags = match access {
         Access::Read => OFlags::RDONLY,
+        Access::ReadWrite => OFlags::RDWR,
         Access::Create => OFlags::RDWR | OFlags::CREATE,
     } | OFlags::NOFOLLOW
         | OFlags::CLOEXEC;
