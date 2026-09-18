@@ -81,24 +81,32 @@
   ],
   "objectiveFunctionContract": {
     "schema": "ObjectiveFunctionV1",
-    "immutableCore": [
+    "fieldShapeAuthority": "docs/contracts/PROTOCOL_SCHEMAS.json::ObjectiveFunctionV1",
+    "semanticRole": "immutable_compiled_objective_projection",
+    "immutableWireFields": [
+      "objectiveId",
+      "requestDigest",
       "principalScope",
       "successPredicates",
       "terminalConditions",
       "hardConstraints",
-      "evidenceRequirements",
-      "allowedActionClasses",
-      "forbiddenActionClasses"
-    ],
-    "boundedAdaptiveSurface": [
       "softUtilityDimensions",
-      "resourceAllocation",
-      "explorationBudget",
-      "evidenceEffort",
-      "abstentionThreshold"
+      "resourceEndowment",
+      "deadlineUnixMs",
+      "revision"
     ],
+    "semanticLowering": {
+      "evidenceRequirements": "bound into success/terminal/hard-constraint evidence semantics and their digests; V1 has no separate wire field",
+      "allowedActionClasses": "bound into hard-constraint/objective semantics; V1 has no separate wire field",
+      "forbiddenActionClasses": "bound into hard-constraint/objective semantics; V1 has no separate wire field",
+      "resourceAllocation": "not a mutable ObjectiveFunctionV1 field; resourceEndowment is the immutable V1 input",
+      "explorationBudget": "downstream planning policy, not ObjectiveFunctionV1 wire state",
+      "evidenceEffort": "downstream planning policy, not ObjectiveFunctionV1 wire state",
+      "abstentionThreshold": "downstream intuition/control policy, not ObjectiveFunctionV1 wire state"
+    },
     "ambiguityPolicy": "emit_bounded_interpretation_set_or_request_clarification",
-    "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success"
+    "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success",
+    "compatibility": "field additions or semantic reinterpretation require a new registered protocol version; this registry must not redefine V1 fields"
   },
   "baselineProfiles": [
     {
