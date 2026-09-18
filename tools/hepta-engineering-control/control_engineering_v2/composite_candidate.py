@@ -325,7 +325,10 @@ def sandbox_composite_candidate(
     candidate: CompositeCandidate,
     checks: Iterable[Sequence[str]],
 ) -> tuple[CompositeCandidate, _candidate.SandboxReceipt]:
+    check_values = bounded_tuple(
+        checks, _candidate.MAX_CHECKS, "check_limit_exceeded"
+    )
     with sandbox_admission():
         return run_with_infrastructure_retries(
-            lambda: _sandbox_once(repository, envelope, candidate, checks)
+            lambda: _sandbox_once(repository, envelope, candidate, check_values)
         )
