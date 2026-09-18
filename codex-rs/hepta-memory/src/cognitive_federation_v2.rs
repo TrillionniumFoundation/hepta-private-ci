@@ -291,6 +291,7 @@ impl FederatedMemoryReader {
                 completed_sources: 1,
                 failed_sources: 0,
             },
+            admission_expires_unix_ms: Some(result.expires_unix_ms),
         })
     }
 
