@@ -1269,6 +1269,54 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     if foreign_occurrences != 0 {
         return Err(AutomationError::AccessDenied);
     }
+    let invalid_dispatches: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM automation_effect_dispatches d
+         LEFT JOIN automation_occurrences o
+           ON o.owner_agent_id = d.owner_agent_id
+          AND o.occurrence_id = d.occurrence_id
+         LEFT JOIN taskflow_runs tr
+           ON tr.owner_agent_id = d.owner_agent_id
+          AND tr.run_id = d.run_id
+         WHERE d.owner_agent_id = ?
+           AND (
+               o.occurrence_id IS NULL
+               OR tr.run_id IS NULL
+               OR o.taskflow_run_id IS NOT d.run_id
+               OR (d.state = 'authorized' AND (
+                   d.provider_receipt_digest IS NOT NULL
+                   OR d.observation IS NOT NULL
+                   OR d.observed_at_ms IS NOT NULL
+               ))
+               OR (d.state IN ('observed', 'indeterminate') AND (
+                   d.provider_receipt_digest IS NULL
+                   OR d.observation IS NULL
+                   OR d.observed_at_ms IS NULL
+               ))
+               OR (d.state = 'not_admitted' AND (
+                   d.provider_receipt_digest IS NOT NULL
+                   OR d.observation IS NOT NULL
+                   OR d.observed_at_ms IS NULL
+               ))
+           )",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_dispatches != 0 {
+        return Err(AutomationError::Corrupt);
+    }
+    let foreign_dispatches: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM automation_effect_dispatches WHERE owner_agent_id != ?",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if foreign_dispatches != 0 {
+        return Err(AutomationError::AccessDenied);
+    }
     verify_taskflow_store(pool, owner_agent_id)
         .await
         .map_err(map_taskflow_verify_error)?;
