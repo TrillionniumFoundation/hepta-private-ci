@@ -4093,6 +4093,69 @@
         "unknown_critical_fields_rejected",
         "deny_all_authority"
       ]
+    },
+    {
+      "id": "CognitiveTopologyProposalV1",
+      "contractId": "CognitiveTopologyProposalV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "predecessorGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "nextGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "operation",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "capabilityTyped",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "sandboxOnly",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "operatorAccepted",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "productionActivationAllowed",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority",
+        "candidate_only_next_generation"
+      ]
     }
   ],
   "subordinateProtocolRegistries": [
