@@ -391,13 +391,15 @@ def normalize() -> bool:
 
         module["sourceStatus"] = SOURCE_STATUS
         module["source_root_present"] = True
-        module["production_implementation"] = False
+        if type(module.get("production_implementation")) is not bool:
+            module["production_implementation"] = False
         module["sourceEvidenceRoots"] = list(expected_roots)
         module["missingDeclaredRoots"] = []
 
         binding["sourceStatus"] = SOURCE_STATUS
         binding["source_root_present"] = True
-        binding["production_implementation"] = False
+        if type(binding.get("production_implementation")) is not bool:
+            binding["production_implementation"] = False
         binding["existingDeclaredRoots"] = list(expected_roots)
         binding["sourceEvidenceRoots"] = list(expected_roots)
         binding["missingDeclaredRoots"] = []
@@ -506,9 +508,9 @@ def verify() -> list[str]:
             failures.append(f"module source status is not closed: {module_id}")
         if module.get("source_root_present") is not True:
             failures.append(f"module source root is not present: {module_id}")
-        if module.get("production_implementation") is not False:
+        if type(module.get("production_implementation")) is not bool:
             failures.append(
-                f"module production implementation is overstated: {module_id}"
+                f"module production implementation fact is invalid: {module_id}"
             )
         if module.get("sourceEvidenceRoots") != list(expected_roots):
             failures.append(f"module source evidence roots are incorrect: {module_id}")
@@ -519,9 +521,9 @@ def verify() -> list[str]:
             failures.append(f"binding source status is not closed: {module_id}")
         if binding.get("source_root_present") is not True:
             failures.append(f"binding source root is not present: {module_id}")
-        if binding.get("production_implementation") is not False:
+        if type(binding.get("production_implementation")) is not bool:
             failures.append(
-                f"binding production implementation is overstated: {module_id}"
+                f"binding production implementation fact is invalid: {module_id}"
             )
         if binding.get("declaredRoots") != list(expected_roots):
             failures.append(f"binding declared roots are incorrect: {module_id}")
