@@ -83,16 +83,20 @@ Consumers compare `request_binding_digest` with the binding of their expected
 input. This is an owner-local integrity API, not an admitted external protocol,
 source authentication or proof of completeness beyond the supplied candidates.
 
-The actual cognitive owner now exposes `CognitiveStore::observe_memory_retrieval`.
+The actual cognitive owner exposes `CognitiveStore::observe_memory_retrieval`.
 It generates and revalidates at most 128 candidates in one SQLite read
-transaction, preserving the legacy retrieval API and top-four ranking. Its
-candidate observation records bind source revisions and scores without raw
-memory or citation bodies. The final top-four omission count is exact for the
-observed candidates. Per-channel `Exhausted` or `LimitReached` records distinguish
-an exhausted bounded generator from a reached query/output cap; they do not
-count unseen rows or prove global coverage, including beyond graph seed limits.
-This owner observation does not bind a complete C1 objective/profile or establish
-delivery-time freshness.
+transaction while preserving the legacy top-four API. Agentd now consumes this
+owner observation through `memory.retrieval::rank_owner_candidates`: it
+intersects candidates with one exact Lane C read cut, binds the owner's aggregate
+RRF score plus observation witness, admits at most 16 ranked candidates, then
+optionally applies the pinned learned ranker only as a permutation of that set.
+After result/byte selection, Agentd batch-revalidates the exact selected
+memory/source/citation/KG bindings and finally revalidates the owning Lane C cut.
+The post-ranking withdrawal regression fails closed at this selection-to-context
+publication seam. Per-channel `Exhausted` or `LimitReached` still describe
+bounded generator coverage only; they do not count unseen rows or prove global
+recall. This composition also does not claim freshness after the Agentd response
+has left the owner boundary or at later physical model dispatch.
 
 Matrix runtime accepts the typed `m.mentions` metadata serialized by the SDK
 after ingress applies its explicit-mention policy. Only the message body is
@@ -114,13 +118,14 @@ real-Synapse and independent qualification remain separate.
 ## Remaining integration requirements
 
 The C1 contract in
-`qualification/module-execution-dossiers/C1_EXECUTION.md` still requires a named
-product-host composition with structured objective/profile binding, the actual
-tokenizer/template/payload, delivery-time revocation checks, durable
+`qualification/module-execution-dossiers/C1_EXECUTION.md` still requires the
+parts beyond the now-named Agentd retrieval composition: structured
+objective/profile binding, the actual tokenizer/template/payload at physical
+turn assembly, a dispatch-time revocation/currentness observation, durable
 provider-attempt correlation, independent task outcomes, learning-ledger
-integration, selected new-process load and rollback. The owner retrieval
-observation, standalone module tests and reference round-trip do not establish
-these product observations.
+integration, selected new-process load and rollback. The composed owner
+retrieval path and source tests establish neither those downstream observations
+nor longitudinal task benefit.
 
 Canonical objective admission also needs an explicit native adapter and
 registered baseline/classification profile. The canonical envelope cannot by
