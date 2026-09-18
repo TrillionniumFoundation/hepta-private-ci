@@ -25,7 +25,6 @@ _INFRASTRUCTURE_ERRORS = frozenset(
     {
         "network_isolation_unavailable",
         "git_operation_failed",
-        "sandbox_time_budget_exceeded",
     }
 )
 
