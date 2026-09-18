@@ -28,9 +28,13 @@ await, the worker rechecks cancellation, the exact Agent generation/readiness,
 the App Server ingress path and the request deadline. `VerifiedUseToken::enter`
 then rechecks binding, time, epoch and revocation state. The durable native
 journal records the authority witness and exact request/payload digests after
-that one-entry check but before the first App Server `turn/start` await. Thus a
-failure before the write-ahead record is definitely unsent; a crash or
-acknowledgement loss after it is reconcile-only.
+that one-entry check but before the first App Server `turn/start` await. The
+same live process receives a non-cloneable, non-serializable abort proof tied to
+that exact dispatch revision. If deadline/cancellation changes while the
+write-ahead fsync completes, the live process may consume that proof to record
+a definitive unsent stop. If the process dies, the proof disappears; a reopened
+journal can never reconstruct it and therefore treats the dispatch as
+reconcile-only.
 
 ## Protected host configuration
 
