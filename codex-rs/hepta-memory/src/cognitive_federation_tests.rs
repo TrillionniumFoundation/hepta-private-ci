@@ -345,7 +345,7 @@ async fn expired_and_corrupt_capabilities_fail_closed_without_cross_agent_fallba
         reader
             .retrieve(&access, &RetrievalRequest::new("Expiring", 150))
             .await,
-        Err(CognitiveStoreError::Corrupt(_))
+        Err(CognitiveStoreError::Unavailable(_))
     ));
     let unavailable = set
         .retrieve(&access, &RetrievalRequest::new("Expiring", 150))
