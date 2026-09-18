@@ -77,7 +77,7 @@ fn read_exact<R: Read>(reader: &mut R, output: &mut [u8]) -> Result<(), StreamWi
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StreamWireError {
     Wire(WireError),
     Io(ErrorKind),
