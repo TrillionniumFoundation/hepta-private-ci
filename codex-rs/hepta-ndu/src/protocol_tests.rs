@@ -146,10 +146,8 @@ fn zero_context_digest_rejects_before_protocol_publication() {
         canonical_iteration_context_digest(&context),
     ));
 
-    let error = bind_solver_iteration_receipt_v1(
-        &context,
-        receipts.first().expect("first solver receipt"),
-    )
-    .expect_err("zero objective digest must reject");
+    let error =
+        bind_solver_iteration_receipt_v1(&context, receipts.first().expect("first solver receipt"))
+            .expect_err("zero objective digest must reject");
     assert_eq!(error.code(), "NDU-E002");
 }
