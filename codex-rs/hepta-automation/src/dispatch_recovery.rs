@@ -5,14 +5,17 @@
 //! an exact stable-client-id lookup and supplies the observed receipt (or a
 //! proof of absence) here.
 
+use codex_hepta_contracts::Sha256Digest;
 use sqlx::Row;
 
 use crate::AutomationError;
 use crate::AutomationLease;
 use crate::AutomationOccurrence;
+use crate::AutomationOccurrenceState;
 use crate::AutomationQueueReceipt;
 use crate::AutomationStore;
 use crate::AutomationTaskId;
+use crate::TaskFlowError;
 
 impl AutomationStore {
     /// Convert a previously quarantined `DispatchUnknown` into a durable Core
@@ -89,7 +92,33 @@ impl AutomationStore {
         task_id: AutomationTaskId,
         occurrence: u64,
         client_user_message_id: &str,
+        proof_digest: &Sha256Digest,
+        observed_at_ms: u64,
     ) -> Result<(), AutomationError> {
+        let current = self
+            .automation_occurrence(task_id, occurrence)
+            .await?
+            .ok_or(AutomationError::Conflict)?;
+        if current.state != AutomationOccurrenceState::Claimed
+            || current.client_user_message_id != client_user_message_id
+        {
+            return Err(AutomationError::Conflict);
+        }
+
+        // Phase 1 seals the old TaskFlow dispatch attempt as provider-proven
+        // absent and clears only the TaskFlow run lease. It is idempotent so a
+        // crash before phase 2 can safely repeat the same reconciliation.
+        self.requeue_occurrence_taskflow_after_proven_absence(
+            &current,
+            proof_digest,
+            observed_at_ms,
+        )
+        .await
+        .map_err(taskflow_recovery_error)?;
+
+        // Phase 2 releases the compatibility scheduler lease. The next claim
+        // keeps the occurrence/client identity, while materialization allocates
+        // a fresh step attempt before any new provider contact.
         self.release_uncertain_for_retry(task_id, occurrence, client_user_message_id)
             .await
     }
@@ -105,4 +134,15 @@ fn to_u64(value: i64) -> Result<u64, AutomationError> {
 
 fn unavailable(_: sqlx::Error) -> AutomationError {
     AutomationError::Unavailable
+}
+
+fn taskflow_recovery_error(error: TaskFlowError) -> AutomationError {
+    match error {
+        TaskFlowError::Invalid(_) => AutomationError::Invalid,
+        TaskFlowError::StaleFence
+        | TaskFlowError::Conflict(_)
+        | TaskFlowError::InvalidTransition(_) => AutomationError::Conflict,
+        TaskFlowError::Corrupt(_) => AutomationError::Corrupt,
+        TaskFlowError::Unavailable => AutomationError::Unavailable,
+    }
 }
