@@ -142,7 +142,7 @@ eligibility and every per-parameter signal evidence digest through
 `PlasticityOwnerEvidenceResolverV1`. A resolver implementation must query the owning
 store and authenticate the owner receipt. Agentd independently recomputes a canonical
 query digest over evidence kind, objective, selected artifact, exact window,
-dataset, generation, layer/parameter identity and observation time; the returned receipt must bind
+dataset, generation and layer/parameter identity; the returned receipt must bind
 that exact query. `PlasticityOwnerEvidencePolicyV1` also requires an explicit
 kind-to-owner allow-policy, so an otherwise valid receipt from the wrong owner is
 rejected before proposal persistence. Every returned receipt is checked for non-empty
