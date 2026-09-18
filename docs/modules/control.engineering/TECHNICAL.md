@@ -24,7 +24,7 @@ The primary owner `developer-productivity` controls changes inside the declared 
 
 Plane `engineering`, kind `orchestrator`, state model `stateful_projection` and architecture role `engineering_control` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
 
-The concrete Python owner, SQLite v5 schema, authenticated public API, CLI,
+The concrete Python owner, SQLite v5 schema, authenticated public API, richer typed orchestration planner, repository product caller, CLI,
 resource limits, failure recovery and behavioral verification are documented in
 [IMPLEMENTATION.md](IMPLEMENTATION.md). The candidate isolation contract is in
 [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md). These implementation companions replace
@@ -387,7 +387,7 @@ None.
 
 #### `ECP-1-ENGINEERING-CONTROL-PLANE`
 
-- State: `planned`; priority: `2`; parallel class: `independent_engineering_tooling`.
+- State: `source_implemented`; priority: `2`; parallel class: `independent_engineering_tooling`.
 - Owner/deputy: `developer-productivity` / `architecture`.
 - Allowed write paths:
 - `tools/hepta-engineering-control/**`
