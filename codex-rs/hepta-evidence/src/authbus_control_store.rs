@@ -101,8 +101,8 @@ impl HeptaEvidenceStore {
         sqlx::query(
             "INSERT INTO authbus_policy_versions (
                 policy_id, revision, principal_id, action, resource_digest,
-                scope_digest, quota_key, max_reservation, enabled, policy_digest, created_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                scope_digest, audience, quota_key, max_reservation, enabled, policy_digest, created_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         )
         .bind(policy.policy_id.as_str())
         .bind(revision.as_slice())
@@ -110,6 +110,7 @@ impl HeptaEvidenceStore {
         .bind(policy.action.as_str())
         .bind(policy.resource_digest.as_array().as_slice())
         .bind(policy.scope_digest.as_array().as_slice())
+        .bind(policy.audience.as_str())
         .bind(policy.quota_key.as_str())
         .bind(max_reservation.as_slice())
         .bind(i64::from(policy.enabled))
@@ -183,6 +184,8 @@ impl HeptaEvidenceStore {
             Some(PolicyDenyReason::ResourceMismatch)
         } else if policy.scope_digest != request.scope_digest {
             Some(PolicyDenyReason::ScopeMismatch)
+        } else if policy.audience != request.audience {
+            Some(PolicyDenyReason::AudienceMismatch)
         } else {
             None
         };
@@ -304,7 +307,8 @@ impl HeptaEvidenceStore {
                 && existing.quota_key == request.quota_key
                 && existing.amount == request.amount
                 && existing.expires_at_ms == request.expires_at_ms
-                && existing.policy_digest == request.policy_digest;
+                && existing.policy_digest == request.policy_digest
+                && existing.authorization_digest == request.authorization_digest;
             if !exact {
                 return Err(AuthBusControlError::ReservationConflict);
             }
@@ -360,6 +364,7 @@ impl HeptaEvidenceStore {
             state: ReservationState::Active,
             expires_at_ms: request.expires_at_ms,
             policy_digest: request.policy_digest,
+            authorization_digest: request.authorization_digest,
             quota_revision_at_reserve: request.expected_quota_revision,
             observed_cost: None,
             terminal_evidence: None,
@@ -477,10 +482,7 @@ impl HeptaEvidenceStore {
             }
             return Err(AuthBusControlError::ReservationConflict);
         }
-        if matches!(
-            reservation.state,
-            ReservationState::Settled | ReservationState::Quarantined
-        ) {
+        if reservation.state == ReservationState::Settled {
             return Err(AuthBusControlError::ReservationUnavailable);
         }
         let mut quota = load_quota(&mut tx, &reservation.quota_key)
@@ -525,9 +527,9 @@ impl HeptaEvidenceStore {
             .map_err(classify_sqlx_error)?;
         let rows = sqlx::query(
             "SELECT reservation_id, operation_id, quota_key, amount, state, expires_at_ms,
-                    policy_digest, quota_revision_at_reserve, observed_cost, terminal_evidence
+                    policy_digest, authorization_digest, quota_revision_at_reserve, observed_cost, terminal_evidence
              FROM authbus_quota_reservations
-             WHERE state = 'active' ORDER BY reservation_id LIMIT ?",
+             WHERE state = 'active' ORDER BY expires_at_ms, reservation_id LIMIT ?",
         )
         .bind(limit)
         .fetch_all(&mut *tx)
@@ -765,7 +767,7 @@ async fn load_policy_version(
     let bytes = revision.to_be_bytes();
     let row = sqlx::query(
         "SELECT policy_id, revision, principal_id, action, resource_digest,
-                scope_digest, quota_key, max_reservation, enabled, policy_digest
+                scope_digest, audience, quota_key, max_reservation, enabled, policy_digest
          FROM authbus_policy_versions WHERE policy_id = ? AND revision = ?",
     )
     .bind(policy_id.as_str())
@@ -781,6 +783,7 @@ async fn load_policy_version(
             action: stable_id_column(&row, "action")?,
             resource_digest: digest_column(&row, "resource_digest")?,
             scope_digest: digest_column(&row, "scope_digest")?,
+            audience: stable_id_column(&row, "audience")?,
             quota_key: stable_id_column(&row, "quota_key")?,
             max_reservation: u64_blob(&row, "max_reservation")?,
             enabled: row.try_get::<i64, _>("enabled").map_err(classify_sqlx_error)? == 1,
@@ -879,7 +882,7 @@ async fn load_reservation(
 ) -> Result<Option<ReservationRecord>, EvidenceError> {
     sqlx::query(
         "SELECT reservation_id, operation_id, quota_key, amount, state, expires_at_ms,
-                policy_digest, quota_revision_at_reserve, observed_cost, terminal_evidence
+                policy_digest, authorization_digest, quota_revision_at_reserve, observed_cost, terminal_evidence
          FROM authbus_quota_reservations WHERE reservation_id = ?",
     )
     .bind(reservation_id.as_str())
@@ -912,6 +915,7 @@ fn decode_reservation(row: &SqliteRow) -> Result<ReservationRecord, EvidenceErro
         state,
         expires_at_ms: u64_blob(row, "expires_at_ms")?,
         policy_digest: digest_column(row, "policy_digest")?,
+        authorization_digest: digest_column(row, "authorization_digest")?,
         quota_revision_at_reserve: u64_blob(row, "quota_revision_at_reserve")?,
         observed_cost: observed
             .map(|value| u64_blob_value(&value, "observed cost"))
@@ -933,9 +937,9 @@ async fn insert_reservation(
     sqlx::query(
         "INSERT INTO authbus_quota_reservations(
            reservation_id, operation_id, quota_key, amount, state, expires_at_ms,
-           policy_digest, quota_revision_at_reserve, observed_cost, terminal_evidence,
+           policy_digest, authorization_digest, quota_revision_at_reserve, observed_cost, terminal_evidence,
            created_at_ms, updated_at_ms
-         ) VALUES (?, ?, ?, ?, 'active', ?, ?, ?, NULL, NULL, ?, ?)",
+         ) VALUES (?, ?, ?, ?, 'active', ?, ?, ?, ?, NULL, NULL, ?, ?)",
     )
     .bind(record.reservation_id.as_str())
     .bind(record.operation_id.as_str())
@@ -943,6 +947,7 @@ async fn insert_reservation(
     .bind(amount.as_slice())
     .bind(expires.as_slice())
     .bind(record.policy_digest.as_array().as_slice())
+    .bind(record.authorization_digest.as_array().as_slice())
     .bind(revision.as_slice())
     .bind(now)
     .bind(now)
