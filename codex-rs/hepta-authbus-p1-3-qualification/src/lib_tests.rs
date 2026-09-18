@@ -7,6 +7,19 @@ fn id(value: &str) -> StableId {
     value
 }
 
+fn execution() -> ExecutionProvenance {
+    ExecutionProvenance {
+        source_sha: "0123456789abcdef0123456789abcdef01234567".to_string(),
+        source_tree: "89abcdef0123456789abcdef0123456789abcdef".to_string(),
+        executable_digest: Digest32::of_bytes(b"authbus-test-binary"),
+        command_digest: Digest32::of_bytes(b"cargo test -p codex-hepta-authbus"),
+        runner_id: id("runner:native-ci"),
+        started_at_ms: 1_000,
+        completed_at_ms: 2_000,
+        exit_code: 0,
+    }
+}
+
 fn cases() -> Vec<CaseEvidence> {
     [
         NegativeCase::Expired,
@@ -21,6 +34,7 @@ fn cases() -> Vec<CaseEvidence> {
         case_id: id(&format!("case:{index}")),
         rejected: true,
         evidence_digest: Digest32::of_bytes(format!("evidence:{index}").as_bytes()),
+        execution: execution(),
     })
     .collect()
 }
@@ -49,4 +63,27 @@ fn unexpected_success_fails_qualification() {
         qualify(value),
         Err(Error::CaseDidNotReject("case:0".to_string()))
     );
+}
+
+
+#[test]
+fn qualification_rejects_mixed_execution_provenance() {
+    let mut value = cases();
+    value[0].execution.executable_digest = Digest32::of_bytes(b"different-binary");
+    assert_eq!(qualify(value), Err(Error::MixedExecutionProvenance));
+}
+
+#[test]
+fn qualification_rejects_failed_or_unbound_execution() {
+    let mut failed = cases();
+    for case in &mut failed {
+        case.execution.exit_code = 1;
+    }
+    assert_eq!(qualify(failed), Err(Error::ExecutionFailed(1)));
+
+    let mut invalid = cases();
+    for case in &mut invalid {
+        case.execution.source_sha = "not-a-git-sha".to_string();
+    }
+    assert_eq!(qualify(invalid), Err(Error::InvalidExecutionProvenance));
 }
