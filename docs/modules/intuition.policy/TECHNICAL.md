@@ -183,6 +183,7 @@ Current operating and state-format references:
 
 - [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs).
 - [codex-rs/hepta-intuition/src/qualified.rs](../../../codex-rs/hepta-intuition/src/qualified.rs).
+- [codex-rs/hepta-intelligence/src/intuition_qualification.rs](../../../codex-rs/hepta-intelligence/src/intuition_qualification.rs), including the authenticated V3 shadow composition.
 - [SCORER_CONTRACT.md](SCORER_CONTRACT.md).
 - [QUALIFICATION_V3.md](QUALIFICATION_V3.md).
 
