@@ -23,6 +23,13 @@ pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
+mod prompt_pipeline;
+
+pub use prompt_pipeline::CanonicalPromptContextErrorV1;
+pub use prompt_pipeline::CanonicalPromptContextReceiptV1;
+pub use prompt_pipeline::CanonicalPromptContextRequestV1;
+pub use prompt_pipeline::run_canonical_prompt_context_v1;
+
 mod pipeline_v2;
 
 pub use pipeline_v2::LaneFRunRequestV2;
