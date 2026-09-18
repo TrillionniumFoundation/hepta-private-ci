@@ -18,6 +18,7 @@ use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_matrix_sdk::IngressDisposition;
 use codex_hepta_matrix_sdk::IngressIgnoredReason;
 use codex_hepta_matrix_sdk::MatrixIngress;
+use codex_hepta_matrix_sdk::MatrixOutboundObserver;
 use codex_hepta_matrix_sdk::MatrixOutboundTransport;
 use codex_hepta_matrix_sdk::MatrixSdkPaths;
 use codex_hepta_matrix_sdk::MatrixSendFuture;
@@ -206,6 +207,8 @@ impl PostSendAckLossTransport {
     }
 }
 
+impl MatrixOutboundObserver for PostSendAckLossTransport {}
+
 impl MatrixOutboundTransport for PostSendAckLossTransport {
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
@@ -241,6 +244,8 @@ impl FakeTransport {
             .clone())
     }
 }
+
+impl MatrixOutboundObserver for FakeTransport {}
 
 impl MatrixOutboundTransport for FakeTransport {
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
