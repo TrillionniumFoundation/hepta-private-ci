@@ -186,7 +186,7 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.terminal_conditions
                 .resize(n, s.terminal_conditions[0].clone())
         }),
-        ("legalActionClasses", 1, 128, |s, n| {
+        ("legalActionClasses", 0, 128, |s, n| {
             s.legal_action_classes
                 .resize(n, s.legal_action_classes[0].clone())
         }),
@@ -198,7 +198,7 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.confirmation_action_classes
                 .resize(n, s.confirmation_action_classes[0].clone())
         }),
-        ("constraints", 1, 256, |s, n| {
+        ("constraints", 1, 246, |s, n| {
             s.constraints.resize(n, s.constraints[0].clone())
         }),
         ("softDimensions", 0, 64, |s, n| {
@@ -280,4 +280,65 @@ fn validation_preserves_order_cross_array_references_and_conflicts_for_the_seman
     assert_eq!(source, expected);
     source.structured_intent.constraints.reverse();
     assert_eq!(source.validate_structure(), Ok(()));
+}
+
+
+#[test]
+fn admission_safe_aggregate_bounds_reserve_generated_native_capacity() {
+    let mut source = envelope();
+    source.structured_intent.constraints = (0..246)
+        .map(|index| {
+            let mut value = source.structured_intent.constraints[0].clone();
+            value.constraint_id = format!("constraint-{index:03}");
+            value
+        })
+        .collect();
+    assert_eq!(source.validate_structure(), Ok(()));
+    let mut overflow = source.structured_intent.constraints[0].clone();
+    overflow.constraint_id = "constraint-overflow".into();
+    source.structured_intent.constraints.push(overflow);
+    assert_eq!(
+        source.validate_structure(),
+        Err(ObjectiveStructureError::CollectionCount {
+            field: "constraints",
+            actual: 247,
+            minimum: 1,
+            maximum: 246,
+        })
+    );
+
+    let mut source = envelope();
+    source.structured_intent.success_predicates = (0..126)
+        .map(|index| {
+            let mut value = source.structured_intent.success_predicates[0].clone();
+            value.predicate_id = format!("success-{index:03}");
+            value
+        })
+        .collect();
+    assert_eq!(
+        source.validate_structure(),
+        Ok(()),
+        "126 success + 1 terminal + 1 evidence must fit the native 128-slot aggregate"
+    );
+    let mut overflow = source.structured_intent.success_predicates[0].clone();
+    overflow.predicate_id = "success-overflow".into();
+    source.structured_intent.success_predicates.push(overflow);
+    assert_eq!(
+        source.validate_structure(),
+        Err(ObjectiveStructureError::CollectionCount {
+            field: "successPredicates+terminalConditions+evidenceRequirements",
+            actual: 129,
+            minimum: 0,
+            maximum: 128,
+        })
+    );
+
+    let mut source = envelope();
+    source.structured_intent.legal_action_classes.clear();
+    source.structured_intent.confirmation_action_classes.clear();
+    assert_eq!(
+        source.validate_structure(),
+        Ok(()),
+        "empty caller action set must preserve the compiler's intrinsic abstain outcome"
+    );
 }

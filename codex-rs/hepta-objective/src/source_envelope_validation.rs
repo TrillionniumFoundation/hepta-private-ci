@@ -4,6 +4,14 @@ use std::fmt;
 
 use crate::ObjectiveSourceEnvelopeV1;
 
+const NATIVE_MAX_CONSTRAINTS: usize = 256;
+const GENERATED_RESOURCE_CONSTRAINTS: usize = 6;
+const GENERATED_RISK_CONSTRAINTS: usize = 4;
+const MAX_SOURCE_CONSTRAINTS: usize =
+    NATIVE_MAX_CONSTRAINTS - GENERATED_RESOURCE_CONSTRAINTS - GENERATED_RISK_CONSTRAINTS;
+const MAX_AGGREGATE_SUCCESS_PREDICATES: usize = 128;
+const MAX_SOURCE_ACTIONS: usize = 128;
+
 /// Structural errors contain field paths/counts, never unrestricted source text.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ObjectiveStructureError {
@@ -61,12 +69,19 @@ impl ObjectiveSourceEnvelopeV1 {
     /// Check declared raw UTF-8 field byte limits, array count bounds and
     /// within-array semantic-key uniqueness without changing any source value.
     ///
+    /// Structural ceilings are admission-safe, not merely per-field maxima:
+    /// source constraints reserve ten native slots for generated resource/risk
+    /// constraints and success/terminal/evidence predicates share the native
+    /// 128-slot aggregate. Source actions may contain up to 128 entries because
+    /// one can be an explicit intrinsic `abstain`; native compile enforces the
+    /// 127-entry ceiling only when it must inject abstain itself.
+    ///
     /// This is deliberately not wire validation: JSON escaping/framing and
     /// aggregate encoded-byte limits, duplicate/unknown JSON fields, ID/time
     /// syntax, NFC, canonical ordering, digest bindings, profile semantics,
-    /// freshness and source authority are not established here. In particular,
-    /// success does not admit a source to the existing scalar compiler. No
-    /// cross-array conflict, unsupported operator or trust label is rewritten.
+    /// freshness and source authority are not established here. No unsupported
+    /// operator or trust label is rewritten. Cross-array action references stay
+    /// in semantic admission so their existing error taxonomy is preserved.
     pub fn validate_structure(&self) -> Result<(), ObjectiveStructureError> {
         text_bytes(&self.request_id, "requestId", /*maximum*/ 128)?;
         text_bytes(&self.locale, "locale", /*maximum*/ 32)?;
@@ -96,26 +111,27 @@ impl ObjectiveSourceEnvelopeV1 {
                 )?;
             }
         }
-        for (actions, field, minimum) in [
-            (&intent.legal_action_classes, "legalActionClasses", 1),
+        for (actions, field, minimum, maximum) in [
+            (
+                &intent.legal_action_classes,
+                "legalActionClasses",
+                0,
+                MAX_SOURCE_ACTIONS,
+            ),
             (
                 &intent.forbidden_action_classes,
                 "forbiddenActionClasses",
                 0,
+                MAX_SOURCE_ACTIONS,
             ),
             (
                 &intent.confirmation_action_classes,
                 "confirmationActionClasses",
                 0,
+                MAX_SOURCE_ACTIONS,
             ),
         ] {
-            collection(
-                actions,
-                field,
-                minimum,
-                /*maximum*/ 128,
-                String::as_str,
-            )?;
+            collection(actions, field, minimum, maximum, String::as_str)?;
             for action in actions {
                 text_bytes(action, field, /*maximum*/ 128)?;
             }
@@ -124,7 +140,7 @@ impl ObjectiveSourceEnvelopeV1 {
             &intent.constraints,
             "constraints",
             /*minimum*/ 1,
-            /*maximum*/ 256,
+            /*maximum*/ MAX_SOURCE_CONSTRAINTS,
             |value| &value.constraint_id,
         )?;
         for constraint in &intent.constraints {
@@ -170,12 +186,37 @@ impl ObjectiveSourceEnvelopeV1 {
                 /*maximum*/ 256,
             )?;
         }
+        aggregate_count(
+            "successPredicates+terminalConditions+evidenceRequirements",
+            intent
+                .success_predicates
+                .len()
+                .saturating_add(intent.terminal_conditions.len())
+                .saturating_add(intent.evidence_requirements.len()),
+            MAX_AGGREGATE_SUCCESS_PREDICATES,
+        )?;
         text_bytes(
             &intent.risk.abstention_rule,
             "risk.abstentionRule",
             /*maximum*/ 512,
         )
     }
+}
+
+fn aggregate_count(
+    field: &'static str,
+    actual: usize,
+    maximum: usize,
+) -> Result<(), ObjectiveStructureError> {
+    if actual > maximum {
+        return Err(ObjectiveStructureError::CollectionCount {
+            field,
+            actual,
+            minimum: 0,
+            maximum,
+        });
+    }
+    Ok(())
 }
 
 fn text_bytes(
