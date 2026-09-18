@@ -109,8 +109,7 @@ impl DurableLearningJournal for LongHorizonSegmentedLedgerV1 {
     }
 
     fn contains_anchor(&self, anchor: LedgerAnchor) -> Result<bool, DurableLedgerError> {
-        LongHorizonSegmentedLedgerV1::contains_anchor(self, anchor)
-            .map_err(map_long_horizon_error)
+        LongHorizonSegmentedLedgerV1::contains_anchor(self, anchor).map_err(map_long_horizon_error)
     }
 }
 
