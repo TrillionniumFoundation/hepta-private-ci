@@ -91,6 +91,7 @@ from .sandbox_control import (
     SandboxExecutionPolicy,
     SandboxExecutionResult,
 )
+from .product_gate import verify_product_receipt_pair
 from .production import (
     ProductionReadinessDecision,
     ProductionReadinessFacts,
@@ -219,5 +220,6 @@ __all__ = [
     "verify_external_key_custody",
     "verify_integration_evidence",
     "verify_production_controls",
+    "verify_product_receipt_pair",
     "verify_sealed_candidate_evidence",
 ]
