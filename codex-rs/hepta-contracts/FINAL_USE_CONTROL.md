@@ -32,9 +32,19 @@ Production host configuration should use `open_state_dir_with_issuer_keys`
 plus the control verifiers' `new_with_keys` constructors and retain required
 historical trust material in its audit/evidence system. The complete issuer
 trust-set digest is pinned into FinalUse durable store schema V2; legacy schema
-V1 single-key state is never silently upgraded into a key-ring trust model. Repository utilities never
-generate private keys; custody, compromise response and HSM/KMS policy remain
-external operational responsibilities.
+V1 single-key state is never silently upgraded into a key-ring trust model.
+Repository utilities never generate private keys; custody and HSM/KMS policy
+remain external operational responsibilities.
+
+A production key-compromise profile must pre-enroll at least one independently
+custodied recovery key whose authority-epoch window survives retirement of the
+active key. Compromise recovery advances to an epoch in which the compromised
+key is outside its acceptance window, distributes a fresh signed revocation
+head, and requires current node acknowledgement before convergence is claimed.
+The repository does not dynamically mutate a pinned trust set in place: adding
+a previously unknown recovery key requires an explicit new trust-set/store
+generation and separate qualification. This prevents a compromised runtime
+from turning key replacement itself into ambient authority.
 
 ## Approval protocol
 
@@ -170,11 +180,14 @@ for the normative ordering and crash-uncertainty rule.
 
 ## Capacity lifecycle
 
-The general lease owner remains bounded at 16,384 leases and 16,384 revocation
-records. `prune_expired_leases` provides bounded online reclamation (maximum
-1,024 entries per call) for expired **unrevoked** leases. Revocation tombstones
-are not silently collected inside an epoch. Epoch advance fences prior authority
-and clears bounded history.
+The general lease owner remains bounded at 16,384 live leases, 16,384
+revocation records and 16,384 compact retired-id revision records.
+`prune_expired_leases` provides bounded online payload reclamation (maximum
+1,024 entries per call) for expired **unrevoked** leases while preserving the
+last revision of every pruned lease id. Same-epoch reissue must continue at
+revision R+1. Revocation and retired-id tombstones are not silently collected;
+epoch advance is the only lineage reset, fences prior authority and clears the
+bounded history.
 
 FinalUse nonce and revocation state remains bounded and uses explicit epoch
 rollover. It does not silently evict replay history. Hosts monitor the exposed
