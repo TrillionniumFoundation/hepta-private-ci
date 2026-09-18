@@ -205,6 +205,8 @@ pub fn fit_transition_model(
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WorldModelPinV1 {
+    /// Independent digest of the complete public model payload.
+    pub payload_digest: Digest32,
     pub model_digest: Digest32,
     pub dataset_digest: Digest32,
 }
@@ -221,9 +223,13 @@ impl LoadedTabularWorldModelV1 {
         model: TabularWorldModelV1,
         pin: &WorldModelPinV1,
     ) -> Result<Self, WorldModelError> {
+        require_digest(pin.payload_digest, "world-model payload pin")?;
         require_digest(pin.model_digest, "world-model pin")?;
         require_digest(pin.dataset_digest, "world-model dataset pin")?;
-        if model.model_digest != pin.model_digest || model.dataset_digest != pin.dataset_digest {
+        if world_model_payload_digest_v1(&model)? != pin.payload_digest
+            || model.model_digest != pin.model_digest
+            || model.dataset_digest != pin.dataset_digest
+        {
             return Err(WorldModelError::InvalidModel);
         }
         validate_world_model(&model)?;
@@ -252,9 +258,13 @@ pub fn predict_transition(
     state_id: &StableId,
     action_id: &StableId,
 ) -> Result<WorldModelPredictionV1, WorldModelError> {
+    require_digest(pin.payload_digest, "world-model payload pin")?;
     require_digest(pin.model_digest, "world-model pin")?;
     require_digest(pin.dataset_digest, "world-model dataset pin")?;
-    if model.model_digest != pin.model_digest || model.dataset_digest != pin.dataset_digest {
+    if world_model_payload_digest_v1(model)? != pin.payload_digest
+        || model.model_digest != pin.model_digest
+        || model.dataset_digest != pin.dataset_digest
+    {
         return Err(WorldModelError::InvalidModel);
     }
     validate_world_model(model)?;
@@ -284,6 +294,38 @@ fn predict_validated_transition(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+pub fn world_model_payload_digest_v1(
+    model: &TabularWorldModelV1,
+) -> Result<Digest32, WorldModelError> {
+    let mut bytes = b"hepta.bellman-operator.world-model-public-payload.v1".to_vec();
+    push_id(&mut bytes, &model.model_id);
+    bytes.extend_from_slice(model.dataset_digest.as_array());
+    bytes.extend_from_slice(model.model_digest.as_array());
+    bytes.extend_from_slice(
+        &u32::try_from(model.estimates.len())
+            .map_err(|_| WorldModelError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for estimate in &model.estimates {
+        push_id(&mut bytes, &estimate.state_id);
+        push_id(&mut bytes, &estimate.action_id);
+        bytes.extend_from_slice(&estimate.sample_count.to_be_bytes());
+        bytes.extend_from_slice(&estimate.mean_outcome.raw().to_be_bytes());
+        bytes.extend_from_slice(estimate.estimate_digest.as_array());
+        bytes.extend_from_slice(
+            &u32::try_from(estimate.branches.len())
+                .map_err(|_| WorldModelError::Arithmetic)?
+                .to_be_bytes(),
+        );
+        for branch in &estimate.branches {
+            push_id(&mut bytes, &branch.next_state_id);
+            bytes.extend_from_slice(&branch.count.to_be_bytes());
+            bytes.extend_from_slice(&branch.probability.raw().to_be_bytes());
+        }
+    }
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn validate_world_model(model: &TabularWorldModelV1) -> Result<(), WorldModelError> {
