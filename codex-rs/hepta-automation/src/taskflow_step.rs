@@ -34,9 +34,12 @@ use crate::TaskFlowRun;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
 
-/// This module is compiled and callable only by an explicit qualification
-/// feature.  These constants are intentionally negative for all authority
-/// surfaces.
+/// Durable step intent/outbox persistence is part of the normal automation
+/// schema. The outbox itself still grants no provider authority and does not
+/// dispatch effects.
+pub const TASKFLOW_STEP_OUTBOX_DURABLE_ENABLED: bool = true;
+/// Compatibility receipt retained for callers that used the old qualification
+/// capability name. It now means the structural API remains available.
 pub const TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED: bool = true;
 pub const TASKFLOW_STEP_OUTBOX_EFFECTS: bool = false;
 pub const TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER: bool = false;
@@ -358,6 +361,38 @@ impl AutomationStore {
         .await
     }
 
+    /// Recover a crash window after the prior owner claimed the step but no
+    /// durable provider outcome was recorded. The successor must first own the
+    /// current TaskFlow run fence. Recovery never dispatches: it records an
+    /// explicit indeterminate receipt so only reconciliation may proceed.
+    pub async fn quarantine_claimed_taskflow_step_after_takeover(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+        intent_digest: &Sha256Digest,
+        payload_digest: &Sha256Digest,
+        command_id: &str,
+        receipt_digest: &Sha256Digest,
+        now_ms: u64,
+    ) -> Result<TaskFlowStepCommandResult, TaskFlowError> {
+        self.append_step_operation(
+            "recover_indeterminate",
+            run_id,
+            step_id,
+            attempt,
+            fence,
+            intent_digest,
+            payload_digest,
+            command_id,
+            Some(receipt_digest),
+            Some(TaskFlowStepObservation::Indeterminate),
+            now_ms,
+        )
+        .await
+    }
+
     /// Reconcile an indeterminate observation with an explicit terminal
     /// outcome.  This only records the caller's already-observed receipt; it
     /// never contacts a provider and never claims effect authority.
@@ -419,7 +454,7 @@ impl AutomationStore {
             attempt,
             &events,
         )?;
-        check_historical_fence(&run, &receipt.fence, fence)?;
+        check_step_read_fence(&run, &receipt.fence, fence)?;
         tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(Some(receipt))
     }
@@ -447,7 +482,7 @@ impl AutomationStore {
             payload_digest,
         )?;
         validate_fence(self, fence)?;
-        if operation != "claim" && operation != "record" {
+        if !matches!(operation, "claim" | "record" | "recover_indeterminate") {
             return Err(TaskFlowError::Invalid("unknown step operation".to_string()));
         }
         if operation == "claim" && (receipt_digest.is_some() || observation.is_some()) {
@@ -458,6 +493,14 @@ impl AutomationStore {
         if operation == "record" && (receipt_digest.is_none() || observation.is_none()) {
             return Err(TaskFlowError::Invalid(
                 "record requires receipt and observation".to_string(),
+            ));
+        }
+        if operation == "recover_indeterminate"
+            && (receipt_digest.is_none()
+                || observation != Some(TaskFlowStepObservation::Indeterminate))
+        {
+            return Err(TaskFlowError::Invalid(
+                "takeover recovery requires an indeterminate receipt".to_string(),
             ));
         }
         self.append_step_operation_with_outcome(
@@ -523,7 +566,16 @@ impl AutomationStore {
                 "record requires receipt and observation".to_string(),
             ));
         }
-        if !matches!(operation, "claim" | "record" | "reconcile") {
+        if operation == "recover_indeterminate"
+            && (receipt_digest.is_none()
+                || observation != Some(TaskFlowStepObservation::Indeterminate)
+                || final_outcome.is_some())
+        {
+            return Err(TaskFlowError::Invalid(
+                "takeover recovery requires an indeterminate receipt".to_string(),
+            ));
+        }
+        if !matches!(operation, "claim" | "record" | "reconcile" | "recover_indeterminate") {
             return Err(TaskFlowError::Invalid("unknown step operation".to_string()));
         }
         if let Some(receipt_digest) = receipt_digest {
@@ -574,23 +626,32 @@ impl AutomationStore {
                 "step command is bound to different intent bytes".to_string(),
             ));
         }
-        check_historical_fence(
-            &run,
-            &fence_from_event(self.taskflow_owner_agent_id(), current)?,
-            fence,
-        )?;
+        let current_fence = fence_from_event(self.taskflow_owner_agent_id(), current)?;
         match operation {
             "claim" => {
                 check_active_run_fence(&run, fence, now_ms)?;
                 if current.event_kind != TaskFlowStepState::Prepared {
                     return Err(invalid_step_transition("claim requires prepared state"));
                 }
+                check_same_or_takeover_fence(&current_fence, fence)?;
             }
             "record" => {
-                check_run_identity_for_observation(&run, fence)?;
+                // A normal provider observation belongs to the exact owner
+                // that claimed the step. A successor may not synthesize an
+                // ACK after a crash; it must use recover_indeterminate.
+                check_historical_fence(&run, &current_fence, fence)?;
                 if current.event_kind != TaskFlowStepState::Claimed {
                     return Err(invalid_step_transition("record requires claimed state"));
                 }
+            }
+            "recover_indeterminate" => {
+                check_active_run_fence(&run, fence, now_ms)?;
+                if current.event_kind != TaskFlowStepState::Claimed {
+                    return Err(invalid_step_transition(
+                        "takeover recovery requires claimed state",
+                    ));
+                }
+                check_strict_takeover_fence(&current_fence, fence)?;
             }
             "reconcile" => {
                 check_run_identity_for_observation(&run, fence)?;
@@ -601,12 +662,13 @@ impl AutomationStore {
                         "reconcile requires an indeterminate recorded state",
                     ));
                 }
+                check_same_or_takeover_fence(&current_fence, fence)?;
             }
             _ => unreachable!("operation validated above"),
         }
         let state = match operation {
             "claim" => TaskFlowStepState::Claimed,
-            "record" => TaskFlowStepState::Recorded,
+            "record" | "recover_indeterminate" => TaskFlowStepState::Recorded,
             "reconcile" => TaskFlowStepState::Reconciled,
             _ => unreachable!(),
         };
@@ -686,9 +748,8 @@ impl From<TaskFlowReconcileOutcome> for StepOperationResult {
 }
 
 async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError> {
-    // The schema is additive and deliberately qualification-only.  Keeping it
-    // out of the default migrator avoids changing AUTOMATION_SCHEMA_VERSION or
-    // existing production/open paths.
+    // The schema is part of the normal v4 migrator. Keep this idempotent
+    // creation path for stores opened by older structural qualification tests.
     sqlx::query(
         r#"CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
             owner_agent_id TEXT NOT NULL,
@@ -1033,7 +1094,7 @@ fn verify_step_events(
     let mut state = None;
     let mut bound_intent: Option<String> = None;
     let mut bound_payload: Option<String> = None;
-    let mut bound_fence = None;
+    let mut previous_fence: Option<TaskFlowFence> = None;
     for (index, event) in events.iter().enumerate() {
         let expected_seq = u64::try_from(index + 1).map_err(|_| corrupt("step seq overflow"))?;
         if event.event_seq != expected_seq {
@@ -1095,19 +1156,32 @@ fn verify_step_events(
         }
         bound_intent = Some(event.intent_digest.clone());
         bound_payload = Some(event.payload_digest.clone());
-        let fence_tuple = (
+        let event_fence = TaskFlowFence::new(
+            owner.clone(),
             event.owner_id.clone(),
             event.owner_epoch,
             event.generation,
             event.fencing_token.clone(),
-        );
-        if bound_fence
-            .as_ref()
-            .is_some_and(|value| value != &fence_tuple)
-        {
-            return Err(corrupt("TaskFlow step fence changes mid-chain"));
+        )?;
+        if let Some(previous_fence_value) = previous_fence.as_ref() {
+            let fence_changed = previous_fence_value != &event_fence;
+            if fence_changed {
+                let allowed_takeover = match (state, event.event_kind) {
+                    (Some(TaskFlowStepState::Prepared), TaskFlowStepState::Claimed) => true,
+                    (Some(TaskFlowStepState::Claimed), TaskFlowStepState::Recorded) => {
+                        event.observation == Some(TaskFlowStepObservation::Indeterminate)
+                    }
+                    (Some(TaskFlowStepState::Recorded), TaskFlowStepState::Reconciled) => true,
+                    _ => false,
+                };
+                if !allowed_takeover {
+                    return Err(corrupt("TaskFlow step fence changed on a non-recoverable transition"));
+                }
+                check_strict_takeover_fence(previous_fence_value, &event_fence)
+                    .map_err(|_| corrupt("TaskFlow step fence regressed during takeover"))?;
+            }
         }
-        bound_fence = Some(fence_tuple);
+        previous_fence = Some(event_fence);
         state = Some(match (state, event.event_kind) {
             (None, TaskFlowStepState::Prepared) => TaskFlowStepState::Prepared,
             (Some(TaskFlowStepState::Prepared), TaskFlowStepState::Claimed) => {
@@ -1382,6 +1456,51 @@ fn check_run_identity_for_observation(
         return Err(TaskFlowError::StaleFence);
     }
     Ok(())
+}
+
+fn check_same_or_takeover_fence(
+    previous: &TaskFlowFence,
+    supplied: &TaskFlowFence,
+) -> Result<(), TaskFlowError> {
+    if previous == supplied {
+        return Ok(());
+    }
+    check_strict_takeover_fence(previous, supplied)
+}
+
+fn check_strict_takeover_fence(
+    previous: &TaskFlowFence,
+    supplied: &TaskFlowFence,
+) -> Result<(), TaskFlowError> {
+    if previous.owner_agent_id != supplied.owner_agent_id
+        || previous.owner_id != supplied.owner_id
+        || supplied.owner_epoch < previous.owner_epoch
+        || supplied.generation <= previous.generation
+        || supplied.fencing_token == previous.fencing_token
+    {
+        return Err(TaskFlowError::StaleFence);
+    }
+    Ok(())
+}
+
+fn check_step_read_fence(
+    run: &TaskFlowRun,
+    event_fence: &TaskFlowFence,
+    supplied: &TaskFlowFence,
+) -> Result<(), TaskFlowError> {
+    if event_fence == supplied {
+        return Ok(());
+    }
+    if matches!(
+        run.state,
+        crate::TaskFlowRunState::Succeeded
+            | crate::TaskFlowRunState::Failed
+            | crate::TaskFlowRunState::Cancelled
+    ) {
+        return Err(TaskFlowError::StaleFence);
+    }
+    check_run_identity_for_observation(run, supplied)?;
+    check_same_or_takeover_fence(event_fence, supplied)
 }
 
 fn check_historical_fence(
