@@ -154,7 +154,11 @@ fn queue_failure_to_automation_error(failure: QueueFailure) -> AutomationError {
             AutomationError::AccessDenied
         }
         QueueFailure::BeforeAdmission(AgentdError::Automation(
-            error @ (AutomationError::Unavailable | AutomationError::Corrupt),
+            error @ (
+                AutomationError::Unavailable
+                | AutomationError::Corrupt
+                | AutomationError::TimerFenced
+            ),
         )) => error,
         QueueFailure::BeforeAdmission(_) => AutomationError::Dispatch,
         QueueFailure::OutcomeUnknown => AutomationError::DispatchUnknown,
@@ -302,10 +306,10 @@ async fn stop_after_automation_error(
     state: &AgentdState,
     cancellation: &CancellationToken,
 ) -> Result<(), AgentdError> {
-    if error == AutomationError::AccessDenied {
+    if matches!(error, AutomationError::AccessDenied | AutomationError::TimerFenced) {
         state.mark_fenced();
         return Err(AgentdError::GenerationFenced(
-            "automation owner or generation boundary was violated".to_string(),
+            "automation owner, timer epoch, or generation boundary was violated".to_string(),
         ));
     }
     state.mark_automation_unavailable()?;
