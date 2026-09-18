@@ -907,37 +907,106 @@
           "name": "principalScope",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 4096
+          "maxBytes": 4096,
+          "minProperties": 2,
+          "maxProperties": 2,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "id",
+              "type": "id128",
+              "required": true,
+              "maxBytes": 128
+            },
+            {
+              "name": "digest",
+              "type": "sha256",
+              "required": true,
+              "maxBytes": 64
+            }
+          ]
         },
         {
           "name": "successPredicates",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 32768,
+          "minItems": 1,
+          "maxItems": 128
         },
         {
           "name": "terminalConditions",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 128
         },
         {
           "name": "hardConstraints",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 32768
+          "maxBytes": 65536,
+          "minItems": 11,
+          "maxItems": 256
+        },
+        {
+          "name": "evidenceRequirements",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 128
+        },
+        {
+          "name": "allowedActionClasses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 127
+        },
+        {
+          "name": "forbiddenActionClasses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 128
+        },
+        {
+          "name": "confirmationActionClasses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 127
         },
         {
           "name": "softUtilityDimensions",
           "type": "bounded_array",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 64
         },
         {
           "name": "resourceEndowment",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 4096,
+          "minProperties": 6,
+          "maxProperties": 6,
+          "additionalProperties": false
+        },
+        {
+          "name": "risk",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096,
+          "minProperties": 4,
+          "maxProperties": 4,
+          "additionalProperties": false
         },
         {
           "name": "deadlineUnixMs",
@@ -948,13 +1017,24 @@
           "name": "revision",
           "type": "u64",
           "required": true
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
         }
       ],
       "invariants": [
         "bounded_lengths",
         "canonical_field_order",
         "digest_before_authority_use",
-        "unknown_critical_fields_rejected"
+        "unknown_critical_fields_rejected",
+        "projection_only_after_successful_admission_and_compile",
+        "native_ir_is_not_wire_contract",
+        "success_terminal_evidence_source_aggregate_lte_128",
+        "hard_constraints_include_six_resource_and_four_risk_rows",
+        "intrinsic_abstain_not_serialized_as_caller_action"
       ]
     },
     {
