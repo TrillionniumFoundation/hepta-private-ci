@@ -36,6 +36,7 @@ use crate::RunSnapshot;
 
 const MAX_PUBLICATION_BYTES: usize = 512 * 1024;
 const PUBLICATION_DOMAIN: &[u8] = b"hepta.agentd.objective-run-publication.v1";
+const STORED_ENVELOPE_SCHEMA: &str = "hepta.agentd.objective-run-publication-envelope.v1";
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -74,7 +75,7 @@ pub struct ObjectiveProductRunReceiptV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StoredObjectiveRunPublicationV1 {
     pub run_id: String,
     pub request_id: String,
@@ -84,6 +85,7 @@ pub struct StoredObjectiveRunPublicationV1 {
     pub schema_digest: String,
     pub hard_constraint_digest: String,
     pub semantic_digest: String,
+    pub runtime_body_digest: String,
     pub constraints: Vec<StoredConstraintV1>,
     pub success_predicates: Vec<StoredPredicateV1>,
     pub legal_actions: Vec<StoredActionV1>,
@@ -93,7 +95,7 @@ pub struct StoredObjectiveRunPublicationV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StoredConstraintV1 {
     pub id: String,
     pub class: String,
@@ -104,7 +106,7 @@ pub struct StoredConstraintV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StoredPredicateV1 {
     pub id: String,
     pub axis: String,
@@ -115,14 +117,14 @@ pub struct StoredPredicateV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StoredActionV1 {
     pub id: String,
     pub confirmation: String,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StoredPreferenceV1 {
     pub dimension: String,
     pub direction: String,
@@ -130,7 +132,7 @@ pub struct StoredPreferenceV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StoredAdmissionReceiptV1 {
     pub profile_id: String,
     pub profile_revision: u64,
@@ -144,7 +146,7 @@ pub struct StoredAdmissionReceiptV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StoredRunStartSnapshotV1 {
     pub run_id: String,
     pub objective_digest: String,
@@ -159,8 +161,9 @@ pub struct StoredRunStartSnapshotV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct StoredEnvelopeV1 {
+    schema: String,
     publication: StoredObjectiveRunPublicationV1,
     publication_digest: String,
 }
@@ -246,6 +249,7 @@ impl ObjectiveRunFileStore {
         }
         let publication_digest = publication_digest(&payload);
         let envelope = StoredEnvelopeV1 {
+            schema: STORED_ENVELOPE_SCHEMA.to_string(),
             publication: publication.clone(),
             publication_digest: publication_digest.to_string(),
         };
@@ -298,7 +302,7 @@ impl ObjectiveRunFileStore {
                 fs::remove_file(&temp_path)?;
                 sync_parent_directory(&self.directory)?;
             }
-            Err(error) if final_path.exists() => {
+            Err(_) if final_path.exists() => {
                 let _ = fs::remove_file(&temp_path);
                 let (current, current_digest) = self
                     .load(&run_id)?
@@ -346,6 +350,9 @@ impl ObjectiveRunFileStore {
             });
         }
         let envelope: StoredEnvelopeV1 = serde_json::from_slice(&encoded)?;
+        if envelope.schema != STORED_ENVELOPE_SCHEMA {
+            return Err(ObjectivePublicationError::Integrity);
+        }
         if envelope.publication.run_id != run_id.as_str() {
             return Err(ObjectivePublicationError::Integrity);
         }
@@ -462,6 +469,7 @@ fn stored_publication(
         schema_digest: objective.schema_digest.to_string(),
         hard_constraint_digest: objective.hard_constraint_digest.to_string(),
         semantic_digest: objective.semantic_digest.to_string(),
+        runtime_body_digest: bindings.body_digest.to_string(),
         constraints: objective
             .constraints
             .iter()

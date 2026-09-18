@@ -323,6 +323,7 @@ fn authenticated_objective_is_durably_published_before_run_admission() {
         first.objective.objective.semantic_digest.to_string()
     );
     assert_eq!(digest, first.publication.publication_digest);
+    assert_eq!(stored.runtime_body_digest, bindings.body_digest.to_string());
     assert!(stored.admission.authority_denied);
 
     let second = admit_publish_and_start_objective_run_v1(
@@ -416,7 +417,6 @@ fn explicit_abstain_is_published_without_runtime_dispatch_state() {
             .authority_denied
     );
 }
-
 
 #[test]
 fn concurrent_semantic_drift_cannot_replace_an_existing_run_publication() {

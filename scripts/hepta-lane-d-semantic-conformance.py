@@ -190,6 +190,8 @@ def verify() -> int:
     for token in [
         "admit_publish_and_start_objective_run_v1",
         "ObjectiveRunFileStore",
+        "STORED_ENVELOPE_SCHEMA",
+        "runtime_body_digest",
         "file.sync_all()?",
         "fs::hard_link(&temp_path, &final_path)",
         "CompileDisposition::ExplicitAbstain",
