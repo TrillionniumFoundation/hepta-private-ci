@@ -580,6 +580,13 @@ def verify_workflow(findings: Findings) -> None:
         "workflow is missing exact-candidate provenance artifact generation",
     )
     findings.require(
+        "id-token: write" in text
+        and "attestations: write" in text
+        and "actions/attest@a1948c3f048ba23858d222213b7c278aabede763" in text,
+        "workflow_gate_missing",
+        "workflow is missing signed Sigstore provenance attestation",
+    )
+    findings.require(
         bool(re.search(r"^  synthetic-merge:\s*$", text, re.MULTILINE)),
         "workflow_gate_missing",
         "workflow is missing synthetic-merge job",
