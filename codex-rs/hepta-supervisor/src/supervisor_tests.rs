@@ -851,8 +851,8 @@ fn lease_publication_failure_keeps_child_tracked_until_exit() -> Result<(), Supe
 }
 
 #[test]
-fn unexpected_exit_restarts_with_bounded_backoff_and_attempt_budget()
--> Result<(), SupervisorError> {
+fn unexpected_exit_restarts_with_bounded_backoff_and_attempt_budget() -> Result<(), SupervisorError>
+{
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
     let now = Instant::now();
