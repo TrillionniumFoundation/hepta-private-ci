@@ -36,6 +36,7 @@ CREATE TABLE cross_owner_outbox (
     destination TEXT NOT NULL,
     semantic_digest BLOB NOT NULL CHECK (length(semantic_digest) = 32),
     payload_digest BLOB NOT NULL CHECK (length(payload_digest) = 32),
+    payload BLOB NOT NULL CHECK (length(payload) BETWEEN 1 AND 1048576),
     state TEXT NOT NULL CHECK (state IN (
         'queued', 'leased', 'dispatched', 'indeterminate', 'applied', 'not_applied', 'quarantined'
     )),
@@ -82,6 +83,7 @@ WHEN OLD.operation_id IS NOT NEW.operation_id
   OR OLD.destination IS NOT NEW.destination
   OR OLD.semantic_digest IS NOT NEW.semantic_digest
   OR OLD.payload_digest IS NOT NEW.payload_digest
+  OR OLD.payload IS NOT NEW.payload
 BEGIN
     SELECT RAISE(ABORT, 'outbox semantic identity is immutable');
 END;
