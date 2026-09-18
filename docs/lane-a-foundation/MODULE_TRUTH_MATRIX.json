@@ -108,7 +108,7 @@
           "path": "codex-rs/hepta-wire/src/v2.rs",
           "mustContain": [
             "const WIRE_VERSION_V2: u16 = 2;",
-            "const FRAME_DIGEST_DOMAIN: &[u8] = b\"HPTA-WIRE-V2\\\\0\";",
+            "FRAME_DIGEST_DOMAIN",
             "pub struct WireEnvelopeV2",
             "FrameDigestMismatch"
           ]
