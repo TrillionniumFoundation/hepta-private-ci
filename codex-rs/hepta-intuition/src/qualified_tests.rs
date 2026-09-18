@@ -172,3 +172,16 @@ fn evidence_payloads_change_when_profile_or_candidate_set_changes() {
         qualification
     );
 }
+
+
+#[test]
+fn policy_model_and_scorer_identities_are_independent_but_bound() {
+    let (request, mut profile) = fixture();
+    profile.scorer.model_digest = digest("model-artifact-v2");
+    profile.scorer.scorer_contract_digest = digest("scorer-contract-v2");
+    let receipt = decide_calibrated_v3(request, &profile).unwrap();
+    assert_eq!(
+        receipt.disposition,
+        crate::calibrated::CalibratedDispositionV1::Selected(id("candidate:a"))
+    );
+}
