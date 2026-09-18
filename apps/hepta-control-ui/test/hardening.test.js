@@ -179,7 +179,26 @@ function allElements(root) {
   return result;
 }
 function sampleView() {
-  return Object.freeze({ stale: false, generation: 7, revision: 9, pending: 0, indeterminate: 0, recoveryRequired: 0, modules: Object.freeze([Object.freeze({ moduleId: "runtime.agentd", status: "ready", revision: 4, digest: D3, ready: true })]) });
+  return Object.freeze({
+    stale: false,
+    sessionId: "session.1",
+    connectionGeneration: 1,
+    generation: 7,
+    revision: 9,
+    digest: D2,
+    pending: 0,
+    indeterminate: 0,
+    recoveryRequired: 0,
+    modules: Object.freeze([
+      Object.freeze({
+        moduleId: "runtime.agentd",
+        status: "ready",
+        revision: 4,
+        digest: D3,
+        ready: true,
+      }),
+    ]),
+  });
 }
 
 test("browser action lock collapses rapid duplicate clicks and restores focus after rerender", async () => {
