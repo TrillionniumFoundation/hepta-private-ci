@@ -1,6 +1,7 @@
 use super::*;
 
 use std::os::unix::fs::PermissionsExt;
+use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
