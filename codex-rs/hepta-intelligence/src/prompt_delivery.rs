@@ -75,19 +75,13 @@ impl PromptRegistryCompiledContextV2 {
         if self.authority.grants_any() || self.delivery_set_digest.is_zero() {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
         }
-        let selected = self
-            .compiled
-            .receipt
-            .selected_item_ids
-            .iter()
-            .cloned()
-            .collect::<Vec<_>>();
-        let delivered = self
-            .selected_deliveries
-            .iter()
-            .map(|delivery| delivery.binding.realization_id.clone())
-            .collect::<Vec<_>>();
-        if selected != delivered {
+        let selected = &self.compiled.receipt.selected_item_ids;
+        if selected.len() != self.selected_deliveries.len()
+            || selected
+                .iter()
+                .zip(&self.selected_deliveries)
+                .any(|(item_id, delivery)| item_id != &delivery.binding.realization_id)
+        {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
         }
         for delivery in &self.selected_deliveries {
