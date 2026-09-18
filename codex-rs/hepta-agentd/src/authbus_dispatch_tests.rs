@@ -91,7 +91,7 @@ impl Fixture {
             trust_file,
         };
         fixture.trust(/*revoked*/ false);
-        let host = TextIngress::open(fixture.state.identity(), fixture.trust_file.clone())
+        let host = TextIngress::open(fixture.state.identity(), fixture.trust_file.clone(), None)
             .await
             .unwrap();
         assert!(fixture.state.authbus.set(Arc::new(host)).is_ok());
@@ -231,7 +231,7 @@ async fn lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_recei
     tokio::time::sleep(Duration::from_millis(1100)).await;
     // A new handle recovers persisted attempts; the queue's independent state
     // survived the lost reply. No in-process claim is reused as authority.
-    let reopened = TextIngress::open(fixture.state.identity(), fixture.trust_file.clone())
+    let reopened = TextIngress::open(fixture.state.identity(), fixture.trust_file.clone(), None)
         .await
         .unwrap();
     let recovered = fixture.claim(&reopened, id).await;
