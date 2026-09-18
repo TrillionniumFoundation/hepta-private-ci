@@ -11,7 +11,7 @@
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_agentd_not_activated",
   "productionWriterState": "not_applicable_stateless",
   "operations": [
     {
@@ -153,7 +153,7 @@
     },
     {
       "operation": "compile",
-      "nativeSymbol": "codex_hepta_objective::compile",
+      "nativeSymbol": "crate::compiler::compile",
       "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
       "inputs": [
         "ObjectiveSourceEnvelope"
@@ -162,7 +162,7 @@
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_internal",
       "authority": "none",
       "tests": [
         {
@@ -181,7 +181,9 @@
       "designOperation": "compile",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "publicCompatibilityEntrypoint": "compile_prevalidated_legacy_objective",
+      "publicCompatibilityFeature": "legacy-objective-compile"
     }
   ],
   "canonicalReadinessProtocols": [
@@ -194,7 +196,7 @@
     "specification": "complete",
     "source": "candidate_implemented",
     "exactHeadQualification": "required",
-    "productComposition": "not_established",
+    "productComposition": "source_composed_not_activated",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -222,12 +224,27 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain successful exact-head objective admission and Lane D semantic workflow receipts for each candidate.",
+    "Qualify the Agentd objective publication path on the named target host, including crash/restart and backpressure measurements."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "productCallerEvidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "symbol": "admit_publish_and_start_objective_run_v1",
+      "semantics": "authenticated admission -> immutable fsync+rename objective/run publication -> bounded AgentRunCoordinator admission"
+    }
+  ],
+  "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+  "exactHeadQualificationPolicy": {
+    "state": "workflow_enforced_per_candidate",
+    "workflows": [
+      ".github/workflows/hepta-objective-admission.yml",
+      ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+    ]
+  }
 }
