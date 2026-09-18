@@ -28,6 +28,20 @@ use crate::cognitive_context::CognitiveContextError;
 use super::AgentdState;
 use super::poisoned_state;
 
+fn agentd_capabilities() -> Result<crate::AgentdCapabilitySet, AgentdError> {
+    let capabilities = [
+        ("run.lifecycle", 1_u16, 0_u16),
+        ("run.lifecycle.recovery", 1_u16, 0_u16),
+    ]
+    .into_iter()
+    .map(|(id, major, minor)| {
+        codex_hepta_agent_protocol::AgentdCapability::new(id, major, minor)
+            .map_err(AgentdError::Protocol)
+    })
+    .collect::<Result<Vec<_>, _>>()?;
+    crate::AgentdCapabilitySet::new(capabilities).map_err(AgentdError::Protocol)
+}
+
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private automation storage is unavailable";
@@ -62,7 +76,7 @@ impl AgentdState {
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
-                AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
+                AgentdPayload::Capabilities(agentd_capabilities()?)
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: matches!(
@@ -97,6 +111,57 @@ impl AgentdState {
                     })
                 }
             }
+            crate::AgentdMethod::RunStart { snapshot } => {
+                AgentdPayload::RunReceipt(self.run_start(now_ms()?, snapshot)?)
+            }
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision,
+                attachment,
+            } => AgentdPayload::RunReceipt(self.run_attach_context(
+                now_ms()?,
+                expected_revision,
+                attachment,
+            )?),
+            crate::AgentdMethod::RunMarkDispatched {
+                run_id,
+                expected_revision,
+            } => AgentdPayload::RunReceipt(self.run_mark_dispatched(
+                now_ms()?,
+                &run_id,
+                expected_revision,
+            )?),
+            crate::AgentdMethod::RunCancel {
+                run_id,
+                expected_revision,
+                reason,
+            } => {
+                let (disposition, receipt) =
+                    self.run_cancel(&run_id, expected_revision, reason)?;
+                AgentdPayload::RunCancellation {
+                    disposition,
+                    receipt,
+                }
+            }
+            crate::AgentdMethod::RunObserveTerminal {
+                run_id,
+                expected_revision,
+                phase,
+                terminal_observed,
+            } => AgentdPayload::RunReceipt(self.run_observe_terminal(
+                &run_id,
+                expected_revision,
+                phase,
+                terminal_observed,
+            )?),
+            crate::AgentdMethod::RunStatus { run_id } => AgentdPayload::RunStatus {
+                receipt: self.run_status(&run_id)?,
+            },
+            crate::AgentdMethod::RunRemoveClosed {
+                run_id,
+                expected_revision,
+            } => AgentdPayload::RunReceipt(
+                self.run_remove_closed(&run_id, expected_revision)?,
+            ),
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
                 crate::authbus_ingress::submit(self, request).await?,
             ),
