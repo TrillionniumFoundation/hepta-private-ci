@@ -40,9 +40,10 @@ predecessor while atomically persisting the checkpoint and receipt. Concurrent
 proposals may be computed; only the host's single writer may publish one.
 The composed owner path is `NeuronRuntimeHost`: it consumes canonical typed
 Neuron inputs, invokes a required `FrozenModelExecutor`, validates the exact
-weights/tokenizer/preprocessor/quantization/backend/device receipt, commits the
-sparse state through `SparseJournal`, and advances a separately durable recovery
-witness before acknowledgement. Strict canonical-JSON adapters exist for the
+weights/tokenizer/preprocessor/quantization/backend/device receipt plus native
+runtime-binary, SBOM and license attestation, commits the sparse state through
+`SparseJournal`, and advances a separately durable recovery witness before
+acknowledgement. Strict canonical-JSON adapters exist for the
 registered Neuron protocols. Segment rotation preserves the exact witnessed
 checkpoint as genesis, and deletion rebuild replays only through the live lineage
 policy; a failed rebuild is poisoned and cannot be reused.
@@ -61,9 +62,11 @@ detector and support lineage are all currently admissible. Missing, expired,
 OOD, low-confidence, collapse or resource evidence abstains. Every runtime result
 remains `AuthorityPosture::DENY_ALL`.
 
-Eligibility-to-parameter-group accumulation and bounded low-dimensional
-modulation now produce next-snapshot sufficient statistics only; selected weights,
-topology and current-run artifacts are never mutated. Real-model execution,
+Eligibility-to-parameter-group accumulation accepts samples derived from actual
+`SparseCheckpoint` state and binds an independent-modulator evidence digest before
+bounded low-dimensional modulation. It produces next-snapshot sufficient
+statistics only; selected weights, topology and current-run artifacts are never
+mutated. Real-model execution,
 target-host resource measurements, ablation outcomes and longitudinal efficacy
 remain external evidence, not consequences of unit tests.
 
