@@ -53,6 +53,13 @@ Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion an
 | `selfIteration` | `SI0_NONE` |
 | `globalOptimization` | `G0_STATIC_HEURISTIC` |
 
+## Claim interpretation
+
+- Source implementation does not advance a baseline capability claim.
+- Source-root presence does not prove product execution.
+- Capability advancement follows the evidence ladder in `docs/evidence/CLAIMS.json`.
+- Queued or passing source CI is candidate evidence, not capability proof.
+
 ## Authority posture
 
 Every canonical and subordinate authority flag is present and false. Documentation readiness, source presence, a generated file, a queued workflow or a fixture is not runtime activation, efficacy, selection, merge, operator acceptance, promotion or release.
