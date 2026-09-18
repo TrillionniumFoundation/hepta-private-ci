@@ -56,6 +56,7 @@ Direct dependencies:
 - `utility.ndu`
 - `neuron.runtime`
 - `intuition.policy`
+- `prompt.registry`
 - `prompt.optimizer`
 - `context.compiler`
 - `learning.eval`
@@ -109,6 +110,7 @@ Consumed contracts:
 - `ModulePort::neuron.runtime::intelligence.control`
 - `ModulePort::objective.compiler::intelligence.control`
 - `ModulePort::prompt.optimizer::intelligence.control`
+- `ModulePort::prompt.registry::intelligence.control`
 - `ModulePort::utility.ndu::intelligence.control`
 
 Critical protocol schemas:
@@ -173,6 +175,7 @@ Composition library over injected owner ports. The read-only vertical and evalua
 
 Current operating and state-format references:
 
+- [codex-rs/hepta-intelligence/src/prompt_delivery.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery.rs) — read-only prompt-registry payload-to-context compilation bridge.
 - [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 
@@ -184,6 +187,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs); named case: `durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes`.
 - [codex-rs/hepta-intelligence/src/lib_tests.rs](../../../codex-rs/hepta-intelligence/src/lib_tests.rs); named case: `highest_eligible_candidate_is_selected_without_effect_authority`.
+- [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs); named cases bind durable prompt-registry payload bytes and admission lineage into `context.compiler` and reject model-profile drift.
 
 In `codex-rs`, run `just test -p codex-hepta-intelligence`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intelligence.control.md) separately labels target acceptance designs.
 
