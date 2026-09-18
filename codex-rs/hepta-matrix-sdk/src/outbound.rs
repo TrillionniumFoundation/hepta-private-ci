@@ -123,9 +123,7 @@ pub enum OutboxDispatchError {
     Store,
 }
 
-pub async fn dispatch_outbox_once<
-    T: MatrixOutboundTransport + MatrixOutboundObserver + ?Sized,
->(
+pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + MatrixOutboundObserver + ?Sized>(
     store: &MatrixDurableStore,
     transport: &T,
     config: &OutboxDispatchConfig,
@@ -144,7 +142,9 @@ pub async fn dispatch_outbox_once<
         ..OutboxDispatchStats::default()
     };
     for record in records {
-        let payload_digest = Sha256Digest::for_bytes(&record.payload).as_str().to_string();
+        let payload_digest = Sha256Digest::for_bytes(&record.payload)
+            .as_str()
+            .to_string();
         let intent = MatrixDispatchIntent {
             operation_id: matrix_dispatch_operation_id(&record.stable_txn_id),
             stable_txn_id: record.stable_txn_id.clone(),
@@ -310,9 +310,7 @@ pub async fn dispatch_outbox_once<
     Ok(stats)
 }
 
-pub async fn run_outbox_sender<
-    T: MatrixOutboundTransport + MatrixOutboundObserver + ?Sized,
->(
+pub async fn run_outbox_sender<T: MatrixOutboundTransport + MatrixOutboundObserver + ?Sized>(
     store: &MatrixDurableStore,
     transport: &T,
     config: &OutboxDispatchConfig,
