@@ -6,6 +6,7 @@ use codex_hepta_types::Digest32;
 
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
+use crate::authbus_control::authbus_epoch_retired;
 use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
 
@@ -60,6 +61,9 @@ pub(crate) async fn advance_replay(
 ) -> Result<(), AuthBusAdmissionError> {
     let claims = authenticated.claims();
     let epoch = claims.key_epoch.get().to_be_bytes();
+    if authbus_epoch_retired(transaction, &claims.issuer_id, claims.key_epoch.get()).await? {
+        return Err(codex_hepta_authbus::Error::Revoked.into());
+    }
     let previous: Option<Vec<u8>> = sqlx::query_scalar(
         "SELECT sequence FROM authbus_replay_sequences
              WHERE issuer_id = ? AND key_epoch = ? AND subject_id = ? AND scope_digest = ?",
