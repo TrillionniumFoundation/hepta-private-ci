@@ -77,6 +77,7 @@ pub struct SnapshotAcquisitionRequestV1 {
     pub request_id: StableId,
     pub scope_id: StableId,
     pub purpose_id: StableId,
+    pub consumer_profile_digest: Digest32,
     pub minimum_memory_frontier: u64,
     pub minimum_source_frontier: u64,
     pub minimum_tombstone_frontier: u64,
@@ -88,6 +89,11 @@ pub struct SnapshotAcquisitionRequestV1 {
 
 impl SnapshotAcquisitionRequestV1 {
     pub fn validate(&self, now_unix_ms: u64) -> Result<(), SnapshotProviderError> {
+        if self.consumer_profile_digest.is_zero() {
+            return Err(SnapshotProviderError::InvalidRequest(
+                "consumer_profile_digest",
+            ));
+        }
         if self.authority_epoch == 0 {
             return Err(SnapshotProviderError::InvalidRequest("authority_epoch"));
         }
@@ -103,6 +109,7 @@ impl SnapshotAcquisitionRequestV1 {
         push_id(&mut bytes, &self.request_id);
         push_id(&mut bytes, &self.scope_id);
         push_id(&mut bytes, &self.purpose_id);
+        bytes.extend_from_slice(self.consumer_profile_digest.as_array());
         push_u64(&mut bytes, self.minimum_memory_frontier);
         push_u64(&mut bytes, self.minimum_source_frontier);
         push_u64(&mut bytes, self.minimum_tombstone_frontier);
@@ -202,6 +209,9 @@ impl AuthoritativeSnapshotV1 {
         }
         if self.generation_vector.purpose_id != request.purpose_id {
             return Err(SnapshotProviderError::PurposeMismatch);
+        }
+        if self.generation_vector.consumer_profile_digest != request.consumer_profile_digest {
+            return Err(SnapshotProviderError::ConsumerProfileMismatch);
         }
         if self.generation_vector.authority_epoch != request.authority_epoch {
             return Err(SnapshotProviderError::AuthorityEpochMismatch);
@@ -397,6 +407,7 @@ pub enum SnapshotProviderError {
     AcquiredInFuture,
     ScopeMismatch,
     PurposeMismatch,
+    ConsumerProfileMismatch,
     AuthorityEpochMismatch,
     StaleMemoryFrontier,
     StaleSourceFrontier,
