@@ -288,6 +288,7 @@ impl HeptaEvidenceStore {
         self.reserve_authbus_quota_inner(decision, request, None).await
     }
 
+    #[cfg(test)]
     pub(crate) async fn reserve_authbus_quota_at(
         &self,
         decision: &AuthorizationDecision,
@@ -548,6 +549,7 @@ impl HeptaEvidenceStore {
         self.expire_authbus_reservations_inner(None, limit).await
     }
 
+    #[cfg(test)]
     pub(crate) async fn expire_authbus_reservations_at(
         &self,
         now_ms: u64,
