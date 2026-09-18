@@ -289,7 +289,11 @@ impl RemoteFederatedResponseV2 {
                 query.binding_digest(),
             ),
             ("response_scope", self.scope_digest, query.scope_digest),
-            ("response_purpose", self.purpose_digest, query.purpose_digest),
+            (
+                "response_purpose",
+                self.purpose_digest,
+                query.purpose_digest,
+            ),
         ] {
             if left != right {
                 return Err(FederationV2Error::DigestMismatch(name));
@@ -323,11 +327,7 @@ pub enum FederationTransportResultV2 {
 /// The returned future is cancellation-safe: dropping it must not dispatch a
 /// second request or detach untracked I/O.
 pub type FederationTransportFutureV2<'a> = Pin<
-    Box<
-        dyn Future<Output = Result<FederationTransportResultV2, FederationV2Error>>
-            + Send
-            + 'a,
-    >,
+    Box<dyn Future<Output = Result<FederationTransportResultV2, FederationV2Error>> + Send + 'a>,
 >;
 
 pub trait FederationTransportV2: Send + Sync {
@@ -364,8 +364,7 @@ pub trait FederationAuthorityV2: Send + Sync {
     ) -> FederationAuthorityFutureV2<'a>;
 }
 
-pub type FederationCancellationFutureV2<'a> =
-    Pin<Box<dyn Future<Output = ()> + Send + 'a>>;
+pub type FederationCancellationFutureV2<'a> = Pin<Box<dyn Future<Output = ()> + Send + 'a>>;
 
 /// Cancellation source owned by the product caller.
 ///
@@ -516,10 +515,7 @@ fn validate_authority_observation(
     query: &FederatedQueryV2,
     lease: &FederatedLeaseV2,
 ) -> Result<AuthorityDispositionV2, FederationV2Error> {
-    ensure_digest(
-        "authority_query_binding",
-        observation.query_binding_digest,
-    )?;
+    ensure_digest("authority_query_binding", observation.query_binding_digest)?;
     ensure_digest(
         "authority_generation_vector",
         observation.generation_vector_digest,
@@ -528,9 +524,7 @@ fn validate_authority_observation(
         return Err(FederationV2Error::IdentityMismatch("authority_lease"));
     }
     if observation.query_binding_digest != query.binding_digest() {
-        return Err(FederationV2Error::DigestMismatch(
-            "authority_query_binding",
-        ));
+        return Err(FederationV2Error::DigestMismatch("authority_query_binding"));
     }
     if observation.lease_epoch == 0 {
         return Err(FederationV2Error::LeaseEpochMismatch);
@@ -614,8 +608,7 @@ where
         .min(preflight_authority.expires_unix_ms);
 
     if cancellation.is_cancelled() {
-        let mut result =
-            indeterminate_result(query, query_binding_digest, base_expiry);
+        let mut result = indeterminate_result(query, query_binding_digest, base_expiry);
         result.result_digest = result.compute_result_digest();
         result.validate()?;
         return Ok(result);
@@ -676,10 +669,7 @@ where
                     authority_disposition,
                     AuthorityDispositionV2::StaleGeneration
                 );
-            let revoked = matches!(
-                authority_disposition,
-                AuthorityDispositionV2::Revoked
-            );
+            let revoked = matches!(authority_disposition, AuthorityDispositionV2::Revoked);
             let maximum_results =
                 usize::try_from(query.maximum_results).unwrap_or(MAX_FEDERATED_RESULTS_V2);
             let remote_item_count = response.items.len();
