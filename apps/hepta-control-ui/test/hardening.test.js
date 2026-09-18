@@ -597,3 +597,46 @@ test("automatic reconnect does not retry recovery-required operations", async ()
   assert.equal(reconcileCalls, 1);
 });
 
+test("transport timeout remains active through response body streaming", async () => {
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+    timeoutMs: 5,
+    fetchImpl: async (_url, options) =>
+      new Response(
+        new ReadableStream({
+          start(controller) {
+            options.signal?.addEventListener("abort", () => controller.error(new Error("aborted")), {
+              once: true,
+            });
+          },
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      ),
+  });
+  await assert.rejects(
+    transport.readSnapshot(),
+    (error) => error.code === ERROR_CODES.BACKEND_UNAVAILABLE,
+  );
+});
+
+test("bootstrap timeout covers response body streaming", async () => {
+  await assert.rejects(
+    loadBrowserBootstrap({
+      origin: "https://control.example",
+      timeoutMs: 5,
+      fetchImpl: async (_url, options) =>
+        new Response(
+          new ReadableStream({
+            start(controller) {
+              options.signal?.addEventListener("abort", () => controller.error(new Error("aborted")), {
+                once: true,
+              });
+            },
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+    }),
+    (error) => error.code === ERROR_CODES.BACKEND_UNAVAILABLE,
+  );
+});
+
