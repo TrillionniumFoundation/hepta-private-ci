@@ -732,3 +732,124 @@ test("post-dispatch persistence failure is visible in the returned acknowledgeme
   assert.equal(client.readView().recoveryRequired, 1);
 });
 
+test("age-triggered recoveryRequired is durably recorded on reconnect", async () => {
+  const storage = new MemoryStorage();
+  const store = new LocalStoragePendingStore({ storage, key: "hepta.pending.age" });
+  store.save([
+    {
+      method: "operation/request",
+      operationId: "operation.aged",
+      semanticDigest: D1,
+      originSessionId: "session.old",
+      originConnectionGeneration: 1,
+      runtimeGeneration: 7,
+      displayedRevision: 9,
+      accepted: true,
+      status: "indeterminate",
+      createdAtMs: 0,
+      reconcileAttempts: 0,
+      nextReconcileAtMs: 0,
+      recoveryRequired: false,
+    },
+  ]);
+  let reconcileCalls = 0;
+  const client = new RuntimeClient({
+    transport: {
+      async connect(input) {
+        return {
+          authenticated: true,
+          sessionId: "session.new",
+          connectionGeneration: 2,
+          protocolVersion: input.protocolVersion,
+        };
+      },
+      async request() { assert.fail("mutation must not replay"); },
+      async reconcile() { reconcileCalls += 1; return null; },
+      async close() {},
+    },
+    pendingStore: store,
+    clock: () => 24 * 60 * 60 * 1000 + 1,
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  const session = await client.connect({
+    endpointId: "runtime.1",
+    protocolVersion: 1,
+    manifestDigest: D2,
+  });
+  assert.equal(session.recoveryRequired, 1);
+  assert.equal(reconcileCalls, 0);
+  assert.equal(store.load()[0].recoveryRequired, true);
+});
+
+test("automated reconciliation preserves persistence failure error truth", async () => {
+  let saves = 0;
+  const store = {
+    load: () => [],
+    save: () => {
+      saves += 1;
+      if (saves >= 3) throw new Error("delete persistence failed");
+    },
+  };
+  let terminal = false;
+  const transport = {
+    async connect(input) {
+      return {
+        authenticated: true,
+        sessionId: "session.1",
+        connectionGeneration: 1,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request(method, input) {
+      return {
+        accepted: true,
+        method,
+        sessionId: input.sessionId,
+        connectionGeneration: input.connectionGeneration,
+        runtimeGeneration: input.runtimeGeneration,
+        operationId: input.operationId,
+        semanticDigest: input.semanticDigest,
+      };
+    },
+    async reconcile(query) {
+      if (!terminal) return null;
+      return {
+        ...query,
+        status: "succeeded",
+        terminalObserved: true,
+        outcomeDigest: D3,
+      };
+    },
+    async close() {},
+  };
+  const client = new RuntimeClient({
+    transport,
+    pendingStore: store,
+    clock: () => 10_000,
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  await connectWithSnapshot(client);
+  const acknowledgement = await client.submitRequest({
+    operationId: "operation.persist-terminal",
+    subjectId: "runtime.agentd",
+    action: "request_retry",
+    expectedRevision: 4,
+    displayedRevision: 9,
+  });
+  assert.equal(acknowledgement.status, "pending");
+  terminal = true;
+  await client.reconcilePending({ force: true });
+  const retry = await client.submitRequest({
+    operationId: "operation.persist-terminal",
+    subjectId: "runtime.agentd",
+    action: "request_retry",
+    expectedRevision: 4,
+    displayedRevision: 9,
+  });
+  assert.equal(retry.status, "indeterminate");
+  assert.equal(retry.recoveryRequired, true);
+  assert.equal(retry.errorCode, ERROR_CODES.PERSISTENCE_UNAVAILABLE);
+});
+
