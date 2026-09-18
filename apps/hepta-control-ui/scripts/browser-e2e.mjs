@@ -86,6 +86,11 @@ try {
   dialog.querySelector("[data-hepta-confirm-submit='true']").click();
   await waitFor(() => document.querySelector("[role='status'],[role='alert']")?.textContent.includes("pending"));
   if ((await stats()).requestCount !== 1) throw new Error("rapid duplicate click crossed transport more than once");
+  const pendingStorageKey = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index))
+    .find((key) => key?.startsWith("hepta.ui.control.pending."));
+  if (!pendingStorageKey || pendingStorageKey.includes("e2e.operator")) {
+    throw new Error("pending store key is not bound through opaque persistence-domain identity");
+  }
   const focused = document.activeElement;
   if (!focused || focused.textContent !== "Retry runtime.agentd") throw new Error("focus was not restored to the initiating action");
   if (root.getAttribute("aria-busy") !== "false") throw new Error("busy state was not cleared");
@@ -109,8 +114,22 @@ try {
   const recoveredRetry = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Retry "));
   if (!recoveredRetry || recoveredRetry.disabled) throw new Error("online recovery did not restore coherent controls");
 
+  const beforeSuspend = (await stats()).connectCount;
+  const pageHide = new Event("pagehide");
+  Object.defineProperty(pageHide, "persisted", { value: true });
+  window.dispatchEvent(pageHide);
+  await sleep(100);
+  if ((await stats()).connectCount !== beforeSuspend) {
+    throw new Error("pagehide suspension unexpectedly reopened a runtime session");
+  }
+  const pageShow = new Event("pageshow");
+  Object.defineProperty(pageShow, "persisted", { value: true });
+  window.dispatchEvent(pageShow);
+  await waitForAsync(async () => (await stats()).connectCount >= beforeSuspend + 1);
+  await waitFor(() => root.getAttribute("data-hepta-ready") === "true");
+
   await fetch("/api/ui-control/e2e-expire-session", { cache: "no-store" });
-  await waitForAsync(async () => (await stats()).connectCount >= 3, 7000);
+  await waitForAsync(async () => (await stats()).connectCount >= beforeSuspend + 2, 7000);
   await waitFor(() => root.getAttribute("data-hepta-ready") === "true", 7000);
   if ((await stats()).requestCount !== 1) throw new Error("session recovery replayed a mutation");
 
