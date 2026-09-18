@@ -85,7 +85,11 @@ impl TextTrust {
         )
     }
 
-    pub fn issuer_for(&self, key_epoch: u64, now_ms: u64) -> Result<IssuerRegistration, AgentdError> {
+    pub fn issuer_for(
+        &self,
+        key_epoch: u64,
+        now_ms: u64,
+    ) -> Result<IssuerRegistration, AgentdError> {
         if key_epoch == self.key_epoch {
             return self.registration(
                 self.key_epoch,
@@ -156,7 +160,10 @@ impl TextTrust {
         not_after_ms: Option<u64>,
         now_ms: Option<u64>,
     ) -> Result<IssuerRegistration, AgentdError> {
-        if not_before_ms.zip(not_after_ms).is_some_and(|(start, end)| start >= end) {
+        if not_before_ms
+            .zip(not_after_ms)
+            .is_some_and(|(start, end)| start >= end)
+        {
             return Err(invalid("invalid key validity window"));
         }
         if let Some(now) = now_ms
@@ -168,8 +175,7 @@ impl TextTrust {
         Ok(IssuerRegistration {
             issuer_id: StableId::new(&self.issuer_id)
                 .map_err(|error| invalid(&error.to_string()))?,
-            key_epoch: Generation::new(key_epoch)
-                .map_err(|error| invalid(&error.to_string()))?,
+            key_epoch: Generation::new(key_epoch).map_err(|error| invalid(&error.to_string()))?,
             verifying_key: VerifyingKey::from_bytes(&hex_bytes(public_key_hex)?)
                 .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
             revoked,
@@ -186,7 +192,9 @@ impl TextTrust {
                 generation,
                 Digest32::from_array(hex_bytes::<32>(digest)?),
             ))),
-            _ => Err(invalid("restore checkpoint generation/digest must be configured together")),
+            _ => Err(invalid(
+                "restore checkpoint generation/digest must be configured together",
+            )),
         }
     }
 
