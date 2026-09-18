@@ -37,6 +37,11 @@
           "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
           "kind": "strict_wire_round_trip",
           "command": "just test -p codex-hepta-agent-protocol"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "kind": "live_daemon_uds_restart",
+          "command": "cargo test --locked -p codex-hepta-agentd --features qualification-cognitive-write --test cognitive_product_e2e real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispatch -- --nocapture --test-threads=1"
         }
       ],
       "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration, and owner-port identities.",
@@ -87,6 +92,11 @@
           "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
           "kind": "strict_wire_round_trip",
           "command": "just test -p codex-hepta-agent-protocol"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "kind": "live_daemon_uds_restart",
+          "command": "cargo test --locked -p codex-hepta-agentd --features qualification-cognitive-write --test cognitive_product_e2e real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispatch -- --nocapture --test-threads=1"
         }
       ],
       "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity.",
@@ -146,6 +156,11 @@
           "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
           "kind": "strict_wire_round_trip",
           "command": "just test -p codex-hepta-agent-protocol"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "kind": "live_daemon_uds_restart",
+          "command": "cargo test --locked -p codex-hepta-agentd --features qualification-cognitive-write --test cognitive_product_e2e real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispatch -- --nocapture --test-threads=1"
         }
       ],
       "sourceSemantics": "Distinguishes provable pre-dispatch cancellation from post-dispatch cancelling or indeterminate state.",
@@ -205,6 +220,11 @@
           "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
           "kind": "strict_wire_round_trip",
           "command": "just test -p codex-hepta-agent-protocol"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "kind": "live_daemon_uds_restart",
+          "command": "cargo test --locked -p codex-hepta-agentd --features qualification-cognitive-write --test cognitive_product_e2e real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispatch -- --nocapture --test-threads=1"
         }
       ],
       "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple.",
