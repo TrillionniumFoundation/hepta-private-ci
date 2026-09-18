@@ -31,7 +31,12 @@ impl PayloadCodec for StrictCodec {
     }
 
     fn encode_value(&self, value: &Self::Value) -> Result<Vec<u8>, SchemaCodecError> {
-        if value.objective.is_empty() || value.objective.contains([';', '=']) {
+        if value.objective.is_empty()
+            || value
+                .objective
+                .bytes()
+                .any(|byte| matches!(byte, b';' | b'='))
+        {
             return Err(SchemaCodecError::Rejected("invalid objective"));
         }
         Ok(format!("objective={};step={}", value.objective, value.step).into_bytes())
