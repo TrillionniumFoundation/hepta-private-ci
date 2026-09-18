@@ -291,6 +291,21 @@ fn tampered_ndu_binding_is_rejected() {
 }
 
 #[test]
+fn resource_profile_digest_must_match_exact_reservations() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    request.resource_reservations[0].essential_floor = q32(1);
+
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::ResourceProfileMismatch
+    );
+}
+
+#[test]
 fn missing_resource_axis_is_unavailable_not_zero_cost() {
     let snapshot = must(collect_snapshot(
         snapshot_request(),
