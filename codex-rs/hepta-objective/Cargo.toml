@@ -10,6 +10,11 @@ name = "codex_hepta_objective"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Qualification-only compatibility surface. Production callers must use authenticated admission.
+qualification-legacy-objective-compile = []
+
 [lints]
 workspace = true
 
