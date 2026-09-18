@@ -119,10 +119,27 @@ impl ArtifactLifecycleJournalV2 {
         event: ArtifactLifecycleEventV1,
         now: u64,
     ) -> Result<ArtifactLifecycleJournalReceiptV2, ArtifactLifecycleJournalError> {
+        self.append_validated_at(
+            expected_head_digest,
+            producer_id,
+            actor,
+            event,
+            now,
+        )
+    }
+
+    fn append_validated_at(
+        &mut self,
+        expected_head_digest: Digest32,
+        producer_id: &StableId,
+        actor: LifecycleActorEvidenceV2,
+        event: ArtifactLifecycleEventV1,
+        validation_time: u64,
+    ) -> Result<ArtifactLifecycleJournalReceiptV2, ArtifactLifecycleJournalError> {
         if expected_head_digest != self.head_digest {
             return Err(ArtifactLifecycleJournalError::HeadMismatch);
         }
-        validate_actor(&actor, now)?;
+        validate_actor(&actor, validation_time)?;
         if event.actor_id != actor.actor_id
             || event.actor_credential_digest != actor.credential_digest
             || event.authority_epoch != actor.authority_epoch
@@ -206,7 +223,7 @@ impl ArtifactLifecycleJournalV2 {
 
     pub fn from_snapshot(
         snapshot: ArtifactLifecycleJournalSnapshotV2,
-        now: u64,
+        _now: u64,
     ) -> Result<Self, ArtifactLifecycleJournalError> {
         let expected_head = snapshot.head_digest;
         let mut journal = Self::new();
@@ -214,12 +231,16 @@ impl ArtifactLifecycleJournalV2 {
             if expected.predecessor_head_digest != journal.head_digest {
                 return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
             }
-            let receipt = journal.append(
+            // Snapshot recovery validates actor evidence at the event's historical
+            // occurrence time. Requiring the credential to still be live at
+            // reopen time would make an otherwise immutable, valid history
+            // unrecoverable after credential expiry.
+            let receipt = journal.append_validated_at(
                 journal.head_digest,
                 &expected.producer_id,
                 expected.actor.clone(),
                 expected.event.clone(),
-                now,
+                expected.event.occurred_at,
             )?;
             let actual = journal
                 .records
@@ -471,6 +492,55 @@ mod tests {
             Err(ArtifactLifecycleJournalError::Transition(
                 ArtifactClosureError::InvalidLifecycleTransition
             ))
+        );
+    }
+
+    #[test]
+    fn art_06_lifecycle_journal_reopens_after_historical_actor_expiry() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        journal
+            .append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained-expiring",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    20,
+                ),
+                20,
+            )
+            .expect("historical append succeeds while credential is live");
+
+        let snapshot = journal.snapshot();
+        let reopened = ArtifactLifecycleJournalV2::from_snapshot(snapshot, 101)
+            .expect("historical snapshot remains recoverable after actor expiry");
+        assert_eq!(reopened.head_digest(), journal.head_digest());
+        assert_eq!(reopened.records(), journal.records());
+
+        let next_artifact = id("artifact-after-expiry");
+        assert_eq!(
+            reopened.clone().append(
+                reopened.head_digest(),
+                &producer_id,
+                producer.clone(),
+                event(
+                    "new-write-after-expiry",
+                    &next_artifact,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    100,
+                ),
+                101,
+            ),
+            Err(ArtifactLifecycleJournalError::InvalidActorEvidence)
         );
     }
 
