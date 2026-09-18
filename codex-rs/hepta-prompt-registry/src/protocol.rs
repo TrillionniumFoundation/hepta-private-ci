@@ -13,6 +13,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::Lifecycle;
+use crate::PromptRoleV2;
 
 const MAX_PROTOCOL_BYTES: usize = 262_144;
 const MAX_SEMANTIC_PURPOSE_BYTES: usize = 4_096;
@@ -120,7 +121,7 @@ pub struct PromptRealizationV1 {
     pub model_version: String,
     pub tokenizer_digest: Digest32,
     pub system_template_digest: Digest32,
-    pub message_role: String,
+    pub message_role: PromptRoleV2,
     pub payload_digest: Digest32,
     pub token_cost_upper_bound: u32,
     pub expires_unix_ms: Option<u64>,
@@ -150,7 +151,7 @@ impl PromptRealizationV1 {
             model_version: self.model_version.clone(),
             tokenizer_digest: self.tokenizer_digest.to_string(),
             system_template_digest: self.system_template_digest.to_string(),
-            message_role: self.message_role.clone(),
+            message_role: prompt_role_name(self.message_role).to_owned(),
             payload_digest: self.payload_digest.to_string(),
             token_cost_upper_bound: self.token_cost_upper_bound,
             expires_unix_ms: self.expires_unix_ms,
@@ -170,7 +171,7 @@ impl PromptRealizationV1 {
             model_version: wire.model_version,
             tokenizer_digest: parse_digest(&wire.tokenizer_digest)?,
             system_template_digest: parse_digest(&wire.system_template_digest)?,
-            message_role: wire.message_role,
+            message_role: parse_prompt_role(&wire.message_role)?,
             payload_digest: parse_digest(&wire.payload_digest)?,
             token_cost_upper_bound: wire.token_cost_upper_bound,
             expires_unix_ms: wire.expires_unix_ms,
@@ -185,8 +186,7 @@ impl PromptRealizationV1 {
     fn validate(&self) -> Result<(), ProtocolCodecError> {
         if self.model_version.is_empty()
             || self.model_version.len() > MAX_MODEL_VERSION_BYTES
-            || self.message_role.is_empty()
-            || self.message_role.len() > MAX_MESSAGE_ROLE_BYTES
+            || prompt_role_name(self.message_role).len() > MAX_MESSAGE_ROLE_BYTES
             || self.tokenizer_digest.is_zero()
             || self.system_template_digest.is_zero()
             || self.payload_digest.is_zero()
@@ -220,6 +220,25 @@ const fn lifecycle_name(value: Lifecycle) -> &'static str {
         Lifecycle::Admitted => "admitted",
         Lifecycle::Retired => "retired",
         Lifecycle::Revoked => "revoked",
+    }
+}
+
+const fn prompt_role_name(value: PromptRoleV2) -> &'static str {
+    match value {
+        PromptRoleV2::SystemInstruction => "system_instruction",
+        PromptRoleV2::DeveloperInstruction => "developer_instruction",
+        PromptRoleV2::UserTemplate => "user_template",
+        PromptRoleV2::ToolSchemaFragment => "tool_schema_fragment",
+    }
+}
+
+fn parse_prompt_role(value: &str) -> Result<PromptRoleV2, ProtocolCodecError> {
+    match value {
+        "system_instruction" => Ok(PromptRoleV2::SystemInstruction),
+        "developer_instruction" => Ok(PromptRoleV2::DeveloperInstruction),
+        "user_template" => Ok(PromptRoleV2::UserTemplate),
+        "tool_schema_fragment" => Ok(PromptRoleV2::ToolSchemaFragment),
+        _ => Err(ProtocolCodecError::InvalidField),
     }
 }
 
@@ -316,7 +335,7 @@ mod tests {
             model_version: "2026-09-18".to_owned(),
             tokenizer_digest: digest("tokenizer"),
             system_template_digest: digest("template"),
-            message_role: "developer".to_owned(),
+            message_role: PromptRoleV2::DeveloperInstruction,
             payload_digest: digest("payload"),
             token_cost_upper_bound: 32,
             expires_unix_ms: Some(100),
