@@ -1,0 +1,148 @@
+name: Hepta Matrix real Synapse qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "docs/modules/channel.matrix/**"
+      - "qualification/module-execution-dossiers/detail/channel.matrix.md"
+      - ".github/workflows/hepta-matrix-real-synapse.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "docs/modules/channel.matrix/**"
+      - "qualification/module-execution-dossiers/detail/channel.matrix.md"
+      - ".github/workflows/hepta-matrix-real-synapse.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-matrix-real-synapse-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-contract:
+    name: Compile exact Matrix qualification candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Verify Matrix source and qualification target
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test -p codex-hepta-matrix-store --test durable_core
+          cargo test -p codex-hepta-matrix-store --test sync_mutation_v2
+          cargo test -p codex-hepta-matrix-sdk --test durable_transport
+          cargo test -p codex-hepta-matrixd --lib
+          cargo test -p codex-hepta-matrixd --features real-synapse-e2e --test real_synapse_e2e --no-run
+
+      - name: Write exact compile receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/matrix-qualification"
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ["GITHUB_WORKSPACE"])
+          receipt = {
+              "schema": "hepta.matrix-qualification-source.v1",
+              "candidate_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
+              "candidate_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=root, text=True).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "real_synapse_target_compiled": True,
+              "real_synapse_executed": False,
+              "promotion": False,
+              "operator_acceptance": False,
+          }
+          Path(os.environ["RUNNER_TEMP"], "matrix-qualification", "source-receipt.json").write_text(
+              json.dumps(receipt, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-source-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/matrix-qualification/source-receipt.json
+          if-no-files-found: error
+
+  real-synapse:
+    name: Execute exact real Synapse qualification
+    if: github.event_name == 'workflow_dispatch'
+    needs: source-contract
+    runs-on: [self-hosted, macOS, matrix-qualification]
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Execute hermetic real Synapse fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.sha }}"
+          mkdir -p "$RUNNER_TEMP/matrix-real-synapse"
+          codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh             --source-root "$GITHUB_WORKSPACE"             --source-mode exact             --artifacts-dir "$RUNNER_TEMP/matrix-real-synapse"
+
+      - name: Bind execution receipt to exact source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/matrix-real-synapse"
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ["GITHUB_WORKSPACE"])
+          receipt = {
+              "schema": "hepta.matrix-real-synapse-run.v1",
+              "candidate_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip(),
+              "candidate_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=root, text=True).strip(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "runner_name": os.environ.get("RUNNER_NAME"),
+              "promotion": False,
+              "operator_acceptance": False,
+          }
+          Path(os.environ["RUNNER_TEMP"], "matrix-real-synapse", "exact-source-receipt.json").write_text(
+              json.dumps(receipt, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: matrix-real-synapse-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-real-synapse
+          if-no-files-found: error
