@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); observed identifiers include `BaoToken`, `BaoReadRequest`, `BaoSecretReceipt`, `BaoClient`, `binding`, `consume_kv_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) for the implemented subset and remaining product work.
+The registered source includes [https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs) for exact-version KV v2 final-use consumption and [lease_control.rs](../../../codex-rs/hepta-bao-adapter/src/lease_control.rs) for dynamic lease issue/renew/revoke, durable local lease metadata, operation-id idempotency and reconciliation. Read [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md) for the exact source-complete subset; [SECRET_LEASE_DESIGN.md](SECRET_LEASE_DESIGN.md) for lifecycle semantics; and the [execution dossier](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) for qualification boundaries.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -172,6 +172,14 @@ Current operating and state-format references:
 - [external/HeptaBao/README.md](../../../external/HeptaBao/README.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+
+### Status documents
+
+- [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md): implemented source only.
+- [SECRET_LEASE_DESIGN.md](SECRET_LEASE_DESIGN.md): lifecycle contract.
+- [FAILURE_RECOVERY.md](FAILURE_RECOVERY.md): ambiguous outcome and restart rules.
+- [HA_AND_STORAGE.md](HA_AND_STORAGE.md): local/active-active storage boundary.
+- [SECURITY_INVARIANTS.md](SECURITY_INVARIANTS.md): security claims and non-claims.
 
 ## 12. Verification and qualification
 
