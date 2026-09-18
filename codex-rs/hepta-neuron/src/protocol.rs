@@ -273,7 +273,12 @@ impl NeuronRuntimeConfigV1 {
         bytes.extend_from_slice(&self.eligibility_profile.trace_dimension.to_be_bytes());
         bytes.extend_from_slice(&self.resource_envelope.p95_latency_micros.to_be_bytes());
         bytes.extend_from_slice(&self.resource_envelope.p99_latency_micros.to_be_bytes());
-        bytes.extend_from_slice(&self.resource_envelope.transient_allocation_bytes.to_be_bytes());
+        bytes.extend_from_slice(
+            &self
+                .resource_envelope
+                .transient_allocation_bytes
+                .to_be_bytes(),
+        );
         bytes.extend_from_slice(&self.resource_envelope.checkpoint_bytes.to_be_bytes());
         bytes.extend_from_slice(&self.expires_at_unix_micros.to_be_bytes());
         bytes.push(match self.fixed_point_profile.state_scale {
@@ -285,7 +290,9 @@ impl NeuronRuntimeConfigV1 {
         bytes.push(match self.top_k_policy.tie_break {
             TopKTieBreakV1::CanonicalUnitId => 0,
         });
-        bytes.push(u8::from(self.fixed_point_profile.checked_wide_intermediates));
+        bytes.push(u8::from(
+            self.fixed_point_profile.checked_wide_intermediates,
+        ));
         bytes.push(u8::from(self.top_k_policy.per_population_first));
         Ok(Digest32::of_bytes(&bytes))
     }
@@ -295,7 +302,10 @@ impl NeuronRuntimeConfigV1 {
             ("encoder", self.encoder_digest),
             ("head", self.head_digest),
             ("inhibition", self.inhibition_digest),
-            ("eligibility local rule", self.eligibility_profile.local_rule_digest),
+            (
+                "eligibility local rule",
+                self.eligibility_profile.local_rule_digest,
+            ),
         ] {
             if digest.is_zero() {
                 return Err(ProtocolError::EmptyDigest(name));
@@ -344,8 +354,7 @@ impl NeuronRuntimeConfigV1 {
             return Err(ProtocolError::InvalidConfig("eligibility profile"));
         }
         if self.resource_envelope.p95_latency_micros == 0
-            || self.resource_envelope.p99_latency_micros
-                < self.resource_envelope.p95_latency_micros
+            || self.resource_envelope.p99_latency_micros < self.resource_envelope.p95_latency_micros
             || self.resource_envelope.checkpoint_bytes == 0
             || self.expires_at_unix_micros == 0
         {
