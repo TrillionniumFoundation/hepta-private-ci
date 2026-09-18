@@ -714,29 +714,11 @@ fn build_product_query_and_lease(
         ],
     );
     let query_digest = Digest32::of_bytes(request.query().as_bytes());
-    let attempt_sequence = PRODUCT_FEDERATION_ATTEMPT_SEQUENCE
-        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| value.checked_add(1))
-        .map_err(|_| {
-            CognitiveStoreError::Unavailable(
-                "memory federation attempt sequence exhausted".to_string(),
-            )
-        })?;
-    let wall_clock_nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|duration| duration.as_nanos())
-        .unwrap_or(0);
-    let process_id = u64::from(std::process::id());
-    let nonce_digest = domain_digest32(
-        b"hepta.memory-federation.product-nonce.v2",
-        &[
-            query_digest.as_array(),
-            capability.id().as_str().as_bytes(),
-            &logical_start_ms.to_be_bytes(),
-            &attempt_sequence.to_be_bytes(),
-            &wall_clock_nanos.to_be_bytes(),
-            &process_id.to_be_bytes(),
-        ],
-    );
+    let nonce_digest = product_attempt_nonce_digest(
+        query_digest,
+        capability.id().as_str(),
+        logical_start_ms,
+    )?;
     let query_id_digest = domain_digest32(
         b"hepta.memory-federation.product-query-id.v2",
         &[nonce_digest.as_array(), peer_id.as_str().as_bytes()],
@@ -803,6 +785,36 @@ fn product_evidence_item(
     })
 }
 
+fn product_attempt_nonce_digest(
+    query_digest: Digest32,
+    capability_id: &str,
+    logical_start_ms: u64,
+) -> Result<Digest32, CognitiveStoreError> {
+    let attempt_sequence = PRODUCT_FEDERATION_ATTEMPT_SEQUENCE
+        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| value.checked_add(1))
+        .map_err(|_| {
+            CognitiveStoreError::Unavailable(
+                "memory federation attempt sequence exhausted".to_string(),
+            )
+        })?;
+    let wall_clock_nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_nanos())
+        .unwrap_or(0);
+    let process_id = u64::from(std::process::id());
+    Ok(domain_digest32(
+        b"hepta.memory-federation.product-nonce.v2",
+        &[
+            query_digest.as_array(),
+            capability_id.as_bytes(),
+            &logical_start_ms.to_be_bytes(),
+            &attempt_sequence.to_be_bytes(),
+            &wall_clock_nanos.to_be_bytes(),
+            &process_id.to_be_bytes(),
+        ],
+    ))
+}
+
 fn capability_expiry_ms(capability: &FederationCapability) -> Result<u64, CognitiveStoreError> {
     seconds_to_ms(capability.expires_at_unix_seconds())
 }
@@ -830,6 +842,21 @@ fn domain_digest32(domain: &[u8], parts: &[&[u8]]) -> Digest32 {
         bytes.extend_from_slice(part);
     }
     Digest32::of_bytes(&bytes)
+}
+
+#[cfg(test)]
+mod product_nonce_tests {
+    use super::*;
+
+    #[test]
+    fn repeated_product_attempts_receive_distinct_nonce_digests() {
+        let query_digest = Digest32::of_bytes(b"same-query");
+        let first = product_attempt_nonce_digest(query_digest, "federation:v1:test", 123_000)
+            .expect("first nonce");
+        let second = product_attempt_nonce_digest(query_digest, "federation:v1:test", 123_000)
+            .expect("second nonce");
+        assert_ne!(first, second);
+    }
 }
 
 impl fmt::Debug for CognitiveRuntime {
