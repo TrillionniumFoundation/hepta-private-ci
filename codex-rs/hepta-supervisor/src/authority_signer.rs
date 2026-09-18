@@ -517,6 +517,7 @@ mod tests {
                 digest(12),
                 digest(13),
                 None,
+                digest(14),
                 8,
             )
             .expect("release selection"),
