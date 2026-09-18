@@ -248,6 +248,7 @@ fn named_product_consumer_executes_the_owner_runtime_boundary() {
         runtime_binary_digest: digest("runtime-binary"),
         sbom_digest: digest("sbom"),
         license_digest: digest("license"),
+        ood_detector_digest: digest("ood-detector"),
         drive_q24: vec![Q, Q / 2, 0, 0, 0],
         prediction_q24: vec![0; 5],
         ood_score_q24: 0,
