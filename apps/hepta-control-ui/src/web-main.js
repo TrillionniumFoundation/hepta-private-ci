@@ -197,8 +197,12 @@ export async function startControlPlane({
     });
   };
 
-  const installRuntime = async (nextConfig, expectedGeneration = lifecycleGeneration) => {
-    if (writerLease?.persistenceKey !== nextConfig.persistenceKey) {
+  const installRuntime = async (
+    nextConfig,
+    expectedGeneration = lifecycleGeneration,
+    leaseBinding = writerLease,
+  ) => {
+    if (leaseBinding?.persistenceKey !== nextConfig.persistenceKey) {
       fail(
         ERROR_CODES.PERSISTENCE_UNAVAILABLE,
         "durable pending store requires the matching browser writer lease",
@@ -343,10 +347,23 @@ export async function startControlPlane({
           nextWriterLease.lease.release();
           return null;
         }
+        let installed;
+        try {
+          installed = await installRuntime(
+            nextConfig,
+            recoveryGeneration,
+            nextWriterLease,
+          );
+        } catch (error) {
+          nextWriterLease.lease.release();
+          throw error;
+        }
+        if (!installed) {
+          nextWriterLease.lease.release();
+          return null;
+        }
         writerLease = nextWriterLease;
         previousWriterLease?.lease.release();
-        const installed = await installRuntime(nextConfig, recoveryGeneration);
-        if (!installed) return null;
       }
 
       const view = await applyCurrentSnapshot(recoveryGeneration);
@@ -390,15 +407,34 @@ export async function startControlPlane({
 
   const initialGeneration = lifecycleGeneration;
   const initialConfig = await loadConfig();
-  writerLease = await acquireWriterLease(initialConfig);
-  const installed = await installRuntime(initialConfig, initialGeneration);
-  if (!installed) {
-    writerLease.lease.release();
-    writerLease = null;
-    return null;
+  const initialWriterLease = await acquireWriterLease(initialConfig);
+  writerLease = initialWriterLease;
+  try {
+    const installed = await installRuntime(
+      initialConfig,
+      initialGeneration,
+      initialWriterLease,
+    );
+    if (!installed) {
+      initialWriterLease.lease.release();
+      writerLease = null;
+      return null;
+    }
+    await applyCurrentSnapshot(initialGeneration);
+    startTimer();
+  } catch (error) {
+    stopTimer();
+    if (client) {
+      try {
+        await client.close();
+      } catch {
+        // Startup failure must not retain either a live session or its writer lease.
+      }
+    }
+    initialWriterLease.lease.release();
+    if (writerLease === initialWriterLease) writerLease = null;
+    throw error;
   }
-  await applyCurrentSnapshot(initialGeneration);
-  startTimer();
 
   const onOffline = () => {
     stopTimer();
