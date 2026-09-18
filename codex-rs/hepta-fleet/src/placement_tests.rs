@@ -1,5 +1,4 @@
 use super::*;
-use crate::FLEET_CAPACITY_OBSERVATION_SCHEMA_VERSION;
 
 fn agent(index: usize) -> AgentId {
     AgentId::parse(format!("00000000-0000-4000-8000-{index:012x}")).expect("agent id")
