@@ -301,7 +301,7 @@ pub fn derive_incremental_delta(
     let upsert_nodes = candidate_nodes
         .iter()
         .filter_map(|(node_id, node)| {
-            (predecessor_nodes.get(node_id).copied() != Some(*node)).then(|| (*node).clone())
+            (predecessor_nodes.get(node_id).copied() != Some(*node)).then(|| (**node).clone())
         })
         .collect::<Vec<_>>();
 
@@ -323,7 +323,7 @@ pub fn derive_incremental_delta(
     let upsert_edges = candidate_edges
         .iter()
         .filter_map(|(identity, edge)| {
-            (predecessor_edges.get(identity).copied() != Some(*edge)).then(|| (*edge).clone())
+            (predecessor_edges.get(identity).copied() != Some(*edge)).then(|| (**edge).clone())
         })
         .collect::<Vec<_>>();
 
