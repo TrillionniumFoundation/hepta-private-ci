@@ -4,7 +4,6 @@ use std::collections::BTreeSet;
 use serde::Deserialize;
 use serde::Serialize;
 
-use super::AlignmentKindV1;
 use super::BindingIdV1;
 use super::CanonicalContractV1;
 use super::CanonicalDigestV1;
@@ -238,6 +237,11 @@ impl CrossModalBindingV1 {
             return Err(ContractErrorV1::Invalid("binding span id must be non-zero"));
         }
         validate_ppm(self.confidence_ppm, "binding confidence")
+    }
+
+    #[must_use]
+    pub const fn binding_id(&self) -> BindingIdV1 {
+        self.binding_id
     }
 
     pub(crate) fn validate_against(
