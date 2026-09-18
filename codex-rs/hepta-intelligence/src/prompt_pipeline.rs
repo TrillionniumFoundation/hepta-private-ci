@@ -19,9 +19,7 @@ use codex_hepta_prompt_optimizer::canonical::{
     PromptExerciseActionV1, PromptExerciseDecisionV1, PromptExerciseRequestV1,
     SelectedPromptPortfolioV1, exercise_v1,
 };
-use codex_hepta_prompt_registry::{
-    PromptRealizationPayloadV2, PromptRegistry, PromptRoleV2,
-};
+use codex_hepta_prompt_registry::{PromptRealizationPayloadV2, PromptRegistry, PromptRoleV2};
 use codex_hepta_types::{AuthorityPosture, Digest32, FixedQ32, StableId};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -227,9 +225,8 @@ pub fn prepare_prompt_delivery_v1(
     // Serialization binds the bytes supplied to the downstream runtime rather
     // than accepting a caller-authored digest with no preimage.
     let payload_digest = Digest32::of_bytes(&serialized_payload);
-    let serialization =
-        record_serialization(&prepared.compiled, serialization_id, payload_digest)
-            .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
+    let serialization = record_serialization(&prepared.compiled, serialization_id, payload_digest)
+        .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     let attachment = build_attachment(&prepared.compiled, &serialization, attachment_id)
         .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
     Ok(PreparedPromptDeliveryV1 {
