@@ -114,6 +114,45 @@ fn op_05_tabular_operator_rejects_missing_or_underfilled_cells() {
 }
 
 #[test]
+fn op_05_tabular_operator_rejects_relabelled_duplicate_evidence() {
+    let mut samples = vec![
+        sample("s1", "sensor-a", "action-a", 10),
+        sample("s2", "sensor-a", "action-a", 20),
+        sample("s3", "sensor-a", "action-b", 10),
+        sample("s4", "sensor-a", "action-b", 20),
+        sample("s5", "sensor-b", "action-a", 10),
+        sample("s6", "sensor-b", "action-a", 20),
+        sample("s7", "sensor-b", "action-b", 10),
+        sample("s8", "sensor-b", "action-b", 20),
+    ];
+    samples[1].evidence_digest = samples[0].evidence_digest;
+    assert_eq!(
+        fit_tabular_operator(plan(samples)),
+        Err(LearnedOperatorError::DuplicateEvidence)
+    );
+}
+
+#[test]
+fn op_05_raw_prediction_rejects_noncanonical_public_artifact() {
+    let samples = vec![
+        sample("s1", "sensor-a", "action-a", 10),
+        sample("s2", "sensor-a", "action-a", 20),
+        sample("s3", "sensor-a", "action-b", 10),
+        sample("s4", "sensor-a", "action-b", 20),
+        sample("s5", "sensor-b", "action-a", 10),
+        sample("s6", "sensor-b", "action-a", 20),
+        sample("s7", "sensor-b", "action-b", 10),
+        sample("s8", "sensor-b", "action-b", 20),
+    ];
+    let mut artifact = fit_tabular_operator(plan(samples)).expect("fit");
+    artifact.cells.swap(0, 1);
+    assert_eq!(
+        predict_tabular_operator(&artifact, &id("sensor-a"), &id("action-a")),
+        Err(LearnedOperatorError::InvalidGrid)
+    );
+}
+
+#[test]
 fn op_05_tabular_prediction_is_synthetic_and_domain_bounded() {
     let samples = vec![
         sample("s1", "sensor-a", "action-a", 10),
