@@ -1,6 +1,8 @@
 use std::error::Error;
 use std::fmt;
 
+use crate::ContractDefinitionKindV1;
+use crate::ContractRegistryV1;
 use crate::Digest32;
 
 /// Native engineering conventions, not production profile registrations.
@@ -91,6 +93,20 @@ pub struct NumericSignalSchemaV1 {
 }
 
 impl NumericSignalSchemaV1 {
+    pub fn validate_with_registry(
+        &self,
+        registry: &ContractRegistryV1,
+    ) -> Result<(), NumericConversionError> {
+        self.element_count()?;
+        registry
+            .require(
+                ContractDefinitionKindV1::Normalization,
+                self.normalization_digest,
+            )
+            .map_err(|_| NumericConversionError::UnknownNormalization)?;
+        Ok(())
+    }
+
     pub(crate) fn element_count(&self) -> Result<usize, NumericConversionError> {
         if self.normalization_digest.is_zero() {
             return Err(NumericConversionError::MissingNormalization);
@@ -118,6 +134,7 @@ impl NumericSignalSchemaV1 {
 pub enum NumericConversionError {
     UnknownProfile,
     MissingNormalization,
+    UnknownNormalization,
     NormalizationMismatch,
     UnitMismatch,
     Shape,
