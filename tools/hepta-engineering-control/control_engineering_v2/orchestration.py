@@ -160,6 +160,14 @@ def issue_repository_work_envelope(
     repository = Path(root).resolve()
     head = _git(repository, "rev-parse", "HEAD")
     tree = _git(repository, "rev-parse", "HEAD^{tree}")
+    status = _git(
+        repository,
+        "status",
+        "--porcelain=v2",
+        "--untracked-files=all",
+    )
+    if status:
+        raise EngineeringError("source_worktree_dirty")
     remote = _normal_remote(_git(repository, "config", "--get", "remote.origin.url"))
     if remote != expected_repository:
         raise EngineeringError("repository_mismatch")
