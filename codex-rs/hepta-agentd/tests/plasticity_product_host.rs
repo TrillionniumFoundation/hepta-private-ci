@@ -390,6 +390,7 @@ impl Fixture {
                     evaluator_bundle,
                 },
             }],
+            host_evidence_verification_digest: Digest32::ZERO,
             expected_registry_predecessor: Digest32::ZERO,
         }
     }
