@@ -69,10 +69,7 @@ fn signed_grant(
     SignedFinalUseGrant { grant, signature }
 }
 
-fn authority(
-    directory: &std::path::Path,
-    signing: &SigningKey,
-) -> FinalUseAuthority {
+fn authority(directory: &std::path::Path, signing: &SigningKey) -> FinalUseAuthority {
     FinalUseAuthority::open_state_dir(
         directory,
         "planner-grant-issuer".to_string(),
@@ -95,9 +92,8 @@ fn independent_authority_claims_exact_planner_binding() {
     let subject = id("agent:alpha");
     let destination = id("provider:effect");
     let scope = digest("effect-scope");
-    let binding =
-        final_use_binding_for_grant_request_v1(&request, &subject, &destination, scope)
-            .expect("binding");
+    let binding = final_use_binding_for_grant_request_v1(&request, &subject, &destination, scope)
+        .expect("binding");
     let signed = signed_grant(&signing, binding.clone());
 
     let token = claim_final_use_for_grant_request_v1(
@@ -116,7 +112,6 @@ fn independent_authority_claims_exact_planner_binding() {
     assert_eq!(released, "released");
 }
 
-
 #[test]
 fn final_boundary_helper_revalidates_and_consumes_authority_once() {
     let temporary = tempfile::tempdir().expect("tempdir");
@@ -126,9 +121,8 @@ fn final_boundary_helper_revalidates_and_consumes_authority_once() {
     let subject = id("agent:alpha");
     let destination = id("provider:effect");
     let scope = digest("effect-scope");
-    let binding =
-        final_use_binding_for_grant_request_v1(&request, &subject, &destination, scope)
-            .expect("binding");
+    let binding = final_use_binding_for_grant_request_v1(&request, &subject, &destination, scope)
+        .expect("binding");
     let signed = signed_grant(&signing, binding);
 
     let released = with_authorized_grant_request_v1(
@@ -167,9 +161,8 @@ fn payload_drift_is_rejected_by_independent_authority_binding() {
     let subject = id("agent:alpha");
     let destination = id("provider:effect");
     let scope = digest("effect-scope");
-    let binding =
-        final_use_binding_for_grant_request_v1(&original, &subject, &destination, scope)
-            .expect("binding");
+    let binding = final_use_binding_for_grant_request_v1(&original, &subject, &destination, scope)
+        .expect("binding");
     let signed = signed_grant(&signing, binding);
 
     let mut changed = original;
