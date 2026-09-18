@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs); observed identifiers include `StoredProviderEffect`, `append_provider_effect_intent`, `dispatch_provider_effect_qualification`, `append_provider_effect_ack`, `mark_provider_effect_indeterminate`, `reconcile_provider_effect_lookup`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-evidence/src/qualification_store.rs](../../../codex-rs/hepta-evidence/src/qualification_store.rs); observed identifiers include `QualificationEvidenceStore`, `QualificationEvidenceEnvelopeV1`, `AuthenticatedEvidenceIssuerV1`, `append_receipt`, `verify_chain`, `query_claim` and `IndependentDecisionReceiptV1`. Provider-effect intent/acknowledgement/reconciliation remains implemented in [provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs) as an adjacent evidence slice. This is a source navigation binding, not proof of production composition or independent acceptance.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -56,6 +56,7 @@ Direct dependencies:
 
 Authoritative write domains:
 
+- `independent_decision_receipt_v1` (rebuildable projection from signed qualification receipts)
 - `qualification_evidence`
 
 Explicitly denied capabilities:
