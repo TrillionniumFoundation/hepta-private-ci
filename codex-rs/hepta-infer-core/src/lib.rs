@@ -31,6 +31,7 @@ pub mod production {
     pub use crate::durable_control::native::NativeRunOutput;
     pub use crate::durable_control::native::NativeRunRecord;
     pub use crate::durable_control::native::NativeRunStatus;
+    pub use crate::durable_control::native::native_final_use_binding;
 }
 
 use std::collections::BTreeMap;
