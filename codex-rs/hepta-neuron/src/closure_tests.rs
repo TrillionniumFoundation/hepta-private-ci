@@ -611,6 +611,69 @@ fn reopen_reconciles_a_durable_suffix_before_accepting_new_ticks() {
 }
 
 #[test]
+fn failed_deletion_rebuild_poisoned_partial_state_is_not_reusable() {
+    let fixture = Fixture::new();
+    let config = config();
+    let native = native();
+    let scope = scope();
+    let sparse_config = checked(config.to_sparse_config(&native));
+    let execution = model_execution();
+    let first_input = input(1, Digest32::ZERO);
+    let first_tick = first_input.to_sparse_tick(&scope, &execution);
+    let (first_checkpoint, _) = checked(sparse_tick(&sparse_config, &first_tick, None));
+
+    let mut revoked_input = input(2, first_checkpoint.digest());
+    revoked_input.feature_vector_q24[0] += 1;
+    revoked_input.input_feature_digest = q24_feature_digest(&revoked_input.feature_vector_q24);
+    let denied = revoked_input.input_feature_digest;
+
+    let config_digest = checked(runtime_profile_digest(&config, &native));
+    let witness = checked(open_file_witness(
+        fixture.file("witness-partial-rebuild"),
+        config_digest,
+        &scope,
+    ));
+    let mut runtime = checked(NeuronRuntimeHost::open(
+        fixture.file("partial-rebuild"),
+        config,
+        native,
+        scope,
+        8,
+        Executor {
+            execution: model_execution(),
+        },
+        witness,
+        Lineage {
+            denied: Some(denied),
+        },
+        calibration_policy(),
+        Some(calibration_artifact()),
+        1,
+    ));
+
+    assert_eq!(
+        runtime.rebuild_from_ordered_inputs(vec![
+            (
+                first_input,
+                RuntimeTickObservationV1 {
+                    now_unix_micros: 2,
+                    queue_age_micros: 0,
+                },
+            ),
+            (
+                revoked_input,
+                RuntimeTickObservationV1 {
+                    now_unix_micros: 3,
+                    queue_age_micros: 0,
+                },
+            ),
+        ]),
+        Err(RuntimeError::RevokedLineage)
+    );
+    assert_eq!(runtime.current_checkpoint(), Err(RuntimeError::Poisoned));
+}
+
+#[test]
 fn deletion_rebuild_rechecks_live_lineage_before_model_execution() {
     let fixture = Fixture::new();
     let config = config();
