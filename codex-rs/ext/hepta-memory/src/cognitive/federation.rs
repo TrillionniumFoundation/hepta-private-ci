@@ -23,6 +23,7 @@ use codex_hepta_memory::FederatedMemoryExplanation;
 use codex_hepta_memory::FederatedMemoryRevalidationBinding;
 use codex_hepta_memory::FederatedRecallSet;
 use codex_hepta_memory::FederatedRetrievalBatch;
+use codex_hepta_memory::FederatedRetrievalCoverage;
 use codex_hepta_memory::FederatedRevalidationStatus;
 use codex_hepta_memory::FederationConsumerAccess;
 use codex_hepta_memory::MemoryLifecycleState;
@@ -44,7 +45,7 @@ use crate::framing::workspace_digest;
 
 const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
 const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
-const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 1;
+const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTO_CITATIONS_PER_MEMORY: usize = 8;
 const MAX_COMBINED_CITATIONS_PER_MEMORY: usize = 1;
 
@@ -54,6 +55,7 @@ struct PreparedFederatedAttachment {
     turn_id: String,
     workspace: std::path::PathBuf,
     query_sha256: Sha256Digest,
+    coverage: FederatedRetrievalCoverage,
     bindings: Vec<FederatedMemoryRevalidationBinding>,
     source_binding_sha256: Sha256Digest,
     content_sha256: Sha256Digest,
@@ -146,6 +148,7 @@ impl FederatedCognitiveExtension {
             input.turn_id,
             input.cwd,
             &prepared.query_sha256,
+            &prepared.coverage,
             &prepared.bindings,
             &content_sha256,
         )?;
@@ -289,6 +292,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 input.turn_id.as_str(),
                 workspace.as_path(),
                 &batch.query_sha256,
+                &batch.coverage,
                 &bindings,
                 &content_sha256,
             ) else {
@@ -302,6 +306,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 turn_id: input.turn_id,
                 workspace,
                 query_sha256: batch.query_sha256,
+                coverage: batch.coverage,
                 bindings,
                 source_binding_sha256,
                 content_sha256,
@@ -401,6 +406,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 input.turn_id,
                 input.cwd,
                 &prepared.query_sha256,
+                &prepared.coverage,
                 &prepared.bindings,
                 &content_sha256,
             ) else {
@@ -691,17 +697,20 @@ fn federation_source_binding(
     turn_id: &str,
     workspace: &Path,
     query_sha256: &Sha256Digest,
+    coverage: &FederatedRetrievalCoverage,
     bindings: &[FederatedMemoryRevalidationBinding],
     content_sha256: &Sha256Digest,
 ) -> Option<Sha256Digest> {
+    let serialized_coverage = serde_json::to_vec(coverage).ok()?;
     let serialized = serde_json::to_vec(bindings).ok()?;
     Some(digest_many(
-        b"hepta:cognitive:federated-ephemeral-source-binding:v1",
+        b"hepta:cognitive:federated-ephemeral-source-binding:v2",
         &[
             thread_id.as_bytes(),
             turn_id.as_bytes(),
             path_identity_bytes(workspace).as_slice(),
             query_sha256.as_str().as_bytes(),
+            serialized_coverage.as_slice(),
             serialized.as_slice(),
             content_sha256.as_str().as_bytes(),
         ],
