@@ -74,7 +74,7 @@ fn config() -> NeuronRuntimeConfigV1 {
             checkpoint_bytes: 1 << 20,
             write_amplification_ppm: 4_000_000,
         },
-        expires_at_unix_micros: u64::MAX,
+        expires_at_unix_micros: 4_102_444_800_000_000,
     }
 }
 
