@@ -525,6 +525,52 @@ fn paged_snapshot_preserves_exact_ancestry_across_page_boundaries() {
 }
 
 #[test]
+fn paged_snapshot_rejects_continuation_after_store_cut_changes() {
+    let mut store = store();
+    let first = candidate(
+        "memory:page:stable:a",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let first_intent = intent(&store, "intent:page:stable:1", &first);
+    store
+        .append_admitted(&Verifier, first, first_intent)
+        .unwrap_or_else(|error| panic!("append first: {error}"));
+    let second = candidate(
+        "memory:page:stable:b",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let second_intent = intent(&store, "intent:page:stable:2", &second);
+    store
+        .append_admitted(&Verifier, second, second_intent)
+        .unwrap_or_else(|error| panic!("append second: {error}"));
+
+    let first_page = store
+        .open_snapshot_page(10, page_request(&store, "page:stable:1", None, 1))
+        .unwrap_or_else(|error| panic!("first page: {error}"));
+    let cursor = first_page.next.clone().expect("continuation cursor");
+
+    let third = candidate(
+        "memory:page:stable:c",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let third_intent = intent(&store, "intent:page:stable:3", &third);
+    store
+        .append_admitted(&Verifier, third, third_intent)
+        .unwrap_or_else(|error| panic!("append intervening mutation: {error}"));
+
+    assert_eq!(
+        store.open_snapshot_page(
+            10,
+            page_request(&store, "page:stable:2", Some(cursor), 1),
+        ),
+        Err(CognitiveStoreV2Error::SnapshotCursorMismatch)
+    );
+}
+
+#[test]
 fn paged_snapshot_rejects_forged_cursor_and_broken_page_ancestry() {
     let mut store = store();
     let first = candidate("memory:page:forged", "content:v1", MemoryAdmissionKind::Observation);

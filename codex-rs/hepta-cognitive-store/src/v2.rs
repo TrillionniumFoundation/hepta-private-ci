@@ -358,6 +358,15 @@ impl AdmittedCognitiveStoreV2 {
             return Err(CognitiveStoreV2Error::StaleTombstoneFrontier);
         }
         if let Some(after) = &request.after {
+            // A page cursor is valid only for the exact immutable cut that
+            // produced it.  Continuing after any mutation would otherwise mix
+            // records from two generation vectors while preserving local record
+            // ancestry, which is not a coherent snapshot.
+            if after.snapshot_vector_digest != self.snapshot_key.vector_digest
+                || after.sequence != self.sequence
+            {
+                return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
+            }
             let Some(record) = self
                 .histories
                 .get(&after.record_id)
@@ -396,7 +405,9 @@ impl AdmittedCognitiveStoreV2 {
         let next = if complete {
             None
         } else {
-            records.last().map(snapshot_cursor)
+            records.last().map(|record| {
+                snapshot_cursor(record, self.snapshot_key.vector_digest, self.sequence)
+            })
         };
         let lease_expires_unix_ms = now_unix_ms
             .checked_add(request.lease_duration_ms)
@@ -682,11 +693,16 @@ pub struct SnapshotCursorV2 {
     pub record_id: StableId,
     pub revision: Revision,
     pub record_digest: Digest32,
+    /// Exact generation-vector digest of the immutable read cut this cursor belongs to.
+    pub snapshot_vector_digest: Digest32,
+    /// Exact store sequence observed with that read cut.
+    pub sequence: LogicalSequence,
 }
 
 impl SnapshotCursorV2 {
     pub fn validate(&self) -> Result<(), CognitiveStoreV2Error> {
-        ensure_digest("snapshot_cursor_record", self.record_digest)
+        ensure_digest("snapshot_cursor_record", self.record_digest)?;
+        ensure_digest("snapshot_cursor_vector", self.snapshot_vector_digest)
     }
 }
 
@@ -761,6 +777,11 @@ impl StoreSnapshotPageV2 {
         }
         if let Some(after) = &self.after {
             after.validate()?;
+            if after.snapshot_vector_digest != self.snapshot_key.vector_digest
+                || after.sequence != self.sequence
+            {
+                return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
+            }
         }
 
         let mut previous = self.after.clone();
@@ -787,7 +808,11 @@ impl StoreSnapshotPageV2 {
             } else if record.revision.get() != 1 || record.predecessor_digest.is_some() {
                 return Err(CognitiveStoreV2Error::SnapshotPageAncestryMismatch);
             }
-            previous = Some(snapshot_cursor(record));
+            previous = Some(snapshot_cursor(
+                record,
+                self.snapshot_key.vector_digest,
+                self.sequence,
+            ));
         }
 
         if self.complete {
@@ -798,7 +823,13 @@ impl StoreSnapshotPageV2 {
             let Some(last) = self.records.last() else {
                 return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
             };
-            if self.next.as_ref() != Some(&snapshot_cursor(last)) {
+            if self.next.as_ref()
+                != Some(&snapshot_cursor(
+                    last,
+                    self.snapshot_key.vector_digest,
+                    self.sequence,
+                ))
+            {
                 return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
             }
         }
@@ -1226,11 +1257,17 @@ const fn memory_write_disposition_code(value: MemoryWriteDisposition) -> u8 {
     }
 }
 
-fn snapshot_cursor(record: &MemoryRecord) -> SnapshotCursorV2 {
+fn snapshot_cursor(
+    record: &MemoryRecord,
+    snapshot_vector_digest: Digest32,
+    sequence: LogicalSequence,
+) -> SnapshotCursorV2 {
     SnapshotCursorV2 {
         record_id: record.record_id.clone(),
         revision: record.revision,
         record_digest: record.record_digest(),
+        snapshot_vector_digest,
+        sequence,
     }
 }
 
@@ -1241,6 +1278,8 @@ fn push_optional_cursor(bytes: &mut Vec<u8>, cursor: Option<&SnapshotCursorV2>) 
             push_id(bytes, &cursor.record_id);
             push_u64(bytes, cursor.revision.get());
             push_digest(bytes, cursor.record_digest);
+            push_digest(bytes, cursor.snapshot_vector_digest);
+            push_u64(bytes, cursor.sequence.get());
         }
         None => bytes.push(0),
     }
