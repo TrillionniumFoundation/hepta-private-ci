@@ -76,6 +76,8 @@ pub struct VerifiedAdmission {
     reviewer_id: StableId,
     reviewed_scope_digest: Digest32,
     evidence_digest: Digest32,
+    not_before_unix_ms: u64,
+    verified_at_unix_ms: u64,
     expires_at_unix_ms: u64,
 }
 
@@ -109,7 +111,9 @@ impl VerifiedAdmission {
     }
 
     pub(crate) const fn is_live_at(&self, now_unix_ms: u64) -> bool {
-        now_unix_ms < self.expires_at_unix_ms
+        now_unix_ms >= self.not_before_unix_ms
+            && now_unix_ms >= self.verified_at_unix_ms
+            && now_unix_ms < self.expires_at_unix_ms
     }
 }
 
@@ -185,6 +189,8 @@ impl AdmissionAuthority {
             reviewer_id,
             reviewed_scope_digest,
             evidence_digest,
+            not_before_unix_ms: signed.grant.not_before_unix_ms,
+            verified_at_unix_ms: now_unix_ms,
             expires_at_unix_ms: signed.grant.expires_at_unix_ms,
         })
     }
