@@ -178,8 +178,8 @@ pub(crate) async fn read(
         expires_at_micros: now_micros
             .checked_add(CONTEXT_PLAN_LIFETIME_MICROS)
             .ok_or_else(|| {
-            CognitiveStoreError::Invalid("context plan expiry overflow".to_string())
-        })?,
+                CognitiveStoreError::Invalid("context plan expiry overflow".to_string())
+            })?,
     })
     .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     if !plan.read_allowed {
