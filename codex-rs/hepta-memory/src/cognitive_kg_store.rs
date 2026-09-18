@@ -903,6 +903,7 @@ fn projection_edge_v2(edge: &ProjectionEdge) -> Result<KnowledgeEdgeV2, Cognitiv
     let validity_digest = validity_digest(edge.valid_from, edge.valid_to);
     Ok(KnowledgeEdgeV2 {
         identity: KnowledgeEdgeIdentityV2 {
+            edge_id: stable_id(&edge.edge_id, "projection edge id")?,
             source_node_id: stable_id(&edge.from_node_id, "edge source node id")?,
             relation: relation_kind_v2(&edge.relation),
             predicate_id: digest_stable_id("predicate", edge.relation.as_bytes())?,
