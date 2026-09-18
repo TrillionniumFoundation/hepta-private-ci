@@ -233,7 +233,7 @@ pub fn execute_native_negative_qualification(
     replay
         .verify(context.clone(), envelope.clone(), scope, payload)
         .map_err(|error| Error::NativeCaseUnexpected(format!("replay setup: {error:?}")))?;
-        .err();
+    let replay_error = replay.verify(context, envelope, scope, payload).err();
     require_auth_error(NegativeCase::Replay, replay_error, AuthBusError::Replay)?;
 
     let cases = [
