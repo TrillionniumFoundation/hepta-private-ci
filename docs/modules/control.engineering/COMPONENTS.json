@@ -278,7 +278,8 @@
         "request_independent_review",
         "record_integration_decision",
         "publish_audit_projection",
-        "prepare_assimilation_candidate"
+        "prepare_assimilation_candidate",
+        "execute_candidate_bundle_sandbox"
       ],
       "state": "source_implemented",
       "failureModel": [
@@ -402,6 +403,7 @@
       "source": "tools/hepta-engineering-control/control_engineering_v2/execution_control.py",
       "symbols": [
         "HostSandboxLimiter",
+        "default_host_sandbox_limiter",
         "execute_with_infrastructure_retries",
         "evaluate_mutation_probes"
       ],
@@ -417,7 +419,7 @@
         "maximumInfrastructureRetries": 2,
         "maximumMutationProbes": 256
       },
-      "rollback": "release the host slot and retry only enumerated infrastructure failures"
+      "rollback": "release the host slot; semantic failures never retry and strong execution cannot bypass the canonical facade"
     },
     {
       "id": "external-coordination-audit-key-boundary",
