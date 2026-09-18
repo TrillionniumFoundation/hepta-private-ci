@@ -60,6 +60,7 @@ MIGRATIONS = [
     "0008_provider_effect_ack_source.sql",
     "0009_authbus_replay.sql",
     "0010_authbus_outbox.sql",
+    "0011_authbus_control.sql",
 ]
 PACKAGES = [
     "codex-hepta-types",
@@ -282,6 +283,16 @@ def validate_source_specific(root: Path = ROOT) -> None:
             "pub async fn admit_authbus_message(",
             'begin_with("BEGIN IMMEDIATE")',
             "transaction.commit().await",
+        ],
+        "codex-rs/hepta-evidence/src/authbus_control.rs": [
+            "pub async fn put_auth_policy(",
+            "pub async fn authorize(",
+            "pub async fn put_quota_registry(",
+            "pub async fn authorize_and_reserve(",
+            "pub async fn begin_reserved_effect(",
+            "pub async fn settle_reservation(",
+            "pub async fn reconcile_reservation(",
+            "pub async fn retire_authbus_replay_epoch(",
         ],
     }
     for path, needles in required.items():
