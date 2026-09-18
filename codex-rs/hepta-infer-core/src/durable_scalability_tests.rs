@@ -133,7 +133,8 @@ fn unchanged_owner_reuses_cut_but_peer_writes_force_refresh() {
     let mut peer = DurableInferenceControl::open(fixture.path(), 512).unwrap();
     peer.reserve_native(request("peer"), 2).unwrap();
     first.reserve_native(request("local"), 2).unwrap();
-    assert_eq!(first.replay_stats().full_replays, 2);
+    assert_eq!(first.replay_stats().full_replays, 1);
+    assert_eq!(first.replay_stats().incremental_replays, 1);
     assert!(first.replay_stats().replayed_bytes > 0);
     assert!(first.native_record("peer").is_some());
     assert_eq!(
@@ -210,6 +211,73 @@ fn temporary_symlink_never_truncates_an_unrelated_file() {
 }
 
 #[test]
+fn released_runs_leave_hot_state_but_keep_permanent_command_identity() {
+    let fixture = Fixture::new();
+    let mut control = DurableInferenceControl::open(fixture.path(), 4).unwrap();
+    for index in 0..4 {
+        let id = format!("released-{index}");
+        control.reserve_native(request(&id), 1).unwrap();
+        control
+            .stop_native_before_dispatch(&id, "finished before dispatch".to_string())
+            .unwrap();
+    }
+    let hot_before = fs::metadata(fixture.path()).unwrap().len();
+    let receipt = control.archive_released_native().unwrap();
+    assert_eq!(receipt.archived, 4);
+    assert_eq!(receipt.remaining_native, 0);
+    assert!(receipt.released_archive_bytes > 0);
+    assert!(receipt.journal_bytes < hot_before);
+    assert!(control.native_record("released-0").is_none());
+
+    let active_before_duplicate = fs::metadata(fixture.path()).unwrap().len();
+    let duplicate = control.reserve_native(request("released-0"), 1).unwrap();
+    assert_eq!(duplicate.state, NativeReservationState::Released);
+    assert_eq!(
+        fs::metadata(fixture.path()).unwrap().len(),
+        active_before_duplicate,
+        "archived duplicate identity must not append a new hot event"
+    );
+
+    let mut conflict = request("released-0");
+    conflict.model = "different-model".to_string();
+    assert_eq!(
+        control.reserve_native(conflict, 1),
+        Err(Error::Conflict),
+        "archived command identity must reject semantic reuse"
+    );
+
+    control.reserve_native(request("new-hot"), 1).unwrap();
+    assert!(control.native_record("new-hot").is_some());
+
+    let archive_dir = released_archive_dir(&fixture.path());
+    assert_eq!(
+        fs::metadata(&archive_dir).unwrap().permissions().mode() & 0o777,
+        0o700
+    );
+    let archived_file = fs::read_dir(&archive_dir)
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap()
+        .path();
+    assert_eq!(
+        fs::metadata(archived_file).unwrap().permissions().mode() & 0o777,
+        0o600
+    );
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(fixture.path(), 4).unwrap();
+    assert!(reopened.native_record("released-0").is_none());
+    assert_eq!(
+        reopened
+            .reserve_native(request("released-0"), 1)
+            .unwrap()
+            .state,
+        NativeReservationState::Released
+    );
+}
+
+#[test]
 fn reserved_headroom_can_be_used_for_cancel_and_proven_pre_dispatch_stop() {
     let fixture = Fixture::new();
     let mut control = DurableInferenceControl::open(fixture.path(), 8).unwrap();
@@ -267,6 +335,55 @@ fn failed_single_record_preparation_preserves_all_other_records_and_bytes() {
     control.reserve_native(request("r100"), 2).unwrap();
 }
 
+#[test]
+#[ignore = "explicit retained multi-writer scalability measurement"]
+fn alternating_writers_replay_only_peer_deltas() {
+    use std::time::Instant;
+
+    for scale in [64_usize, 256, 1_024] {
+        let fixture = Fixture::new();
+        let mut first = DurableInferenceControl::open(fixture.path(), scale + 8).unwrap();
+        let mut second = DurableInferenceControl::open(fixture.path(), scale + 8).unwrap();
+        let mut tail_update_micros = Vec::new();
+
+        for index in 0..scale {
+            let id = format!("peer-curve-{index}");
+            let started = Instant::now();
+            let owner = if index % 2 == 0 {
+                &mut first
+            } else {
+                &mut second
+            };
+            owner.reserve_native(request(&id), 1).unwrap();
+            owner
+                .stop_native_before_dispatch(&id, "peer curve terminal".to_string())
+                .unwrap();
+            if index + 64 >= scale {
+                tail_update_micros.push(started.elapsed().as_micros() as u64);
+            }
+        }
+
+        tail_update_micros.sort_unstable();
+        let p95_index = ((tail_update_micros.len() * 95).div_ceil(100)).saturating_sub(1);
+        let p95_micros = tail_update_micros[p95_index];
+        let first_stats = first.replay_stats();
+        let second_stats = second.replay_stats();
+        assert_eq!(first_stats.full_replays, 1);
+        assert_eq!(second_stats.full_replays, 1);
+        assert!(
+            first_stats.incremental_replays + second_stats.incremental_replays
+                >= (scale.saturating_sub(1)) as u64
+        );
+        println!(
+            "HEPTA_INFERENCE_MULTIWRITER scale={scale} update_p95_us={p95_micros} \
+             first_incremental={} second_incremental={} replayed_bytes={}",
+            first_stats.incremental_replays,
+            second_stats.incremental_replays,
+            first_stats.replayed_bytes + second_stats.replayed_bytes,
+        );
+    }
+}
+
 fn peak_rss_kib() -> Option<u64> {
     let status = fs::read_to_string("/proc/self/status").ok()?;
     status.lines().find_map(|line| {
@@ -302,6 +419,7 @@ fn history_growth_emits_update_recovery_memory_and_disk_curve() {
         let update_p95_micros = tail_update_micros[p95_index];
         let steady_stats = control.replay_stats();
         assert_eq!(steady_stats.full_replays, 1);
+        assert_eq!(steady_stats.incremental_replays, 0);
         assert!(steady_stats.unchanged_reuses >= (scale * 2) as u64);
         let journal_before_bytes = fs::metadata(fixture.path()).unwrap().len();
         drop(control);
@@ -321,10 +439,12 @@ fn history_growth_emits_update_recovery_memory_and_disk_curve() {
             NativeReservationState::Released
         );
 
-        let archive = reopened.compact_with_archive().unwrap();
-        let active_after_compaction_bytes = fs::metadata(fixture.path()).unwrap().len();
-        let archive_bytes = fs::metadata(&archive).unwrap().len();
-        let before_duplicate = active_after_compaction_bytes;
+        let archive_receipt = reopened.archive_released_native().unwrap();
+        assert_eq!(archive_receipt.archived, scale);
+        assert_eq!(archive_receipt.remaining_native, 0);
+        let active_after_archive_bytes = fs::metadata(fixture.path()).unwrap().len();
+        assert!(active_after_archive_bytes < journal_before_bytes);
+        let before_duplicate = active_after_archive_bytes;
         let duplicate = reopened.reserve_native(request("curve-0"), 1).unwrap();
         assert_eq!(duplicate.state, NativeReservationState::Released);
         assert_eq!(
@@ -334,21 +454,39 @@ fn history_growth_emits_update_recovery_memory_and_disk_curve() {
         drop(reopened);
 
         let compacted_recovery_started = Instant::now();
-        let compacted = DurableInferenceControl::open(fixture.path(), scale + 8).unwrap();
+        let mut compacted = DurableInferenceControl::open(fixture.path(), scale + 8).unwrap();
         let compacted_recovery_micros = compacted_recovery_started.elapsed().as_micros() as u64;
+        assert!(compacted.native_record("curve-0").is_none());
         assert_eq!(
-            compacted.native_record("curve-0").unwrap().state,
+            compacted.reserve_native(request("curve-0"), 1).unwrap().state,
             NativeReservationState::Released
         );
+
+        let audit_archive_bytes = fs::read_dir(&fixture.0)
+            .unwrap()
+            .filter_map(Result::ok)
+            .filter_map(|entry| {
+                let name = entry.file_name();
+                let name = name.to_string_lossy();
+                (name.starts_with("inference.journal.archive-"))
+                    .then(|| entry.metadata().ok()?.len())
+            })
+            .sum::<u64>();
+        let total_after_archive_bytes = active_after_archive_bytes
+            + archive_receipt.released_archive_bytes
+            + audit_archive_bytes;
+        let journal_bytes_per_run = journal_before_bytes.div_ceil(scale as u64);
 
         println!(
             "HEPTA_INFERENCE_SCALE scale={scale} update_p95_us={update_p95_micros} \
              recovery_us={recovery_micros} compacted_recovery_us={compacted_recovery_micros} \
              peak_rss_kib={} journal_before_bytes={journal_before_bytes} \
-             active_after_compaction_bytes={active_after_compaction_bytes} \
-             archive_bytes={archive_bytes} total_after_compaction_bytes={}",
+             journal_bytes_per_run={journal_bytes_per_run} \
+             active_after_archive_bytes={active_after_archive_bytes} \
+             released_archive_bytes={} audit_archive_bytes={audit_archive_bytes} \
+             total_after_archive_bytes={total_after_archive_bytes}",
             peak_rss_kib().unwrap_or(0),
-            active_after_compaction_bytes + archive_bytes,
+            archive_receipt.released_archive_bytes,
         );
     }
 }
