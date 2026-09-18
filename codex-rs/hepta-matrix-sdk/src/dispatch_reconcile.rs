@@ -118,7 +118,7 @@ async fn reconcile_raw_event(
             )
             && receipt.observed_event_id.as_ref() == Some(&event_id)
     });
-    if existing.is_some() && sender != *expected_sender {
+    if existing.is_some() && &sender != expected_sender {
         return Err(MatrixSdkError::Sync);
     }
     if !already_observed {
