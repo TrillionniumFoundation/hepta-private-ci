@@ -94,6 +94,7 @@ pub use publication::{
     classify_artifact_publication_recovery_v1, prepare_artifact_publication_transaction_v1,
 };
 pub use registry::ArtifactRegistry;
+pub use service::{ArtifactOwnerStatusV1, inspect_artifact_owner_status_v1};
 pub use storage::ArtifactStorageError;
 pub use storage::CreateOnlyArtifactFile;
 pub use storage::PreparedCandidatePayloadV1;
