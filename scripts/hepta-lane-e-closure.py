@@ -593,6 +593,29 @@ def verify_workflow(findings: Findings) -> None:
         "workflow is missing exact-candidate provenance artifact generation",
     )
     findings.require(
+        "scripts/hepta-lane-e-evidence.py self-test" in text,
+        "workflow_gate_missing",
+        "workflow is missing provenance verifier self-test",
+    )
+    evidence_script = ROOT / "scripts/hepta-lane-e-evidence.py"
+    findings.require(
+        evidence_script.is_file(),
+        "evidence_verifier_missing",
+        "Lane E provenance verifier is missing",
+    )
+    if evidence_script.is_file():
+        evidence_text = evidence_script.read_text(encoding="utf-8")
+        findings.require(
+            'SCHEMA = "hepta.lane-e-ci-evidence.v2"' in evidence_text
+            and "evidence receipt expired" in evidence_text
+            and "output digest mismatch" in evidence_text
+            and "synthetic merge ordered parents mismatch" in evidence_text
+            and 'Path(".github/workflows/hepta-lane-e-gap-closure.yml")' in evidence_text
+            and 'Path("scripts/hepta-lane-e-evidence.py")' in evidence_text,
+            "evidence_verifier_regression",
+            "provenance verifier must enforce freshness, output rehash, merge identity, and self-binding",
+        )
+    findings.require(
         "id-token: write" in text
         and "attestations: write" in text
         and "actions/attest@a1948c3f048ba23858d222213b7c278aabede763" in text,
