@@ -34,6 +34,7 @@ const REQUEST_SEMANTICS_SCHEMA = "hepta.ui-control.request-semantics.v1";
 const TRANSPORT_REQUEST_SCHEMA = "hepta.ui-control.transport-request.v1";
 const RECONCILE_BASE_DELAY_MS = 1_000;
 const RECONCILE_MAX_DELAY_MS = 60_000;
+const RECONCILE_BATCH_SIZE = 8;
 const RECONCILE_AUTO_ATTEMPTS = 64;
 const RECONCILE_RECOVERY_AGE_MS = 24 * 60 * 60 * 1_000;
 
@@ -599,52 +600,59 @@ export class RuntimeClient {
   async #resumePending({ force = false } = {}) {
     if (!this.#session || this.#pending.size === 0) return;
     const session = this.#captureSession();
-    for (const entry of [...this.#pending.values()]) {
-      const now = this.#now();
+    const eligible = [];
+    const now = this.#now();
+    for (const entry of this.#pending.values()) {
       this.#refreshRecoveryRequirement(entry, now);
       if (entry.recoveryRequired && !force) continue;
       if (!force && entry.nextReconcileAtMs > now) continue;
+      eligible.push(entry);
+      if (eligible.length >= RECONCILE_BATCH_SIZE) break;
+    }
+    if (eligible.length === 0) return;
+    await Promise.all(eligible.map((entry) => this.#reconcileEntry(entry, session)));
+  }
 
-      let observation;
-      try {
-        observation = await this.#transport.reconcile(
-          Object.freeze({
-            sessionId: session.sessionId,
-            connectionGeneration: session.connectionGeneration,
-            method: entry.method,
-            operationId: entry.operationId,
-            semanticDigest: entry.semanticDigest,
-            originSessionId: entry.originSessionId,
-            originConnectionGeneration: entry.originConnectionGeneration,
-            runtimeGeneration: entry.runtimeGeneration,
-          }),
-        );
-      } catch {
-        this.#advanceReconciliation(entry);
-        this.#persistBestEffort();
-        continue;
-      }
-      if (observation == null) {
-        this.#advanceReconciliation(entry);
-        this.#persistBestEffort();
-        continue;
-      }
-      try {
-        const safeObservation = requireRecord(
-          snapshotCanonical(observation, "reconciliation observation", {
-            maxBytes: MAX_REQUEST_BYTES,
-          }),
-          "reconciliation observation",
-        );
-        this.#reconcileObservation(safeObservation, entry, session);
-      } catch {
-        entry.recoveryRequired = true;
-        cloneAcknowledgement(entry, "indeterminate", {
-          accepted: entry.accepted,
-          errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
-        });
-        this.#persistBestEffort();
-      }
+  async #reconcileEntry(entry, session) {
+    let observation;
+    try {
+      observation = await this.#transport.reconcile(
+        Object.freeze({
+          sessionId: session.sessionId,
+          connectionGeneration: session.connectionGeneration,
+          method: entry.method,
+          operationId: entry.operationId,
+          semanticDigest: entry.semanticDigest,
+          originSessionId: entry.originSessionId,
+          originConnectionGeneration: entry.originConnectionGeneration,
+          runtimeGeneration: entry.runtimeGeneration,
+        }),
+      );
+    } catch {
+      this.#advanceReconciliation(entry);
+      this.#persistBestEffort();
+      return;
+    }
+    if (observation == null) {
+      this.#advanceReconciliation(entry);
+      this.#persistBestEffort();
+      return;
+    }
+    try {
+      const safeObservation = requireRecord(
+        snapshotCanonical(observation, "reconciliation observation", {
+          maxBytes: MAX_REQUEST_BYTES,
+        }),
+        "reconciliation observation",
+      );
+      this.#reconcileObservation(safeObservation, entry, session);
+    } catch {
+      entry.recoveryRequired = true;
+      cloneAcknowledgement(entry, "indeterminate", {
+        accepted: entry.accepted,
+        errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
+      });
+      this.#persistBestEffort();
     }
   }
 
