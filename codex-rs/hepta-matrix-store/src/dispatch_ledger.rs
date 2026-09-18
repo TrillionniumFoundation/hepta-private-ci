@@ -177,13 +177,31 @@ impl MatrixDurableStore {
         let outbox = outbox_for_txn_raw(&mut transaction, txn_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
-        if outbox.state != OutboxState::InFlight || outbox.attempts != expected_attempt {
+        if outbox.attempts != expected_attempt {
             return Err(MatrixDurableError::Conflict);
         }
-        ensure_dispatch_for_claim_tx(&mut transaction, &outbox, expected_attempt, now_ms).await?;
         let current = dispatch_by_txn_tx(&mut transaction, txn_id)
             .await?
             .ok_or(MatrixDurableError::Corrupt)?;
+        if outbox.state == OutboxState::Sent
+            && matches!(
+                current.state,
+                MatrixDispatchState::ObservedTerminal | MatrixDispatchState::Redacted
+            )
+        {
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
+        if outbox.state == OutboxState::PermanentFailure
+            && current.state == MatrixDispatchState::TerminalFailure
+        {
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
+        if outbox.state != OutboxState::InFlight {
+            return Err(MatrixDurableError::Conflict);
+        }
+        ensure_dispatch_for_claim_tx(&mut transaction, &outbox, expected_attempt, now_ms).await?;
         if !current.state.unresolved() {
             return Err(MatrixDurableError::Conflict);
         }
