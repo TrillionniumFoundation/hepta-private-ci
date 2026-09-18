@@ -445,10 +445,18 @@ impl<P: BaoLeaseProvider> BaoLeaseCoordinator<P> {
             .get(&request.lease_id)
             .cloned()
             .ok_or(BaoLeaseError::LeaseNotFound)?;
-        if lease.state == BaoSecretLeaseState::Revoked {
-            return Err(BaoLeaseError::LeaseNotActive);
-        }
         let operation = normalize_revoke(request, &lease, provider_payload)?;
+        if lease.state == BaoSecretLeaseState::Revoked {
+            let duplicate = self
+                .store
+                .state()
+                .operations
+                .get(&operation.operation_id)
+                .is_some_and(|stored| stored.operation == operation);
+            if !duplicate {
+                return Err(BaoLeaseError::LeaseNotActive);
+            }
+        }
         let binding = operation_binding(self.provider.provider_scope(), &operation)?;
         let execution = self
             .execute_mutation(authority, grant, binding, operation, provider_payload)
@@ -771,7 +779,14 @@ impl<P: BaoLeaseProvider> BaoLeaseCoordinator<P> {
         key: &ProviderEffectKey,
         reason_code: &str,
     ) -> Result<(), BaoLeaseError> {
-        if self.store.state().effect.state(key) == Some(ProviderEffectState::Indeterminate) {
+        if self
+            .store
+            .state()
+            .effect
+            .uncertainties(key)
+            .last()
+            .is_some_and(|uncertainty| uncertainty.reason_code == reason_code)
+        {
             return Ok(());
         }
         self.store.append(LeaseJournalRecord::Uncertainty {
