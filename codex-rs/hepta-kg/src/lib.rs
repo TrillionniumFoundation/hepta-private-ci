@@ -42,6 +42,7 @@ pub use generation::MAX_KNOWLEDGE_NODES_V2;
 pub use generation::MAX_SUPPORTS_PER_RELATION_V2;
 pub use generation::apply_incremental_delta;
 pub use generation::build_complete_generation;
+pub use generation::derive_incremental_delta;
 pub use generation::publish_generation;
 pub use generation::query_relations;
 
