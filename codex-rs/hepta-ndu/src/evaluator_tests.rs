@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
@@ -415,4 +417,35 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
         .support_digest;
 
     assert_ne!(first_support, second_support);
+}
+
+#[test]
+fn axis_semantics_digest_is_required_and_changes_profile_and_evaluation_identity() {
+    let mut base_profile = profile();
+    let base_digest = must(super::canonical_utility_profile_digest(&base_profile));
+    let base = must(evaluate_candidates_with_policy(
+        set(vec![contribution("abstain", 0, 0)]),
+        base_profile.clone(),
+        None,
+        must(legacy_evaluation_policy(&base_profile)),
+    ));
+
+    base_profile.axis_semantics_digest = Digest32::of_bytes(b"utility-v1-axis-semantics-v2");
+    let changed_digest = must(super::canonical_utility_profile_digest(&base_profile));
+    let changed = must(evaluate_candidates_with_policy(
+        set(vec![contribution("abstain", 0, 0)]),
+        base_profile.clone(),
+        None,
+        must(legacy_evaluation_policy(&base_profile)),
+    ));
+
+    assert_ne!(base_digest, changed_digest);
+    assert_ne!(base.base.utility_profile_digest, changed.base.utility_profile_digest);
+    assert_ne!(base.evaluation_digest_v2, changed.evaluation_digest_v2);
+
+    base_profile.axis_semantics_digest = Digest32::ZERO;
+    assert_eq!(
+        must_err(super::canonical_utility_profile_digest(&base_profile)),
+        crate::NduError::EmptyProfileSemanticsDigest
+    );
 }
