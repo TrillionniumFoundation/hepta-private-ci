@@ -47,7 +47,7 @@ rather than defining a second uncertainty model.
 `src/lease_store.rs` owns an adapter-local metadata journal. It contains no
 raw secret values.
 
-The store is Unix fail-closed and uses:
+The current store is Linux fail-closed and uses:
 
 - owner-only state directory (0700);
 - owner-only regular files (0600), NOFOLLOW, link-count and owner checks;
@@ -175,7 +175,7 @@ change and must not be hidden inside this adapter package.
 - unsupported provider rejection before dispatch;
 - Accepted -> status lookup -> Completed without re-dispatch.
 
-Run the crate tests, all-target compile, formatting, and strict Clippy on the
+Run the crate tests, all-target compile, formatting, locked dependency checks, and strict Clippy on the
 exact branch candidate before treating this source as complete. Those results
 are technical evidence only and do not grant provider activation or release
 authority.
