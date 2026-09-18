@@ -20,7 +20,6 @@ use codex_hepta_contracts::ProviderEffectAckSource;
 use codex_hepta_contracts::ProviderEffectAckStatus;
 use codex_hepta_contracts::ProviderEffectAppendDisposition;
 use codex_hepta_contracts::ProviderEffectBindingError;
-use codex_hepta_contracts::ProviderEffectDispatchReceipt;
 use codex_hepta_contracts::ProviderEffectFuture;
 use codex_hepta_contracts::ProviderEffectIdempotencyCapability;
 use codex_hepta_contracts::ProviderEffectIntent;
@@ -644,13 +643,30 @@ impl<P: BaoLeaseProvider> BaoLeaseCoordinator<P> {
                         return Err(error);
                     }
                 };
-                let secret = self.validate_dispatch_secret(&stored, &ack, metadata.as_ref(), secret)?;
-                self.store.append(LeaseJournalRecord::Ack {
+                let secret = match self.validate_dispatch_secret(
+                    &stored,
+                    &ack,
+                    metadata.as_ref(),
+                    secret,
+                ) {
+                    Ok(secret) => secret,
+                    Err(error) => {
+                        self.mark_indeterminate(
+                            &intent.key,
+                            "provider_dispatch_secret_invalid",
+                        )?;
+                        return Err(error);
+                    }
+                };
+                if let Err(error) = self.store.append(LeaseJournalRecord::Ack {
                     operation_id: operation.operation_id.clone(),
                     ack,
                     source: ProviderEffectAckSource::DispatchResponse,
                     lease: metadata,
-                })?;
+                }) {
+                    self.mark_indeterminate(&intent.key, "provider_dispatch_commit_unknown")?;
+                    return Err(error);
+                }
                 let state = self
                     .store
                     .state()
