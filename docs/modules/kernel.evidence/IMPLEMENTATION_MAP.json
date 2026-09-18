@@ -122,6 +122,52 @@
       "designOperation": "verify_external_checkpoint",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "verify_qualification_trust",
+      "nativeSymbol": "verify_qualification_trust",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "host_pinned_trust_root",
+      "tests": [
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_qualification_trust",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "query_claim_with_authority",
+      "nativeSymbol": "query_claim_with_authority",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "host_pinned_trust_root_and_revocation_head",
+      "tests": [
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "query_claim",
+      "mappingClass": "owner_native_product_adapter",
+      "delegatedCallees": [
+        "query_claim"
+      ]
+    },
+    {
+      "operation": "verify_chain_with_authority",
+      "nativeSymbol": "verify_chain_with_authority",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "host_pinned_trust_root_and_revocation_head",
+      "tests": [
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_chain",
+      "mappingClass": "owner_native_product_adapter",
+      "delegatedCallees": [
+        "verify_chain"
+      ]
     }
   ],
   "repositoryControlledGaps": [
