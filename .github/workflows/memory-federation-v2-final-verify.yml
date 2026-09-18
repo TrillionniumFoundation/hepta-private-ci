@@ -1,0 +1,100 @@
+name: memory federation v2 final verify
+
+on:
+  push:
+    branches:
+      - fix/memory-federation-v2-hardening-final
+    paths:
+      - .github/workflows/memory-federation-v2-final-verify.yml
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: fix/memory-federation-v2-hardening-final
+
+      - name: Run focused federation verification
+        shell: bash
+        run: |
+          set +e
+          RESULTS=/tmp/memory-federation-v2-results.txt
+          : > "$RESULTS"
+          overall=0
+
+          run_check() {
+            label="$1"
+            shift
+            log="/tmp/memory-federation-v2-${label}.log"
+            echo "::group::${label}"
+            "$@" >"$log" 2>&1
+            status=$?
+            cat "$log"
+            echo "::endgroup::"
+            printf '%s|%s|%s\n' "$label" "$status" "$log" >>"$RESULTS"
+            if [ "$status" -ne 0 ]; then
+              overall=1
+            fi
+          }
+
+          cd codex-rs
+          run_check fmt cargo fmt -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server
+          run_check federation_contract cargo test -p codex-hepta-memory-federation --lib
+          run_check memory_product_adapter cargo test -p codex-hepta-memory --lib cognitive_runtime_tests
+          run_check memory_legacy_regression cargo test -p codex-hepta-memory --lib cognitive_federation_tests
+          run_check extension_federation cargo test -p codex-hepta-memory-extension --lib cognitive::federation
+          run_check agentd_runtime cargo test -p codex-hepta-agentd --lib runtime
+          run_check composition_check cargo check -p codex-hepta-agentd -p codex-app-server
+          run_check clippy cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server --all-targets -- -D warnings
+          cd ..
+          run_check diff_check git diff --check
+
+          mkdir -p qualification/memory-federation
+          receipt=qualification/memory-federation/FINAL_V2_VERIFICATION.md
+          {
+            echo "# memory.federation V2 final verification"
+            echo
+            echo "- workflow input head: \`$GITHUB_SHA\`"
+            echo "- branch: \`$GITHUB_REF_NAME\`"
+            echo "- runner: \`$RUNNER_OS/$RUNNER_ARCH\`"
+            echo "- generated UTC: \`$(date -u +%Y-%m-%dT%H:%M:%SZ)\`"
+            echo "- overall: \`$([ "$overall" -eq 0 ] && echo PASS || echo FAIL)\`"
+            echo
+            echo "## Commands"
+            echo
+            echo "| check | exit |"
+            echo "|---|---:|"
+            while IFS='|' read -r label status log; do
+              echo "| \`$label\` | $status |"
+            done < "$RESULTS"
+            echo
+            if [ "$overall" -ne 0 ]; then
+              echo "## Failure tails"
+              echo
+              while IFS='|' read -r label status log; do
+                if [ "$status" -ne 0 ]; then
+                  echo "### $label"
+                  echo
+                  echo '~~~text'
+                  tail -n 120 "$log"
+                  echo '~~~'
+                  echo
+                fi
+              done < "$RESULTS"
+            fi
+          } > "$receipt"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add codex-rs qualification/memory-federation/FINAL_V2_VERIFICATION.md
+          if ! git diff --cached --quiet; then
+            git commit -m "memory.federation: record final v2 verification"
+            git push origin HEAD:fix/memory-federation-v2-hardening-final
+          fi
+
+          exit "$overall"
