@@ -205,10 +205,14 @@ impl LearningLedger {
             return Err(LedgerError::InvalidRunStart("admission grants authority"));
         }
         if publication.compile.disposition != codex_hepta_objective::CompileDisposition::Compiled {
-            return Err(LedgerError::InvalidRunStart("compile disposition is not compiled"));
+            return Err(LedgerError::InvalidRunStart(
+                "compile disposition is not compiled",
+            ));
         }
         if !publication.compile.removed_action_ids.is_empty() {
-            return Err(LedgerError::InvalidRunStart("successful compile removed requested actions"));
+            return Err(LedgerError::InvalidRunStart(
+                "successful compile removed requested actions",
+            ));
         }
         codex_hepta_objective::validate_compiled_objective_v1(&publication.compile.objective)
             .map_err(|_| LedgerError::InvalidRunStart("compiled objective validation failed"))?;
@@ -216,8 +220,12 @@ impl LearningLedger {
             .run_start
             .validate_for_objective(&publication.compile.objective)
             .map_err(|_| LedgerError::InvalidRunStart("run snapshot validation failed"))?;
-        if publication.compile.objective.source_digest != publication.admission.admitted_source_digest {
-            return Err(LedgerError::InvalidRunStart("admitted source digest mismatch"));
+        if publication.compile.objective.source_digest
+            != publication.admission.admitted_source_digest
+        {
+            return Err(LedgerError::InvalidRunStart(
+                "admitted source digest mismatch",
+            ));
         }
         if publication.admission.profile_digest.is_zero()
             || publication.admission.supplied_source_digest.is_zero()
@@ -351,10 +359,8 @@ impl LearningLedger {
             .insert(record_id, event_kind(&record.event));
         match &record.event {
             LedgerEvent::RunStart(value) => {
-                self.run_starts.insert(
-                    value.run_start.run_id.clone(),
-                    value.record_id.clone(),
-                );
+                self.run_starts
+                    .insert(value.run_start.run_id.clone(), value.record_id.clone());
             }
             LedgerEvent::Decision(value) => {
                 self.decisions.insert(
