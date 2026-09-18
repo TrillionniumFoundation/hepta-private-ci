@@ -1,5 +1,7 @@
 use super::*;
 
+use std::collections::BTreeSet;
+
 use crate::FactorSource;
 use crate::PromptFactor;
 
@@ -253,19 +255,53 @@ fn equivalent_required_factor_order_has_one_canonical_digest() {
     registry
         .register_realization_v2(binding())
         .unwrap_or_else(|error| panic!("register realization: {error}"));
+
+    let mut factor_two = factor();
+    factor_two.factor_id = id("factor:2");
+    factor_two.proposer_id = id("proposer:2");
+    factor_two.content_digest = digest("factor:2");
+    registry
+        .register_factor(factor_two)
+        .unwrap_or_else(|error| panic!("register factor two: {error}"));
+    registry
+        .admit_factor(&id("factor:2"), &id("reviewer:2"), digest("evidence:2"))
+        .unwrap_or_else(|error| panic!("admit factor two: {error}"));
+    let mut second = binding();
+    second.realization_id = id("realization:2");
+    second.factor_id = id("factor:2");
+    second.payload_digest = digest("payload:2");
+    registry
+        .register_realization_v2(second)
+        .unwrap_or_else(|error| panic!("register second realization: {error}"));
+
     let tuple = model_tuple();
     let vector = digest("generation-vector");
     let snapshot = registry
         .snapshot_v2(vector, &tuple)
         .unwrap_or_else(|error| panic!("snapshot: {error}"));
     let left = registry
-        .read_compatible_v2(&snapshot, vector, &tuple, 10, vec![id("factor:1")], 8)
+        .read_compatible_v2(
+            &snapshot,
+            vector,
+            &tuple,
+            10,
+            vec![id("factor:1"), id("factor:2")],
+            8,
+        )
         .unwrap_or_else(|error| panic!("left: {error}"));
     let right = registry
-        .read_compatible_v2(&snapshot, vector, &tuple, 10, vec![id("factor:1")], 8)
+        .read_compatible_v2(
+            &snapshot,
+            vector,
+            &tuple,
+            10,
+            vec![id("factor:2"), id("factor:1")],
+            8,
+        )
         .unwrap_or_else(|error| panic!("right: {error}"));
     assert_eq!(left.set_digest, right.set_digest);
     assert_eq!(left.required_factor_ids, right.required_factor_ids);
+    assert_eq!(left.bindings, right.bindings);
 }
 
 #[test]
