@@ -10,6 +10,7 @@ on:
       - codex-rs/hepta-learning-artifacts/**
       - codex-rs/hepta-bellman-operator/**
       - codex-rs/hepta-intelligence-eval/**
+      - codex-rs/hepta-intelligence/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
       - qualification/lane-e/**
@@ -41,13 +42,13 @@ jobs:
       - name: Install repository test runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.8.6
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
-          components: clippy,rustfmt
+          components: clippy,rustfmt,llvm-tools-preview
 
       - name: Bind exact source
         shell: bash
@@ -99,6 +100,32 @@ jobs:
           --test cross_language_wire_fault
           -- --test-threads=1
 
+      - name: Signed evaluated-shadow end-to-end qualification
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence
+          evaluated_shadow
+          -- --test-threads=1
+
+      - name: Durable holdout reopen/replay stress audit
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          durable_holdout_reopen_replay_stress
+          -- --ignored --test-threads=1
+
+      - name: learning.eval coverage evidence
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          mkdir -p ../.hepta-evidence
+          cargo llvm-cov --locked \
+            -p codex-hepta-intelligence-eval \
+            --lcov \
+            --output-path ../.hepta-evidence/learning-eval-source.lcov
+
       - name: Strict Lane E lint
         working-directory: codex-rs
         run: >-
@@ -126,6 +153,29 @@ jobs:
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
 
+      - name: Emit exact-source Lane E qualification receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          python3 scripts/hepta-lane-e-closure.py receipt \
+            --kind source-head \
+            --expected-sha "${SOURCE_SHA}" \
+            --output .hepta-evidence/lane-e-source-head.json
+          python3 scripts/hepta-lane-e-closure.py receipt-verify \
+            --kind source-head \
+            --expected-sha "${SOURCE_SHA}" \
+            --input .hepta-evidence/lane-e-source-head.json
+
+      - name: Retain exact-source Lane E qualification evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-e-qualification-source-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
   synthetic-merge:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
@@ -139,13 +189,13 @@ jobs:
       - name: Install repository test runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.8.6
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
-          components: rustfmt
+          components: rustfmt,llvm-tools-preview
 
       - name: Materialize ordered-parent synthetic merge
         shell: bash
@@ -176,6 +226,8 @@ jobs:
           } >> "${GITHUB_ENV}"
           git diff --cached --check
           git diff --exit-code
+          git checkout --detach "${MERGE_COMMIT}"
+          test "$(git rev-parse HEAD)" = "${MERGE_COMMIT}"
 
       - name: Verify merged closed world
         shell: bash
@@ -219,6 +271,22 @@ jobs:
           --test cross_language_wire_fault
           -- --test-threads=1
 
+      - name: Test merged signed evaluated-shadow end-to-end qualification
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence
+          evaluated_shadow
+          -- --test-threads=1
+
+      - name: Test merged durable holdout stress audit
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          durable_holdout_reopen_replay_stress
+          -- --ignored --test-threads=1
+
       - name: Verify merged formatting and index stability
         shell: bash
         run: |
@@ -234,3 +302,26 @@ jobs:
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+
+      - name: Emit synthetic-merge Lane E qualification receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          python3 scripts/hepta-lane-e-closure.py receipt \
+            --kind synthetic-merge \
+            --expected-sha "${MERGE_COMMIT}" \
+            --output .hepta-evidence/lane-e-synthetic-merge.json
+          python3 scripts/hepta-lane-e-closure.py receipt-verify \
+            --kind synthetic-merge \
+            --expected-sha "${MERGE_COMMIT}" \
+            --input .hepta-evidence/lane-e-synthetic-merge.json
+
+      - name: Retain synthetic-merge Lane E qualification evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-e-qualification-merge-${{ env.MERGE_COMMIT }}
+          path: .hepta-evidence/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
