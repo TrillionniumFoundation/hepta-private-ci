@@ -134,11 +134,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             // a fresh explicit start.
             return self.start_release_slot(agent_id, slot, release, now);
         }
-        self.reset_restart_budget_for_release(
-            agent_id,
-            slot,
-            release.release_id().clone(),
-        )?;
+        self.reset_restart_budget_for_release(agent_id, slot, release.release_id().clone())?;
         let lifecycle = self.record(agent_id)?.lifecycle.lifecycle;
         let result = if matches!(
             lifecycle,

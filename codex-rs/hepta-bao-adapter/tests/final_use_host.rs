@@ -107,11 +107,8 @@ mod unix {
             distributor.verifying_key().to_bytes(),
         )
         .unwrap();
-        let consumer = RegisteredBaoConsumer::new(
-            registered_consumer.into(),
-            Arc::new(|_| Ok(())),
-        )
-        .unwrap();
+        let consumer =
+            RegisteredBaoConsumer::new(registered_consumer.into(), Arc::new(|_| Ok(()))).unwrap();
         let host = BaoFinalUseHost::new(
             authority,
             approval_verifier,
@@ -138,8 +135,8 @@ mod unix {
             update: bootstrap,
         };
         host.apply_revocation_update(&bootstrap).unwrap();
-        let approval = FinalUseApproval::for_grant("operator-approver".into(), &grant.grant)
-            .unwrap();
+        let approval =
+            FinalUseApproval::for_grant("operator-approver".into(), &grant.grant).unwrap();
         let approval = SignedFinalUseApproval {
             signature: approver
                 .sign(&approval.signing_bytes().unwrap())

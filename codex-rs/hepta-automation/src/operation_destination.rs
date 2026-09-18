@@ -59,8 +59,8 @@ pub fn automation_task_operation_intent(
     let scope_id = StableId::new(owner_agent_id.as_str()).map_err(|_| AutomationError::Invalid)?;
     let operation_id = StableId::new(format!("automation.task.create:{}", draft.task_id))
         .map_err(|_| AutomationError::Invalid)?;
-    let destination = StableId::new(AUTOMATION_OPERATION_DESTINATION)
-        .map_err(|_| AutomationError::Invalid)?;
+    let destination =
+        StableId::new(AUTOMATION_OPERATION_DESTINATION).map_err(|_| AutomationError::Invalid)?;
     Ok(OperationIntentV1 {
         scope_id,
         operation_id,
@@ -94,7 +94,11 @@ impl AutomationStore {
             .await
             .map_err(map_operation_error)?;
 
-        match dedupe.begin_apply(&identity).await.map_err(map_operation_error)? {
+        match dedupe
+            .begin_apply(&identity)
+            .await
+            .map_err(map_operation_error)?
+        {
             DestinationApplyStart::AlreadyApplied(destination_receipt) => {
                 let task = self
                     .task(draft.task_id)

@@ -110,8 +110,9 @@ impl ProcessDriver for FakeDriver {
         let mut world = self.world.lock().expect("fake world lock");
         world.next_id += 1;
         let id = world.next_id;
-        let identity = ProcessIdentity::new(id, format!("restart-recovery-{id}-{}", spec.generation))
-            .map_err(|error| ProcessDriverError::new(error.to_string()))?;
+        let identity =
+            ProcessIdentity::new(id, format!("restart-recovery-{id}-{}", spec.generation))
+                .map_err(|error| ProcessDriverError::new(error.to_string()))?;
         world.processes.insert(
             id,
             FakeState {
@@ -239,15 +240,17 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
-    assert!(supervisor
-        .snapshot(&agent_id)
-        .expect("snapshot")
-        .events
-        .iter()
-        .any(|event| matches!(
-            &event.kind,
-            SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
-        )));
+    assert!(
+        supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot")
+            .events
+            .iter()
+            .any(|event| matches!(
+                &event.kind,
+                SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
+            ))
+    );
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(499)),
         TickReport::default()
@@ -267,15 +270,17 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
-    assert!(supervisor
-        .snapshot(&agent_id)
-        .expect("snapshot")
-        .events
-        .iter()
-        .any(|event| matches!(
-            &event.kind,
-            SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
-        )));
+    assert!(
+        supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot")
+            .events
+            .iter()
+            .any(|event| matches!(
+                &event.kind,
+                SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
+            ))
+    );
     now += Duration::from_secs(1);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&agent_id), 4);

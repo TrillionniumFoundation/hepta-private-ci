@@ -129,11 +129,7 @@ impl AgentdOperationsHost {
 
         if let Some(receipt) = self.automation.observe_task_operation(&intent).await? {
             self.source
-                .reconcile_destination_receipt(
-                    &receipt,
-                    self.observer_id.clone(),
-                    self.generation,
-                )
+                .reconcile_destination_receipt(&receipt, self.observer_id.clone(), self.generation)
                 .await?;
             return self
                 .automation
@@ -176,12 +172,16 @@ impl AgentdOperationsHost {
                 },
                 Err(mpsc::error::TrySendError::Full(_)) => DispatchEffect::NotDispatched {
                     value: (),
-                    reason_digest: Digest32::of_bytes(b"hepta.agentd.automation-owner-queue-full.v1\0"),
+                    reason_digest: Digest32::of_bytes(
+                        b"hepta.agentd.automation-owner-queue-full.v1\0",
+                    ),
                     retry_after: QUEUE_RETRY,
                 },
                 Err(mpsc::error::TrySendError::Closed(_)) => DispatchEffect::NotDispatched {
                     value: (),
-                    reason_digest: Digest32::of_bytes(b"hepta.agentd.automation-owner-queue-closed.v1\0"),
+                    reason_digest: Digest32::of_bytes(
+                        b"hepta.agentd.automation-owner-queue-closed.v1\0",
+                    ),
                     retry_after: QUEUE_RETRY,
                 },
             })
@@ -221,7 +221,10 @@ async fn apply_and_reconcile(
     operation: &OperationIntentV1,
     draft: &AutomationTaskDraft,
 ) -> Result<AutomationTask, AgentdOperationsError> {
-    match automation.create_task_from_operation(operation, draft).await {
+    match automation
+        .create_task_from_operation(operation, draft)
+        .await
+    {
         Ok(receipt) => {
             source
                 .reconcile_destination_receipt(
@@ -236,11 +239,7 @@ async fn apply_and_reconcile(
             match automation.observe_task_operation(operation).await {
                 Ok(Some(receipt)) => {
                     source
-                        .reconcile_destination_receipt(
-                            &receipt,
-                            observer_id.clone(),
-                            generation,
-                        )
+                        .reconcile_destination_receipt(&receipt, observer_id.clone(), generation)
                         .await?;
                     if let Some(task_id) = task_id_from_operation(operation) {
                         if let Some(task) = automation.task(task_id).await? {
@@ -261,12 +260,8 @@ async fn apply_and_reconcile(
                         ReconciliationOutcome::NotApplied
                     };
                     let evidence_digest = match outcome {
-                        ReconciliationOutcome::Quarantined => {
-                            Digest32::of_bytes(QUARANTINE_DOMAIN)
-                        }
-                        ReconciliationOutcome::NotApplied => {
-                            Digest32::of_bytes(NOT_APPLIED_DOMAIN)
-                        }
+                        ReconciliationOutcome::Quarantined => Digest32::of_bytes(QUARANTINE_DOMAIN),
+                        ReconciliationOutcome::NotApplied => Digest32::of_bytes(NOT_APPLIED_DOMAIN),
                         ReconciliationOutcome::Applied => unreachable!(),
                     };
                     source
@@ -309,11 +304,7 @@ async fn reconcile_reopened_operations(
             match automation.observe_task_operation(&record.intent).await? {
                 Some(receipt) => {
                     source
-                        .reconcile_destination_receipt(
-                            &receipt,
-                            observer_id.clone(),
-                            generation,
-                        )
+                        .reconcile_destination_receipt(&receipt, observer_id.clone(), generation)
                         .await?;
                 }
                 None => {

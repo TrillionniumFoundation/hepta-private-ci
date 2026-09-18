@@ -207,11 +207,7 @@ impl SignedIntentRecoveryDirective {
     }
 
     fn compute_digest(&self) -> Result<Sha256Digest, SignedIntentError> {
-        let payload = serde_json::to_vec(&(
-            self.schema_version,
-            &self.intent_sha256,
-            self.action,
-        ))?;
+        let payload = serde_json::to_vec(&(self.schema_version, &self.intent_sha256, self.action))?;
         Ok(Sha256Digest::from_sha256_output(Sha256::digest(
             [RECOVERY_DOMAIN, payload.as_slice()].concat(),
         )))

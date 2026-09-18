@@ -539,16 +539,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .control_revision
                 .checked_add(1)
                 .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))?;
-            if slot
-                .signed_intent
-                .as_ref()
-                .is_some_and(|intent| {
-                    !matches!(
-                        intent.status,
-                        SignedIntentStatus::Committed | SignedIntentStatus::Aborted
-                    )
-                })
-            {
+            if slot.signed_intent.as_ref().is_some_and(|intent| {
+                !matches!(
+                    intent.status,
+                    SignedIntentStatus::Committed | SignedIntentStatus::Aborted
+                )
+            }) {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
                 ));
@@ -572,12 +568,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             // of blindly retrying the grant.
             slot.signed_intent = Some(intent.clone());
             if write_intent(record.layout.run_root(), &intent).is_err() {
-                return Err(supervisor.mark_signed_intent_recovery_required(
-                    agent_id,
-                    slot,
-                    &record,
-                    &intent,
-                ));
+                return Err(supervisor
+                    .mark_signed_intent_recovery_required(agent_id, slot, &record, &intent));
             }
             slot.control_revision = next_control_revision;
 
@@ -586,31 +578,19 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .upgrade_slot(agent_id, slot, target, now, explicit_rollback)
                 .is_err()
             {
-                return Err(supervisor.mark_signed_intent_recovery_required(
-                    agent_id,
-                    slot,
-                    &record,
-                    &intent,
-                ));
+                return Err(supervisor
+                    .mark_signed_intent_recovery_required(agent_id, slot, &record, &intent));
             }
             let queued = match intent.with_status(SignedIntentStatus::Queued) {
                 Ok(queued) => queued,
                 Err(_) => {
-                    return Err(supervisor.mark_signed_intent_recovery_required(
-                        agent_id,
-                        slot,
-                        &record,
-                        &intent,
-                    ));
+                    return Err(supervisor
+                        .mark_signed_intent_recovery_required(agent_id, slot, &record, &intent));
                 }
             };
             if write_intent(record.layout.run_root(), &queued).is_err() {
-                return Err(supervisor.mark_signed_intent_recovery_required(
-                    agent_id,
-                    slot,
-                    &record,
-                    &queued,
-                ));
+                return Err(supervisor
+                    .mark_signed_intent_recovery_required(agent_id, slot, &record, &queued));
             }
             slot.signed_intent = Some(queued);
             Ok(ProductionMutationReceipt::queued(

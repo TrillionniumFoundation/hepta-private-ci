@@ -198,9 +198,12 @@ pub(crate) async fn finalize(
     expected_snapshot_digest: &str,
     expected_read_digest: &str,
 ) -> Result<(), CognitiveContextError> {
-    let expected_snapshot_digest = expected_snapshot_digest
-        .parse::<Digest32>()
-        .map_err(|error| CognitiveStoreError::Invalid(format!("invalid snapshot digest: {error}")))?;
+    let expected_snapshot_digest =
+        expected_snapshot_digest
+            .parse::<Digest32>()
+            .map_err(|error| {
+                CognitiveStoreError::Invalid(format!("invalid snapshot digest: {error}"))
+            })?;
     let expected_read_digest = expected_read_digest
         .parse::<Digest32>()
         .map_err(|error| CognitiveStoreError::Invalid(format!("invalid read digest: {error}")))?;

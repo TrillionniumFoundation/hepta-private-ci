@@ -64,12 +64,8 @@ async fn exact_operation_replay_returns_one_task_and_one_destination_receipt() {
     let fixture = Fixture::new();
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
     let draft = draft();
-    let operation = automation_task_operation_intent(
-        store.owner_agent_id(),
-        &draft,
-        generation(7),
-    )
-    .expect("operation");
+    let operation = automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
+        .expect("operation");
 
     let first = store
         .create_task_from_operation(&operation, &draft)
@@ -95,12 +91,8 @@ async fn same_operation_identity_with_changed_task_payload_conflicts() {
     let fixture = Fixture::new();
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
     let draft = draft();
-    let operation = automation_task_operation_intent(
-        store.owner_agent_id(),
-        &draft,
-        generation(7),
-    )
-    .expect("operation");
+    let operation = automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
+        .expect("operation");
     store
         .create_task_from_operation(&operation, &draft)
         .await
@@ -108,12 +100,9 @@ async fn same_operation_identity_with_changed_task_payload_conflicts() {
 
     let mut changed = draft.clone();
     changed.prompt = "changed semantic payload".to_owned();
-    let changed_operation = automation_task_operation_intent(
-        store.owner_agent_id(),
-        &changed,
-        generation(7),
-    )
-    .expect("changed operation");
+    let changed_operation =
+        automation_task_operation_intent(store.owner_agent_id(), &changed, generation(7))
+            .expect("changed operation");
     assert_eq!(changed_operation.operation_id, operation.operation_id);
     assert_ne!(changed_operation.payload_digest, operation.payload_digest);
     assert_eq!(
@@ -130,14 +119,11 @@ async fn mismatched_destination_or_scope_is_denied_before_domain_mutation() {
     let fixture = Fixture::new();
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
     let draft = draft();
-    let mut operation = automation_task_operation_intent(
-        store.owner_agent_id(),
-        &draft,
-        generation(7),
-    )
-    .expect("operation");
-    operation.destination = codex_hepta_types::StableId::new("cognitive.store")
-        .expect("different destination");
+    let mut operation =
+        automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
+            .expect("operation");
+    operation.destination =
+        codex_hepta_types::StableId::new("cognitive.store").expect("different destination");
     assert_eq!(
         store.create_task_from_operation(&operation, &draft).await,
         Err(AutomationError::AccessDenied)
@@ -150,19 +136,17 @@ async fn destination_dedupe_and_task_survive_store_reopen() {
     let fixture = Fixture::new();
     let draft = draft();
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
-    let operation = automation_task_operation_intent(
-        store.owner_agent_id(),
-        &draft,
-        generation(7),
-    )
-    .expect("operation");
+    let operation = automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
+        .expect("operation");
     let first = store
         .create_task_from_operation(&operation, &draft)
         .await
         .expect("first create");
     store.close().await;
 
-    let reopened = AutomationStore::open(&fixture.layout).await.expect("reopen");
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen");
     let replay = reopened
         .create_task_from_operation(&operation, &draft)
         .await

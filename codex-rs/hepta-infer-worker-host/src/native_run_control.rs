@@ -144,10 +144,7 @@ pub struct TransientNativeControl {
 }
 
 impl TransientNativeControl {
-    pub fn new(
-        path: impl AsRef<Path>,
-        capacity: usize,
-    ) -> std::result::Result<Self, ControlError> {
+    pub fn new(path: impl AsRef<Path>, capacity: usize) -> std::result::Result<Self, ControlError> {
         let path = path.as_ref().to_path_buf();
         let control = DurableInferenceControl::open(&path, capacity)?;
         drop(control);

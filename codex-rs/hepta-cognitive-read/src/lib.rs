@@ -22,8 +22,6 @@ use codex_hepta_types::Digest32;
 // effect boundary. Preserve the legacy synchronous provider symbols for source
 // compatibility, but deprecate them as production entrypoints so there is one
 // authority/freshness semantics path rather than two drifting implementations.
-pub use authoritative::AuthoritativeSnapshotV1;
-pub use authoritative::SnapshotProviderError;
 #[deprecated(
     note = "qualification compatibility only; production acquisition uses hepta-memory durable Lane C plus Agentd receipt finalization"
 )]
@@ -32,10 +30,12 @@ pub use authoritative::AuthoritativeCognitiveSnapshotProvider;
     note = "qualification compatibility only; production acquisition uses hepta-memory durable Lane C plus Agentd receipt finalization"
 )]
 pub use authoritative::AuthoritativeReadResultV1;
+pub use authoritative::AuthoritativeSnapshotV1;
 #[deprecated(
     note = "qualification compatibility only; production acquisition uses hepta-memory durable Lane C plus Agentd receipt finalization"
 )]
 pub use authoritative::SnapshotAcquisitionRequestV1;
+pub use authoritative::SnapshotProviderError;
 #[deprecated(
     note = "qualification compatibility only; production acquisition uses hepta-memory durable Lane C plus Agentd receipt finalization"
 )]

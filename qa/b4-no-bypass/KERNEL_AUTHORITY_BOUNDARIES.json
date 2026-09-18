@@ -134,7 +134,9 @@
         "FinalUseAuthority\\s*::\\s*open_state_dir_with_trust\\s*\\(",
         "FinalUseAuthority\\\\s*::\\\\s*open_state_dir_with_issuer_keys\\\\s*\\\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"
+      ]
     },
     {
       "id": "final_use_claim",
@@ -155,7 +157,9 @@
         "\\.\\s*claim\\s*\\(",
         "FinalUseAuthority\\s*::\\s*claim\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs"
+      ]
     },
     {
       "id": "final_use_delivery",
@@ -195,7 +199,9 @@
         "\\.\\s*with_dispatch_boundary\\s*\\(",
         "FinalUseAuthority\\s*::\\s*with_dispatch_boundary\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs"
+      ]
     },
     {
       "id": "final_use_revocation_update",

@@ -113,7 +113,9 @@ impl AgentdState {
             ));
         }
         self.automation_operations.set(host).map_err(|_| {
-            AgentdError::Protocol("automation operations host was attached more than once".to_string())
+            AgentdError::Protocol(
+                "automation operations host was attached more than once".to_string(),
+            )
         })
     }
 

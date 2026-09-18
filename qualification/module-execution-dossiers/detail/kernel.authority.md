@@ -2,8 +2,9 @@
 
 Parent: `docs/modules/kernel.authority/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
 Status: durable authority leases/revocations, signed final-use verification,
-independent approval, authenticated revocation ingestion and a registered Bao
-consumer host are source-implemented. Product-process activation and independent
+independent approval, authenticated revocation ingestion, a registered Bao
+consumer host and a named Agentd Browser FinalUse product source path are
+source-implemented. Exact-candidate product execution, activation and independent
 acceptance remain separate gates. Common requirements: `../EXECUTION_SEMANTICS.md`
 and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
@@ -24,11 +25,11 @@ The native general capability owner is `AuthorityLeaseRegistry`:
 - `put_lease(lease, expected_revision)` performs bounded owner-CAS create/update;
 - `read_lease(lease_id)` publishes the current `authority_lease` value;
 - `read_revocation(lease_id)` publishes the current `capability_revocation` value;
-- `verify_use(lease_id, expected_revision, binding, now)` checks principal,
+- `AuthorityLeaseVerifier::verify_use(lease_id, expected_revision, binding)` checks principal,
   operation class, scope, payload/destination binding, epoch, revision, expiry
-  and revocation using trusted host time;
-- `revoke(lease_id, expected_revision, reason_digest, revoked_at)` performs one
-  durable owner-CAS revocation;
+  and revocation using the clock bound into the authority owner;
+- `revoke(lease_id, expected_revision, reason_digest)` performs one durable
+  owner-CAS revocation and assigns revocation time from that same bound clock;
 - `advance_epoch(expected_store_revision, new_epoch)` durably fences old
   authority and clears bounded old-epoch history only as part of the epoch
   transition.
@@ -75,6 +76,12 @@ The registered Bao host resolves the signed `consumer_id` against a closed
 process-local registry. It verifies independent operator approval before provider
 dispatch. Revocation updates enter through a separately pinned signed feed.
 
+The Agentd Browser product source path is separately composed: `hepta-agentd-browser`
+opens the durable FinalUse owner, while `BrowserServoPort::call` performs the raw
+claim and crosses `with_dispatch_boundary` only around Browser durable-intent plus
+local-worker dispatch. The Browser child never receives a serializable authority
+token.
+
 ## 5. Capacity and performance profile
 
 Both current owner stores are bounded; there is no silent eviction. The general
@@ -102,10 +109,12 @@ not test-file existence, establish execution for one candidate.
 
 ## 7. Integration, rollback and capability ceiling
 
-B4 call-site proof now inventories final-use claim, final delivery, independent
+B4 call-site proof inventories final-use open/claim/delivery/dispatch, independent
 approval verification, revocation-feed application, the raw Bao consumer and the
-registered Bao host. Method-call patterns are scanned across non-test/non-example
-Rust sources; unexpected product callers fail the closed-set check.
+registered Bao host. The closed set now names the Agentd Browser open-state,
+raw-claim and raw-dispatch callers instead of treating their real calls as empty.
+Method-call patterns are scanned across non-test/non-example Rust sources;
+unexpected product callers fail the closed-set check.
 
 The local filesystem remains insufficient as an external anti-rollback oracle.
 The host must provide a protected monotonic frontier and trusted time. Signed
@@ -129,7 +138,12 @@ promotion or release.
 - **Independent controls:** `FinalUseApprovalVerifier` and
   `FinalUseRevocationFeedVerifier` in
   [codex-rs/hepta-contracts/src/final_use_control.rs](../../../codex-rs/hepta-contracts/src/final_use_control.rs).
-- **Registered integration host:** `BaoFinalUseHost` in
+- **Named Browser product source path:** `hepta-agentd-browser` in
+  `codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs` and
+  `BrowserServoPort::call` in `codex-rs/hepta-agentd/src/browser_servo.rs` compose
+  FinalUse claim plus bounded local dispatch fencing. Exact-candidate product
+  execution and activation remain unproved.
+- **Registered Bao integration host:** `BaoFinalUseHost` in
   [codex-rs/hepta-bao-adapter/src/final_use_host.rs](../../../codex-rs/hepta-bao-adapter/src/final_use_host.rs).
   It is source-composed but currently has no selected production process caller.
 - **Operator utilities:** `hepta-final-use-signer`,
@@ -143,7 +157,8 @@ promotion or release.
   [codex-rs/hepta-contracts/FINAL_USE.md](../../../codex-rs/hepta-contracts/FINAL_USE.md),
   [codex-rs/hepta-contracts/FINAL_USE_CONTROL.md](../../../codex-rs/hepta-contracts/FINAL_USE_CONTROL.md),
   [codex-rs/hepta-supervisor/EXTERNAL_AUTHORITY_SIGNER.md](../../../codex-rs/hepta-supervisor/EXTERNAL_AUTHORITY_SIGNER.md).
-- **Remaining gates:** selected product-process activation, fleet revocation
-  fanout/freshness qualification, external anti-rollback/trusted-time source,
+- **Remaining gates:** exact-candidate Browser product execution and activation,
+  selected Bao product-process activation, remaining target ModulePort composition,
+  fleet revocation fanout/freshness qualification, external anti-rollback/trusted-time source,
   key-custody/operator ceremony, equivalent non-Unix storage, independent
   semantic acceptance, canary, promotion and release.

@@ -21,10 +21,9 @@ The current candidate contains two native authority families.
   mutate authority state.
 - a verified token is rechecked against the exact current stored lease record;
   replacing a lease invalidates tokens issued for an older revision;
-- revocation retries are idempotent only for identical lease/revision, reason
-  digest and revocation timestamp semantics;
-- time comes from the clock bound into the owner. Product callers no longer
-  provide arbitrary `now_unix_ms` values to verifier operations;
+- revocation time is owner-generated from the bound authority clock; callers cannot choose or rewrite `revoked_at_unix_ms`;
+- a retry with the same expected lease revision and reason digest returns the first committed revocation receipt, preserving its original owner-generated timestamp; a different retry conflicts;
+- time comes from the clock bound into the owner. Product callers no longer provide arbitrary `now_unix_ms` values to verifier or revoke operations;
 - production-oriented open binds `AuthorityClock` plus an externally durable
   `AuthorityFrontierStore<AuthorityLeaseFrontier>`.
 
@@ -122,24 +121,16 @@ eviction.
 
 ## Source composition
 
-The strongest source-composed product boundary is currently the registered Bao
-host in `codex-rs/hepta-bao-adapter/src/final_use_host.rs`. B4 restricts the
-lower `BaoClient::consume_kv_v2` caller set to that host and independently
-inventories the raw authority APIs.
+There are now two explicit source-composition classes. `hepta-agentd-browser` is a named non-test Agentd-owned product process for `browser.servo`; its effect path claims the signed FinalUse grant and crosses `FinalUseAuthority::with_dispatch_boundary` only around Browser's durable-intent plus local-worker dispatch boundary. Separately, `BaoFinalUseHost` is a registered source host whose lower `BaoClient::consume_kv_v2` caller set is closed, but no deployed Bao product process is selected yet.
 
-There is still **no selected deployed product process** for that host in this
-candidate. The other registered target ModulePorts (AuthBus, Servo, Matrix,
-inference, memory federation, Codex, fleet and supervisor generic-authority
-ports) do not become implemented merely because the general lease primitive
-exists. Existing module-specific authority/fence mechanisms keep their own
-semantics and are not re-labelled as kernel.authority composition.
+B4 independently inventories the Browser raw open/claim/dispatch callers and the Bao lower-level consumer boundary. The remaining registered target ModulePorts (AuthBus, Matrix, inference, memory federation, Codex, fleet and supervisor generic-authority ports) do not become implemented merely because the general lease primitive exists. Existing module-specific authority/fence mechanisms keep their own semantics and are not re-labelled as kernel.authority composition.
 
 ## Verification added by this candidate
 
 Current source tests cover, among other cases:
 
 - stale-token denial after lease replacement;
-- exact revocation retry semantics including timestamp;
+- owner-generated revocation timestamps and idempotent retry preservation of the first committed receipt;
 - bound-clock lease verification;
 - bounded expired-lease pruning;
 - external general-lease snapshot rollback detection;
@@ -158,8 +149,9 @@ verification/delivery methods, the bounded dispatch fence and lease pruning.
 
 Repository source does not manufacture or claim:
 
+- exact-candidate product-execution qualification and activation for the named Browser product source path;
 - a selected product process for the registered Bao host;
-- generic kernel.authority composition for every target ModulePort;
+- generic kernel.authority composition for the remaining target ModulePorts;
 - fleet revocation transport/consensus or a measured convergence-latency SLA (signed per-node convergence evidence is implemented);
 - an attested production clock;
 - a deployed rollback-resistant external frontier store;

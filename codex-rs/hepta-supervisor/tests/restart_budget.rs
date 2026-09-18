@@ -176,7 +176,8 @@ impl ManagedProcess for FakeProcess {
 }
 
 #[test]
-fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(), SupervisorError> {
+fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(), SupervisorError>
+{
     let temp = tempfile::tempdir()?;
     let root = HeptaFleetRoot::parse(temp.path().join("fleet"))
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;

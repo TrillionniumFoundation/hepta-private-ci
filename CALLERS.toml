@@ -91,8 +91,8 @@ id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"]
+caller_markers = ["FinalUseAuthority::open_state_dir", "authority_state_dir", "SignedFinalUseGrant"]
 
 [[boundary]]
 id = "final_use_claim"
@@ -108,8 +108,8 @@ symbol = "FinalUseAuthority::claim"
 call_pattern = "authority\\s*\\.\\s*claim\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
+caller_markers = ["BrowserFinalUseInvocation", ".claim(&invocation.signed_grant", "with_dispatch_boundary"]
 
 [[boundary]]
 id = "final_use_delivery"
@@ -142,8 +142,8 @@ symbol = "FinalUseAuthority::with_dispatch_boundary"
 call_pattern = "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_dispatch_boundary", "validate_live", "dispatch_boundary"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
+caller_markers = ["with_dispatch_boundary", "authority_enter", "dispatch_boundary"]
 
 [[boundary]]
 id = "final_use_revocation_update"

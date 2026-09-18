@@ -177,6 +177,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-contracts/src/final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs); named case: `signed_claim_is_single_use_and_delivers_under_same_owner`.
 - [codex-rs/hepta-contracts/src/agent_id_tests.rs](../../../codex-rs/hepta-contracts/src/agent_id_tests.rs); named case: `canonical_id_is_stable_across_display_parse_and_serde`.
+- [scripts/test_hepta_kernel_authority_traceability.py](../../../scripts/test_hepta_kernel_authority_traceability.py); machine-checks target-port coverage, product-caller/source-object binding, Browser B4 closed sets and non-claim boundaries.
 
 In `codex-rs`, run `just test -p codex-hepta-contracts`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) separately labels target acceptance designs.
 
