@@ -243,6 +243,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             let record = self.record(agent_id)?;
             let selection = read_release_selection(record.layout.run_root())?
                 .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+            let Some(current_frontier) = self.production_revocation_frontier else {
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            };
+            if selection.binding.revocation_frontier != current_frontier {
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
             if selection.source_release != rollback.identity() {
                 self.mark_signed_intent_recovery_required(agent_id, slot)?;
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
