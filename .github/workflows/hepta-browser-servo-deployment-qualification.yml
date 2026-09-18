@@ -31,7 +31,7 @@ jobs:
       SOURCE_SHA: ${{ github.sha }}
       BUILD_RUN_ID: ${{ inputs.build_run_id }}
       EXPECTED_WORKER_SHA256: ${{ inputs.worker_sha256 }}
-      SERVO_PIN: 84bcc9ac701874fa9819e5cdee06356b961d736c
+      SERVO_PIN: 5cc5bd32d02619acdec5736055515e38c5840ce1
     steps:
       - name: Reject non-main or malformed qualification requests
         shell: bash
