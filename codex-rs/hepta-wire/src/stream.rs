@@ -198,78 +198,75 @@ impl Error for StreamDecodeError {}
 
 #[cfg(test)]
 mod tests {
+    use std::error::Error;
     use std::io::Cursor;
 
     use codex_hepta_types::Generation;
     use codex_hepta_types::StableId;
 
-    use crate::WireEnvelope;
     use crate::WireCapability;
+    use crate::WireEnvelope;
     use crate::WireEnvelopeV2;
     use crate::negotiate;
 
     use super::*;
 
-    fn v1() -> WireFrame {
-        WireFrame::V1(
-            WireEnvelope::new(
-                StableId::new("stream.v1").expect("schema"),
-                StableId::new("producer").expect("producer"),
-                Generation::new(1).expect("generation"),
-                vec![1, 2, 3],
-            )
-            .expect("v1"),
-        )
+    fn v1() -> Result<WireFrame, Box<dyn Error>> {
+        Ok(WireFrame::V1(WireEnvelope::new(
+            StableId::new("stream.v1")?,
+            StableId::new("producer")?,
+            Generation::new(1)?,
+            vec![1, 2, 3],
+        )?))
     }
 
-    fn v2() -> WireFrame {
-        WireFrame::V2(
-            WireEnvelopeV2::new(
-                StableId::new("stream.v2").expect("schema"),
-                StableId::new("producer").expect("producer"),
-                Generation::new(2).expect("generation"),
-                vec![4, 5, 6],
-            )
-            .expect("v2"),
-        )
+    fn v2() -> Result<WireFrame, Box<dyn Error>> {
+        Ok(WireFrame::V2(WireEnvelopeV2::new(
+            StableId::new("stream.v2")?,
+            StableId::new("producer")?,
+            Generation::new(2)?,
+            vec![4, 5, 6],
+        )?))
     }
 
     #[test]
-    fn bounded_reader_reads_header_before_body() {
-        let expected = v2();
+    fn bounded_reader_reads_header_before_body() -> Result<(), Box<dyn Error>> {
+        let expected = v2()?;
         let bytes = expected.encode();
         let mut cursor = Cursor::new(bytes);
-        assert_eq!(read_frame(&mut cursor).expect("read"), expected);
+        assert_eq!(read_frame(&mut cursor)?, expected);
+        Ok(())
     }
 
     #[test]
-    fn incremental_decoder_handles_arbitrary_chunks_and_multiple_frames() {
-        let first = v1();
-        let second = v2();
+    fn incremental_decoder_handles_arbitrary_chunks_and_multiple_frames(
+    ) -> Result<(), Box<dyn Error>> {
+        let first = v1()?;
+        let second = v2()?;
         let mut bytes = first.encode();
         bytes.extend_from_slice(&second.encode());
 
         let mut decoder = WireStreamDecoder::new();
         let mut decoded = Vec::new();
         for chunk in bytes.chunks(7) {
-            decoder.feed(chunk).expect("feed");
-            while let Some(frame) = decoder.next_frame().expect("next") {
+            decoder.feed(chunk)?;
+            while let Some(frame) = decoder.next_frame()? {
                 decoded.push(frame);
             }
         }
         assert_eq!(decoded, vec![first, second]);
         assert_eq!(decoder.buffered_bytes(), 0);
+        Ok(())
     }
 
     #[test]
-    fn negotiated_reader_rejects_v1_downgrade() {
+    fn negotiated_reader_rejects_v1_downgrade() -> Result<(), Box<dyn Error>> {
         let negotiated = negotiate(
             &[WireVersion::V1, WireVersion::V2],
             &[WireVersion::V1, WireVersion::V2],
             &[WireCapability::FullFrameIntegrity],
-        )
-        .expect("negotiate");
-        let bytes = v1().encode();
+        )?;
+        let bytes = v1()?.encode();
         let mut cursor = Cursor::new(bytes);
         assert!(matches!(
             read_frame_for(&mut cursor, negotiated),
@@ -280,10 +277,11 @@ mod tests {
                 }
             ))
         ));
+        Ok(())
     }
 
     #[test]
-    fn over_buffer_and_unknown_version_fail_closed() {
+    fn over_buffer_and_unknown_version_fail_closed() -> Result<(), Box<dyn Error>> {
         let mut decoder = WireStreamDecoder::new();
         let oversized = vec![0; MAX_STREAM_BUFFER_BYTES + 1];
         assert_eq!(
@@ -292,13 +290,14 @@ mod tests {
         );
         assert_eq!(decoder.buffered_bytes(), 0);
 
-        let mut bytes = v1().encode();
+        let mut bytes = v1()?.encode();
         bytes[4..6].copy_from_slice(&99_u16.to_be_bytes());
-        decoder.feed(&bytes).expect("feed");
+        decoder.feed(&bytes)?;
         assert!(matches!(
             decoder.next_frame(),
             Err(StreamDecodeError::Wire(WireError::Version(99)))
         ));
         assert_eq!(decoder.buffered_bytes(), 0);
+        Ok(())
     }
 }
