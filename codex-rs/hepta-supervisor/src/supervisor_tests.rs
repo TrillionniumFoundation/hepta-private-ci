@@ -1368,7 +1368,7 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     assert!(
         report.faults.iter().any(|fault| {
             fault.agent_id == fleet.first
-                && fault.message.contains("signed supervisor intent requires recovery")
+                && fault.message.contains("unresolved signed supervisor intent")
         }),
         "matching target must be quarantined instead of inferred committed"
     );
