@@ -109,11 +109,18 @@ function driver({
     get stopCalls() {
       return stopCalls;
     },
-    async start() {
+    async start(payload) {
       return {
         started: true,
         processId: "servo.process.1",
-        profileOwnerDigest: D4,
+        profileOwnerDigest: canonicalDigest({
+          schema: "hepta.browser.profile-owner.v1",
+          profileId: payload.profileId,
+          principalId: payload.principalId,
+          generation: payload.generation,
+          manifestDigest: payload.manifestDigest,
+          grantDigest: payload.grantDigest,
+        }),
       };
     },
     async observe(payload) {
@@ -197,6 +204,27 @@ async function preparedHost(options = {}) {
   });
   return { host, fakeDriver, finalAuthority, journal, session, page };
 }
+
+test("profile ownership observation must bind the admitted principal and generation", async () => {
+  const fakeDriver = driver();
+  fakeDriver.start = async () => ({
+    started: true,
+    processId: "servo.process.1",
+    profileOwnerDigest: D4,
+  });
+  const host = new BrowserProfileHost({
+    driver: fakeDriver,
+    authority: authority(),
+    journal: new MemoryBrowserOperationJournal(),
+    clock: () => 1_000,
+    allowVolatileJournalForTests: true,
+    driverCallTimeoutMs: 50,
+  });
+  await assert.rejects(
+    host.openProfile(input()),
+    /profile ownership observation does not bind/,
+  );
+});
 
 test("effect owner rejects volatile journals unless a test explicitly opts in", () => {
   assert.throws(
