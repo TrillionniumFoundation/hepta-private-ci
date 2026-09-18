@@ -21,6 +21,7 @@ use crate::PreparedPlanInputV1;
 use crate::ResourceReservationV1;
 use crate::SnapshotRequestV1;
 use crate::bind_ndu_plan_evaluation_v1;
+use crate::canonical_resource_profile_digest;
 use crate::collect_snapshot;
 use crate::finalize_plan;
 use crate::prepare_plan;
@@ -95,18 +96,19 @@ fn candidate(name: &str) -> PlanCandidateV1 {
 }
 
 fn planning_request() -> PlanningRequestV1 {
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: id("compute"),
+        endowment: q32(10),
+        essential_floor: FixedQ32::ZERO,
+    }];
     PlanningRequestV1 {
         plan_id: id("plan-run"),
         now_micros: 100,
         deadline_micros: 400,
         evaluation_policy_digest: digest("policy"),
-        resource_profile_digest: digest("resource-profile"),
+        resource_profile_digest: must(canonical_resource_profile_digest(&resource_reservations)),
         candidates: vec![candidate("abstain"), candidate("work")],
-        resource_reservations: vec![ResourceReservationV1 {
-            axis: id("compute"),
-            endowment: q32(10),
-            essential_floor: FixedQ32::ZERO,
-        }],
+        resource_reservations,
     }
 }
 
