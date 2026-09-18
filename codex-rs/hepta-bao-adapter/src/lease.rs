@@ -61,6 +61,17 @@ pub struct SecretLeaseRevokeRequest {
     pub namespace: String,
 }
 
+/// Read-only provider lookup used to reconcile a known lease after a renew or
+/// revoke response is lost. It never replays the mutation.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SecretLeaseLookupRequest {
+    pub subject_id: String,
+    pub consumer_id: String,
+    pub operation_id: String,
+    pub namespace: String,
+}
+
 /// Provider lease identifier retained only by the trusted host boundary.
 pub struct SecretLeaseHandle(Zeroizing<String>);
 
@@ -129,6 +140,28 @@ pub struct SecretLeaseRevocation {
     pub lease_id_sha256: [u8; 32],
     pub operation_sha256: [u8; 32],
     pub observed_at_unix_ms: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct SecretLeaseObservation {
+    pub lease_id_sha256: [u8; 32],
+    pub operation_sha256: [u8; 32],
+    pub observed_at_unix_ms: u64,
+    pub expires_at_unix_ms: u64,
+    pub renewable: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum SecretLeaseLookupOutcome {
+    Active(SecretLeaseObservation),
+    Absent {
+        lease_id_sha256: [u8; 32],
+        operation_sha256: [u8; 32],
+        observed_at_unix_ms: u64,
+    },
+    Indeterminate {
+        operation_sha256: [u8; 32],
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -419,6 +452,119 @@ impl BaoClient {
         )
     }
 
+    pub fn secret_lease_lookup_binding(
+        &self,
+        handle: &SecretLeaseHandle,
+        request: &SecretLeaseLookupRequest,
+    ) -> Result<FinalUseBinding, BaoClientError> {
+        validate_mutation_request(
+            &request.subject_id,
+            &request.consumer_id,
+            &request.operation_id,
+        )?;
+        if !request.namespace.is_empty() && !segmented(&request.namespace) {
+            return Err(BaoClientError::InvalidRequest);
+        }
+        mutation_binding(
+            self,
+            "lookup",
+            handle,
+            &request.subject_id,
+            &request.consumer_id,
+            &request.operation_id,
+            &request.namespace,
+            None,
+        )
+    }
+
+    /// Reconcile a known lease without replaying a prior mutation.
+    ///
+    /// Active is an observation of current provider state, not proof that a
+    /// specific lost renewal request was applied. Absent can close a lost
+    /// revoke for a previously known lease. Unknown transport remains
+    /// Indeterminate.
+    pub async fn lookup_secret_lease(
+        &self,
+        authority: &FinalUseAuthority,
+        grant: &SignedFinalUseGrant,
+        handle: &SecretLeaseHandle,
+        request: &SecretLeaseLookupRequest,
+    ) -> Result<SecretLeaseLookupOutcome, BaoClientError> {
+        let binding = self.secret_lease_lookup_binding(handle, request)?;
+        let operation_sha256 = binding.payload_sha256;
+        let verified = authority
+            .claim(grant, &binding)
+            .map_err(BaoClientError::Authority)?;
+        let url = self.system_lease_url("lookup")?;
+        let payload = LeaseRevokePayload {
+            lease_id: &handle.0,
+        };
+        let mut network_request = self
+            .client
+            .request(Method::PUT, url)
+            .header("X-Vault-Token", self.sensitive_token_header()?)
+            .header("Accept", "application/json")
+            .json(&payload);
+        if !request.namespace.is_empty() {
+            network_request =
+                network_request.header("X-Vault-Namespace", &request.namespace);
+        }
+        let mut response = match network_request.send().await {
+            Ok(response) => response,
+            Err(_) => {
+                return Ok(SecretLeaseLookupOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
+        };
+        match response.status() {
+            StatusCode::OK => {}
+            StatusCode::NOT_FOUND => {
+                authority
+                    .with_verified_use(verified, &binding, || ())
+                    .map_err(BaoClientError::Authority)?;
+                return Ok(SecretLeaseLookupOutcome::Absent {
+                    lease_id_sha256: handle.lease_id_sha256(),
+                    operation_sha256,
+                    observed_at_unix_ms: now_unix_ms()?,
+                });
+            }
+            StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN | StatusCode::BAD_REQUEST => {
+                return Err(BaoClientError::ProviderDenied);
+            }
+            status if status.is_server_error() => {
+                return Ok(SecretLeaseLookupOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
+            _ => return Err(BaoClientError::InvalidResponse),
+        }
+        let body = read_bounded_body(&mut response).await?;
+        let decoded: LeaseLookupResponse =
+            serde_json::from_slice(&body).map_err(|_| BaoClientError::InvalidResponse)?;
+        let observed_at_unix_ms = now_unix_ms()?;
+        let expires_at_unix_ms = observed_at_unix_ms
+            .checked_add(
+                decoded
+                    .data
+                    .ttl
+                    .checked_mul(1000)
+                    .ok_or(BaoClientError::InvalidResponse)?,
+            )
+            .ok_or(BaoClientError::InvalidResponse)?;
+        let observation = SecretLeaseObservation {
+            lease_id_sha256: handle.lease_id_sha256(),
+            operation_sha256,
+            observed_at_unix_ms,
+            expires_at_unix_ms,
+            renewable: decoded.data.renewable,
+        };
+        authority
+            .with_verified_use(verified, &binding, || ())
+            .map_err(BaoClientError::Authority)?;
+        Ok(SecretLeaseLookupOutcome::Active(observation))
+    }
+
     pub async fn revoke_secret_lease(
         &self,
         authority: &FinalUseAuthority,
@@ -651,6 +797,17 @@ struct LeaseRenewResponse {
 #[derive(Serialize)]
 struct LeaseRevokePayload<'a> {
     lease_id: &'a str,
+}
+
+#[derive(Deserialize)]
+struct LeaseLookupResponse {
+    data: LeaseLookupData,
+}
+
+#[derive(Deserialize)]
+struct LeaseLookupData {
+    ttl: u64,
+    renewable: bool,
 }
 
 #[cfg(test)]
