@@ -92,6 +92,67 @@ pub struct MemoryFederationCapabilitySnapshot {
     pub state: MemoryFederationCapabilityState,
 }
 
+pub const MAX_RUN_CANCEL_REASON_BYTES: usize = 512;
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RunPhase {
+    Admitted,
+    ContextAttached,
+    Dispatched,
+    Cancelling,
+    Cancelled,
+    Succeeded,
+    Failed,
+    Indeterminate,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunSnapshot {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ContextAttachment {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+    pub context_digest: String,
+    pub compilation_receipt_digest: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunReceipt {
+    pub run_id: String,
+    pub revision: u64,
+    pub phase: RunPhase,
+    pub context_digest: Option<String>,
+    pub terminal_observed: bool,
+    pub idempotent: bool,
+    pub cancel_reason: Option<String>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CancellationDisposition {
+    CancelledBeforeDispatch,
+    CancellingAfterDispatch,
+    AlreadyTerminal,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AgentdRequest {
@@ -135,6 +196,115 @@ impl AgentdRequest {
             request_id,
             spawn_generation,
             method: AgentdMethod::SessionIngress,
+        }
+    }
+
+    pub fn run_start(request_id: u64, spawn_generation: u64, snapshot: RunSnapshot) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunStart { snapshot },
+        }
+    }
+
+    pub fn run_attach_context(
+        request_id: u64,
+        spawn_generation: u64,
+        expected_revision: u64,
+        attachment: ContextAttachment,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunAttachContext {
+                expected_revision,
+                attachment,
+            },
+        }
+    }
+
+    pub fn run_mark_dispatched(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunMarkDispatched {
+                run_id,
+                expected_revision,
+            },
+        }
+    }
+
+    pub fn run_cancel(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunCancel {
+                run_id,
+                expected_revision,
+                reason,
+            },
+        }
+    }
+
+    pub fn run_observe_terminal(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        phase: RunPhase,
+        terminal_observed: bool,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunObserveTerminal {
+                run_id,
+                expected_revision,
+                phase,
+                terminal_observed,
+            },
+        }
+    }
+
+    pub fn run_status(request_id: u64, spawn_generation: u64, run_id: String) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunStatus { run_id },
+        }
+    }
+
+    pub fn run_remove_closed(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunRemoveClosed {
+                run_id,
+                expected_revision,
+            },
         }
     }
 
@@ -266,6 +436,35 @@ pub enum AgentdMethod {
     Health,
     Lifecycle,
     SessionIngress,
+    RunStart {
+        snapshot: RunSnapshot,
+    },
+    RunAttachContext {
+        expected_revision: u64,
+        attachment: ContextAttachment,
+    },
+    RunMarkDispatched {
+        run_id: String,
+        expected_revision: u64,
+    },
+    RunCancel {
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    },
+    RunObserveTerminal {
+        run_id: String,
+        expected_revision: u64,
+        phase: RunPhase,
+        terminal_observed: bool,
+    },
+    RunStatus {
+        run_id: String,
+    },
+    RunRemoveClosed {
+        run_id: String,
+        expected_revision: u64,
+    },
     AuthBusText {
         request: AuthBusTextIngress,
     },
@@ -328,6 +527,14 @@ pub enum AgentdPayload {
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
+    RunReceipt(RunReceipt),
+    RunCancellation {
+        disposition: CancellationDisposition,
+        receipt: RunReceipt,
+    },
+    RunStatus {
+        receipt: Option<RunReceipt>,
+    },
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
