@@ -29,9 +29,9 @@ use codex_hepta_agentd::AuthBusTextStatus;
 use codex_hepta_agentd::authbus_text_claims;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_evidence::HeptaEvidenceStore;
-use core_test_support::responses;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use core_test_support::responses;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use tokio::time::timeout;
@@ -77,18 +77,16 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &[],
         /*revoked*/ false,
     )?;
-    let sqlite_home =
-        AbsolutePathBuf::from_absolute_path(agent.layout.home_root().to_path_buf())?;
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root().to_path_buf())?;
     let checkpoint_store =
         HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(sqlite_home)).await?;
-    let checkpoint = checkpoint_store.advance_authbus_replay_checkpoint(0).await?;
+    let checkpoint = checkpoint_store
+        .advance_authbus_replay_checkpoint(0)
+        .await?;
     drop(checkpoint_store);
     let checkpoint_dir = agent.workspace.join(".authbus-checkpoint");
     std::fs::create_dir(&checkpoint_dir)?;
-    std::fs::set_permissions(
-        &checkpoint_dir,
-        std::fs::Permissions::from_mode(0o700),
-    )?;
+    std::fs::set_permissions(&checkpoint_dir, std::fs::Permissions::from_mode(0o700))?;
     let checkpoint_file = checkpoint_dir.join("replay-checkpoint.json");
     let checkpoint_json = serde_json::json!({
         "schema_version": 1,
@@ -97,15 +95,8 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         "replay_digest_hex": checkpoint.replay_digest.to_string(),
     });
     std::fs::write(&checkpoint_file, serde_json::to_vec(&checkpoint_json)?)?;
-    std::fs::set_permissions(
-        &checkpoint_file,
-        std::fs::Permissions::from_mode(0o600),
-    )?;
-    fleet.start_with_authbus_trust_and_checkpoint(
-        &agent,
-        &trust_file,
-        &checkpoint_file,
-    )?;
+    std::fs::set_permissions(&checkpoint_file, std::fs::Permissions::from_mode(0o600))?;
+    fleet.start_with_authbus_trust_and_checkpoint(&agent, &trust_file, &checkpoint_file)?;
     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     let ingress = control.session_ingress().await?;
     let client = connect_app_server_with_experimental(
