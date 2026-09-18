@@ -635,6 +635,12 @@ fn query_agent_health_once(
         && health.workspace == identity.workspace
         && health.home_root == identity.home_root
         && health.run_root == identity.run_root;
+    if !exact_identity || !readiness_matches {
+        return Ok(HealthProbeObservation {
+            exact_identity,
+            ready: false,
+        });
+    }
     let readiness_request_id = request_id.wrapping_add(1).max(1);
     let readiness = query_agent_readiness_once(
         identity,
