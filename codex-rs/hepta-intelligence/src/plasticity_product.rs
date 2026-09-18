@@ -505,7 +505,6 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         host_evidence_verification_digest,
         generator_authentication_digest,
         admission_authentication_digest,
-        host_evidence_verification_digest,
         evaluation_digest,
     ] {
         composition.extend_from_slice(digest.as_array());
@@ -515,6 +514,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         registry,
         generator_authentication_digest,
         admission_authentication_digest,
+        host_evidence_verification_digest,
         evaluation_digest,
         committed_registry_anchor,
         composition_digest: Digest32::of_bytes(&composition),
