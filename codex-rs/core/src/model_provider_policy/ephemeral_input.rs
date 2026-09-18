@@ -453,7 +453,7 @@ mod tests {
         );
         let content = "federated cognitive memory";
         let proposal = EphemeralModelInputProposal::new(
-            EphemeralModelInputSource::parse(HEPTA_COGNITIVE_FEDERATION_SOURCE).expect("source"),
+            EphemeralModelInputSource::parse(HEPTA_COGNITIVE_FEDERATION_SOURCE_V2).expect("source"),
             context.attempt_id,
             context.base_logical_request_sha256.clone(),
             context.thread_id,
