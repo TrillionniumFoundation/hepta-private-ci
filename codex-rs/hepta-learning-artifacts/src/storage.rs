@@ -13,6 +13,7 @@ use std::io::SeekFrom;
 use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
+use std::path::Component;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -50,6 +51,25 @@ impl fmt::Debug for CreateOnlyArtifactFile {
 }
 
 impl CreateOnlyArtifactFile {
+    /// Create a target under a caller-authenticated directory using exactly one
+    /// normal path component. This closes lexical `..`/absolute/subdirectory
+    /// escape through an untrusted leaf name. It does not authenticate or pin the
+    /// ancestor directory against hostile rename/symlink races; that remains a
+    /// host/platform capability boundary.
+    pub fn create_in_directory(
+        directory: impl AsRef<Path>,
+        leaf: impl AsRef<Path>,
+    ) -> Result<Self, ArtifactStorageError> {
+        let leaf = leaf.as_ref();
+        let mut components = leaf.components();
+        if !matches!(components.next(), Some(Component::Normal(_)))
+            || components.next().is_some()
+        {
+            return Err(ArtifactStorageError::InvalidPath);
+        }
+        Self::create(directory.as_ref().join(leaf))
+    }
+
     pub fn create(path: impl AsRef<Path>) -> Result<Self, ArtifactStorageError> {
         let mut options = OpenOptions::new();
         options.read(true).write(true).create_new(true);
@@ -97,6 +117,7 @@ pub enum ArtifactStorageError {
     HeadWitnessMismatch,
     Busy,
     NotRegular,
+    InvalidPath,
     AlreadyExists,
     Capacity,
     Corrupt,
