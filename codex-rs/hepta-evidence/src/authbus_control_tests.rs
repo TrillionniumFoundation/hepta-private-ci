@@ -49,6 +49,7 @@ async fn provision(
             scope_digest: scope(),
             revision: 1,
             effect: PolicyEffect::Allow,
+            max_active_reservations: 4_096,
         })
         .await
         .unwrap();
@@ -121,6 +122,62 @@ async fn bus_01_simultaneous_last_unit_reservations_cannot_both_succeed() {
     assert!(matches!(rejected, AuthBusControlError::QuotaExceeded));
     let snapshot = first.quota_snapshot(&quota).await.unwrap();
     assert_eq!((snapshot.capacity, snapshot.reserved, snapshot.consumed), (1, 1, 0));
+}
+
+#[tokio::test]
+async fn duplicate_reservation_retry_survives_active_limit() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let principal = id("principal:active-limit");
+    let action = id("action:provider-effect");
+    let quota = id("quota:active-limit");
+    store
+        .put_auth_policy(&AuthPolicyRule {
+            principal_id: principal.clone(),
+            action_id: action.clone(),
+            scope_digest: scope(),
+            revision: 1,
+            effect: PolicyEffect::Allow,
+            max_active_reservations: 1,
+        })
+        .await
+        .unwrap();
+    let now = u64::try_from(now_millis().unwrap()).unwrap();
+    let end = now + 60_000;
+    store
+        .put_quota_registry(&QuotaRegistryEntry {
+            quota_key: quota.clone(),
+            revision: 1,
+            capacity: 2,
+            period_start_ms: now.saturating_sub(1_000),
+            period_end_ms: end,
+        })
+        .await
+        .unwrap();
+    let request = request(
+        "operation:active-limit-idempotent",
+        &principal,
+        &action,
+        &quota,
+        1,
+        end - 1,
+    );
+    let first = store.authorize_and_reserve(&request).await.unwrap();
+    let duplicate = store.authorize_and_reserve(&request).await.unwrap();
+    assert_eq!(first, duplicate);
+
+    let second = request(
+        "operation:active-limit-second",
+        &principal,
+        &action,
+        &quota,
+        1,
+        end - 1,
+    );
+    assert!(matches!(
+        store.authorize_and_reserve(&second).await,
+        Err(AuthBusControlError::ActiveReservationLimitExceeded)
+    ));
 }
 
 #[tokio::test]
@@ -220,6 +277,7 @@ async fn bus_04_stale_or_denied_policy_cannot_cross_effect_boundary() {
             scope_digest: scope(),
             revision: 2,
             effect: PolicyEffect::Deny,
+            max_active_reservations: 4_096,
         })
         .await
         .unwrap();
