@@ -5,11 +5,11 @@
 //! publishes the new in-process state. Store failure therefore cannot expose an
 //! uncommitted mutation.
 
+#[cfg(test)]
+use std::cell::Cell;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fmt;
-#[cfg(test)]
-use std::cell::Cell;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
@@ -23,10 +23,6 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::admission::map_final_use_error;
-use crate::final_use_realization_binding;
-use crate::final_use_retire_binding;
-use crate::final_use_revoke_binding;
 use crate::AdmissionError;
 use crate::Error;
 use crate::FactorSource;
@@ -45,6 +41,10 @@ use crate::PromptRoleV2;
 use crate::RealizationDeliveryV2;
 use crate::RegistryReceipt;
 use crate::VerifiedAdmission;
+use crate::admission::map_final_use_error;
+use crate::final_use_realization_binding;
+use crate::final_use_retire_binding;
+use crate::final_use_revoke_binding;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
@@ -167,9 +167,13 @@ impl DurablePromptRegistry {
         payload: Vec<u8>,
         supersedes_realization_id: Option<StableId>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
-        let factor = self.registry.factor(&binding.factor_id).cloned().ok_or_else(|| {
-            DurableRegistryError::Core(Error::FactorNotFound(binding.factor_id.to_string()))
-        })?;
+        let factor = self
+            .registry
+            .factor(&binding.factor_id)
+            .cloned()
+            .ok_or_else(|| {
+                DurableRegistryError::Core(Error::FactorNotFound(binding.factor_id.to_string()))
+            })?;
         let expected = final_use_realization_binding(
             &factor,
             actor_id,
@@ -240,13 +244,8 @@ impl DurablePromptRegistry {
         let factor = self.registry.factor(factor_id).cloned().ok_or_else(|| {
             DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string()))
         })?;
-        let expected = final_use_retire_binding(
-            &factor,
-            actor_id,
-            scope_digest,
-            reason_digest,
-        )
-        .map_err(DurableRegistryError::Admission)?;
+        let expected = final_use_retire_binding(&factor, actor_id, scope_digest, reason_digest)
+            .map_err(DurableRegistryError::Admission)?;
         let token = authority
             .claim(signed, &expected)
             .map_err(map_final_use_error)
@@ -817,7 +816,10 @@ fn migrate_v1(
 fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
     if registry.revocation_frontier > registry.lifecycle_frontier
         || registry.lifecycle_frontier > registry.revision.get()
-        || registry.factors.len().saturating_add(registry.realizations.len())
+        || registry
+            .factors
+            .len()
+            .saturating_add(registry.realizations.len())
             > registry.maximum_records
     {
         return Err(DurableRegistryError::Corrupt);
@@ -1007,8 +1009,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
 
 fn decode_factor(mut stored: StoredFactor) -> Result<PromptFactor, DurableRegistryError> {
     if stored.semantic_purpose.is_empty() {
-        stored.semantic_purpose =
-            "legacy imported factor; semantic purpose unavailable".to_owned();
+        stored.semantic_purpose = "legacy imported factor; semantic purpose unavailable".to_owned();
     }
     if stored.authority_class.is_empty() {
         stored.authority_class = "registered_prompt_factor".to_owned();
@@ -1955,7 +1956,11 @@ mod tests {
         };
         let admission_signed = SignedFinalUseGrant {
             signature: signing_key
-                .sign(&admission_grant.signing_bytes().expect("admission signing bytes"))
+                .sign(
+                    &admission_grant
+                        .signing_bytes()
+                        .expect("admission signing bytes"),
+                )
                 .to_bytes()
                 .to_vec(),
             grant: admission_grant,
@@ -2101,10 +2106,7 @@ mod tests {
         let reopened =
             DurablePromptRegistry::open_state_dir(&root, 64).expect("reconcile by reopen");
         assert!(!reopened.requires_reopen());
-        assert_eq!(
-            reopened.registry().factor(&factor.factor_id),
-            Some(&factor)
-        );
+        assert_eq!(reopened.registry().factor(&factor.factor_id), Some(&factor));
     }
 
     #[test]
