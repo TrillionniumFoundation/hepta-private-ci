@@ -4,11 +4,15 @@ on:
   pull_request:
     paths:
       - "apps/hepta-native/**"
+      - "codex-rs/hepta-native-gateway/**"
+      - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-native-rust.yml"
   push:
     branches: [main]
     paths:
       - "apps/hepta-native/**"
+      - "codex-rs/hepta-native-gateway/**"
+      - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-native-rust.yml"
   workflow_dispatch:
 
@@ -59,6 +63,14 @@ jobs:
 
       - name: Test
         run: cargo test --all-targets
+
+      - name: Clippy authenticated native gateway
+        working-directory: codex-rs
+        run: cargo clippy -p codex-hepta-native-gateway --all-targets -- -D warnings
+
+      - name: Test authenticated native gateway
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-native-gateway
 
       - name: Headless product smoke contract
         run: cargo run --bin hepta-native -- --self-test
