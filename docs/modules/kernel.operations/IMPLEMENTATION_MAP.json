@@ -62,13 +62,15 @@
       "designOperation": "prepare_intent_claim_outbox_observe_terminal",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "kernel.authority::FinalUseAuthority"
+        "kernel.authority::FinalUseAuthority",
+        "runtime.agentd::AgentdOperationCoordinator",
+        "cognitive.store::ProductionDurableWriter"
       ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind DurableOperationStore to an authenticated named product caller.",
-    "Bind one real destination owner's atomic semantic dedupe/apply and trusted terminal observer.",
+    "Construct AgentdOperationCoordinator from a named default/runtime lifecycle path.",
+    "Bind kernel.authority final-use at actual non-local external adapter boundaries.",
     "Run and retain exact-head plus deterministic synthetic-merge tests for the candidate."
   ],
   "externalEvidenceGates": [
