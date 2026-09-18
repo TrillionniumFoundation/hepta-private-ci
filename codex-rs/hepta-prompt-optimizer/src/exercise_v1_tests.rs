@@ -75,6 +75,7 @@ fn fixture() -> Fixture {
         realization_id: id("realization:001"),
         role: PromptCandidateRoleV1::DeveloperInstruction,
         payload_digest: digest("payload"),
+        registry_binding_digest: digest("registry-binding"),
         admission_digest: digest("admission"),
         support_digest: digest("registry-support"),
         token_cost: 5,
@@ -89,6 +90,8 @@ fn fixture() -> Fixture {
         revocation_frontier: 1,
         generation_vector_digest: digest("generation"),
         model_profile: PromptModelProfileV1 {
+            model_id: id("model:hepta-test"),
+            model_version: "2026-09-18".to_owned(),
             model_digest: digest("model"),
             tokenizer_digest: digest("tokenizer"),
             template_digest: digest("template"),
