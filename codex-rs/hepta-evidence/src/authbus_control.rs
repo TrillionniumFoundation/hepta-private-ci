@@ -153,8 +153,14 @@ impl HeptaEvidenceStore {
         policy_revision: u64,
     ) -> Result<PolicyDecision, AuthBusControlError> {
         let mut tx = self.pool.begin().await.map_err(classify_sqlx_error)?;
-        let evaluation =
-            authorize_tx(&mut tx, principal_id, action_id, scope_digest, policy_revision).await?;
+        let evaluation = authorize_tx(
+            &mut tx,
+            principal_id,
+            action_id,
+            scope_digest,
+            policy_revision,
+        )
+        .await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(evaluation.decision)
     }
@@ -193,7 +199,10 @@ impl HeptaEvidenceStore {
             }
             let reserved = blob_u64(&row, "reserved")?;
             let consumed = blob_u64(&row, "consumed")?;
-            let start = i64_to_u64(row.try_get("period_start_ms").map_err(classify_sqlx_error)?)?;
+            let start = i64_to_u64(
+                row.try_get("period_start_ms")
+                    .map_err(classify_sqlx_error)?,
+            )?;
             let end = i64_to_u64(row.try_get("period_end_ms").map_err(classify_sqlx_error)?)?;
             if start != entry.period_start_ms || end != entry.period_end_ms {
                 if reserved != 0 || entry.period_start_ms < end {
@@ -483,14 +492,7 @@ impl HeptaEvidenceStore {
             }
             return Err(AuthBusControlError::ReservationConflict);
         }
-        settle_tx(
-            &mut tx,
-            &reservation,
-            observed_cost,
-            terminal_evidence,
-            now,
-        )
-        .await?;
+        settle_tx(&mut tx, &reservation, observed_cost, terminal_evidence, now).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(Settlement {
             reservation_id,
@@ -527,13 +529,7 @@ impl HeptaEvidenceStore {
         if reservation.state != ReservationState::Reserved {
             return Err(AuthBusControlError::InvalidTransition);
         }
-        cancel_reserved_tx(
-            &mut tx,
-            &reservation,
-            Some(terminal_evidence),
-            now,
-        )
-        .await?;
+        cancel_reserved_tx(&mut tx, &reservation, Some(terminal_evidence), now).await?;
         let result = load_reservation_tx(&mut tx, reservation_id).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(result)
@@ -609,14 +605,7 @@ impl HeptaEvidenceStore {
                         "terminal evidence digest is empty",
                     ));
                 }
-                settle_tx(
-                    &mut tx,
-                    &reservation,
-                    observed_cost,
-                    terminal_evidence,
-                    now,
-                )
-                .await?;
+                settle_tx(&mut tx, &reservation, observed_cost, terminal_evidence, now).await?;
             }
             ReservationReconcileOutcome::NotApplied { terminal_evidence } => {
                 if terminal_evidence.is_zero() {
@@ -672,7 +661,11 @@ impl HeptaEvidenceStore {
         &self,
         head: &AuthBusTrustHead,
     ) -> Result<ControlWriteDisposition, AuthBusControlError> {
-        if head.revision == 0 || head.key_epoch == 0 || head.verifying_key_digest.is_zero() || head.registration_digest.is_zero() {
+        if head.revision == 0
+            || head.key_epoch == 0
+            || head.verifying_key_digest.is_zero()
+            || head.registration_digest.is_zero()
+        {
             return Err(AuthBusControlError::InvalidRequest(
                 "trust revision, epoch and key digest must be nonzero",
             ));
@@ -696,7 +689,10 @@ impl HeptaEvidenceStore {
             let epoch = blob_u64(&row, "key_epoch")?;
             let key = blob_digest(&row, "verifying_key_digest")?;
             let registration = blob_digest(&row, "registration_digest")?;
-            let revoked = row.try_get::<i64, _>("revoked").map_err(classify_sqlx_error)? != 0;
+            let revoked = row
+                .try_get::<i64, _>("revoked")
+                .map_err(classify_sqlx_error)?
+                != 0;
             if revision == head.revision
                 && epoch == head.key_epoch
                 && key == head.verifying_key_digest
@@ -755,11 +751,12 @@ impl HeptaEvidenceStore {
         if current_generation != expected_generation {
             return Err(AuthBusControlError::RollbackDetected);
         }
-        let generation = expected_generation
-            .checked_add(1)
-            .ok_or(AuthBusControlError::InvalidRequest(
-                "checkpoint generation overflow",
-            ))?;
+        let generation =
+            expected_generation
+                .checked_add(1)
+                .ok_or(AuthBusControlError::InvalidRequest(
+                    "checkpoint generation overflow",
+                ))?;
         let replay_digest = replay_digest_tx(&mut tx).await?;
         write_checkpoint_tx(
             &mut tx,
@@ -816,19 +813,22 @@ impl HeptaEvidenceStore {
             .await?
             .ok_or(AuthBusControlError::RollbackDetected)?;
         let current_digest = replay_digest_tx(&mut tx).await?;
-        if checkpoint != *expected_checkpoint || current_digest != expected_checkpoint.replay_digest {
+        if checkpoint != *expected_checkpoint || current_digest != expected_checkpoint.replay_digest
+        {
             return Err(AuthBusControlError::RollbackDetected);
         }
-        let trust = sqlx::query(
-            "SELECT key_epoch, revoked FROM authbus_trust_heads WHERE issuer_id = ?",
-        )
-        .bind(issuer_id.as_str())
-        .fetch_optional(&mut *tx)
-        .await
-        .map_err(classify_sqlx_error)?
-        .ok_or(AuthBusControlError::EpochRetirementBlocked)?;
+        let trust =
+            sqlx::query("SELECT key_epoch, revoked FROM authbus_trust_heads WHERE issuer_id = ?")
+                .bind(issuer_id.as_str())
+                .fetch_optional(&mut *tx)
+                .await
+                .map_err(classify_sqlx_error)?
+                .ok_or(AuthBusControlError::EpochRetirementBlocked)?;
         let current_epoch = blob_u64(&trust, "key_epoch")?;
-        let revoked = trust.try_get::<i64, _>("revoked").map_err(classify_sqlx_error)? != 0;
+        let revoked = trust
+            .try_get::<i64, _>("revoked")
+            .map_err(classify_sqlx_error)?
+            != 0;
         if current_epoch < key_epoch || (current_epoch == key_epoch && !revoked) {
             return Err(AuthBusControlError::EpochRetirementBlocked);
         }
@@ -844,12 +844,9 @@ impl HeptaEvidenceStore {
         if active != 0 {
             return Err(AuthBusControlError::EpochRetirementBlocked);
         }
-        let next_generation = expected_checkpoint
-            .generation
-            .checked_add(1)
-            .ok_or(AuthBusControlError::InvalidRequest(
-                "checkpoint generation overflow",
-            ))?;
+        let next_generation = expected_checkpoint.generation.checked_add(1).ok_or(
+            AuthBusControlError::InvalidRequest("checkpoint generation overflow"),
+        )?;
         sqlx::query(
             "INSERT INTO authbus_retired_epochs
              (issuer_id, key_epoch, checkpoint_generation, retired_at_ms)
@@ -862,14 +859,12 @@ impl HeptaEvidenceStore {
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
-        sqlx::query(
-            "DELETE FROM authbus_replay_sequences WHERE issuer_id = ? AND key_epoch = ?",
-        )
-        .bind(issuer_id.as_str())
-        .bind(key_epoch.to_be_bytes().as_slice())
-        .execute(&mut *tx)
-        .await
-        .map_err(classify_sqlx_error)?;
+        sqlx::query("DELETE FROM authbus_replay_sequences WHERE issuer_id = ? AND key_epoch = ?")
+            .bind(issuer_id.as_str())
+            .bind(key_epoch.to_be_bytes().as_slice())
+            .execute(&mut *tx)
+            .await
+            .map_err(classify_sqlx_error)?;
         let replay_digest = replay_digest_tx(&mut tx).await?;
         let next = AuthBusReplayCheckpoint {
             generation: next_generation,
@@ -926,7 +921,9 @@ pub(crate) async fn verify_authbus_control_invariants(
         let capacity = u128::from(blob_u64_evidence(&row, "capacity")?);
         let reserved = u128::from(blob_u64_evidence(&row, "reserved")?);
         let consumed = u128::from(blob_u64_evidence(&row, "consumed")?);
-        let start: i64 = row.try_get("period_start_ms").map_err(classify_sqlx_error)?;
+        let start: i64 = row
+            .try_get("period_start_ms")
+            .map_err(classify_sqlx_error)?;
         let end: i64 = row.try_get("period_end_ms").map_err(classify_sqlx_error)?;
         if start < 0
             || end <= start
@@ -1045,11 +1042,10 @@ fn decode_quota(row: &SqliteRow) -> Result<QuotaSnapshot, AuthBusControlError> {
         reserved: blob_u64(row, "reserved")?,
         consumed: blob_u64(row, "consumed")?,
         period_start_ms: i64_to_u64(
-            row.try_get("period_start_ms").map_err(classify_sqlx_error)?,
+            row.try_get("period_start_ms")
+                .map_err(classify_sqlx_error)?,
         )?,
-        period_end_ms: i64_to_u64(
-            row.try_get("period_end_ms").map_err(classify_sqlx_error)?,
-        )?,
+        period_end_ms: i64_to_u64(row.try_get("period_end_ms").map_err(classify_sqlx_error)?)?,
     })
 }
 
@@ -1122,9 +1118,7 @@ fn decode_reservation(row: &SqliteRow) -> Result<Reservation, AuthBusControlErro
         amount: blob_u64(row, "amount")?,
         state,
         observed_cost,
-        expires_at_ms: i64_to_u64(
-            row.try_get("expires_at_ms").map_err(classify_sqlx_error)?,
-        )?,
+        expires_at_ms: i64_to_u64(row.try_get("expires_at_ms").map_err(classify_sqlx_error)?)?,
         terminal_evidence,
     })
 }
@@ -1147,10 +1141,9 @@ async fn settle_tx(
     }
     let quota = load_quota_tx(tx, &reservation.quota_key).await?;
     if quota.reserved < reservation.amount {
-        return Err(EvidenceError::Corrupt(
-            "AuthBus quota reserved counter underflow".into(),
-        )
-        .into());
+        return Err(
+            EvidenceError::Corrupt("AuthBus quota reserved counter underflow".into()).into(),
+        );
     }
     let reserved = quota.reserved - reservation.amount;
     let consumed = quota
@@ -1166,7 +1159,14 @@ async fn settle_tx(
         )
         .into());
     }
-    set_quota_counters_tx(tx, &reservation.quota_key, reserved, consumed, u64_to_i64(now)?).await?;
+    set_quota_counters_tx(
+        tx,
+        &reservation.quota_key,
+        reserved,
+        consumed,
+        u64_to_i64(now)?,
+    )
+    .await?;
     sqlx::query(
         "UPDATE authbus_quota_reservations
          SET state = 'settled', observed_cost = ?, terminal_evidence = ?,
@@ -1218,11 +1218,14 @@ async fn release_held_tx(
         return Err(AuthBusControlError::InvalidTransition);
     }
     let quota = load_quota_tx(tx, &reservation.quota_key).await?;
-    let reserved = quota.reserved.checked_sub(reservation.amount).ok_or_else(|| {
-        AuthBusControlError::Storage(EvidenceError::Corrupt(
-            "AuthBus quota reserved counter underflow".into(),
-        ))
-    })?;
+    let reserved = quota
+        .reserved
+        .checked_sub(reservation.amount)
+        .ok_or_else(|| {
+            AuthBusControlError::Storage(EvidenceError::Corrupt(
+                "AuthBus quota reserved counter underflow".into(),
+            ))
+        })?;
     set_quota_counters_tx(
         tx,
         &reservation.quota_key,
