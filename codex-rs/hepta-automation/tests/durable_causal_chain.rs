@@ -344,7 +344,10 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
         .expect("same occurrence after retry");
     assert_eq!(second.occurrence_id, first.occurrence_id);
     assert_eq!(second.schedule_revision, first.schedule_revision);
-    assert_eq!(second.client_user_message_id, uncertain.client_user_message_id);
+    assert_eq!(
+        second.client_user_message_id,
+        uncertain.client_user_message_id
+    );
     assert_eq!(second.claim_generation, 1);
     assert_eq!(second.step_attempt, 2);
     assert_eq!(second.state, AutomationOccurrenceState::Admitted);
