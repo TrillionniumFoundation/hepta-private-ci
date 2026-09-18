@@ -43,8 +43,8 @@ use crate::framing::digest_many;
 use crate::framing::path_identity_bytes;
 use crate::framing::workspace_digest;
 
-const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
-const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
+const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v2";
+const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v2";
 const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTO_CITATIONS_PER_MEMORY: usize = 8;
 const MAX_COMBINED_CITATIONS_PER_MEMORY: usize = 1;
@@ -478,8 +478,10 @@ fn combine_cognitive_materials(
     let local_memory = compact_local_memory(local_value.get("memories")?.as_array()?.first()?)?;
     let federated_memory =
         compact_federated_memory(federated_value.get("memories")?.as_array()?.first()?)?;
+    let federated_coverage = compact_federated_coverage(federated_value.get("coverage")?)?;
     let content = serde_json::to_string(&json!({
-        "s": "verified_cognitive_v1",
+        "s": "verified_cognitive_v2",
+        "fc": federated_coverage,
         "m": [local_memory, federated_memory],
     }))
     .ok()?;
@@ -499,7 +501,7 @@ fn combine_cognitive_materials(
     }
     let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
     let source_binding_sha256 = digest_many(
-        b"hepta:cognitive:combined-ephemeral-source-binding:v1",
+        b"hepta:cognitive:combined-ephemeral-source-binding:v2",
         &[
             input.thread_id.as_bytes(),
             input.turn_id.as_bytes(),
@@ -534,6 +536,14 @@ fn compact_local_memory(memory: &Value) -> Option<Value> {
         "c": memory.get("content")?,
         "h": memory.get("content_sha256")?,
         "q": citations,
+    }))
+}
+
+fn compact_federated_coverage(coverage: &Value) -> Option<Value> {
+    Some(json!({
+        "r": coverage.get("requested_sources")?,
+        "c": coverage.get("completed_sources")?,
+        "f": coverage.get("failed_sources")?,
     }))
 }
 
