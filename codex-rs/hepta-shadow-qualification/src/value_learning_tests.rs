@@ -181,6 +181,7 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
         },
         UtilityProfile {
             profile_id: id("utility-profile-v1"),
+            axis_semantics_digest: Digest32::of_bytes(b"utility-profile-v1-axis-semantics"),
             dimensions: vec![(id("success"), AxisDirection::Maximize)],
             risk_ceilings: vec![AxisLimit {
                 axis: id("privacy-risk"),
