@@ -38,6 +38,7 @@ impl TestFile {
 impl Drop for TestFile {
     fn drop(&mut self) {
         let _ = fs::remove_file(&self.0);
+        let _ = fs::remove_dir_all(&self.0);
     }
 }
 
@@ -499,4 +500,49 @@ fn durable_auxiliary_snapshot_receipts_fail_closed_on_cross_file_reuse() {
     write_dataset_withdrawal_snapshot(second.create().unwrap(), &registry, binding()).unwrap();
     fs::write(&second.0, b"tampered").unwrap();
     assert!(read_dataset_withdrawal_snapshot(second.open(), receipt).is_err());
+}
+
+
+#[test]
+fn contained_create_rejects_traversal_and_reconciles_only_empty_orphans() {
+    let parent = TestFile::new();
+    fs::create_dir(&parent.0).unwrap();
+
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in(&parent.0, "../escape").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in(&parent.0, "nested/file").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+
+    let orphan = parent.0.join("orphan");
+    drop(CreateOnlyArtifactFile::create_in(&parent.0, "orphan").unwrap());
+    assert!(orphan.exists());
+    remove_zero_length_orphan_in(&parent.0, "orphan").unwrap();
+    assert!(!orphan.exists());
+
+    let retained = parent.0.join("retained");
+    fs::write(&retained, b"not-an-orphan").unwrap();
+    assert_eq!(
+        remove_zero_length_orphan_in(&parent.0, "retained"),
+        Err(ArtifactStorageError::NotOrphan)
+    );
+    assert_eq!(fs::read(retained).unwrap(), b"not-an-orphan");
+}
+
+#[cfg(unix)]
+#[test]
+fn contained_create_rejects_symlink_parent() {
+    use std::os::unix::fs::symlink;
+
+    let real = TestFile::new();
+    fs::create_dir(&real.0).unwrap();
+    let linked = TestFile::new();
+    symlink(&real.0, &linked.0).unwrap();
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in(&linked.0, "child").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
 }
