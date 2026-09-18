@@ -32,7 +32,7 @@ fn existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
         bounds,
     )
     .unwrap();
-    let first = run_evaluated_shadow_v1(
+    let first = run_evaluated_shadow_v2(
         fixture.request(),
         &fixture.verifier,
         &mut journal,
@@ -47,7 +47,7 @@ fn existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
     let mut second_request = fixture.request();
     second_request.episode_id = id("second-episode");
     second_request.expected_ledger_head = anchor.chain_digest;
-    let second = run_evaluated_shadow_v1(
+    let second = run_evaluated_shadow_v2(
         second_request,
         &fixture.verifier,
         &mut journal,
@@ -68,7 +68,7 @@ fn existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
         checkpoint,
     )
     .unwrap();
-    let replay = run_evaluated_shadow_v1(
+    let replay = run_evaluated_shadow_v2(
         first_fixture.request(),
         &first_fixture.verifier,
         &mut recovered,
@@ -105,7 +105,7 @@ fn bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal() 
     let before = journal.snapshot().unwrap();
     let mut ports = Ports::new(&fixture);
     assert!(
-        run_evaluated_shadow_v1(
+        run_evaluated_shadow_v2(
             fixture.request(),
             &fixture.verifier,
             &mut journal,
