@@ -294,6 +294,46 @@ class OrchestrationTests(unittest.TestCase):
                     ("feasible",),
                 )
 
+    def test_package_owner_self_attestation_cannot_complete_predecessor(self):
+        owner_trust = HmacTrustStore({("package_owner", "owner"): b"owner-secret"})
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                valid = self.completion(store, "foundation", "src/foundation")
+                self_attested = replace(
+                    valid,
+                    issuer="package_owner",
+                    signing_identity="owner",
+                    signature="",
+                )
+                self_attested = replace(
+                    self_attested,
+                    signature=owner_trust.sign(
+                        self_attested,
+                        self_attested.issuer,
+                        self_attested.signing_identity,
+                    ),
+                )
+                with self.assertRaisesRegex(ValueError, "completion_issuer_role"):
+                    plan_engineering_work(
+                        store,
+                        self.envelope,
+                        (
+                            EngineeringWorkPackage(
+                                0,
+                                "feature",
+                                ("foundation",),
+                                ("src/feature",),
+                            ),
+                        ),
+                        (WorkerProfile("worker", (), 1, ("src",)),),
+                        (self_attested,),
+                        owner_trust,
+                        EngineeringCapacity(1, ()),
+                        generation_id="g-owner-self-attestation",
+                        now_ns=self.now,
+                    )
+
     def test_unsigned_completion_cannot_satisfy_predecessor(self):
         with tempfile.TemporaryDirectory() as temp:
             with EngineeringStore(Path(temp) / "store.db") as store:
