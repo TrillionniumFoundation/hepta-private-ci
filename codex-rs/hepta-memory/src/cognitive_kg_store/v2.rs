@@ -307,7 +307,10 @@ pub(crate) async fn load_generation_tx(
             CognitiveStoreError::Corrupt(format!("invalid persisted KG generation: {error}"))
         })?,
         KnowledgeProjectionInputV2 {
-            source_snapshot_digest: parse_digest(input_heads_sha256.as_str(), FailureClass::Corrupt)?,
+            source_snapshot_digest: parse_digest(
+                input_heads_sha256.as_str(),
+                FailureClass::Corrupt,
+            )?,
             generation_vector_digest: generation_vector_digest(
                 projection_scope,
                 &input_heads_sha256,
