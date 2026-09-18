@@ -19,6 +19,7 @@ source paths and test names are not pass receipts by themselves.
 | `parameter_authenticated_admission` | `source_implemented` | `propose_authenticated_parameter_plasticity_v1` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
 | `parameter_anchor_state_machine` | `source_implemented` | `PlasticityWriterStateV1` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
 | `agentd_selected_host_surface` | `source_implemented_not_runtime_enrolled` | `AgentdPlasticityHostV1` | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
+| `agentd_dataset_receipt_binding` | `source_implemented_not_runtime_enrolled` | `DatasetSnapshotReceiptV3 host verification` | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
 | `agentd_owner_evidence_binding` | `source_implemented_not_deployment_bound` | `PlasticityOwnerEvidencePolicyV1` | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
 | `agentd_anchor_fence_store` | `source_implemented_not_deployment_bound` | `AgentdPlasticityAnchorFenceStoreV1` | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
 | `topology_v2_proposal` | `source_implemented_proposal_only` | `propose_topology_v2` | `codex-rs/hepta-plasticity/src/topology_v2.rs` |
@@ -137,6 +138,12 @@ and requires the baseline artifact to be present, lineage-eligible, Parameters/M
 kind, and exactly bound to the supplied objective, generation and content digest. It
 also recomputes `artifact_frontier_binding_v1` from the exact registry head.
 
+Before resolving mutable owner evidence, the host also requires a
+`DatasetSnapshotReceiptV3` from the learning-ledger owner. It recomputes that receipt,
+checks its producer validity window and immutable dataset preimage, and requires the
+resulting dataset/objective identity to match the signed admission. A tampered
+correction/revocation/inclusion cut therefore fails before proposal persistence.
+
 The host then actively resolves update-rule, modulator, modulator-broadcast,
 eligibility and every per-parameter signal evidence digest through
 `PlasticityOwnerEvidenceResolverV1`. A resolver implementation must query the owning
@@ -186,8 +193,10 @@ registry anchor.
 `AgentdPlasticityAnchorFenceStoreV1` is an append-only, checksum-protected, locked host
 journal for monotonic new-registry fence issuance and independently retained anchors.
 Its file must be placed by the deployment in a rollback domain independent of the
-proposal registry. The source can enforce monotonic journal semantics; it cannot make
-two files physically independent by itself.
+proposal registry. On reopen it preserves every complete checksum-valid fence/anchor
+frame and truncates only one incomplete crash tail; a complete invalid frame still
+fails closed as corruption. The source can enforce monotonic journal semantics; it
+cannot make two files physically independent by itself.
 
 ## 7. Governed topology proposal path
 
