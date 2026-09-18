@@ -134,7 +134,7 @@ fn config() -> SupervisorConfig {
         stop_grace: Duration::from_millis(10),
         restart_backoff_min: Duration::from_millis(5),
         restart_backoff_max: Duration::from_millis(20),
-        restart_recovery_window: Duration::from_millis(50),
+        restart_recovery_window: Duration::from_millis(200),
         restart_attempt_budget: 3,
         event_capacity: 8,
         log_capacity: 3,
@@ -158,6 +158,8 @@ struct FakeWorld {
     processes: BTreeMap<u64, FakeState>,
     reject_adoption: BTreeSet<AgentId>,
     reject_spawn_programs: BTreeSet<PathBuf>,
+    race_process_lease_publish: BTreeSet<AgentId>,
+    reject_kill: BTreeSet<AgentId>,
 }
 
 struct FakeState {
@@ -267,6 +269,22 @@ impl FakeControl {
             .insert(program.into());
     }
 
+    fn race_process_lease_publish(&self, agent_id: AgentId) {
+        self.world
+            .lock()
+            .expect("fake world lock")
+            .race_process_lease_publish
+            .insert(agent_id);
+    }
+
+    fn reject_kill(&self, agent_id: AgentId) {
+        self.world
+            .lock()
+            .expect("fake world lock")
+            .reject_kill
+            .insert(agent_id);
+    }
+
     fn counts(&self, agent_id: &AgentId) -> (usize, usize, usize) {
         self.counts_role(agent_id, FakeRole::Agentd)
     }
@@ -321,6 +339,13 @@ impl ProcessDriver for FakeDriver {
         let mut world = self.world.lock().expect("fake world lock");
         if world.reject_spawn_programs.contains(&spec.command.program) {
             return Err(ProcessDriverError::new("injected spawn failure"));
+        }
+        let race_process_lease_publish = world.race_process_lease_publish.remove(&spec.agent_id);
+        if race_process_lease_publish {
+            drop(world);
+            std::fs::create_dir(spec.run_root.join("supervisor-process.json"))
+                .map_err(ProcessDriverError::from)?;
+            world = self.world.lock().expect("fake world lock");
         }
         world.next_id += 1;
         let id = world.next_id;
@@ -469,13 +494,15 @@ impl ManagedProcess for FakeProcess {
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
-            .processes
-            .get_mut(&self.id)
-            .expect("fake process")
-            .kill_requests += 1;
+        let mut world = self.world.lock().expect("fake world lock");
+        let agent_id = {
+            let state = world.processes.get_mut(&self.id).expect("fake process");
+            state.kill_requests += 1;
+            state.agent_id.clone()
+        };
+        if world.reject_kill.contains(&agent_id) {
+            return Err(ProcessDriverError::new("injected kill failure"));
+        }
         Ok(())
     }
 }
