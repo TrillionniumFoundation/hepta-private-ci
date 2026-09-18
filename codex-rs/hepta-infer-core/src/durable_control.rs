@@ -935,12 +935,13 @@ impl DurableInferenceControl {
                 reservation,
             } => {
                 let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-                require_revision(record, *expected_revision, /*replay*/ false)?;
                 if record.state == RequestState::Reserved
                     && record.reservation.as_ref() == Some(reservation)
+                    && is_exact_event_replay(record, *expected_revision)
                 {
                     return Ok(Some(receipt(record, /*idempotent*/ true)));
                 }
+                require_revision(record, *expected_revision, /*replay*/ false)?;
                 if record.state != RequestState::Pending {
                     return Err(Error::InvalidTransition);
                 }
@@ -954,12 +955,13 @@ impl DurableInferenceControl {
                 assignment,
             } => {
                 let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-                require_revision(record, *expected_revision, /*replay*/ false)?;
                 if record.state == RequestState::Assigned
                     && record.assignment.as_ref() == Some(assignment)
+                    && is_exact_event_replay(record, *expected_revision)
                 {
                     return Ok(Some(receipt(record, /*idempotent*/ true)));
                 }
+                require_revision(record, *expected_revision, /*replay*/ false)?;
                 if record.state != RequestState::Reserved {
                     return Err(Error::InvalidTransition);
                 }
@@ -969,13 +971,14 @@ impl DurableInferenceControl {
                 expected_revision,
             } => {
                 let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-                require_revision(record, *expected_revision, /*replay*/ false)?;
                 if matches!(
                     record.state,
                     RequestState::Cancelled | RequestState::Cancelling
-                ) {
+                ) && is_exact_event_replay(record, *expected_revision)
+                {
                     return Ok(Some(receipt(record, /*idempotent*/ true)));
                 }
+                require_revision(record, *expected_revision, /*replay*/ false)?;
                 if record.state.terminal() {
                     return Err(Error::InvalidTransition);
                 }
@@ -987,10 +990,12 @@ impl DurableInferenceControl {
                 observation,
             } => {
                 let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
-                require_revision(record, *expected_revision, /*replay*/ false)?;
-                if record.terminal_observation_digest.as_ref() == Some(observation_digest) {
+                if record.terminal_observation_digest.as_ref() == Some(observation_digest)
+                    && is_exact_event_replay(record, *expected_revision)
+                {
                     return Ok(Some(receipt(record, /*idempotent*/ true)));
                 }
+                require_revision(record, *expected_revision, /*replay*/ false)?;
                 if record.state.terminal() {
                     return Err(Error::Conflict);
                 }
@@ -1443,6 +1448,12 @@ fn apply_event(
         }
     }
     Ok(())
+}
+
+fn is_exact_event_replay(record: &RequestRecord, expected: u64) -> bool {
+    expected
+        .checked_add(1)
+        .is_some_and(|committed_revision| committed_revision == record.revision)
 }
 
 fn require_revision(record: &RequestRecord, expected: u64, replay: bool) -> Result<(), Error> {
