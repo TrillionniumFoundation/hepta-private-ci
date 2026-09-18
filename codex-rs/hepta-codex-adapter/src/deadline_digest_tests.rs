@@ -83,3 +83,30 @@ fn the_deadline_remains_exclusive() {
         Err(Error::DeadlineExpired)
     );
 }
+
+
+#[test]
+fn late_terminal_observation_is_not_erased_by_local_deadline() {
+    let value = intent(/*deadline_ms*/ 2_000);
+    let observation = AppServerObservation::terminal(
+        id("thread:deadline"),
+        id("turn:late"),
+        11,
+        2,
+        digest(b"connection"),
+        TerminalOutcome::Failed,
+        digest(b"late-response"),
+    )
+    .expect("late terminal evidence remains structurally valid");
+
+    let receipt = adapt(
+        /*now_ms*/ 2_500,
+        value,
+        Some(observation),
+    )
+    .expect("a local timeout cannot erase provider terminal truth");
+
+    assert_eq!(receipt.status, AdapterStatus::Failed);
+    assert_eq!(receipt.turn_id.as_ref(), Some(&id("turn:late")));
+    assert!(receipt.response_digest.is_some());
+}
