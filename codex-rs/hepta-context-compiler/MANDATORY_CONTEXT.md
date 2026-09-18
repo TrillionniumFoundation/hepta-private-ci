@@ -1,11 +1,68 @@
 # Native mandatory context profile
 
-`compile(CompilationRequest)` now treats every `TrustedInstruction` item as a
+The crate now has two deliberately different source API classes.
+
+## Normative proof-closed V2.1
+
+The public V2 surface is `NORMATIVE_CONTEXT_COMPILER_API =
+"v2.1-proof-closed"` and is implemented in `src/proof_v2.rs`. The existing
+`src/v2.rs` implementation remains private and supplies only the deterministic
+selection engine.
+
+The normative path requires typed, snapshot-bound trusted admission evidence.
+`ContextAdmissionSnapshotV2::verify_trusted_binding` is the only constructor
+path for `VerifiedContextAdmissionV2`; trusted instruction/schema candidates
+cannot satisfy the public V2 contract with a naked caller-supplied admission
+digest. The snapshot binds issuer, source snapshot, revocation frontier, host
+witness, observation time and canonical admission records. The host must
+authenticate issuer/witness provenance before constructing that snapshot.
+
+Candidate token receipts are measured from actual bytes through
+`ExactContextTokenizerV2`. The public token receipt does not accept a
+caller-provided token count.
+
+`compile_v2` preserves the existing deterministic V2 selection algorithm after
+the proof layer has verified typed admission, exact candidate tokenization and
+profile bindings. Trusted instructions/schemas remain non-tradable floors.
+Explicit `MandatoryContextGroupV2` records remain atomic and are additionally
+canonicalized and bound into `mandatory_groups_digest`; changing group reason
+or membership changes the public receipt even when the selected IDs happen to
+remain the same.
+
+`serialize_context_v2` requires the actual bytes for every selected item,
+recomputes their content digests, invokes the selected serializer, then invokes
+the selected exact tokenizer over the actual final serialized payload. The
+provider-facing token budget is enforced against this final measurement, not
+against the sum of candidate token counts.
+
+`build_attachment` consumes that serialized payload and a current
+`ContextAdmissionSnapshotV2`. It revalidates every selected trusted
+instruction/schema against the current snapshot, rejects issuer drift, stale
+snapshot time, missing admission, source/content/role drift, expiry and
+revocation, and binds the current revocation frontier and witness into the
+attachment.
+
+`deliver_attachment` passes the exact attachment payload bytes to a
+`ContextDeliveryAdapterV2`. A `Delivered` receipt is valid only when the
+adapter reports the same payload digest, a terminal attempt, a stable provider
+request ID and provider acknowledgement digest. Indeterminate attempts cannot
+be promoted to delivered by a caller-supplied status flag.
+
+Compilation, serialization, attachment and delivery receipts all carry
+`AuthorityPosture::DENY_ALL`. This crate does not grant provider or other
+effect authority.
+
+The detailed V2 source contract, trust boundaries and product-composition
+obligations are documented in
+`docs/modules/context.compiler/V2_TECHNICAL.md`.
+
+## V1 compatibility profile
+
+`compile(CompilationRequest)` treats every `TrustedInstruction` item as a
 non-tradable floor. If those instructions cannot fit, it returns
 `Error::InsufficientContext` with the exact required cost and available budget.
 The existing request and receipt shapes remain unchanged. Successful legacy
-compilations retain the original digest format. The previous behavior that
-silently omitted a trusted instruction is intentionally rejected.
+compilations retain the original digest format.
 
 `compile_with_requirements(request, CompilationRequirementsV1)` additionally
 binds mandatory provenance or contradiction groups. Requirements carry the
@@ -15,46 +72,38 @@ digest, secret flag or token count cannot satisfy a requirement. An indivisible
 mandatory group is included in full or the entire compilation fails. Shared
 members across groups are included and charged once.
 
-Validation precedes packing. Instructions and the union of all required group
-members reserve their entire cost before any optional evidence is considered.
-Remaining optional items use the existing deterministic role/ID order. Items
-that cannot fit are explicitly omitted; this stable greedy policy makes no
-global-optimality or value-per-cost claim. Required cost uses an exact u128 sum
-of at most 4096 u64 costs, so a floor exceeding u64 still returns insufficient
-context without wrapping. Input items, groups and total member references are
-each bounded by 4096. Empty or duplicate groups and duplicate members within a
-group are rejected. Reordering inputs/groups does not change the receipt.
+The additive owner-local `compile_candidate_bound` and
+`compile_candidate_bound_with_requirements` entrypoints preserve V1 semantics
+while binding the complete bounded set supplied by the caller, including omitted
+items. Their `caller_candidate_set_digest` is caller-relative: it is not proof
+that the caller supplied every eligible item and is not a freshness,
+revocation, delivery or selection credential.
 
-The native requirements profile has its own context digest domain. It binds the
-canonical group structure, frozen snapshot/objective, item roles, exact source
-and content digests, and costs along with the normal compilation inputs. Changing
-required-group semantics therefore invalidates that compilation digest even when
-the selected context items happen to be identical. It does not silently change
-the canonical serialized `ContextCompilationReceiptV1` protocol.
+V1 callers still authenticate instructions and supply token counts. V1 must not
+be interpreted as having V2.1 exact-tokenizer, current-revocation, final-payload
+or delivery-proof guarantees.
 
-The caller still authenticates instructions, source access and requirements, and
-supplies token counts. This implementation does not measure a real tokenizer,
-model/template/tool-schema tuple, independently current revocations or actual
-Codex payload delivery. Product attachment must bind those values and revalidate
-at the delivery boundary. Compilation grants no provider or effect authority.
+## Verification
 
-The additive owner-local, crate-native `compile_candidate_bound` and
-`compile_candidate_bound_with_requirements` entrypoints preserve the existing
-V1 request, receipt and digest semantics. Their wrapper binds the complete
-bounded set supplied by the caller, including omitted item identities, content,
-source, role, cost and secret marker. It deliberately calls this a
-`caller_candidate_set_digest`: it cannot prove that the caller supplied every
-eligible item and is not a registered cross-module port or wire V2, source
-credential, freshness or revocation witness, delivery receipt, selection
-decision, or authority grant.
+Native compatibility cases remain in `src/lib_tests.rs`,
+`src/requirements_tests.rs`, `src/candidate_bound_tests.rs` and
+`src/v2_tests.rs`.
 
-Native acceptance cases are in `src/lib_tests.rs`,
-`src/requirements_tests.rs` and `src/candidate_bound_tests.rs`:
-trusted-instruction overflow, mandatory provenance at a tight budget, refusal
-rather than partial groups, shared provenance, permutation invariance, omitted
-candidate binding, exact binding drift, invalid identities, scope/objective
-drift, requirement digest changes and reference saturation.
+Proof-boundary cases are in `src/proof_v2_tests.rs`, including admission
+binding drift, revoked admission, compile-to-attach revocation, final
+serialization overhead, selected-content substitution, mandatory-group
+provenance, provider acknowledgement, payload mismatch and indeterminate
+delivery.
 
-Run with `just test --locked -p codex-hepta-context-compiler`. These are native
-contract tests; actual product CTX-01/03/04 and C1 delivery remain integration
-obligations. No runtime activation or independent acceptance is asserted here.
+Run from `codex-rs`:
+
+```text
+just test --locked -p codex-hepta-context-compiler
+cargo clippy --locked -p codex-hepta-context-compiler --all-targets -- -D warnings
+```
+
+Those are test commands, not stored execution receipts. Exact-head CI and
+synthetic-merge evidence remain the execution proof. A real product host must
+still authenticate admission witnesses and compose real tokenizer, serializer
+and delivery adapters. No runtime activation, independent acceptance, promotion
+or release is asserted by this source profile.
