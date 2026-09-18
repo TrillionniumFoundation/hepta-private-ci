@@ -153,7 +153,8 @@
       "nativeSymbol": "issue_repository_work_envelope",
       "ownerSymbol": "issue_repository_work_envelope",
       "tests": [
-        "OrchestrationTests.test_repository_envelope_binds_real_head_tree_and_remote"
+        "OrchestrationTests.test_repository_envelope_binds_real_head_tree_and_remote",
+        "OrchestrationTests.test_repository_envelope_rejects_dirty_and_untracked_source"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "exact local Git or signed canonical-source admission only"
@@ -169,7 +170,10 @@
         "OrchestrationTests.test_signed_completion_requires_real_durable_assignment_generation",
         "OrchestrationTests.test_plan_rejects_envelope_not_identical_to_admitted_owner_state",
         "OrchestrationTests.test_plan_rejects_duplicate_and_unbounded_capacity_dimensions",
-        "OrchestrationTests.test_worker_scope_is_canonicalized_before_matching"
+        "OrchestrationTests.test_worker_scope_is_canonicalized_before_matching",
+        "OrchestrationTests.test_value_ordering_and_durable_generation_are_identical",
+        "OrchestrationTests.test_infeasible_high_score_does_not_consume_assignment_slot",
+        "OrchestrationTests.test_completion_cannot_predate_or_outlive_its_owner_generation"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "assignment/integration-order/merge-queue proposals only"
