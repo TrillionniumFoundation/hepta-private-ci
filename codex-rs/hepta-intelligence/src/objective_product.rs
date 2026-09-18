@@ -32,7 +32,6 @@ use codex_hepta_types::StableId;
 #[path = "objective_product_codec.rs"]
 mod codec;
 
-use codec::StoredPublicationBody;
 
 const MAGIC: &[u8; 8] = b"HEPTOB01";
 const HEADER_BYTES: usize = 72;
@@ -355,9 +354,7 @@ impl DurableObjectivePublicationStoreV1 {
             return Err(ObjectivePublicationStoreErrorV1::Poisoned);
         }
         validate_publication_semantics(&admission, &objective, &run_start)?;
-        let body = StoredPublicationBody::from_typed(&admission, &objective, &run_start);
-        let payload =
-            serde_json::to_vec(&body).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?;
+        let payload = codec::encode_publication(&admission, &objective, &run_start)?;
         if payload.len() > MAX_PAYLOAD_BYTES {
             return Err(ObjectivePublicationStoreErrorV1::Capacity);
         }
@@ -645,9 +642,7 @@ fn replay(
         {
             return Err(ObjectivePublicationStoreErrorV1::Corrupt);
         }
-        let body: StoredPublicationBody = serde_json::from_slice(&payload)
-            .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?;
-        let (admission, objective, run_start) = body.into_typed()?;
+        let (admission, objective, run_start) = codec::decode_publication(&payload)?;
         validate_publication_semantics(&admission, &objective, &run_start)?;
         let record = ObjectivePublicationV1 {
             sequence,
