@@ -42,7 +42,7 @@ A pipe write alone is not a crossed effect. Only a worker admission ACK proves t
 
 ## 4. Durable recovery and secret boundary
 
-`FileBrowserOperationJournal` now validates exact fields on every hydrated record, rejects unknown fields, validates checksum envelopes, fsyncs before dispatch, uses private non-symlink paths, rejects semantic identity conflicts, atomically compacts the live snapshot before capacity exhaustion and retires a clean terminal profile generation after close.
+`FileBrowserOperationJournal` now validates exact fields on every hydrated record, rejects unknown fields, validates checksum envelopes, fsyncs before dispatch, uses private non-symlink paths, rejects semantic identity conflicts, atomically compacts the live snapshot before capacity exhaustion and retires a clean terminal profile generation after close. The effect owner rejects volatile journals unless an explicit test-only opt-in is supplied. A generation with durable operation history cannot be reopened into a fresh worker, unresolved effects from another generation block profile advancement, and persisted recovery automatically retires the generation once all its operations become terminal.
 
 The durable record intentionally omits the complete `typedAction`. `type.text`, credential bytes, upload content/host paths, page HTML and worker stderr do not enter the journal. Durable identity stores the final payload digest and immutable effect semantics required for replay/reconciliation.
 
@@ -50,11 +50,11 @@ Terminal identities may leave the bounded in-memory cache while remaining durabl
 
 ## 5. Semantic observe -> reason -> act loop
 
-The current-pin Servo worker implements a bounded semantic observation through a fixed worker-owned script. `hepta.browser.semantic-observation.v1` includes bounded title, visible text, HTTP(S) links, forms, page-local CSS selectors for actionable controls and viewport metadata. Password inputs and control values are excluded.
+The current-pin Servo worker implements a bounded semantic observation through a fixed worker-owned script. `hepta.browser.semantic-observation.v1` includes bounded title, visible text, HTTP(S) links, forms, unique page-local CSS selectors for visible actionable controls and viewport metadata. Password inputs, hidden controls and control values are excluded.
 
 The worker canonicalizes the observation, emits `semanticDigest`, and includes that digest in `documentDigest`. `BrowserProfileHost` rechecks the semantic digest and caller observation budget before publication.
 
-Each admitted semantic observation advances page generation and stores an actionable-surface digest over links, controls and forms. Worker admission rechecks page generation, document digest, navigation epoch and a fresh actionable-surface digest; every effect invalidates the prior observation, so later new effects require a fresh observation.
+Each admitted semantic observation advances page generation and stores an actionable-surface digest over links, controls and forms. Worker admission rechecks page generation, document digest, navigation epoch and a fresh actionable-surface digest. Click/type/focus selectors must belong to that exact visible admitted control surface; disabled controls are denied and generic type cannot target password/non-text-entry controls, with execution-time visibility/disabled/password checks repeated by the fixed script. Every crossed effect also invalidates the Browser host's page observation, so later new effects require a fresh observation.
 
 ## 6. Private worker protocol and Linux isolation
 
@@ -68,7 +68,7 @@ Each admitted semantic observation advances page generation and stores an action
 
 ## 7. Resource/capacity model
 
-Current source ceilings include <=1 active profile/worker process per Browser service by default (configurable only up to 64 for a compatible injected driver), <=128 origins/profile, <=1024 admitted effect grants/profile, <=1024 nonterminal effects/profile, <=256 terminal operations retained in host memory, <=64 queued mutations per serialization key by default, <=1 MiB host observation request, <=256 KiB real worker semantic observation, <=1 MiB private worker frame, <=64 MiB file journal with compaction starting at 48 MiB, bounded typed-action fields and driver/authority deadlines.
+Current source ceilings include <=1 active profile/worker process per Browser service by default (configurable only up to 64 for a compatible injected driver), <=128 origins/profile, <=1024 admitted effect grants/profile, a generic owner ceiling of <=1024 nonterminal effects/profile with the current one-WebView subprocess driver restricted to 1 outstanding effect, <=256 terminal operations retained in host memory, <=64 queued mutations per serialization key by default, <=1 MiB host observation request, <=256 KiB real worker semantic observation, <=1 MiB private worker frame, <=64 MiB file journal with compaction starting at 48 MiB, bounded typed-action fields and driver/authority deadlines.
 
 The current worker is one Servo / one WebView per profile generation. The pilot <=16-tabs target is not claimed by this candidate and requires a later measured scheduler/profile.
 

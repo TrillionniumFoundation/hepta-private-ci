@@ -80,7 +80,9 @@ Typed browser actions are closed-world: `navigate`, `click`, `type`, `credential
 
 ## 6. Data authority, persistence and migrations
 
-Owned/recoverable data is `browser_profile_state` plus Browser-owned effect identities/observations. The file journal provides exact field/schema validation for every hydrated record; no unknown fields and no persisted `typedAction`; checksum-bound canonical envelopes; bounded line/file sizes; fsync before the external dispatch boundary; non-symlink/private Unix file and parent-directory checks; semantic-identity conflict detection; atomic snapshot compaction before capacity exhaustion; and clean-close retirement that fsyncs a durable per-profile generation high-water before operation records are compacted away, preventing a retired generation from being resurrected after restart.
+Owned/recoverable data is `browser_profile_state` plus Browser-owned effect identities/observations. The effect owner requires a persistent journal by default; the in-memory journal is accepted only through an explicit test-only opt-in. The file journal provides exact field/schema validation for every hydrated record; no unknown fields and no persisted `typedAction`; checksum-bound canonical envelopes; bounded line/file sizes; fsync before the external dispatch boundary; non-symlink/private Unix file and parent-directory checks; semantic-identity conflict detection; atomic snapshot compaction before capacity exhaustion; and clean-close retirement that fsyncs a durable per-profile generation high-water before operation records are compacted away, preventing a retired generation from being resurrected after restart.
+
+Admission additionally rejects reopening a profile generation that still has any durable operation history and rejects advancing the same profile to another generation while a different generation has unresolved effects. Crash recovery uses `reconcilePersistedOperation`; once every persisted operation in that recovered generation is terminal, Browser retires the generation automatically before it can be reused.
 
 `type { selector, text }` may contain sensitive user-entered text at the live effect boundary, but the durable journal stores only the typed action's final payload digest and immutable effect semantics. Raw `type.text`, credential values, upload bytes and page contents are not journal fields.
 
@@ -103,7 +105,9 @@ New effect algorithm:
 9. Browser forwards that boundary and Agentd releases final-use authority; a proven worker pre-effect rejection instead emits `dispatch_rejected` and is persisted as terminal failed/no-dispatch;
 10. terminal/unknown worker/business outcome is persisted and reconciled separately.
 
-An already-dispatched identity never re-enters final-use authority and never redispatches. Reconciliation remains available after the old grant/deadline expires because it observes prior work rather than authorizing new work.
+An already-dispatched identity never re-enters final-use authority and never redispatches. Browser invalidates its own page observation as soon as the worker admission boundary crosses, so every later new effect must observe again. Reconciliation remains available after the old grant/deadline expires because it observes prior work rather than authorizing new work.
+
+The generic owner hard ceiling is 1024 nonterminal operation identities, but the current one-WebView subprocess driver advertises a stricter ceiling of one outstanding effect. That prevents a later WebView mutation from making an older unknown operation unreconcilable; alternate injected drivers must explicitly declare any wider safe outstanding-effect capacity.
 
 ## 8. Failure semantics, recovery and rollback
 
@@ -125,7 +129,7 @@ Security controls include final payload/provenance binding, live revocation line
 
 ## 10. Performance, capacity and hot-path policy
 
-Current hard source bounds include <=1 active profile/worker process per Browser service by default (configurable only up to 64 for a compatible injected driver); <=128 origins/profile; <=1024 effect grants/profile; <=1024 nonterminal operations/profile; <=256 terminal operations retained in host memory; <=64 queued mutations per serialization key; <=1 MiB host observation request; <=256 KiB semantic observation returned by the real Servo worker; <=1 MiB private worker frame; <=64 MiB file journal with automatic compaction beginning at 48 MiB; bounded action fields; and explicit Browser driver/authority deadlines.
+Current hard source bounds include <=1 active profile/worker process per Browser service by default (configurable only up to 64 for a compatible injected driver); <=128 origins/profile; <=1024 effect grants/profile; a generic owner ceiling of <=1024 nonterminal operations/profile with the current one-WebView subprocess driver restricted to 1 outstanding effect; <=256 terminal operations retained in host memory; <=64 queued mutations per serialization key; <=1 MiB host observation request; <=256 KiB semantic observation returned by the real Servo worker; <=1 MiB private worker frame; <=64 MiB file journal with automatic compaction beginning at 48 MiB; bounded action fields; and explicit Browser driver/authority deadlines.
 
 The current worker is one WebView/profile generation. The dossier's <=16 concurrent-tab pilot target is not a current claim and requires a later measured scheduler/profile.
 
@@ -133,7 +137,7 @@ The current worker is one WebView/profile generation. The dossier's <=16 concurr
 
 Safe observations include profile/process/page generations, operation/request/semantic digests, profile-owner digest, worker artifact identity and terminal/indeterminate state. Raw credential values, `type.text`, upload content/host paths, raw page HTML and worker stderr are excluded from durable receipts.
 
-`observePage` carries a digest-bound `hepta.browser.semantic-observation.v1` produced by the real Servo WebView using a fixed worker-owned script. It exposes bounded title, visible text, HTTP(S) links, forms, page-local CSS selectors for actionable controls and viewport metadata; password inputs and control values are not exported. The worker stores a digest of the actionable surface (links/controls/forms), re-evaluates that surface immediately before admitting an effect, rejects navigation/document/action-surface drift before `dispatch_boundary`, and invalidates the observation after every effect so the next new effect requires a fresh observation.
+`observePage` carries a digest-bound `hepta.browser.semantic-observation.v1` produced by the real Servo WebView using a fixed worker-owned script. It exposes bounded title, visible text, HTTP(S) links, forms, unique page-local CSS selectors for visible actionable controls and viewport metadata; password inputs, hidden controls and control values are not exported. For click/type/focus, the worker requires the requested selector to exist in that freshly revalidated admitted control surface and rejects disabled controls; generic type additionally rejects password and non-text-entry targets. The fixed execution script repeats visibility/disabled/password checks immediately before mutation. The worker stores a digest of the actionable surface (links/controls/forms), re-evaluates that surface immediately before admitting an effect, rejects navigation/document/action-surface drift before `dispatch_boundary`, and invalidates the observation after every effect so the next new effect requires a fresh observation.
 
 Operating references:
 
@@ -151,7 +155,7 @@ node --test apps/hepta-browser/test/*.test.js
 node --check apps/hepta-browser/src/*.js
 ```
 
-Coverage includes canonical proposals, action/provenance binding, worker-admission authority linearization, explicit pre-dispatch rejection, page/document/navigation/action-surface drift, observation invalidation after effects, secret-free durability, semantic-observation digest/budget, bounded serialization backpressure, strict journal hydration/compaction/retirement, private protocol canonicality, response-request echo binding, worker artifact/profile ownership, stderr drain and Linux launch allowlist.
+Coverage includes canonical proposals, action/provenance binding, worker-admission authority linearization, explicit pre-dispatch rejection, page/document/navigation/action-surface drift, exact observed-target admission, hidden/disabled/password target rejection, host-side observation invalidation after effects, durable generation-resurrection fencing, recovered-generation auto-retirement, volatile-journal rejection, one-WebView outstanding-effect capacity, secret-free durability, semantic-observation digest/budget, bounded serialization backpressure, strict journal hydration/compaction/retirement, private protocol canonicality, response-request echo binding, worker artifact/profile ownership, stderr drain and Linux launch allowlist.
 
 Cross-owner qualification additionally runs:
 

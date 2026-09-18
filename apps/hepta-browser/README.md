@@ -9,7 +9,7 @@ This root contains the repository-owned `browser.servo` boundary. The current ca
 - `src/bridge.js` — provenance-preserving proposal -> effect bridge.
 - `src/runtime.js` / `src/runtime-host.js` — serialized profile owner, live final-use fence, durable no-redispatch recovery and semantic page observations.
 - `src/runtime-boundary.js` — bounded per-profile serialization queue plus safe abort settlement; an effect-capable driver timeout is not reported until the abort/containment path itself has settled.
-- `src/journal.js` — strict private durable operation journal with compaction and clean-generation retirement.
+- `src/journal.js` — strict private durable operation journal with compaction and clean-generation retirement. Production effect ownership requires persistent durability; the in-memory journal is an explicit test-only opt-in. Durable operation history fences profile-generation resurrection after a crash.
 - `src/worker-protocol.js` — canonical bounded private Browser/Servo frames.
 - `src/worker-driver.js` — exact-artifact subprocess driver, principal-bound fresh profile roots, worker-originated admission boundary, response-request binding, stderr drain and Linux Bubblewrap source contract. A pipe write is not treated as effect admission; timeout/abort before a worker boundary contains the worker unless the worker has explicitly proven a no-dispatch rejection.
 - `src/agentd-protocol.js`, `src/agentd-service.js`, `src/agentd-service-main.js` — private Agentd parent handoff.
@@ -27,15 +27,15 @@ The Browser service does not accept a reusable serialized `VerifiedUseToken`. Ag
 
 Typed actions are closed-world: `navigate`, `click`, `type`, `credential`, `upload`, `focus`, `scroll`, `wait`, `download`. Credential/upload actions carry references rather than raw secret bytes or ambient host paths. `type.text` exists only in the live action payload; the durable operation journal does **not** store `typedAction` or raw text. It stores the final payload digest plus immutable effect semantics.
 
-The file journal validates every hydrated field, rejects unknown fields, checks canonical checksum envelopes, fsyncs dispatch intent before the effect boundary, compacts atomically before the file ceiling and retires a fully terminal profile generation after clean close.
+The file journal validates every hydrated field, rejects unknown fields, checks canonical checksum envelopes, fsyncs dispatch intent before the effect boundary, compacts atomically before the file ceiling and retires a fully terminal profile generation after clean close. A generation with durable operation history cannot be reopened into a fresh worker; unresolved durable effects from another generation block profile advancement. Persisted recovery automatically retires the generation once all recovered operations become terminal.
 
 Each worker generation receives a fresh random private profile directory and a mode-0600 `hepta.browser.profile-owner.v1` manifest binding profile ID, principal ID, generation, Browser manifest digest and profile grant digest. Stale profile bytes are not silently reopened for another principal.
 
 ## Semantic observe -> reason -> act loop
 
-The current-pin worker's `observe` path emits bounded `hepta.browser.semantic-observation.v1` data rather than only URL/digests. It includes title, bounded visible text, HTTP(S) links, forms, page-local selectors for actionable controls and viewport metadata. Password controls and control values are excluded. The semantic value is canonical-digest-bound by the worker and rechecked by `BrowserProfileHost` against the caller's observation budget.
+The current-pin worker's `observe` path emits bounded `hepta.browser.semantic-observation.v1` data rather than only URL/digests. It includes title, bounded visible text, HTTP(S) links, forms, unique page-local selectors for visible actionable controls and viewport metadata. Password/hidden controls and control values are excluded. The semantic value is canonical-digest-bound by the worker and rechecked by `BrowserProfileHost` against the caller's observation budget. Click/type/focus must target a selector from that exact revalidated control surface; disabled controls fail closed, generic type cannot target password/non-text-entry controls, and the fixed execution script repeats visibility/disabled/password checks immediately before mutation.
 
-Every admitted semantic observation advances page generation and records an actionable-surface digest over links, controls and forms. Immediately before admission the worker reruns the fixed projection and requires page generation, document digest, navigation epoch and actionable-surface digest to still match. Every effect invalidates the prior observation, so the next new effect requires a fresh observe.
+Every admitted semantic observation advances page generation and records an actionable-surface digest over links, controls and forms. Immediately before admission the worker reruns the fixed projection and requires page generation, document digest, navigation epoch and actionable-surface digest to still match. Every crossed effect invalidates both worker and Browser-host copies of the prior observation, so the next new effect requires a fresh observe. The current one-WebView subprocess driver additionally permits only one outstanding effect until the prior identity becomes terminal, preventing later page mutation from corrupting reconciliation of an older unknown effect.
 
 ## Worker and sandbox boundary
 
