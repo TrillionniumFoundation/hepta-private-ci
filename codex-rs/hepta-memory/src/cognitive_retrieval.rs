@@ -91,6 +91,8 @@ pub struct RetrievalCandidate {
     pub memory: MemoryRevisionRecord,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
+    /// Exact one-based rank contributed by each bounded owner channel.
+    pub channel_ranks: Vec<(RetrievalChannel, u32)>,
     pub revalidation: MemoryRevalidationBinding,
 }
 
@@ -154,6 +156,7 @@ struct MemoryKey {
 struct AggregatedRank {
     score: u64,
     channels: BTreeSet<RetrievalChannel>,
+    channel_ranks: BTreeMap<RetrievalChannel, u32>,
 }
 
 struct EntitySeed {
@@ -833,9 +836,11 @@ fn add_rrf_channel(
         .enumerate()
     {
         let rank = u64::try_from(index + 1).unwrap_or(u64::MAX);
+        let rank_u32 = u32::try_from(index + 1).unwrap_or(u32::MAX);
         let aggregate = ranked.entry(memory.clone()).or_default();
         aggregate.score += RRF_SCALE / (RRF_K + rank);
         aggregate.channels.insert(source);
+        aggregate.channel_ranks.insert(source, rank_u32);
     }
 }
 
