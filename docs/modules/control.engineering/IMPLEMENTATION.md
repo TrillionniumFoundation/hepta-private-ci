@@ -91,9 +91,10 @@ Renewal, release and revocation require the exact revision and epoch.
 At most 4096 packages, 4096 authenticated completion receipts, 256 predecessors per
 package, 4096 active leases, 256 paths per record and 128 durable base assignments
 are admitted. The low-level compatibility scheduler still accepts completed IDs,
-but canonical resource-aware orchestration derives that set only from fresh signed
-`CompletionReceipt` objects bound to the same source commit/tree and to an actually
-published immutable assignment generation. The receipt carries that generation's
+but canonical resource-aware orchestration first requires the caller's `WorkEnvelope`
+to be semantically identical to the already-admitted SQLite owner row, then derives
+the completed set only from fresh signed `CompletionReceipt` objects bound to the
+same source commit/tree and to an actually published immutable assignment generation. The receipt carries that generation's
 semantic digest; verification also requires the package to have been assigned in
 that generation and the stored assignment frontier to match the same envelope and
 source identity. A signed arbitrary generation string cannot satisfy a predecessor.
@@ -108,7 +109,11 @@ frontier; the orchestration plan additionally binds the authenticated completion
 frontier. A changed frontier requires a new generation ID. An assignment is still
 a proposal; workers must acquire the exact local lease, and multi-host production
 writes must additionally present a signed distributed fence matching epoch/token,
-paths, source and revocation frontier.
+paths, source and revocation frontier. Fence verification re-reads the current
+SQLite lease row and requires the same envelope, holder, revision, epoch, token,
+paths and expiry to still be active; a previously signed active receipt fails
+immediately after local release/revocation. External fence and audit-anchor validity
+windows may not outlive their owning local lease/envelope.
 
 ## Candidate qualification
 
