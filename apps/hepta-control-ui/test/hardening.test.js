@@ -1412,9 +1412,11 @@ test("failed persistence-domain switch keeps the old lease recoverable and relea
   let failFirstDomainBConnect = true;
   let activeSession = null;
   let activeGeneration = 0;
-  let heldCloseGate = null;
-  let heldCloseStartedResolve = null;
-  const fetchImpl = async (url) => {
+  let heldRequestGate = null;
+  let heldRequestStartedResolve = null;
+  let requestCalls = 0;
+  let reconcileCalls = 0;
+  const fetchImpl = async (url, options = {}) => {
     const path = new URL(url).pathname;
     if (path === "/api/ui-control/bootstrap") {
       bootstrapCalls += 1;
@@ -1478,13 +1480,36 @@ test("failed persistence-domain switch keeps the old lease recoverable and relea
         { status: 200, headers: { "content-type": "application/json" } },
       );
     }
-    if (path === "/api/ui-control/close") {
-      if (heldCloseGate) {
-        heldCloseStartedResolve?.();
-        await heldCloseGate;
-        heldCloseGate = null;
-        heldCloseStartedResolve = null;
+    if (path === "/api/ui-control/request") {
+      requestCalls += 1;
+      const body = JSON.parse(options.body);
+      heldRequestStartedResolve?.();
+      if (heldRequestGate) {
+        await heldRequestGate;
+        heldRequestGate = null;
+        heldRequestStartedResolve = null;
       }
+      return new Response(
+        JSON.stringify({
+          accepted: true,
+          method: body.method,
+          sessionId: body.request.sessionId,
+          connectionGeneration: body.request.connectionGeneration,
+          runtimeGeneration: body.request.runtimeGeneration,
+          operationId: body.request.operationId,
+          semanticDigest: body.request.semanticDigest,
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    if (path === "/api/ui-control/reconcile") {
+      reconcileCalls += 1;
+      return new Response("null", {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    if (path === "/api/ui-control/close") {
       return new Response(JSON.stringify({ closed: true }), {
         status: 200,
         headers: { "content-type": "application/json" },
@@ -1517,18 +1542,37 @@ test("failed persistence-domain switch keeps the old lease recoverable and relea
   assert.notEqual([...held][0], oldLeaseName);
   const domainBLeaseName = [...held][0];
 
-  let finishHeldClose;
-  heldCloseGate = new Promise((resolve) => { finishHeldClose = resolve; });
-  const heldCloseStarted = new Promise((resolve) => { heldCloseStartedResolve = resolve; });
+  let finishHeldRequest;
+  heldRequestGate = new Promise((resolve) => { finishHeldRequest = resolve; });
+  const heldRequestStarted = new Promise((resolve) => { heldRequestStartedResolve = resolve; });
+  const activeView = control.client.readView();
+  const submission = control.client.submitRequest({
+    operationId: "operation.bfcache-drain",
+    subjectId: "runtime.agentd",
+    action: "request_retry",
+    expectedRevision: activeView.modules[0].revision,
+    displayedView: {
+      sessionId: activeView.sessionId,
+      connectionGeneration: activeView.connectionGeneration,
+      generation: activeView.generation,
+      revision: activeView.revision,
+      digest: activeView.digest,
+    },
+  });
+  await heldRequestStarted;
+  assert.equal(requestCalls, 1);
+
   const pageHide = windowListeners.get("pagehide");
   const pageShow = windowListeners.get("pageshow");
   assert.equal(typeof pageHide, "function");
   assert.equal(typeof pageShow, "function");
   pageHide();
-  await heldCloseStarted;
+  await new Promise((resolve) => setImmediate(resolve));
   assert.deepEqual([...held], [domainBLeaseName]);
 
-  finishHeldClose();
+  finishHeldRequest();
+  const acknowledgement = await submission;
+  assert.equal(acknowledgement.accepted, true);
   for (let index = 0; index < 20 && held.size !== 0; index += 1) {
     await new Promise((resolve) => setImmediate(resolve));
   }
@@ -1542,6 +1586,8 @@ test("failed persistence-domain switch keeps the old lease recoverable and relea
   assert.equal(held.size, 1);
   assert.equal([...held][0], domainBLeaseName);
   assert.ok(connectCalls > beforeResumeConnect);
+  assert.equal(requestCalls, 1);
+  assert.ok(reconcileCalls >= 1);
 
   await control.dispose();
   await new Promise((resolve) => setImmediate(resolve));
