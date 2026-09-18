@@ -93,6 +93,8 @@ struct State {
     used_nonces: BTreeSet<[u8; 32]>,
     #[serde(skip)]
     failed: bool,
+    #[serde(skip)]
+    claim_log_bytes: u64,
 }
 
 struct Inner {
@@ -171,7 +173,7 @@ impl FinalUseAuthority {
         let current = self
             .0
             .store
-            .load()
+            .refresh(&state)
             .inspect_err(|_| state.failed = true)?;
         if !valid_head(&head)
             || head.authority_epoch < current.head.authority_epoch
@@ -235,22 +237,25 @@ impl FinalUseAuthority {
         let mut current = self
             .0
             .store
-            .load()
+            .refresh(&state)
             .inspect_err(|_| state.failed = true)?;
         validate_live(&signed.grant, &current.head)?;
         if current.used_nonces.contains(&signed.grant.nonce) {
             *state = current;
             return Err(FinalUseError::AlreadyClaimed);
         }
-        if self
-            .0
-            .store
-            .append_claim(signed.grant.authority_epoch, signed.grant.nonce)
-            .is_err()
-        {
-            state.failed = true;
-            return Err(FinalUseError::Unavailable);
-        }
+        let next_offset = match self.0.store.append_claim(
+            signed.grant.authority_epoch,
+            signed.grant.nonce,
+            current.claim_log_bytes,
+        ) {
+            Ok(offset) => offset,
+            Err(_) => {
+                state.failed = true;
+                return Err(FinalUseError::Unavailable);
+            }
+        };
+        current.claim_log_bytes = next_offset;
         current.used_nonces.insert(signed.grant.nonce);
         // Persistence can outlast a short grant. Never admit a dispatch using
         // the time sampled before that I/O; its nonce stays consumed on expiry.
@@ -292,7 +297,7 @@ impl FinalUseAuthority {
         let current = self
             .0
             .store
-            .load()
+            .refresh(&state)
             .inspect_err(|_| state.failed = true)?;
         validate_live(&token.grant, &current.head)?;
         *state = current;
