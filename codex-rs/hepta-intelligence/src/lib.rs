@@ -34,6 +34,7 @@ pub use prompt_delivery::prepare_canonical_prompt_attachment_v1;
 pub use prompt_pipeline::CanonicalPromptContextErrorV1;
 pub use prompt_pipeline::CanonicalPromptContextReceiptV1;
 pub use prompt_pipeline::CanonicalPromptContextRequestV1;
+pub use prompt_pipeline::SignedCandidatePricingEvidenceV1;
 pub use prompt_pipeline::run_canonical_prompt_context_v1;
 
 mod pipeline_v2;
