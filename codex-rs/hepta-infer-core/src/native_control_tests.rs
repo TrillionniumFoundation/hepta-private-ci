@@ -87,6 +87,43 @@ fn concurrent_handles_share_budget_without_holding_the_lock_during_execution() {
 }
 
 #[test]
+fn stale_handle_reopens_current_inode_after_peer_compaction() {
+    let path = path("peer-compaction");
+    let mut first = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut second = DurableInferenceControl::open(&path, 8).unwrap();
+
+    first.reserve_native(request("r1"), 2).unwrap();
+    second.reserve_native(request("r2"), 2).unwrap();
+    let archive = second.compact_with_archive().unwrap();
+
+    // `first` was opened before the atomic journal replacement. Its next
+    // mutation must reopen the current pathname while holding the sidecar fence
+    // instead of appending to the retired inode.
+    first.dispatch_native("r1", dispatch()).unwrap();
+    drop(first);
+    drop(second);
+
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.native_record("r1").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    assert_eq!(
+        reopened.native_record("r2").unwrap().state,
+        NativeReservationState::Reserved
+    );
+    drop(reopened);
+
+    std::fs::remove_file(&path).unwrap();
+    std::fs::remove_file(&archive).unwrap();
+    let lock = path.with_file_name(format!(
+        "{}.writer.lock",
+        path.file_name().unwrap().to_string_lossy()
+    ));
+    let _ = std::fs::remove_file(lock);
+}
+
+#[test]
 fn compaction_archives_full_history_and_preserves_indeterminate_fences() {
     let path = path("compact");
     let mut control = DurableInferenceControl::open(&path, 16).unwrap();
