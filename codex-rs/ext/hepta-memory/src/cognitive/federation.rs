@@ -884,6 +884,10 @@ mod tests {
         let payload =
             serde_json::from_str::<serde_json::Value>(&boundary.content).expect("combined payload");
         let memories = payload["m"].as_array().expect("combined memories");
+        assert_eq!(payload["s"], "verified_cognitive_v2");
+        assert_eq!(payload["fc"]["r"], 1);
+        assert_eq!(payload["fc"]["c"], 1);
+        assert_eq!(payload["fc"]["f"], 0);
         assert_eq!(memories.len(), 2);
         assert_eq!(memories[0]["h"], "22".repeat(32));
         assert_eq!(
