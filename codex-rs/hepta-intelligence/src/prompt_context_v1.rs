@@ -91,7 +91,7 @@ impl PromptContextPreparationV1 {
     }
 }
 
-pub fn prepare_prompt_context_v1(
+pub fn prepare_prompt_context_v1<A>(
     candidate_set: &PromptCandidateSetReceiptV1,
     pricing: &PromptPricingReceiptV1,
     relations: &PromptRelationSourceV1,
