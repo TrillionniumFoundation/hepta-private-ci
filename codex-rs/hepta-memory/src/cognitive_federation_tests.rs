@@ -145,6 +145,11 @@ async fn explicit_grant_is_owner_written_consumer_read_only_and_scope_exact() {
         .await
         .expect("federated retrieval");
     assert_eq!(batch.candidates.len(), 1);
+    assert_eq!(batch.coverage.requested_sources, 1);
+    assert_eq!(batch.coverage.completed_sources, 1);
+    assert_eq!(batch.coverage.failed_sources, 0);
+    assert!(!batch.coverage.is_partial());
+    assert!(!batch.coverage.is_unavailable());
     assert_eq!(batch.candidates[0].source_agent_id, owner_id);
     assert_eq!(
         batch.candidates[0].candidate.memory.content,
@@ -315,6 +320,8 @@ async fn expired_and_corrupt_capabilities_fail_closed_without_cross_agent_fallba
         .expect("discover")
         .pop()
         .expect("reader");
+    let set = FederatedRecallSet::new(consumer_id.clone(), vec![reader.clone()])
+        .expect("single-reader set");
     let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
     assert!(matches!(
         reader
@@ -340,6 +347,15 @@ async fn expired_and_corrupt_capabilities_fail_closed_without_cross_agent_fallba
             .await,
         Err(CognitiveStoreError::Corrupt(_))
     ));
+    let unavailable = set
+        .retrieve(&access, &RetrievalRequest::new("Expiring", 150))
+        .await
+        .expect("aggregate preserves failure as coverage");
+    assert!(unavailable.candidates.is_empty());
+    assert_eq!(unavailable.coverage.requested_sources, 1);
+    assert_eq!(unavailable.coverage.completed_sources, 0);
+    assert_eq!(unavailable.coverage.failed_sources, 1);
+    assert!(unavailable.coverage.is_unavailable());
 }
 
 #[tokio::test]
@@ -416,6 +432,9 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
             .expect("set retrieval");
         if [1usize, 3usize].contains(&consumer_index) {
             assert_eq!(batch.candidates.len(), 1);
+            assert_eq!(batch.coverage.requested_sources, 1);
+            assert_eq!(batch.coverage.completed_sources, 1);
+            assert_eq!(batch.coverage.failed_sources, 0);
             assert_eq!(batch.candidates[0].source_agent_id, ids[0]);
             assert_eq!(
                 batch.candidates[0].candidate.memory.content,
@@ -423,6 +442,9 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
             );
         } else {
             assert!(batch.candidates.is_empty());
+            assert_eq!(batch.coverage.requested_sources, 0);
+            assert_eq!(batch.coverage.completed_sources, 0);
+            assert_eq!(batch.coverage.failed_sources, 0);
         }
     }
 }
