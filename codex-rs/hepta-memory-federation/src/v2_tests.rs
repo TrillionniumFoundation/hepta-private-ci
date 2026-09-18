@@ -489,6 +489,28 @@ async fn duplicate_remote_identity_is_rejected() {
     );
 }
 
+#[tokio::test]
+async fn restored_result_rejects_unaccounted_peer_coverage() {
+    let query = query();
+    let lease = lease(&query);
+    let authority = FixtureAuthority::stable(&query, &lease);
+    let transport =
+        FixtureTransport::immediate(FederationTransportResultV2::Terminal(terminal_response(&query)));
+    let mut result = execute_once(
+        &transport,
+        &authority,
+        &FixtureCancellation { cancelled: false },
+        10,
+        query,
+        &lease,
+    )
+    .await
+    .expect("valid result");
+    result.coverage.completed_peers = 0;
+    result.result_digest = result.compute_result_digest();
+    assert_eq!(result.validate(), Err(FederationV2Error::InvalidCoverage));
+}
+
 #[test]
 fn response_digest_is_order_independent_for_canonical_item_order() {
     let query = query();
