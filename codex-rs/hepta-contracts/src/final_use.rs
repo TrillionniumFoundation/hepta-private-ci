@@ -16,7 +16,8 @@ use serde::Serialize;
 #[path = "final_use_store.rs"]
 mod store;
 
-const MAX_CLAIMS: usize = 16_384;
+const MAX_CLAIMS: usize = 1_000_000;
+const MAX_REVOKED_GRANTS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
 
 /// Exact operation identity signed by the authority owner. Digests must bind
@@ -169,11 +170,16 @@ impl FinalUseAuthority {
             return Err(FinalUseError::StaleRevocationHead);
         }
         let mut next = state.clone();
-        if head.authority_epoch > next.head.authority_epoch {
+        let epoch_changed = head.authority_epoch > next.head.authority_epoch;
+        if epoch_changed {
             next.used_nonces.clear();
         }
         next.head = head;
-        if self.0.store.persist(&next).is_err() {
+        if self.0.store.persist_head(&next.head).is_err() {
+            state.failed = true;
+            return Err(FinalUseError::Unavailable);
+        }
+        if epoch_changed && self.0.store.compact_claims().is_err() {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
@@ -215,7 +221,12 @@ impl FinalUseAuthority {
             return Err(FinalUseError::CapacityExceeded);
         }
         state.used_nonces.insert(signed.grant.nonce);
-        if self.0.store.persist(&state).is_err() {
+        if self
+            .0
+            .store
+            .persist_claim(state.head.authority_epoch, signed.grant.nonce)
+            .is_err()
+        {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
@@ -258,7 +269,7 @@ impl FinalUseAuthority {
 fn valid_head(head: &FinalUseRevocations) -> bool {
     head.authority_epoch > 0
         && head.revision > 0
-        && head.revoked_grant_ids.len() <= MAX_CLAIMS
+        && head.revoked_grant_ids.len() <= MAX_REVOKED_GRANTS
         && head.revoked_grant_ids.iter().all(|id| identifier(id))
 }
 
