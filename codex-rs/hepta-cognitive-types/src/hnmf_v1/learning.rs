@@ -141,7 +141,7 @@ impl CanonicalJsonV1 for PlasticityBatchV1 {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", rename_all_fields = "camelCase", deny_unknown_fields)]
-pub enum TopologyOperationV1 {
+pub enum CognitiveTopologyOperationV1 {
     AddNode { label: String, population: EngramPopulationV1 },
     SplitNode {
         #[serde(with = "super::exact_u64")]
@@ -171,7 +171,7 @@ pub enum TopologyOperationV1 {
     },
 }
 
-impl TopologyOperationV1 {
+impl CognitiveTopologyOperationV1 {
     fn validate(&self) -> Result<(), HnmfContractError> {
         match self {
             Self::AddNode { label, .. } => {
@@ -210,12 +210,12 @@ impl TopologyOperationV1 {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct TopologyProposalV1 {
+pub struct CognitiveTopologyProposalV1 {
     #[serde(with = "super::exact_u64")]
     pub predecessor_generation: u64,
     #[serde(with = "super::exact_u64")]
     pub next_generation: u64,
-    pub operation: TopologyOperationV1,
+    pub operation: CognitiveTopologyOperationV1,
     pub capability_typed: bool,
     pub sandbox_only: bool,
     pub operator_accepted: bool,
@@ -223,8 +223,8 @@ pub struct TopologyProposalV1 {
     pub authority: AuthorityPostureV1,
 }
 
-impl CanonicalJsonV1 for TopologyProposalV1 {
-    const SCHEMA_ID: &'static str = "TopologyProposalV1";
+impl CanonicalJsonV1 for CognitiveTopologyProposalV1 {
+    const SCHEMA_ID: &'static str = "CognitiveTopologyProposalV1";
     const MAX_ENCODED_BYTES: usize = 65_536;
 
     fn validate(&self) -> Result<(), HnmfContractError> {
