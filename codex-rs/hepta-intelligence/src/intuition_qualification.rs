@@ -17,6 +17,7 @@ use codex_hepta_intuition::QualifiedCalibratedError;
 use codex_hepta_intuition::ScoringCommitmentV1;
 use codex_hepta_intuition::canonical_assignment_evidence_payload_v1;
 use codex_hepta_intuition::canonical_completeness_evidence_payload_v1;
+use codex_hepta_intuition::canonical_decision_request_evidence_payload_v1;
 use codex_hepta_intuition::canonical_policy_profile_digest_v1;
 use codex_hepta_intuition::canonical_profile_qualification_evidence_payload_v1;
 use codex_hepta_intuition::canonical_qualification_evidence_payload_v1;
@@ -49,6 +50,7 @@ pub struct IntuitionQualificationEvidenceV1<'a> {
 pub struct IntuitionQualificationEvidenceV2<'a> {
     pub completeness: &'a SignedLearningEvidenceV1,
     pub profile_qualification: &'a SignedLearningEvidenceV1,
+    pub decision_request: &'a SignedLearningEvidenceV1,
     pub scoring: &'a SignedLearningEvidenceV1,
     pub assignment: Option<&'a SignedLearningEvidenceV1>,
 }
@@ -71,6 +73,7 @@ pub struct AuthenticatedIntuitionDecisionV2 {
     pub trust_digest: Digest32,
     pub completeness_payload_digest: Digest32,
     pub profile_qualification_payload_digest: Digest32,
+    pub decision_request_payload_digest: Digest32,
     pub scoring_payload_digest: Digest32,
     pub assignment_payload_digest: Option<Digest32>,
     pub authentication_digest: Digest32,
@@ -173,6 +176,8 @@ pub fn decide_authenticated_intuition_v2(
 ) -> Result<AuthenticatedIntuitionDecisionV2, IntuitionQualificationError> {
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request)?;
     let profile_payload = canonical_profile_qualification_evidence_payload_v1(&profile)?;
+    let decision_request_payload =
+        canonical_decision_request_evidence_payload_v1(&request, &profile, &scoring_commitment)?;
     let scoring_payload =
         canonical_scoring_evidence_payload_v1(&request, &profile, &scoring_commitment)?;
 
@@ -188,6 +193,12 @@ pub fn decide_authenticated_intuition_v2(
         &profile_payload,
         now,
     )?;
+    let decision_context = verifier.verify(
+        LearningEvidenceRoleV1::Evaluator,
+        evidence.decision_request,
+        &decision_request_payload,
+        now,
+    )?;
     let scorer = verifier.verify(
         LearningEvidenceRoleV1::Observer,
         evidence.scoring,
@@ -195,8 +206,9 @@ pub fn decide_authenticated_intuition_v2(
         now,
     )?;
     verify_signed_role_separation(&generator, &evaluator, now)?;
+    verify_signed_role_separation(&generator, &decision_context, now)?;
     verify_signed_role_separation(&generator, &scorer, now)?;
-    verify_distinct_verified_roles(&evaluator, &scorer, now)?;
+    verify_distinct_verified_roles(&decision_context, &scorer, now)?;
 
     let assignment_payload_and_evidence = match (&request.assignment, evidence.assignment) {
         (AssignmentModeV1::Deterministic, None) => None,
@@ -215,7 +227,7 @@ pub fn decide_authenticated_intuition_v2(
                 now,
             )?;
             verify_signed_role_separation(&generator, &randomizer, now)?;
-            verify_distinct_verified_roles(&evaluator, &randomizer, now)?;
+            verify_distinct_verified_roles(&decision_context, &randomizer, now)?;
             verify_distinct_verified_roles(&scorer, &randomizer, now)?;
             Some((payload, assignment_evidence))
         }
@@ -227,6 +239,7 @@ pub fn decide_authenticated_intuition_v2(
     let decision = decide_calibrated_v3(request, &profile)?;
     let completeness_payload_digest = Digest32::of_bytes(&completeness_payload);
     let profile_qualification_payload_digest = Digest32::of_bytes(&profile_payload);
+    let decision_request_payload_digest = Digest32::of_bytes(&decision_request_payload);
     let scoring_payload_digest = Digest32::of_bytes(&scoring_payload);
     let assignment_payload_digest = assignment_payload_and_evidence
         .as_ref()
@@ -239,10 +252,12 @@ pub fn decide_authenticated_intuition_v2(
         scoring_commitment_digest,
         completeness_payload_digest,
         profile_qualification_payload_digest,
+        decision_request_payload_digest,
         scoring_payload_digest,
         assignment_payload_digest.unwrap_or(Digest32::ZERO),
         Digest32::of_bytes(&evidence.completeness.signing_bytes()),
         Digest32::of_bytes(&evidence.profile_qualification.signing_bytes()),
+        Digest32::of_bytes(&evidence.decision_request.signing_bytes()),
         Digest32::of_bytes(&evidence.scoring.signing_bytes()),
         decision.receipt_digest,
     ] {
@@ -250,6 +265,7 @@ pub fn decide_authenticated_intuition_v2(
     }
     bytes.extend_from_slice(&evidence.completeness.signature);
     bytes.extend_from_slice(&evidence.profile_qualification.signature);
+    bytes.extend_from_slice(&evidence.decision_request.signature);
     bytes.extend_from_slice(&evidence.scoring.signature);
     if let Some((_, assignment_evidence)) = assignment_payload_and_evidence {
         bytes.extend_from_slice(&assignment_evidence.signature);
@@ -262,6 +278,7 @@ pub fn decide_authenticated_intuition_v2(
         trust_digest: verifier.trust_digest(),
         completeness_payload_digest,
         profile_qualification_payload_digest,
+        decision_request_payload_digest,
         scoring_payload_digest,
         assignment_payload_digest,
         authentication_digest: Digest32::of_bytes(&bytes),
