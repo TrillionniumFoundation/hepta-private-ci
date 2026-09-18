@@ -12,10 +12,12 @@ use std::fs::File;
 
 use codex_hepta_intelligence_eval::{
     IndependentEvaluationDispositionV1, SignedEvaluationError, decide_with_signed_evidence_v2,
+    evaluation_signing_payload_v2,
 };
 use codex_hepta_learning_ledger::{
     LearningEvidenceRoleV1, LearningEvidenceVerifierV1, SignedEvidenceError,
     SignedLearningEvidenceV1, verify_signed_role_separation,
+    verify_verified_role_separation,
 };
 use codex_hepta_plasticity::{
     AppendDisposition, DurableRegistryAnchorV1, DurableTopologyProposalAppendReceiptV1,
@@ -345,6 +347,19 @@ pub fn propose_authenticated_topology_plasticity_v1(
             return Err(E::EvaluatorMismatch);
         }
         evaluator_id.get_or_insert(this_evaluator);
+        let evaluator_payload =
+            evaluation_signing_payload_v2(&evaluation.bundle, &evaluation.metric_roles)
+                .map_err(E::Evaluation)?;
+        let verified_evaluator = verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &evaluation.evidence.evaluator_bundle,
+                &evaluator_payload,
+                now,
+            )
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+        verify_verified_role_separation(&observer, &verified_evaluator, now)
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
         let decision = decide_with_signed_evidence_v2(
             evaluation.bundle,
             evaluation.metric_roles,
