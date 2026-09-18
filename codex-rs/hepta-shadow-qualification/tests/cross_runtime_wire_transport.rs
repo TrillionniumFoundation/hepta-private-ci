@@ -8,6 +8,7 @@
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_hepta_wire::PayloadCodec;
+use codex_hepta_wire::WireCapability;
 use codex_hepta_wire::PayloadCodecError;
 use codex_hepta_wire::SchemaDefinition;
 use codex_hepta_wire::SchemaRegistry;
@@ -15,7 +16,8 @@ use codex_hepta_wire::SchemaValidationError;
 use codex_hepta_wire::WireError;
 use codex_hepta_wire::WireReadError;
 use codex_hepta_wire::WireVersion;
-use codex_hepta_wire::read_frame;
+use codex_hepta_wire::negotiate;
+use codex_hepta_wire::read_frame_for;
 use serde::Deserialize;
 use serde::Serialize;
 use std::error::Error;
@@ -124,8 +126,14 @@ fn python_tcp_v2_is_admitted_and_metadata_tamper_rejects() -> Result<(), Box<dyn
         .stderr(Stdio::piped())
         .spawn()?;
 
+    let negotiated = negotiate(
+        &[WireVersion::V1, WireVersion::V2],
+        &[WireVersion::V2],
+        &[WireCapability::FullFrameIntegrity],
+    )?;
+
     let (mut first_stream, _) = listener.accept()?;
-    let frame = read_frame(&mut first_stream)?;
+    let frame = read_frame_for(&mut first_stream, negotiated)?;
 
     let codec = IntegrationCodec::new()?;
     let mut registry = SchemaRegistry::new();
@@ -147,11 +155,11 @@ fn python_tcp_v2_is_admitted_and_metadata_tamper_rejects() -> Result<(), Box<dyn
         }
     );
     assert_eq!(admitted.generation(), Generation::new(7)?);
-    assert_eq!(admitted.producer(), &StableId::new("python.runtime")?);
+    assert_eq!(admitted.producer().as_str(), "python.runtime");
 
     let (mut second_stream, _) = listener.accept()?;
     assert!(matches!(
-        read_frame(&mut second_stream),
+        read_frame_for(&mut second_stream, negotiated),
         Err(WireReadError::Wire(WireError::IntegrityMismatch { .. }))
     ));
 
