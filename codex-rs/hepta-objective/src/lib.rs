@@ -58,7 +58,7 @@ pub use model::SuccessPredicate;
 pub fn compile_prevalidated_legacy_objective(
     source: ObjectiveSourceEnvelope,
 ) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
-    compiler::compile(source)
+    compiler::compile(compiler::AdmittedObjectiveSource::from_prevalidated_legacy(source))
 }
 pub use objective_admission::ObjectiveAbstentionRuleProfileV1;
 pub use objective_admission::ObjectiveActionProfileV1;
