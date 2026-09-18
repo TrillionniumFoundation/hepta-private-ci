@@ -85,8 +85,9 @@ impl DurablePromptRegistry {
     pub fn admit_factor_verified(
         &mut self,
         admission: VerifiedAdmission,
+        now_unix_ms: u64,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
-        self.commit(|registry| registry.admit_factor_verified(admission))
+        self.commit(|registry| registry.admit_factor_verified(admission, now_unix_ms))
     }
 
     pub fn register_realization_v2(
