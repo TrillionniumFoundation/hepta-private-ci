@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs); observed identifiers include `rescale_signal`, `NumericSignalV1`, `NumericErrorBoundV1`, `NumericConversionReceiptV1`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md) for the implemented subset and remaining product work.
+The registered Lane A observation remains [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs) for historical source navigation, while the current public contract is intentionally split across `identity.rs`, `canonical_digest.rs`, `registry.rs`, `fixed.rs`, `numeric_profile.rs` and `numeric_conversion.rs` and re-exported from [codex-rs/hepta-types/src/lib.rs](../../../codex-rs/hepta-types/src/lib.rs). Current native entrypoints include `validate_id`, `canonical_digest_v1`, `ContractRegistryV1::require`, `rescale_signal` and `rescale_signal_registered`. The frozen V1 canonical vector is language-neutral and independently reconstructed in Rust, Python and Node. These source bindings prove neither a named production consumer nor activation or external acceptance. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) alongside this target guide.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -169,12 +169,18 @@ Current operating and state-format references:
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Current focused test and vector sources (source references, not pass receipts):
 
-- [codex-rs/hepta-types/src/bounded_tests.rs](../../../codex-rs/hepta-types/src/bounded_tests.rs); named case: `text_and_bytes_enforce_exact_bound`.
-- [codex-rs/hepta-types/src/digest_tests.rs](../../../codex-rs/hepta-types/src/digest_tests.rs); named case: `sha256_round_trip_is_canonical`.
+- [codex-rs/hepta-types/src/bounded_tests.rs](../../../codex-rs/hepta-types/src/bounded_tests.rs): exact byte bounds, UTF-8 byte boundaries and borrowed preflight constructors.
+- [codex-rs/hepta-types/src/identity_tests.rs](../../../codex-rs/hepta-types/src/identity_tests.rs): profiled namespace grammar, exhaustive ASCII alphabet, monotonic overflow and non-authorizing posture conversion.
+- [codex-rs/hepta-types/src/digest_tests.rs](../../../codex-rs/hepta-types/src/digest_tests.rs): canonical lowercase digest parsing and negative syntax cases.
+- [codex-rs/hepta-types/src/fixed_tests.rs](../../../codex-rs/hepta-types/src/fixed_tests.rs): checked overflow/range boundaries and deterministic small-domain add/sub properties.
+- [codex-rs/hepta-types/src/canonical_digest_tests.rs](../../../codex-rs/hepta-types/src/canonical_digest_tests.rs): frozen vector, field-order invariance, framing separation, duplicate rejection and size bounds.
+- [codex-rs/hepta-types/src/registry_tests.rs](../../../codex-rs/hepta-types/src/registry_tests.rs): immutable digest resolution, kind checking, duplicate identity and definition bounds.
+- [codex-rs/hepta-types/src/numeric_conversion_tests.rs](../../../codex-rs/hepta-types/src/numeric_conversion_tests.rs): rounding, overflow, mismatch, digest binding and registry-gated normalization resolution.
+- [docs/lane-a-foundation/platform.types/CANONICAL_DIGEST_V1.json](../../lane-a-foundation/platform.types/CANONICAL_DIGEST_V1.json) is independently reconstructed by `scripts/verify_platform_types_vectors.py` and `scripts/verify_platform_types_vectors.mjs`.
 
-In `codex-rs`, run `just test -p codex-hepta-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md) separately labels target acceptance designs.
+In `codex-rs`, run `cargo test -p codex-hepta-types` and `cargo clippy -p codex-hepta-types --all-targets -- -D warnings`. Run both independent vector verifiers from the repository root. These commands are test invocations, not stored results. Exact-head and deterministic synthetic-merge native receipts are produced only by [Lane A foundation truth and native qualification](../../../.github/workflows/lane-a-foundation.yml) for the tested candidate.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
