@@ -160,17 +160,8 @@ fn worker() {
                 },
             );
             let model = must(model);
-            assert_eq!(
-                model
-                    .predict(&id("state"), &id("read"))
-                    .map_or_else(
-                        |error| panic!("unexpected prediction error: {error:?}"),
-                        |prediction| prediction,
-                    )
-                    .value
-                    .raw(),
-                expected
-            );
+            let prediction = must(model.predict(&id("state"), &id("read")));
+            assert_eq!(prediction.value.raw(), expected);
         }
     }
     println!("OWNER_TABULAR_PID={}", std::process::id());
@@ -236,7 +227,7 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
             event_id: id(&format!("register-{generation}")),
             manifest: manifest.clone(),
         }));
-        write_candidate_payload(
+        must(write_candidate_payload(
             must(CreateOnlyArtifactFile::create(&request.payload)),
             &registry,
             &manifest.artifact_id,
@@ -244,7 +235,7 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
         ));
         requests.push(request);
     }
-    let receipt = write_registry_snapshot(
+    let receipt = must(write_registry_snapshot(
         must(CreateOnlyArtifactFile::create(&snapshot)),
         &registry,
         digest("fixture-current-host-binding"),
@@ -266,7 +257,7 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
         reason_digest: digest("withdrawn-support"),
     })));
     let revoked_snapshot = directory.path().join("registry-revoked");
-    let current = write_registry_snapshot(
+    let current = must(write_registry_snapshot(
         must(CreateOnlyArtifactFile::create(&revoked_snapshot)),
         &registry,
         receipt.binding,

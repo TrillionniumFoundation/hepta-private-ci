@@ -56,14 +56,15 @@ fn encode_hex(bytes: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut output = String::with_capacity(bytes.len() * 2);
     for byte in bytes {
-        output.push(HEX[(byte >> 4) as usize] as char);
-        output.push(HEX[(byte & 0x0f) as usize] as char);
+        let value = *byte;
+        output.push(char::from(HEX[usize::from(value >> 4)]));
+        output.push(char::from(HEX[usize::from(value & 0x0f)]));
     }
     output
 }
 
 fn run_python(frame: &[u8]) -> std::process::Output {
-    let mut child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
+    let child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
         .args(["-c", PYTHON_PARSER])
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
