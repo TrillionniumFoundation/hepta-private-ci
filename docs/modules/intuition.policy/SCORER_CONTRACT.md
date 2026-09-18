@@ -30,7 +30,7 @@ A model replacement may therefore retain compatible policy semantics, and a poli
 
 Every current-generation V3 decision carries one exact scorer-owned commitment containing:
 
-- decision ID and state digest;
+- decision ID, objective/objective-class digests and state digest;
 - policy digest and generation/sequence;
 - model artifact and scorer-contract digests;
 - feature snapshot and feature-schema digests;
