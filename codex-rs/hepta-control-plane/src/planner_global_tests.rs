@@ -17,7 +17,9 @@ use super::GlobalPlanningErrorV1;
 use super::GlobalPlanningRequestV1;
 use super::NduPlanningPortV1;
 use super::OwnerPortErrorV1;
+use super::plan_global_and_record_v1;
 use super::plan_global_v1;
+use crate::PlannerJournalStoreV1;
 use crate::EvaluatedPlanV1;
 use crate::GlobalStateSnapshotV1;
 use crate::NduPlanningError;
@@ -231,6 +233,43 @@ fn multi_owner_global_plan_runs_real_ndu_and_emits_grant_request() {
         digest("payload:work")
     );
     assert!(!receipt.grant_requests.authority().grants_any());
+}
+
+#[test]
+fn durable_global_plan_commits_selection_before_returning() {
+    let (fleet, evidence, ndu, request) = fixture();
+    let temp = tempfile::tempdir().expect("tempdir");
+    let (store, empty) = PlannerJournalStoreV1::open(temp.path()).expect("open store");
+    assert!(empty.entries().is_empty());
+    let operation = digest("durable-global-operation");
+
+    let receipt = plan_global_and_record_v1(
+        &[&fleet, &evidence],
+        &ndu,
+        &store,
+        operation,
+        request.clone(),
+    )
+    .expect("durable global plan");
+    let journal = store.reopen().expect("reopen committed journal");
+    assert_eq!(
+        journal.selected_plan_digest(),
+        Some(receipt.evaluation.plan.receipt_digest())
+    );
+
+    let retry = plan_global_and_record_v1(
+        &[&fleet, &evidence],
+        &ndu,
+        &store,
+        operation,
+        request,
+    )
+    .expect("idempotent retry");
+    assert_eq!(
+        retry.evaluation.plan.receipt_digest(),
+        receipt.evaluation.plan.receipt_digest()
+    );
+    assert_eq!(store.reopen().expect("reopen retry").entries().len(), 3);
 }
 
 #[test]
