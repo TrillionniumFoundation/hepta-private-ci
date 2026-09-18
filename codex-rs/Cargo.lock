@@ -3736,6 +3736,7 @@ dependencies = [
  "codex-hepta-objective",
  "codex-hepta-plasticity",
  "codex-hepta-prompt-optimizer",
+ "codex-hepta-prompt-registry",
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
@@ -4016,6 +4017,11 @@ name = "codex-hepta-prompt-registry"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "ed25519-dalek",
+ "rustix 1.1.4",
+ "serde",
+ "serde_json",
+ "tempfile",
 ]
 
 [[package]]
