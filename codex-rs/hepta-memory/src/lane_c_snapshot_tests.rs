@@ -47,6 +47,7 @@ fn acquisition(
         request_id: StableId::new("read-request:test").unwrap(),
         scope_id: cut.scope_id().clone(),
         purpose_id: StableId::new("read-only-context").unwrap(),
+        consumer_profile_digest: Digest32::of_bytes(b"test cognitive read profile"),
         minimum_memory_frontier: cut.frontiers().memory,
         minimum_source_frontier: cut.frontiers().source,
         minimum_tombstone_frontier: cut.frontiers().tombstone,
