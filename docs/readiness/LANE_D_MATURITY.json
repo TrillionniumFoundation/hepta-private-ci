@@ -171,9 +171,10 @@
       "implementationMap": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
       "dimensions": {
         "technicalSpecification": {
-          "state": "candidate_complete",
+          "state": "candidate_complete_current_closure_documented",
           "evidence": [
-            "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+            "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
+            "qualification/module-execution-dossiers/detail/control.runtime.md"
           ]
         },
         "canonicalProtocolRegistration": {
@@ -190,7 +191,7 @@
           ]
         },
         "nativeApiMapping": {
-          "state": "candidate_complete",
+          "state": "candidate_complete_current_surfaces_mapped",
           "evidence": [
             "docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
           ]
@@ -202,13 +203,16 @@
             "prepare_plan",
             "bind_ndu_plan_evaluation_v1",
             "finalize_plan",
-            "request_execution_grants"
+            "request_execution_grants",
+            "canonical_resource_profile_digest"
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "fsync_frontier_store_candidate_implemented_product_writer_pending",
           "evidence": [
-            "PlannerJournalV1"
+            "PlannerJournalStoreV1",
+            "committed_revocation_cannot_be_resurrected_from_older_backup",
+            "raw_v1_journal_migrates_to_store_envelope_and_frontier"
           ]
         },
         "effectAuthority": {
@@ -218,16 +222,22 @@
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "pending_current_candidate_workflows",
-          "evidence": []
+          "state": "pending_current_pull_request_workflow",
+          "evidence": [
+            ".github/workflows/hepta-control-runtime-closure.yml"
+          ]
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "narrow_read_only_context_established_global_effect_caller_not_established",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs"
+          ]
         },
         "productionWriter": {
-          "state": "not_established",
-          "evidence": []
+          "state": "not_established_store_candidate_exists",
+          "evidence": [
+            "PlannerJournalStoreV1"
+          ]
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -255,20 +265,73 @@
             "evaluationPolicyDigest",
             "resourceProfileDigest"
           ]
+        },
+        "authenticatedGlobalComposition": {
+          "state": "candidate_implemented_product_host_binding_pending",
+          "evidence": [
+            "plan_global_v1",
+            "multi_owner_global_plan_runs_real_ndu_and_emits_grant_request",
+            "missing_required_owner_port_fails_closed"
+          ]
+        },
+        "narrowProductCaller": {
+          "state": "composed_read_only_context",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "plan_observed_context",
+            "codex-rs/hepta-contracts/CALLERS.toml"
+          ]
+        },
+        "journalSemanticReplay": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "semantic_transitions_fail_closed_on_append_and_reopen",
+            "revocation_clears_selection_and_prevents_reselection"
+          ]
+        },
+        "independentExecutionAuthority": {
+          "state": "candidate_bridge_implemented_effect_caller_pending",
+          "evidence": [
+            "claim_execution_grant_v1",
+            "independent_authority_claim_revalidates_at_effect_boundary",
+            "authority_nonce_is_single_use_even_when_effect_is_not_dispatched"
+          ]
+        },
+        "monotonicClockBinding": {
+          "state": "product_context_composed",
+          "evidence": [
+            "AgentdState::monotonic_origin",
+            "read_with_monotonic_origin",
+            "mixed_clock_binding_is_rejected_before_owner_reads"
+          ]
+        },
+        "resourceProfileBinding": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "canonical_resource_profile_digest",
+            "resource_profile_digest_binds_exact_reservations"
+          ]
+        },
+        "namedHostMeasurement": {
+          "state": "pending_current_pull_request_workflow",
+          "evidence": [
+            "examples/control_runtime_probe.rs",
+            ".github/workflows/hepta-control-runtime-closure.yml"
+          ]
         }
       }
     }
   ],
   "repositoryControlledClosure": {
-    "state": "candidate_pending_exact_head_qualification",
+    "state": "candidate_pending_exact_head_and_synthetic_merge_qualification",
     "requiredChecks": [
+      "control.runtime dedicated source-head qualification",
+      "control.runtime deterministic synthetic merge qualification",
       "Lane D semantic conformance",
-      "cargo fmt",
-      "cargo check --locked for all three Lane D packages",
-      "package tests for all three Lane D packages",
-      "strict Clippy for all three Lane D packages",
-      "existing repository integrity and readiness workflows",
-      "synthetic merge qualification"
+      "cargo check and package tests for control-plane, agentd, contracts and NDU",
+      "strict Clippy and formatting",
+      "named-host full-ceiling global-planner probe",
+      "clean tracked state"
     ]
   },
   "externalGates": [
