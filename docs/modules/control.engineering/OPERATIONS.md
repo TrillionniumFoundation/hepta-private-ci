@@ -22,7 +22,12 @@ evidence, an observed target deployment, and a rollback rehearsal.
 Use
 `control_engineering_v2.production.evaluate_production_readiness` to project
 those already-authenticated facts. The projection is not an authenticator and
-never creates authority.
+never creates authority. The CLI command `readiness-projection` is intentionally
+non-authoritative, while the former `production-readiness` exit-gate spelling
+fails closed. Do not treat caller-supplied booleans or digest-shaped strings as
+proof of HSM/KMS custody, a distributed fence, an external audit anchor, review,
+deployment or rollback. Those facts must first pass their typed signature
+verifiers under the selected production trust store.
 
 ## 2. Preflight
 
