@@ -228,6 +228,43 @@ async fn nonterminal_attempt_is_explicitly_indeterminate_without_retry() {
     assert_eq!(result.coverage.failed_peers, 1);
 }
 
+
+#[tokio::test]
+async fn genuine_empty_zero_frontier_response_is_valid() {
+    let query = query();
+    let response = RemoteFederatedResponseV2 {
+        peer_id: query.peer_id.clone(),
+        scope_digest: query.scope_digest,
+        purpose_digest: query.purpose_digest,
+        generation_vector_digest: query.generation_vector_digest,
+        response_digest: Digest32::ZERO,
+        observed_frontier: 0,
+        expires_unix_ms: 80,
+        items: Vec::new(),
+        completeness: FederatedCompletenessV2::Empty,
+        terminal_observed: true,
+    }
+    .seal(query.binding_digest())
+    .unwrap_or_else(|error| panic!("valid empty response: {error}"));
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::Terminal(response)),
+    };
+    let result = execute_once(
+        &transport,
+        &current_authority(&query),
+        &NeverCancelledV2,
+        10,
+        query.clone(),
+        &lease(&query),
+    )
+    .await
+    .unwrap_or_else(|error| panic!("valid empty result: {error}"));
+    assert!(result.items.is_empty());
+    assert_eq!(result.observed_frontier, Some(0));
+    assert_eq!(result.completeness, FederatedCompletenessV2::Empty);
+    assert_eq!(result.validity, FederatedValidityV2::Valid);
+}
+
 #[tokio::test]
 async fn sealed_response_detects_payload_tampering() {
     let query = query();
