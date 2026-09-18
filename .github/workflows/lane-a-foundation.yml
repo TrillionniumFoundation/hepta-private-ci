@@ -8,6 +8,10 @@ on:
       - "docs/contracts/**"
       - "scripts/verify_hepta_callers.py"
       - "scripts/verify_kernel_authority_map_freshness.py"
+      - "scripts/verify_secrets_heptabao_map_freshness.py"
+      - "docs/modules/secrets.heptabao/**"
+      - "docs/lane-a-foundation/secrets.heptabao/**"
+      - "qualification/module-execution-dossiers/detail/secrets.heptabao.md"
       - ".github/workflows/lane-a-foundation.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
@@ -50,6 +54,7 @@ jobs:
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
           python3 scripts/verify_kernel_authority_map_freshness.py --expected-sha "$EXPECTED_SHA"
+          python3 scripts/verify_secrets_heptabao_map_freshness.py --expected-sha "$EXPECTED_SHA"
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
@@ -74,6 +79,9 @@ jobs:
           python3 scripts/verify_kernel_authority_map_freshness.py \
             --expected-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-kernel-authority-map-head.json
+          python3 scripts/verify_secrets_heptabao_map_freshness.py \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-secrets-heptabao-map-head.json
 
       - name: Retain exact source receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -142,6 +150,9 @@ jobs:
           python3 scripts/verify_kernel_authority_map_freshness.py \
             --expected-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-kernel-authority-map-merge-candidate.json
+          python3 scripts/verify_secrets_heptabao_map_freshness.py \
+            --expected-sha "$EXPECTED_SHA" \
+            --output .hepta-evidence/lane-a-secrets-heptabao-map-merge-candidate.json
 
       - name: Retain synthetic merge receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
