@@ -902,7 +902,7 @@ mod tests {
 
     #[test]
     fn convergence_report_requires_every_enrolled_node_ack() {
-        let (_authority, grant, _directory, _approver, distributor) = fixture();
+        let (authority, grant, _directory, _approver, distributor) = fixture();
         let node_a = SigningKey::from_bytes(&[71; 32]);
         let node_b = SigningKey::from_bytes(&[72; 32]);
         let update = FinalUseRevocationUpdate::new(
@@ -928,7 +928,7 @@ mod tests {
         )
         .unwrap();
         let applied_receipt = feed_verifier
-            .apply(&_authority, &signed_update, 1_500)
+            .apply(&authority, &signed_update, 1_500)
             .unwrap();
         let verifier = FinalUseRevocationConvergenceVerifier::new([
             FinalUseRevocationNodeTrust {
@@ -957,7 +957,8 @@ mod tests {
             &signed_update,
             &applied_receipt,
             2_000,
-        ).unwrap();
+        )
+        .unwrap();
         let signed_a = SignedFinalUseRevocationAck {
             signature: node_a
                 .sign(&ack_a.signing_bytes().unwrap())
@@ -976,7 +977,8 @@ mod tests {
             &signed_update,
             &applied_receipt,
             2_050,
-        ).unwrap();
+        )
+        .unwrap();
         let signed_b = SignedFinalUseRevocationAck {
             signature: node_b
                 .sign(&ack_b.signing_bytes().unwrap())
@@ -1034,7 +1036,7 @@ mod tests {
         )
         .unwrap();
         let applied_receipt = feed_verifier
-            .apply(&_authority, &signed_update, 1_200)
+            .apply(&authority, &signed_update, 1_200)
             .unwrap();
         let verifier = FinalUseRevocationConvergenceVerifier::new([
             FinalUseRevocationNodeTrust {
@@ -1053,7 +1055,8 @@ mod tests {
             &signed_update,
             &applied_receipt,
             1_500,
-        ).unwrap();
+        )
+        .unwrap();
         let signed = SignedFinalUseRevocationAck {
             signature: node
                 .sign(&ack.signing_bytes().unwrap())
@@ -1070,13 +1073,13 @@ mod tests {
             ),
             Err(FinalUseControlError::InvalidRevocationAck)
         );
-        let future_ack =
-            FinalUseRevocationAck::for_applied_update(
+        let future_ack = FinalUseRevocationAck::for_applied_update(
                 "node-a".into(),
                 &signed_update,
                 &applied_receipt,
                 1_800,
-            ).unwrap();
+            )
+        .unwrap();
         let future_signed = SignedFinalUseRevocationAck {
             signature: node
                 .sign(&future_ack.signing_bytes().unwrap())
