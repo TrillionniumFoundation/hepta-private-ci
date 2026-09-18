@@ -14,6 +14,12 @@ pub enum FleetResourceAxisV1 {
     TurnQueueSlots,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum FleetResourceSourceV1 {
+    PhysicalObservation,
+    PolicyCeiling,
+}
+
 impl FleetResourceAxisV1 {
     pub const ALL: [Self; 4] = [
         Self::ConcurrentTurns,
@@ -33,6 +39,15 @@ impl FleetResourceAxisV1 {
     /// policy-derived, but runtime.fleet never overcommits them.
     pub const fn is_hard_ceiling(self) -> bool {
         true
+    }
+
+    pub const fn source(self) -> FleetResourceSourceV1 {
+        match self {
+            Self::ConcurrentTurns | Self::MemoryMib => {
+                FleetResourceSourceV1::PhysicalObservation
+            }
+            Self::ToolProcesses | Self::TurnQueueSlots => FleetResourceSourceV1::PolicyCeiling,
+        }
     }
 
     pub const fn read(self, vector: FleetResourceVectorV1) -> u64 {
