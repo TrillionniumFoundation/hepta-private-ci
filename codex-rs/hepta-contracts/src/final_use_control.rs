@@ -435,6 +435,9 @@ impl FinalUseRevocationConvergenceVerifier {
         let mut acknowledged = BTreeSet::new();
         for signed in acknowledgements {
             signed.ack.validate_against(update)?;
+            if signed.ack.applied_at_unix_ms > now_unix_ms {
+                return Err(FinalUseControlError::InvalidRevocationAck);
+            }
             let keys = self
                 .nodes
                 .get(&signed.ack.node_id)
@@ -950,6 +953,19 @@ mod tests {
         };
         assert_eq!(
             verifier.verify(&update, &[signed.clone(), signed.clone()], 1_600),
+            Err(FinalUseControlError::InvalidRevocationAck)
+        );
+        let future_ack =
+            FinalUseRevocationAck::for_update("node-a".into(), &update, 1_800).unwrap();
+        let future_signed = SignedFinalUseRevocationAck {
+            signature: node
+                .sign(&future_ack.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            ack: future_ack,
+        };
+        assert_eq!(
+            verifier.verify(&update, &[future_signed], 1_600),
             Err(FinalUseControlError::InvalidRevocationAck)
         );
         assert_eq!(
