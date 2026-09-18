@@ -26,6 +26,15 @@ pub use composition_v3::StageOutcomeV3;
 pub use composition_v3::StageTraceV3;
 pub use composition_v3::prepare_intelligence_run_v3;
 
+mod learning_v3;
+
+pub use learning_v3::DecisionAppendRequestV3;
+pub use learning_v3::LearningClosureErrorV3;
+pub use learning_v3::OutcomeCreditClosureReceiptV3;
+pub use learning_v3::OutcomeCreditClosureRequestV3;
+pub use learning_v3::append_decision_v3;
+pub use learning_v3::append_outcome_and_credit_v3;
+
 mod evaluated_shadow;
 
 pub use evaluated_shadow::EvaluatedShadowError;
