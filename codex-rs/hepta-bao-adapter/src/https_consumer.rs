@@ -9,6 +9,7 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::SecretLeaseStoreError;
 use codex_hepta_types::Digest32;
 use codex_http_client::HttpClient;
 use codex_http_client::HttpClientBuilder;
@@ -23,7 +24,7 @@ use zeroize::Zeroizing;
 const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 
 /// Provider credential injected by the enrolled host. Debug never reveals it.
-pub struct BaoToken(Zeroizing<String>);
+pub struct BaoToken(pub(crate) Zeroizing<String>);
 
 impl BaoToken {
     pub fn new(value: String) -> Result<Self, BaoClientError> {
@@ -65,10 +66,10 @@ pub struct BaoSecretReceipt {
 }
 
 pub struct BaoClient {
-    client: HttpClient,
-    origin: Url,
-    ca_sha256: [u8; 32],
-    token: BaoToken,
+    pub(crate) client: HttpClient,
+    pub(crate) origin: Url,
+    pub(crate) ca_sha256: [u8; 32],
+    pub(crate) token: BaoToken,
 }
 
 impl fmt::Debug for BaoClient {
@@ -256,7 +257,7 @@ struct KvMetadata {
     version: u64,
 }
 
-fn component(value: &str) -> bool {
+pub(crate) fn component(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 128
         && value != "."
@@ -265,10 +266,10 @@ fn component(value: &str) -> bool {
             .bytes()
             .all(|b| b.is_ascii_alphanumeric() || b"_-.:".contains(&b))
 }
-fn segmented(value: &str) -> bool {
+pub(crate) fn segmented(value: &str) -> bool {
     value.len() <= 1024 && value.split('/').all(component)
 }
-fn transport_error(error: HttpError) -> BaoClientError {
+pub(crate) fn transport_error(error: HttpError) -> BaoClientError {
     if error.is_timeout() {
         BaoClientError::TimedOut
     } else {
@@ -282,6 +283,7 @@ pub enum BaoClientError {
     InvalidRequest,
     Authority(FinalUseError),
     ProviderDenied,
+    ProviderRejected,
     ProviderUnavailable,
     NotFound,
     TransportUnavailable,
@@ -291,6 +293,11 @@ pub enum BaoClientError {
     VersionMismatch,
     SecretDigestMismatch,
     ConsumerIndeterminate,
+    LeaseStore(SecretLeaseStoreError),
+    LeaseState,
+    LeaseOperationAlreadyStarted,
+    ReconciliationRequired,
+    ClockUnavailable,
 }
 impl fmt::Display for BaoClientError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
