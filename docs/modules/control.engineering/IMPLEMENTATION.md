@@ -92,8 +92,12 @@ At most 4096 packages, 4096 authenticated completion receipts, 256 predecessors 
 package, 4096 active leases, 256 paths per record and 128 durable base assignments
 are admitted. The low-level compatibility scheduler still accepts completed IDs,
 but canonical resource-aware orchestration derives that set only from fresh signed
-`CompletionReceipt` objects bound to the same source commit/tree. Encoded semantic
-records also have a 256 KiB bound; hitting a byte bound may reject input below the
+`CompletionReceipt` objects bound to the same source commit/tree and to an actually
+published immutable assignment generation. The receipt carries that generation's
+semantic digest; verification also requires the package to have been assigned in
+that generation and the stored assignment frontier to match the same envelope and
+source identity. A signed arbitrary generation string cannot satisfy a predecessor.
+Encoded semantic records also have a 256 KiB bound; hitting a byte bound may reject input below the
 item-count limit. Graph validation is iterative, so valid deep DAGs do not depend
 on Python's recursion limit. Base scheduling applies verified completed predecessors, active lease exclusion,
 intra-batch path exclusion, stable priority and envelope capacity. The higher
@@ -113,7 +117,12 @@ budgets. No-change is first and candidate identity is content-derived. A candida
 may be a single mutation or one atomic `MutationSet` of up to the changed-file
 ceiling; rename is a first-class two-path operation. Test, tests, __tests__, fixture,
 golden and common test-file forms are mandatory oracle paths and cannot be made
-mutable by an envelope. The executor
+mutable by an envelope. Before mutation, the executor also rejects a changed source
+file whose existing contents contain inline test/oracle markers (for example Rust
+`#[cfg(test)]` / `#[test]`, Python unittest/pytest forms, or common JS/JUnit/Go test
+forms), and rejects replacement/addition text that attempts to introduce those
+markers. This closes the same-file oracle case rather than relying only on filenames.
+The executor
 requires the clean caller HEAD to match the envelope. It reads exact Git tree and
 blob records into a metadata-free temporary workspace, without checkout filters,
 Git archive attributes, hooks, repository remotes or credential files.
