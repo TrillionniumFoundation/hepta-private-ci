@@ -433,10 +433,10 @@ impl SecretLeaseStore {
         metadata: &SecretLeaseMetadataV1,
         observed_sha256: [u8; 32],
         now_ms: u64,
-    ) -> Result<(), SecretLeaseStoreError> {
+    ) -> Result<SecretLeaseMetadataV1, SecretLeaseStoreError> {
         validate_metadata(metadata)?;
         validate_operation_id(operation_id)?;
-        if observed_sha256 == [0; 32] {
+        if observed_sha256 == [0; 32] || metadata.state != SecretLeaseStateV1::Active {
             return Err(SecretLeaseStoreError::Invalid);
         }
         let mut transaction = self
@@ -467,26 +467,58 @@ impl SecretLeaseStore {
         {
             return Err(SecretLeaseStoreError::CapacityExceeded);
         }
-        if let Some(existing) = load_lease_tx(&mut transaction, &metadata.lease_id).await? {
-            if existing != *metadata {
+
+        let stored = if let Some(existing) =
+            load_lease_tx(&mut transaction, &metadata.lease_id).await?
+        {
+            if existing.provider_mount != metadata.provider_mount
+                || existing.namespace != metadata.namespace
+                || existing.consumer_id != metadata.consumer_id
+                || existing.scope_sha256 != metadata.scope_sha256
+                || existing.request_sha256 != metadata.request_sha256
+                || existing.fingerprint_key_id != metadata.fingerprint_key_id
+                || existing.secret_fingerprint != metadata.secret_fingerprint
+                || existing.renewable != metadata.renewable
+                || existing.issued_at_ms != metadata.issued_at_ms
+                || existing.expires_at_ms != metadata.expires_at_ms
+            {
                 return Err(SecretLeaseStoreError::Conflict);
             }
+            existing
         } else {
-            insert_lease_tx(&mut transaction, metadata, now_ms).await?;
-        }
+            let next_generation: i64 = sqlx::query_scalar(
+                "SELECT COALESCE(MAX(rotation_generation), 0) + 1
+                 FROM secret_leases
+                 WHERE provider_mount = ? AND namespace = ? AND consumer_id = ?
+                   AND scope_sha256 = ?",
+            )
+            .bind(&metadata.provider_mount)
+            .bind(&metadata.namespace)
+            .bind(&metadata.consumer_id)
+            .bind(metadata.scope_sha256.as_slice())
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            let mut stored = metadata.clone();
+            stored.rotation_generation = to_u64(next_generation)?;
+            stored.revision = 1;
+            insert_lease_tx(&mut transaction, &stored, now_ms).await?;
+            stored
+        };
         sqlx::query(
             "UPDATE secret_lease_operations
              SET lease_id = ?, state = 'applied', observed_sha256 = ?, updated_at_ms = ?
              WHERE operation_id = ?",
         )
-        .bind(&metadata.lease_id)
+        .bind(&stored.lease_id)
         .bind(observed_sha256.as_slice())
         .bind(to_i64(now_ms)?)
         .bind(operation_id)
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
-        transaction.commit().await.map_err(unavailable)
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(stored)
     }
 
     pub async fn commit_renew(
@@ -749,9 +781,10 @@ impl SecretLeaseStore {
     ) -> Result<Option<SecretLeaseMetadataV1>, SecretLeaseStoreError> {
         match observation {
             SecretLeaseIssueObservationV1::Applied(metadata) => {
-                self.commit_issue(operation_id, &metadata, observed_sha256, now_ms)
+                let stored = self
+                    .commit_issue(operation_id, &metadata, observed_sha256, now_ms)
                     .await?;
-                Ok(Some(metadata))
+                Ok(Some(stored))
             }
             SecretLeaseIssueObservationV1::NotApplied => {
                 self.mark_not_applied(operation_id, Some(observed_sha256), now_ms)
