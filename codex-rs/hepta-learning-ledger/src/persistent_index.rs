@@ -28,18 +28,18 @@ use codex_hepta_types::StableId;
 use crate::AppendDisposition;
 use crate::AppendReceipt;
 use crate::CreditAssignment;
-use crate::ledger::DecisionIndex;
 use crate::EpisodeDecision;
-use crate::ledger::HistoricalRecordIndex;
 use crate::LearningLedger;
 use crate::LedgerAnchor;
 use crate::LedgerError;
 use crate::LedgerEvent;
 use crate::LedgerRecord;
 use crate::OutcomeFinality;
-use crate::ledger::OutcomeIndex;
 use crate::OutcomeObservation;
 use crate::Revocation;
+use crate::ledger::DecisionIndex;
+use crate::ledger::HistoricalRecordIndex;
+use crate::ledger::OutcomeIndex;
 use crate::ledger::PreparedAppend;
 use crate::ledger::event_kind;
 
@@ -213,10 +213,7 @@ impl PersistentHistoricalIndexV1 {
         )
     }
 
-    fn run_start(
-        &mut self,
-        run_id: &StableId,
-    ) -> Result<Option<StableId>, PersistentIndexErrorV1> {
+    fn run_start(&mut self, run_id: &StableId) -> Result<Option<StableId>, PersistentIndexErrorV1> {
         let Some(bytes) = self.get(RUN_START_NAMESPACE, run_id.as_str().as_bytes())? else {
             return Ok(None);
         };
@@ -722,7 +719,8 @@ impl PersistentIndexedLearningLedgerV1 {
             LedgerEvent::Decision(value) => {
                 if let Some(index) = self.history.decision(&value.episode_id)? {
                     if self_indexed {
-                        if index.record_id != value.record_id || index.policy_id != value.policy_id {
+                        if index.record_id != value.record_id || index.policy_id != value.policy_id
+                        {
                             return Err(PersistentIndexErrorV1::Corrupt.into());
                         }
                     } else {
