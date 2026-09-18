@@ -98,7 +98,7 @@ pub fn exercise_portfolio_v1<A: PromptCandidateSourceAuthenticatorV1>(
 
     let disposition = expected_disposition(candidate_set, portfolio, &request);
     let mut receipt = PromptExerciseDecisionV1 {
-        exercise_id: request.exercise_id,
+        exercise_id: request.exercise_id.clone(),
         portfolio_receipt_digest: portfolio.receipt_digest,
         boundary: request.boundary,
         disposition,
