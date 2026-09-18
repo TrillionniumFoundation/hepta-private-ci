@@ -119,6 +119,7 @@ pub struct SecretLeaseMetadataV1 {
     pub schema_version: u32,
     pub lease_id: String,
     pub provider_mount: String,
+    pub namespace: String,
     pub consumer_id: String,
     pub scope_sha256: [u8; 32],
     pub request_sha256: [u8; 32],
@@ -859,15 +860,16 @@ async fn insert_lease_tx(
 ) -> Result<(), SecretLeaseStoreError> {
     sqlx::query(
         "INSERT INTO secret_leases (
-            lease_id, schema_version, provider_mount, consumer_id,
+            lease_id, schema_version, provider_mount, namespace, consumer_id,
             scope_sha256, request_sha256, fingerprint_key_id, secret_fingerprint,
             renewable, issued_at_ms, expires_at_ms, rotation_generation,
             state, revision, updated_at_ms
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(&metadata.lease_id)
     .bind(i64::from(metadata.schema_version))
     .bind(&metadata.provider_mount)
+    .bind(&metadata.namespace)
     .bind(&metadata.consumer_id)
     .bind(metadata.scope_sha256.as_slice())
     .bind(metadata.request_sha256.as_slice())
@@ -910,7 +912,7 @@ async fn load_lease_tx(
     row.as_ref().map(lease_from_row).transpose()
 }
 
-const LEASE_SELECT: &str = "SELECT lease_id, schema_version, provider_mount, consumer_id,
+const LEASE_SELECT: &str = "SELECT lease_id, schema_version, provider_mount, namespace, consumer_id,
     scope_sha256, request_sha256, fingerprint_key_id, secret_fingerprint,
     renewable, issued_at_ms, expires_at_ms, rotation_generation, state, revision
     FROM secret_leases WHERE lease_id = ?";
@@ -922,6 +924,7 @@ fn lease_from_row(
         schema_version: to_u32(row.try_get::<i64, _>("schema_version").map_err(unavailable)?)?,
         lease_id: row.try_get("lease_id").map_err(unavailable)?,
         provider_mount: row.try_get("provider_mount").map_err(unavailable)?,
+        namespace: row.try_get("namespace").map_err(unavailable)?,
         consumer_id: row.try_get("consumer_id").map_err(unavailable)?,
         scope_sha256: digest_column(row, "scope_sha256")?,
         request_sha256: digest_column(row, "request_sha256")?,
@@ -1024,6 +1027,7 @@ async fn verify_store(pool: &SqlitePool) -> Result<(), SecretLeaseStoreError> {
 fn validate_metadata(metadata: &SecretLeaseMetadataV1) -> Result<(), SecretLeaseStoreError> {
     if metadata.schema_version != SECRET_LEASE_SCHEMA_VERSION_V1
         || !component(&metadata.provider_mount)
+        || (!metadata.namespace.is_empty() && !segmented(&metadata.namespace))
         || !component(&metadata.consumer_id)
         || !component(&metadata.fingerprint_key_id)
         || metadata.scope_sha256 == [0; 32]
@@ -1057,6 +1061,10 @@ pub(crate) fn validate_provider_lease_id(value: &str) -> Result<(), SecretLeaseS
     } else {
         Ok(())
     }
+}
+
+fn segmented(value: &str) -> bool {
+    value.len() <= 1_024 && value.split('/').all(component)
 }
 
 fn component(value: &str) -> bool {
