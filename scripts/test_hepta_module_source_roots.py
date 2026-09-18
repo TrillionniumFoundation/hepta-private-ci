@@ -105,6 +105,36 @@ class SourceRootTests(unittest.TestCase):
         self.assertEqual(result["sourceBase"], source_base)
         self.assertFalse(result["claimBoundary"]["activation"])
 
+    def test_migration_refreshes_stale_source_base(self):
+        spec = importlib.util.spec_from_file_location(
+            "implementation_maps",
+            Path(__file__).with_name("hepta-implementation-maps.py"),
+        )
+        maps = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(maps)
+        self.module.update(
+            {"owner": "owner", "deputy": "deputy", "technicalDocument": "guide"}
+        )
+        old_base = {"commit": "1" * 40, "tree": "2" * 40}
+        current_base = {"commit": "a" * 40, "tree": "b" * 40}
+        row = {
+            "module": self.module["id"],
+            "sourceBase": old_base,
+            "operations": [
+                {
+                    "operation": "run",
+                    "nativeSymbol": "run",
+                    "sourcePath": "legacy/callee.rs",
+                    "tests": [],
+                }
+            ],
+        }
+        with mock.patch.object(maps, "ROOT", self.root):
+            result = maps.migrate_map(
+                row, self.module, {self.module["id"]: "lane"}, current_base
+            )
+        self.assertEqual(result["sourceBase"], current_base)
+
     def test_identity_version_and_authority_mismatches_reject(self):
         original = copy.deepcopy(self.binding)
         for key, value in [
