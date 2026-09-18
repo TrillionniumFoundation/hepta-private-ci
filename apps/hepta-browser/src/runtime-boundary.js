@@ -2,13 +2,16 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
   const remaining = Math.max(1, deadlineMs - now());
   const timeoutMs = Math.min(timeoutCapMs, remaining);
   const controller = abortable ? new AbortController() : null;
+  const timeoutError = new Error(`${timeoutName} timed out`);
+  timeoutError.name =
+    timeoutName === "browser driver" ? "BrowserDriverTimeoutError" : "BrowserAuthorityTimeoutError";
   let timer;
+  let timedOut = false;
   const timeout = new Promise((_, reject) => {
     timer = setTimeout(() => {
+      timedOut = true;
       controller?.abort();
-      const error = new Error(`${timeoutName} timed out`);
-      error.name = timeoutName === "browser driver" ? "BrowserDriverTimeoutError" : "BrowserAuthorityTimeoutError";
-      reject(error);
+      reject(timeoutError);
     }, timeoutMs);
   });
   try {
@@ -16,6 +19,12 @@ export async function callWithDeadline({ call, payload, now, deadlineMs, timeout
       Promise.resolve().then(() => call(payload, controller ? { signal: controller.signal } : undefined)),
       timeout,
     ]);
+  } catch (error) {
+    // An abort-aware callee may reject synchronously from the signal handler
+    // before the timeout promise wins Promise.race. Preserve the boundary
+    // cause: an abort initiated by this timer is a timeout, not a driver error.
+    if (timedOut && error?.name === "AbortError") throw timeoutError;
+    throw error;
   } finally {
     clearTimeout(timer);
   }
