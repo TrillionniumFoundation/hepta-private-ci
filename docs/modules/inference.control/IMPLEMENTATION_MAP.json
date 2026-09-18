@@ -17,7 +17,7 @@
     "codex-rs/hepta-inferd"
   ],
   "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, final-use-witnessed dispatch bindings and digest-only durable observations.",
-  "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. Provider turn entry additionally requires kernel FinalUseAuthority admission, while owner health remains a separate runtime observation. This is not provider billing, economic quota or signed remote-worker authority.",
+  "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. Provider turn entry additionally requires a sealed kernel FinalUseAuthority witness consumed by dispatch_native_authorized, while owner health remains a separate runtime observation. This is not provider billing, economic quota or signed remote-worker authority.",
   "operations": [
     {
       "designOperation": "reserve_request",
@@ -48,7 +48,7 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-        "symbol": "pub fn dispatch_native(",
+        "symbol": "pub fn dispatch_native_authorized(",
         "buildTarget": "codex-hepta-infer-core::durable_control::native"
       },
       "delegatedCallees": [],
@@ -59,9 +59,9 @@
           "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Immediately before turn/start, kernel FinalUseAuthority verifies the exact request/model/provider/resolved-context binding and rechecks revocation while the exact thread/provider/context dispatch intent plus public witness is synced; a duplicate cannot issue a new turn.",
+      "sourceSemantics": "Immediately before turn/start, kernel FinalUseAuthority verifies the exact request/model/provider/resolved-context binding and exposes a sealed non-serializable witness under the live revocation fence. dispatch_native_authorized independently recomputes that binding, derives the durable public witness, and syncs the exact thread/provider/context intent; ordinary dispatch_native rejects caller-supplied witnesses and cannot establish authorized success.",
       "operation": "schedule",
-      "nativeSymbol": "pub fn dispatch_native(",
+      "nativeSymbol": "pub fn dispatch_native_authorized(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
       "sourcePathExists": true
     },
@@ -115,7 +115,7 @@
   "repositoryControlledGaps": [
     "Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.",
     "Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.",
-    "Compose the registered OperationIntentV1/VerifiedUseTokenWitnessV1 product protocols with the native final-use-gated provider path; the shipped path consumes FinalUseAuthority and persists a non-authoritative NativeFinalUseWitness but does not claim the full registry protocol composition.",
+    "Compose the registered OperationIntentV1/VerifiedUseTokenWitnessV1 product protocols with the native final-use-gated provider path; the shipped path consumes the sealed FinalUseAuthority witness and persists a derived non-authoritative NativeFinalUseWitness but does not claim the full registry protocol composition.",
     "Add general bounded archival/record compaction under the same journal owner; output redaction can reduce bytes but preserves event history, so the 64 MiB/16384-record ceiling still rejects further durable writes when reached."
   ],
   "externalEvidenceGates": [
