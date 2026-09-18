@@ -10,6 +10,7 @@ from .candidate import (
     Candidate,
     CandidateEnvelope,
     Mutation,
+    MutationSet,
     SandboxReceipt,
     generate_candidates,
 )
@@ -87,7 +88,7 @@ def schedule_ready_packages(
 
 def generate_candidate(
     envelope: CandidateEnvelope,
-    mutations: Iterable[Mutation],
+    mutations: Iterable[Mutation | MutationSet],
 ) -> tuple[Candidate, ...]:
     return generate_candidates(envelope, mutations)
 
