@@ -35,6 +35,13 @@ pub use qualified::canonical_completeness_evidence_payload_v1;
 pub use qualified::canonical_policy_profile_digest_v1;
 pub use qualified::canonical_qualification_evidence_payload_v1;
 pub use qualified::decide_calibrated_v3;
+pub use runtime_commitment::AssignmentCommitmentV1;
+pub use runtime_commitment::RuntimeCommitmentError;
+pub use runtime_commitment::ScoringCommitmentV1;
+pub use runtime_commitment::canonical_profile_qualification_payload_v1;
+pub use runtime_commitment::canonical_runtime_commitment_payload_v1;
+pub use runtime_commitment::canonical_scored_outputs_digest_v1;
+pub use runtime_commitment::canonical_scoring_commitment_digest_v1;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
