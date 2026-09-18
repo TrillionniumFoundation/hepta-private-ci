@@ -73,22 +73,36 @@ impl MatrixSyncComposer<'_> {
         for (txn_id, room_id, event_id) in &outbound_observations {
             let evidence = serde_json::to_vec(&(
                 "hepta.matrix.homeserver-event.v1",
-                txn_id.as_str(),
                 room_id.as_str(),
                 event_id.as_str(),
             ))
             .map_err(|_| MatrixSdkError::Sync)?;
             let digest = Sha256Digest::for_bytes(&evidence);
-            self.store
-                .observe_outbox_server_event(
-                    txn_id,
-                    room_id,
-                    event_id,
-                    &digest,
-                    observed_at_ms,
-                )
-                .await
-                .map_err(|_| MatrixSdkError::Store)?;
+            let observed = if let Some(txn_id) = txn_id {
+                self.store
+                    .observe_outbox_server_event(
+                        txn_id,
+                        room_id,
+                        event_id,
+                        &digest,
+                        observed_at_ms,
+                    )
+                    .await
+                    .map_err(|_| MatrixSdkError::Store)?
+            } else {
+                None
+            };
+            if observed.is_none() {
+                self.store
+                    .observe_outbox_server_event_candidate(
+                        room_id,
+                        event_id,
+                        &digest,
+                        observed_at_ms,
+                    )
+                    .await
+                    .map_err(|_| MatrixSdkError::Store)?;
+            }
         }
         for mutation in &mutations {
             if let MatrixSyncMutationBodyV2::Redaction { target_event_id } = &mutation.body {
@@ -233,7 +247,7 @@ impl MatrixSyncComposer<'_> {
     fn outbound_observations(
         &self,
         response: &SyncResponse,
-    ) -> Result<Vec<(MatrixTransactionId, MatrixRoomId, MatrixEventId)>, MatrixSdkError> {
+    ) -> Result<Vec<(Option<MatrixTransactionId>, MatrixRoomId, MatrixEventId)>, MatrixSdkError> {
         let mut observations = BTreeMap::new();
         let rooms = response
             .rooms
@@ -264,40 +278,35 @@ impl MatrixSyncComposer<'_> {
                 let unsigned = raw
                     .get_field::<Value>("unsigned")
                     .map_err(|_| MatrixSdkError::Sync)?;
-                let Some(transaction_id) = unsigned
+                let txn_id = unsigned
                     .as_ref()
                     .and_then(|value| value.get("transaction_id"))
                     .and_then(Value::as_str)
-                else {
-                    continue;
-                };
-                let Ok(txn_id) = MatrixTransactionId::parse(transaction_id) else {
-                    continue;
-                };
+                    .and_then(|value| MatrixTransactionId::parse(value).ok());
                 let event_id = raw
                     .get_field::<String>("event_id")
                     .map_err(|_| MatrixSdkError::Sync)?
                     .ok_or(MatrixSdkError::Sync)?;
                 let event_id =
                     MatrixEventId::parse(event_id).map_err(|_| MatrixSdkError::Sync)?;
-                let key = txn_id.as_str().to_string();
-                if let Some((prior_room, prior_event)) = observations.get(&key) {
-                    if prior_room != &room_id || prior_event != &event_id {
+                let key = event_id.as_str().to_string();
+                if let Some((prior_txn, prior_room)) = observations.get(&key) {
+                    if prior_txn != &txn_id || prior_room != &room_id {
                         return Err(MatrixSdkError::Sync);
                     }
                 } else {
-                    observations.insert(key, (room_id, event_id));
+                    observations.insert(key, (txn_id, room_id));
                 }
             }
         }
-        observations
+        Ok(observations
             .into_iter()
-            .map(|(txn_id, (room_id, event_id))| {
-                MatrixTransactionId::parse(txn_id)
-                    .map(|txn_id| (txn_id, room_id, event_id))
+            .map(|(event_id, (txn_id, room_id))| {
+                MatrixEventId::parse(event_id)
+                    .map(|event_id| (txn_id, room_id, event_id))
                     .map_err(|_| MatrixSdkError::Sync)
             })
-            .collect()
+            .collect::<Result<Vec<_>, _>>()?)
     }
 
     fn normalize(
