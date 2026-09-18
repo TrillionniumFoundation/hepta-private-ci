@@ -600,6 +600,11 @@ def verify_workflow(findings: Findings) -> None:
         "workflow is missing signed Sigstore provenance attestation",
     )
     findings.require(
+        "github.event.pull_request.base.sha || github.event.before" in text,
+        "workflow_base_binding_missing",
+        "workflow must bind BASE_SHA for both pull_request and push events",
+    )
+    findings.require(
         bool(re.search(r"^  synthetic-merge:\s*$", text, re.MULTILINE)),
         "workflow_gate_missing",
         "workflow is missing synthetic-merge job",
