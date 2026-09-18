@@ -92,7 +92,6 @@ pub fn plasticity_owner_evidence_query_digest_v1(
         }
         None => bytes.push(0),
     }
-    bytes.extend_from_slice(&query.now.to_be_bytes());
     Digest32::of_bytes(&bytes)
 }
 
@@ -363,7 +362,13 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
                 plasticity_owner_evidence_receipt_digest_v1(&receipt).as_array(),
             );
         }
-        for signal in &request.generator_profile.signals {
+        let mut signals = request.generator_profile.signals.iter().collect::<Vec<_>>();
+        signals.sort_by(|left, right| {
+            left.layer_id
+                .cmp(&right.layer_id)
+                .then_with(|| left.parameter_id.cmp(&right.parameter_id))
+        });
+        for signal in signals {
             let receipt = self.resolve_one(
                 request,
                 PlasticityOwnerEvidenceKindV1::ParameterSignal,
