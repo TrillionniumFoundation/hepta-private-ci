@@ -267,6 +267,52 @@ fn one_attempt_returns_bounded_partial_result() {
 }
 
 #[test]
+fn result_validator_rejects_semantically_inconsistent_completeness() {
+    let query = query();
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::Terminal(terminal_response(
+            &query,
+        ))),
+    };
+    let valid = execute(&transport, query.clone(), &lease(&query))
+        .unwrap_or_else(|error| panic!("valid bounded result: {error}"));
+
+    let mut complete_with_truncation = valid.clone();
+    complete_with_truncation.completeness = FederatedCompletenessV2::Complete;
+    complete_with_truncation.result_digest = complete_with_truncation.compute_result_digest();
+    assert_eq!(
+        complete_with_truncation.validate(),
+        Err(FederationV2Error::InvalidCompleteness)
+    );
+
+    let mut empty_with_items = valid;
+    empty_with_items.completeness = FederatedCompletenessV2::Empty;
+    empty_with_items.result_digest = empty_with_items.compute_result_digest();
+    assert_eq!(
+        empty_with_items.validate(),
+        Err(FederationV2Error::InvalidCompleteness)
+    );
+}
+
+#[test]
+fn indeterminate_result_cannot_claim_truncation() {
+    let query = query();
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::NonTerminal(
+            FederationTransportOutcomeV2::TimedOut,
+        )),
+    };
+    let mut result = execute(&transport, query.clone(), &lease(&query))
+        .unwrap_or_else(|error| panic!("indeterminate result: {error}"));
+    result.coverage.truncated_items = 1;
+    result.result_digest = result.compute_result_digest();
+    assert_eq!(
+        result.validate(),
+        Err(FederationV2Error::InvalidCompleteness)
+    );
+}
+
+#[test]
 fn response_digest_detects_field_tampering() {
     let query = query();
     let mut response = terminal_response(&query);
@@ -383,6 +429,14 @@ fn post_io_revocation_suppresses_remote_items() {
     assert!(result.items.is_empty());
     assert_eq!(result.validity, FederatedValidityV2::Revoked);
     assert_eq!(result.completeness, FederatedCompletenessV2::Partial);
+
+    let mut invalid = result;
+    invalid.completeness = FederatedCompletenessV2::Empty;
+    invalid.result_digest = invalid.compute_result_digest();
+    assert_eq!(
+        invalid.validate(),
+        Err(FederationV2Error::InvalidCompleteness)
+    );
 }
 
 #[test]
