@@ -24,6 +24,7 @@ from .evidence import (
     EvaluatorIndependenceReceipt,
     ExecutionReceipt,
     HmacTrustStore,
+    WorkCompletionReceipt,
     verify_integration_evidence,
 )
 from .orchestration import (
@@ -186,7 +187,7 @@ def build_product_receipt(
     package = EngineeringWorkPackage(
         priority=0,
         package_id="control.engineering.product-composition",
-        predecessors=(),
+        predecessors=("control.engineering.product-predecessor",),
         write_paths=("tools/hepta-engineering-control",),
         required_skills=("engineering-control",),
         worker_capacity_units=1,
@@ -205,6 +206,22 @@ def build_product_receipt(
             ("tools/hepta-engineering-control",),
         ),
     )
+    completion = WorkCompletionReceipt(
+        "control.engineering.product-predecessor",
+        "product-predecessor-generation",
+        source_sha,
+        source_tree,
+        hashlib.sha256(b"control-engineering-product-predecessor-v2").hexdigest(),
+        "completed",
+        "ci_executor",
+        "ci-execution-reference",
+        now,
+        expires,
+    )
+    completion = _signed(
+        trust, completion, completion.issuer, completion.signing_identity
+    )
+    completions = (completion,)
     generation_id = f"product-generation-{head[:24]}"
     with tempfile.TemporaryDirectory(prefix="hepta-engineering-product-v2-") as directory:
         with EngineeringStore(Path(directory) / "engineering.sqlite3") as store:
@@ -222,7 +239,7 @@ def build_product_receipt(
                 envelope,
                 (package,),
                 workers,
-                (),
+                completions,
                 trust,
                 generation_id=generation_id,
                 review_capacity=(ReviewCapacity("architecture_reviewer", 1),),
@@ -234,7 +251,7 @@ def build_product_receipt(
                 envelope,
                 plan,
                 (package,),
-                (),
+                completions,
                 trust,
                 now_ns=now,
             )
@@ -257,6 +274,10 @@ def build_product_receipt(
         "documentSetDigest": document_digest,
         "sourceReceiptVerified": True,
         "authenticatedCompletionBoundary": True,
+        "authenticatedCompletionPackage": completion.package_id,
+        "authenticatedCompletionReceiptDigest": hashlib.sha256(
+            HmacTrustStore.payload(completion)
+        ).hexdigest(),
         "multidimensionalOrchestration": True,
         "durableGenerationId": generation_id,
         "assignmentFrontierDigest": frontier["frontierDigest"],
