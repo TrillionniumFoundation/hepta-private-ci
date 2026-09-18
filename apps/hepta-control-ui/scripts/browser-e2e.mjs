@@ -26,14 +26,42 @@ function findChrome() {
   throw new Error("Chromium/Chrome executable is required for browser E2E qualification");
 }
 
-function json(res, status, value) {
+function json(res, status, value, extraHeaders = {}) {
   const body = JSON.stringify(value);
   res.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
     "content-length": Buffer.byteLength(body),
     "cache-control": "no-store",
+    ...extraHeaders,
   });
   res.end(body);
+}
+
+function hasAuthenticatedCookie(req) {
+  return (req.headers.cookie ?? "")
+    .split(";")
+    .map((part) => part.trim())
+    .includes("hepta_e2e_session=authenticated");
+}
+
+function requireAuthenticated(req, res) {
+  if (hasAuthenticatedCookie(req)) return true;
+  json(res, 401, { error: "unauthenticated" });
+  return false;
+}
+
+function requireMutationGuards(req, res) {
+  if (!requireAuthenticated(req, res)) return false;
+  const expectedOrigin = `http://${req.headers.host}`;
+  if (req.headers.origin !== expectedOrigin) {
+    json(res, 403, { error: "origin" });
+    return false;
+  }
+  if (req.headers["x-hepta-csrf"] !== "e2e-csrf") {
+    json(res, 403, { error: "csrf" });
+    return false;
+  }
+  return true;
 }
 
 async function readJson(req) {
@@ -169,6 +197,7 @@ const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url, "http://127.0.0.1");
     if (url.pathname === "/api/ui-control/bootstrap") {
+      if (!requireAuthenticated(req, res)) return;
       return json(res, 200, {
         endpointId: "runtime.1",
         protocolVersion: 1,
@@ -179,9 +208,12 @@ const server = createServer(async (req, res) => {
         requestTimeoutMs: 5_000,
       });
     }
-    if (url.pathname === "/api/ui-control/csrf") return json(res, 200, { token: "e2e-csrf" });
+    if (url.pathname === "/api/ui-control/csrf") {
+      if (!requireAuthenticated(req, res)) return;
+      return json(res, 200, { token: "e2e-csrf" });
+    }
     if (url.pathname === "/api/ui-control/connect") {
-      if (req.headers["x-hepta-csrf"] !== "e2e-csrf") return json(res, 403, { error: "csrf" });
+      if (!requireMutationGuards(req, res)) return;
       const body = await readJson(req);
       connectCount += 1;
       currentSessionId = `session.e2e.${connectCount}`;
@@ -193,6 +225,7 @@ const server = createServer(async (req, res) => {
       });
     }
     if (url.pathname === "/api/ui-control/snapshot") {
+      if (!requireAuthenticated(req, res)) return;
       if (expireSnapshotOnce) {
         expireSnapshotOnce = false;
         return json(res, 401, { error: "expired" });
@@ -208,7 +241,7 @@ const server = createServer(async (req, res) => {
       });
     }
     if (url.pathname === "/api/ui-control/request") {
-      if (req.headers["x-hepta-csrf"] !== "e2e-csrf") return json(res, 403, { error: "csrf" });
+      if (!requireMutationGuards(req, res)) return;
       const body = await readJson(req);
       requestCount += 1;
       return json(res, 200, {
@@ -222,13 +255,13 @@ const server = createServer(async (req, res) => {
       });
     }
     if (url.pathname === "/api/ui-control/reconcile") {
-      if (req.headers["x-hepta-csrf"] !== "e2e-csrf") return json(res, 403, { error: "csrf" });
+      if (!requireMutationGuards(req, res)) return;
       await readJson(req);
       reconcileCount += 1;
       return json(res, 200, null);
     }
     if (url.pathname === "/api/ui-control/close") {
-      if (req.headers["x-hepta-csrf"] !== "e2e-csrf") return json(res, 403, { error: "csrf" });
+      if (!requireMutationGuards(req, res)) return;
       await readJson(req);
       return json(res, 200, { closed: true });
     }
@@ -253,6 +286,12 @@ const server = createServer(async (req, res) => {
       body = Buffer.from(baseIndex.replace("</body>", '  <script type="module" src="/e2e-driver.js"></script>\n</body>'));
     }
     for (const [name, value] of Object.entries(securityHeaders)) res.setHeader(name, value);
+    if (path === "/index.html") {
+      res.setHeader(
+        "Set-Cookie",
+        "hepta_e2e_session=authenticated; HttpOnly; SameSite=Strict; Path=/api/ui-control",
+      );
+    }
     const type = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json" }[extname(path)] ?? "application/octet-stream";
     res.writeHead(200, { "content-type": `${type}; charset=utf-8`, "content-length": body.length, "cache-control": "no-store" });
     res.end(body);
