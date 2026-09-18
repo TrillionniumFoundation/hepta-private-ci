@@ -28,6 +28,17 @@ fn sample(name: &str, sensor: &str, action: &str, target: i64) -> TabularOperato
     }
 }
 
+fn artifact_pin(artifact: &TabularOperatorArtifactV1) -> TabularArtifactPinV1 {
+    TabularArtifactPinV1 {
+        artifact_digest: artifact.artifact_digest,
+        objective_digest: artifact.objective_digest,
+        dataset_digest: artifact.dataset_digest,
+        sensor_core_digest: artifact.sensor_core_digest,
+        training_profile_digest: artifact.training_profile_digest,
+        generation: artifact.generation,
+    }
+}
+
 fn plan(samples: Vec<TabularOperatorSampleV1>) -> TabularOperatorPlanV1 {
     TabularOperatorPlanV1 {
         artifact_id: id("operator-artifact"),
@@ -147,7 +158,7 @@ fn op_05_raw_prediction_rejects_noncanonical_public_artifact() {
     let mut artifact = fit_tabular_operator(plan(samples)).expect("fit");
     artifact.cells.swap(0, 1);
     assert_eq!(
-        predict_tabular_operator(&artifact, &id("sensor-a"), &id("action-a")),
+        predict_tabular_operator(&artifact, &artifact_pin(&artifact), &id("sensor-a"), &id("action-a")),
         Err(LearnedOperatorError::InvalidGrid)
     );
 }
@@ -177,7 +188,28 @@ fn op_05_tabular_prediction_is_synthetic_and_domain_bounded() {
     assert!(prediction.synthetic);
     assert!(!prediction.authority.grants_any());
     assert_eq!(
-        predict_tabular_operator(&artifact, &id("sensor-unknown"), &id("action-a")),
+        predict_tabular_operator(&artifact, &artifact_pin(&artifact), &id("sensor-unknown"), &id("action-a")),
         Err(LearnedOperatorError::UnsupportedCell)
+    );
+}
+
+#[test]
+fn op_05_raw_prediction_rejects_unmatched_pin() {
+    let samples = vec![
+        sample("p1", "sensor-a", "action-a", 10),
+        sample("p2", "sensor-a", "action-a", 20),
+        sample("p3", "sensor-a", "action-b", 10),
+        sample("p4", "sensor-a", "action-b", 20),
+        sample("p5", "sensor-b", "action-a", 10),
+        sample("p6", "sensor-b", "action-a", 20),
+        sample("p7", "sensor-b", "action-b", 10),
+        sample("p8", "sensor-b", "action-b", 20),
+    ];
+    let artifact = fit_tabular_operator(plan(samples)).expect("fit");
+    let mut pin = artifact_pin(&artifact);
+    pin.dataset_digest = digest("other-dataset");
+    assert_eq!(
+        predict_tabular_operator(&artifact, &pin, &id("sensor-a"), &id("action-a")),
+        Err(LearnedOperatorError::ArtifactBinding)
     );
 }
