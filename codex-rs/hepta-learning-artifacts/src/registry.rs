@@ -12,10 +12,10 @@ use crate::ArtifactRecord;
 use crate::ArtifactRegistryError;
 use crate::ArtifactRegistrySnapshot;
 use crate::ArtifactState;
-use crate::limits::MAX_REGISTRY_RECORDS;
 use crate::RegistryAppendDisposition;
 use crate::RegistryAppendReceipt;
 use crate::StateChange;
+use crate::limits::MAX_REGISTRY_RECORDS;
 
 const MAX_ARTIFACT_BYTES: u64 = 64 * 1024 * 1024;
 const EVENT_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.event.v1";
