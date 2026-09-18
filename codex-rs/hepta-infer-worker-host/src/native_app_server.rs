@@ -41,6 +41,9 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
@@ -83,6 +86,12 @@ pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
 }
 
+pub(super) struct NativeProviderAuthorization<'a> {
+    pub(super) authority: &'a FinalUseAuthority,
+    pub(super) signed: &'a SignedFinalUseGrant,
+    pub(super) binding: FinalUseBinding,
+}
+
 impl AppServerModelDriver {
     pub fn new(config: NativeWorkerConfig) -> Result<Self> {
         if !config.agentd_socket.is_absolute()
@@ -97,6 +106,53 @@ impl AppServerModelDriver {
         Ok(Self { config })
     }
 
+    /// Exact final-use binding for the narrow production provider path.
+    ///
+    /// The authorized path intentionally rejects dynamic context_query input:
+    /// the issuer must sign the exact ordered provider user input before the
+    /// adapter can enter dispatch. Read-only context-enriched operator runs
+    /// remain available through `run`, but are not product authority.
+    pub fn provider_final_use_binding(
+        &self,
+        request_id: &str,
+        prompt: &str,
+    ) -> Result<FinalUseBinding> {
+        if request_id.is_empty() || request_id.len() > 128 {
+            return Err("invalid provider request identity".into());
+        }
+        if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
+            return Err("prompt must contain 1..32768 bytes".into());
+        }
+        let input = vec![UserInput::Text {
+            text: prompt.to_string(),
+            text_elements: Vec::new(),
+        }];
+        let payload_sha256 = decode_sha256(&canonical_input_digest(&input)?)?;
+        let request_sha256 = sha256_array(&serde_json::to_vec(&(
+            "hepta.provider-request.v1",
+            request_id,
+            self.config.agent_id.to_string(),
+            self.config.generation,
+            &self.config.model,
+            prompt,
+            self.config.timeout.as_millis(),
+        ))?);
+        let scope_sha256 = sha256_array(&serde_json::to_vec(&(
+            "hepta.provider-scope.v1",
+            self.config.agent_id.to_string(),
+            self.config.generation,
+            &self.config.model,
+            &self.config.agentd_socket,
+        ))?);
+        Ok(FinalUseBinding {
+            subject_id: self.config.agent_id.to_string(),
+            destination_id: "provider:codex-app-server".to_string(),
+            request_sha256,
+            scope_sha256,
+            payload_sha256,
+        })
+    }
+
     /// Execute once. Transport loss after turn/start remains indeterminate and
     /// must never be automatically replayed as a fresh request.
     async fn run_once(
@@ -106,6 +162,7 @@ impl AppServerModelDriver {
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
+        authorization: Option<NativeProviderAuthorization<'_>>,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
@@ -194,16 +251,25 @@ impl AppServerModelDriver {
             text_elements: Vec::new(),
         }];
         let input_payload_sha256 = canonical_input_digest(&input)?;
-        control.dispatch_native(
-            request_id,
-            NativeDispatch {
-                thread_id: started.thread.id.clone(),
-                model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
-                client_user_message_id: Some(request_id.to_string()),
-                input_payload_sha256: Some(input_payload_sha256),
-            },
-        )?;
+        let dispatch = NativeDispatch {
+            thread_id: started.thread.id.clone(),
+            model_provider: started.model_provider.clone(),
+            context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+            client_user_message_id: Some(request_id.to_string()),
+            input_payload_sha256: Some(input_payload_sha256),
+        };
+        if let Some(authorization) = authorization {
+            let token = authorization
+                .authority
+                .claim(authorization.signed, &authorization.binding)?;
+            authorization.authority.with_verified_use(
+                token,
+                &authorization.binding,
+                || control.dispatch_native(request_id, dispatch),
+            )??;
+        } else {
+            control.dispatch_native(request_id, dispatch)?;
+        }
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
@@ -598,6 +664,23 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn sha256_array(bytes: &[u8]) -> [u8; 32] {
+    Sha256::digest(bytes).into()
+}
+
+fn decode_sha256(value: &str) -> Result<[u8; 32]> {
+    if value.len() != 64 {
+        return Err("invalid canonical input digest".into());
+    }
+    let mut output = [0_u8; 32];
+    for (index, byte) in output.iter_mut().enumerate() {
+        let offset = index * 2;
+        *byte = u8::from_str_radix(&value[offset..offset + 2], 16)
+            .map_err(|_| "invalid canonical input digest")?;
+    }
+    Ok(output)
 }
 
 fn canonical_input_digest(input: &[UserInput]) -> Result<String> {
