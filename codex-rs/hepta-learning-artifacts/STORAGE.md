@@ -122,7 +122,14 @@ independent evaluation/decision -> separately owned next-run selection.
 `ArtifactPublicationTransactionV1` makes that host transaction contract
 executable without claiming impossible cross-file atomicity. It binds the V3
 admission, scoped withdrawal frontier, artifact-registry namespace identity,
-exact registry append, snapshot receipt and current-head witness. Recovery has only four phases:
+exact registry append, snapshot receipt and current-head witness. The V3-to-V1
+projection preserves the exact dataset digest as V1 `support_digest` for a
+dataset-derived artifact with one source dataset, while deriving the V1 event
+identity from the host operation ID plus the V3 admission digest. This keeps
+post-publication dataset revocation reachable while making the registry event
+commit the exact admission frontier. Multi-dataset or multi-predecessor V2
+manifests fail closed at this V1 bridge rather than losing durable semantics.
+Recovery has only four phases:
 `Prepared -> SnapshotDurable -> WitnessDurable -> Acknowledged`. A source
 acknowledgement is forbidden before `WitnessDurable`. Two synced files are still
 not a distributed transaction; restart reconstructs progress from durable receipts
