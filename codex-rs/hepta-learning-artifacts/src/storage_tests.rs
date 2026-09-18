@@ -417,7 +417,6 @@ fn zero_binding_leaves_created_file_empty_for_host_reconciliation() {
     assert_eq!(fs::metadata(&file.0).unwrap().len(), 0);
 }
 
-
 #[test]
 fn withdrawal_registry_round_trips_through_create_only_durable_snapshot() {
     let mut registry = DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalDomainV1 {
@@ -501,7 +500,6 @@ fn durable_auxiliary_snapshot_receipts_fail_closed_on_cross_file_reuse() {
     fs::write(&second.0, b"tampered").unwrap();
     assert!(read_dataset_withdrawal_snapshot(second.open(), receipt).is_err());
 }
-
 
 #[test]
 fn contained_create_rejects_traversal_and_reconciles_only_empty_orphans() {
