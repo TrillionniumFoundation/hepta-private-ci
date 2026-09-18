@@ -604,7 +604,7 @@ pub fn recall(
         disposition,
         selections,
         omitted_count,
-        distinct_channels: u32::try_from(observed_channels).unwrap_or(u32::MAX),
+        distinct_channels: union.distinct_channels,
         packet_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };
