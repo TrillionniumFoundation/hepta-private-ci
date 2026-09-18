@@ -379,7 +379,6 @@ impl H7H89ProductionGrantSigner {
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         authority_epoch: u64,
-        revocation_frontier: u64,
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     ) -> Result<H7H89ProductionGrant, ProductionAuthorityError> {
@@ -415,7 +414,6 @@ impl H7H89ProductionGrantSigner {
             expected_control_revision,
             expected_lifecycle_generation,
             authority_epoch,
-            revocation_frontier,
             signer_id: self.signer_id.clone(),
             signer_epoch: self.signer_epoch,
             issued_at_unix_seconds,
@@ -449,6 +447,7 @@ impl H7H89ProductionGrantSigner {
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         authority_epoch: u64,
+        revocation_frontier: u64,
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     ) -> Result<ProductionRecoveryDecision, ProductionAuthorityError> {
@@ -482,6 +481,7 @@ impl H7H89ProductionGrantSigner {
             expected_control_revision,
             expected_lifecycle_generation,
             authority_epoch,
+            revocation_frontier,
             signer_id: self.signer_id.clone(),
             signer_epoch: self.signer_epoch,
             issued_at_unix_seconds,
@@ -621,6 +621,9 @@ impl H7H89ProductionGrantVerifier {
                 expected: expected_authority_epoch,
                 actual: grant.authority_epoch,
             });
+        }
+        if grant.release_selection.revocation_frontier != expected_revocation_frontier {
+            return Err(ProductionAuthorityError::Compatibility);
         }
         if grant.signer_id != self.signer_id {
             return Err(ProductionAuthorityError::SignerMismatch);
