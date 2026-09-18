@@ -26,6 +26,8 @@ STATIC_INPUTS = [
     Path("codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"),
     Path("codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md"),
     Path("codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md"),
+    Path("codex-rs/hepta-intelligence/Cargo.toml"),
+    Path("codex-rs/hepta-intelligence/src/lib.rs"),
     Path("codex-rs/hepta-intelligence/src/evaluated_shadow.rs"),
     Path("codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"),
     Path("codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs"),
