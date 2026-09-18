@@ -8,7 +8,7 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
-use codex_hepta_cognitive_read::ReadResultV2;
+use codex_hepta_cognitive_read::AuthoritativeReadResultV1;
 use codex_hepta_memory::RetrievalChannel;
 use codex_hepta_memory::RetrievalLimitObservation;
 use codex_hepta_memory::RetrievalObservation;
@@ -25,11 +25,14 @@ use codex_hepta_types::ProbabilityQ32;
 pub(crate) fn adapt_owner_retrieval(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
-    read: &ReadResultV2,
+    read: &AuthoritativeReadResultV1,
     observation: &RetrievalObservation,
 ) -> Result<Vec<RetrievalChannelBatchV1>, String> {
     cue.validate().map_err(|error| error.to_string())?;
     policy.validate().map_err(|error| error.to_string())?;
+    if read.generation_vector_digest != cue.snapshot_key.vector_digest {
+        return Err("authoritative read and retrieval cue generation differ".to_string());
+    }
 
     let enabled = policy
         .channel_weights
@@ -51,6 +54,7 @@ pub(crate) fn adapt_owner_retrieval(
     }
 
     let records = read
+        .read_result
         .records()
         .iter()
         .map(|record| {
