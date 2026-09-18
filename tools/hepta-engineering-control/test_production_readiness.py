@@ -164,13 +164,13 @@ class ProductionReadinessTests(unittest.TestCase):
         now = 100
         trust = HmacTrustStore(
             {
-                ("independent_review_authority", "review-key"): b"review",
-                ("deployment_handoff_authority", "handoff-key"): b"handoff",
-                ("sandbox_qualification_authority", "sandbox-key"): b"sandbox",
-                ("deployment_authority", "deploy-key"): b"deploy",
-                ("rollback_authority", "rollback-key"): b"rollback",
-                ("audit_anchor_authority", "audit-key"): b"audit",
-                ("key_custody_authority", "custody-key"): b"custody",
+                ("independent_evaluator", "review-key"): b"review",
+                ("external_deployment_handoff_authority", "handoff-key"): b"handoff",
+                ("ci_executor", "sandbox-key"): b"sandbox",
+                ("external_deployment_authority", "deploy-key"): b"deploy",
+                ("external_rollback_authority", "rollback-key"): b"rollback",
+                ("external_audit_anchor_authority", "audit-key"): b"audit",
+                ("external_key_custody_authority", "custody-key"): b"custody",
             }
         )
 
@@ -186,7 +186,7 @@ class ProductionReadinessTests(unittest.TestCase):
                 ExternalFactReceipt(
                     "independent_review_accepted",
                     subject,
-                    "independent_review_authority",
+                    "independent_evaluator",
                     "review-key",
                     90,
                     1000,
@@ -196,7 +196,7 @@ class ProductionReadinessTests(unittest.TestCase):
                 ExternalFactReceipt(
                     "authorized_handoff",
                     subject,
-                    "deployment_handoff_authority",
+                    "external_deployment_handoff_authority",
                     "handoff-key",
                     90,
                     1000,
@@ -206,7 +206,7 @@ class ProductionReadinessTests(unittest.TestCase):
                 ExternalFactReceipt(
                     "strong_sandbox_observed",
                     subject,
-                    "sandbox_qualification_authority",
+                    "ci_executor",
                     "sandbox-key",
                     90,
                     1000,
@@ -216,7 +216,7 @@ class ProductionReadinessTests(unittest.TestCase):
                 ExternalFactReceipt(
                     "deployment_observed",
                     subject,
-                    "deployment_authority",
+                    "external_deployment_authority",
                     "deploy-key",
                     90,
                     1000,
@@ -226,7 +226,7 @@ class ProductionReadinessTests(unittest.TestCase):
                 ExternalFactReceipt(
                     "rollback_rehearsed",
                     subject,
-                    "rollback_authority",
+                    "external_rollback_authority",
                     "rollback-key",
                     90,
                     1000,
@@ -239,7 +239,7 @@ class ProductionReadinessTests(unittest.TestCase):
                 "source-signing-key",
                 ("source_authority",),
                 "d" * 64,
-                "key_custody_authority",
+                "external_key_custody_authority",
                 "custody-key",
                 90,
                 1000,
@@ -251,7 +251,7 @@ class ProductionReadinessTests(unittest.TestCase):
                 "binder-signing-key",
                 ("engineering_evidence_binder",),
                 "d" * 64,
-                "key_custody_authority",
+                "external_key_custody_authority",
                 "custody-key",
                 90,
                 1000,
@@ -278,7 +278,7 @@ class ProductionReadinessTests(unittest.TestCase):
                         "e" * 64,
                         last["sequence"],
                         last["eventDigest"],
-                        "audit_anchor_authority",
+                        "external_audit_anchor_authority",
                         "audit-key",
                         90,
                         1000,
