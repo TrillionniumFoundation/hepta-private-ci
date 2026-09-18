@@ -46,6 +46,20 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let replay_checkpoint_file = config
         .authbus_replay_checkpoint_file()
         .map(std::path::Path::to_path_buf);
+    match (&trust_file, &replay_checkpoint_file) {
+        (Some(_), None) => {
+            return Err(AgentdError::Invalid(
+                "AuthBus signed ingress requires an independently retained replay checkpoint"
+                    .to_string(),
+            ));
+        }
+        (None, Some(_)) => {
+            return Err(AgentdError::Invalid(
+                "AuthBus replay checkpoint requires an explicit trust file".to_string(),
+            ));
+        }
+        _ => {}
+    }
     let ranker = config.cognitive_ranker();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
