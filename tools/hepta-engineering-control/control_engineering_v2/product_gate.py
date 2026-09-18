@@ -63,11 +63,15 @@ def _sha(value: str, label: str) -> str:
 
 
 def _canonical_engineering_package(root: Path) -> dict[str, object]:
-    """Bind the product caller to the canonical ECP-1 delivery definition."""
-    path = root / CANONICAL_WORK_PACKAGE_PATH
+    """Bind the product caller to the exact HEAD blob for canonical ECP-1."""
+    relative = CANONICAL_WORK_PACKAGE_PATH.as_posix()
     try:
-        raw = path.read_bytes()
-    except OSError:
+        raw = _git(root, "show", f"HEAD:{relative}").encode("utf-8")
+        blob_oid = _sha(
+            _git(root, "rev-parse", f"HEAD:{relative}"),
+            "canonical_work_package_blob",
+        )
+    except ValueError:
         raise ValueError("canonical_work_package_registry_unavailable") from None
     if not raw or len(raw) > MAX_CANONICAL_REGISTRY_BYTES:
         raise ValueError("canonical_work_package_registry_invalid")
@@ -117,6 +121,7 @@ def _canonical_engineering_package(root: Path) -> dict[str, object]:
         "schema": registry["schema"],
         "schemaVersion": registry["schemaVersion"],
         "packageId": CANONICAL_ENGINEERING_PACKAGE,
+        "blobOid": blob_oid,
         "registryDigest": hashlib.sha256(raw).hexdigest(),
         "packageDigest": hashlib.sha256(package_bytes).hexdigest(),
         "state": package["state"],
