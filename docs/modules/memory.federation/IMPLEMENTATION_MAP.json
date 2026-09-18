@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "tree": "789fa2ea88e8a6e787a0fb838a8dda3cf2e20701"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -18,16 +18,16 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "candidate_composition_boundary_not_host_bound",
+  "productionWriterState": "not_applicable_read_only",
   "operations": [
     {
       "operation": "execute_once",
       "nativeSymbol": "execute_once",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "compatibility_source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": ["codex-rs/hepta-memory-federation/src/v2_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "execute_once",
       "mappingClass": "owner_native",
@@ -37,22 +37,95 @@
       "operation": "observe_cancellation",
       "nativeSymbol": "observe_cancellation",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "compatibility_source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": ["codex-rs/hepta-memory-federation/src/v2_tests.rs"],
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "execute_once_v3",
+      "nativeSymbol": "execute_once_v3",
+      "sourcePath": "codex-rs/hepta-memory-federation/src/v3.rs",
+      "state": "candidate_source_implemented_not_host_qualified",
+      "authority": "deny_all_result_live_verified_read_grant",
+      "tests": ["codex-rs/hepta-memory-federation/src/v3_tests.rs"],
+      "sourcePathExists": true,
+      "designOperation": "query_peer",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["CapabilityVerifierV3", "FederationTransportV3", "FederationKeyResolverV3"]
+    },
+    {
+      "operation": "execute_once_v3_async",
+      "nativeSymbol": "execute_once_v3_async",
+      "sourcePath": "codex-rs/hepta-memory-federation/src/v3_ext.rs",
+      "state": "candidate_source_implemented_not_host_qualified",
+      "authority": "deny_all_result_live_verified_read_grant",
+      "tests": ["codex-rs/hepta-memory-federation/src/v3_tests.rs"],
+      "sourcePathExists": true,
+      "designOperation": "query_peer",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["CapabilityVerifierV3", "AsyncFederationTransportV3", "FederationKeyResolverV3"]
+    },
+    {
+      "operation": "execute_federation_resilient_v3",
+      "nativeSymbol": "execute_federation_resilient_v3",
+      "sourcePath": "codex-rs/hepta-memory-federation/src/v3_orchestrator.rs",
+      "state": "candidate_source_implemented_not_host_qualified",
+      "authority": "deny_all_aggregate",
+      "tests": ["codex-rs/hepta-memory-federation/src/v3_orchestrator_tests.rs"],
+      "sourcePathExists": true,
+      "designOperation": "query_peer",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["execute_once_v3"]
+    },
+    {
+      "operation": "execute_federation_v3",
+      "nativeSymbol": "execute_federation_v3",
+      "sourcePath": "codex-rs/hepta-memory-federation/src/v3.rs",
+      "state": "strict_candidate_helper_source_implemented",
+      "authority": "deny_all_aggregate",
+      "tests": ["codex-rs/hepta-memory-federation/src/v3_tests.rs"],
+      "sourcePathExists": true,
+      "designOperation": "query_peer",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["execute_once_v3"]
+    },
+    {
+      "operation": "revalidate_remote",
+      "nativeSymbol": "FederationServiceV3::revalidate_remote",
+      "sourcePath": "codex-rs/hepta-memory-federation/src/v3.rs",
+      "state": "candidate_source_implemented_not_host_qualified",
+      "authority": "none",
+      "tests": ["codex-rs/hepta-memory-federation/src/v3_tests.rs"],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_remote",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["FederatedResultCacheV3", "CapabilityVerifierV3"]
+    },
+    {
+      "operation": "cache_revocation_purge",
+      "nativeSymbol": "FederationServiceV3::{purge_grant,purge_key,purge_peer}",
+      "sourcePath": "codex-rs/hepta-memory-federation/src/v3.rs",
+      "state": "candidate_source_implemented_not_host_qualified",
+      "authority": "none",
+      "tests": ["codex-rs/hepta-memory-federation/src/v3_tests.rs"],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_remote",
+      "mappingClass": "owner_native",
+      "delegatedCallees": ["FederatedResultCacheV3"]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind the V3 composition boundary to a selected-host authenticated network transport, trust-key resolver, revocation source and enrolled peer registry.",
+    "Run exact-head and deterministic synthetic-merge tests and record receipts before changing production or activation claims.",
+    "Qualify real network cancellation, peer timeout isolation, key rotation, revocation feed interruption and <=16-peer overload behavior."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic and security review",
+    "selected-host product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
