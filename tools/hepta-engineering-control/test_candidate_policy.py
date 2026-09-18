@@ -44,6 +44,14 @@ class CandidatePolicyTests(unittest.TestCase):
             "src/__tests__/feature.js",
             "src/fixtures/case.json",
             "src/output.golden",
+            "src/feature.test.ts",
+            "src/feature.spec.js",
+            "src/feature_test.go",
+            "src/feature_spec.rb",
+            "src/feature_test.cpp",
+            "src/contract.feature",
+            "src/__snapshots__/feature.snap",
+            "src/testdata/fixture.json",
         ):
             with self.subTest(path=path):
                 with self.assertRaisesRegex(EngineeringError, "candidate_oracle_path"):
