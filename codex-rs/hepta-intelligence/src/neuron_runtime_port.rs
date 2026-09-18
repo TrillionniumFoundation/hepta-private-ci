@@ -151,7 +151,6 @@ fn digest_consumer_receipt(
     Digest32::of_bytes(&bytes)
 }
 
-
 #[cfg(test)]
 #[path = "neuron_runtime_port_tests.rs"]
 mod tests;
