@@ -1,4 +1,5 @@
 use std::collections::BTreeSet;
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 use std::time::SystemTime;
