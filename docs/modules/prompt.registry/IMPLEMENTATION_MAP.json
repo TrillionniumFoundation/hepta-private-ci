@@ -50,6 +50,22 @@
       "delegatedCallees": []
     },
     {
+      "operation": "verify_final_use_admission",
+      "nativeSymbol": "FinalUseAdmissionAuthority::verify",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/admission.rs",
+      "state": "source_implemented_not_runtime_activated",
+      "authority": "consumes_kernel_final_use_authority",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_factor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "kernel.authority::FinalUseAuthority"
+      ]
+    },
+    {
       "operation": "durable_owner",
       "nativeSymbol": "DurablePromptRegistry",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
