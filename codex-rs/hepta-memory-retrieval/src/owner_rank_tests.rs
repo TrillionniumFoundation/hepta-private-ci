@@ -25,6 +25,7 @@ fn candidate(name: &str, score: u64) -> OwnerRankCandidateV1 {
         snapshot_digest: digest("snapshot"),
         owner_score: score,
         support_digest: digest(&format!("support:{name}")),
+        evidence_channels: vec![OwnerEvidenceChannelV1::Lexical],
     }
 }
 
@@ -97,5 +98,47 @@ fn owner_rank_enforces_product_capacity() {
     assert_eq!(
         rank_owner_candidates(oversized),
         Err(OwnerRankErrorV1::InvalidMaximumResults)
+    );
+}
+
+#[test]
+fn owner_rank_binds_and_canonicalizes_evidence_channels() {
+    let mut first = request();
+    first.candidates[0].evidence_channels = vec![
+        OwnerEvidenceChannelV1::Causal,
+        OwnerEvidenceChannelV1::GraphOneHop,
+    ];
+    let baseline = rank_owner_candidates(first).expect("rank evidence");
+    let result = baseline
+        .results
+        .iter()
+        .find(|result| result.record_id == id("memory:b"))
+        .expect("result");
+    assert_eq!(
+        result.evidence_channels,
+        vec![
+            OwnerEvidenceChannelV1::GraphOneHop,
+            OwnerEvidenceChannelV1::Causal,
+        ]
+    );
+
+    let mut changed = request();
+    changed.candidates[0].evidence_channels = vec![OwnerEvidenceChannelV1::Procedural];
+    let changed = rank_owner_candidates(changed).expect("changed evidence");
+    assert_ne!(
+        baseline.request_binding_digest,
+        changed.request_binding_digest
+    );
+
+    let mut duplicate = request();
+    duplicate.candidates[0].evidence_channels = vec![
+        OwnerEvidenceChannelV1::Lexical,
+        OwnerEvidenceChannelV1::Lexical,
+    ];
+    assert_eq!(
+        rank_owner_candidates(duplicate),
+        Err(OwnerRankErrorV1::DuplicateEvidenceChannel(
+            "memory:b".to_string()
+        ))
     );
 }

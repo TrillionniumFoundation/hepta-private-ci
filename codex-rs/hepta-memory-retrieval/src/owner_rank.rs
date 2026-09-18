@@ -21,6 +21,18 @@ pub const MAX_OWNER_RANK_RESULTS: usize = 16;
 const REQUEST_DOMAIN: &[u8] = b"hepta.memory.retrieval.owner-rank.request.v1";
 const RECEIPT_DOMAIN: &[u8] = b"hepta.memory.retrieval.owner-rank.receipt.v1";
 
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum OwnerEvidenceChannelV1 {
+    Lexical,
+    Entity,
+    GraphOneHop,
+    Recency,
+    Temporal,
+    Causal,
+    Procedural,
+    ContradictionSupport,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OwnerRankCandidateV1 {
     pub record: MemoryRecord,
@@ -28,6 +40,8 @@ pub struct OwnerRankCandidateV1 {
     pub owner_score: u64,
     /// Digest of the owner observation/support from which this candidate came.
     pub support_digest: Digest32,
+    /// Canonical evidence classes observed by the physical owner.
+    pub evidence_channels: Vec<OwnerEvidenceChannelV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -45,6 +59,7 @@ pub struct OwnerRankResultV1 {
     pub record_digest: Digest32,
     pub owner_score: u64,
     pub support_digest: Digest32,
+    pub evidence_channels: Vec<OwnerEvidenceChannelV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -67,6 +82,8 @@ pub enum OwnerRankErrorV1 {
     SnapshotMismatch(String),
     InvalidRecord(String),
     TombstoneRecord(String),
+    EmptyEvidenceChannels(String),
+    DuplicateEvidenceChannel(String),
 }
 
 impl fmt::Display for OwnerRankErrorV1 {
@@ -91,6 +108,7 @@ pub fn rank_owner_candidates(
             record_digest: candidate.record.record_digest(),
             owner_score: candidate.owner_score,
             support_digest: candidate.support_digest,
+            evidence_channels: canonical_evidence_channels(&candidate.evidence_channels),
         })
         .collect::<Vec<_>>();
     results.sort_by(|left, right| {
@@ -114,6 +132,7 @@ pub fn rank_owner_candidates(
         push_digest(&mut bytes, result.record_digest);
         push_u64(&mut bytes, result.owner_score);
         push_digest(&mut bytes, result.support_digest);
+        push_evidence_channels(&mut bytes, &result.evidence_channels);
     }
     bytes.extend_from_slice(&[0]);
 
@@ -160,6 +179,19 @@ fn validate_request(request: &OwnerRankRequestV1) -> Result<(), OwnerRankErrorV1
         if candidate.support_digest.is_zero() {
             return Err(OwnerRankErrorV1::EmptyDigest("candidate_support"));
         }
+        if candidate.evidence_channels.is_empty() {
+            return Err(OwnerRankErrorV1::EmptyEvidenceChannels(
+                candidate.record.record_id.to_string(),
+            ));
+        }
+        let mut evidence_channels = BTreeSet::new();
+        for channel in &candidate.evidence_channels {
+            if !evidence_channels.insert(*channel) {
+                return Err(OwnerRankErrorV1::DuplicateEvidenceChannel(
+                    candidate.record.record_id.to_string(),
+                ));
+            }
+        }
         if !seen.insert(candidate.record.record_id.clone()) {
             return Err(OwnerRankErrorV1::DuplicateRecord(
                 candidate.record.record_id.to_string(),
@@ -185,8 +217,34 @@ fn request_binding_digest(request: &OwnerRankRequestV1) -> Digest32 {
         push_digest(&mut bytes, candidate.snapshot_digest);
         push_u64(&mut bytes, candidate.owner_score);
         push_digest(&mut bytes, candidate.support_digest);
+        let evidence_channels = canonical_evidence_channels(&candidate.evidence_channels);
+        push_evidence_channels(&mut bytes, &evidence_channels);
     }
     Digest32::of_bytes(&bytes)
+}
+
+fn canonical_evidence_channels(
+    channels: &[OwnerEvidenceChannelV1],
+) -> Vec<OwnerEvidenceChannelV1> {
+    let mut channels = channels.to_vec();
+    channels.sort();
+    channels
+}
+
+fn push_evidence_channels(bytes: &mut Vec<u8>, channels: &[OwnerEvidenceChannelV1]) {
+    push_len(bytes, channels.len());
+    for channel in channels {
+        bytes.push(match channel {
+            OwnerEvidenceChannelV1::Lexical => 0,
+            OwnerEvidenceChannelV1::Entity => 1,
+            OwnerEvidenceChannelV1::GraphOneHop => 2,
+            OwnerEvidenceChannelV1::Recency => 3,
+            OwnerEvidenceChannelV1::Temporal => 4,
+            OwnerEvidenceChannelV1::Causal => 5,
+            OwnerEvidenceChannelV1::Procedural => 6,
+            OwnerEvidenceChannelV1::ContradictionSupport => 7,
+        });
+    }
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {

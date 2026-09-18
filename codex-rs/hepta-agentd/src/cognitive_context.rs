@@ -13,9 +13,12 @@ use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::MemoryRevalidationBinding;
+use codex_hepta_memory::RetrievalChannel;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_memory::RetrievalSemanticRelation;
 use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_memory_retrieval::MAX_OWNER_RANK_RESULTS;
+use codex_hepta_memory_retrieval::OwnerEvidenceChannelV1;
 use codex_hepta_memory_retrieval::OwnerRankCandidateV1;
 use codex_hepta_memory_retrieval::OwnerRankRequestV1;
 use codex_hepta_memory_retrieval::rank_owner_candidates;
@@ -159,6 +162,10 @@ where
             owner_score: observed.reciprocal_rank_score,
             support_digest: Digest32::of_bytes(
                 observation.observation_sha256().as_str().as_bytes(),
+            ),
+            evidence_channels: owner_evidence_channels(
+                &observed.channels,
+                &observed.semantic_relations,
             ),
         });
         candidate_bindings.push(observed.revalidation.clone());
@@ -338,6 +345,44 @@ where
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
     Ok(response)
+}
+
+fn owner_evidence_channels(
+    channels: &[RetrievalChannel],
+    semantic_relations: &[RetrievalSemanticRelation],
+) -> Vec<OwnerEvidenceChannelV1> {
+    let mut result = channels
+        .iter()
+        .map(|channel| match channel {
+            RetrievalChannel::MemoryFts => OwnerEvidenceChannelV1::Lexical,
+            RetrievalChannel::EntityFts => OwnerEvidenceChannelV1::Entity,
+            RetrievalChannel::GraphOneHop => OwnerEvidenceChannelV1::GraphOneHop,
+            RetrievalChannel::Recency => OwnerEvidenceChannelV1::Recency,
+        })
+        .collect::<Vec<_>>();
+    for relation in semantic_relations {
+        let channel = match relation {
+            RetrievalSemanticRelation::TemporalBefore
+            | RetrievalSemanticRelation::TemporalAfter => Some(OwnerEvidenceChannelV1::Temporal),
+            RetrievalSemanticRelation::Causes | RetrievalSemanticRelation::Enables => {
+                Some(OwnerEvidenceChannelV1::Causal)
+            }
+            RetrievalSemanticRelation::ProcedureStep => Some(OwnerEvidenceChannelV1::Procedural),
+            RetrievalSemanticRelation::Contradicts => {
+                Some(OwnerEvidenceChannelV1::ContradictionSupport)
+            }
+            RetrievalSemanticRelation::Supports
+            | RetrievalSemanticRelation::PromptComplements
+            | RetrievalSemanticRelation::PromptSubstitutes
+            | RetrievalSemanticRelation::PromptConflicts => None,
+        };
+        if let Some(channel) = channel {
+            result.push(channel);
+        }
+    }
+    result.sort();
+    result.dedup();
+    result
 }
 
 fn now_seconds() -> Result<i64, CognitiveStoreError> {

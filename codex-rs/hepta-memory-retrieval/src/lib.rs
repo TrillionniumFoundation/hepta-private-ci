@@ -36,6 +36,7 @@ pub use generation_bound::compile_cue;
 pub use generation_bound::recall;
 pub use owner_rank::MAX_OWNER_RANK_CANDIDATES;
 pub use owner_rank::MAX_OWNER_RANK_RESULTS;
+pub use owner_rank::OwnerEvidenceChannelV1;
 pub use owner_rank::OwnerRankCandidateV1;
 pub use owner_rank::OwnerRankErrorV1;
 pub use owner_rank::OwnerRankReceiptV1;
