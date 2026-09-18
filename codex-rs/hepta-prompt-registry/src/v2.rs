@@ -24,6 +24,7 @@ use crate::PromptRegistry;
 use crate::RegistryReceipt;
 
 pub const MAX_COMPATIBLE_REALIZATIONS_V2: usize = 128;
+pub const MAX_REALIZATION_PAYLOAD_BYTES_V2: usize = 64 * 1024;
 const BINDING_DOMAIN: &[u8] = b"hepta.prompt-realization-binding.v2";
 const SNAPSHOT_DOMAIN: &[u8] = b"hepta.prompt-registry-snapshot.v2";
 const COMPATIBLE_SET_DOMAIN: &[u8] = b"hepta.prompt-compatible-realization-set.v2";
@@ -97,6 +98,31 @@ impl PromptRealizationBindingV2 {
             None => bytes.push(0),
         }
         Digest32::of_bytes(&bytes)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptRealizationPayloadV2 {
+    pub binding: PromptRealizationBindingV2,
+    pub payload: Vec<u8>,
+    pub payload_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl PromptRealizationPayloadV2 {
+    pub fn validate(&self) -> Result<(), PromptRegistryV2Error> {
+        self.binding.validate()?;
+        if self.payload.is_empty() || self.payload.len() > MAX_REALIZATION_PAYLOAD_BYTES_V2 {
+            return Err(PromptRegistryV2Error::PayloadLimitExceeded);
+        }
+        let actual = Digest32::of_bytes(&self.payload);
+        if actual != self.payload_digest || actual != self.binding.payload_digest {
+            return Err(PromptRegistryV2Error::DigestMismatch("realization payload"));
+        }
+        if self.authority.grants_any() {
+            return Err(PromptRegistryV2Error::AuthorityGranted);
+        }
+        Ok(())
     }
 }
 
@@ -289,6 +315,126 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
+    pub fn register_realization_with_payload_v2(
+        &mut self,
+        binding: PromptRealizationBindingV2,
+        payload: Vec<u8>,
+    ) -> Result<RegistryReceipt, Error> {
+        if payload.is_empty() || payload.len() > MAX_REALIZATION_PAYLOAD_BYTES_V2 {
+            return Err(Error::InvalidTransition);
+        }
+        if Digest32::of_bytes(&payload) != binding.payload_digest {
+            return Err(Error::RealizationConflict(binding.realization_id.to_string()));
+        }
+        binding.validate().map_err(|error| match error {
+            PromptRegistryV2Error::EmptyDigest(name) => Error::EmptyDigest(name),
+            _ => Error::InvalidTransition,
+        })?;
+        let Some(factor) = self.factors.get(&binding.factor_id) else {
+            return Err(Error::FactorNotFound(binding.factor_id.to_string()));
+        };
+        if factor.source != FactorSource::GovernedInternal
+            || factor.lifecycle != Lifecycle::Admitted
+        {
+            return Err(Error::FactorNotAdmitted(binding.factor_id.to_string()));
+        }
+        let legacy = PromptRealization {
+            realization_id: binding.realization_id.clone(),
+            factor_id: binding.factor_id.clone(),
+            model_digest: binding.model_digest,
+            tokenizer_digest: binding.tokenizer_digest,
+            content_digest: binding.payload_digest,
+            active: true,
+        };
+        let existing_legacy = self.realizations.get(&binding.realization_id);
+        let existing_binding = self.realization_bindings.get(&binding.realization_id);
+        let existing_payload = self.realization_payloads.get(&binding.realization_id);
+        match (existing_legacy, existing_binding, existing_payload) {
+            (Some(existing_legacy), Some(existing_binding), Some(existing_payload))
+                if existing_legacy == &legacy
+                    && existing_binding == &binding
+                    && existing_payload == &payload =>
+            {
+                return Ok(self.receipt(MutationDisposition::Unchanged));
+            }
+            (Some(existing_legacy), Some(existing_binding), None)
+                if existing_legacy == &legacy && existing_binding == &binding => {}
+            (None, None, None) => {
+                self.ensure_capacity(/*additional*/ 1)?;
+            }
+            _ => {
+                return Err(Error::RealizationConflict(
+                    binding.realization_id.to_string(),
+                ));
+            }
+        }
+        let next_revision = self.next_revision()?;
+        self.realizations
+            .insert(binding.realization_id.clone(), legacy);
+        self.realization_bindings
+            .insert(binding.realization_id.clone(), binding.clone());
+        self.realization_payloads
+            .insert(binding.realization_id.clone(), payload);
+        self.commit_revision(next_revision, /*revocation*/ false);
+        Ok(self.receipt(MutationDisposition::Inserted))
+    }
+
+    pub fn read_realization_payload_v2(
+        &self,
+        expected_snapshot: &PromptRegistrySnapshotV2,
+        generation_vector_digest: Digest32,
+        model_tuple: &PromptModelTupleV2,
+        now_unix_ms: u64,
+        realization_id: &StableId,
+    ) -> Result<PromptRealizationPayloadV2, PromptRegistryV2Error> {
+        expected_snapshot.validate()?;
+        let current_snapshot = self.snapshot_v2(generation_vector_digest, model_tuple)?;
+        if current_snapshot != *expected_snapshot {
+            return Err(PromptRegistryV2Error::SnapshotStale);
+        }
+        if now_unix_ms == 0 {
+            return Err(PromptRegistryV2Error::InvalidTime);
+        }
+        let binding = self
+            .realization_bindings
+            .get(realization_id)
+            .ok_or_else(|| PromptRegistryV2Error::RealizationUnavailable(realization_id.to_string()))?;
+        let factor_live = self
+            .factors
+            .get(&binding.factor_id)
+            .is_some_and(|factor| factor.lifecycle == Lifecycle::Admitted);
+        let realization_live = self
+            .realizations
+            .get(realization_id)
+            .is_some_and(|realization| realization.active);
+        let tuple_matches = binding.model_digest == model_tuple.model_digest
+            && binding.tokenizer_digest == model_tuple.tokenizer_digest
+            && binding.template_digest == model_tuple.template_digest
+            && binding.tool_schema_digest == model_tuple.tool_schema_digest
+            && binding.locale_id == model_tuple.locale_id;
+        let not_expired = binding
+            .expires_unix_ms
+            .is_none_or(|expires| now_unix_ms < expires);
+        if !factor_live || !realization_live || !tuple_matches || !not_expired {
+            return Err(PromptRegistryV2Error::RealizationUnavailable(
+                realization_id.to_string(),
+            ));
+        }
+        let payload = self
+            .realization_payloads
+            .get(realization_id)
+            .ok_or_else(|| PromptRegistryV2Error::PayloadMissing(realization_id.to_string()))?
+            .clone();
+        let result = PromptRealizationPayloadV2 {
+            binding: binding.clone(),
+            payload_digest: Digest32::of_bytes(&payload),
+            payload,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        result.validate()?;
+        Ok(result)
+    }
+
     pub fn snapshot_v2(
         &self,
         generation_vector_digest: Digest32,
@@ -402,6 +548,10 @@ pub enum PromptRegistryV2Error {
     EmptyDigest(&'static str),
     DigestMismatch(&'static str),
     ZeroTokenCost,
+    PayloadLimitExceeded,
+    PayloadMissing(String),
+    RealizationUnavailable(String),
+    InvalidTime,
     InvalidExpiry,
     InvalidFrontier,
     ReadLimitExceeded,
