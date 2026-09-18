@@ -76,7 +76,9 @@ pub enum WorldModelError {
     EmptyDataset,
     SampleLimit,
     DuplicateSample(String),
+    DuplicateEvidence,
     InvalidOutcome,
+    InvalidModel,
     StateActionLimit,
     BranchLimit,
     UnsupportedStateAction,
@@ -120,10 +122,21 @@ pub fn fit_transition_model(
             adjacent[0].sample_id.to_string(),
         ));
     }
+    let mut evidence = Vec::with_capacity(samples.len());
+    for sample in &samples {
+        require_digest(sample.evidence_digest, "world-model sample evidence")?;
+        evidence.push(sample.evidence_digest);
+    }
+    evidence.sort_unstable();
+    if evidence
+        .windows(2)
+        .any(|adjacent| adjacent[0] == adjacent[1])
+    {
+        return Err(WorldModelError::DuplicateEvidence);
+    }
 
     let mut groups: BTreeMap<(StableId, StableId), Group> = BTreeMap::new();
     for sample in &samples {
-        require_digest(sample.evidence_digest, "world-model sample evidence")?;
         if !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw()).contains(&sample.outcome.raw()) {
             return Err(WorldModelError::InvalidOutcome);
         }
@@ -177,36 +190,32 @@ pub fn fit_transition_model(
         });
     }
 
-    let mut bytes = b"hepta.bellman-operator.tabular-world-model.v1".to_vec();
-    push_id(&mut bytes, &model_id);
-    bytes.extend_from_slice(dataset_digest.as_array());
-    bytes.extend_from_slice(
-        &u32::try_from(estimates.len())
-            .map_err(|_| WorldModelError::Arithmetic)?
-            .to_be_bytes(),
-    );
-    for estimate in &estimates {
-        bytes.extend_from_slice(estimate.estimate_digest.as_array());
-    }
+    let model_digest = digest_model(&model_id, dataset_digest, &estimates)?;
     Ok(TabularWorldModelV1 {
         model_id,
         dataset_digest,
         estimates,
-        model_digest: Digest32::of_bytes(&bytes),
+        model_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
 }
 
+#[deprecated(
+    note = "raw world-model prediction is unauthenticated; use LoadedTabularWorldModelV1::from_pinned_payload(...).predict(...)"
+)]
 pub fn predict_transition(
     model: &TabularWorldModelV1,
     state_id: &StableId,
     action_id: &StableId,
 ) -> Result<WorldModelPredictionV1, WorldModelError> {
-    let estimate = model
+    validate_world_model_structure(model)?;
+    let index = model
         .estimates
-        .iter()
-        .find(|estimate| &estimate.state_id == state_id && &estimate.action_id == action_id)
-        .ok_or(WorldModelError::UnsupportedStateAction)?;
+        .binary_search_by(|estimate| {
+            (&estimate.state_id, &estimate.action_id).cmp(&(state_id, action_id))
+        })
+        .map_err(|_| WorldModelError::UnsupportedStateAction)?;
+    let estimate = &model.estimates[index];
     Ok(WorldModelPredictionV1 {
         model_id: model.model_id.clone(),
         dataset_digest: model.dataset_digest,
@@ -218,6 +227,68 @@ pub fn predict_transition(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+pub(crate) fn validate_world_model_structure(
+    model: &TabularWorldModelV1,
+) -> Result<(), WorldModelError> {
+    if model.authority.grants_any()
+        || model.dataset_digest.is_zero()
+        || model.model_digest.is_zero()
+        || model.estimates.is_empty()
+        || model.estimates.len() > MAX_STATE_ACTIONS
+        || model.estimates.windows(2).any(|pair| {
+            (&pair[0].state_id, &pair[0].action_id)
+                >= (&pair[1].state_id, &pair[1].action_id)
+        })
+    {
+        return Err(WorldModelError::InvalidModel);
+    }
+
+    let mut total_samples = 0_u64;
+    for estimate in &model.estimates {
+        if estimate.sample_count == 0
+            || estimate.estimate_digest.is_zero()
+            || !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw())
+                .contains(&estimate.mean_outcome.raw())
+            || estimate.branches.is_empty()
+            || estimate.branches.len() > MAX_BRANCHES_PER_STATE_ACTION
+            || estimate
+                .branches
+                .windows(2)
+                .any(|pair| pair[0].next_state_id >= pair[1].next_state_id)
+        {
+            return Err(WorldModelError::InvalidModel);
+        }
+        let mut branch_count = 0_u64;
+        let mut probability_sum = 0_u128;
+        for branch in &estimate.branches {
+            if branch.count == 0 {
+                return Err(WorldModelError::InvalidModel);
+            }
+            branch_count = branch_count
+                .checked_add(u64::from(branch.count))
+                .ok_or(WorldModelError::InvalidModel)?;
+            probability_sum = probability_sum
+                .checked_add(u128::from(branch.probability.raw()))
+                .ok_or(WorldModelError::InvalidModel)?;
+        }
+        if branch_count != u64::from(estimate.sample_count)
+            || probability_sum != u128::from(ProbabilityQ32::ONE.raw())
+        {
+            return Err(WorldModelError::InvalidModel);
+        }
+        total_samples = total_samples
+            .checked_add(u64::from(estimate.sample_count))
+            .ok_or(WorldModelError::InvalidModel)?;
+    }
+    if total_samples == 0 || total_samples > MAX_SAMPLES as u64 {
+        return Err(WorldModelError::InvalidModel);
+    }
+    if digest_model(&model.model_id, model.dataset_digest, &model.estimates)? != model.model_digest {
+        return Err(WorldModelError::InvalidModel);
+    }
+    Ok(())
 }
 
 fn exact_probabilities(
@@ -310,6 +381,25 @@ fn digest_estimate(
     );
     for digest in evidence_digests {
         bytes.extend_from_slice(digest.as_array());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+pub(crate) fn digest_model(
+    model_id: &StableId,
+    dataset_digest: Digest32,
+    estimates: &[TransitionEstimateV1],
+) -> Result<Digest32, WorldModelError> {
+    let mut bytes = b"hepta.bellman-operator.tabular-world-model.v1".to_vec();
+    push_id(&mut bytes, model_id);
+    bytes.extend_from_slice(dataset_digest.as_array());
+    bytes.extend_from_slice(
+        &u32::try_from(estimates.len())
+            .map_err(|_| WorldModelError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for estimate in estimates {
+        bytes.extend_from_slice(estimate.estimate_digest.as_array());
     }
     Ok(Digest32::of_bytes(&bytes))
 }
