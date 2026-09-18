@@ -1074,6 +1074,7 @@ struct HiddenControlState<'a> {
     runtime_release: &'a Option<String>,
     runtime_incarnation: &'a Option<String>,
     runtime_fenced: bool,
+    runtime_lease_persisted: bool,
     release_change: &'a Option<crate::ControlReleaseChange>,
     has_last_command: bool,
     matrix: &'a SupervisordMatrixStatus,
@@ -1111,6 +1112,7 @@ fn control_state_digest(
             runtime_release: &snapshot.runtime_release,
             runtime_incarnation: &snapshot.runtime_incarnation,
             runtime_fenced: snapshot.runtime_fenced,
+            runtime_lease_persisted: snapshot.runtime_lease_persisted,
             release_change: &snapshot.release_change,
             has_last_command: snapshot.has_last_command,
             matrix: &status.matrix,
@@ -1529,6 +1531,7 @@ mod tests {
             runtime_release: None,
             runtime_incarnation: None,
             runtime_fenced: false,
+            runtime_lease_persisted: true,
             release_change: None,
             has_last_command: false,
         };
