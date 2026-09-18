@@ -164,7 +164,8 @@ impl RecoveryWitnessStore for FileRecoveryWitness {
         }
         let bytes = encode(self.context_digest, Some(next));
         let target_slot = 1_usize.saturating_sub(self.active_slot);
-        let offset = u64::try_from(target_slot * SLOT_BYTES).map_err(|_| WitnessError::Indeterminate)?;
+        let offset =
+            u64::try_from(target_slot * SLOT_BYTES).map_err(|_| WitnessError::Indeterminate)?;
         self.poisoned = true;
         self.file.seek(SeekFrom::Start(offset))?;
         self.file
@@ -210,17 +211,11 @@ fn decode(
     if &bytes[..8] != MAGIC {
         return Err(WitnessError::Corrupt);
     }
-    let context = Digest32::from_array(
-        bytes[8..40]
-            .try_into()
-            .map_err(|_| WitnessError::Corrupt)?,
-    );
+    let context = Digest32::from_array(bytes[8..40].try_into().map_err(|_| WitnessError::Corrupt)?);
     if context != expected_context {
         return Err(WitnessError::Context);
     }
-    if Digest32::of_bytes(&bytes[..SLOT_BYTES - 32]).as_array()
-        != &bytes[SLOT_BYTES - 32..]
-    {
+    if Digest32::of_bytes(&bytes[..SLOT_BYTES - 32]).as_array() != &bytes[SLOT_BYTES - 32..] {
         return Err(WitnessError::Corrupt);
     }
     let sequence = u64::from_be_bytes(
@@ -242,7 +237,6 @@ fn decode(
         _ => Err(WitnessError::Corrupt),
     }
 }
-
 
 fn read_slot(
     file: &mut LockedFile,
