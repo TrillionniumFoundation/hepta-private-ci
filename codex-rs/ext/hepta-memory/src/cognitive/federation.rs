@@ -654,7 +654,10 @@ fn compile_retrieval_batch(
     Some((selected_bindings, content))
 }
 
-fn compile_explanations(explanations: &[FederatedMemoryExplanation], coverage: [u32; 4]) -> Option<String> {
+fn compile_explanations(
+    explanations: &[FederatedMemoryExplanation],
+    coverage: [u32; 4],
+) -> Option<String> {
     let memories = explanations
         .iter()
         .map(|explanation| {
