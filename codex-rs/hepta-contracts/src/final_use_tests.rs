@@ -767,3 +767,97 @@ fn external_replay_store_is_global_across_active_replicas() {
     assert_eq!(capacity.used_nonces, 1);
     assert_eq!(capacity.max_claims, usize::MAX);
 }
+
+
+#[test]
+fn external_replay_replica_fails_closed_when_shared_head_moves_then_converges() {
+    let issuer = SigningKey::from_bytes(&[88; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 13,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let replay_directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(
+        replay_directory.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    let replay = Arc::new(
+        crate::SqliteAuthorityReplayStore::open(replay_directory.path()).unwrap(),
+    );
+    replay.provision_owner_exact("replica-owner", 13).unwrap();
+    let frontier = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_external_replay_head(&head).unwrap(),
+    )));
+    let first_directory = tempfile::tempdir().unwrap();
+    let second_directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(
+        first_directory.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    std::fs::set_permissions(
+        second_directory.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    let first = FinalUseAuthority::open_state_dir_with_trust_and_replay(
+        first_directory.path(),
+        "replica-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        head.clone(),
+        Arc::new(FixedClock(2_000)),
+        frontier.clone(),
+        replay.clone(),
+    )
+    .unwrap();
+    let second = FinalUseAuthority::open_state_dir_with_trust_and_replay(
+        second_directory.path(),
+        "replica-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        head,
+        Arc::new(FixedClock(2_000)),
+        frontier,
+        replay,
+    )
+    .unwrap();
+
+    let updated = FinalUseRevocations {
+        authority_epoch: 13,
+        revision: 2,
+        revoked_grant_ids: BTreeSet::from(["revoked-use".to_owned()]),
+    };
+    first.update_revocations(updated.clone()).unwrap();
+
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "replica-owner".into(),
+        authority_epoch: 13,
+        grant_id: "fresh-use".into(),
+        nonce: [89; 32],
+        binding: FinalUseBinding {
+            subject_id: "agent-one".into(),
+            destination_id: "provider:heptabao".into(),
+            request_sha256: [90; 32],
+            scope_sha256: [91; 32],
+            payload_sha256: [92; 32],
+        },
+        not_before_unix_ms: 1_000,
+        expires_at_unix_ms: 3_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    assert_eq!(
+        second.claim(&signed, &signed.grant.binding).unwrap_err(),
+        FinalUseError::AntiRollbackViolation
+    );
+
+    second.update_revocations(updated).unwrap();
+    assert!(second.claim(&signed, &signed.grant.binding).is_ok());
+}
