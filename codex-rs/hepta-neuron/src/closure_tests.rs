@@ -145,6 +145,7 @@ fn calibration_artifact() -> NeuronCalibrationArtifactV1 {
     let mut artifact = NeuronCalibrationArtifactV1 {
         artifact_digest: Digest32::ZERO,
         config_digest: checked(runtime_profile_digest(&config, &native())),
+        policy_digest: checked(calibration_policy().digest()),
         model_identity_digest: checked(execution.model_identity_digest()),
         generation: config.generation,
         valid_from_sequence: 1,
@@ -256,6 +257,32 @@ fn exact_runtime_profile_digest_changes_with_native_mechanism_parameters() {
     changed.temporal_decay_q24 += 1;
     let second = checked(runtime_profile_digest(&config, &changed));
     assert_ne!(first, second);
+}
+
+#[test]
+fn calibration_policy_drift_cannot_reuse_an_old_artifact() {
+    let config = config();
+    let execution = model_execution();
+    let artifact = calibration_artifact();
+    let mut policy = calibration_policy();
+    policy.minimum_confidence_ppm += 1;
+    let calibrated = checked(apply_calibration(
+        policy,
+        Some(&artifact),
+        checked(runtime_profile_digest(&config, &native())),
+        checked(execution.model_identity_digest()),
+        config.generation,
+        1,
+        Q,
+        Q / 10,
+        200_000,
+        0,
+    ));
+    assert!(calibrated.abstain);
+    assert_eq!(
+        calibrated.fallback_reason,
+        Some(SignalFallbackReasonV1::CalibrationBindingMismatch)
+    );
 }
 
 #[test]
