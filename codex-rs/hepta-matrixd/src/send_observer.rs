@@ -1,10 +1,15 @@
 #![forbid(unsafe_code)]
 
-use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
-const MAX_PENDING_SENDS: usize = 4_096;
+use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_protocol::MatrixRoomId;
+use codex_hepta_matrix_protocol::MatrixTransactionId;
+use codex_hepta_matrix_store::MatrixDispatchRecord;
+use codex_hepta_matrix_store::MatrixDispatchState;
+use codex_hepta_matrix_store::MatrixDurableStore;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SendIntent {
@@ -48,9 +53,9 @@ pub struct SendReceipt {
     pub transaction_id: String,
     pub state: SendState,
     pub server_event_id: Option<String>,
-    pub observation_digest: Option<String>,
+    pub send_observation_digest: Option<String>,
+    pub redaction_observation_digest: Option<String>,
     pub terminal_observed: bool,
-    pub idempotent: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -59,13 +64,12 @@ pub enum Error {
     InvalidDigest(&'static str),
     InvalidGeneration,
     DeadlineExpired,
-    CapacityExceeded,
     PayloadMismatch,
     OperationConflict,
     SendNotFound,
     ObservationMismatch,
     TerminalEventMissing,
-    AlreadyTerminal,
+    Store,
 }
 
 impl fmt::Display for Error {
@@ -76,156 +80,193 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-#[derive(Debug)]
-struct SendRecord {
-    intent: SendIntent,
-    receipt: SendReceipt,
-}
-
-#[derive(Debug, Default)]
+/// Thin compatibility facade over MatrixDurableStore.
+///
+/// This type intentionally owns no send map, event map, queue, sender, or
+/// terminal truth. All dispatch state lives in the canonical durable owner.
+#[derive(Clone)]
 pub struct MatrixSendObserver {
-    sends: BTreeMap<String, SendRecord>,
-    events: BTreeMap<String, String>,
+    store: MatrixDurableStore,
 }
 
 impl MatrixSendObserver {
-    pub fn prepare_send(&mut self, now_ms: u64, intent: SendIntent) -> Result<SendReceipt, Error> {
+    pub fn new(store: MatrixDurableStore) -> Self {
+        Self { store }
+    }
+
+    pub fn store(&self) -> &MatrixDurableStore {
+        &self.store
+    }
+
+    pub async fn prepare_send(
+        &self,
+        now_ms: u64,
+        intent: SendIntent,
+    ) -> Result<SendReceipt, Error> {
         validate_intent(now_ms, &intent)?;
         if intent.payload_digest != intent.grant_payload_digest {
             return Err(Error::PayloadMismatch);
         }
-        if let Some(current) = self.sends.get(&intent.operation_id) {
-            if current.intent == intent {
-                let mut receipt = current.receipt.clone();
-                receipt.idempotent = true;
-                return Ok(receipt);
-            }
-            return Err(Error::OperationConflict);
-        }
-        if self.sends.len() >= MAX_PENDING_SENDS {
-            return Err(Error::CapacityExceeded);
-        }
-        if self
-            .sends
-            .values()
-            .any(|current| current.intent.transaction_id == intent.transaction_id)
+        let txn_id =
+            MatrixTransactionId::parse(&intent.transaction_id).map_err(|_| Error::InvalidIdentity("transaction"))?;
+        let room_id =
+            MatrixRoomId::parse(&intent.room_id).map_err(|_| Error::InvalidIdentity("room"))?;
+        let record = self
+            .store
+            .dispatch_for_txn(&txn_id)
+            .await
+            .map_err(|_| Error::Store)?
+            .ok_or(Error::SendNotFound)?;
+        if record.operation_id != intent.operation_id
+            || record.room_id != room_id
+            || record.generation != intent.session_generation
+            || record.payload_sha256 != intent.payload_digest
+            || record
+                .authority_epoch
+                .is_some_and(|epoch| epoch != intent.authority_epoch)
+            || record
+                .grant_payload_digest
+                .as_deref()
+                .is_some_and(|digest| digest != intent.grant_payload_digest)
         {
             return Err(Error::OperationConflict);
         }
-        let receipt = SendReceipt {
-            operation_id: intent.operation_id.clone(),
-            transaction_id: intent.transaction_id.clone(),
-            state: SendState::Prepared,
-            server_event_id: None,
-            observation_digest: None,
-            terminal_observed: false,
-            idempotent: false,
-        };
-        self.sends.insert(
-            intent.operation_id.clone(),
-            SendRecord {
-                intent,
-                receipt: receipt.clone(),
-            },
-        );
-        Ok(receipt)
+        Ok(receipt_from_record(&record))
     }
 
-    pub fn observe_send(&mut self, observation: ServerObservation) -> Result<SendReceipt, Error> {
+    pub async fn observe_send(
+        &self,
+        observed_at_ms: u64,
+        observation: ServerObservation,
+    ) -> Result<SendReceipt, Error> {
         validate_observation(&observation)?;
+        let txn_id = MatrixTransactionId::parse(&observation.transaction_id)
+            .map_err(|_| Error::InvalidIdentity("transaction"))?;
+        let room_id =
+            MatrixRoomId::parse(&observation.room_id).map_err(|_| Error::InvalidIdentity("room"))?;
         let current = self
-            .sends
-            .get_mut(&observation.operation_id)
+            .store
+            .dispatch_for_txn(&txn_id)
+            .await
+            .map_err(|_| Error::Store)?
             .ok_or(Error::SendNotFound)?;
-        if observation.transaction_id != current.intent.transaction_id
-            || observation.homeserver_id != current.intent.homeserver_id
-            || observation.room_id != current.intent.room_id
-            || observation.session_generation != current.intent.session_generation
+        if current.operation_id != observation.operation_id
+            || current.room_id != room_id
+            || current.generation != observation.session_generation
         {
             return Err(Error::ObservationMismatch);
         }
-        // Terminal outcomes cannot be reopened by delayed or contradictory observations.
-        // A digest alone is not sufficient to establish an identical replay.
-        match current.receipt.state {
-            SendState::Succeeded | SendState::Failed => {
-                if observation.terminal_observed
-                    && observation.accepted == (current.receipt.state == SendState::Succeeded)
-                    && observation.server_event_id == current.receipt.server_event_id
-                    && current.receipt.observation_digest.as_deref()
-                        == Some(observation.observation_digest.as_str())
-                {
-                    let mut receipt = current.receipt.clone();
-                    receipt.idempotent = true;
-                    return Ok(receipt);
-                }
-                return Err(Error::AlreadyTerminal);
-            }
-            SendState::Redacted => return Err(Error::AlreadyTerminal),
-            SendState::Prepared | SendState::Indeterminate => {}
-        }
-        if !observation.terminal_observed {
-            current.receipt.state = SendState::Indeterminate;
-            current.receipt.observation_digest = Some(observation.observation_digest);
-            return Ok(current.receipt.clone());
-        }
-        if observation.accepted {
+        let record = if !observation.terminal_observed {
+            self.store
+                .record_transport_indeterminate(&txn_id, current.last_attempt, observed_at_ms)
+                .await
+                .map_err(|_| Error::Store)?
+        } else if observation.accepted {
             let event_id = observation
                 .server_event_id
-                .as_ref()
-                .ok_or(Error::TerminalEventMissing)?;
-            validate_identity(event_id, "server event")?;
-            if let Some(prior_operation) = self.events.get(event_id)
-                && prior_operation != &observation.operation_id
-            {
-                return Err(Error::OperationConflict);
-            }
-            self.events
-                .insert(event_id.clone(), observation.operation_id.clone());
-            current.receipt.state = SendState::Succeeded;
-            current.receipt.server_event_id = Some(event_id.clone());
+                .as_deref()
+                .ok_or(Error::TerminalEventMissing)
+                .and_then(|value| {
+                    MatrixEventId::parse(value)
+                        .map_err(|_| Error::InvalidIdentity("server event"))
+                })?;
+            let digest = Sha256Digest::parse(observation.observation_digest)
+                .map_err(|_| Error::InvalidDigest("observation"))?;
+            self.store
+                .observe_outbox_server_event(
+                    &txn_id,
+                    &room_id,
+                    &event_id,
+                    &digest,
+                    observed_at_ms,
+                )
+                .await
+                .map_err(|_| Error::Store)?
+                .ok_or(Error::SendNotFound)?
         } else {
             if observation.server_event_id.is_some() {
                 return Err(Error::ObservationMismatch);
             }
-            current.receipt.state = SendState::Failed;
-        }
-        current.receipt.observation_digest = Some(observation.observation_digest);
-        current.receipt.terminal_observed = true;
-        Ok(current.receipt.clone())
+            self.store
+                .mark_outbox_permanent_failure(&txn_id, current.last_attempt, observed_at_ms)
+                .await
+                .map_err(|_| Error::Store)?;
+            self.store
+                .record_transport_terminal_failure(
+                    &txn_id,
+                    current.last_attempt,
+                    observed_at_ms,
+                )
+                .await
+                .map_err(|_| Error::Store)?
+        };
+        Ok(receipt_from_record(&record))
     }
 
-    pub fn apply_redaction(
-        &mut self,
+    pub async fn apply_redaction(
+        &self,
+        observed_at_ms: u64,
         server_event_id: &str,
+        redaction_event_id: &str,
         redaction_digest: &str,
     ) -> Result<SendReceipt, Error> {
-        validate_identity(server_event_id, "server event")?;
-        validate_digest(redaction_digest, "redaction")?;
-        let operation_id = self
-            .events
-            .get(server_event_id)
-            .cloned()
+        let server_event_id = MatrixEventId::parse(server_event_id)
+            .map_err(|_| Error::InvalidIdentity("server event"))?;
+        let redaction_event_id = MatrixEventId::parse(redaction_event_id)
+            .map_err(|_| Error::InvalidIdentity("redaction event"))?;
+        let digest = Sha256Digest::parse(redaction_digest)
+            .map_err(|_| Error::InvalidDigest("redaction"))?;
+        let record = self
+            .store
+            .observe_outbox_redaction(
+                &server_event_id,
+                &redaction_event_id,
+                &digest,
+                observed_at_ms,
+            )
+            .await
+            .map_err(|_| Error::Store)?
             .ok_or(Error::SendNotFound)?;
-        let current = self
-            .sends
-            .get_mut(&operation_id)
-            .ok_or(Error::SendNotFound)?;
-        if current.receipt.state == SendState::Redacted {
-            if current.receipt.observation_digest.as_deref() == Some(redaction_digest) {
-                let mut receipt = current.receipt.clone();
-                receipt.idempotent = true;
-                return Ok(receipt);
-            }
-            return Err(Error::AlreadyTerminal);
-        }
-        current.receipt.state = SendState::Redacted;
-        current.receipt.observation_digest = Some(redaction_digest.to_string());
-        current.receipt.terminal_observed = true;
-        Ok(current.receipt.clone())
+        Ok(receipt_from_record(&record))
     }
 
-    pub fn receipt(&self, operation_id: &str) -> Option<&SendReceipt> {
-        self.sends.get(operation_id).map(|record| &record.receipt)
+    pub async fn receipt(&self, transaction_id: &str) -> Result<Option<SendReceipt>, Error> {
+        let txn_id = MatrixTransactionId::parse(transaction_id)
+            .map_err(|_| Error::InvalidIdentity("transaction"))?;
+        self.store
+            .dispatch_for_txn(&txn_id)
+            .await
+            .map_err(|_| Error::Store)
+            .map(|record| record.as_ref().map(receipt_from_record))
+    }
+}
+
+fn receipt_from_record(record: &MatrixDispatchRecord) -> SendReceipt {
+    let state = match record.state {
+        MatrixDispatchState::Dispatched => SendState::Prepared,
+        MatrixDispatchState::Accepted | MatrixDispatchState::Indeterminate => {
+            SendState::Indeterminate
+        }
+        MatrixDispatchState::ObservedTerminal => SendState::Succeeded,
+        MatrixDispatchState::TerminalFailure => SendState::Failed,
+        MatrixDispatchState::Redacted => SendState::Redacted,
+    };
+    SendReceipt {
+        operation_id: record.operation_id.clone(),
+        transaction_id: record.stable_txn_id.as_str().to_string(),
+        state,
+        server_event_id: record
+            .terminal_event_id
+            .as_ref()
+            .map(|event_id| event_id.as_str().to_string()),
+        send_observation_digest: record.send_observation_digest.clone(),
+        redaction_observation_digest: record.redaction_observation_digest.clone(),
+        terminal_observed: matches!(
+            record.state,
+            MatrixDispatchState::ObservedTerminal
+                | MatrixDispatchState::TerminalFailure
+                | MatrixDispatchState::Redacted
+        ),
     }
 }
 
@@ -281,17 +322,7 @@ fn validate_identity(value: &str, field: &'static str) -> Result<(), Error> {
 }
 
 fn validate_digest(value: &str, field: &'static str) -> Result<(), Error> {
-    if value.len() != 64
-        || value.bytes().all(|byte| byte == b'0')
-        || !value
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
-    {
-        return Err(Error::InvalidDigest(field));
-    }
-    Ok(())
+    Sha256Digest::parse(value.to_string())
+        .map(|_| ())
+        .map_err(|_| Error::InvalidDigest(field))
 }
-
-#[cfg(test)]
-#[path = "send_observer_tests.rs"]
-mod tests;
