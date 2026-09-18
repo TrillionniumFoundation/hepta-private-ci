@@ -157,6 +157,7 @@ where
         )?,
         scope_id: cut.scope_id().clone(),
         purpose_id,
+        consumer_profile_digest,
         minimum_memory_frontier: cut.frontiers().memory,
         minimum_source_frontier: cut.frontiers().source,
         minimum_tombstone_frontier: cut.frontiers().tombstone,
