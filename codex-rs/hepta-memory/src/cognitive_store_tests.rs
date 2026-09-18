@@ -87,6 +87,43 @@ async fn stores_are_per_agent_append_only_and_scope_fail_closed() {
 }
 
 #[tokio::test]
+async fn durable_owner_implements_cognitive_store_binding_without_granting_authority() {
+    let temp = TempDir::new().expect("owner descriptor temp");
+    let first_owner = agent_id(201);
+    let second_owner = agent_id(202);
+    let first = CognitiveStore::open(&layout(&temp, &first_owner))
+        .await
+        .expect("first owner");
+    let second = CognitiveStore::open(&layout(&temp, &second_owner))
+        .await
+        .expect("second owner");
+
+    let first_descriptor = first.authoritative_owner_descriptor_v1();
+    first_descriptor.validate().expect("valid owner descriptor");
+    assert_eq!(
+        first_descriptor.durability,
+        codex_hepta_cognitive_store::DurableStoreProfileV1::SqliteWalSynchronousFull
+    );
+    assert_eq!(
+        first_descriptor.writer_fence,
+        codex_hepta_cognitive_store::DurableWriterFenceProfileV1::ExternalAuthorityGrantProcessLockAndCas
+    );
+    assert_eq!(
+        first_descriptor.recovery,
+        codex_hepta_cognitive_store::DurableRecoveryProfileV1::DescriptorSafeWriterUnavailable
+    );
+    assert!(!first_descriptor.authority.grants_any());
+    assert_ne!(
+        first_descriptor.owner_identity_digest,
+        second.authoritative_owner_descriptor_v1().owner_identity_digest
+    );
+    assert_ne!(
+        first_descriptor.physical_store_digest,
+        second.authoritative_owner_descriptor_v1().physical_store_digest
+    );
+}
+
+#[tokio::test]
 async fn concurrent_source_identity_conflict_commits_exactly_one_payload() {
     let temp = TempDir::new().expect("temp dir");
     let owner = agent_id(81);
