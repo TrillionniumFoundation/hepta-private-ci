@@ -163,6 +163,11 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
+    /// Legacy digest-only realization registration is retained only for
+    /// compatibility with old callers and reopened historical records. New
+    /// digest-only records are rejected because they cannot prove exact-profile
+    /// payload delivery. Call `register_realization_v2` with bounded payload
+    /// bytes instead.
     pub fn register_realization(
         &mut self,
         realization: PromptRealization,
@@ -193,16 +198,7 @@ impl PromptRegistry {
                 realization.realization_id.to_string(),
             ));
         }
-        // Legacy V1 records are digest-only and are intentionally not eligible
-        // for V2 delivery. V2 registration requires actual bounded payload bytes.
-        self.ensure_capacity(/*additional*/ 1)?;
-        let next_revision = self.next_revision()?;
-        self.realization_revisions
-            .insert(realization.realization_id.clone(), next_revision);
-        self.realizations
-            .insert(realization.realization_id.clone(), realization);
-        self.commit_revision(next_revision, /*revocation*/ false);
-        Ok(self.receipt(MutationDisposition::Inserted))
+        Err(Error::PayloadRequired)
     }
 
     pub fn retire_factor(&mut self, _factor_id: &StableId) -> Result<RegistryReceipt, Error> {

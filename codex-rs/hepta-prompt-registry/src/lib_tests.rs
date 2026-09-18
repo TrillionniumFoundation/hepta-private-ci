@@ -114,13 +114,13 @@ fn proposer_cannot_self_review_even_with_signed_authority() {
 }
 
 #[test]
-fn revocation_cascades_is_terminal_and_keeps_reason_cutoff_history() {
+fn new_digest_only_realizations_are_rejected_and_v2_payloads_are_required() {
     let mut registry = registry();
     registry
         .register_factor(factor_with_id("factor:1", FactorSource::GovernedInternal))
         .expect("register factor");
     let authority = TestAuthority::new();
-    crate::test_support::admit(&mut registry, &authority, "factor:1", 5);
+    crate::test_support::admit(&mut registry, &authority, "factor:1", 51);
     let realization = PromptRealization {
         realization_id: id("realization:legacy"),
         factor_id: id("factor:1"),
@@ -129,9 +129,40 @@ fn revocation_cascades_is_terminal_and_keeps_reason_cutoff_history() {
         content_digest: digest("legacy-payload"),
         active: true,
     };
+    assert_eq!(
+        registry.register_realization(realization),
+        Err(Error::PayloadRequired)
+    );
+    assert!(registry.realization(&id("realization:legacy")).is_none());
+}
+
+#[test]
+fn revocation_cascades_is_terminal_and_keeps_reason_cutoff_history() {
+    let mut registry = registry();
     registry
-        .register_realization(realization)
-        .expect("register legacy realization");
+        .register_factor(factor_with_id("factor:1", FactorSource::GovernedInternal))
+        .expect("register factor");
+    let authority = TestAuthority::new();
+    crate::test_support::admit(&mut registry, &authority, "factor:1", 5);
+    let payload = b"revocation payload".to_vec();
+    let binding = PromptRealizationBindingV2 {
+        realization_id: id("realization:1"),
+        factor_id: id("factor:1"),
+        model_digest: digest("model"),
+        tokenizer_digest: digest("tokenizer"),
+        template_digest: digest("template"),
+        tool_schema_digest: digest("tool-schema"),
+        context_profile_digest: digest("context-profile"),
+        locale_id: id("locale:en-US"),
+        role: PromptRoleV2::DeveloperInstruction,
+        payload_digest: Digest32::of_bytes(&payload),
+        token_cost: 8,
+        expires_unix_ms: None,
+        predecessor_realization_id: None,
+    };
+    registry
+        .register_realization_v2(binding.clone(), payload)
+        .expect("register payload-backed realization");
     let reason = digest("reason:revoked");
     let receipt = registry
         .revoke_factor_with_reason(&id("factor:1"), &id("operator:1"), reason, 42)
@@ -143,7 +174,7 @@ fn revocation_cascades_is_terminal_and_keeps_reason_cutoff_history() {
     );
     assert!(
         !registry
-            .realization(&id("realization:legacy"))
+            .realization(&binding.realization_id)
             .expect("realization")
             .active
     );

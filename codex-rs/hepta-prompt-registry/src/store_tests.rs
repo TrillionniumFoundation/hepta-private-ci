@@ -178,6 +178,20 @@ fn deterministic_v0_draft_migration_rewrites_current_v1_state() {
 }
 
 #[test]
+fn v0_migration_rejects_capacity_above_native_bound() {
+    let directory = tempfile::tempdir().expect("store temp dir");
+    let legacy = format!(
+        "{{\"schema\":\"hepta.prompt-registry.durable.v0\",\"schemaVersion\":0,\"maximumRecords\":{},\"factors\":[]}}",
+        u64::try_from(MAX_RECORDS).expect("max records fits").saturating_add(1)
+    );
+    std::fs::write(directory.path().join(STATE_FILE), legacy.as_bytes()).expect("write v0");
+    assert!(matches!(
+        DurablePromptRegistry::open(directory.path()),
+        Err(PromptRegistryStoreError::Protocol(_))
+    ));
+}
+
+#[test]
 fn v0_migration_refuses_to_invent_admission_authority() {
     let directory = tempfile::tempdir().expect("store temp dir");
     let factor_digest = digest("legacy-admitted");

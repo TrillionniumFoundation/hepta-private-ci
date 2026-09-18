@@ -722,6 +722,9 @@ fn decode_registry_state_v0(bytes: &[u8]) -> Result<DecodedRegistryState, Prompt
     }
     let maximum_records = usize::try_from(state.maximum_records)
         .map_err(|_| PromptProtocolError::InvalidField("maximumRecords"))?;
+    if maximum_records == 0 || maximum_records > MAX_RECORDS {
+        return Err(PromptProtocolError::InvalidField("maximumRecords"));
+    }
     let mut registry = PromptRegistry::new(maximum_records)
         .map_err(|error| PromptProtocolError::StateIntegrity(error.to_string()))?;
     for wire in state.factors {
