@@ -461,11 +461,22 @@ def verify() -> int:
         ROOT / "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     ).read_text(encoding="utf-8")
     for token in [
-        "canonical_event_fixture_is_valid_in_reference_and_production",
-        "modality_range_mismatch_fails_closed_in_reference_and_production",
-        "modality_closed_world_matches_reference",
+        'include_bytes!("data/hnmf_conformance_v1.json")',
+        "shared_fixture_is_valid_in_production",
+        "shared_fixture_rejects_modality_range_mismatch_in_production",
+        "shared_fixture_modality_closed_world_in_production",
     ]:
-        need(token in conformance, f"production/reference conformance {token}")
+        need(token in conformance, f"production conformance {token}")
+    reference_conformance = (
+        ROOT / "qualification/hnmf-contract-reference/src/tests.rs"
+    ).read_text(encoding="utf-8")
+    for token in [
+        'include_str!("../../../codex-rs/hepta-cognitive-types/tests/data/hnmf_conformance_v1.json")',
+        "shared_fixture_is_valid_in_reference",
+        "shared_fixture_rejects_modality_range_mismatch_in_reference",
+        "shared_fixture_modality_closed_world_in_reference",
+    ]:
+        need(token in reference_conformance, f"reference conformance {token}")
 
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
