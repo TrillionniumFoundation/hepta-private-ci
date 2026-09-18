@@ -6,6 +6,9 @@ CREATE TABLE authbus_policy_heads (
     scope_digest BLOB NOT NULL CHECK (length(scope_digest) = 32),
     revision BLOB NOT NULL CHECK (length(revision) = 8),
     effect TEXT NOT NULL CHECK (effect IN ('allow', 'deny')),
+    max_active_reservations INTEGER NOT NULL CHECK (
+        max_active_reservations BETWEEN 1 AND 4096
+    ),
     record_digest BLOB NOT NULL CHECK (length(record_digest) = 32),
     updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= 0),
     PRIMARY KEY (principal_id, action_id, scope_digest)
@@ -17,6 +20,9 @@ CREATE TABLE authbus_policy_history (
     scope_digest BLOB NOT NULL CHECK (length(scope_digest) = 32),
     revision BLOB NOT NULL CHECK (length(revision) = 8),
     effect TEXT NOT NULL CHECK (effect IN ('allow', 'deny')),
+    max_active_reservations INTEGER NOT NULL CHECK (
+        max_active_reservations BETWEEN 1 AND 4096
+    ),
     record_digest BLOB NOT NULL CHECK (length(record_digest) = 32),
     recorded_at_ms INTEGER NOT NULL CHECK (recorded_at_ms >= 0),
     PRIMARY KEY (principal_id, action_id, scope_digest, revision)
@@ -94,6 +100,9 @@ CREATE TABLE authbus_quota_reservations (
 
 CREATE INDEX authbus_quota_reservations_state_expiry
 ON authbus_quota_reservations(state, expires_at_ms, quota_key);
+
+CREATE INDEX authbus_quota_reservations_principal_state
+ON authbus_quota_reservations(principal_id, state);
 
 CREATE TRIGGER authbus_quota_reservation_identity_immutable
 BEFORE UPDATE OF reservation_id, operation_id, principal_id, action_id, scope_digest,
