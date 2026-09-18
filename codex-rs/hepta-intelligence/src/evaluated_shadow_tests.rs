@@ -200,6 +200,45 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
 }
 
 #[test]
+fn authenticated_v3_shadow_keeps_policy_and_model_identities_separate() {
+    let mut fixture = Fixture::new();
+    let policy_digest = digest("separate-intuition-policy");
+    fixture.intuition.policy_digest = policy_digest;
+    fixture.intuition.calibration.policy_digest = policy_digest;
+    fixture.intuition.ood.policy_digest = policy_digest;
+    assert_ne!(policy_digest, fixture.run.snapshot.model_artifact_digest);
+
+    let authenticated_receipt = decide_calibrated_v2(fixture.intuition.clone()).unwrap();
+    let mut ports = Ports {
+        calls: Vec::new(),
+        intuition: authenticated_receipt.clone(),
+        fail_context: false,
+    };
+    let temp = tempfile::tempdir().unwrap();
+    let mut ledger = ledger_at(&temp.path().join("ledger"));
+    let qualified_model_artifact_digest = fixture.run.snapshot.model_artifact_digest;
+
+    let receipt = run_evaluated_shadow_with_authenticated_intuition_v2(
+        fixture.request(),
+        authenticated_receipt,
+        qualified_model_artifact_digest,
+        digest("authenticated-intuition"),
+        &fixture.verifier,
+        &mut ledger,
+        &mut ports,
+        /*now*/ 50,
+    )
+    .unwrap();
+
+    assert!(receipt.learning.is_some());
+    assert_eq!(
+        receipt.pipeline.disposition,
+        PipelineDispositionV1::DispatchProposed
+    );
+    assert_eq!(ports.calls.len(), 7);
+}
+
+#[test]
 fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
     let mutations: [fn(&mut Fixture); 9] = [
         |f| f.evidence.generator_plan.signature[0] ^= 1,
