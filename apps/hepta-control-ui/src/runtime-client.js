@@ -9,6 +9,7 @@ import {
   freezeResult,
   nonNegativeInteger,
   positiveInteger,
+  readOwnDataFields,
   requireDigest,
   requireRecord,
   snapshotCanonical,
@@ -120,17 +121,25 @@ export class RuntimeClient {
   }
 
   async connect(endpointManifest) {
-    requireRecord(endpointManifest, "endpointManifest");
-    const endpointId = stableId(endpointManifest.endpointId, "endpointId");
-    const protocolVersion = positiveInteger(endpointManifest.protocolVersion, "protocolVersion");
-    const manifestDigest = requireDigest(endpointManifest.manifestDigest, "manifestDigest");
+    const manifest = readOwnDataFields(
+      endpointManifest,
+      "endpointManifest",
+      ["endpointId", "protocolVersion", "manifestDigest"],
+    );
+    const endpointId = stableId(manifest.endpointId, "endpointId");
+    const protocolVersion = positiveInteger(manifest.protocolVersion, "protocolVersion");
+    const manifestDigest = requireDigest(manifest.manifestDigest, "manifestDigest");
     const attempt = ++this.#connectAttempt;
 
     let observed;
     try {
       observed = requireRecord(
-        await this.#transport.connect(
-          Object.freeze({ endpointId, protocolVersion, manifestDigest }),
+        snapshotCanonical(
+          await this.#transport.connect(
+            Object.freeze({ endpointId, protocolVersion, manifestDigest }),
+          ),
+          "connection observation",
+          { maxBytes: 4096 },
         ),
         "connection observation",
       );
@@ -176,17 +185,22 @@ export class RuntimeClient {
 
   applySnapshot(snapshot) {
     this.#requireSession();
-    requireRecord(snapshot, "snapshot");
-    const generation = positiveInteger(snapshot.generation, "generation");
-    const snapshotRevision = positiveInteger(snapshot.revision, "revision");
-    const snapshotDigest = requireDigest(snapshot.digest, "digest");
-    if (snapshot.sessionId !== this.#session.sessionId) {
+    const snapshotFields = readOwnDataFields(
+      snapshot,
+      "snapshot",
+      ["sessionId", "connectionGeneration", "generation", "revision", "digest", "modules"],
+    );
+    const generation = positiveInteger(snapshotFields.generation, "generation");
+    const snapshotRevision = positiveInteger(snapshotFields.revision, "revision");
+    const snapshotDigest = requireDigest(snapshotFields.digest, "digest");
+    if (snapshotFields.sessionId !== this.#session.sessionId) {
       fail(ERROR_CODES.PROTOCOL_VIOLATION, "snapshot session identity mismatch");
     }
-    if (snapshot.connectionGeneration !== this.#session.connectionGeneration) {
+    if (snapshotFields.connectionGeneration !== this.#session.connectionGeneration) {
       fail(ERROR_CODES.PROTOCOL_VIOLATION, "snapshot connection generation mismatch");
     }
-    if (!Array.isArray(snapshot.modules) || snapshot.modules.length > MAX_MODULES) {
+    const modulesInput = snapshotFields.modules;
+    if (!Array.isArray(modulesInput) || modulesInput.length > MAX_MODULES) {
       fail(ERROR_CODES.INVALID_INPUT, "snapshot.modules must be a bounded array");
     }
     if (this.#snapshot) {
@@ -198,9 +212,9 @@ export class RuntimeClient {
       }
     }
 
-    const moduleDescriptors = Object.getOwnPropertyDescriptors(snapshot.modules);
+    const moduleDescriptors = Object.getOwnPropertyDescriptors(modulesInput);
     const expectedModuleKeys = new Set(
-      [...Array(snapshot.modules.length).keys()].map(String).concat("length"),
+      [...Array(modulesInput.length).keys()].map(String).concat("length"),
     );
     for (const key of Reflect.ownKeys(moduleDescriptors)) {
       if (typeof key !== "string" || !expectedModuleKeys.has(key)) {
@@ -210,7 +224,7 @@ export class RuntimeClient {
 
     const moduleIds = new Set();
     const modules = [];
-    for (let index = 0; index < snapshot.modules.length; index += 1) {
+    for (let index = 0; index < modulesInput.length; index += 1) {
       const descriptor = moduleDescriptors[String(index)];
       if (!descriptor || !Object.hasOwn(descriptor, "value") || descriptor.enumerable !== true) {
         fail(ERROR_CODES.INVALID_INPUT, "snapshot.modules must contain only dense indexed data");
@@ -306,13 +320,16 @@ export class RuntimeClient {
 
   reconcile(observation) {
     const session = this.#captureSession();
-    requireRecord(observation, "observation");
-    const operationId = stableId(observation.operationId, "operationId");
+    const safeObservation = requireRecord(
+      snapshotCanonical(observation, "observation", { maxBytes: MAX_REQUEST_BYTES }),
+      "observation",
+    );
+    const operationId = stableId(safeObservation.operationId, "operationId");
     const pending = this.#pending.get(operationId);
     if (!pending) {
       fail(ERROR_CODES.RECONCILIATION_MISMATCH, "observation does not match a pending operation");
     }
-    return this.#reconcileObservation(observation, pending, session);
+    return this.#reconcileObservation(safeObservation, pending, session);
   }
 
   async reconcilePending({ force = false } = {}) {
@@ -441,7 +458,10 @@ export class RuntimeClient {
     }
     let response;
     try {
-      response = requireRecord(rawResponse, "request acknowledgement");
+      response = requireRecord(
+        snapshotCanonical(rawResponse, "request acknowledgement", { maxBytes: MAX_REQUEST_BYTES }),
+        "request acknowledgement",
+      );
     } catch {
       cloneAcknowledgement(entry, "indeterminate", {
         accepted: null,
@@ -610,8 +630,13 @@ export class RuntimeClient {
         continue;
       }
       try {
-        requireRecord(observation, "reconciliation observation");
-        this.#reconcileObservation(observation, entry, session);
+        const safeObservation = requireRecord(
+          snapshotCanonical(observation, "reconciliation observation", {
+            maxBytes: MAX_REQUEST_BYTES,
+          }),
+          "reconciliation observation",
+        );
+        this.#reconcileObservation(safeObservation, entry, session);
       } catch {
         entry.recoveryRequired = true;
         cloneAcknowledgement(entry, "indeterminate", {
