@@ -145,7 +145,7 @@ impl ObjectiveFunctionV1 {
     }
 
     fn validate_bounds(&self) -> Result<(), ObjectiveProjectionError> {
-        if self.objective_id.as_bytes().len() > 128 {
+        if self.objective_id.len() > 128 {
             return Err(ObjectiveProjectionError::FieldTooLarge("objectiveId"));
         }
         if !sha256_text(&self.request_digest) {
