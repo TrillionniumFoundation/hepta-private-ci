@@ -17,6 +17,7 @@ arguments to its Agentd command:
 
 ```text
 --authbus-trust-file /absolute/canonical/agent/home/authbus-trust.json
+--authbus-replay-checkpoint-file /independently-retained/private/authbus-replay-checkpoint.json
 ```
 
 The file must be a direct child of the canonical Agent home. Set the home to
@@ -38,11 +39,7 @@ and allowed existing thread IDs:
   "key_epoch": 3,
   "public_key_hex": "<64 hexadecimal characters from the producer's public key>",
   "revoked": false,
-  "thread_ids": ["<existing thread ID>"],
-  "replay_checkpoint": {
-    "generation": 12,
-    "replay_digest_hex": "<64 lowercase hexadecimal characters>"
-  }
+  "thread_ids": ["<existing thread ID>"]
 }
 ```
 
@@ -50,7 +47,20 @@ and allowed existing thread IDs:
 permits startup but no text admission; use the normal session ingress to create
 a thread, then install its ID. Replace the complete file atomically while preserving its permissions. The daemon reloads it for admission and every dispatch stage and persists the monotonic trust head in the evidence database. Keep the private signing key with the independent producer; Agentd never generates or stores it.
 
-`replay_checkpoint` is optional for development but required by the production AuthBus profile. It is a projection of an **independently retained** checkpoint previously emitted by the evidence owner. Agentd verifies its generation and deterministic replay-registry digest on every trust refresh. Keeping the only checkpoint copy in the same backup/snapshot as the SQLite database does not provide rollback protection.
+For the production AuthBus profile, configure `--authbus-replay-checkpoint-file` as a separate projection of an **independently retained** checkpoint previously emitted by the evidence owner. The checkpoint file must be canonical, symlink-free, mode `0600`, owned by the Agent owner, inside an owner-private (`0700`) directory, and outside both the Agent home and run root. Agentd verifies its generation against the durable checkpoint watermark on every trust refresh. A checkpoint stored only with the same restored backup set as the SQLite database is not an independent anti-rollback oracle.
+
+Checkpoint JSON is:
+
+```json
+{
+  "schema_version": 1,
+  "agent_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13",
+  "generation": 12,
+  "replay_digest_hex": "<64 lowercase hexadecimal characters>"
+}
+```
+
+The trust schema also accepts an embedded checkpoint for bounded development/compatibility fixtures, but production configuration uses the separate checkpoint file so the trust projection itself is not mistaken for independent rollback state.
 
 Revocation uses `revoked: true`; removing a thread also prevents subsequent
 admission/dispatch to that thread. Neither operation cancels work already
