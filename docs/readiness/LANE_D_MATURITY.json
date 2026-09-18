@@ -214,36 +214,42 @@
           ]
         },
         "ownerAuthenticationBoundary": {
-          "state": "candidate_seam_implemented_external_cryptographic_verifier_required",
+          "state": "candidate_concrete_pinned_ed25519_verifier_implemented_host_trust_composition_pending",
           "evidence": [
-            "AuthenticatedOwnerSummaryV1",
-            "authenticate_owner_summary_v1"
+            "OwnerSummaryVerifierV1",
+            "SignedOwnerSummaryV1",
+            "pinned_ed25519_owner_key_admits_only_the_exact_summary"
           ]
         },
         "globalComposition": {
-          "state": "candidate_source_implemented_not_activated",
+          "state": "candidate_source_implemented_with_concrete_authority_adapter_not_activated",
           "evidence": [
             "compose_global_plan_v1",
-            "handoff_grant_requests_v1",
-            "authenticated_owner_ndu_and_grant_handoff_compose_without_authority_leak"
+            "with_authorized_grant_request_v1",
+            "codex_hepta_contracts::FinalUseAuthority"
           ]
         },
         "durability": {
-          "state": "owner_local_reference_with_strict_semantic_replay_not_production_writer",
+          "state": "owner_local_private_locked_fsync_atomic_store_candidate_not_activated",
           "evidence": [
             "PlannerJournalV1",
-            "StrictPlannerJournalV1"
+            "StrictPlannerJournalV1",
+            "PlannerJournalStoreV1",
+            "legacy_raw_journal_migrates_once_through_strict_replay",
+            "predecessor_restore_is_explicit_and_semantically_verified"
           ]
         },
         "effectAuthority": {
-          "state": "explicitly_absent",
+          "state": "independent_kernel_authority_adapter_implemented_control_still_deny_all",
           "evidence": [
             "AuthorityPosture::DENY_ALL",
-            "handoff_grant_requests_v1"
+            "FinalUseAuthority::claim",
+            "FinalUseAuthority::with_verified_use",
+            "with_authorized_grant_request_v1"
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "pending_closure_branch_workflows",
+          "state": "pending_current_closure_head_workflows",
           "evidence": []
         },
         "boundedReadOnlyCaller": {
@@ -260,8 +266,10 @@
           ]
         },
         "productionWriter": {
-          "state": "not_established",
-          "evidence": []
+          "state": "candidate_owner_local_store_implemented_not_composed",
+          "evidence": [
+            "PlannerJournalStoreV1"
+          ]
         },
         "namedHostQualification": {
           "state": "not_established",
@@ -304,23 +312,21 @@
     }
   ],
   "repositoryControlledClosure": {
-    "state": "candidate_pending_exact_head_qualification",
+    "state": "candidate_pending_exact_head_and_named_host_qualification",
     "requiredChecks": [
       "Lane D semantic conformance",
       "cargo fmt",
-      "cargo check --locked for all three Lane D packages and Agentd consumer",
-      "package tests for control-plane and affected consumer",
+      "cargo check --locked for Lane D packages and Agentd consumer",
+      "control-plane and affected-consumer tests",
       "strict Clippy",
       "existing repository integrity and readiness workflows",
-      "synthetic merge qualification"
+      "synthetic merge qualification",
+      "named-host planner load/latency/restart/fault-injection evidence"
     ]
   },
   "externalGates": [
-    "concrete cryptographic owner verifier composition",
-    "concrete kernel.authority adapter composition",
-    "owner-approved production journal/store with fsync, migration, retention and restore qualification",
-    "named-host resource, latency, restart and fault-injection measurements",
-    "independent non-author review",
+    "named production host composition of pinned owner trust, planner store and independent final-use authority",
+    "independent non-author semantic and security review",
     "operator acceptance",
     "deployment and activation",
     "future-window efficacy where applicable",
