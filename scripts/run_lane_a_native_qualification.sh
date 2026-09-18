@@ -10,6 +10,7 @@ PACKAGES=(
   codex-hepta-operations
   codex-hepta-evidence
   codex-hepta-authbus
+  codex-hepta-authbus-p1-3-qualification
   codex-hepta-bao-adapter
 )
 ARGS=()
