@@ -274,7 +274,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[deprecated(
     note = "trusted in-process compatibility only; external/production admission must use decide_with_signed_evidence_v2 or decide_with_signed_longitudinal_evidence_v3"
 )]
-pub use evaluate_legacy_inprocess_v1 as evaluate;
+pub fn evaluate(request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+    evaluate_legacy_inprocess_v1(request)
+}
 
 #[cfg(test)]
 #[path = "lib_tests.rs"]
