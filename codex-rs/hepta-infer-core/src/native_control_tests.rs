@@ -87,6 +87,59 @@ fn concurrent_handles_share_budget_without_holding_the_lock_during_execution() {
 }
 
 #[test]
+fn stalled_provider_handle_does_not_block_independent_same_journal_update() {
+    use std::sync::mpsc;
+    use std::thread;
+    use std::time::Duration;
+
+    let path = path("stalled-provider");
+    let mut provider_owner = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut independent = DurableInferenceControl::open(&path, 8).unwrap();
+
+    provider_owner.reserve_native(request("r1"), 2).unwrap();
+    independent.reserve_native(request("r2"), 2).unwrap();
+    provider_owner.dispatch_native("r1", dispatch()).unwrap();
+
+    // Retain the first handle exactly as a provider future does while it is
+    // waiting on external I/O. No journal writer fence may live across that
+    // wait: an independent request on the same journal must still durably
+    // advance before the provider is allowed to resume.
+    let (resume_tx, resume_rx) = mpsc::channel();
+    let provider = thread::spawn(move || {
+        resume_rx
+            .recv_timeout(Duration::from_secs(2))
+            .expect("independent update must complete while provider is stalled");
+        provider_owner
+            .native_started("r1", "turn-1".to_string())
+            .unwrap();
+    });
+
+    let mut d2 = dispatch();
+    d2.thread_id = "thread-2".to_string();
+    independent.dispatch_native("r2", d2).unwrap();
+    resume_tx.send(()).unwrap();
+    provider.join().unwrap();
+    drop(independent);
+
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.native_record("r1").unwrap().state,
+        NativeReservationState::Running
+    );
+    assert_eq!(
+        reopened.native_record("r2").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    drop(reopened);
+    std::fs::remove_file(&path).unwrap();
+    let lock = path.with_file_name(format!(
+        "{}.writer.lock",
+        path.file_name().unwrap().to_string_lossy()
+    ));
+    let _ = std::fs::remove_file(lock);
+}
+
+#[test]
 fn stale_handle_reopens_current_inode_after_peer_compaction() {
     let path = path("peer-compaction");
     let mut first = DurableInferenceControl::open(&path, 8).unwrap();
