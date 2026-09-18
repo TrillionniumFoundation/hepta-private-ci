@@ -154,6 +154,76 @@ test("offline-style reconciliation pause cancels automatic retry without discard
   assert.equal(client.readView().pending, 1);
 });
 
+test("paused reconciliation survives a late acknowledgement and only a fresh connect resumes it", async () => {
+  let connection = 0;
+  let requestResolve;
+  let requestStartedResolve;
+  const requestStarted = new Promise((resolve) => { requestStartedResolve = resolve; });
+  let timerCalls = 0;
+  let reconcileCalls = 0;
+  const transport = {
+    async connect(input) {
+      connection += 1;
+      return {
+        authenticated: true,
+        sessionId: `session.${connection}`,
+        connectionGeneration: connection,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request(method, input) {
+      requestStartedResolve({ method, input });
+      return new Promise((resolve) => { requestResolve = resolve; });
+    },
+    async reconcile() {
+      reconcileCalls += 1;
+      return null;
+    },
+    async close() {},
+  };
+  const client = new RuntimeClient({
+    transport,
+    setTimer() {
+      timerCalls += 1;
+      return { unref() {} };
+    },
+    clearTimer: () => {},
+  });
+  await connectWithSnapshot(client);
+
+  const submission = client.submitRequest({
+    operationId: "operation.pause-late-ack",
+    subjectId: "runtime.agentd",
+    action: "request_retry",
+    expectedRevision: 4,
+    displayedView: displayedViewBinding(),
+  });
+  const started = await requestStarted;
+  client.pauseReconciliation();
+  requestResolve({
+    accepted: true,
+    method: started.method,
+    sessionId: started.input.sessionId,
+    connectionGeneration: started.input.connectionGeneration,
+    runtimeGeneration: started.input.runtimeGeneration,
+    operationId: started.input.operationId,
+    semanticDigest: started.input.semanticDigest,
+  });
+  const acknowledgement = await submission;
+  assert.equal(acknowledgement.accepted, true);
+  assert.equal(timerCalls, 0);
+  assert.equal(reconcileCalls, 0);
+
+  const session = await client.connect({
+    endpointId: "runtime.1",
+    protocolVersion: 1,
+    manifestDigest: D1,
+  });
+  assert.equal(session.sessionId, "session.2");
+  assert.equal(reconcileCalls, 1);
+  assert.equal(timerCalls, 1);
+});
+
 test("closing client cannot re-arm or manually start reconciliation from a late acknowledgement", async () => {
   let requestResolve;
   let requestStartedResolve;
