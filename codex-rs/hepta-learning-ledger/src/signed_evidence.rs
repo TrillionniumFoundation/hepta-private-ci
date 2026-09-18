@@ -279,7 +279,9 @@ pub fn verify_verified_actor_separation(
     right: &VerifiedLearningEvidenceV1,
     now: u64,
 ) -> Result<(), SignedEvidenceError> {
-    if left.trust_digest != right.trust_digest || left.objective_digest != right.objective_digest {
+    if left.trust_digest != right.trust_digest
+        || left.objective_digest != right.objective_digest
+    {
         return Err(SignedEvidenceError::ContextMismatch);
     }
     for evidence in [left, right] {
