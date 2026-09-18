@@ -32,7 +32,14 @@ Before mutation, immediately after the admitted mutation, and after every check,
 
 Directories are included, so post-admission empty directories are visible. The changed-path set is an exact manifest difference, not parsed human-readable Git porcelain. It preserves spaces, text containing ` -> `, deletions, replacements, mode changes, symbolic links, untracked files, ignored-file equivalents and files created after admission.
 
-The realized footprint must equal the one path declared by `add_file`, `replace_text` or `delete_file`, or the empty footprint declared by `no_change`. Every changed path must remain inside the envelope roots and outside protected roots. File count and a conservative before-plus-after byte budget are enforced. After checks, the entire workspace manifest must be identical to its pre-check manifest; any extra write fails closed.
+For the compatibility single-mutation API, the realized footprint must equal the
+one path declared by `add_file`, `replace_text` or `delete_file`, or the empty
+footprint declared by `no_change`. `CandidateBundle` extends the same invariant to
+an exact set of up to 100 paths across atomic add/replace/delete/rename operations. Every changed path must remain inside the envelope roots and outside protected
+roots. In addition, test/evaluator surfaces are unconditionally immutable even if
+a caller places their parent tree in `allowed_paths`: test/tests/qa/qualification
+segments, conventional `test_*`, `*_test.*`, `*_tests.*` files and snapshots are
+classified as oracle paths and rejected before execution. File count and a conservative before-plus-after byte budget are enforced. After checks, the entire workspace manifest must be identical to its pre-check manifest; any extra write fails closed.
 
 ## Candidate and check identity
 
@@ -81,7 +88,13 @@ Runner configuration installs Bubblewrap and makes the required namespaces avail
 
 `SandboxReceipt` binds the candidate and base identities, source tree before and after, ordered check results, check-set digest, candidate-state digest before and after, caller-worktree digest before and after, adapter identity, observed network and filesystem isolation, duration, pass/fail result, credential-environment count and an always-false authority delta.
 
-A receipt with unavailable isolation, no checks, incomplete execution, state drift, source drift, an unrecognized adapter or any nonzero check is not strong sandbox evidence.
+A receipt with unavailable isolation, no checks, incomplete execution, state drift,
+source drift, an unrecognized adapter or any nonzero check is not strong sandbox
+evidence. The host execution controller admits at most eight concurrent strong
+sandboxes through cross-process slot locks and permits at most two retries, only for
+enumerated infrastructure failures. Semantic rejection is never retried unchanged.
+Generated-test evidence is admitted only when a nonempty bounded mutation-probe set
+has no surviving mutant.
 
 The executor compares source HEAD, tree, refs and worktree, plus the candidate
 manifest, after every check. A later check cannot hide an earlier mutation. The
