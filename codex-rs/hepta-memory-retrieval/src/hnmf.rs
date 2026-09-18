@@ -129,14 +129,18 @@ impl EngramSnapshotV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RecallDynamicsV1 {
+    /// Zero is the qualified no-recurrence ablation; otherwise 1..=4.
     pub recurrent_steps: u8,
     pub maximum_active_units_per_population: u16,
     pub leak: FixedQ32,
+    /// False is the qualified no-inhibition ablation. Inhibitory synapses are
+    /// ignored rather than converted into excitatory support.
+    pub inhibition_enabled: bool,
 }
 
 impl RecallDynamicsV1 {
     pub fn validate(&self) -> Result<(), HnmfRecallErrorV1> {
-        if self.recurrent_steps == 0 || self.recurrent_steps > MAX_RECURRENT_STEPS {
+        if self.recurrent_steps > MAX_RECURRENT_STEPS {
             return Err(HnmfRecallErrorV1::InvalidRecurrentSteps);
         }
         if self.maximum_active_units_per_population == 0
@@ -156,6 +160,7 @@ impl RecallDynamicsV1 {
         bytes.push(self.recurrent_steps);
         bytes.extend_from_slice(&self.maximum_active_units_per_population.to_be_bytes());
         bytes.extend_from_slice(&self.leak.raw().to_be_bytes());
+        bytes.push(u8::from(self.inhibition_enabled));
         Digest32::of_bytes(&bytes)
     }
 }
@@ -242,6 +247,11 @@ pub fn recall_with_engram(
         return Err(HnmfRecallErrorV1::GenerationVectorMismatch);
     }
     let union = build_candidate_union(cue, policy, candidates).map_err(HnmfRecallErrorV1::Recall)?;
+    let engram = crate::engram_expansion::expand_candidate_engram(
+        &union,
+        engram,
+        dynamics.recurrent_steps,
+    )?;
 
     let node_by_record = engram
         .nodes
@@ -277,6 +287,11 @@ pub fn recall_with_engram(
             .map_err(|_| HnmfRecallErrorV1::Arithmetic)?;
     }
 
+    apply_population_competition(
+        &engram.nodes,
+        &mut activation,
+        usize::from(dynamics.maximum_active_units_per_population),
+    );
     let mut trace_bytes = b"hepta.hnmf-settling-trace.v1".to_vec();
     record_trace(&mut trace_bytes, 0, &engram.nodes, &activation);
     for step in 0..dynamics.recurrent_steps {
@@ -305,9 +320,13 @@ pub fn recall_with_engram(
                     .checked_mul(synapse.weight)
                     .map_err(|_| HnmfRecallErrorV1::Arithmetic)?;
                 value = if synapse.inhibitory {
-                    value
-                        .checked_sub(contribution)
-                        .map_err(|_| HnmfRecallErrorV1::Arithmetic)?
+                    if dynamics.inhibition_enabled {
+                        value
+                            .checked_sub(contribution)
+                            .map_err(|_| HnmfRecallErrorV1::Arithmetic)?
+                    } else {
+                        value
+                    }
                 } else {
                     value
                         .checked_add(contribution)

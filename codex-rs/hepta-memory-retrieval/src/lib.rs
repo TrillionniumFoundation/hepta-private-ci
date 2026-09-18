@@ -4,6 +4,7 @@
 
 mod channel_contract;
 mod generation_bound;
+mod engram_expansion;
 mod hnmf;
 mod qualification;
 mod v2;
@@ -43,6 +44,7 @@ pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::build_candidate_union;
 pub use generation_bound::compile_cue;
 pub use generation_bound::recall;
+pub use engram_expansion::expand_candidate_engram;
 pub use hnmf::EngramNodeV1;
 pub use hnmf::EngramSnapshotV1;
 pub use hnmf::EngramSynapseV1;

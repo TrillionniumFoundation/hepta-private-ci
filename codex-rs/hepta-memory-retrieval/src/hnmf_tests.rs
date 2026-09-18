@@ -129,6 +129,7 @@ fn recurrent_association_can_promote_a_non_top_base_candidate() {
             recurrent_steps: 1,
             maximum_active_units_per_population: 2,
             leak: FixedQ32::ZERO,
+            inhibition_enabled: true,
         },
     )
     .unwrap();
@@ -174,6 +175,7 @@ fn sparse_population_competition_zeroes_units_beyond_bound() {
             recurrent_steps: 1,
             maximum_active_units_per_population: 1,
             leak: FixedQ32::ZERO,
+            inhibition_enabled: true,
         },
     )
     .unwrap();
@@ -233,4 +235,148 @@ fn stale_engram_generation_and_oversized_dynamics_fail_closed() {
         ),
         Err(HnmfRecallErrorV1::InvalidRecurrentSteps)
     );
+}
+
+
+#[test]
+fn no_recurrence_and_no_inhibition_are_explicit_ablation_profiles() {
+    let cue = cue();
+    let candidates = vec![
+        candidate(&cue, "memory:a", q(6, 10)),
+        candidate(&cue, "memory:b", q(4, 10)),
+    ];
+    let engram = EngramSnapshotV1 {
+        generation_vector_digest: cue.snapshot_key.vector_digest,
+        nodes: vec![
+            EngramNodeV1 {
+                record_id: id("memory:a"),
+                population_id: id("population:a"),
+                cue_bias: FixedQ32::ZERO,
+                threshold: FixedQ32::ZERO,
+            },
+            EngramNodeV1 {
+                record_id: id("memory:b"),
+                population_id: id("population:b"),
+                cue_bias: FixedQ32::ZERO,
+                threshold: FixedQ32::ZERO,
+            },
+        ],
+        synapses: vec![EngramSynapseV1 {
+            from_record_id: id("memory:a"),
+            to_record_id: id("memory:b"),
+            weight: FixedQ32::ONE,
+            inhibitory: false,
+        }],
+    };
+    let no_recurrence = recall_with_engram(
+        &cue,
+        &policy(2),
+        candidates.clone(),
+        &engram,
+        &RecallDynamicsV1 {
+            recurrent_steps: 0,
+            maximum_active_units_per_population: 2,
+            leak: FixedQ32::ZERO,
+            inhibition_enabled: true,
+        },
+    )
+    .unwrap();
+    assert_eq!(no_recurrence.packet.selections[0].record_id, id("memory:a"));
+
+    let mut inhibitory = engram;
+    inhibitory.synapses = vec![EngramSynapseV1 {
+        from_record_id: id("memory:a"),
+        to_record_id: id("memory:b"),
+        weight: FixedQ32::ONE,
+        inhibitory: true,
+    }];
+    let inhibited = recall_with_engram(
+        &cue,
+        &policy(2),
+        candidates.clone(),
+        &inhibitory,
+        &RecallDynamicsV1 {
+            recurrent_steps: 1,
+            maximum_active_units_per_population: 2,
+            leak: FixedQ32::ZERO,
+            inhibition_enabled: true,
+        },
+    )
+    .unwrap();
+    let no_inhibition = recall_with_engram(
+        &cue,
+        &policy(2),
+        candidates,
+        &inhibitory,
+        &RecallDynamicsV1 {
+            recurrent_steps: 1,
+            maximum_active_units_per_population: 2,
+            leak: FixedQ32::ZERO,
+            inhibition_enabled: false,
+        },
+    )
+    .unwrap();
+    let activation = |receipt: &HnmfRecallReceiptV1, name: &str| {
+        receipt
+            .final_activations
+            .iter()
+            .find(|row| row.record_id == id(name))
+            .unwrap()
+            .final_activation
+    };
+    assert!(activation(&no_inhibition, "memory:b") > activation(&inhibited, "memory:b"));
+}
+
+#[test]
+fn candidate_engram_expansion_is_bounded_local_and_canonical() {
+    let cue = cue();
+    let policy = policy(2);
+    let candidates = vec![candidate(&cue, "memory:a", q(6, 10))];
+    let union = build_candidate_union(&cue, &policy, candidates).unwrap();
+    let source = EngramSnapshotV1 {
+        generation_vector_digest: cue.snapshot_key.vector_digest,
+        nodes: ["memory:d", "memory:c", "memory:a", "memory:b"]
+            .into_iter()
+            .map(|name| EngramNodeV1 {
+                record_id: id(name),
+                population_id: id("population:shared"),
+                cue_bias: FixedQ32::ZERO,
+                threshold: FixedQ32::ZERO,
+            })
+            .collect(),
+        synapses: vec![
+            EngramSynapseV1 {
+                from_record_id: id("memory:a"),
+                to_record_id: id("memory:b"),
+                weight: FixedQ32::ONE,
+                inhibitory: false,
+            },
+            EngramSynapseV1 {
+                from_record_id: id("memory:b"),
+                to_record_id: id("memory:c"),
+                weight: FixedQ32::ONE,
+                inhibitory: false,
+            },
+        ],
+    };
+    let one_hop = expand_candidate_engram(&union, &source, 1).unwrap();
+    assert_eq!(
+        one_hop
+            .nodes
+            .iter()
+            .map(|node| node.record_id.as_str())
+            .collect::<Vec<_>>(),
+        vec!["memory:a", "memory:b"]
+    );
+    let two_hop = expand_candidate_engram(&union, &source, 2).unwrap();
+    assert_eq!(
+        two_hop
+            .nodes
+            .iter()
+            .map(|node| node.record_id.as_str())
+            .collect::<Vec<_>>(),
+        vec!["memory:a", "memory:b", "memory:c"]
+    );
+    assert!(two_hop.nodes.iter().all(|node| node.record_id != id("memory:d")));
+    assert_eq!(two_hop, expand_candidate_engram(&union, &source, 2).unwrap());
 }

@@ -125,6 +125,7 @@ impl CurrentMemoryRetrievalProfile for CurrentProfile {
                 recurrent_steps: 1,
                 maximum_active_units_per_population: 64,
                 leak: FixedQ32::ZERO,
+                inhibition_enabled: true,
             },
         })
     }

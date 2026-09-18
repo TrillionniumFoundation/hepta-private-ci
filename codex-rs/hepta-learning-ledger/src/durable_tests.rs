@@ -236,7 +236,7 @@ fn invalid_causal_facts_and_oversized_candidate_sets_fail_before_io() {
     ));
     let mut oversized = decision();
     if let LedgerEvent::Decision(value) = &mut oversized {
-        value.candidate_ids = vec![id("same"); MAX_CANDIDATES + 1];
+        value.candidate_ids = vec![id("same"); crate::ledger::MAX_CANDIDATES + 1];
     }
     assert_eq!(
         ledger.append(first.chain_digest, oversized),
@@ -270,7 +270,7 @@ fn maximum_retrieval_candidate_set_round_trips_through_durable_recovery() {
     let mut ledger = fixture.create();
     let receipt = must(ledger.append(Digest32::ZERO, event));
     let snapshot = must(ledger.snapshot());
-    assert!(crate::ledger::encode_event(&snapshot.records()[0]).len() <= MAX_EVENT);
+    assert!(crate::ledger::encode_event(&snapshot.records()[0].event).len() <= MAX_EVENT);
     drop(ledger);
     let reopened = must(fixture.recover(LedgerRecovery::Acknowledged(LedgerAnchor {
         sequence: 1,
