@@ -108,9 +108,9 @@ impl MatrixSendObserver {
             return Err(Error::PayloadMismatch);
         }
         let txn_id =
-            MatrixTransactionId::parse(&intent.transaction_id).map_err(|_| Error::InvalidIdentity("transaction"))?;
+            MatrixTransactionId::parse(intent.transaction_id.as_str()).map_err(|_| Error::InvalidIdentity("transaction"))?;
         let room_id =
-            MatrixRoomId::parse(&intent.room_id).map_err(|_| Error::InvalidIdentity("room"))?;
+            MatrixRoomId::parse(intent.room_id.as_str()).map_err(|_| Error::InvalidIdentity("room"))?;
         let record = self
             .store
             .dispatch_for_txn(&txn_id)
@@ -140,10 +140,10 @@ impl MatrixSendObserver {
         observation: ServerObservation,
     ) -> Result<SendReceipt, Error> {
         validate_observation(&observation)?;
-        let txn_id = MatrixTransactionId::parse(&observation.transaction_id)
+        let txn_id = MatrixTransactionId::parse(observation.transaction_id.as_str())
             .map_err(|_| Error::InvalidIdentity("transaction"))?;
         let room_id =
-            MatrixRoomId::parse(&observation.room_id).map_err(|_| Error::InvalidIdentity("room"))?;
+            MatrixRoomId::parse(observation.room_id.as_str()).map_err(|_| Error::InvalidIdentity("room"))?;
         let current = self
             .store
             .dispatch_for_txn(&txn_id)
