@@ -454,11 +454,12 @@ async fn corrupted_qualification_payload_fails_closed_after_reopen() {
     .execute(&store.pool)
     .await
     .expect("restore immutable trigger");
-    drop(store);
+    store.pool.close().await;
 
     let error = HeptaEvidenceStore::open(&sqlite)
         .await
-        .expect_err("corruption must fail closed");
+        .err()
+        .expect("corruption must fail closed");
     assert!(matches!(error, crate::EvidenceError::Corrupt(_)));
 }
 
@@ -487,7 +488,7 @@ async fn external_checkpoint_rejects_complete_database_rollback() {
         .append_receipt(&first, &issuer)
         .await
         .expect("append first");
-    drop(store);
+    store.pool.close().await;
 
     let db_path = temp.path().join("hepta_evidence_2.sqlite");
     let rollback_copy = temp.path().join("rollback.sqlite");
@@ -516,7 +517,7 @@ async fn external_checkpoint_rejects_complete_database_rollback() {
         .verify_external_checkpoint(&checkpoint)
         .await
         .expect("current store verifies");
-    drop(store);
+    store.pool.close().await;
 
     fs::copy(&rollback_copy, &db_path).expect("restore old database");
     for suffix in ["-wal", "-shm"] {
@@ -525,6 +526,7 @@ async fn external_checkpoint_rejects_complete_database_rollback() {
     }
     let error = HeptaEvidenceStore::open_with_external_checkpoint(&sqlite, &checkpoint)
         .await
-        .expect_err("rolled back database must fail the checkpoint");
+        .err()
+        .expect("rolled back database must fail the checkpoint");
     assert!(matches!(error, crate::EvidenceError::Corrupt(_)));
 }
