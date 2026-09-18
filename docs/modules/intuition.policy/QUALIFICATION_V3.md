@@ -1,40 +1,77 @@
 # intuition.policy current-generation qualification V3
 
-Status: source-level qualification implementation. Green tests establish the exact candidate's source behavior; they do not establish production activation, operator acceptance, promotion or release.
+Status: source-level qualification implementation. Green exact-source and merge-candidate tests establish candidate source behavior only; they do not establish production activation, operator acceptance, promotion or release.
 
 ## Closed qualification chain
 
-The current path is:
+The current path separates long-lived qualification from per-decision provenance:
 
-1. A legal-set generator produces the complete bounded candidate set and `CandidateSetCompletenessBindingV1`.
-2. `codex-hepta-intuition::decide_calibrated_v2` fails closed when `omitted_count_bound != 0`; consumer-only compensation is no longer sufficient for a current decision.
-3. A `CanonicalPolicyProfileV1` freezes the model/scorer contract, objective class, generation/window, confidence/ECE/OOD thresholds, OOD in-domain ceiling, risk routing rule, frozen qualification datasets and accepted calibration/OOD artifact digests.
-4. The generator signs `canonical_completeness_evidence_payload_v1` over the exact state and complete candidate-set receipt.
-5. An independent evaluator signs `canonical_qualification_evidence_payload_v1` over the exact calibrated request plus canonical profile.
-6. `codex-hepta-intelligence::decide_authenticated_intuition_v1` verifies both signatures against `LearningEvidenceVerifierV1`: payload bytes, role, trust digest, objective/scope, authority epoch, signer key, validity window, revocation and role/controller separation are checked before policy evaluation.
-7. `decide_calibrated_v3` rejects profile/request drift and returns a receipt whose V3 digest commits to the original request, canonical profile and bounded V2 decision.
-8. `run_qualified_evaluated_shadow_v2` is the current qualified Lane-F compatibility wrapper. It authenticates before any host port, proves V2/V3 decision parity for the supported `HighOnlySlowPath` host rule, and rebinds the shadow run request digest to the authentication/profile/decision digests before execution.
+1. A legal-set generator emits the bounded candidate identities and completeness facts.
+2. `decide_calibrated_v2` fails closed when `omitted_count_bound != 0`.
+3. A reusable `CanonicalPolicyProfileV1` freezes policy semantics, model/scorer identities, generation/window, confidence/ECE/OOD thresholds, maximum in-domain OOD score, risk routing, frozen qualification datasets, admitted artifact identities, measured calibration/OOD metadata, detector/support digests and artifact validity windows.
+4. An independent evaluator signs only the canonical profile qualification payload. This attestation can be reused for decisions in the profile validity window.
+5. For each decision, the generator signs candidate identity/completeness, the scorer signs `ScoringCommitmentV1`, and CounterBased assignment requires a RandomSource signature over exact `(stream, request sequence/counter, draw, abstain mass, distribution)`.
+6. `codex-hepta-intelligence::decide_authenticated_intuition_v1` verifies all required signatures against `LearningEvidenceVerifierV1`: trust digest, role, signer key, authority epoch, objective/scope, validity, revocation and principal/controller independence.
+7. The consumer computes the exact calibrated request digest and binds it with all verified evidence. No evaluator per-decision signature is required because every mutable decision-time domain has a separately authenticated owner.
+8. `decide_calibrated_v3` validates profile/request equality and the scoring commitment, then returns a receipt binding exact request + canonical profile + scoring commitment + bounded V2 outcome.
 
-Stricter V3 risk rules (`ElevatedAndHighSlowPath`, `AlwaysSlowPath`) are implemented in the policy kernel. They require a native V3 host port rather than the legacy Lane-F compatibility adapter, so the wrapper fails closed instead of silently weakening them.
+The legacy Lane-F wrapper still accepts only `HighOnlySlowPath`; stricter V3 risk profiles require a native V3 host port and fail closed at that compatibility boundary.
+
+## Identity separation
+
+`policy_digest`, `model_artifact_digest`, and `scorer_contract_digest` are distinct identities. The canonical profile binds the tuple; it never assumes model bytes are the policy identity.
+
+This supports model replacement under stable policy semantics, policy/profile revisions over one model, and independent scorer-interface versioning.
+
+## Scoring provenance
+
+`ScoringCommitmentV1` binds:
+
+- decision/state/generation/sequence;
+- model artifact and scorer contract;
+- feature snapshot/schema;
+- output schema and score semantics;
+- candidate identity;
+- exact utility/confidence/OOD outputs.
+
+Changing score outputs after commitment fails even when the candidate IDs are unchanged.
+
+## Random assignment provenance
+
+CounterBased assignment cannot be caller-chosen. `RandomSource` owns a signed payload binding the random-stream digest, request sequence as counter, exact draw, abstain mass, candidate identities and all assignment probabilities.
+
+A randomized request without that evidence fails closed. Deterministic requests reject unexpected RandomSource evidence.
 
 ## Frozen-data qualification test
 
-`codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs` consumes repository-controlled immutable fixtures:
+`codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs`:
 
-- `fixtures/intuition-policy/linear-scorer-v1.model`
-- `fixtures/intuition-policy/frozen-calibration-v1.csv`
-- `fixtures/intuition-policy/frozen-ood-v1.csv`
+- hashes and parses the retained reference model;
+- computes measured ECE and OOD false-acceptance from frozen datasets;
+- derives calibration/OOD artifact identities;
+- uses a policy digest distinct from the model artifact digest;
+- builds an exact feature/scoring commitment;
+- creates independent Generator, Scorer, Evaluator and RandomSource trust principals;
+- signs the corresponding payloads;
+- rejects tampered scorer evidence and missing RNG evidence;
+- obtains the current-generation V3 policy decision only after all admission checks pass.
 
-The test hashes and parses the actual model artifact, runs its deterministic scorer over frozen calibration/OOD rows, computes measured ECE and OOD false-acceptance metrics, materializes artifact digests from those measured results, binds those artifacts and dataset digests into the canonical policy profile, independently signs completeness/qualification payloads, verifies them through the real trust verifier, and only then asks the policy for a decision. Editing model bytes, frozen data, thresholds, artifact metadata, signatures, generation or candidate set changes a bound digest or fails qualification.
+The fixtures prove the chain, not production model quality.
 
-This is a deterministic repository qualification model used to prove the chain. It is not a claim that this fixture model is a production-selected learned artifact.
+## Two performance gates
 
-## Fast gate
+The qualification workflow intentionally reports two different latency surfaces.
 
-`.github/workflows/hepta-intuition-qualification.yml` runs exact-source and synthetic-merge qualification. `codex-rs/hepta-intuition/examples/fast_gate.rs` measures release-mode V3 policy-kernel latency, throughput and allocator activity at candidate counts 1, 16, 64 and 128. It reports p50/p95/p99 latency, decisions/second, allocation count per decision and allocated bytes per decision, and fails the workflow when a bound is exceeded.
+### Kernel fast gate
 
-The benchmark intentionally measures the pure decision kernel after trust admission; Ed25519 evidence verification is the consumer admission boundary, not part of the bounded candidate-scoring/selection hot path. Benchmark ceilings are conservative CI regression bounds, not a production SLO. Production p50/p95/p99 SLOs must be tightened against the selected host profile before activation.
+`codex-rs/hepta-intuition/examples/fast_gate.rs` measures the pure V3 policy kernel at 1/16/64/128 candidates, including profile and scoring-commitment validation. It reports p50/p95/p99, throughput and allocator activity.
+
+### Authenticated end-to-end gate
+
+`codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs` measures the host admission path at 1/16/64/128 candidates. It includes four-role Ed25519 verification, trust/revocation/window checks, signer/controller independence, exact request binding, profile admission, scorer provenance, RNG provenance and the V3 decision.
+
+These CI bounds are regression gates, not target-host production SLOs. Target-host activation must retain its own exact host/profile measurements.
 
 ## Remaining non-claims
 
-This change does not train a production model, choose a production model artifact, prove an external runtime has executed an intervention, authenticate a counter-based assignment draw from its eventual random-source owner, or authorize release. Those are separate owner/activation/evidence states.
+This source change does not select a production model, prove real future-time calibration efficacy, create a named product caller, prove external intervention execution, grant effect authority, establish operator acceptance, promote an artifact or authorize release.
