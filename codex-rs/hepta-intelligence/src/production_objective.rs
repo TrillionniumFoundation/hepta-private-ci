@@ -41,27 +41,73 @@ pub struct ProductionRunBindingsV1 {
     pub authority_epoch: u64,
     pub generation: u64,
     pub fence_digest: Digest32,
-    /// Exact current durable ledger head supplied by the ledger owner.
+    /// Exact predecessor of this durable record. An exact retry supplies the
+    /// same predecessor as the original append.
     pub expected_ledger_predecessor: Digest32,
 }
 
-/// Digest-bound product handoff consumed by the runtime host.
+/// Minimal digest-bound handoff consumed by the runtime host.
 ///
-/// The envelope contains no grant. Its authority posture is always DENY_ALL;
-/// effect authorization remains a separate kernel boundary.
+/// Full objective/admission facts remain in the durable owner record and the
+/// product publication receipt. Agentd receives only the frozen RunStart
+/// binding, admission lineage and durable chain evidence.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct IntelligenceHostEnvelopeV1 {
-    pub objective_admission: ObjectiveAdmissionReceiptV1,
-    pub objective: ObjectiveCompileReceipt,
     pub run_start: RunStartSnapshotV1,
-    pub durable_append: AppendReceipt,
+    pub profile_digest: Digest32,
+    pub intent_digest: Digest32,
+    pub admitted_source_digest: Digest32,
+    pub deadline_unix_micros: Option<u64>,
+    pub durable_sequence: u64,
+    pub durable_event_digest: Digest32,
+    pub durable_chain_digest: Digest32,
+    pub run_start_digest: Digest32,
     pub envelope_digest: Digest32,
     pub authority: AuthorityPosture,
 }
 
 impl IntelligenceHostEnvelopeV1 {
     pub fn validate(&self) -> Result<(), ProductionObjectiveError> {
-        if self.authority.grants_any() || self.objective_admission.authority.grants_any() {
+        if self.authority.grants_any() {
+            return Err(ProductionObjectiveError::AuthorityEscalation);
+        }
+        for (field, digest) in [
+            ("profile", self.profile_digest),
+            ("intent", self.intent_digest),
+            ("admitted source", self.admitted_source_digest),
+            ("durable event", self.durable_event_digest),
+            ("durable chain", self.durable_chain_digest),
+            ("run start", self.run_start_digest),
+        ] {
+            if digest.is_zero() {
+                return Err(ProductionObjectiveError::EmptyHostDigest(field));
+            }
+        }
+        if self.durable_sequence == 0 {
+            return Err(ProductionObjectiveError::InvalidDurableSequence);
+        }
+        if self.run_start.digest() != self.run_start_digest {
+            return Err(ProductionObjectiveError::RunStartDigestMismatch);
+        }
+        if self.envelope_digest != envelope_digest(self) {
+            return Err(ProductionObjectiveError::EnvelopeDigestMismatch);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProductionObjectiveStartReceiptV1 {
+    pub objective_admission: ObjectiveAdmissionReceiptV1,
+    pub objective: ObjectiveCompileReceipt,
+    pub run_start: RunStartSnapshotV1,
+    pub durable_append: AppendReceipt,
+    pub host_envelope: IntelligenceHostEnvelopeV1,
+}
+
+impl ProductionObjectiveStartReceiptV1 {
+    pub fn validate(&self) -> Result<(), ProductionObjectiveError> {
+        if self.objective_admission.authority.grants_any() {
             return Err(ProductionObjectiveError::AuthorityEscalation);
         }
         if self.objective.disposition != CompileDisposition::Compiled {
@@ -77,16 +123,26 @@ impl IntelligenceHostEnvelopeV1 {
         {
             return Err(ProductionObjectiveError::AdmissionBindingMismatch);
         }
-        if self.envelope_digest != envelope_digest(self) {
-            return Err(ProductionObjectiveError::EnvelopeDigestMismatch);
+        if self.host_envelope.run_start != self.run_start
+            || self.host_envelope.profile_digest != self.objective_admission.profile_digest
+            || self.host_envelope.intent_digest != self.objective_admission.intent_digest
+            || self.host_envelope.admitted_source_digest
+                != self.objective_admission.admitted_source_digest
+            || self.host_envelope.deadline_unix_micros
+                != self.objective_admission.deadline_unix_micros
+            || self.host_envelope.durable_sequence != self.durable_append.sequence.get()
+            || self.host_envelope.durable_event_digest != self.durable_append.event_digest
+            || self.host_envelope.durable_chain_digest != self.durable_append.chain_digest
+        {
+            return Err(ProductionObjectiveError::HostBindingMismatch);
         }
-        Ok(())
+        self.host_envelope.validate()
     }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductionObjectiveDispositionV1 {
-    Published(IntelligenceHostEnvelopeV1),
+    Published(ProductionObjectiveStartReceiptV1),
     Conflict {
         admission: ObjectiveAdmissionReceiptV1,
         conflict: ObjectiveConflictReceipt,
@@ -106,6 +162,10 @@ pub enum ProductionObjectiveError {
     AuthorityEscalation,
     InvalidPublishedDisposition,
     AdmissionBindingMismatch,
+    HostBindingMismatch,
+    EmptyHostDigest(&'static str),
+    InvalidDurableSequence,
+    RunStartDigestMismatch,
     EnvelopeDigestMismatch,
 }
 
@@ -125,6 +185,12 @@ impl fmt::Display for ProductionObjectiveError {
             Self::AdmissionBindingMismatch => {
                 formatter.write_str("published objective is not bound to admitted source")
             }
+            Self::HostBindingMismatch => {
+                formatter.write_str("runtime host envelope differs from durable publication receipt")
+            }
+            Self::EmptyHostDigest(field) => write!(formatter, "host envelope {field} digest is zero"),
+            Self::InvalidDurableSequence => formatter.write_str("host envelope durable sequence is zero"),
+            Self::RunStartDigestMismatch => formatter.write_str("host envelope run-start digest mismatch"),
             Self::EnvelopeDigestMismatch => formatter.write_str("objective host envelope digest mismatch"),
         }
     }
@@ -140,6 +206,10 @@ impl StdError for ProductionObjectiveError {
             Self::AuthorityEscalation
             | Self::InvalidPublishedDisposition
             | Self::AdmissionBindingMismatch
+            | Self::HostBindingMismatch
+            | Self::EmptyHostDigest(_)
+            | Self::InvalidDurableSequence
+            | Self::RunStartDigestMismatch
             | Self::EnvelopeDigestMismatch => None,
         }
     }
@@ -202,17 +272,30 @@ pub fn prepare_intelligence_run_v1<J: DurableLearningJournal>(
         .append(bindings.expected_ledger_predecessor, event)
         .map_err(ProductionObjectiveError::Durable)?;
 
-    let mut envelope = IntelligenceHostEnvelopeV1 {
+    let mut host_envelope = IntelligenceHostEnvelopeV1 {
+        run_start: run_start.clone(),
+        profile_digest: admission.profile_digest,
+        intent_digest: admission.intent_digest,
+        admitted_source_digest: admission.admitted_source_digest,
+        deadline_unix_micros: admission.deadline_unix_micros,
+        durable_sequence: durable_append.sequence.get(),
+        durable_event_digest: durable_append.event_digest,
+        durable_chain_digest: durable_append.chain_digest,
+        run_start_digest: run_start.digest(),
+        envelope_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    host_envelope.envelope_digest = envelope_digest(&host_envelope);
+
+    let receipt = ProductionObjectiveStartReceiptV1 {
         objective_admission: admission,
         objective: compile,
         run_start,
         durable_append,
-        envelope_digest: Digest32::ZERO,
-        authority: AuthorityPosture::DENY_ALL,
+        host_envelope,
     };
-    envelope.envelope_digest = envelope_digest(&envelope);
-    envelope.validate()?;
-    Ok(ProductionObjectiveDispositionV1::Published(envelope))
+    receipt.validate()?;
+    Ok(ProductionObjectiveDispositionV1::Published(receipt))
 }
 
 fn envelope_digest(value: &IntelligenceHostEnvelopeV1) -> Digest32 {
@@ -220,18 +303,32 @@ fn envelope_digest(value: &IntelligenceHostEnvelopeV1) -> Digest32 {
     bytes.extend_from_slice(HOST_ENVELOPE_DIGEST_DOMAIN);
     push_id(&mut bytes, &value.run_start.run_id);
     for digest in [
-        value.objective_admission.profile_digest,
-        value.objective_admission.intent_digest,
-        value.objective_admission.admitted_source_digest,
-        value.objective.objective.semantic_digest,
-        value.objective.objective.hard_constraint_digest,
-        value.run_start.digest(),
-        value.durable_append.event_digest,
-        value.durable_append.chain_digest,
+        value.profile_digest,
+        value.intent_digest,
+        value.admitted_source_digest,
+        value.run_start.objective_digest,
+        value.run_start.hard_constraint_digest,
+        value.run_start.preference_state_digest,
+        value.run_start.model_tuple_digest,
+        value.run_start.prompt_registry_digest,
+        value.run_start.artifact_set_digest,
+        value.run_start.fence_digest,
+        value.durable_event_digest,
+        value.durable_chain_digest,
+        value.run_start_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    bytes.extend_from_slice(&value.durable_append.sequence.get().to_be_bytes());
+    bytes.extend_from_slice(&value.run_start.authority_epoch.to_be_bytes());
+    bytes.extend_from_slice(&value.run_start.generation.to_be_bytes());
+    match value.deadline_unix_micros {
+        Some(deadline) => {
+            bytes.push(1);
+            bytes.extend_from_slice(&deadline.to_be_bytes());
+        }
+        None => bytes.push(0),
+    }
+    bytes.extend_from_slice(&value.durable_sequence.to_be_bytes());
     Digest32::of_bytes(&bytes)
 }
 
