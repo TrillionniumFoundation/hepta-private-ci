@@ -79,9 +79,7 @@ mod tests {
     use codex_hepta_types::{Digest32, Generation, StableId};
 
     use super::*;
-    use crate::{
-        ArtifactKind, ArtifactManifest, WithdrawalRegistryBindingV1,
-    };
+    use crate::{ArtifactKind, ArtifactManifest, WithdrawalRegistryBindingV1};
 
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("valid id")
