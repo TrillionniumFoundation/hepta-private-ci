@@ -130,6 +130,9 @@ pub(super) struct NativeJournal {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 enum Event {
+    Policy {
+        maximum_in_flight: usize,
+    },
     Reserve {
         request: NativeRequest,
         maximum_in_flight: usize,
@@ -381,6 +384,9 @@ impl NativeJournal {
     pub(super) fn compacted_lines(&self, archive_digest: &str) -> Result<String, Error> {
         validate_digest(archive_digest, "native archive")?;
         let mut events = Vec::new();
+        if let Some(maximum_in_flight) = self.maximum_in_flight {
+            events.push(Event::Policy { maximum_in_flight });
+        }
         for tombstone in self.tombstones.values() {
             events.push(Event::Tombstone {
                 request: tombstone.request.clone(),
@@ -465,6 +471,17 @@ impl NativeJournal {
     }
 
     fn apply(&mut self, event: Event) -> Result<(), Error> {
+        if let Event::Policy { maximum_in_flight } = event {
+            if !(1..=256).contains(&maximum_in_flight)
+                || self
+                    .maximum_in_flight
+                    .is_some_and(|current| current != maximum_in_flight)
+            {
+                return Err(Error::Conflict);
+            }
+            self.maximum_in_flight = Some(maximum_in_flight);
+            return Ok(());
+        }
         if let Event::Tombstone {
             request,
             final_state,
@@ -547,7 +564,7 @@ impl NativeJournal {
             return Ok(());
         }
         let id = match &event {
-            Event::Reserve { .. } | Event::Tombstone { .. } => {
+            Event::Policy { .. } | Event::Reserve { .. } | Event::Tombstone { .. } => {
                 return Err(Error::InvalidTransition)
             }
             Event::Dispatch { request_id, .. }
@@ -558,7 +575,7 @@ impl NativeJournal {
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
-            Event::Reserve { .. } | Event::Tombstone { .. } => {
+            Event::Policy { .. } | Event::Reserve { .. } | Event::Tombstone { .. } => {
                 return Err(Error::InvalidTransition)
             }
             Event::Dispatch { dispatch, .. } => {
