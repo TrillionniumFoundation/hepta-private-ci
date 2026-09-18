@@ -68,8 +68,8 @@ pub(crate) async fn read(
             maximum_encoded_bytes: 1024 * 1024,
         })
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
-    let candidates = store
-        .retrieve_memory_candidates(&access, &RetrievalRequest::new(query, now_seconds()?))
+    let retrieval = store
+        .observe_memory_retrieval(&access, &RetrievalRequest::new(query, now_seconds()?))
         .await?;
     let mut response = CognitiveContextSnapshot {
         snapshot_digest: read.snapshot_digest().to_string(),
@@ -82,8 +82,8 @@ pub(crate) async fn read(
     // budget.  Ranking must see every admitted candidate; otherwise a large
     // low-ranked record can hide the learned winner before the ranker runs.
     let mut admitted_items = Vec::new();
-    for candidate in candidates.candidates {
-        let memory = candidate.memory;
+    for candidate in retrieval.materialized_candidates() {
+        let memory = &candidate.memory;
         // The legacy search ranks candidates; the new owner cut admits only
         // the exact verified revision and content bound by the read port.
         let accepted = read.records().iter().any(|record| {
@@ -98,7 +98,7 @@ pub(crate) async fn read(
         let item = CognitiveContextItem {
             memory_id: memory.id.memory_id.as_str().to_string(),
             revision: memory.id.revision,
-            content: memory.content,
+            content: memory.content.clone(),
             content_sha256: memory.content_sha256.as_str().to_string(),
         };
         admitted_items.push(item);
