@@ -97,8 +97,8 @@ class SandboxCoordinatorTests(unittest.TestCase):
             self.skipTest("host admission locks require POSIX flock")
         with tempfile.TemporaryDirectory() as temp:
             with mock.patch(
-                "control_engineering_v2.sandbox_control.tempfile.gettempdir",
-                return_value=temp,
+                "control_engineering_v2.sandbox_control._HOST_ADMISSION_ROOT",
+                new=sandbox_control.Path(temp),
             ):
                 coordinators = [
                     SandboxCoordinator(SandboxExecutionPolicy(8, 0))
