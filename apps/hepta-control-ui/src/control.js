@@ -2,6 +2,7 @@ import {
   ERROR_CODES,
   fail,
   positiveInteger,
+  readOwnDataFields,
   requireDigest,
   requireRecord,
   stableId,
@@ -72,39 +73,47 @@ function parseCanonicalInput(encoded, expectedKeys, name) {
 }
 
 export function projectRuntime(observation) {
-  requireRecord(observation, "observation");
-  const moduleId = stableId(observation.moduleId, "moduleId");
-  if (!RUNTIME_STATUSES.has(observation.status)) {
+  const fields = readOwnDataFields(
+    observation,
+    "observation",
+    ["moduleId", "status", "revision", "digest"],
+  );
+  const moduleId = stableId(fields.moduleId, "moduleId");
+  if (!RUNTIME_STATUSES.has(fields.status)) {
     fail(ERROR_CODES.INVALID_INPUT, "status is not a registered runtime state");
   }
-  const revision = positiveInteger(observation.revision, "revision");
-  const digest = requireDigest(observation.digest, "digest");
+  const revision = positiveInteger(fields.revision, "revision");
+  const digest = requireDigest(fields.digest, "digest");
 
   return Object.freeze({
     moduleId,
-    status: observation.status,
+    status: fields.status,
     revision,
     digest,
-    ready: observation.status === "ready",
+    ready: fields.status === "ready",
     authorityGranted: false,
     directStoreWrite: false,
   });
 }
 
 export function buildOperationProposal(input) {
-  requireRecord(input, "input");
-  const operationId = stableId(input.operationId, "operationId");
-  const subjectId = stableId(input.subjectId, "subjectId");
-  if (!OPERATION_ACTIONS.has(input.action)) {
+  const fields = readOwnDataFields(
+    input,
+    "input",
+    ["operationId", "subjectId", "action", "expectedRevision"],
+  );
+  const operationId = stableId(fields.operationId, "operationId");
+  const subjectId = stableId(fields.subjectId, "subjectId");
+  if (!OPERATION_ACTIONS.has(fields.action)) {
     fail(ERROR_CODES.INVALID_INPUT, "action is not a registered operator request");
   }
-  const expectedRevision = positiveInteger(input.expectedRevision, "expectedRevision");
+  const expectedRevision = positiveInteger(fields.expectedRevision, "expectedRevision");
 
   return Object.freeze({
     kind: "UiOperationProposalV1",
     operationId,
     subjectId,
-    action: input.action,
+    action: fields.action,
     expectedRevision,
     authorityGranted: false,
     directStoreWrite: false,
