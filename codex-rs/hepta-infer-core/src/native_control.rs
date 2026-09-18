@@ -130,6 +130,23 @@ pub struct NativeDispatch {
     pub codex_deadline_ms: Option<u64>,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NativeDispatchRejectionKind {
+    Rejected,
+    Unavailable,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeDispatchRejection {
+    pub kind: NativeDispatchRejectionKind,
+    pub code: i64,
+    pub reason: String,
+    pub response_digest: String,
+    pub codex_request_digest: String,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct NativeRunRecord {
@@ -142,6 +159,10 @@ pub struct NativeRunRecord {
     /// A locally proven pre-dispatch stop releases a slot without pretending
     /// to have observed a provider terminal event or zero token consumption.
     pub pre_dispatch_stop: Option<String>,
+    /// Explicit App Server rejection that proves the turn was not admitted.
+    /// This is distinct from a lost acknowledgement, which remains indeterminate.
+    #[serde(default)]
+    pub dispatch_rejection: Option<NativeDispatchRejection>,
     pub observation: Option<NativeRunOutput>,
 }
 
@@ -172,6 +193,10 @@ enum Event {
     Stop {
         request_id: String,
         reason: String,
+    },
+    RejectDispatch {
+        request_id: String,
+        rejection: NativeDispatchRejection,
     },
     Observe {
         request_id: String,
@@ -288,6 +313,22 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Records a server response that proves turn/start did not enter execution.
+    /// Only protocol-level pre-admission rejection codes should use this path.
+    pub fn reject_native_dispatch(
+        &mut self,
+        request_id: &str,
+        rejection: NativeDispatchRejection,
+    ) -> Result<NativeRunRecord, Error> {
+        self.commit_native(
+            request_id,
+            Event::RejectDispatch {
+                request_id: request_id.to_string(),
+                rejection,
+            },
+        )
+    }
+
     /// Trusted host port: validates exact assignment and monotonic observations.
     /// Only matching terminal observations release local execution capacity.
     /// Missing usage never becomes zero and unknown execution may later settle.
@@ -395,6 +436,7 @@ impl NativeJournal {
                     turn_id: None,
                     cancel_requested: false,
                     pre_dispatch_stop: None,
+                    dispatch_rejection: None,
                     observation: None,
                 },
             );
@@ -406,6 +448,7 @@ impl NativeJournal {
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
+            | Event::RejectDispatch { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -447,6 +490,35 @@ impl NativeJournal {
                     return Err(Error::InvalidTransition);
                 }
                 record.pre_dispatch_stop = Some(reason);
+                record.state = NativeReservationState::Released;
+            }
+            Event::RejectDispatch { rejection, .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || rejection.reason.is_empty()
+                    || rejection.reason.len() > 4096
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                validate_digest(&rejection.response_digest, "native rejection response")?;
+                validate_digest(
+                    &rejection.codex_request_digest,
+                    "native rejection codex request",
+                )?;
+                let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
+                if dispatch.codex_request_digest.as_deref()
+                    != Some(rejection.codex_request_digest.as_str())
+                {
+                    return Err(Error::AssignmentMismatch);
+                }
+                match rejection.kind {
+                    NativeDispatchRejectionKind::Unavailable if rejection.code == -32001 => {}
+                    NativeDispatchRejectionKind::Rejected
+                        if matches!(rejection.code, -32600 | -32601 | -32602) => {}
+                    _ => return Err(Error::InvalidTransition),
+                }
+                record.dispatch_rejection = Some(rejection);
                 record.state = NativeReservationState::Released;
             }
             Event::Observe { output, .. } => {
