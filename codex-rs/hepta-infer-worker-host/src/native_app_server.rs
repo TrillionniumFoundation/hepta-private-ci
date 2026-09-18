@@ -33,16 +33,14 @@ use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
-use codex_hepta_infer_core::durable_control::native::NativeFinalUseWitness;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
+pub use codex_hepta_infer_core::durable_control::native::native_final_use_binding;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
-use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
@@ -205,18 +203,20 @@ impl AppServerModelDriver {
         let context_digest = control::digest(&serde_json::to_vec(&additional_context)?);
         let binding = native_final_use_binding(request, &started.model_provider, &context_digest)?;
         let verified = final_use.authority.claim(final_use.grant, &binding)?;
-        let witness = native_final_use_witness(final_use.grant, &binding)?;
-        final_use.authority.with_verified_use(verified, &binding, || {
-            control.dispatch_native(
-                request_id,
-                NativeDispatch {
-                    thread_id: started.thread.id.clone(),
-                    model_provider: started.model_provider.clone(),
-                    context_digest,
-                    final_use_witness: Some(witness),
-                },
-            )
-        })??;
+        final_use
+            .authority
+            .with_verified_use_witness(verified, &binding, |witness| {
+                control.dispatch_native_authorized(
+                    request_id,
+                    NativeDispatch {
+                        thread_id: started.thread.id.clone(),
+                        model_provider: started.model_provider.clone(),
+                        context_digest,
+                        final_use_witness: None,
+                    },
+                    witness,
+                )
+            })??;
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
@@ -389,68 +389,6 @@ impl AppServerModelDriver {
             }
         }
     }
-}
-
-/// Build the exact final-use binding used immediately before provider turn entry.
-/// It binds request identity, Agent generation, model, provider, prompt/query
-/// envelope digest and the resolved owner-context digest.
-pub fn native_final_use_binding(
-    request: &NativeRequest,
-    model_provider: &str,
-    context_digest: &str,
-) -> std::result::Result<FinalUseBinding, String> {
-    if !final_use_identifier(model_provider)
-        || format!("provider:{model_provider}").len() > 128
-        || context_digest.len() != 64
-        || !context_digest
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
-    {
-        return Err("invalid native final-use provider/context binding".to_string());
-    }
-    let request_bytes = serde_json::to_vec(&(
-        "hepta.inference.final-use.request.v1",
-        request,
-        model_provider,
-        context_digest,
-    ))
-    .map_err(|_| "cannot encode native final-use request".to_string())?;
-    let scope_bytes = serde_json::to_vec(&(
-        "hepta.inference.final-use.scope.v1",
-        &request.principal_id,
-        request.worker_generation,
-        &request.model,
-        model_provider,
-    ))
-    .map_err(|_| "cannot encode native final-use scope".to_string())?;
-    let payload_bytes = serde_json::to_vec(&(
-        "hepta.inference.final-payload.v1",
-        &request.payload_digest,
-        context_digest,
-        &request.model,
-        model_provider,
-    ))
-    .map_err(|_| "cannot encode native final-use payload".to_string())?;
-    Ok(FinalUseBinding {
-        subject_id: request.principal_id.clone(),
-        destination_id: format!("provider:{model_provider}"),
-        request_sha256: Digest32::of_bytes(&request_bytes).into_array(),
-        scope_sha256: Digest32::of_bytes(&scope_bytes).into_array(),
-        payload_sha256: Digest32::of_bytes(&payload_bytes).into_array(),
-    })
-}
-
-fn native_final_use_witness(
-    grant: &SignedFinalUseGrant,
-    binding: &FinalUseBinding,
-) -> Result<NativeFinalUseWitness> {
-    Ok(NativeFinalUseWitness {
-        signer_id: grant.grant.signer_id.clone(),
-        authority_epoch: grant.grant.authority_epoch,
-        grant_id: grant.grant.grant_id.clone(),
-        expires_at_unix_ms: grant.grant.expires_at_unix_ms,
-        binding_digest: Digest32::of_bytes(&serde_json::to_vec(binding)?).to_string(),
-    })
 }
 
 fn final_use_identifier(value: &str) -> bool {
