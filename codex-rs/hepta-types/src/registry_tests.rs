@@ -32,11 +32,14 @@ fn immutable_registry_resolves_digest_to_exact_definition() {
         "row-major;i64;rank<=4;elements<=4096",
     );
     let normalization_digest = normalization.digest();
-    let registry =
-        ContractRegistryV1::new(vec![schema, normalization.clone()]).expect("registry");
-    let resolved = registry
-        .normalization_definition(normalization_digest)
-        .expect("normalization by digest");
+    let registry = ContractRegistryV1::new(vec![schema, normalization.clone()]);
+    let Ok(registry) = registry else {
+        panic!("registry fixture should be valid");
+    };
+    let resolved = registry.normalization_definition(normalization_digest);
+    let Some(resolved) = resolved else {
+        panic!("normalization digest should resolve");
+    };
     assert_eq!(resolved, &normalization);
     assert_eq!(
         registry
@@ -48,7 +51,11 @@ fn immutable_registry_resolves_digest_to_exact_definition() {
             .map(RegistryDefinitionV1::digest),
         Some(normalization_digest)
     );
-    assert!(!registry.registry_digest().expect("registry digest").is_zero());
+    let registry_digest = registry.registry_digest();
+    let Ok(registry_digest) = registry_digest else {
+        panic!("valid registry should have a canonical digest");
+    };
+    assert!(!registry_digest.is_zero());
 }
 
 #[test]
@@ -65,9 +72,14 @@ fn registry_digest_is_insertion_order_independent_and_definition_sensitive() {
         1,
         "identity",
     );
-    let first =
-        ContractRegistryV1::new(vec![left.clone(), right.clone()]).expect("first registry");
-    let second = ContractRegistryV1::new(vec![right, left]).expect("second registry");
+    let first = ContractRegistryV1::new(vec![left.clone(), right.clone()]);
+    let Ok(first) = first else {
+        panic!("first registry fixture should be valid");
+    };
+    let second = ContractRegistryV1::new(vec![right, left]);
+    let Ok(second) = second else {
+        panic!("second registry fixture should be valid");
+    };
     assert_eq!(first.registry_digest(), second.registry_digest());
 
     let changed = definition(
