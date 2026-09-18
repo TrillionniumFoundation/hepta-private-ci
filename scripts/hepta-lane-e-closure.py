@@ -863,8 +863,8 @@ def verify_workflow(findings: Findings) -> None:
     findings.require(
         "hepta-lane-e-qualification-" in text
         and "actions/upload-artifact@" in text
-        and "receipt --kind source-head" in text
-        and "receipt --kind synthetic-merge" in text,
+        and re.search(r"receipt\s*\\?\s*--kind\s+source-head", text)
+        and re.search(r"receipt\s*\\?\s*--kind\s+synthetic-merge", text),
         "workflow_gate_missing",
         "workflow must retain exact-source and synthetic-merge qualification receipts",
     )
