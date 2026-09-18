@@ -93,7 +93,31 @@ CREATE TABLE authbus_quota_reservations (
     terminal_evidence BLOB CHECK (terminal_evidence IS NULL OR length(terminal_evidence) = 32),
     created_at_ms INTEGER NOT NULL CHECK (created_at_ms >= 0),
     updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= created_at_ms),
-    terminal_at_ms INTEGER,
+    terminal_at_ms INTEGER CHECK (terminal_at_ms IS NULL OR terminal_at_ms >= created_at_ms),
+    CHECK (
+        (state = 'reserved'
+            AND observed_cost IS NULL
+            AND terminal_evidence IS NULL
+            AND terminal_at_ms IS NULL)
+        OR (state = 'in_flight'
+            AND observed_cost IS NULL
+            AND terminal_evidence IS NULL
+            AND terminal_at_ms IS NULL)
+        OR (state = 'quarantined'
+            AND observed_cost IS NULL
+            AND terminal_evidence IS NOT NULL
+            AND terminal_at_ms IS NULL)
+        OR (state = 'settled'
+            AND observed_cost IS NOT NULL
+            AND terminal_evidence IS NOT NULL
+            AND terminal_at_ms IS NOT NULL)
+        OR (state = 'cancelled'
+            AND observed_cost IS NULL
+            AND terminal_at_ms IS NOT NULL)
+        OR (state = 'expired'
+            AND observed_cost IS NULL
+            AND terminal_at_ms IS NOT NULL)
+    ),
     FOREIGN KEY (quota_key) REFERENCES authbus_quota_registry(quota_key)
         ON UPDATE RESTRICT ON DELETE RESTRICT
 ) WITHOUT ROWID;
