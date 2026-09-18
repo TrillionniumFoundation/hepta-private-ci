@@ -191,7 +191,7 @@ def verify() -> int:
         "admit_publish_and_start_objective_run_v1",
         "ObjectiveRunFileStore",
         "file.sync_all()?",
-        "fs::rename(&temp_path, &final_path)",
+        "fs::hard_link(&temp_path, &final_path)",
         "CompileDisposition::ExplicitAbstain",
         ".start_run(",
     ]:
