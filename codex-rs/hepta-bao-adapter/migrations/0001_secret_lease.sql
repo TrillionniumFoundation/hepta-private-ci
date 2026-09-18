@@ -19,6 +19,7 @@ CREATE TABLE secret_leases (
     lease_id TEXT PRIMARY KEY,
     schema_version INTEGER NOT NULL,
     provider_mount TEXT NOT NULL,
+    namespace TEXT NOT NULL,
     consumer_id TEXT NOT NULL,
     scope_sha256 BLOB NOT NULL CHECK (length(scope_sha256) = 32),
     request_sha256 BLOB NOT NULL CHECK (length(request_sha256) = 32),
