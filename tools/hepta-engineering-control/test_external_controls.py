@@ -383,9 +383,11 @@ class ExternalControlTests(unittest.TestCase):
                     self.trust,
                     now_ns=self.now,
                 )
-                self.assertEqual(len(decision.distributed_fence_digest), 64)
-                self.assertEqual(len(decision.audit_anchor_digest), 64)
-                self.assertEqual(len(decision.key_custody_digest), 64)
+                self.assertTrue(decision.distributed_fence_verified)
+                self.assertTrue(decision.external_audit_anchor_verified)
+                self.assertTrue(decision.external_key_custody_verified)
+                self.assertEqual(len(decision.evidence_digest), 64)
+                self.assertNotEqual(decision.evidence_digest, "0" * 64)
                 self.assertFalse(decision.runtime_authority)
                 self.assertFalse(decision.merge_authority)
                 self.assertFalse(decision.release_authority)
