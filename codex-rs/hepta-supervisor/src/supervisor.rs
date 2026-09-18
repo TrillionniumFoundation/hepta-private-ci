@@ -406,6 +406,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            slot.restart_attempt = 0;
+            slot.restart_window_started_at = None;
+            slot.restart_retry_at = None;
             supervisor.start_slot(agent_id, slot, command, now)
         })
     }
@@ -417,6 +420,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            slot.restart_attempt = 0;
+            slot.restart_window_started_at = None;
+            slot.restart_retry_at = None;
             supervisor.start_release_slot(agent_id, slot, release, now)
         })
     }
