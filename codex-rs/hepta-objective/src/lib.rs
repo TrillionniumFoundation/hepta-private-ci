@@ -12,6 +12,8 @@ mod feasibility;
 mod feasibility_model;
 mod model;
 mod objective_admission;
+mod objective_admission_gate;
+mod retry_policy;
 mod scalar_adapter;
 mod source_envelope_json;
 mod source_envelope_json_dto;
@@ -48,6 +50,15 @@ pub use model::SoftDirection;
 pub use model::SoftPreference;
 pub use model::SourceTrust;
 pub use model::SuccessPredicate;
+
+/// Stable V1 Rust contract name for the native compile receipt. This alias fixes
+/// the public type-name drift with `ObjectiveCompileReceiptV1`; it does not claim
+/// that the native `ObjectiveFunction` is the canonical JSON wire projection.
+pub type ObjectiveCompileReceiptV1 = ObjectiveCompileReceipt;
+
+/// Stable V1 Rust contract name for the typed non-error conflict outcome.
+pub type ObjectiveConflictReceiptV1 = ObjectiveConflictReceipt;
+
 pub use objective_admission::ObjectiveAbstentionRuleProfileV1;
 pub use objective_admission::ObjectiveActionProfileV1;
 pub use objective_admission::ObjectiveAdmissionContextV1;
@@ -63,8 +74,11 @@ pub use objective_admission::ObjectiveResourceProfileV1;
 pub use objective_admission::ObjectiveRiskProfileV1;
 pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
-pub use objective_admission::admit_and_compile_objective_v1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
+pub use objective_admission_gate::admit_and_compile_objective_v1;
+pub use retry_policy::ObjectiveRetryDirectiveV1;
+pub use retry_policy::objective_admission_blind_retry_safe_v1;
+pub use retry_policy::objective_admission_retry_directive_v1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
 pub use source_envelope_json::decode_source_envelope_json_v1;
@@ -83,4 +97,7 @@ pub use source_envelope_v1::ObjectiveSourceEnvelopeV1;
 pub use source_envelope_v1::ObjectiveSourcePredicateV1;
 pub use source_envelope_v1::ObjectiveSourceTrustV1;
 pub use source_envelope_v1::ObjectiveStructuredIntentV1;
+pub use source_envelope_validation::MAX_OBJECTIVE_AGGREGATE_PREDICATES;
+pub use source_envelope_validation::MAX_OBJECTIVE_CALLER_ACTIONS;
+pub use source_envelope_validation::MAX_OBJECTIVE_SOURCE_CONSTRAINTS;
 pub use source_envelope_validation::ObjectiveStructureError;
