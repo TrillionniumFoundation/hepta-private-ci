@@ -16,6 +16,18 @@
 
 This stable document is the implementation guide for `auth.authbus`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+### Current capability status
+
+| Capability | Target | Source implemented | Product-composed |
+| --- | --- | --- | --- |
+| Authentication | yes | yes | partial: Agentd signed-text ingress |
+| Authorization | yes | yes, candidate | no effect caller yet |
+| Quota | yes | yes, candidate | no provider/economic caller yet |
+| Reservation / settlement | yes | yes, candidate | no external-effect caller yet |
+
+The candidate control implementation is split deliberately across owners: `codex-rs/hepta-authbus/src/control.rs` owns pure policy/quota/reservation contract types; `codex-rs/hepta-evidence/src/authbus_control.rs` and migrations 0011/0012 own durable transactions, reconciliation, restore-checkpoint binding and replay-epoch retirement; `codex-rs/hepta-agentd` remains the narrow signed-text host. Source implementation is not production acceptance: the candidate must pass exact-head, synthetic-merge, native product and independent semantic/security qualification before any production claim.
+
+
 ## 1. Identity, mission and ownership
 
 Own policy, quota and reservation facts while separating authorization from external secret effects.
