@@ -53,6 +53,7 @@ from .evidence import (
 )
 from .facade import (
     ReviewRequest,
+    execute_candidate_bundle_sandbox,
     execute_candidate_sandbox,
     generate_candidate,
     issue_work_envelope,
@@ -80,6 +81,7 @@ from .orchestration import (
 from .execution_control import (
     HostSandboxLimiter,
     MutationProbeResult,
+    default_host_sandbox_limiter,
     MutationTestReceipt,
     evaluate_mutation_probes,
     execute_with_infrastructure_retries,
@@ -155,7 +157,9 @@ __all__ = [
     "ReviewCapacity",
     "WorkerCapacity",
     "WorkCompletionReceipt",
+    "default_host_sandbox_limiter",
     "evaluate_mutation_probes",
+    "execute_candidate_bundle_sandbox",
     "execute_with_infrastructure_retries",
     "export_audit_anchor",
     "generate_candidate_bundle",
