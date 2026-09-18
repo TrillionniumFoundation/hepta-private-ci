@@ -1,9 +1,4 @@
-"""Deterministic engineering scheduling and integration eligibility.
-
-This module coordinates bounded work envelopes. It deliberately exposes no API
-for merging a pull request, modifying runtime authority, deploying, promoting,
-or releasing a candidate.
-"""
+"""Legacy compatibility facade for the pre-v2 engineering-control prototype.\n\nCanonical new composition lives in control_engineering_v2. This module is retained\nonly for historical callers and regression fixtures; it is not a native mapping,\nproduct caller, production evidence verifier, or supported path for new integration.\nIts boolean-based IntegrationEvidence cannot substitute for authenticated v2\nGit/execution/evaluator receipts.\n\nIt deliberately exposes no API for merging a pull request, modifying runtime\nauthority, deploying, promoting, or releasing a candidate.\n"""
 
 from __future__ import annotations
 
@@ -15,6 +10,7 @@ import re
 MAX_PACKAGES = 4096
 MAX_LEASES = 4096
 MAX_ASSIGNMENTS = 128
+LEGACY_COMPATIBILITY_ONLY = True
 
 
 @dataclass(frozen=True, order=True)
