@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  checks: read
 
 jobs:
   repository-control:
@@ -22,38 +23,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
+          HEPTA_EVALUATOR_APP_ID: ${{ vars.HEPTA_EVALUATOR_APP_ID }}
         shell: bash
         run: |
           set -euo pipefail
-          test "$GITHUB_REF_NAME" = "main"
+          test "$GITHUB_REF" = "refs/heads/main"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-
-          branch_json="$(gh api "repos/$REPO/branches/main")"
-          test "$(jq -r '.protected' <<<"$branch_json")" = "true"
-
-          # A prose policy file is not enforcement. Require at least one live
-          # ruleset or branch-protection object and fail closed when the token
-          # cannot observe repository administration state.
-          rulesets="$(gh api "repos/$REPO/rulesets?includes_parents=true")"
-          test "$(jq 'length' <<<"$rulesets")" -gt 0
-
-          protection="$(gh api "repos/$REPO/branches/main/protection")"
-          test "$(jq -r '.required_pull_request_reviews.required_approving_review_count // 0' <<<"$protection")" -ge 1
-          test "$(jq -r '.allow_force_pushes.enabled // false' <<<"$protection")" = "false"
-
-          required="$(jq '[.required_status_checks.checks[]?.context, .required_status_checks.contexts[]?] | flatten | unique' <<<"$protection")"
-          jq -e 'index("blocking-ci") != null' <<<"$required" >/dev/null
+          # Observation failures (including 403) are fatal. Do not provide an
+          # administration token or release credentials to checked-out code.
+          python3 scripts/hepta_repository_controls.py \
+            --repo "$REPO" --expected-sha "$GITHUB_SHA"
 
       - name: Verify source-side independent integration semantics
         shell: bash
         run: |
           set -euo pipefail
           python3 tools/hepta-engineering-control/test_integration_identity.py -v
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          policy = json.loads(Path("docs/branch-policy.json").read_text())
-          assert policy["selfIterationActivationRequiresLiveProtection"] is True
-          assert policy["protectedBranchesAreRequiredStateNotObservation"] is True
-          assert policy["protectedBranches"] == ["main"]
-          PY
+          python3 scripts/tests/test_hepta_repository_controls.py -v
