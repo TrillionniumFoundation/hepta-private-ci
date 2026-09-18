@@ -108,4 +108,7 @@ mod authbus_outbox_tests;
 #[cfg(test)]
 #[path = "authbus_outbox_quarantine_tests.rs"]
 mod authbus_outbox_quarantine_tests;
-\n#[cfg(test)]\n#[path = "authbus_control_tests.rs"]\nmod authbus_control_tests;\n
+
+#[cfg(test)]
+#[path = "authbus_control_tests.rs"]
+mod authbus_control_tests;
