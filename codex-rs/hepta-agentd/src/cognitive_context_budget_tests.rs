@@ -398,3 +398,85 @@ async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstenti
     .unwrap();
     assert_eq!(selected.items, vec![baseline.items[0].clone()]);
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn production_read_fail_closes_when_owner_changes_after_authoritative_acquisition() {
+    let (_directory, store, owner, items) = stored_candidates(vec![
+        "lemon authoritative alpha".to_string(),
+        "lemon authoritative beta".to_string(),
+    ])
+    .await;
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let memory_id = must(
+        StableMemoryId::parse(items[0].memory_id.clone()),
+        "parse memory id",
+    );
+    let head = must(
+        store.read_memory_head(&access, &memory_id).await,
+        "read memory head",
+    );
+
+    let (entered_tx, entered_rx) = std::sync::mpsc::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let fixture = fitted_ranker_with_gate(
+        owner.clone(),
+        &items,
+        &[10, 0],
+        Some(CurrentViewGate {
+            calls: AtomicUsize::new(0),
+            entered: entered_tx,
+            release: Mutex::new(release_rx),
+        }),
+    );
+
+    let read_store = store.clone();
+    let read_owner = owner.clone();
+    let read_ranker = Arc::clone(&fixture.ranker);
+    let read_task = tokio::spawn(async move {
+        read(
+            &read_store,
+            &read_owner,
+            /*body_generation*/ 1,
+            /*authority_epoch*/ 2,
+            "lemon",
+            /*limit*/ 2,
+            Some(&read_ranker),
+        )
+        .await
+    });
+
+    let gate_wait = must(
+        tokio::task::spawn_blocking(move || entered_rx.recv_timeout(Duration::from_secs(5))).await,
+        "join ranker gate wait",
+    );
+    must(gate_wait, "wait for ranker gate");
+
+    must(
+        store
+            .correct_memory(
+                &access,
+                &memory_id,
+                head.id.revision,
+                &MemoryRevisionDraft {
+                    scope: head.scope.clone(),
+                    content: "lemon authoritative alpha corrected".to_string(),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: head.valid_from_unix_seconds,
+                    valid_to_unix_seconds: head.valid_to_unix_seconds,
+                    citations: head.citations.clone(),
+                },
+            )
+            .await,
+        "advance memory frontier",
+    );
+    must(release_tx.send(()), "release ranker gate");
+
+    let result = must(read_task.await, "join cognitive read");
+    assert!(matches!(
+        result,
+        Err(super::super::CognitiveContextError::Store(
+            CognitiveStoreError::Conflict(_)
+        ))
+    ));
+}
