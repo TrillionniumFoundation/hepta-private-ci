@@ -1,13 +1,19 @@
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
+#[cfg(unix)]
 use std::fs::OpenOptions;
+#[cfg(unix)]
 use std::fs::TryLockError;
+#[cfg(unix)]
 use std::io::Read;
+#[cfg(unix)]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+#[cfg(unix)]
 use std::sync::atomic::AtomicU64;
+#[cfg(unix)]
 use std::sync::atomic::Ordering;
 
 use codex_hepta_types::Digest32;
@@ -18,12 +24,19 @@ use crate::PlannerJournalEntryV1;
 use crate::PlannerJournalError;
 use crate::PlannerJournalV1;
 
+#[cfg(unix)]
 const STORE_MAGIC: &[u8; 8] = b"HCPSTR01";
+#[cfg(unix)]
 const STORE_VERSION: u32 = 1;
+#[cfg(unix)]
 const STORE_HEADER_BYTES: usize = 8 + 4 + 8 + 32;
+#[cfg(unix)]
 const STORE_MAX_BYTES: u64 = 1024 * 1024;
+#[cfg(unix)]
 const JOURNAL_NAME: &str = "planner-journal.hcp";
+#[cfg(unix)]
 const LOCK_NAME: &str = "planner-journal.lock";
+#[cfg(unix)]
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Debug)]
@@ -246,6 +259,7 @@ impl Drop for PlannerJournalStoreV1 {
     }
 }
 
+#[cfg(unix)]
 fn enforce_minimum_head(
     journal: &PlannerJournalV1,
     minimum_head: Option<Digest32>,
@@ -269,6 +283,7 @@ fn enforce_minimum_head(
     }
 }
 
+#[cfg(unix)]
 fn encode_store(journal: &PlannerJournalV1) -> Result<Vec<u8>, PlannerStoreErrorV1> {
     let payload = journal.export_bytes();
     let payload_len =
@@ -288,6 +303,7 @@ fn encode_store(journal: &PlannerJournalV1) -> Result<Vec<u8>, PlannerStoreError
     Ok(bytes)
 }
 
+#[cfg(unix)]
 fn decode_store(bytes: &[u8]) -> Result<(PlannerJournalV1, bool), PlannerStoreErrorV1> {
     if bytes.starts_with(b"HCPJNL01") {
         return Ok((PlannerJournalV1::reopen(bytes)?, true));
@@ -328,6 +344,7 @@ fn decode_store(bytes: &[u8]) -> Result<(PlannerJournalV1, bool), PlannerStoreEr
     Ok((PlannerJournalV1::reopen(payload)?, false))
 }
 
+#[cfg(unix)]
 fn open_and_lock(path: &Path) -> Result<File, PlannerStoreErrorV1> {
     let mut options = OpenOptions::new();
     options.create(true).read(true).write(true);
@@ -345,6 +362,7 @@ fn open_and_lock(path: &Path) -> Result<File, PlannerStoreErrorV1> {
     }
 }
 
+#[cfg(unix)]
 fn secure_read(path: &Path) -> Result<Vec<u8>, PlannerStoreErrorV1> {
     let link = std::fs::symlink_metadata(path)?;
     if link.file_type().is_symlink() || !link.is_file() {
@@ -367,6 +385,7 @@ fn secure_read(path: &Path) -> Result<Vec<u8>, PlannerStoreErrorV1> {
     Ok(bytes)
 }
 
+#[cfg(unix)]
 fn verify_secure_root(root: &Path) -> Result<(), PlannerStoreErrorV1> {
     let metadata = std::fs::symlink_metadata(root)?;
     if metadata.file_type().is_symlink() || !metadata.is_dir() {
@@ -386,6 +405,7 @@ fn verify_secure_root(root: &Path) -> Result<(), PlannerStoreErrorV1> {
     Ok(())
 }
 
+#[cfg(unix)]
 fn verify_private_file(path: &Path, file: &File) -> Result<(), PlannerStoreErrorV1> {
     let fd_metadata = file.metadata()?;
     let path_metadata = std::fs::metadata(path)?;
@@ -415,6 +435,7 @@ fn verify_private_file(path: &Path, file: &File) -> Result<(), PlannerStoreError
     Ok(())
 }
 
+#[cfg(unix)]
 fn same_file_identity(left: &std::fs::Metadata, right: &std::fs::Metadata) -> bool {
     #[cfg(unix)]
     {
