@@ -3,8 +3,17 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+import errno
+import os
+from pathlib import Path
+import tempfile
 from threading import BoundedSemaphore, Lock
+
+try:
+    import fcntl as _fcntl
+except ImportError:  # Windows portable fixtures cannot be strong sandbox evidence.
+    _fcntl = None
 
 from .candidate import Candidate, CandidateEnvelope, SandboxReceipt, sandbox_candidate
 from .control_plane import EngineeringError, semantic_digest
@@ -35,9 +44,14 @@ class SandboxExecutionResult:
 
 
 class SandboxCoordinator:
-    """Process-local admission owner; distributed deployment needs an external fence."""
+    """Bound sandbox admission on one host; multi-host deployment needs an external fence."""
 
-    def __init__(self, policy: SandboxExecutionPolicy = SandboxExecutionPolicy()):
+    def __init__(
+        self,
+        policy: SandboxExecutionPolicy = SandboxExecutionPolicy(),
+        *,
+        admission_directory: str | Path | None = None,
+    ):
         if not isinstance(policy, SandboxExecutionPolicy):
             raise EngineeringError("invalid_sandbox_execution_policy")
         if (
@@ -52,26 +66,87 @@ class SandboxCoordinator:
         self._lock = Lock()
         self._active = 0
         self._peak = 0
+        if _fcntl is None:
+            self._admission_directory = None
+        else:
+            directory = (
+                Path(admission_directory)
+                if admission_directory is not None
+                else Path(tempfile.gettempdir())
+                / f"hepta-engineering-sandbox-slots-{os.getuid()}"
+            )
+            try:
+                directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+                if directory.is_symlink() or not directory.is_dir():
+                    raise OSError("sandbox admission directory is not a directory")
+            except OSError:
+                raise EngineeringError("sandbox_host_admission_unavailable") from None
+            self._admission_directory = directory
 
     @property
     def peak_parallelism(self) -> int:
         with self._lock:
             return self._peak
 
-    def _enter(self) -> None:
+    @property
+    def admission_scope(self) -> str:
+        return "host" if self._admission_directory is not None else "process"
+
+    def _acquire_host_slot(self) -> int | None:
+        if self._admission_directory is None:
+            return None
+        assert _fcntl is not None
+        flags = os.O_RDWR | os.O_CREAT
+        if hasattr(os, "O_CLOEXEC"):
+            flags |= os.O_CLOEXEC
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        for index in range(MAX_PARALLEL_SANDBOXES):
+            path = self._admission_directory / f"slot-{index:02d}.lock"
+            try:
+                descriptor = os.open(path, flags, 0o600)
+            except OSError:
+                raise EngineeringError("sandbox_host_admission_unavailable") from None
+            try:
+                _fcntl.flock(descriptor, _fcntl.LOCK_EX | _fcntl.LOCK_NB)
+                return descriptor
+            except OSError as error:
+                os.close(descriptor)
+                if error.errno in {errno.EACCES, errno.EAGAIN}:
+                    continue
+                raise EngineeringError("sandbox_host_admission_unavailable") from None
+        raise EngineeringError("sandbox_capacity_exhausted")
+
+    def _enter(self) -> int | None:
         if not self._semaphore.acquire(blocking=False):
             raise EngineeringError("sandbox_capacity_exhausted")
-        with self._lock:
-            self._active += 1
-            if self._active > self.policy.maximum_parallel_sandboxes:
-                self._active -= 1
-                self._semaphore.release()
-                raise EngineeringError("sandbox_parallelism_invariant")
-            self._peak = max(self._peak, self._active)
+        host_slot: int | None = None
+        try:
+            host_slot = self._acquire_host_slot()
+            with self._lock:
+                self._active += 1
+                if self._active > self.policy.maximum_parallel_sandboxes:
+                    self._active -= 1
+                    raise EngineeringError("sandbox_parallelism_invariant")
+                self._peak = max(self._peak, self._active)
+            return host_slot
+        except BaseException:
+            if host_slot is not None and _fcntl is not None:
+                try:
+                    _fcntl.flock(host_slot, _fcntl.LOCK_UN)
+                finally:
+                    os.close(host_slot)
+            self._semaphore.release()
+            raise
 
-    def _exit(self) -> None:
+    def _exit(self, host_slot: int | None) -> None:
         with self._lock:
             self._active -= 1
+        if host_slot is not None and _fcntl is not None:
+            try:
+                _fcntl.flock(host_slot, _fcntl.LOCK_UN)
+            finally:
+                os.close(host_slot)
         self._semaphore.release()
 
     def execute(
@@ -83,7 +158,7 @@ class SandboxCoordinator:
     ) -> SandboxExecutionResult:
         checks_value = tuple(tuple(item) for item in checks)
         attempts = 0
-        self._enter()
+        host_slot = self._enter()
         try:
             while True:
                 attempts += 1
@@ -95,7 +170,17 @@ class SandboxCoordinator:
                         tested,
                         receipt,
                         attempts,
-                        semantic_digest(self.policy.__dict__),
+                        semantic_digest(
+                            {
+                                "policy": asdict(self.policy),
+                                "admissionScope": self.admission_scope,
+                                "hostSlotCeiling": (
+                                    MAX_PARALLEL_SANDBOXES
+                                    if self.admission_scope == "host"
+                                    else None
+                                ),
+                            }
+                        ),
                     )
                 except EngineeringError as error:
                     if (
@@ -106,4 +191,4 @@ class SandboxCoordinator:
                     # Semantic rejection is never retried.  Only the explicitly
                     # classified infrastructure failures above can consume budget.
         finally:
-            self._exit()
+            self._exit(host_slot)
