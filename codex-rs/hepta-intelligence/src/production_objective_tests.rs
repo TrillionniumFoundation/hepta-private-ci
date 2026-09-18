@@ -267,8 +267,8 @@ fn product_objective_is_one_durable_replayable_run_start() {
     };
     receipt.validate().expect("valid product receipt");
     assert_eq!(ledger.records().expect("records").len(), 1);
-    let chain_digest = receipt.durable_append.chain_digest;
-    assert_eq!(receipt.durable_append.disposition, AppendDisposition::Appended);
+    let chain_digest = receipt.durable_append().chain_digest;
+    assert_eq!(receipt.durable_append().disposition, AppendDisposition::Appended);
     drop(ledger);
 
     let file = OpenOptions::new()
@@ -294,7 +294,7 @@ fn product_objective_is_one_durable_replayable_run_start() {
     assert_eq!(publication.run_start.run_id, id("run-1"));
     assert_eq!(
         publication.compile.objective.semantic_digest,
-        receipt.objective.objective.semantic_digest
+        receipt.objective().objective.semantic_digest
     );
     publication
         .run_start
@@ -338,7 +338,7 @@ fn exact_retry_is_idempotent_and_run_id_drift_conflicts() {
     let ProductionObjectiveDispositionV1::Published(replay) = replay else {
         panic!("expected replayed publication")
     };
-    assert_eq!(replay.durable_append.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(replay.durable_append().disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(ledger.records().expect("records").len(), 1);
 
     let conflict = prepare_intelligence_run_v1(
@@ -349,7 +349,7 @@ fn exact_retry_is_idempotent_and_run_id_drift_conflicts() {
         bindings(
             "run-start-record-2",
             "run-1",
-            replay.durable_append.chain_digest,
+            replay.durable_append().chain_digest,
         ),
     )
     .expect_err("same run id with a different record must conflict");
@@ -399,7 +399,7 @@ fn product_objective_named_host_measurement_receipt() {
         let ProductionObjectiveDispositionV1::Published(receipt) = result else {
             panic!("measurement must publish");
         };
-        predecessor = receipt.durable_append.chain_digest;
+        predecessor = receipt.durable_append().chain_digest;
         micros.push(started.elapsed().as_micros());
     }
     micros.sort_unstable();
