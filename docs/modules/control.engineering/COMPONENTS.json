@@ -308,6 +308,29 @@
       "rollback": "request fresh evidence; never rewrite or reuse an existing seal"
     },
     {
+      "id": "production-readiness-gate",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/production.py",
+      "symbols": [
+        "ProductionReadinessFacts",
+        "ProductionReadinessDecision",
+        "evaluate_production_readiness"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "failureModel": [
+        "repository_mismatch",
+        "product_caller_missing",
+        "product_tests_not_passed",
+        "reviewer_identity_collision",
+        "strong_sandbox_not_observed",
+        "deployment_not_observed",
+        "rollback_not_rehearsed"
+      ],
+      "resourceBounds": {
+        "ambientAuthority": 0
+      },
+      "rollback": "keep production_implementation false and require fresh authenticated external receipts"
+    },
+    {
       "id": "engineering-local-cli",
       "source": "tools/hepta-engineering-control/control_engineering_v2/cli.py",
       "symbols": [
