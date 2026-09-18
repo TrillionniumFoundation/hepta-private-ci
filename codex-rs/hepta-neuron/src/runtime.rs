@@ -51,6 +51,7 @@ pub struct FrozenModelRequestV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FrozenModelExecutionV1 {
     pub runtime_receipt: LocalModelRuntimeReceiptV1,
+    pub head_digest: Digest32,
     pub request_digest: Digest32,
     pub output_digest: Digest32,
     pub drive_q24: Vec<i64>,
@@ -99,11 +100,37 @@ pub struct PendingNeuronTickV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RuntimeFallbackDispositionV1 {
+    TemporalSignal,
+    StatelessSelectedHead,
+    DeterministicCalibratedRule,
+    SlowPathAbstain,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RuntimeHealthReasonV1 {
+    Healthy,
+    DeadActivation,
+    ExcessiveProjection,
+    CalibrationAbstain,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RuntimeHealthV1 {
+    pub disposition: RuntimeFallbackDispositionV1,
+    pub reason: RuntimeHealthReasonV1,
+    pub health_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RuntimeTickOutputV1 {
     pub checkpoint: SparseCheckpoint,
     pub tick_receipt: NeuronTickReceiptV1,
     pub signal_receipt: NeuronSignalReceiptV1,
     pub model_runtime_receipt: LocalModelRuntimeReceiptV1,
+    pub health: RuntimeHealthV1,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -367,12 +394,19 @@ pub fn finalize_tick(
     };
     signal_receipt.receipt_digest = signal_receipt.calculate_digest()?;
     signal_receipt.validate()?;
+    let health = assess_runtime_health(
+        config,
+        &pending.sparse_receipt,
+        &tick_receipt.active_indices,
+        pending.calibration,
+    );
 
     Ok(RuntimeTickOutputV1 {
         checkpoint: pending.checkpoint,
         tick_receipt,
         signal_receipt,
         model_runtime_receipt: pending.model_runtime_receipt,
+        health,
     })
 }
 
@@ -389,7 +423,9 @@ fn validate_model_execution(
     if execution.output_digest.is_zero() {
         return Err(RuntimeError::ModelOutputDigest);
     }
-    if execution.runtime_receipt.weights_digest != config.encoder_digest {
+    if execution.runtime_receipt.weights_digest != config.encoder_digest
+        || execution.head_digest != config.head_digest
+    {
         return Err(RuntimeError::ModelRuntimeBinding);
     }
     if execution.drive_q24.len() != width
@@ -405,6 +441,7 @@ fn validate_model_execution(
     let mut bytes = b"hepta.neuron.frozen-model-output.v1".to_vec();
     bytes.extend_from_slice(execution.request_digest.as_array());
     bytes.extend_from_slice(execution.runtime_receipt.receipt_digest.as_array());
+    bytes.extend_from_slice(execution.head_digest.as_array());
     append_q24(&mut bytes, &execution.drive_q24)?;
     append_q24(&mut bytes, &execution.prediction_q24)?;
     if Digest32::of_bytes(&bytes) != execution.output_digest {
@@ -433,18 +470,67 @@ pub fn model_request_digest(request: &FrozenModelRequestV1) -> Result<Digest32, 
 pub fn frozen_model_output_digest(
     request_digest: Digest32,
     runtime_receipt_digest: Digest32,
+    head_digest: Digest32,
     drive_q24: &[i64],
     prediction_q24: &[i64],
 ) -> Result<Digest32, RuntimeError> {
-    if request_digest.is_zero() || runtime_receipt_digest.is_zero() {
+    if request_digest.is_zero() || runtime_receipt_digest.is_zero() || head_digest.is_zero() {
         return Err(RuntimeError::ModelOutputDigest);
     }
     let mut bytes = b"hepta.neuron.frozen-model-output.v1".to_vec();
     bytes.extend_from_slice(request_digest.as_array());
     bytes.extend_from_slice(runtime_receipt_digest.as_array());
+    bytes.extend_from_slice(head_digest.as_array());
     append_q24(&mut bytes, drive_q24)?;
     append_q24(&mut bytes, prediction_q24)?;
     Ok(Digest32::of_bytes(&bytes))
+}
+
+pub fn assess_runtime_health(
+    config: &NeuronRuntimeConfigV1,
+    sparse_receipt: &SparseSignalReceipt,
+    active_indices: &[u32],
+    calibration: CalibratedSignalV1,
+) -> RuntimeHealthV1 {
+    let (disposition, reason) = if calibration.abstain {
+        (
+            RuntimeFallbackDispositionV1::SlowPathAbstain,
+            RuntimeHealthReasonV1::CalibrationAbstain,
+        )
+    } else if active_indices.is_empty() {
+        (
+            RuntimeFallbackDispositionV1::StatelessSelectedHead,
+            RuntimeHealthReasonV1::DeadActivation,
+        )
+    } else if sparse_receipt.projection_count > config.homeostasis_profile.saturation_limit {
+        (
+            RuntimeFallbackDispositionV1::DeterministicCalibratedRule,
+            RuntimeHealthReasonV1::ExcessiveProjection,
+        )
+    } else {
+        (
+            RuntimeFallbackDispositionV1::TemporalSignal,
+            RuntimeHealthReasonV1::Healthy,
+        )
+    };
+    let mut bytes = b"hepta.neuron.runtime-health.v1".to_vec();
+    bytes.extend_from_slice(sparse_receipt.checkpoint_after.as_array());
+    bytes.extend_from_slice(&sparse_receipt.projection_count.to_be_bytes());
+    bytes.extend_from_slice(&calibration.confidence_ppm.to_be_bytes());
+    bytes.extend_from_slice(&calibration.ood_ppm.to_be_bytes());
+    bytes.push(u8::from(calibration.abstain));
+    bytes.push(match disposition {
+        RuntimeFallbackDispositionV1::TemporalSignal => 0,
+        RuntimeFallbackDispositionV1::StatelessSelectedHead => 1,
+        RuntimeFallbackDispositionV1::DeterministicCalibratedRule => 2,
+        RuntimeFallbackDispositionV1::SlowPathAbstain => 3,
+    });
+    RuntimeHealthV1 {
+        disposition,
+        reason,
+        health_digest: Digest32::of_bytes(&bytes),
+        authority: AuthorityPosture::DENY_ALL,
+    }
 }
 
 fn calibrate(

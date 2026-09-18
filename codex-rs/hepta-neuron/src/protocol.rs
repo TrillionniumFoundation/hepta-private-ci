@@ -507,6 +507,15 @@ impl NeuronSignalReceiptV1 {
         }
         require_digest("model runtime", self.model_runtime_digest)?;
         require_digest("temporal state", self.temporal_state_digest)?;
+        if self.signals_q24.is_empty()
+            || self.signals_q24.len() > MAX_ACTIVATION_STATE as usize
+            || self
+                .signals_q24
+                .iter()
+                .any(|value| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(value))
+        {
+            return Err(ProtocolError::InvalidFeatureVector);
+        }
         if self.activation_sparsity_ppm > 1_000_000 {
             return Err(ProtocolError::InvalidProbability("activation sparsity"));
         }

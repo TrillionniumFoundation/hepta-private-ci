@@ -145,12 +145,14 @@ impl FrozenNeuronModel for FakeModel {
         let output_digest = frozen_model_output_digest(
             request_digest,
             runtime_receipt.receipt_digest,
+            request.head_digest,
             &drive_q24,
             &prediction_q24,
         )
         .unwrap_or_else(|error| panic!("output digest: {error:?}"));
         Ok(FrozenModelExecutionV1 {
             runtime_receipt,
+            head_digest: request.head_digest,
             request_digest,
             output_digest,
             drive_q24,
@@ -197,6 +199,7 @@ fn canonical_tick_binds_model_calibration_and_sparse_state() {
     .unwrap_or_else(|error| panic!("prepare: {error:?}"));
     assert_eq!(pending.sparse_receipt.checkpoint_before, Digest32::ZERO);
     assert!(!pending.model_runtime_receipt.receipt_digest.is_zero());
+    let saturation_count = pending.sparse_receipt.projection_count;
     let output = finalize_tick(
         &cfg,
         &tick,
@@ -205,7 +208,7 @@ fn canonical_tick_binds_model_calibration_and_sparse_state() {
             execution_micros: 200,
             transient_allocation_bytes: 4096,
             checkpoint_bytes: 2048,
-            saturation_count: pending.sparse_receipt.projection_count,
+            saturation_count,
             queue_age_micros: 0,
         },
     )
@@ -254,6 +257,7 @@ fn resource_overrun_is_not_reported_as_success() {
         &calibration(&cfg, runtime_digest),
     )
     .unwrap_or_else(|error| panic!("prepare: {error:?}"));
+    let saturation_count = pending.sparse_receipt.projection_count;
     assert_eq!(
         finalize_tick(
             &cfg,
@@ -263,10 +267,58 @@ fn resource_overrun_is_not_reported_as_success() {
                 execution_micros: 8_001,
                 transient_allocation_bytes: 1,
                 checkpoint_bytes: 1,
-                saturation_count: pending.sparse_receipt.projection_count,
+                saturation_count,
                 queue_age_micros: 0,
             },
         ),
         Err(RuntimeError::ResourceCeiling("execution latency"))
+    );
+}
+
+
+#[test]
+fn runtime_health_orders_temporal_fallbacks_without_granting_authority() {
+    let cfg = config(&[]);
+    let receipt = SparseSignalReceipt {
+        config_digest: digest(b"config"),
+        input_digest: digest(b"input"),
+        checkpoint_before: Digest32::ZERO,
+        checkpoint_after: digest(b"checkpoint"),
+        activation_q24: vec![0; 5],
+        active_fraction_ppm: 0,
+        prediction_error_q24: 0,
+        projection_count: 0,
+        requires_calibration: true,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    let dead = assess_runtime_health(
+        &cfg,
+        &receipt,
+        &[],
+        CalibratedSignalV1 {
+            confidence_ppm: 900_000,
+            ood_ppm: 100_000,
+            abstain: false,
+        },
+    );
+    assert_eq!(
+        dead.disposition,
+        RuntimeFallbackDispositionV1::StatelessSelectedHead
+    );
+    assert_eq!(dead.authority, AuthorityPosture::DENY_ALL);
+
+    let abstain = assess_runtime_health(
+        &cfg,
+        &receipt,
+        &[0],
+        CalibratedSignalV1 {
+            confidence_ppm: 0,
+            ood_ppm: 1_000_000,
+            abstain: true,
+        },
+    );
+    assert_eq!(
+        abstain.disposition,
+        RuntimeFallbackDispositionV1::SlowPathAbstain
     );
 }
