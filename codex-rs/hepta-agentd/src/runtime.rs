@@ -291,7 +291,9 @@ async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
             state.mark_fenced();
             return Err(error);
         }
-        state.expire_run_deadlines(unix_time_ms()?)?;
+        state
+            .expire_run_deadlines_and_interrupt(unix_time_ms()?)
+            .await?;
         if !app_server_ready {
             match probe_app_server(state.identity()).await {
                 Ok(()) => {
