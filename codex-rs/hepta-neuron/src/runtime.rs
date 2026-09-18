@@ -99,7 +99,6 @@ pub struct PendingNeuronTickV1 {
     pub calibration: CalibratedSignalV1,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RuntimeFallbackDispositionV1 {
     TemporalSignal,

@@ -7,6 +7,9 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_types::Generation;
 
+use crate::SparseCheckpoint;
+use crate::sparse_tick;
+
 const Q: i64 = 1 << 24;
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
