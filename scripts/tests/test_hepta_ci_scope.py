@@ -10,41 +10,72 @@ from scripts.hepta_ci_scope import GROUPS, changed_paths, select
 
 class ScopeTests(unittest.TestCase):
     def test_readme_and_ordinary_prose_do_not_prepare_native_dependencies(self):
-        self.assertFalse(select(["README.md", "docs/modules/inference.control/TECHNICAL.md"])["native"])
+        scope = select(["README.md", "docs/modules/inference.control/TECHNICAL.md"])
+        self.assertFalse(scope["native"])
+        self.assertFalse(scope["full_repo"])
 
-    def test_inference_local_change_does_not_run_browser_learning_or_objective(self):
+    def test_inference_local_change_is_module_scoped(self):
         scope = select(["codex-rs/hepta-infer-core/src/durable_control.rs"])
         self.assertTrue(scope["inference"])
+        self.assertFalse(scope["full_repo"])
         for group in GROUPS - {"inference"}:
             self.assertFalse(scope[group])
 
-    def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
-        for path in ["codex-rs/hepta-types/src/lib.rs", "codex-rs/hepta-agentd/src/state.rs", "codex-rs/Cargo.lock"]:
+    def test_shared_hepta_types_and_agentd_are_cross_domain_but_not_full_repo(self):
+        for path in ["codex-rs/hepta-types/src/lib.rs", "codex-rs/hepta-agentd/src/state.rs"]:
             with self.subTest(path=path):
-                self.assertTrue(all(select([path])[key] for key in GROUPS))
+                scope = select([path])
+                self.assertTrue(all(scope[key] for key in GROUPS))
+                self.assertFalse(scope["full_repo"])
 
-    def test_registry_is_not_prose(self):
-        scope = select(["docs/modules/MODULES.json"])
-        self.assertTrue(scope["derived"])
+    def test_workspace_lock_retains_full_repository_fallback(self):
+        scope = select(["codex-rs/Cargo.lock"])
+        self.assertTrue(scope["full_repo"])
         self.assertTrue(all(scope[key] for key in GROUPS))
 
-    def test_unknown_or_executable_document_selects_full(self):
-        for path in ["docs/check.rs", "scripts/new-verifier.py", "codex-rs/hepta-new/src/lib.rs", ".github/workflows/new.yml"]:
+    def test_runtime_consumed_module_registry_selects_lifecycle_only(self):
+        scope = select(["docs/modules/MODULES.json"])
+        self.assertTrue(scope["derived"])
+        self.assertTrue(scope["lifecycle"])
+        self.assertFalse(scope["full_repo"])
+        for group in GROUPS - {"lifecycle"}:
+            self.assertFalse(scope[group])
+
+    def test_generated_views_are_derived_without_native_fanout(self):
+        for path in ["docs/modules/SOURCE_BINDINGS.json", "docs/modules/MODULE_DOCS.json", "docs/STATUS.md"]:
             with self.subTest(path=path):
-                self.assertTrue(all(select([path])[key] for key in GROUPS))
+                scope = select([path])
+                self.assertTrue(scope["derived"])
+                self.assertFalse(scope["native"])
+                self.assertFalse(scope["full_repo"])
+
+    def test_unknown_hepta_package_stays_architecture_scoped(self):
+        scope = select(["codex-rs/hepta-new/src/lib.rs"])
+        self.assertTrue(scope["native"])
+        self.assertFalse(scope["full_repo"])
+        self.assertTrue(all(scope[key] for key in GROUPS))
+
+    def test_unknown_shared_source_or_workflow_selects_full_repo(self):
+        for path in ["codex-rs/core/src/new.rs", ".github/workflows/new.yml", "scripts/hepta_ci_scope.py"]:
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["full_repo"])
+                self.assertTrue(all(scope[key] for key in GROUPS))
 
     def test_code_owned_markdown_is_not_assumed_pure_prose(self):
-        self.assertTrue(select(["codex-rs/core/prompt.md"])["native"])
+        self.assertTrue(select(["codex-rs/core/prompt.md"])["full_repo"])
 
     def test_rename_keeps_source_and_destination_groups(self):
         scope = select(["codex-rs/hepta-infer-core/src/old.rs", "codex-rs/hepta-learning-ledger/src/new.rs"])
         self.assertTrue(scope["inference"] and scope["learning"])
+        self.assertFalse(scope["full_repo"])
 
     def test_effectful_retirement_keeps_lifecycle_and_effect_tests(self):
         scope = select(["codex-rs/hepta-automation/src/timer_lifecycle.rs"])
         self.assertTrue(scope["effects"] and scope["lifecycle"])
+        self.assertFalse(scope["full_repo"])
 
-    def test_manual_full_keeps_all_groups_even_with_no_paths(self):
+    def test_manual_full_keeps_every_boolean_true(self):
         self.assertTrue(all(select([], force_full=True).values()))
 
     def test_bad_paths_fail_instead_of_selecting_nothing(self):
@@ -60,8 +91,12 @@ class ScopeTests(unittest.TestCase):
     def test_git_diff_covers_real_rename_and_deleted_path(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+
             def git(*args):
-                return subprocess.check_output(["git", "-C", directory, *args], stderr=subprocess.DEVNULL).decode().strip()
+                return subprocess.check_output(
+                    ["git", "-C", directory, *args], stderr=subprocess.DEVNULL
+                ).decode().strip()
+
             git("init", "-q")
             git("config", "user.name", "Scope Test")
             git("config", "user.email", "scope@localhost")

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Select architecture checks by changed boundary, not a global prose gate.
+"""Select the smallest trustworthy CI boundary for an exact Git diff.
 
-This is scheduling only: it cannot grant merge, activation, or release. Unknown
-source and shared contracts conservatively select every native group. Deleted
-and renamed paths retain both owners through a --no-renames NUL-delimited diff.
+Known Hepta packages stay on the module-local path. Shared repository build
+inputs and unknown non-Hepta code retain the full-repository fallback. Derived
+views never acquire native scope merely because they are checked in.
 """
 from __future__ import annotations
 
@@ -15,53 +15,143 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable
 
 GROUPS = frozenset({"inference", "effects", "lifecycle", "learning", "objective"})
+
 PACKAGE_GROUPS = {
     "hepta-infer-core": {"inference"},
     "hepta-operations": {"effects", "lifecycle"},
     "hepta-automation": {"effects", "lifecycle"},
-    "hepta-control-plane": {"lifecycle", "effects"},
+    "hepta-contracts": set(GROUPS),
+    "hepta-control-plane": {"lifecycle", "effects", "objective"},
     "hepta-supervisor": {"lifecycle", "effects"},
-    "hepta-fleet": {"lifecycle", "effects"},
+    "hepta-fleet": {"lifecycle"},
+    "hepta-agentd": set(GROUPS),
+    "hepta-types": set(GROUPS),
     "hepta-learning-ledger": {"learning"},
     "hepta-learning-artifacts": {"learning"},
     "hepta-intelligence-eval": {"learning"},
+    "hepta-plasticity": {"learning", "lifecycle"},
     "hepta-objective": {"objective", "learning"},
     "hepta-prompt-optimizer": {"objective", "learning"},
+}
+
+DERIVED_ONLY = {
+    "docs/STATUS.md",
+    "docs/modules/SOURCE_BINDINGS.json",
+    "docs/modules/MODULE_DOCS.json",
+    "docs/learning/ALGORITHM_STATUS.md",
+    "docs/readiness/STATUS.md",
+    "docs/cns/STATUS.md",
+}
+
+CANONICAL_DOC_GROUPS = {
+    "docs/modules/MODULES.json": {"lifecycle"},
+    "docs/architecture/ARCHITECTURE.json": set(GROUPS),
+    "docs/data/DATA_AUTHORITY.json": set(GROUPS),
+    "CALLERS.toml": {"effects", "lifecycle"},
 }
 
 
 def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]:
     selected = set(GROUPS) if force_full else set()
     derived = force_full
+    full_repo = force_full
+
     for path in paths:
         parts = PurePosixPath(path).parts
         if not path or path.startswith("/") or ".." in parts or "\\" in path or "\x00" in path:
             raise ValueError(f"invalid repository path: {path!r}")
-        # Only established prose roots are exempt; a .md elsewhere may be an
-        # include_str! input and therefore defaults to the conservative path.
-        if path in {"README.md", "CONTRIBUTING.md"} or (path.startswith("docs/") and path.endswith(".md")):
+
+        if path in {"README.md", "CONTRIBUTING.md"} or (
+            path.startswith("docs/") and path.endswith(".md")
+        ):
             continue
+
+        if path in DERIVED_ONLY or path.startswith("qualification/module-execution-dossiers/detail/"):
+            derived = True
+            continue
+
+        if path in CANONICAL_DOC_GROUPS:
+            selected.update(CANONICAL_DOC_GROUPS[path])
+            derived = True
+            continue
+
+        if path.startswith("docs/contracts/"):
+            selected.update(GROUPS)
+            derived = True
+            continue
+
         if path.startswith("docs/"):
+            # Machine documentation is checked for projection drift, but only
+            # explicitly runtime-consumed registries acquire native scope.
             derived = True
-            selected.update(GROUPS)
-        elif path.startswith("apps/hepta-browser/"):
+            continue
+
+        if path.startswith("apps/hepta-browser/"):
             selected.add("effects")
-        elif len(parts) > 2 and parts[0] == "codex-rs" and parts[1] in PACKAGE_GROUPS:
-            selected.update(PACKAGE_GROUPS[parts[1]])
-        else:
-            # Shared code, manifests, protocols, verifiers and workflow changes
-            # must never be silently classified as documentation-only.
+            continue
+
+        if len(parts) > 2 and parts[0] == "codex-rs":
+            package = parts[1]
+            if package in PACKAGE_GROUPS:
+                selected.update(PACKAGE_GROUPS[package])
+                continue
+            if package.startswith("hepta-"):
+                # A new Hepta package stays in the architecture lane; workspace
+                # manifest/lock changes separately select full-repository CI.
+                selected.update(GROUPS)
+                continue
+            full_repo = True
+            selected.update(GROUPS)
+            continue
+
+        if path in {"codex-rs/Cargo.toml", "codex-rs/Cargo.lock"}:
+            full_repo = True
+            selected.update(GROUPS)
+            continue
+
+        if path.startswith("scripts/hepta_ci_") or path.startswith(".github/workflows/"):
+            full_repo = True
             selected.update(GROUPS)
             derived = True
-    return {**{group: group in selected for group in sorted(GROUPS)}, "native": bool(selected), "derived": derived}
+            continue
+
+        if path.startswith("scripts/hepta") or path.startswith("scripts/test_hepta"):
+            derived = True
+            continue
+
+        # Unknown shared source/build inputs are the conservative escape hatch.
+        full_repo = True
+        selected.update(GROUPS)
+        derived = True
+
+    return {
+        **{group: group in selected for group in sorted(GROUPS)},
+        "native": bool(selected),
+        "derived": derived,
+        "full_repo": full_repo,
+    }
 
 
 def changed_paths(base: str, head: str) -> list[str]:
     if not all(re.fullmatch(r"[0-9a-f]{40}", value) for value in (base, head)):
         raise ValueError("base and head must be exact 40-character Git commit identities")
     result = subprocess.run(
-        ["git", "--no-replace-objects", "diff", "--no-ext-diff", "--no-textconv", "--name-only", "--no-renames", "-z", base, head, "--"],
-        check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        [
+            "git",
+            "--no-replace-objects",
+            "diff",
+            "--no-ext-diff",
+            "--no-textconv",
+            "--name-only",
+            "--no-renames",
+            "-z",
+            base,
+            head,
+            "--",
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     return [value.decode("utf-8", "strict") for value in result.stdout.split(b"\0") if value]
 
