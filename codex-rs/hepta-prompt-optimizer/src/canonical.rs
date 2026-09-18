@@ -37,6 +37,7 @@ pub struct PromptCandidateSetReceiptV1 {
     pub objective_digest: Digest32,
     pub registry_snapshot_digest: Digest32,
     pub model_tuple_digest: Digest32,
+    pub compatible_set_digest: Digest32,
     pub generator_digest: Digest32,
     pub hard_filter_digest: Digest32,
     pub truncation_digest: Digest32,
@@ -67,6 +68,14 @@ pub struct CandidateEvidenceV1 {
 pub struct PromptPriceV1 {
     pub candidate: PromptCandidateV1,
     pub causal_utility: FixedQ32,
+    pub token_shadow_cost: FixedQ32,
+    pub latency_cost: FixedQ32,
+    pub crowding_cost: FixedQ32,
+    pub interference_cost: FixedQ32,
+    pub privacy_cost: FixedQ32,
+    pub instability_cost: FixedQ32,
+    pub future_option_cost: FixedQ32,
+    pub resource_cost: FixedQ32,
     pub total_utility_cost: FixedQ32,
     pub net_utility: FixedQ32,
     pub support_digest: Digest32,
@@ -234,6 +243,7 @@ pub fn enumerate_factors(
         objective_digest,
         registry_snapshot_digest: registry_snapshot.snapshot_digest,
         model_tuple_digest: registry_snapshot.model_tuple_digest,
+        compatible_set_digest: compatible.set_digest,
         generator_digest,
         hard_filter_digest,
         truncation_digest,
@@ -329,6 +339,14 @@ pub fn price_factors(
         prices.push(PromptPriceV1 {
             candidate: candidate.clone(),
             causal_utility: row.causal_utility,
+            token_shadow_cost: row.token_shadow_cost,
+            latency_cost: row.latency_cost,
+            crowding_cost: row.crowding_cost,
+            interference_cost: row.interference_cost,
+            privacy_cost: row.privacy_cost,
+            instability_cost: row.instability_cost,
+            future_option_cost: row.future_option_cost,
+            resource_cost: row.resource_cost,
             total_utility_cost,
             net_utility,
             support_digest: row.support_digest,
@@ -768,6 +786,7 @@ fn digest_candidate_set(value: &PromptCandidateSetReceiptV1) -> Digest32 {
         value.objective_digest,
         value.registry_snapshot_digest,
         value.model_tuple_digest,
+        value.compatible_set_digest,
         value.generator_digest,
         value.hard_filter_digest,
         value.truncation_digest,
@@ -799,7 +818,19 @@ fn digest_pricing(value: &PromptPricingReceiptV1) -> Digest32 {
         push_u64(&mut bytes, price.candidate.token_cost);
         bytes.push(prompt_role_code(price.candidate.role));
         push_i64(&mut bytes, price.causal_utility.raw());
-        push_i64(&mut bytes, price.total_utility_cost.raw());
+        for cost in [
+            price.token_shadow_cost,
+            price.latency_cost,
+            price.crowding_cost,
+            price.interference_cost,
+            price.privacy_cost,
+            price.instability_cost,
+            price.future_option_cost,
+            price.resource_cost,
+            price.total_utility_cost,
+        ] {
+            push_i64(&mut bytes, cost.raw());
+        }
         push_i64(&mut bytes, price.net_utility.raw());
         push_digest(&mut bytes, price.support_digest);
         push_digest(&mut bytes, price.confidence_digest);
