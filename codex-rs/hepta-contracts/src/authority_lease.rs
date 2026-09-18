@@ -6,8 +6,10 @@
 //! lease mutation, durable revocation, anti-rollback frontier checks and an
 //! opaque verified-use token that is consumed at one final boundary.
 
+use crate::AuthorityClock;
 use crate::AuthorityFrontierStore;
 use crate::AuthorityTrustError;
+use crate::SystemAuthorityClock;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::BTreeMap;
@@ -143,6 +145,7 @@ struct Inner {
     owner_id: String,
     state: Mutex<State>,
     store: Store,
+    clock: Arc<dyn AuthorityClock>,
     frontier_store: Option<Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>>>,
 }
 
@@ -220,6 +223,7 @@ impl AuthorityLeaseRegistry {
             owner_id,
             state: Mutex::new(state),
             store,
+            clock: Arc::new(SystemAuthorityClock),
             frontier_store: None,
         })))
     }
@@ -233,9 +237,47 @@ impl AuthorityLeaseRegistry {
         owner_id: String,
         frontier_store: Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>>,
     ) -> Result<Self, AuthorityLeaseError> {
+        Self::open_state_dir_with_trust(
+            directory,
+            owner_id,
+            Arc::new(SystemAuthorityClock),
+            frontier_store,
+        )
+    }
+
+    pub fn open_state_dir_with_clock(
+        directory: &Path,
+        owner_id: String,
+        trusted_frontier: AuthorityLeaseFrontier,
+        clock: Arc<dyn AuthorityClock>,
+    ) -> Result<Self, AuthorityLeaseError> {
+        if !identifier(&owner_id)
+            || trusted_frontier.authority_epoch == 0
+            || trusted_frontier.store_revision == 0
+        {
+            return Err(AuthorityLeaseError::InvalidTrust);
+        }
+        clock.now_unix_ms().map_err(map_trust_error)?;
+        let (store, state) = Store::open(directory, &owner_id, trusted_frontier)?;
+        Ok(Self(Arc::new(Inner {
+            owner_id,
+            state: Mutex::new(state),
+            store,
+            clock,
+            frontier_store: None,
+        })))
+    }
+
+    pub fn open_state_dir_with_trust(
+        directory: &Path,
+        owner_id: String,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<AuthorityLeaseFrontier>>,
+    ) -> Result<Self, AuthorityLeaseError> {
         if !identifier(&owner_id) {
             return Err(AuthorityLeaseError::InvalidTrust);
         }
+        clock.now_unix_ms().map_err(map_trust_error)?;
         let trusted_frontier = frontier_store
             .load(&owner_id)
             .map_err(map_trust_error)?;
@@ -254,6 +296,7 @@ impl AuthorityLeaseRegistry {
             owner_id,
             state: Mutex::new(state),
             store,
+            clock,
             frontier_store: Some(frontier_store),
         })))
     }
@@ -423,12 +466,12 @@ impl AuthorityLeaseRegistry {
     /// lease record to remain present.
     pub fn prune_expired_leases(
         &self,
-        now_unix_ms: u64,
         max_to_prune: usize,
     ) -> Result<usize, AuthorityLeaseError> {
-        if now_unix_ms == 0 || max_to_prune == 0 || max_to_prune > MAX_AUTHORITY_PRUNE_BATCH {
+        if max_to_prune == 0 || max_to_prune > MAX_AUTHORITY_PRUNE_BATCH {
             return Err(AuthorityLeaseError::InvalidPrune);
         }
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let mut state = self.lock_state()?;
         let expired: Vec<String> = state
             .leases
@@ -577,8 +620,8 @@ impl AuthorityLeaseVerifier {
         lease_id: &str,
         expected_revision: u64,
         expected: &AuthorityLeaseBinding,
-        now_unix_ms: u64,
     ) -> Result<LeaseVerifiedUseToken, AuthorityLeaseError> {
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
         let lease = state
             .leases
@@ -597,12 +640,12 @@ impl AuthorityLeaseVerifier {
         &self,
         token: LeaseVerifiedUseToken,
         expected: &AuthorityLeaseBinding,
-        now_unix_ms: u64,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, AuthorityLeaseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
         validate_live(
             &token.lease,
