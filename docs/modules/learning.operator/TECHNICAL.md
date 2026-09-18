@@ -14,15 +14,15 @@
 
 **Bootstrap work package:** `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
 
-This stable document is the implementation guide for `learning.operator`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This stable document is the implementation and operation guide for `learning.operator`. Normative identity, ownership, contract, data-authority and delivery facts remain in canonical JSON registries. Documentation readiness is not source qualification, product composition, activation, independent operator acceptance, promotion or release.
 
 ## 1. Identity, mission and ownership
 
-Train bounded Bellman/operator candidates in qualification space without online production mutation.
+Train bounded Bellman/operator candidates in qualification space without online production mutation. The module provides deterministic reference construction, simplest-sufficient learned candidates, action-conditioned world-model candidates and deny-all qualification inputs. It does not own online policy selection or product writes.
 
-The primary owner `learning-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `qualification-plane` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
+The primary owner `learning-platform` controls the declared target root and is accountable for correctness, compatibility, replay integrity, resource bounds, test evidence and rollback. The deputy `qualification-plane` independently reviews contracts, authority checks, persistence/loading, resource limits and acceptance evidence. Cross-owner changes require an explicit co-owner or separate integration package.
 
-Plane `qualification`, kind `trainer`, state model `stateful_shadow` and architecture role `slow_learner` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
+Plane `qualification`, kind `trainer`, state model `stateful_shadow` and architecture role `slow_learner` define placement. Local optimization cannot be interpreted as global optimality or ownership of another module's durable facts.
 
 ## 2. Source binding and implementation status
 
@@ -53,107 +53,102 @@ Direct dependencies:
 - `learning.artifacts`
 - `kernel.evidence`
 
-Authoritative write domains:
-
-None.
+Authoritative write domains: none.
 
 Explicitly denied capabilities:
 
 - `online_current_artifact_mutation`
 - `production_write`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The module accepts only registered, bounded, versioned inputs. Missing authority, stale revisions, scope mismatch, digest mismatch, duplicate evidence, incompatible action domains and unsupported cells are hard failures. It never directly writes another owner's store.
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, converting qualification evidence into deployment authority, or requiring a neural/tensor implementation when the simpler qualified candidate is sufficient.
 
 ## 4. Internal architecture and component decomposition
 
 The bounded components are:
 
-- `dataset snapshot loader`
-- `feature and target builder`
-- `bounded trainer`
-- `evaluation hook`
-- `artifact emitter`
+- immutable dataset/target admission;
+- deterministic Bellman target and reference evaluator;
+- applicability and sensor-core admission;
+- replay-safe tabular learner;
+- replay-safe action-conditioned world-model learner;
+- candidate payload encoders;
+- independently pinned immutable loaded predictors;
+- regularity and statistical qualification admission;
+- external artifact-owner integration;
+- qualification-evidence acceptance package.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+### Replay boundary
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+Evidence identity, not caller-controlled sample identity, is the replay boundary. `build_targets` rejects duplicate support digests. Public tabular and world-model fit wrappers reject duplicate evidence digests before sample counts, target statistics, transition counts or branch probabilities are computed. Relabelling one observation cannot make it contribute twice.
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+### Runtime candidate boundary
+
+A public candidate struct is not an authenticated runtime object. Cross-crate inference uses `LoadedTabularOperatorV1` or `LoadedTabularWorldModelV1`; each is created only after independently pinned payload/model validation. Raw artifact predictors remain crate-internal implementation/test helpers and are not re-exported from `lib.rs`.
+
+### Configuration and generation
+
+Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision/generation. Hidden mutable singletons, unbounded queues and implicit store fallbacks are prohibited.
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+Current produced source contracts include:
 
-- `BellmanOperatorArtifactV1`
-- `RegularityProfileV1`
-
-Consumed contracts:
-
-- `CreditAssignmentReceiptV1`
-- `DatasetSnapshotV1`
-- `DomainRead::learning_artifact_registryV1`
-- `DomainRead::learning_credit_ledgerV1`
-- `DomainRead::learning_episode_ledgerV1`
-- `DomainRead::learning_unlearning_lineageV1`
-- `DomainRead::operator_sensor_core_registryV1`
-- `DomainRead::qualification_evidenceV1`
-- `LearningDecisionV1`
-- `LearningEpisodeV1`
-- `ModulePort::kernel.evidence::learning.operator`
-- `ModulePort::learning.artifacts::learning.operator`
-- `ModulePort::learning.ledger::learning.operator`
-- `ModulePort::platform.types::learning.operator`
+- `BellmanOperatorArtifact`
+- `TabularOperatorArtifactV1`
+- `TabularWorldModelV1`
 - `OperatorSensorCoreManifestV1`
-- `OutcomeReceiptV1`
+- `OperatorRegularityAdmissionV1`
+- `WorldModelQualificationAdmissionV1`
+- bounded tabular/world-model candidate payloads.
 
-Critical protocol schemas:
+Current consumed or bound contracts include:
 
-- `CreditAssignmentReceiptV1`
-- `DatasetSnapshotV1`
-- `LearningDecisionV1`
-- `LearningEpisodeV1`
-- `OperatorSensorCoreManifestV1`
-- `OutcomeReceiptV1`
-- `RegularityProfileV1`
+- immutable learning dataset and evidence identities;
+- artifact-owner current-selection and lineage pins;
+- applicability/regularity profiles;
+- independently produced world-model qualification assessment/profile;
+- operator-acceptance frozen evidence and externally pinned trust policy.
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+The deterministic reference and public learned fitting paths require at least two actions. The tabular learner requires a complete canonical sensor-by-action grid and positive per-cell sample floor. Compatibility is additive only where registered.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The original `train` symbol is deprecated. It is a compatibility alias for `build_targets`, not a trainer. New code must use the explicit operation name. A genuine neural/tensor trainer, if later justified, receives a distinct immutable profile and API.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Owned authoritative or rebuildable domains: none.
 
-None.
+Read-only dependencies include the learning artifact registry, credit/episode ledgers, unlearning lineage, sensor-core registry and qualification evidence.
 
-Read-only data dependencies:
+Candidate persistence belongs to `learning.artifacts`. The Bellman crate only encodes bounded candidate bytes and validates independently selected pins. Tabular pins bind payload, training-artifact, objective, dataset, sensor-core, training-profile and generation identities. World-model pins bind the complete semantic payload digest, model digest, dataset digest and model identity. Corruption, truncation, trailing bytes, noncanonical order, invalid statistics, invalid probability/count totals or identity drift reject.
 
-- `learning_artifact_registry`
-- `learning_credit_ledger`
-- `learning_episode_ledger`
-- `learning_unlearning_lineage`
-- `operator_sensor_core_registry`
-- `qualification_evidence`
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Rollback reopens an immutable compatible predecessor through the artifact owner under the current registry/revocation witness. Source tests exercise separate-process baseline/candidate/predecessor loading; this is engineering evidence, not product deployment authority.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.operator.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.operator.md).
+The native implementation is CPU/local deterministic code with no production writer. Fitters build deny-all candidate values from immutable inputs. Loaded predictors hold private immutable state after admission and perform repeated lookups without re-trusting a caller-supplied mutable artifact.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+The qualification acceptance package owns its sidecar transaction boundary. It uses create-only/atomic private writes, a durable trusted-time watermark, nonce claim and final receipt. It rechecks trust policy and frozen evidence across signature verification to fail closed on concurrent change.
+
+Shared concurrency and transaction requirements remain applicable at the artifact, evidence and acceptance owner boundaries.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.operator.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.operator.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Fail-closed conditions include:
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+- duplicate sample identity or duplicate evidence/support digest;
+- missing/underfilled grid cells or fewer than two actions;
+- unsupported applicability or expired applicability evidence;
+- exact sensor work exceeding the source budget;
+- rank/gain/shape/OOD/error-budget breach;
+- candidate payload/pin mismatch or corrupt/noncanonical payload;
+- unsupported prediction cell/state-action pair;
+- insufficient holdout/effective support/snapshot/future-window evidence;
+- calibration/drift/confidence bound breach;
+- qualification-acceptance trust/frozen-evidence/time/nonce mismatch.
+
+Failure never causes online mutation or automatic fallback promotion. A simpler qualified predecessor/fallback must be selected by its owner. Rollback and revocation preserve lineage; no test in this module grants selection authority.
 
 ## 9. Security, privacy and threat controls
 
@@ -163,316 +158,105 @@ Owned threat entries:
 - `off_policy_residual_blowup`
 - `replay_contamination`
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+Controls now explicitly include evidence-digest replay admission across target construction, tabular fitting and world-model fitting; deny-all candidate authority; independent payload pins; bounded canonical decoding; exact-work admission; regularity/OOD admission; and frozen statistical-evidence binding.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+Credentials do not enter learning datasets or general logs. Acceptance trust inputs are externally pinned and qualification-only. A hash computed from received bytes is not independent selection or admission.
+
+Negative tests cover relabelled evidence replay, action-domain mismatch, payload tampering/truncation, unsupported predictions, future-window insufficiency, drift excess, denied authority and revoked artifact loading.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.operator.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs) and the linked implementation components.
+Source ceilings include the registered dimension/sensor/action/rank/grid/sample bounds. In addition, exact sensor construction now estimates coordinate work before entering pairwise/farthest-point geometry. The estimate covers candidate-pair duplicate checks, candidate-to-selected updates and selected-pair separation. Work above the reviewed source ceiling rejects early.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+Loaded tabular and world-model predictors validate once and keep private immutable canonical state for repeated lookup. This removes the former cross-crate pattern of repeatedly trusting and validating an arbitrary public artifact at prediction time.
+
+All source ceilings are capacity controls, not selected-host measurements. Target CPU/GPU/device latency, memory and energy measurements remain external evidence.
 
 ## 11. Observability and operations
 
-Offline/reference learning library. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
+Offline/reference learning library. Bind immutable dataset/sensor/profile/evidence identities and emit candidates through the artifact owner. Distinguish deterministic reference, simplest-sufficient learner, world-model prediction and independent factual outcomes. Synthetic trajectories never supply independent production outcome evidence.
 
-Current operating and state-format references:
+Operating references:
 
-- [codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md](../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md).
+- `codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md`
+- `qualification/module-execution-dossiers/detail/learning.operator.md`
+- `docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json`
+- `qualification/lane-e/TEST_TRACEABILITY.json`
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+The operator-acceptance package may seal exact qualification evidence only. Its `automatic_transition=false` boundary must remain visible in operational dashboards and release logic.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Focused source references include:
 
-- [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs); named case: `op_05_tabular_operator_fits_complete_grid_deterministically`.
-- [codex-rs/hepta-bellman-operator/src/lib_tests.rs](../../../codex-rs/hepta-bellman-operator/src/lib_tests.rs); named case: `deterministic_and_canonical`.
+- `src/lib_tests.rs` — deterministic target construction and duplicate-support rejection;
+- `src/reference_tests.rs` — applicability, deterministic reference and regularity;
+- `src/sensor_bounded.rs` — exact-work budget;
+- `src/learned_tests.rs` — complete-grid fitting;
+- `src/loaded_tests.rs` — pinned tabular validation and separate-process reload/rollback;
+- `src/world_model_tests.rs` — action-conditioned deterministic baseline;
+- `src/world_model.rs` — pinned world-model load/predict/tamper rejection;
+- `src/world_model_qualification.rs` — effective-support/future/drift/confidence admission;
+- `hepta-shadow-qualification/tests/lane_e_api_contract.rs` — cross-crate public-surface linkage;
+- `hepta-shadow-qualification/tests/support/tabular_reload.rs` — artifact-owner reload/revocation integration;
+- `hepta-operator-acceptance` tests — qualification-evidence ceremony/trust behavior.
 
-In `codex-rs`, run `just test -p codex-hepta-bellman-operator`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.operator.md) separately labels target acceptance designs.
+Lane-E OP-01..OP-04 requirements are mapped to exact test functions in `qualification/lane-e/TEST_TRACEABILITY.json`. Exact-head and synthetic-merge CI, formatting, strict lint and all-target compilation remain required before source qualification is claimed.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+Repository tests cannot self-create real future-calendar windows, selected-device measurements, live outcomes or independent acceptance.
 
 ## 13. Implementation sequence and work packages
 
-Applicable work packages:
+Applicable packages:
 
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- `HBO-2-BELLMAN-OPERATOR-SHADOW`
-- `BIO-2-REPLAY-CONSOLIDATION`
-- `BIO-3-WORLD-MODEL-PREDICTION-ERROR`
+- `HBO-0-BELLMAN-OPERATOR-CONTRACTS` — source implemented for current deterministic/tabular surface;
+- `HBO-1-OPERATOR-SENSOR-CORE` — source implemented with explicit exact-work admission;
+- `HBO-2-BELLMAN-OPERATOR-SHADOW` — source implementation present; live future/device qualification remains external;
+- `BIO-2-REPLAY-CONSOLIDATION` — replay identity controls implemented on operator ingress; wider consolidation remains with owning modules;
+- `BIO-3-WORLD-MODEL-PREDICTION-ERROR` — deterministic baseline, pinned load and evidence admission implemented; live-world evidence remains external.
 
-The bootstrap package is `HBO-0-BELLMAN-OPERATOR-CONTRACTS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
-
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+A neural/tensor candidate is a separately reviewed optional implementation profile, not an unfinished prerequisite by default. It becomes required only when objective/qualification evidence demonstrates that the simplest sufficient implementation is inadequate or another approved profile mandates it.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Activation requires a named authenticated product caller through registered ports plus selected artifact, authority/configuration/resource checks and failure behavior. Shadow and qualification callers are not production callers.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+The `hepta-operator-acceptance` ceremony has scope `qualification_evidence_only`; `automatic_transition=false`; its declaration grants no Enforce, promotion, outbound or retirement authority. Production activation must not reinterpret this receipt.
+
+Retirement of raw compatibility paths requires all callers migrated. Raw predictor helpers are already non-public; `train` remains deprecated only for source compatibility and should be removed in a future breaking revision after repository callers are proven absent.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires current code, tests and a freshness-verified source snapshot. Qualification requires exact-candidate CI plus externally valid evidence for the claim being made. Product composition requires a named caller and selected-process loading. Independent operator acceptance, activation, canary, promotion and release are separate states.
 
-For `learning.operator`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+Current candidate status is therefore: **repository source closure in progress under PR CI; production implementation remains false; product caller remains not composed; external live/future/device/independent-acceptance gates remain open.**
 
-### Work-package execution envelopes
+### Repository source-operation inventory (non-authoritative)
 
-#### `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
+This inventory is navigation evidence for the current qualification candidate. The canonical source-location receipt remains Section 17; operation truth and freshness are machine-checked by `IMPLEMENTATION_MAP.json`.
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
-- Owner/deputy: `learning-platform` / `qualification-plane`.
-- Allowed write paths:
-- `codex-rs/hepta-bellman-operator/**`
-- `codex-rs/hepta-types/**`
-- Development predecessors:
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `LRN-0-CAUSAL-LEARNING-CONTRACTS`
-- `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
-- Activation predecessors:
-- `NDU-0-PREFERENCE-UTILITY-CONTRACTS`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `build_targets` | `build_targets` | `codex-rs/hepta-bellman-operator/src/lib.rs` | `src/lib_tests.rs` |
+| `fit_tabular_operator` | `fit_tabular_operator` | `codex-rs/hepta-bellman-operator/src/learned.rs` | `src/learned_tests.rs` |
+| `fit_tabular_operator_strict_v2` | `fit_tabular_operator_strict_v2` | `codex-rs/hepta-bellman-operator/src/learned_strict.rs` | `src/learned_strict.rs` |
+| `load_pinned_tabular_operator` | `LoadedTabularOperatorV1::from_pinned_payload` | `codex-rs/hepta-bellman-operator/src/loaded.rs` | `src/loaded_tests.rs` |
+| `predict_loaded_tabular_operator` | `LoadedTabularOperatorV1::predict` | `codex-rs/hepta-bellman-operator/src/loaded.rs` | `src/loaded_tests.rs` |
+| `validate_applicability_certificate` | `validate_applicability_certificate` | `codex-rs/hepta-bellman-operator/src/reference.rs` | `src/reference_tests.rs` |
+| `build_sensor_core` | `build_sensor_core` | `codex-rs/hepta-bellman-operator/src/sensor_bounded.rs` | `src/sensor_bounded.rs`, `src/reference_tests.rs` |
+| `evaluate_bellman_reference` | `evaluate_bellman_reference` | `codex-rs/hepta-bellman-operator/src/reference.rs` | `src/reference_tests.rs` |
+| `admit_operator_regularity` | `admit_operator_regularity` | `codex-rs/hepta-bellman-operator/src/reference.rs` | `src/reference_tests.rs` |
+| `fit_transition_model` | `fit_transition_model` | `codex-rs/hepta-bellman-operator/src/world_model.rs` | `src/world_model_tests.rs` |
+| `load_pinned_world_model` | `LoadedTabularWorldModelV1::from_pinned_model` | `codex-rs/hepta-bellman-operator/src/world_model.rs` | `src/world_model.rs` |
+| `predict_loaded_world_model` | `LoadedTabularWorldModelV1::predict` | `codex-rs/hepta-bellman-operator/src/world_model.rs` | `src/world_model.rs` |
+| `admit_world_model_qualification` | `admit_world_model_qualification` | `codex-rs/hepta-bellman-operator/src/world_model_qualification.rs` | `src/world_model_qualification.rs` |
+| `prepare_qualification_acceptance` | `prepare` | `codex-rs/hepta-operator-acceptance/src/lib.rs` | `src/lib_tests.rs` |
+| `verify_and_seal_qualification_acceptance` | `verify_and_seal` | `codex-rs/hepta-operator-acceptance/src/lib.rs` | `src/lib_tests.rs`, `src/g5_trust_tests.rs` |
+| `verify_qualification_acceptance_receipt` | `verify_receipt` | `codex-rs/hepta-operator-acceptance/src/lib.rs` | `src/lib_tests.rs` |
 
-#### `HBO-1-OPERATOR-SENSOR-CORE`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `learning-platform` / `durability-kernel`.
-- Allowed write paths:
-- `codex-rs/hepta-learning-artifacts/**`
-- `codex-rs/hepta-bellman-operator/**`
-- Development predecessors:
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `LRN-1-DURABLE-EPISODE-LEDGER`
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- Activation predecessors:
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `ART-1-LEARNING-ARTIFACT-REGISTRY`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `HBO-2-BELLMAN-OPERATOR-SHADOW`
-
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
-- Owner/deputy: `learning-platform` / `qualification-plane`.
-- Allowed write paths:
-- `codex-rs/hepta-bellman-operator/**`
-- Development predecessors:
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- `NDU-1-DETERMINISTIC-UTILITY-BASELINE`
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- Activation predecessors:
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- `NDU-1-DETERMINISTIC-UTILITY-BASELINE`
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `BIO-2-REPLAY-CONSOLIDATION`
-
-- State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
-- Owner/deputy: `learning-platform` / `qualification-plane`.
-- Allowed write paths:
-- `codex-rs/hepta-bellman-operator/**`
-- `qa/learning/replay/**`
-- Development predecessors:
-- `BIO-1-ELIGIBILITY-HOMEOSTASIS`
-- `LONG-2-RETENTION-FORGETTING`
-- `HBO-2-BELLMAN-OPERATOR-SHADOW`
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- Activation predecessors:
-- `BIO-1-ELIGIBILITY-HOMEOSTASIS`
-- `LONG-2-RETENTION-FORGETTING`
-- `HBO-2-BELLMAN-OPERATOR-SHADOW`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- `verified_episode_replay`
-- `fast_slow_memory_separation`
-- `replay_ablation`
-- `deletion_eligibility`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-#### `BIO-3-WORLD-MODEL-PREDICTION-ERROR`
-
-- State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
-- Owner/deputy: `learning-platform` / `qualification-plane`.
-- Allowed write paths:
-- `codex-rs/hepta-bellman-operator/**`
-- `qa/learning/world-model/**`
-- Development predecessors:
-- `BIO-2-REPLAY-CONSOLIDATION`
-- `HBO-2-BELLMAN-OPERATOR-SHADOW`
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- Activation predecessors:
-- `BIO-2-REPLAY-CONSOLIDATION`
-- Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
-- `state_action_prediction`
-- `reward_and_risk_prediction`
-- `prediction_error_modulation`
-- `dreamed_and_real_trajectory_separation`
-- Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
-
-<!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
-### Exact closed-world registry projection
-
-This generated projection binds `learning.operator` to the current canonical contract, protocol, data, delivery and threat registries. The registries remain authoritative; this block is a digest-checked documentation projection.
-
-**Produced contracts:**
-- `BellmanOperatorArtifactV1`
-
-**Consumed contracts:**
-- `CandidateSetCompletenessReceiptV1`
-- `CreditAssignmentReceiptV1`
-- `DatasetSnapshotV1`
-- `DomainRead::learning_artifact_registryV1`
-- `DomainRead::learning_credit_ledgerV1`
-- `DomainRead::learning_episode_ledgerV1`
-- `DomainRead::learning_unlearning_lineageV1`
-- `DomainRead::operator_sensor_core_registryV1`
-- `DomainRead::qualification_evidenceV1`
-- `GoldenFixtureManifestV1`
-- `LearningDecisionV1`
-- `LearningEpisodeV1`
-- `ModulePort::kernel.evidence::learning.operator`
-- `ModulePort::learning.artifacts::learning.operator`
-- `ModulePort::learning.ledger::learning.operator`
-- `ModulePort::platform.types::learning.operator`
-- `OperatorApplicabilityCertificateV1`
-- `OperatorSensorCoreManifestV1`
-- `OutcomeReceiptV1`
-- `OutcomeWatermarkV1`
-- `RandomStreamManifestV1`
-- `RegularityProfileV1`
-- `SupportAuditReceiptV1`
-
-**Typed protocols:**
-- `CandidateSetCompletenessReceiptV1`
-- `CreditAssignmentReceiptV1`
-- `DatasetSnapshotV1`
-- `GoldenFixtureManifestV1`
-- `LearningDecisionV1`
-- `LearningEpisodeV1`
-- `OperatorApplicabilityCertificateV1`
-- `OperatorSensorCoreManifestV1`
-- `OutcomeReceiptV1`
-- `OutcomeWatermarkV1`
-- `RandomStreamManifestV1`
-- `RegularityProfileV1`
-- `SupportAuditReceiptV1`
-
-**Owned data domains:**
-- None.
-
-**Read data domains:**
-- `candidate_set_completeness_receipt_v1`
-- `golden_fixture_manifest_v1`
-- `learning_artifact_registry`
-- `learning_credit_ledger`
-- `learning_episode_ledger`
-- `learning_unlearning_lineage`
-- `operator_applicability_certificate_v1`
-- `operator_sensor_core_manifest_v1`
-- `operator_sensor_core_registry`
-- `outcome_watermark_v1`
-- `qualification_evidence`
-- `random_stream_manifest_v1`
-- `regularity_profile_v1`
-- `support_audit_receipt_v1`
-
-**Work packages:**
-- `BIO-2-REPLAY-CONSOLIDATION`
-- `BIO-3-WORLD-MODEL-PREDICTION-ERROR`
-- `HBO-0-BELLMAN-OPERATOR-CONTRACTS`
-- `HBO-1-OPERATOR-SENSOR-CORE`
-- `HBO-2-BELLMAN-OPERATOR-SHADOW`
-
-**Owned threats:**
-- `Bellman_error_amplification`
-- `off_policy_residual_blowup`
-- `replay_contamination`
-
-<!-- END GENERATED EXACT REGISTRY PROJECTION -->
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain explicit follow-up evidence when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 

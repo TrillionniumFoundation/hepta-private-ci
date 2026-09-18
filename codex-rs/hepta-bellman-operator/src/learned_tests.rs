@@ -114,6 +114,25 @@ fn op_05_tabular_operator_rejects_missing_or_underfilled_cells() {
 }
 
 #[test]
+fn op_05_tabular_operator_rejects_relabelled_duplicate_evidence() {
+    let mut samples = vec![
+        sample("s1", "sensor-a", "action-a", 10),
+        sample("s2", "sensor-a", "action-a", 20),
+        sample("s3", "sensor-a", "action-b", 10),
+        sample("s4", "sensor-a", "action-b", 20),
+        sample("s5", "sensor-b", "action-a", 10),
+        sample("s6", "sensor-b", "action-a", 20),
+        sample("s7", "sensor-b", "action-b", 10),
+        sample("s8", "sensor-b", "action-b", 20),
+    ];
+    samples[1].evidence_digest = samples[0].evidence_digest;
+    assert_eq!(
+        fit_tabular_operator(plan(samples)),
+        Err(LearnedOperatorError::DuplicateEvidence)
+    );
+}
+
+#[test]
 fn op_05_tabular_prediction_is_synthetic_and_domain_bounded() {
     let samples = vec![
         sample("s1", "sensor-a", "action-a", 10),
@@ -140,5 +159,17 @@ fn op_05_tabular_prediction_is_synthetic_and_domain_bounded() {
     assert_eq!(
         predict_tabular_operator(&artifact, &id("sensor-unknown"), &id("action-a")),
         Err(LearnedOperatorError::UnsupportedCell)
+    );
+}
+
+#[test]
+fn tabular_operator_requires_reference_action_domain() {
+    let mut single_action = plan(vec![sample("s1", "sensor-a", "action-a", 10)]);
+    single_action.sensor_ids = vec![id("sensor-a")];
+    single_action.action_ids = vec![id("action-a")];
+    single_action.minimum_samples_per_cell = 1;
+    assert_eq!(
+        fit_tabular_operator(single_action),
+        Err(LearnedOperatorError::InvalidGrid)
     );
 }

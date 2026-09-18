@@ -1,19 +1,20 @@
 //! Strict admission wrapper for the simplest-sufficient tabular operator.
 //!
-//! The original V1 functions remain available. This additive surface rejects
-//! duplicate underlying evidence even when callers relabel samples, and uses
-//! the artifact's canonical cell ordering for binary lookup after an O(n)
-//! validation on every call. Use LoadedTabularOperatorV1 for once-validated
-//! persisted candidates and O(log n) repeated lookups.
+//! This additive fit surface rejects duplicate underlying evidence even when
+//! callers relabel samples. The legacy indexed raw predictor is compiled only
+//! for crate tests; cross-crate callers use LoadedTabularOperatorV1 for
+//! independently pinned, once-validated persisted candidates.
 
 use std::error::Error as StdError;
 use std::fmt;
 
+#[cfg(test)]
 use codex_hepta_types::StableId;
 
 use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
+#[cfg(test)]
 use crate::TabularOperatorPredictionV1;
 use crate::fit_tabular_operator;
 
@@ -35,7 +36,8 @@ pub fn fit_tabular_operator_strict_v2(
     Ok(fit_tabular_operator(plan)?)
 }
 
-pub fn predict_tabular_operator_indexed_v2(
+#[cfg(test)]
+pub(crate) fn predict_tabular_operator_indexed_v2(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
     action_id: &StableId,

@@ -1,6 +1,7 @@
 //! Cross-owner engineering test: real tabular fit, existing artifact storage,
 //! independent process loading and revocation-safe rollback. Fixture pins are
 //! not deployment authorization or scientific evidence of task improvement.
+use std::fmt::Debug;
 use std::fs::File;
 use std::path::PathBuf;
 use std::process::Command;
@@ -31,37 +32,54 @@ use pretty_assertions::assert_eq;
 use serde::Deserialize;
 use serde::Serialize;
 
+fn must<T, E: Debug>(result: Result<T, E>, context: &str) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("{context}: {error:?}"),
+    }
+}
+
+fn some<T>(value: Option<T>, context: &str) -> T {
+    match value {
+        Some(value) => value,
+        None => panic!("{context}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("fixture identity")
+    must(StableId::new(value), "fixture identity")
 }
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 fn fit(generation: u64, value: i64) -> TabularOperatorArtifactV1 {
-    fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
+    let mut samples = Vec::new();
+    for (action, targets) in [("read", [value - 2, value + 2]), ("abstain", [0, 0])] {
+        for (replicate, target) in targets.into_iter().enumerate() {
+            samples.push(TabularOperatorSampleV1 {
+                sample_id: id(&format!("sample-{action}-{replicate}")),
+                sensor_id: id("state"),
+                action_id: id(action),
+                target: FixedQ32::from_raw(target),
+                evidence_digest: digest(&format!(
+                    "fixture-observation-{generation}-{action}-{replicate}"
+                )),
+            });
+        }
+    }
+    must(fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
         artifact_id: id(&format!("tabular-{generation}")),
         producer_id: id("fixture-trainer"),
-        generation: Generation::new(generation).expect("generation"),
+        generation: must(Generation::new(generation), "generation"),
         objective_digest: digest("fixed-external-task"),
         dataset_digest: digest(&format!("dataset-{generation}")),
         sensor_core_digest: digest("fixed-grid"),
         training_profile_digest: digest("strict-tabular"),
         minimum_samples_per_cell: 2,
         sensor_ids: vec![id("state")],
-        action_ids: vec![id("read")],
-        samples: [value - 2, value + 2]
-            .into_iter()
-            .enumerate()
-            .map(|(i, target)| TabularOperatorSampleV1 {
-                sample_id: id(&format!("sample-{i}")),
-                sensor_id: id("state"),
-                action_id: id("read"),
-                target: FixedQ32::from_raw(target),
-                evidence_digest: digest(&format!("fixture-observation-{generation}-{i}")),
-            })
-            .collect(),
-    })
-    .expect("strict learner")
+        action_ids: vec![id("read"), id("abstain")],
+        samples,
+    }), "strict learner")
 }
 
 /// The parent retains these expected values independently of inspected files.
@@ -91,9 +109,9 @@ impl Request {
         ArtifactManifest {
             artifact_id: id(&format!("tabular-{}", self.generation)),
             kind: ArtifactKind::Policy,
-            generation: Generation::new(self.generation).expect("generation"),
+            generation: must(Generation::new(self.generation), "generation"),
             predecessor_id: (self.generation == 2).then(|| id("tabular-1")),
-            content_digest: self.payload_digest.parse().expect("payload digest"),
+            content_digest: must(self.payload_digest.parse(), "payload digest"),
             objective_digest: digest("fixed-external-task"),
             support_digest: digest(&format!("dataset-{}", self.generation)),
             producer_id: id("fixture-trainer"),
@@ -114,19 +132,24 @@ impl Request {
 fn worker() {
     let Ok(raw) = std::env::var("HEPTA_TEST_OWNER_TABULAR_REQUEST") else {
         // Normal invocation still exercises an actual fitted model, not an empty main.
-        assert_eq!(fit(1, 1).cells[0].mean_target.raw(), 1);
+        let model = fit(1, 1);
+        let read = some(
+            model.cells.iter().find(|cell| cell.action_id == id("read")),
+            "read cell",
+        );
+        assert_eq!(read.mean_target.raw(), 1);
         return;
     };
     assert!(raw.len() <= 16384);
-    let request: Request = serde_json::from_str(&raw).expect("host fixture request");
+    let request: Request = must(serde_json::from_str(&raw), "host fixture request");
     let loaded = load_pinned_candidate(
-        File::open(&request.snapshot).expect("read-only registry"),
-        File::open(&request.payload).expect("read-only payload"),
+        must(File::open(&request.snapshot), "read-only registry"),
+        must(File::open(&request.payload), "read-only payload"),
         PinnedCandidateSpec {
             registry_receipt: RegistrySnapshotReceipt {
-                binding: request.binding.parse().expect("binding"),
-                head_digest: request.head.parse().expect("head"),
-                file_digest: request.snapshot_digest.parse().expect("snapshot digest"),
+                binding: must(request.binding.parse(), "binding"),
+                head_digest: must(request.head.parse(), "head"),
+                file_digest: must(request.snapshot_digest.parse(), "snapshot digest"),
                 records: request.records,
                 encoded_bytes: request.snapshot_bytes,
             },
@@ -139,24 +162,22 @@ fn worker() {
             "revoked candidate must not reach predictor"
         ),
         Expected::Value(expected) => {
-            let bytes = loaded.expect("existing artifact owner pin");
+            let bytes = must(loaded, "existing artifact owner pin");
             let model = LoadedTabularOperatorV1::from_pinned_payload(
                 bytes.bytes(),
                 &TabularPayloadPinV1 {
-                    payload_digest: request.payload_digest.parse().expect("payload digest"),
-                    artifact_digest: request.artifact_digest.parse().expect("artifact digest"),
+                    payload_digest: must(request.payload_digest.parse(), "payload digest"),
+                    artifact_digest: must(request.artifact_digest.parse(), "artifact digest"),
                     objective_digest: digest("fixed-external-task"),
                     dataset_digest: digest(&format!("dataset-{}", request.generation)),
                     sensor_core_digest: digest("fixed-grid"),
                     training_profile_digest: digest("strict-tabular"),
-                    generation: Generation::new(request.generation).expect("generation"),
+                    generation: must(Generation::new(request.generation), "generation"),
                 },
-            )
-            .expect("loaded model binding");
+            );
+            let model = must(model, "loaded model binding");
             assert_eq!(
-                model
-                    .predict(&id("state"), &id("read"))
-                    .expect("prediction")
+                must(model.predict(&id("state"), &id("read")), "prediction")
                     .value
                     .raw(),
                 expected
@@ -167,8 +188,8 @@ fn worker() {
 }
 
 fn run(request: &Request) -> u32 {
-    let raw = serde_json::to_string(request).expect("fixture request");
-    let child = Command::new(std::env::current_exe().expect("test executable"))
+    let raw = must(serde_json::to_string(request), "fixture request");
+    let child = Command::new(must(std::env::current_exe(), "test executable"))
         .args([
             "--exact",
             "tabular_reload::worker",
@@ -178,12 +199,12 @@ fn run(request: &Request) -> u32 {
         .env("HEPTA_TEST_OWNER_TABULAR_REQUEST", raw)
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())
-        .spawn()
-        .expect("new host process");
+        .spawn();
+    let child = must(child, "new host process");
     let pid = child.id();
-    let output = child.wait_with_output().expect("process terminality");
+    let output = must(child.wait_with_output(), "process terminality");
     assert!(output.status.success(), "{output:?}");
-    let stdout = String::from_utf8(output.stdout).expect("utf8");
+    let stdout = must(String::from_utf8(output.stdout), "utf8");
     let observations: Vec<_> = stdout
         .lines()
         .filter_map(|line| {
@@ -191,20 +212,21 @@ fn run(request: &Request) -> u32 {
                 .map(|(_, value)| value)
         })
         .collect();
-    assert_eq!(observations, vec![pid.to_string().as_str()]);
+    let expected_pid = pid.to_string();
+    assert_eq!(observations, vec![expected_pid.as_str()]);
     assert_ne!(pid, std::process::id());
     pid
 }
 
 #[test]
 fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
-    let directory = tempfile::tempdir().expect("private fixture namespace");
+    let directory = must(tempfile::tempdir(), "private fixture namespace");
     let snapshot = directory.path().join("registry");
     let mut registry = ArtifactRegistry::new();
     let mut requests = Vec::new();
     for (generation, target) in [(1, 1), (2, 7)] {
         let model = fit(generation, target);
-        let bytes = encode_tabular_payload_v1(&model).expect("encode model");
+        let bytes = must(encode_tabular_payload_v1(&model), "encode model");
         let request = Request {
             snapshot: snapshot.clone(),
             payload: directory.path().join(format!("payload-{generation}")),
@@ -220,27 +242,38 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
             expected: Expected::Value(target),
         };
         let manifest = request.manifest();
-        registry
-            .append(ArtifactEvent::Register {
+        must(
+            registry.append(ArtifactEvent::Register {
                 event_id: id(&format!("register-{generation}")),
                 manifest: manifest.clone(),
-            })
-            .expect("owner registration");
-        write_candidate_payload(
-            CreateOnlyArtifactFile::create(&request.payload).expect("create-only payload"),
-            &registry,
-            &manifest.artifact_id,
-            &bytes,
-        )
-        .expect("owner payload sync");
+            }),
+            "owner registration",
+        );
+        must(
+            write_candidate_payload(
+                must(
+                    CreateOnlyArtifactFile::create(&request.payload),
+                    "create-only payload",
+                ),
+                &registry,
+                &manifest.artifact_id,
+                &bytes,
+            ),
+            "owner payload sync",
+        );
         requests.push(request);
     }
-    let receipt = write_registry_snapshot(
-        CreateOnlyArtifactFile::create(&snapshot).expect("create-only registry"),
-        &registry,
-        digest("fixture-current-host-binding"),
-    )
-    .expect("owner snapshot sync");
+    let receipt = must(
+        write_registry_snapshot(
+            must(
+                CreateOnlyArtifactFile::create(&snapshot),
+                "create-only registry",
+            ),
+            &registry,
+            digest("fixture-current-host-binding"),
+        ),
+        "owner snapshot sync",
+    );
     for request in &mut requests {
         request.set_snapshot(receipt);
     }
@@ -251,21 +284,27 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
             .len(),
         3
     );
-    registry
-        .append(ArtifactEvent::Revoke(StateChange {
+    must(
+        registry.append(ArtifactEvent::Revoke(StateChange {
             event_id: id("revoke-predecessor"),
             artifact_id: id("tabular-1"),
             evaluator_id: id("fixture-independent-evaluator"),
             reason_digest: digest("withdrawn-support"),
-        }))
-        .expect("owner revoke");
+        })),
+        "owner revoke",
+    );
     let revoked_snapshot = directory.path().join("registry-revoked");
-    let current = write_registry_snapshot(
-        CreateOnlyArtifactFile::create(&revoked_snapshot).expect("new registry"),
-        &registry,
-        receipt.binding,
-    )
-    .expect("current revocation sync");
+    let current = must(
+        write_registry_snapshot(
+            must(
+                CreateOnlyArtifactFile::create(&revoked_snapshot),
+                "new registry",
+            ),
+            &registry,
+            receipt.binding,
+        ),
+        "current revocation sync",
+    );
     for request in &mut requests {
         request.snapshot = revoked_snapshot.clone();
         request.set_snapshot(current);

@@ -43,6 +43,82 @@ def lane_by_module():
     }
 
 
+def bound_package_roots(module_id: str) -> list[str]:
+    registry = ROOT / "docs/modules/CARGO_BINDINGS.json"
+    if not registry.is_file():
+        return []
+    rows = load("docs/modules/CARGO_BINDINGS.json").get("bindings", [])
+    return sorted(
+        {
+            row["packagePath"]
+            for row in rows
+            if row.get("module") == module_id and row.get("packagePath")
+        }
+    )
+
+
+def effective_source_roots(module: dict) -> list[str]:
+    declared = [x["path"] for x in module["rootBindings"]]
+    return sorted(set(declared) | set(bound_package_roots(module["id"])))
+
+
+def current_source_root_trees(paths: list[str]) -> dict[str, str]:
+    return {path: git("rev-parse", f"HEAD:{path}") for path in paths}
+
+
+def source_base_tracks_paths(
+    source_base: dict, paths: list[str], root_trees: object
+) -> bool:
+    """Verify current bound roots against immutable Git tree pins.
+
+    Root-tree comparison works in shallow CI checkouts.  When the historical
+    source-base commit is available locally, also verify its commit/tree pair,
+    ancestry, and per-root tree identities.
+    """
+    commit = source_base.get("commit")
+    tree = source_base.get("tree")
+    if not commit or not tree or not paths or not isinstance(root_trees, dict):
+        return False
+    if set(root_trees) != set(paths):
+        return False
+    try:
+        for path in paths:
+            expected = root_trees.get(path)
+            if not isinstance(expected, str) or not expected:
+                return False
+            if git("rev-parse", f"HEAD:{path}") != expected:
+                return False
+    except subprocess.CalledProcessError:
+        return False
+
+    available = subprocess.run(
+        ["git", "cat-file", "-e", f"{commit}^{{commit}}"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if available.returncode != 0:
+        return True
+
+    try:
+        if git("rev-parse", f"{commit}^{{tree}}") != tree:
+            return False
+        for path in paths:
+            if git("rev-parse", f"{commit}:{path}") != root_trees[path]:
+                return False
+    except subprocess.CalledProcessError:
+        return False
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    return ancestor.returncode == 0
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
@@ -72,6 +148,8 @@ def parse_entrypoints(module: str):
 def map_for(module: dict, source_base: dict, lanes: dict):
     mid = module["id"]
     roots = [x["path"] for x in module["rootBindings"]]
+    bound_roots = bound_package_roots(mid)
+    effective_roots = effective_source_roots(module)
     operations = parse_entrypoints(mid)
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
@@ -97,8 +175,12 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "deputy": module["deputy"],
         "technicalGuide": module["technicalDocument"],
         "declaredRoots": roots,
+        "boundPackageRoots": bound_roots,
+        "effectiveSourceRoots": effective_roots,
+        "sourceFreshnessPolicy": "bound_root_tree_pins_match_current_head",
+        "sourceRootTrees": current_source_root_trees(effective_roots),
         "resolvedRoots": resolve_source_roots(ROOT, module),
-        "sourceRootPresent": all((ROOT / x).exists() for x in roots),
+        "sourceRootPresent": all((ROOT / x).exists() for x in effective_roots),
         "productionImplementation": False,
         "productCallerState": "not_composed",
         "productionWriterState": "not_established",
@@ -114,9 +196,10 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         ],
         "claimBoundary": {
             "nativeSourceMappingComplete": all(
-                op["sourcePathExists"] and op["nativeSymbol"] for op in operations
+                op["sourcePathExists"] and op["nativeSymbol"] and op.get("tests")
+                for op in operations
             ),
-            "sourceRootPresent": all((ROOT / x).exists() for x in roots),
+            "sourceRootPresent": all((ROOT / x).exists() for x in effective_roots),
             "productionImplementation": False,
             "productExecutionProved": False,
             "independentAcceptance": False,
@@ -135,6 +218,8 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     operation vocabulary and top-level status/claim fields.
     """
     roots = [x["path"] for x in module["rootBindings"]]
+    bound_roots = bound_package_roots(module["id"])
+    effective_roots = effective_source_roots(module)
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
     if isinstance(declared, str):
         declared = [declared]
@@ -161,6 +246,16 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         source = op.get("sourcePath")
         op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
         operations.append(op)
+    fresh_operations = parse_entrypoints(module["id"])
+    known_symbols = {op.get("nativeSymbol") for op in operations}
+    for fresh in fresh_operations:
+        if fresh.get("nativeSymbol") not in known_symbols:
+            fresh = dict(fresh)
+            fresh.setdefault("designOperation", fresh["operation"])
+            fresh.setdefault("mappingClass", "owner_native")
+            fresh.setdefault("delegatedCallees", [])
+            operations.append(fresh)
+            known_symbols.add(fresh.get("nativeSymbol"))
     if not operations:
         operations = [
             {
@@ -181,15 +276,19 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
             "deputy": row.get("deputy", module["deputy"]),
             "technicalGuide": row.get("technicalGuide", module["technicalDocument"]),
             "declaredRoots": declared,
+            "boundPackageRoots": bound_roots,
+            "effectiveSourceRoots": effective_roots,
+            "sourceFreshnessPolicy": "bound_root_tree_pins_match_current_head",
+            "sourceRootTrees": current_source_root_trees(effective_roots),
             "resolvedRoots": resolve_source_roots(ROOT, module),
-            "sourceRootPresent": all((ROOT / x).exists() for x in declared),
+            "sourceRootPresent": all((ROOT / x).exists() for x in effective_roots),
             "productionImplementation": bool(
                 row.get("productionImplementation", False)
             ),
@@ -206,7 +305,11 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     migrated["claimBoundary"] = {
         **boundary,
         "nativeSourceMappingComplete": all(
-            bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+            bool(
+                op.get("sourcePathExists")
+                and op.get("nativeSymbol")
+                and op.get("tests")
+            )
             for op in operations
         ),
         "sourceRootPresent": migrated["sourceRootPresent"],
@@ -287,7 +390,8 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
+    freshness_verified = 0
+    legacy_unverified = 0
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -315,14 +419,30 @@ def verify():
             or not source_base.get("tree")
         ):
             failures.append(f"{mid}: source base")
-        else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
             declared = [declared]
         if declared != roots:
             failures.append(f"{mid}: declared roots")
+        policy = row.get("sourceFreshnessPolicy")
+        if policy is not None:
+            if policy != "bound_root_tree_pins_match_current_head":
+                failures.append(f"{mid}: unknown source freshness policy")
+            expected_bound = bound_package_roots(mid)
+            expected_effective = effective_source_roots(module)
+            if row.get("boundPackageRoots") != expected_bound:
+                failures.append(f"{mid}: bound package roots")
+            if row.get("effectiveSourceRoots") != expected_effective:
+                failures.append(f"{mid}: effective source roots")
+            if isinstance(source_base, dict) and source_base_tracks_paths(
+                source_base, expected_effective, row.get("sourceRootTrees")
+            ):
+                freshness_verified += 1
+            else:
+                failures.append(f"{mid}: source base is stale for bound roots")
+        else:
+            legacy_unverified += 1
         try:
             if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
                 failures.append(f"{mid}: resolved source roots")
@@ -334,6 +454,16 @@ def verify():
             continue
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
+        actual_symbols = {op.get("nativeSymbol") for op in ops if op.get("nativeSymbol")}
+        documented_symbols = {
+            op.get("nativeSymbol")
+            for op in parse_entrypoints(mid)
+            if op.get("nativeSymbol")
+        }
+        if policy is not None and not documented_symbols.issubset(actual_symbols):
+            missing = sorted(documented_symbols - actual_symbols)
+            failures.append(f"{mid}: documented entrypoints missing from map {missing}")
+        expected_effective = effective_source_roots(module)
         for op in ops:
             if not op.get("operation"):
                 failures.append(f"{mid}: operation id")
@@ -342,11 +472,39 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+            if policy is not None:
+                if not isinstance(op.get("tests"), list) or not op.get("tests"):
+                    failures.append(f"{mid}: operation lacks mapped tests {op.get('operation')}")
+                if source and not any(
+                    source == root or source.startswith(root + "/")
+                    for root in expected_effective
+                ):
+                    failures.append(
+                        f"{mid}: operation source outside effective roots {source}"
+                    )
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+        elif policy is not None:
+            mapping_complete = (
+                isinstance(source_base, dict)
+                and source_base_tracks_paths(
+                    source_base, expected_effective, row.get("sourceRootTrees")
+                )
+                and documented_symbols.issubset(actual_symbols)
+                and all(
+                    bool(
+                        op.get("sourcePathExists")
+                        and op.get("nativeSymbol")
+                        and op.get("tests")
+                    )
+                    for op in ops
+                )
+            )
+            if boundary.get("nativeSourceMappingComplete") is not mapping_complete:
+                failures.append(
+                    f"{mid}: nativeSourceMappingComplete does not match verified evidence"
+                )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -356,6 +514,8 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "freshnessVerifiedMaps": freshness_verified,
+                "legacyUnverifiedMaps": legacy_unverified,
             },
             sort_keys=True,
         )

@@ -1,11 +1,12 @@
 //! Bounded, deterministic Bellman/operator candidates for qualification space.
 //!
-//! The legacy target builder remains available as `train`, while
-//! `build_targets` makes its actual scope explicit. Applicability admission,
-//! sensor geometry, tabular Bellman reference, simplest-sufficient tabular
-//! learning, regularity/error-budget checks and an action-conditioned tabular
-//! world model are separate bounded surfaces. None can mutate an online policy,
-//! activate an artifact, select itself, or write production state.
+//! `build_targets` is deterministic target construction, not model training.
+//! Learned fitting and repeated inference remain separate fail-closed surfaces.
+//! Applicability admission, work-bounded sensor geometry, Bellman reference,
+//! simplest-sufficient tabular learning, regularity/error-budget checks and an
+//! action-conditioned world model are bounded qualification surfaces. None can
+//! mutate an online policy, activate an artifact, select itself, or write
+//! production state.
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeSet;
@@ -25,7 +26,9 @@ pub use loaded::TabularPayloadPinV1;
 pub use loaded::encode_tabular_payload_v1;
 mod learned_strict;
 mod reference;
+mod sensor_bounded;
 mod world_model;
+mod world_model_qualification;
 
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
@@ -34,10 +37,8 @@ pub use learned::TabularOperatorPlanV1;
 pub use learned::TabularOperatorPredictionV1;
 pub use learned::TabularOperatorSampleV1;
 pub use learned::fit_tabular_operator;
-pub use learned::predict_tabular_operator;
 pub use learned_strict::StrictLearnedOperatorError;
 pub use learned_strict::fit_tabular_operator_strict_v2;
-pub use learned_strict::predict_tabular_operator_indexed_v2;
 pub use reference::ApplicabilityDecisionV1;
 pub use reference::BellmanReferenceCellV1;
 pub use reference::BellmanReferencePlanV1;
@@ -53,17 +54,26 @@ pub use reference::OperatorSensorCoreManifestV1;
 pub use reference::SensorCoreDesignV1;
 pub use reference::SensorPointV1;
 pub use reference::admit_operator_regularity;
-pub use reference::build_sensor_core;
 pub use reference::evaluate_bellman_reference;
 pub use reference::validate_applicability_certificate;
+pub use sensor_bounded::SensorCoreBuildError;
+pub use sensor_bounded::build_sensor_core;
+pub use world_model::LoadedTabularWorldModelV1;
 pub use world_model::TabularWorldModelV1;
 pub use world_model::TransitionBranchV1;
 pub use world_model::TransitionEstimateV1;
 pub use world_model::WorldModelError;
+pub use world_model::WorldModelPinV1;
 pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
 pub use world_model::fit_transition_model;
-pub use world_model::predict_transition;
+pub use world_model::world_model_payload_digest_v1;
+pub use world_model_qualification::WorldModelQualificationAdmissionV1;
+pub use world_model_qualification::WorldModelQualificationAssessmentV1;
+pub use world_model_qualification::WorldModelQualificationError;
+pub use world_model_qualification::WorldModelQualificationProfileV1;
+pub use world_model_qualification::admit_world_model_qualification;
+pub use world_model_qualification::world_model_qualification_profile_digest;
 
 const MAX_SAMPLES: usize = 16_384;
 const SCALE: i128 = 1_i128 << 32;
@@ -129,6 +139,7 @@ pub enum Error {
     EmptyDataset,
     SampleLimitExceeded,
     DuplicateSample(String),
+    DuplicateEvidence,
     EmptyDigest(&'static str),
     InvalidGamma,
     Arithmetic,
@@ -163,13 +174,17 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
         .dataset
         .transitions
         .sort_by_key(|transition| transition.sample_id.clone());
-    let mut seen = BTreeSet::new();
+    let mut seen_ids = BTreeSet::new();
+    let mut seen_support = BTreeSet::new();
     for sample in &request.dataset.transitions {
-        if !seen.insert(sample.sample_id.clone()) {
+        if !seen_ids.insert(sample.sample_id.clone()) {
             return Err(Error::DuplicateSample(sample.sample_id.to_string()));
         }
         if sample.support_digest.is_zero() {
             return Err(Error::EmptyDigest("sample support"));
+        }
+        if !seen_support.insert(sample.support_digest) {
+            return Err(Error::DuplicateEvidence);
         }
     }
 
@@ -214,8 +229,11 @@ pub fn build_targets(mut request: TrainingRequest) -> Result<BellmanOperatorArti
     })
 }
 
-/// Compatibility alias for the original API. The implementation remains a
-/// deterministic target builder and does not imply a learned operator.
+/// Compatibility alias for the original target-builder API.
+///
+/// This never trained a learned operator. New callers must use `build_targets`
+/// so the operation cannot be mistaken for model fitting.
+#[deprecated(note = "target construction only; use build_targets")]
 pub fn train(request: TrainingRequest) -> Result<BellmanOperatorArtifact, Error> {
     build_targets(request)
 }

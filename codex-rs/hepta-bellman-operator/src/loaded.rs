@@ -208,6 +208,7 @@ fn validate(artifact: &TabularOperatorArtifactV1) -> Result<(), TabularPayloadEr
         samples += u64::from(cell.sample_count);
     }
     if sensors.len() > 4096
+        || actions.len() < 2
         || actions.len() > 128
         || samples > 1_000_000
         || sensors.values().any(|count| *count != actions.len())

@@ -81,7 +81,7 @@ fn op_04_prediction_is_synthetic_and_unsupported_pairs_abstain() {
 }
 
 #[test]
-fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
+fn world_model_rejects_duplicate_samples_evidence_and_invalid_outcomes() {
     let duplicate = sample("sample-1", "state-b", 10);
     assert_eq!(
         fit_transition_model(
@@ -92,9 +92,62 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
         Err(WorldModelError::DuplicateSample("sample-1".to_owned()))
     );
 
+    let mut replayed = vec![
+        sample("sample-1", "state-b", 10),
+        sample("sample-2", "state-c", 20),
+    ];
+    replayed[1].evidence_digest = replayed[0].evidence_digest;
+    assert_eq!(
+        fit_transition_model(id("world-model-replay"), digest("dataset"), replayed),
+        Err(WorldModelError::DuplicateEvidence)
+    );
+
     let invalid = sample("sample-2", "state-b", FixedQ32::ONE.raw() + 1);
     assert_eq!(
         fit_transition_model(id("world-model-2"), digest("dataset"), vec![invalid],),
         Err(WorldModelError::InvalidOutcome)
+    );
+}
+
+
+#[test]
+fn loaded_world_model_requires_complete_host_pin() {
+    let model = fit_transition_model(
+        id("world-model-loaded"),
+        digest("dataset-loaded"),
+        vec![
+            sample("sample-1", "state-b", 10),
+            sample("sample-2", "state-c", 20),
+        ],
+    )
+    .expect("valid world model");
+    let pin = WorldModelPinV1 {
+        model_id: model.model_id.clone(),
+        dataset_digest: model.dataset_digest,
+        model_digest: model.model_digest,
+        payload_digest: world_model_payload_digest_v1(&model).expect("payload digest"),
+    };
+    let loaded =
+        LoadedTabularWorldModelV1::from_pinned_model(model.clone(), &pin).expect("pinned load");
+    assert_eq!(
+        loaded
+            .predict(&id("state-a"), &id("action-a"))
+            .expect("supported prediction")
+            .mean_outcome,
+        FixedQ32::from_raw(15)
+    );
+
+    let mut inconsistent = model.clone();
+    inconsistent.estimates[0].estimate_digest = digest("forged-estimate");
+    assert_eq!(
+        LoadedTabularWorldModelV1::from_pinned_model(inconsistent, &pin),
+        Err(WorldModelError::InvalidModel)
+    );
+
+    let mut altered = model;
+    altered.estimates[0].mean_outcome = FixedQ32::from_raw(999);
+    assert_eq!(
+        LoadedTabularWorldModelV1::from_pinned_model(altered, &pin),
+        Err(WorldModelError::Binding)
     );
 }
