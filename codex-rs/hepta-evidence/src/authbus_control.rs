@@ -697,7 +697,7 @@ impl HeptaEvidenceStore {
         .bind(head.revision.to_be_bytes().as_slice())
         .bind(head.key_epoch.to_be_bytes().as_slice())
         .bind(head.verifying_key_digest.as_array().as_slice())
-        .bind(i64::from(head.revoked))
+        .bind(if head.revoked { 1_i64 } else { 0_i64 })
         .bind(now)
         .execute(&mut *tx)
         .await
@@ -847,12 +847,12 @@ impl HeptaEvidenceStore {
     }
 }
 
-pub(crate) async fn ensure_authbus_epoch_active(
+pub(crate) async fn authbus_epoch_retired(
     tx: &mut Transaction<'_, Sqlite>,
     issuer_id: &StableId,
     key_epoch: u64,
-) -> Result<(), AuthBusControlError> {
-    let retired: bool = sqlx::query_scalar(
+) -> Result<bool, EvidenceError> {
+    sqlx::query_scalar(
         "SELECT EXISTS(
             SELECT 1 FROM authbus_retired_epochs WHERE issuer_id = ? AND key_epoch = ?
          )",
@@ -861,12 +861,7 @@ pub(crate) async fn ensure_authbus_epoch_active(
     .bind(key_epoch.to_be_bytes().as_slice())
     .fetch_one(&mut **tx)
     .await
-    .map_err(classify_sqlx_error)?;
-    if retired {
-        Err(AuthBusControlError::EpochRetirementBlocked)
-    } else {
-        Ok(())
-    }
+    .map_err(classify_sqlx_error)
 }
 
 pub(crate) async fn verify_authbus_control_invariants(
