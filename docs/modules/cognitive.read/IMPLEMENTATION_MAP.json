@@ -106,7 +106,7 @@
     "productCaller": "codex-rs/hepta-agentd/src/cognitive_context.rs",
     "ownerCut": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
     "authoritativeContract": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
-    "finalUseFence": "AuthoritativeReadGuardV1::revalidate plus AgentdState lifecycle refresh/readiness recheck"
+    "finalUseFence": "AuthoritativeReadGuardV1::revalidate plus AgentdState lifecycle refresh/readiness recheck with exact current_generation equality"
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-read"
