@@ -421,3 +421,77 @@ async fn retired_replay_epoch_stays_revoked_after_safe_compaction() {
         ))
     ));
 }
+
+
+#[tokio::test]
+async fn trust_head_is_monotonic_across_revision_key_and_revocation_lifecycle() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let issuer_id = id("issuer:trust-lifecycle");
+    let first_key = Digest32::of_bytes(b"trust-key-1");
+    let second_key = Digest32::of_bytes(b"trust-key-2");
+
+    let first = AuthBusTrustHead {
+        issuer_id: issuer_id.clone(),
+        revision: 1,
+        key_epoch: 1,
+        verifying_key_digest: first_key,
+        registration_digest: Digest32::of_bytes(b"trust-registration-1"),
+        revoked: false,
+    };
+    store.observe_authbus_trust_head(&first).await.unwrap();
+
+    let mut same_revision_drift = first.clone();
+    same_revision_drift.registration_digest = Digest32::of_bytes(b"drift");
+    assert!(matches!(
+        store.observe_authbus_trust_head(&same_revision_drift).await,
+        Err(AuthBusControlError::TrustRollback)
+    ));
+
+    let mut same_epoch_key_substitution = first.clone();
+    same_epoch_key_substitution.revision = 2;
+    same_epoch_key_substitution.verifying_key_digest = second_key;
+    same_epoch_key_substitution.registration_digest =
+        Digest32::of_bytes(b"same-epoch-key-substitution");
+    assert!(matches!(
+        store
+            .observe_authbus_trust_head(&same_epoch_key_substitution)
+            .await,
+        Err(AuthBusControlError::TrustRollback)
+    ));
+
+    let revoked = AuthBusTrustHead {
+        issuer_id: issuer_id.clone(),
+        revision: 2,
+        key_epoch: 1,
+        verifying_key_digest: first_key,
+        registration_digest: Digest32::of_bytes(b"trust-registration-revoked"),
+        revoked: true,
+    };
+    store.observe_authbus_trust_head(&revoked).await.unwrap();
+
+    let unrevoked_same_epoch = AuthBusTrustHead {
+        issuer_id: issuer_id.clone(),
+        revision: 3,
+        key_epoch: 1,
+        verifying_key_digest: first_key,
+        registration_digest: Digest32::of_bytes(b"trust-registration-unrevoked"),
+        revoked: false,
+    };
+    assert!(matches!(
+        store
+            .observe_authbus_trust_head(&unrevoked_same_epoch)
+            .await,
+        Err(AuthBusControlError::TrustRollback)
+    ));
+
+    let rotated = AuthBusTrustHead {
+        issuer_id,
+        revision: 3,
+        key_epoch: 2,
+        verifying_key_digest: second_key,
+        registration_digest: Digest32::of_bytes(b"trust-registration-epoch-2"),
+        revoked: false,
+    };
+    store.observe_authbus_trust_head(&rotated).await.unwrap();
+}
