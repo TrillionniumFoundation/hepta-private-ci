@@ -130,7 +130,11 @@ trust/revocation distribution, directory durability, retention and the productio
 scheduler. Locks exclude cooperating writers, not hostile filesystem mutation.
 Tests in `src/durable_holdout_tests.rs` cover a different loading process,
 idempotent retries, acknowledged-history truncation, corruption, writer collision
-and write uncertainty. They are not production-caller or future-window receipts.
+and write uncertainty. Lane E CI additionally emits commit/tree/input-bound
+coverage, repeated durable-holdout stress and strict cross-crate E2E artifacts;
+same-repository runs sign those subjects through GitHub's Sigstore-backed artifact
+attestation service. These still are not live product-writer or future-calendar
+efficacy receipts.
 
 ## Observed-time longitudinal admission
 
