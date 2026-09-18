@@ -39,7 +39,7 @@ use super::codec::u64_blob;
 use super::unavailable;
 
 const OPERATIONS_DB_FILENAME: &str = "hepta_operations_1.sqlite";
-const OPERATIONS_SCHEMA_VERSION: i64 = 1;
+const OPERATIONS_SCHEMA_VERSION: i64 = 2;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
@@ -56,6 +56,12 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("destination_operation_dedup", "table"),
     ("destination_operation_dedup_no_update", "trigger"),
     ("destination_operation_dedup_recorded", "index"),
+    ("operation_tombstones", "table"),
+    ("operation_tombstones_no_update", "trigger"),
+    ("operation_tombstones_no_delete", "trigger"),
+    ("destination_operation_tombstones", "table"),
+    ("destination_operation_tombstones_no_update", "trigger"),
+    ("destination_operation_tombstones_no_delete", "trigger"),
 ];
 
 #[derive(Clone)]
@@ -115,6 +121,21 @@ impl DurableOperationStore {
         let semantic_digest = request.semantic_digest()?;
         let mut tx = begin_immediate(&self.pool).await?;
         let now = now_millis()?;
+        if let Some(retired_digest) = sqlx::query_scalar::<_, Vec<u8>>(
+            "SELECT semantic_digest FROM operation_tombstones
+             WHERE scope = ? AND operation_id = ?",
+        )
+        .bind(request.scope.as_str())
+        .bind(request.operation_id.as_str())
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(unavailable)?
+        {
+            if retired_digest == semantic_digest.as_array().as_slice() {
+                return Err(DurableOperationError::Retired(request.operation_id.clone()));
+            }
+            return Err(DurableOperationError::Conflict(request.operation_id.clone()));
+        }
         if let Some(existing) = load_operation_tx(&mut tx, &request.scope, &request.operation_id).await?
         {
             if existing.semantic_digest != semantic_digest
@@ -712,20 +733,59 @@ impl DurableOperationStore {
     ) -> Result<u64, DurableOperationError> {
         validate_limit(limit)?;
         let mut tx = begin_immediate(&self.pool).await?;
-        let result = sqlx::query(
-            "DELETE FROM operation_ledger WHERE (scope, operation_id) IN (
-                 SELECT scope, operation_id FROM operation_ledger
-                 WHERE state IN ('applied', 'not_applied', 'quarantined')
-                 AND terminal_at_ms <= ? ORDER BY terminal_at_ms, scope, operation_id LIMIT ?
-             )",
+        let now = now_millis()?;
+        let rows = sqlx::query(
+            "SELECT scope, operation_id, semantic_digest, predecessor_digest, payload_digest,
+                    destination, state, terminal_evidence_digest
+             FROM operation_ledger
+             WHERE state IN ('applied', 'not_applied', 'quarantined')
+               AND terminal_at_ms <= ?
+             ORDER BY terminal_at_ms, scope, operation_id LIMIT ?",
         )
         .bind(terminal_before_ms)
         .bind(limit)
-        .execute(&mut *tx)
+        .fetch_all(&mut *tx)
         .await
         .map_err(unavailable)?;
+        for row in &rows {
+            let scope: String = row.try_get("scope").map_err(unavailable)?;
+            let operation_id: String = row.try_get("operation_id").map_err(unavailable)?;
+            let semantic_digest: Vec<u8> = row.try_get("semantic_digest").map_err(unavailable)?;
+            let predecessor_digest: Option<Vec<u8>> =
+                row.try_get("predecessor_digest").map_err(unavailable)?;
+            let payload_digest: Vec<u8> = row.try_get("payload_digest").map_err(unavailable)?;
+            let destination: String = row.try_get("destination").map_err(unavailable)?;
+            let terminal_state: String = row.try_get("state").map_err(unavailable)?;
+            let terminal_evidence_digest: Vec<u8> = row
+                .try_get("terminal_evidence_digest")
+                .map_err(unavailable)?;
+            sqlx::query(
+                "INSERT INTO operation_tombstones
+                 (scope, operation_id, semantic_digest, predecessor_digest, payload_digest,
+                  destination, terminal_state, terminal_evidence_digest, retired_at_ms)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            )
+            .bind(&scope)
+            .bind(&operation_id)
+            .bind(semantic_digest)
+            .bind(predecessor_digest)
+            .bind(payload_digest)
+            .bind(destination)
+            .bind(terminal_state)
+            .bind(terminal_evidence_digest)
+            .bind(now)
+            .execute(&mut *tx)
+            .await
+            .map_err(unavailable)?;
+            sqlx::query("DELETE FROM operation_ledger WHERE scope = ? AND operation_id = ?")
+                .bind(&scope)
+                .bind(&operation_id)
+                .execute(&mut *tx)
+                .await
+                .map_err(unavailable)?;
+        }
         tx.commit().await.map_err(unavailable)?;
-        Ok(result.rows_affected())
+        u64::try_from(rows.len()).map_err(|_| DurableOperationError::Capacity)
     }
 
     pub async fn prune_destination_receipts(
@@ -735,19 +795,54 @@ impl DurableOperationStore {
     ) -> Result<u64, DurableOperationError> {
         validate_limit(limit)?;
         let mut tx = begin_immediate(&self.pool).await?;
-        let result = sqlx::query(
-            "DELETE FROM destination_operation_dedup WHERE (destination, operation_id) IN (
-                 SELECT destination, operation_id FROM destination_operation_dedup
-                 WHERE recorded_at_ms <= ? ORDER BY recorded_at_ms, destination, operation_id LIMIT ?
-             )",
+        let now = now_millis()?;
+        let rows = sqlx::query(
+            "SELECT destination, operation_id, semantic_digest, outcome, evidence_digest,
+                    recorded_at_ms
+             FROM destination_operation_dedup
+             WHERE recorded_at_ms <= ?
+             ORDER BY recorded_at_ms, destination, operation_id LIMIT ?",
         )
         .bind(recorded_before_ms)
         .bind(limit)
-        .execute(&mut *tx)
+        .fetch_all(&mut *tx)
         .await
         .map_err(unavailable)?;
+        for row in &rows {
+            let destination: String = row.try_get("destination").map_err(unavailable)?;
+            let operation_id: String = row.try_get("operation_id").map_err(unavailable)?;
+            let semantic_digest: Vec<u8> = row.try_get("semantic_digest").map_err(unavailable)?;
+            let outcome: String = row.try_get("outcome").map_err(unavailable)?;
+            let evidence_digest: Vec<u8> = row.try_get("evidence_digest").map_err(unavailable)?;
+            let recorded_at_ms: i64 = row.try_get("recorded_at_ms").map_err(unavailable)?;
+            sqlx::query(
+                "INSERT INTO destination_operation_tombstones
+                 (destination, operation_id, semantic_digest, outcome, evidence_digest,
+                  recorded_at_ms, retired_at_ms)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)",
+            )
+            .bind(&destination)
+            .bind(&operation_id)
+            .bind(semantic_digest)
+            .bind(outcome)
+            .bind(evidence_digest)
+            .bind(recorded_at_ms)
+            .bind(now)
+            .execute(&mut *tx)
+            .await
+            .map_err(unavailable)?;
+            sqlx::query(
+                "DELETE FROM destination_operation_dedup
+                 WHERE destination = ? AND operation_id = ?",
+            )
+            .bind(&destination)
+            .bind(&operation_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(unavailable)?;
+        }
         tx.commit().await.map_err(unavailable)?;
-        Ok(result.rows_affected())
+        u64::try_from(rows.len()).map_err(|_| DurableOperationError::Capacity)
     }
 }
 
