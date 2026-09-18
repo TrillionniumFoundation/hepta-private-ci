@@ -46,19 +46,17 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); observed identifiers include `ReadRequestV2`, `ReadResultV2`, `read_v2`, `binding_digest`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) for the implemented subset and remaining product work.
+The lower-level projection source is [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); observed identifiers include `ReadRequestV2`, `ReadResultV2`, `read_v2`, and `binding_digest`. The authoritative product contract is implemented in [codex-rs/hepta-cognitive-read/src/authoritative.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative.rs) through `SnapshotAcquisitionRequestV1`, `AuthoritativeSnapshotV1`, `AuthoritativeCognitiveSnapshotProvider`, `AuthoritativeReadResultV1`, and `read_authoritative`.
+
+The canonical SQLite production adapter is `CognitiveStore::authoritative_lane_c_snapshot_provider` / `LaneCAuthoritativeSnapshotProvider` in [codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs). The named product caller is `hepta-agentd` in [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs). `read_v2` remains public for compatibility and focused lower-level use, but it is not the product final-use boundary.
 
 ## 3. Boundary, responsibilities and non-goals
 
-The SQLite owner now exposes `CognitiveStore::lane_c_snapshot` and
-`DurableCognitiveSnapshot::read(ReadRequestV2)` through `hepta-memory`. This is a
-native read-through adapter to the existing durable store. It authorizes the
-exact scope, preserves record and citation IDs, includes committed tombstones,
-and admits only verified, currently valid live heads. Consumers must compare
-retrieved revision/content digests and reacquire the cut before delivery using
-`revalidate_lane_c_snapshot`. Snapshot generation alone does not detect validity
-expiry without a write. See `codex-rs/hepta-memory/LANE_C_SQLITE.md`; the adapter
-does not register a new V2 wire format or grant effects to read results.
+The SQLite owner exposes two deliberately different layers through `hepta-memory`. `DurableCognitiveSnapshot::read(ReadRequestV2)` is a lower-level compatibility projection over one immutable owner-acquired cut. Production context delivery instead acquires `LaneCAuthoritativeSnapshotProvider`, invokes `read_authoritative`, and calls `revalidate_authoritative_lane_c_snapshot` immediately before use.
+
+The production provider fills memory/source/tombstone/knowledge-fact/knowledge-graph frontiers from the same SQLite transaction cut; callers cannot supply those owner facts. The authoritative envelope additionally binds scope, purpose, authority epoch, generation-vector digest, lease window, snapshot receipt and snapshot digest. Final-use validation rechecks the read/request/receipt/vector bindings, lease/deadline, the exact owner cut, and a freshly supplied host vector. `hepta-agentd` also rechecks its fleet lifecycle generation before publishing the control response.
+
+The current Agentd context path does not consume compact-checkpoint or prompt-registry state. Those broad Lane-C vector slots therefore carry documented fixed "not consumed" sentinels rather than a false claim that those owners are composed into this read. If either becomes a real input, its actual current receipt/generation must replace the sentinel before use. See `codex-rs/hepta-memory/LANE_C_SQLITE.md`; none of these read receipts grant effect authority or register a new V2 wire format.
 
 Direct dependencies:
 
@@ -80,10 +78,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `snapshot acquisition`
+- `authoritative snapshot acquisition`
+- `immutable owner-cut projection`
 - `scope and redaction filter`
-- `cache boundary`
-- `consistency verifier`
+- `generation-vector / receipt / lease verifier`
+- `final-use owner and host-authority revalidation`
+
+The read core accepts a concrete immutable `CognitiveSnapshot`; the production SQLite adapter returns an opaque `LaneCAuthoritativeSnapshotProvider` that owns its frozen `DurableCognitiveSnapshot`. There is no moving `CognitiveSnapshotView` / split `visible()+fetch()` backend interface in the current implementation, so a future backend cannot join the production path merely by implementing independently moving visibility and fetch methods. A second backend must produce the same immutable authoritative envelope/provider semantics and pass the same final-use checks.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -161,7 +162,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Acquire a cut through the existing SQLite owner, then call the crate-native ReadRequestV2 reader. Before delivery compare exact revision/content digests and revalidate time as well as frontiers. Release snapshot handles on completion/cancel; the historical cut does not lease future external effects.
+Acquire an authoritative provider through the existing SQLite owner, call `read_authoritative` with the exact `ReadRequestV2`, and retain its request plus provider until final consumption. Before delivery call `revalidate_authoritative_lane_c_snapshot`; Agentd then rechecks the captured fleet lifecycle authority epoch before response publication. Exact revision/frontier revalidation is therefore already composed in production; the stronger vector/receipt/lease/authority checks now surround it rather than replacing it. Release snapshot/provider handles on completion or cancellation; the receipt grants no future external effect.
 
 Current operating and state-format references:
 
@@ -174,8 +175,9 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
-- [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs); named case: `authoritative_read_binds_provider_vector_and_query`.
+- [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs); covers provider/vector/query binding and final-use lease/request/receipt validation.
+- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); `authoritative_provider_revalidates_epoch_profile_lease_and_owner_frontiers` exercises authority/profile drift, lease expiry and owner-frontier advance.
+- [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); `authoritative_context_fails_closed_when_owner_changes_before_final_use` injects a committed tombstone after context assembly but before the production final-use checks and requires the call to fail closed.
 
 In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-read`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) separately labels target acceptance designs.
 
@@ -202,6 +204,20 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `cognitive.read`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+
+Current source/composition status is intentionally separated from qualification:
+
+| Invariant | Implemented | Product-wired | Adversarial test source | Qualification |
+| --- | --- | --- | --- | --- |
+| typed bounded projection / exact snapshot digest | yes | yes, inside authoritative path | yes | pending exact-candidate CI |
+| immutable SQLite owner cut / revision and frontier fence | yes | yes | yes | pending exact-candidate CI |
+| scope / purpose / authority epoch binding | yes | yes | yes | pending exact-candidate CI |
+| generation-vector and snapshot-receipt digest binding | yes | yes | yes | pending exact-candidate CI |
+| lease / request deadline final-use check | yes | yes | yes | pending exact-candidate CI |
+| host lifecycle epoch recheck before Agentd publication | yes | yes | state/control and provider drift tests | pending exact-candidate CI |
+| independent acceptance / activation / release | repository source is ready for qualification | no claim | external | pending external gates |
+
+Accordingly, the old "delivery revalidation is remaining work" statement is no longer accurate. Exact revision/frontier revalidation is complete, and the authoritative vector/receipt/lease path is now the product default in source. Remaining closure is exact-candidate CI plus the independent acceptance, activation and release gates; those gates are not self-certified by this document.
 
 ### Work-package execution envelopes
 
