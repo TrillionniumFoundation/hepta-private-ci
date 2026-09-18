@@ -208,6 +208,7 @@
             "pub struct DurableOperationStore",
             "BEGIN IMMEDIATE",
             "record_dispatch_started",
+            "mark_recovered_indeterminate",
             "handoff_owner",
             "execute_with_final_use"
           ]
