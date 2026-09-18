@@ -20,10 +20,13 @@ use serde::Serialize;
 use url::Url;
 use zeroize::Zeroizing;
 
+use crate::TrustedConsumerRegistry;
+use crate::consumer::TrustedConsumerError;
+
 const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 
 /// Provider credential injected by the enrolled host. Debug never reveals it.
-pub struct BaoToken(Zeroizing<String>);
+pub struct BaoToken(pub(crate) Zeroizing<String>);
 
 impl BaoToken {
     pub fn new(value: String) -> Result<Self, BaoClientError> {
@@ -55,20 +58,40 @@ pub struct BaoReadRequest {
 }
 
 /// Contains observations only; it is never a reusable permission or secret.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Eq, PartialEq, Serialize)]
 pub struct BaoSecretReceipt {
     pub request_sha256: [u8; 32],
+    /// Internal verification fingerprint. Deliberately excluded from serialized
+    /// receipts because a stable digest can fingerprint low-entropy secrets.
+    #[serde(skip_serializing)]
     pub response_sha256: [u8; 32],
+    /// Internal verification fingerprint. Deliberately excluded from serialized
+    /// receipts and Debug output.
+    #[serde(skip_serializing)]
     pub secret_sha256: [u8; 32],
     pub version: u64,
     pub secret_bytes: usize,
+    pub secret_verified: bool,
+}
+
+impl fmt::Debug for BaoSecretReceipt {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("BaoSecretReceipt")
+            .field("request_sha256", &self.request_sha256)
+            .field("version", &self.version)
+            .field("secret_bytes", &self.secret_bytes)
+            .field("secret_verified", &self.secret_verified)
+            .finish()
+    }
 }
 
 pub struct BaoClient {
-    client: HttpClient,
-    origin: Url,
-    ca_sha256: [u8; 32],
-    token: BaoToken,
+    pub(crate) client: HttpClient,
+    pub(crate) origin: Url,
+    pub(crate) ca_sha256: [u8; 32],
+    pub(crate) token: BaoToken,
+    pub(crate) consumers: TrustedConsumerRegistry,
 }
 
 impl fmt::Debug for BaoClient {
@@ -83,6 +106,7 @@ impl BaoClient {
         ca_pem: &[u8],
         token: BaoToken,
         timeout: Duration,
+        consumers: TrustedConsumerRegistry,
     ) -> Result<Self, BaoClientError> {
         if endpoint.len() > 2048
             || ca_pem.len() > 128 * 1024
@@ -109,6 +133,7 @@ impl BaoClient {
             origin,
             ca_sha256: Digest32::of_bytes(ca_pem).into_array(),
             token,
+            consumers,
         })
     }
 
@@ -158,7 +183,6 @@ impl BaoClient {
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
         request: &BaoReadRequest,
-        consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoClientError> {
         let binding = self.binding(request)?;
         let mut url = self.origin.clone();
@@ -233,11 +257,17 @@ impl BaoClient {
             secret_sha256: digest,
             version: request.version,
             secret_bytes: secret.len(),
+            secret_verified: true,
         };
         authority
-            .with_verified_use(verified, &binding, || consumer(secret.as_bytes()))
+            .with_verified_use(verified, &binding, || {
+                self.consumers.consume(&request.consumer_id, secret.as_bytes())
+            })
             .map_err(BaoClientError::Authority)?
-            .map_err(|()| BaoClientError::ConsumerIndeterminate)?;
+            .map_err(|error| match error {
+                TrustedConsumerError::UnknownConsumer => BaoClientError::UnknownConsumer,
+                TrustedConsumerError::Indeterminate => BaoClientError::ConsumerIndeterminate,
+            })?;
         Ok(receipt)
     }
 }
@@ -290,7 +320,11 @@ pub enum BaoClientError {
     InvalidResponse,
     VersionMismatch,
     SecretDigestMismatch,
+    UnknownConsumer,
     ConsumerIndeterminate,
+    LeaseOperationConflict,
+    LeaseOperationIndeterminate,
+    LeaseOperationAlreadyCompleted,
 }
 impl fmt::Display for BaoClientError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
