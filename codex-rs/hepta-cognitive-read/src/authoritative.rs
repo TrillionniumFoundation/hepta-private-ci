@@ -17,7 +17,7 @@ use codex_hepta_types::StableId;
 use crate::ReadRequestV2;
 use crate::ReadResultV2;
 use crate::ReadV2Error;
-use crate::read_v2;
+use crate::v2::read_v2;
 
 const GENERATION_VECTOR_DOMAIN: &[u8] = b"hepta.cognitive.read-generation-vector.v1";
 const SNAPSHOT_RECEIPT_DOMAIN: &[u8] = b"hepta.cognitive.authoritative-snapshot.v1";
