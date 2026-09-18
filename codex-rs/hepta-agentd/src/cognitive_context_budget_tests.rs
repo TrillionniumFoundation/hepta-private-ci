@@ -2,6 +2,7 @@
 //! Training scores and current-registry witnesses are explicit test fixtures,
 //! not independent task-benefit or production-authorization evidence.
 
+use std::collections::BTreeSet;
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -357,9 +358,28 @@ async fn learned_ranker_can_promote_a_candidate_beyond_legacy_top_four() {
         .collect::<Vec<_>>();
     let (_directory, store, owner, items) = stored_candidates(contents).await;
     assert!(items.len() > codex_hepta_memory::MAX_RETRIEVAL_RESULTS);
-    let winner = items.last().unwrap().clone();
-    let scores = (0..items.len())
-        .map(|index| if index + 1 == items.len() { 100 } else { 0 })
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let legacy = store
+        .retrieve_memory_candidates(
+            &access,
+            &RetrievalRequest::new("lemon", /*now_unix_seconds*/ 100),
+        )
+        .await
+        .unwrap();
+    let legacy_ids = legacy
+        .candidates
+        .iter()
+        .map(|candidate| candidate.memory.id.memory_id.as_str().to_string())
+        .collect::<BTreeSet<_>>();
+    assert_eq!(legacy_ids.len(), codex_hepta_memory::MAX_RETRIEVAL_RESULTS);
+    let winner = items
+        .iter()
+        .find(|item| !legacy_ids.contains(&item.memory_id))
+        .expect("fixture must contain a candidate beyond the legacy top-four")
+        .clone();
+    let scores = items
+        .iter()
+        .map(|item| if item.memory_id == winner.memory_id { 100 } else { 0 })
         .collect::<Vec<_>>();
     let fixture = fitted_ranker(owner.clone(), &items, &scores);
 
