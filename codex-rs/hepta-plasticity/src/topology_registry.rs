@@ -20,8 +20,8 @@ use crate::{
 };
 
 const MAGIC: &[u8; 8] = b"HPTTOP02";
-const PAYLOAD_MAGIC: &[u8; 8] = b"HPTTGV01";
-const FORMAT_VERSION: u16 = 1;
+const PAYLOAD_MAGIC: &[u8; 8] = b"HPTTGV02";
+const FORMAT_VERSION: u16 = 2;
 const HEADER_SIZE: usize = 8 + 2 + 8 + 4 + 32 + 32;
 const MAX_RECORDS: usize = 4_096;
 const MAX_PAYLOAD_BYTES: usize = 2 * 1024 * 1024;
@@ -649,6 +649,11 @@ fn encode_proposal(
             w.u8(operation_tag(change.operation));
             w.optional_digest(change.predecessor_digest);
             w.optional_digest(change.candidate_digest);
+            w.digest(change.capability_typing_digest);
+            w.digest(change.compatibility_plan_digest);
+            w.digest(change.lesion_ablation_digest);
+            w.digest(change.resource_review_digest);
+            w.digest(change.security_review_digest);
             w.digest(change.migration_digest);
             w.digest(change.rollback_digest);
             w.digest(change.writer_handoff_digest);
@@ -697,6 +702,11 @@ fn decode_proposal(
                 operation: decode_operation(r.u8()?)?,
                 predecessor_digest: r.optional_digest()?,
                 candidate_digest: r.optional_digest()?,
+                capability_typing_digest: r.digest()?,
+                compatibility_plan_digest: r.digest()?,
+                lesion_ablation_digest: r.digest()?,
+                resource_review_digest: r.digest()?,
+                security_review_digest: r.digest()?,
                 migration_digest: r.digest()?,
                 rollback_digest: r.digest()?,
                 writer_handoff_digest: r.digest()?,
@@ -951,6 +961,11 @@ mod tests {
                 operation: TopologyOperationV2::Replace,
                 predecessor_digest: Some(digest(&format!("old:{label}"))),
                 candidate_digest: Some(digest(&format!("new:{label}"))),
+                capability_typing_digest: digest(&format!("capability:{label}")),
+                compatibility_plan_digest: digest(&format!("compatibility:{label}")),
+                lesion_ablation_digest: digest(&format!("lesion:{label}")),
+                resource_review_digest: digest(&format!("resource:{label}")),
+                security_review_digest: digest(&format!("security:{label}")),
                 migration_digest: migration,
                 rollback_digest: rollback,
                 writer_handoff_digest: handoff.plan_digest,

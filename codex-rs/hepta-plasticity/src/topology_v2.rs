@@ -34,6 +34,16 @@ pub struct TopologyChangeV2 {
     pub predecessor_digest: Option<Digest32>,
     /// Absent only for `Remove` or `Retire`.
     pub candidate_digest: Option<Digest32>,
+    /// Typed capability/interface contract for the proposed graph delta.
+    pub capability_typing_digest: Digest32,
+    /// Compatibility/migration preconditions for predecessor and candidate graph shapes.
+    pub compatibility_plan_digest: Digest32,
+    /// Lesion/ablation design proving the structural contribution can be isolated.
+    pub lesion_ablation_digest: Digest32,
+    /// Bounded resource-impact review for the candidate.
+    pub resource_review_digest: Digest32,
+    /// Security/threat review for the candidate.
+    pub security_review_digest: Digest32,
     pub migration_digest: Digest32,
     pub rollback_digest: Digest32,
     pub writer_handoff_digest: Digest32,
@@ -279,6 +289,11 @@ fn canonicalize_changes(
 
 fn validate_change(change: &TopologyChangeV2) -> Result<(), TopologyProposalErrorV2> {
     for (name, digest) in [
+        ("capability typing", change.capability_typing_digest),
+        ("compatibility plan", change.compatibility_plan_digest),
+        ("lesion/ablation", change.lesion_ablation_digest),
+        ("resource review", change.resource_review_digest),
+        ("security review", change.security_review_digest),
         ("migration", change.migration_digest),
         ("rollback", change.rollback_digest),
         ("writer handoff", change.writer_handoff_digest),
@@ -409,6 +424,11 @@ fn push_change(
     push_optional_digest(bytes, change.predecessor_digest);
     push_optional_digest(bytes, change.candidate_digest);
     for digest in [
+        change.capability_typing_digest,
+        change.compatibility_plan_digest,
+        change.lesion_ablation_digest,
+        change.resource_review_digest,
+        change.security_review_digest,
         change.migration_digest,
         change.rollback_digest,
         change.writer_handoff_digest,
@@ -478,6 +498,11 @@ mod tests {
                 operation: TopologyOperationV2::Replace,
                 predecessor_digest: Some(digest(b"old")),
                 candidate_digest: Some(digest(b"new")),
+                capability_typing_digest: digest(b"capability-typing"),
+                compatibility_plan_digest: digest(b"compatibility-plan"),
+                lesion_ablation_digest: digest(b"lesion-ablation"),
+                resource_review_digest: digest(b"resource-review"),
+                security_review_digest: digest(b"security-review"),
                 migration_digest: digest(b"migration"),
                 rollback_digest: digest(b"rollback"),
                 writer_handoff_digest: digest(b"handoff"),
@@ -530,6 +555,25 @@ mod tests {
             .expect("window update")
             .candidate_id;
         assert_ne!(base_update, window_update);
+    }
+
+    #[test]
+    fn topology_change_requires_explicit_capability_lesion_resource_security_bindings() {
+        let mutations: [fn(&mut TopologyChangeV2); 5] = [
+            |change| change.capability_typing_digest = Digest32::ZERO,
+            |change| change.compatibility_plan_digest = Digest32::ZERO,
+            |change| change.lesion_ablation_digest = Digest32::ZERO,
+            |change| change.resource_review_digest = Digest32::ZERO,
+            |change| change.security_review_digest = Digest32::ZERO,
+        ];
+        for mutate in mutations {
+            let mut request = request();
+            mutate(&mut request.changes[0]);
+            assert!(matches!(
+                propose_topology_v2(request),
+                Err(TopologyProposalErrorV2::EmptyDigest(_))
+            ));
+        }
     }
 
     #[test]
