@@ -47,7 +47,7 @@ pub struct ObjectivePrincipalScopeWireV1 {
 pub struct ObjectivePredicateWireV1 {
     pub predicate_id: String,
     pub axis: String,
-    pub relation: &'static str,
+    pub relation: String,
     pub bound_q32: i64,
     pub evidence_source_id: String,
 }
@@ -56,7 +56,7 @@ pub struct ObjectivePredicateWireV1 {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ObjectiveConstraintWireV1 {
     pub constraint_id: String,
-    pub class: &'static str,
+    pub class: String,
     pub axis: String,
     pub relation: &'static str,
     pub bound_q32: i64,
@@ -67,7 +67,7 @@ pub struct ObjectiveConstraintWireV1 {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ObjectiveSoftDimensionWireV1 {
     pub dimension_id: String,
-    pub direction: &'static str,
+    pub direction: String,
     pub weight_q32: i64,
 }
 
@@ -202,7 +202,7 @@ pub fn project_objective_function_v1(
         let projected = ObjectivePredicateWireV1 {
             predicate_id: value.id.to_string(),
             axis: value.axis.to_string(),
-            relation: relation(value.relation),
+            relation: relation(value.relation).to_string(),
             bound_q32: value.bound.raw(),
             evidence_source_id: value.evidence_source.to_string(),
         };
@@ -226,9 +226,9 @@ pub fn project_objective_function_v1(
             .iter()
             .map(|value| ObjectiveConstraintWireV1 {
                 constraint_id: value.id.to_string(),
-                class: constraint_class(value.class),
+                class: constraint_class(value.class).to_string(),
                 axis: value.axis.to_string(),
-                relation: relation(value.relation),
+                relation: relation(value.relation).to_string(),
                 bound_q32: value.bound.raw(),
                 evidence_source_id: value.evidence_source.to_string(),
             })
@@ -238,7 +238,7 @@ pub fn project_objective_function_v1(
             .iter()
             .map(|value| ObjectiveSoftDimensionWireV1 {
                 dimension_id: value.dimension.to_string(),
-                direction: soft_direction(value.direction),
+                direction: soft_direction(value.direction).to_string(),
                 weight_q32: value.weight.raw(),
             })
             .collect(),
