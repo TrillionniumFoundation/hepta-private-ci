@@ -1,6 +1,7 @@
 //! Independent deterministic candidate evaluation. Eligibility is not promotion.
 #![forbid(unsafe_code)]
 
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
