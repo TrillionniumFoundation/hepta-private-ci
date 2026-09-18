@@ -12,11 +12,17 @@ use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::DurableCognitiveSnapshot;
 use codex_hepta_memory::RetrievalObservation;
+use codex_hepta_learning_ledger::CandidateSetCompleteness;
+use codex_hepta_learning_ledger::EpisodeDecision;
+use codex_hepta_memory_retrieval::CandidateUnionBuildV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
+use codex_hepta_memory_retrieval::HnmfRecallReceiptV1;
+use codex_hepta_memory_retrieval::RecallDispositionV1;
 use codex_hepta_memory_retrieval::RecallDynamicsV1;
 use codex_hepta_memory_retrieval::RetrievalPolicyV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -143,6 +149,12 @@ pub trait CurrentMemoryRetrievalProfile: Send + Sync {
     ) -> Result<MemoryRetrievalProfileV1, String>;
 }
 
+pub trait MemoryRetrievalDecisionSink: Send + Sync {
+    /// Append through the learning.ledger owner. The returned digest must bind
+    /// the committed append/receipt; the retrieval runtime owns no ledger.
+    fn append_decision(&self, decision: EpisodeDecision) -> Result<Digest32, String>;
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PreparedMemoryRetrievalV1 {
     pub preparation: MemoryRetrievalPreparationV1,
@@ -155,6 +167,7 @@ pub struct PinnedMemoryRetrievalRuntime {
     owner: AgentId,
     body_generation: u64,
     current: Arc<dyn CurrentMemoryRetrievalProfile>,
+    decision_sink: Arc<dyn MemoryRetrievalDecisionSink>,
 }
 
 impl PinnedMemoryRetrievalRuntime {
@@ -162,6 +175,7 @@ impl PinnedMemoryRetrievalRuntime {
         owner: AgentId,
         body_generation: u64,
         current: Arc<dyn CurrentMemoryRetrievalProfile>,
+        decision_sink: Arc<dyn MemoryRetrievalDecisionSink>,
     ) -> Result<Self, String> {
         if body_generation == 0 {
             return Err("memory retrieval runtime requires a non-zero body generation".to_string());
@@ -170,6 +184,7 @@ impl PinnedMemoryRetrievalRuntime {
             owner,
             body_generation,
             current,
+            decision_sink,
         })
     }
 
@@ -243,6 +258,82 @@ impl PinnedMemoryRetrievalRuntime {
         }
         Ok(())
     }
+
+    pub fn record_decision(
+        &self,
+        prepared: &PreparedMemoryRetrievalV1,
+        built: &CandidateUnionBuildV1,
+        receipt: &HnmfRecallReceiptV1,
+    ) -> Result<Digest32, String> {
+        if !built.all_enabled_channels_exhausted {
+            return Err("incomplete retrieval coverage cannot be logged as a causal decision".to_string());
+        }
+        built.validate().map_err(|error| error.to_string())?;
+        receipt.validate().map_err(|error| error.to_string())?;
+        if receipt.packet.candidate_union_digest != built.union.union_digest {
+            return Err("recall packet does not bind the logged candidate union".to_string());
+        }
+
+        let mut candidate_ids = built
+            .union
+            .entries
+            .iter()
+            .map(|entry| retrieval_candidate_id(&entry.record.record_id, entry.record.revision.get()))
+            .collect::<Result<Vec<_>, _>>()?;
+        candidate_ids.push(StableId::new("abstain").map_err(|error| error.to_string())?);
+        candidate_ids.sort();
+        if candidate_ids.windows(2).any(|pair| pair[0] == pair[1]) {
+            return Err("retrieval candidate identity collision".to_string());
+        }
+
+        let selected_candidate_id = match receipt.packet.disposition {
+            RecallDispositionV1::Recalled => {
+                let selected = receipt
+                    .packet
+                    .selections
+                    .first()
+                    .ok_or_else(|| "recalled packet has no selection".to_string())?;
+                retrieval_candidate_id(&selected.record_id, selected.record_revision.get())?
+            }
+            RecallDispositionV1::Abstained(_) => {
+                StableId::new("abstain").map_err(|error| error.to_string())?
+            }
+        };
+        let mut support_bytes = b"hepta.memory-retrieval.learning-decision.v1".to_vec();
+        support_bytes.extend_from_slice(prepared.preparation_digest.as_array());
+        support_bytes.extend_from_slice(prepared.profile_digest.as_array());
+        support_bytes.extend_from_slice(built.coverage_digest.as_array());
+        support_bytes.extend_from_slice(receipt.receipt_digest.as_array());
+        let support_digest = Digest32::of_bytes(&support_bytes);
+        let episode_id = digest_stable_id("retrieval-episode", support_digest)?;
+        let record_id = digest_stable_id("retrieval-decision", support_digest)?;
+        let decision = EpisodeDecision {
+            record_id,
+            episode_id,
+            objective_digest: prepared.profile.objective_digest,
+            policy_id: prepared.profile.policy.policy_id.clone(),
+            candidate_ids,
+            selected_candidate_id,
+            selected_propensity: ProbabilityQ32::ONE,
+            completeness: CandidateSetCompleteness::Complete,
+            support_digest,
+        };
+        self.decision_sink.append_decision(decision)
+    }
+}
+
+fn retrieval_candidate_id(record_id: &StableId, revision: u64) -> Result<StableId, String> {
+    let mut bytes = b"hepta.memory-retrieval.candidate-id.v1".to_vec();
+    push_bytes(&mut bytes, record_id.as_str().as_bytes());
+    bytes.extend_from_slice(&revision.to_be_bytes());
+    digest_stable_id("rc", Digest32::of_bytes(&bytes))
+}
+
+fn digest_stable_id(prefix: &str, digest: Digest32) -> Result<StableId, String> {
+    // 192 bits keeps a 512-entry decision comfortably below the durable V1
+    // 32 KiB event ceiling while retaining a collision-resistant exact-set key.
+    let hex = digest.to_string();
+    StableId::new(format!("{prefix}-{}", &hex[..48])).map_err(|error| error.to_string())
 }
 
 fn push_bytes(bytes: &mut Vec<u8>, value: &[u8]) {
