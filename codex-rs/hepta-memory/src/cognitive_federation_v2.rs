@@ -101,38 +101,16 @@ impl FederationTransportV2 for ProductFederationTransport<'_> {
                 ));
             }
 
-            let frontier_before = match self.reader.product_memory_frontier().await {
-                Ok(frontier) => frontier,
-                Err(error) => {
-                    remember_product_error(&self.state, error);
-                    return Ok(FederationTransportResultV2::NonTerminal(
-                        codex_hepta_memory_federation::FederationTransportOutcomeV2::Unavailable,
-                    ));
-                }
-            };
-            let batch = match self.reader.product_owner_retrieval(self.request).await {
-                Ok(batch) => batch,
-                Err(error) => {
-                    remember_product_error(&self.state, error);
-                    return Ok(FederationTransportResultV2::NonTerminal(
-                        codex_hepta_memory_federation::FederationTransportOutcomeV2::Unavailable,
-                    ));
-                }
-            };
-            let frontier_after = match self.reader.product_memory_frontier().await {
-                Ok(frontier) => frontier,
-                Err(error) => {
-                    remember_product_error(&self.state, error);
-                    return Ok(FederationTransportResultV2::NonTerminal(
-                        codex_hepta_memory_federation::FederationTransportOutcomeV2::Unavailable,
-                    ));
-                }
-            };
-            if frontier_before != frontier_after {
-                return Ok(FederationTransportResultV2::NonTerminal(
-                    codex_hepta_memory_federation::FederationTransportOutcomeV2::Unavailable,
-                ));
-            }
+            let (batch, observed_frontier) =
+                match self.reader.product_owner_retrieval(self.request).await {
+                    Ok(value) => value,
+                    Err(error) => {
+                        remember_product_error(&self.state, error);
+                        return Ok(FederationTransportResultV2::NonTerminal(
+                            codex_hepta_memory_federation::FederationTransportOutcomeV2::Unavailable,
+                        ));
+                    }
+                };
 
             let items = match batch
                 .candidates
@@ -164,7 +142,7 @@ impl FederationTransportV2 for ProductFederationTransport<'_> {
                     FederationCapabilityState::Granted,
                 ),
                 response_digest: Digest32::ZERO,
-                observed_frontier: frontier_after,
+                observed_frontier,
                 expires_unix_ms: query.deadline_unix_ms,
                 items,
                 completeness,
@@ -437,35 +415,16 @@ impl FederatedMemoryReader {
     async fn product_owner_retrieval(
         &self,
         request: &RetrievalRequest,
-    ) -> Result<crate::RetrievalBatch, CognitiveStoreError> {
+    ) -> Result<(crate::RetrievalBatch, u64), CognitiveStoreError> {
         let owner_access = owner_access(&self.capability);
-        let mut batch = self
+        let (mut batch, observed_frontier) = self
             .owner
-            .retrieve_memory_candidates(&owner_access, request)
+            .retrieve_memory_candidates_with_frontier(&owner_access, request)
             .await?;
         batch
             .candidates
             .retain(|candidate| candidate.memory.scope == *self.capability.scope.owner_scope());
-        Ok(batch)
-    }
-
-    async fn product_memory_frontier(&self) -> Result<u64, CognitiveStoreError> {
-        let (scope_kind, workspace) = self.capability.scope.owner_scope().database_parts();
-        let count: i64 = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM memory_revisions
-             WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?",
-        )
-        .bind(self.capability.owner_agent_id.as_str())
-        .bind(scope_kind)
-        .bind(workspace)
-        .fetch_one(&self.owner.pool)
-        .await
-        .map_err(unavailable)?;
-        u64::try_from(count).map_err(|_| {
-            CognitiveStoreError::Corrupt(
-                "memory federation owner frontier is negative".to_string(),
-            )
-        })
+        Ok((batch, observed_frontier))
     }
 
     fn product_evidence_item(
