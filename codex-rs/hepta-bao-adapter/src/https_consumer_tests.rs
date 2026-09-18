@@ -9,6 +9,8 @@ use codex_hepta_contracts::FinalUseRevocations;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
+
+use crate::TrustedSecretConsumer;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
