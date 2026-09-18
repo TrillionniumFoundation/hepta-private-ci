@@ -20,8 +20,10 @@ use codex_hepta_learning_ledger::{
 use codex_hepta_plasticity::{
     AppendDisposition, DurableRegistryAnchorV1, DurableTopologyProposalAppendReceiptV1,
     DurableTopologyProposalRegistryError, DurableTopologyProposalRegistryV2,
-    TopologyCandidateKindV2, TopologyChangeV2, TopologyGovernanceErrorV1, TopologyProposalRequestV2,
+    TopologyCandidateKindV2, TopologyChangeV2, TopologyGovernanceErrorV1,
+    TopologyMutationPolicyErrorV1, TopologyMutationPolicyV1, TopologyProposalRequestV2,
     TopologyProposalV2, TopologyWriterHandoffV1, propose_topology_v2,
+    verify_topology_changes_against_policy_v1, verify_topology_mutation_policy_v1,
     verify_topology_writer_handoffs_v1,
 };
 use codex_hepta_types::{Digest32, Generation, StableId};
@@ -38,6 +40,7 @@ pub struct TopologyPlasticityAdmissionEvidenceV1 {
     pub artifact_registry_binding: Digest32,
     pub artifact_registry_head_digest: Digest32,
     pub qualification_evidence_head_digest: Digest32,
+    pub topology_policy_digest: Digest32,
     pub window: codex_hepta_plasticity::ProposalWindowV2,
     pub baseline_generation: Generation,
     pub candidate_generation: Generation,
@@ -47,6 +50,7 @@ pub struct TopologyPlasticityAdmissionEvidenceV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TopologyPlasticityProductRequestV1 {
     pub proposal_id: StableId,
+    pub topology_policy: TopologyMutationPolicyV1,
     pub changes: Vec<TopologyChangeV2>,
     pub handoffs: Vec<TopologyWriterHandoffV1>,
     pub generator_attestation: SignedLearningEvidenceV1,
@@ -80,6 +84,7 @@ pub enum TopologyPlasticityProductErrorV1 {
     UnexpectedEvaluation(String),
     EvaluatorMismatch,
     NoUpdateCandidate,
+    Policy(TopologyMutationPolicyErrorV1),
     Proposal(codex_hepta_plasticity::TopologyProposalErrorV2),
     Governance(TopologyGovernanceErrorV1),
     Registry(DurableTopologyProposalRegistryError),
@@ -91,6 +96,11 @@ impl fmt::Display for TopologyPlasticityProductErrorV1 {
     }
 }
 impl StdError for TopologyPlasticityProductErrorV1 {}
+impl From<TopologyMutationPolicyErrorV1> for TopologyPlasticityProductErrorV1 {
+    fn from(value: TopologyMutationPolicyErrorV1) -> Self {
+        Self::Policy(value)
+    }
+}
 impl From<codex_hepta_plasticity::TopologyProposalErrorV2> for TopologyPlasticityProductErrorV1 {
     fn from(value: codex_hepta_plasticity::TopologyProposalErrorV2) -> Self {
         Self::Proposal(value)
@@ -231,6 +241,15 @@ pub fn propose_authenticated_topology_plasticity_v1(
         return Err(E::Registry(DurableTopologyProposalRegistryError::Poisoned));
     }
     validate_admission(&request.admission)?;
+    verify_topology_mutation_policy_v1(&request.topology_policy)?;
+    if request.topology_policy.policy_digest != request.admission.topology_policy_digest {
+        return Err(E::Binding("topology policy digest"));
+    }
+    verify_topology_changes_against_policy_v1(
+        request.admission.selected_artifact_digest,
+        &request.changes,
+        &request.topology_policy,
+    )?;
     let generator_payload = topology_generation_signing_payload_v1(
         &request.admission,
         &request.changes,
@@ -429,6 +448,7 @@ fn validate_admission(
             "qualification evidence head",
             admission.qualification_evidence_head_digest,
         ),
+        ("topology policy", admission.topology_policy_digest),
         ("window", admission.window.window_digest),
         ("dataset", admission.dataset_digest),
     ] {
@@ -452,6 +472,7 @@ fn push_admission(bytes: &mut Vec<u8>, admission: &TopologyPlasticityAdmissionEv
         admission.artifact_registry_binding,
         admission.artifact_registry_head_digest,
         admission.qualification_evidence_head_digest,
+        admission.topology_policy_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
