@@ -553,7 +553,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 agent_id,
                 current,
                 &target,
-                expected_authority_epoch,
+                grant.release_selection.compatibility_receipt_sha256.clone(),
+                grant.release_selection.revocation_frontier,
             )?;
             verifier
                 .verify(
@@ -1059,6 +1060,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         source: &AgentRelease,
         target: &AgentRelease,
+        compatibility_receipt_sha256: Sha256Digest,
         revocation_frontier: u64,
     ) -> Result<ReleaseSelectionBinding, SupervisorError> {
         let source = self
@@ -1084,6 +1086,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .matrixd_sha256
                 .map(|value| parse(value, "target matrixd"))
                 .transpose()?,
+            compatibility_receipt_sha256,
             revocation_frontier,
         )
         .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))
