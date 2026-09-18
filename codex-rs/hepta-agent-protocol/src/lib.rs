@@ -129,6 +129,24 @@ impl AgentdRequest {
         }
     }
 
+    pub fn readiness(request_id: u64, spawn_generation: u64) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::Readiness,
+        }
+    }
+
+    pub fn drain(request_id: u64, spawn_generation: u64) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::Drain,
+        }
+    }
+
     pub fn session_ingress(request_id: u64, spawn_generation: u64) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -265,6 +283,8 @@ pub enum AgentdMethod {
     Capabilities,
     Health,
     Lifecycle,
+    Readiness,
+    Drain,
     SessionIngress,
     AuthBusText {
         request: AuthBusTextIngress,
@@ -327,6 +347,8 @@ pub enum AgentdPayload {
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
+    Readiness(ReadinessSnapshot),
+    Drain(DrainSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
@@ -399,6 +421,22 @@ pub struct LifecycleSnapshot {
     pub lifecycle: AgentLifecycle,
     pub app_server_ready: bool,
     pub fenced: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ReadinessSnapshot {
+    pub critical_stores_ready: bool,
+    pub revocation_ready: bool,
+    pub required_ports_ready: bool,
+    pub admission_open: bool,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DrainSnapshot {
+    pub admission_stopped: bool,
+    pub drain_accepted: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
