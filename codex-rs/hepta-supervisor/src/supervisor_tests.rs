@@ -538,8 +538,8 @@ fn preflight_accepts_matrix_only_release_change() -> Result<(), SupervisorError>
 }
 
 #[test]
-fn lease_write_and_cleanup_kill_failure_keeps_child_tracked_until_exit()
--> Result<(), SupervisorError> {
+fn lease_write_and_cleanup_kill_failure_keeps_child_tracked_until_exit() -> Result<(), SupervisorError>
+{
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
     control.poison_lease_on_spawn(fleet.first.clone());
@@ -681,8 +681,8 @@ fn restart_drains_one_agent_and_spawns_a_new_generation() -> Result<(), Supervis
 }
 
 #[test]
-fn unexpected_agent_failure_uses_bounded_exponential_restart_budget()
--> Result<(), SupervisorError> {
+fn unexpected_agent_failure_uses_bounded_exponential_restart_budget() -> Result<(), SupervisorError>
+{
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
     let now = Instant::now();
