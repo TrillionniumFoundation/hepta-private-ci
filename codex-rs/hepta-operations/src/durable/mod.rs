@@ -38,6 +38,8 @@ pub enum DurableOperationError {
     Conflict(StableId),
     #[error("durable operation is missing: {0}")]
     Missing(StableId),
+    #[error("durable operation identity is retired: {0}")]
+    Retired(StableId),
     #[error("durable operation store capacity exceeded")]
     Capacity,
     #[error("dispatch lease is stale")]
