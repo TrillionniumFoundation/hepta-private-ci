@@ -1,0 +1,81 @@
+{
+  "schema": "hepta.control-engineering-production-implementation.v2",
+  "schemaVersion": 2,
+  "module": "control.engineering",
+  "canonicalImplementationRoot": "tools/hepta-engineering-control/control_engineering_v2",
+  "legacyCompatibilityOnly": [
+    "tools/hepta-engineering-control/hepta_engineering_control.py"
+  ],
+  "productCaller": {
+    "kind": "github_actions",
+    "path": ".github/workflows/hepta-consolidated-source.yml",
+    "job": "engineering-product-gate",
+    "pythonModule": "control_engineering_v2.product_gate",
+    "sourceState": "bound_pending_current_ci_receipt",
+    "upstreamRequiredJobs": [
+      "workspace-regression",
+      "engineering-sandbox",
+      "qualification"
+    ]
+  },
+  "productEntrypoints": [
+    "control_engineering_v2.orchestration.issue_authenticated_work_envelope",
+    "control_engineering_v2.orchestration.schedule_engineering_work",
+    "control_engineering_v2.composite_candidate.generate_composite_candidates",
+    "control_engineering_v2.composite_candidate.sandbox_composite_candidate",
+    "control_engineering_v2.mutation_testing.run_mutation_testing",
+    "control_engineering_v2.evidence.verify_integration_evidence",
+    "control_engineering_v2.seal.request_independent_review",
+    "control_engineering_v2.seal.record_integration_decision",
+    "control_engineering_v2.production.evaluate_authenticated_production_readiness"
+  ],
+  "repositoryEnforcedInvariants": {
+    "authenticatedCanonicalSourceBeforeProductEnvelope": true,
+    "authenticatedPredecessorCompletion": true,
+    "typedWorkerSkillAndCapacity": true,
+    "typedReviewAndCiCapacity": true,
+    "expectedValueArchitectureDebtRollbackCostInputs": true,
+    "deterministicIntegrationOrder": true,
+    "mergeQueueProposalWithoutMergeAuthority": true,
+    "testOracleSelfModificationDenied": true,
+    "maximumParallelSandboxesPerCoordinator": 8,
+    "maximumInfrastructureRetries": 2,
+    "semanticRetryForRejectedCandidate": 0,
+    "atomicMultiFileCandidateMaximumMutations": 100,
+    "mutationTestingRequiredByProductEvidence": true,
+    "distributedModeRequiresLeadershipEpoch": true,
+    "externalAuditAnchorRequiredForDeploymentReadiness": true,
+    "externalKeyCustodyReceiptRequiredForDeploymentReadiness": true
+  },
+  "sourceEvidence": {
+    "currentSourceIdentity": "runtime_exact_receipt_and_ci",
+    "implementationMapSourceBaseRole": "historical_generation_baseline_not_current_source_claim"
+  },
+  "currentClaim": {
+    "sourceImplemented": true,
+    "namedProductCallerSourceBound": true,
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "deploymentReady": false,
+    "reason": "current branch must first obtain exact-head, synthetic-merge, strong-sandbox and product-caller CI receipts"
+  },
+  "externalEvidenceRequired": [
+    "independent reviewer acceptance",
+    "external source/evidence signing key custody",
+    "external immutable audit anchor",
+    "distributed consensus/leader service when distributed mode is selected",
+    "authorized target-host deployment",
+    "operator acceptance",
+    "rollback rehearsal",
+    "canary promotion and release"
+  ],
+  "authorityBoundary": {
+    "runtimeAuthority": false,
+    "mergeAuthority": false,
+    "activationAuthority": false,
+    "promotionAuthority": false,
+    "releaseAuthority": false,
+    "externalEffectAuthority": false,
+    "independentAcceptance": false
+  }
+}

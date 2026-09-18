@@ -8,12 +8,21 @@ These are implementation and test mappings, not acceptance certificates.
 ## Implemented boundary
 
 The Python package persists work envelopes, fenced path leases and dependency-aware
-assignment generations; creates bounded code candidates; runs admitted checks;
-verifies source, execution and evaluator evidence; records signed candidate-bound
-review eligibility; and composes consent-bound dormant external-system proposals.
-Its CLI exposes local scheduling, candidate generation and sandbox execution.
-The pilot mutation grammar is deterministic (`no_change`, `add_file`, `replace_text`,
-`delete_file`). It is not a learned code generator or an autonomous development agent.
+assignment generations; authenticates canonical source and predecessor completion
+receipts; schedules against worker skills/capacity, review topology/capacity, CI
+capacity, expected value, architecture debt and rollback cost; emits bounded worker
+assignments, integration order and non-authoritative merge-queue proposals; creates
+single-file or atomic multi-file code candidates; runs admitted checks and bounded
+mutation testing; verifies source, execution, evaluator, audit-anchor and key-custody
+evidence; records signed candidate-bound review eligibility; and composes
+consent-bound dormant external-system proposals. The repository CI contains a named
+`control_engineering_v2.product_gate` caller, but its receipt grants no repository
+mutation or deployment authority.
+
+The mutation grammar remains deterministic (`no_change`, `add_file`,
+`replace_text`, `delete_file`); a `CompositeCandidate` binds up to 100 such
+mutations atomically. It is not a learned code generator or an autonomous
+development agent.
 
 Review requests and dormant proposals do not themselves merge, activate, deploy,
 enroll a host or transfer credentials. A deployment controller or production caller
@@ -24,9 +33,15 @@ must provide the separate owner authorization required by its own contract.
 | Owner | Responsibility | Main callers |
 | --- | --- | --- |
 | `path_policy.py` | Canonical POSIX paths and cross-platform alias rejection | Store, candidate generator and sandbox |
-| `control_plane.py` | SQLite schema, transactions, envelopes, leases, scheduling and audit | Public facade and CLI |
-| `candidate.py` | Deterministic candidate grammar, exact Git materialization and isolation | Public facade and CLI |
+| `control_plane.py` | SQLite schema, transactions, envelopes, leases, low-level durable scheduling and audit | v2 orchestration, public facade and CLI |
+| `orchestration.py` | Authenticated source/predecessor admission; skills/capacity/CI/review/value/debt/rollback scheduling; integration order and merge queue | Repository product caller and production composition |
+| `candidate.py` | Deterministic single-file candidate grammar, exact Git materialization and isolation | Public facade, composite candidate and CLI |
+| `composite_candidate.py` | Atomic multi-file candidate identity and sandbox composition | Product candidate pipeline |
+| `sandbox_control.py` | Eight-slot admission and <=2 infrastructure-only retries | All candidate sandboxes |
+| `mutation_testing.py` | Evaluator-owned source mutation probes | Qualification/product evidence |
 | `evidence.py` | Exact Git objects, source/merge execution receipts and independent identities | Candidate evidence binder |
+| `external.py` | Signed external audit, deployment-fact and key-custody verification | Authenticated production readiness |
+| `product_gate.py` | Named read-only repository product caller | Consolidated source CI |
 | `hardening.py` | Active-state frontier and authenticated evidence/consent primitives | Store, closure and seal |
 | `closure.py` | Source-tree and freshness-window binding, dormant assimilation | Seal and public facade |
 | `seal.py` | Signed evidence seals, replay prevention, review and durable eligibility | Public package and facade |
@@ -70,6 +85,27 @@ connections and serialize writes in SQLite. WAL disk growth, backups, external
 audit anchoring, archival retention and production availability remain operational
 work. The in-file hash chain detects accidental mutation; it is not protection
 against an administrator who can rewrite the complete database and chain.
+
+## Product orchestration and authenticated completion
+
+`EngineeringStore.schedule_ready_packages` remains the low-level durable owner
+primitive. Product callers use `schedule_engineering_work`, which accepts only
+authenticated `CompletionReceipt` objects for predecessor completion; arbitrary
+completed-ID strings are not a product input. The product scheduler also consumes
+typed worker skills/capacity, review role capacity, CI capacity, expected value,
+architecture debt and rollback cost. It first derives a bounded resource-feasible
+set, then commits the exact selected package set through the durable generation and
+lease-frontier owner. The resulting `EngineeringPlan` binds both the durable
+frontier and the complete resource model, and contains deterministic integration
+order plus merge-queue proposals with `merge_authority=false`.
+
+Remote or distributed composition must call `issue_authenticated_work_envelope`
+so a signed, fresh `CanonicalSourceReceipt` is checked against the real Git
+commit/tree before the envelope is persisted. Distributed mode additionally
+requires a signed `LeadershipReceipt` with a monotonically governed external
+epoch. The repository does not pretend SQLite is a consensus service; an external
+coordination authority owns leader election and HA, while Lane G fails closed when
+its receipt is absent, stale, drifted or invalid.
 
 ## Leases and scheduling
 
@@ -166,6 +202,20 @@ file is bounded to 2 MiB; duplicate and unknown record keys reject. Machine-read
 results go to stdout; a rejected operation emits a safe error code on stderr and
 exits 1. A failed sandbox check also exits 1. The CLI cannot issue signed review
 receipts, self-approve changes or deploy them.
+
+## External audit and production key custody
+
+The SQLite audit hash chain detects local corruption but is not an administrator-
+tamper-proof anchor. `external.verify_audit_anchor` therefore requires an
+independently signed receipt binding store identity, audit sequence and audit-head
+digest. Deployment readiness remains false without that external anchor.
+
+`HmacTrustStore` remains a deterministic reference/test adapter. Production key
+custody is represented by `KeyCustodyReceipt` and must be verified through an
+independently controlled verifier/HSM/keystore boundary. The authenticated
+production-readiness API derives external review, handoff, sandbox, deployment,
+rollback, audit and key-custody facts from signed receipts rather than trusting
+caller booleans. No repository code manufactures those external authorities.
 
 ## Failure handling and verification
 

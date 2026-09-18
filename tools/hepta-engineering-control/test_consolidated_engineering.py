@@ -14,6 +14,7 @@ import unittest
 from control_engineering_v2 import (
     EngineeringError,
     EngineeringStore,
+    ProductionReadinessFacts,
     WorkEnvelope,
     WorkPackage,
     bind_candidate_evidence,
@@ -366,6 +367,60 @@ class EngineeringCliTests(unittest.TestCase):
             capture_output=True,
             text=True,
             timeout=30,
+        )
+
+
+    def readiness_facts(self):
+        return ProductionReadinessFacts(
+            repository_full_name="TrillionniumFoundation/hepta-private-ci",
+            expected_repository_full_name="TrillionniumFoundation/hepta-private-ci",
+            source_commit="a" * 40,
+            source_tree="b" * 40,
+            source_receipt_digest="1" * 64,
+            candidate_evidence_verified=True,
+            native_symbol_mapping_verified=True,
+            native_symbol_mapping_digest="2" * 64,
+            product_caller="hepta-production-engineering-host",
+            product_test_receipt_digest="3" * 64,
+            exact_source_ci_passed=True,
+            synthetic_merge_ci_passed=True,
+            product_tests_passed=True,
+            generator_identity="engineering-generator",
+            reviewer_identity="independent-reviewer",
+            independent_review_accepted=True,
+            review_receipt_digest="4" * 64,
+            authorized_handoff=True,
+            handoff_receipt_digest="5" * 64,
+            external_key_custody=True,
+            key_custody_receipt_digest="6" * 64,
+            strong_sandbox_observed=True,
+            strong_sandbox_receipt_digest="7" * 64,
+            deployment_target_digest="8" * 64,
+            deployment_observed=True,
+            deployment_receipt_digest="9" * 64,
+            rollback_rehearsed=True,
+            rollback_receipt_digest="a" * 64,
+        )
+
+    def test_production_readiness_cli_is_a_real_exit_gate(self):
+        complete = self.write("readiness-complete.json", asdict(self.readiness_facts()))
+        passed = self.command(
+            "production-readiness", "--facts", complete, "--require", "deployment"
+        )
+        self.assertEqual(passed.returncode, 0, passed.stderr)
+        decision = json.loads(passed.stdout)["decision"]
+        self.assertTrue(decision["production_implementation_ready"])
+        self.assertTrue(decision["deployment_readiness_ready"])
+
+        blocked_facts = replace(self.readiness_facts(), external_key_custody=False)
+        blocked = self.write("readiness-blocked.json", asdict(blocked_facts))
+        failed = self.command(
+            "production-readiness", "--facts", blocked, "--require", "deployment"
+        )
+        self.assertEqual(failed.returncode, 1, failed.stderr)
+        self.assertIn(
+            "external_key_custody_missing",
+            json.loads(failed.stdout)["decision"]["deployment_blockers"],
         )
 
     def test_schedule_persists_and_replays_an_identical_generation(self):

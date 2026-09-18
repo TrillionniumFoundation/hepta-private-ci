@@ -21,6 +21,11 @@ from .candidate import (
     generate_candidates,
     sandbox_candidate,
 )
+from .composite_candidate import (
+    CompositeCandidate,
+    generate_composite_candidates,
+    sandbox_composite_candidate,
+)
 from .control_plane import (
     EngineeringError,
     EngineeringStore,
@@ -47,6 +52,16 @@ from .evidence import (
     HmacTrustStore,
     verify_integration_evidence,
 )
+from .external import (
+    AuditAnchorReceipt,
+    ExternalFactReceipt,
+    KeyCustodyReceipt,
+    verify_audit_anchor,
+    verify_external_fact_receipts,
+    verify_key_custody,
+    verify_key_custody_set,
+    verify_store_audit_anchor,
+)
 from .facade import (
     ReviewRequest,
     execute_candidate_sandbox,
@@ -54,6 +69,29 @@ from .facade import (
     issue_work_envelope,
     publish_audit_projection,
     schedule_ready_packages,
+)
+from .mutation_testing import (
+    MutationTestingReceipt,
+    run_mutation_testing,
+)
+from .orchestration import (
+    CompletionReceipt,
+    EngineeringPlan,
+    EngineeringWorkPackage,
+    LeadershipReceipt,
+    MergeQueueProposal,
+    ReviewCapacity,
+    WorkerCapacity,
+    WorkAssignment,
+    issue_authenticated_work_envelope,
+    schedule_engineering_work,
+    verify_canonical_source_receipt,
+)
+from .production import (
+    ProductionReadinessDecision,
+    ProductionReadinessFacts,
+    evaluate_authenticated_production_readiness,
+    evaluate_production_readiness,
 )
 from .hardening import (
     AttestedSandboxParity,
@@ -68,7 +106,8 @@ from .hardening import (
 )
 
 # The store owns its schema and transactions directly. Public composition uses
-# authenticated evidence; candidate.py remains the sole sandbox executor.
+# authenticated evidence; candidate.py owns exact materialization/execution
+# primitives and composite_candidate.py composes those primitives atomically.
 from .closure import prepare_assimilation_candidate
 from .seal import (
     SealedCandidateEvidence,
@@ -85,6 +124,31 @@ hardened_record_integration_decision = record_integration_decision
 hardened_request_independent_review = request_independent_review
 
 __all__ = [
+    "verify_store_audit_anchor",
+    "verify_key_custody_set",
+    "evaluate_authenticated_production_readiness",
+    "run_mutation_testing",
+    "MutationTestingReceipt",
+    "verify_key_custody",
+    "verify_external_fact_receipts",
+    "verify_canonical_source_receipt",
+    "verify_audit_anchor",
+    "schedule_engineering_work",
+    "sandbox_composite_candidate",
+    "issue_authenticated_work_envelope",
+    "generate_composite_candidates",
+    "WorkAssignment",
+    "WorkerCapacity",
+    "ReviewCapacity",
+    "MergeQueueProposal",
+    "LeadershipReceipt",
+    "KeyCustodyReceipt",
+    "ExternalFactReceipt",
+    "EngineeringWorkPackage",
+    "EngineeringPlan",
+    "CompletionReceipt",
+    "CompositeCandidate",
+    "AuditAnchorReceipt",
     "AssimilationProposal",
     "DebianSandboxAdapter",
     "AttestedSandboxParity",
@@ -104,6 +168,8 @@ __all__ = [
     "Mutation",
     "OwnerConsentAttestation",
     "OwnerConsentReceipt",
+    "ProductionReadinessDecision",
+    "ProductionReadinessFacts",
     "ReviewRequest",
     "SandboxParityAttestation",
     "SandboxParityReceipt",
@@ -124,6 +190,7 @@ __all__ = [
     "checked_id",
     "checked_sha256",
     "consent_payload_digest",
+    "evaluate_production_readiness",
     "execute_candidate_sandbox",
     "generate_candidate",
     "generate_candidates",

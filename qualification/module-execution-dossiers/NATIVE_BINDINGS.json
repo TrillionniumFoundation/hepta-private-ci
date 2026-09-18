@@ -489,16 +489,19 @@
     },
     {
       "module": "control.engineering",
-      "path": "tools/hepta-engineering-control/hepta_engineering_control.py",
-      "blobSha": "8bb54ee7998ca1e6202ee67096f51b1fde6ca64a",
+      "path": "tools/hepta-engineering-control/control_engineering_v2/__init__.py",
+      "blobSha": "4bfd2d9cda7fbd2e3660acb79f4817e25a16e0de",
       "exports": [
-        "WorkPackage",
-        "PathLease",
-        "ScheduleReceipt",
-        "IntegrationEvidence",
-        "IntegrationDecision",
-        "schedule",
-        "decide_integration"
+        "EngineeringStore",
+        "issue_authenticated_work_envelope",
+        "schedule_engineering_work",
+        "generate_composite_candidates",
+        "sandbox_composite_candidate",
+        "run_mutation_testing",
+        "verify_integration_evidence",
+        "request_independent_review",
+        "record_integration_decision",
+        "evaluate_authenticated_production_readiness"
       ]
     }
   ],

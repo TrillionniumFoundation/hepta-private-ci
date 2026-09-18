@@ -37,6 +37,7 @@ from .control_plane import (
     path_is_within,
     semantic_digest,
 )
+from .oracle_policy import is_oracle_path
 
 MAX_CANDIDATES = 32
 MAX_CHANGED_FILES = 100
@@ -435,6 +436,8 @@ def generate_candidates(
                 raise EngineeringError("path_outside_candidate_envelope")
             if path_is_within(mutation.path, protected):
                 raise EngineeringError("protected_path")
+            if is_oracle_path(mutation.path):
+                raise EngineeringError("protected_oracle_path")
         candidate_id, digest = _candidate_identity(envelope, mutation)
         if digest in seen:
             continue
@@ -960,7 +963,7 @@ def _admit_bubblewrap(workspace: Path, envelope: CandidateEnvelope) -> str:
     return bubblewrap
 
 
-def sandbox_candidate(
+def _sandbox_candidate_once(
     repository: str | Path,
     envelope: CandidateEnvelope,
     candidate: Candidate,
@@ -1047,6 +1050,8 @@ def sandbox_candidate(
             raise EngineeringError("sandbox_path_escape")
         if any(path_is_within(path, protected) for path in changed):
             raise EngineeringError("protected_path")
+        if any(is_oracle_path(path) for path in changed):
+            raise EngineeringError("protected_oracle_path")
         if (
             _changed_byte_budget(base_manifest, candidate_manifest, changed)
             > envelope.maximum_diff_bytes
@@ -1116,6 +1121,8 @@ def sandbox_candidate(
             raise EngineeringError("sandbox_path_escape")
         if any(path_is_within(path, protected) for path in post_changed):
             raise EngineeringError("protected_path")
+        if any(is_oracle_path(path) for path in post_changed):
+            raise EngineeringError("protected_oracle_path")
         source_after = _git(root, "rev-parse", f"{envelope.base_commit}^{{tree}}")
         if source_after != source_tree:
             raise EngineeringError("source_tree_mutated")
@@ -1160,4 +1167,27 @@ def sandbox_candidate(
                 receipt_digest,
             ),
             receipt,
+        )
+
+
+def sandbox_candidate(
+    repository: str | Path,
+    envelope: CandidateEnvelope,
+    candidate: Candidate,
+    checks: Iterable[Sequence[str]],
+) -> tuple[Candidate, SandboxReceipt]:
+    """Run one candidate under the global sandbox/retry controller.
+
+    Semantic rejection is never retried. Only bounded infrastructure failures
+    may receive at most two retries, and at most eight candidate executions are
+    admitted concurrently in one coordinator process.
+    """
+    from .sandbox_control import sandbox_admission, run_with_infrastructure_retries
+
+    check_values = bounded_tuple(checks, MAX_CHECKS, "check_limit_exceeded")
+    with sandbox_admission():
+        return run_with_infrastructure_retries(
+            lambda: _sandbox_candidate_once(
+                repository, envelope, candidate, check_values
+            )
         )

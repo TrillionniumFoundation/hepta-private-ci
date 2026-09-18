@@ -76,7 +76,12 @@ The bounded components are:
 
 - `work-envelope scheduler`
 - `path-lease arbiter`
+- `authenticated product orchestration`
+- `integration-order / merge-queue proposal engine`
+- `candidate and composite-candidate qualification`
+- `mutation-testing controller`
 - `integration decision engine`
+- `external audit/key-custody evidence verifier`
 - `audit projection`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -147,7 +152,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to the canonical `control_engineering_v2` components documented in [IMPLEMENTATION.md](IMPLEMENTATION.md), including `orchestration.py`, `candidate.py`, `composite_candidate.py` and `sandbox_control.py`; the historical `hepta_engineering_control.py` surface is compatibility-only.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -167,6 +172,11 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [tools/hepta-engineering-control/test_control_engineering_v2.py](../../../tools/hepta-engineering-control/test_control_engineering_v2.py); named case: `test_fenced_lease_schedule_reopen_and_audit`.
+- [tools/hepta-engineering-control/test_orchestration_v2.py](../../../tools/hepta-engineering-control/test_orchestration_v2.py); authenticated predecessor/source, skills/capacity, review/CI capacity and distributed leadership.
+- [tools/hepta-engineering-control/test_composite_candidate.py](../../../tools/hepta-engineering-control/test_composite_candidate.py); atomic multi-file changes and non-self-modifiable oracle paths.
+- [tools/hepta-engineering-control/test_mutation_testing.py](../../../tools/hepta-engineering-control/test_mutation_testing.py); evaluator checks must kill every admitted source mutant.
+- [tools/hepta-engineering-control/test_external_evidence.py](../../../tools/hepta-engineering-control/test_external_evidence.py); signed external audit, deployment-fact and key-custody receipts.
+- [tools/hepta-engineering-control/test_product_gate_v2.py](../../../tools/hepta-engineering-control/test_product_gate_v2.py); named repository product caller.
 - [tools/hepta-engineering-control/assimilation/discovery/tests/test_cli.py](../../../tools/hepta-engineering-control/assimilation/discovery/tests/test_cli.py); named case: `test_real_subprocess_emits_bounded_non_authoritative_candidate`.
 
 From `tools/hepta-engineering-control`, run `python3 -m unittest test_control_engineering_v2`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) separately labels target acceptance designs.
@@ -189,7 +199,7 @@ Applicable work packages:
 
 The bootstrap package is `ECP-1-ENGINEERING-CONTROL-PLANE`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. The named repository product caller binds the exact canonical `WORK_PACKAGES.json` inventory, the real `ECP-1-ENGINEERING-CONTROL-PLANE` state/predecessor/write-root/resource facts and the v2 orchestration output into its CI receipt; it does not invent predecessor completion or merge authority. The canonical product source path is `control_engineering_v2`; `hepta_engineering_control.py` is compatibility-only and may not be imported by product callers. Current source identity is established at runtime by authenticated source receipts and exact-head CI, not by treating the historical `sourceBase` field in a tracked implementation map as the containing commit. Later planned packages may remain without invalidating documentation closure.
 
 ## 14. Activation, compatibility and retirement
 
@@ -387,7 +397,7 @@ None.
 
 #### `ECP-1-ENGINEERING-CONTROL-PLANE`
 
-- State: `planned`; priority: `2`; parallel class: `independent_engineering_tooling`.
+- State: `source_implemented`; priority: `2`; parallel class: `independent_engineering_tooling`.
 - Owner/deputy: `developer-productivity` / `architecture`.
 - Allowed write paths:
 - `tools/hepta-engineering-control/**`
