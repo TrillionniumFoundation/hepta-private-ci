@@ -7,7 +7,9 @@ use codex_hepta_types::StableId;
 
 use super::NduIterationContextV1;
 use super::bind_solver_iteration_receipt_v1;
+use super::solve_preference_target_for_context;
 use crate::AxisValue;
+use crate::NduError;
 use crate::PreferenceState;
 use crate::SubjectClass;
 use crate::solve_preference_target;
@@ -23,32 +25,44 @@ fn id(value: &str) -> StableId {
     must(StableId::new(value))
 }
 
-#[test]
-fn local_step_requires_complete_context_before_protocol_publication() {
-    let initial = must(PreferenceState::genesis(
-        id("agent-a"),
+fn context(subject: &str, objective: &[u8]) -> NduIterationContextV1 {
+    NduIterationContextV1 {
+        subject_id: id(subject),
+        subject_class: SubjectClass::Agent,
+        objective_digest: Digest32::of_bytes(objective),
+        generation: must(Generation::new(4)),
+        event_digest: Digest32::of_bytes(b"event"),
+        coefficient_digest: Digest32::of_bytes(b"coefficient"),
+    }
+}
+
+fn initial(subject: &str) -> PreferenceState {
+    must(PreferenceState::genesis(
+        id(subject),
         SubjectClass::Agent,
         vec![AxisValue {
             axis: id("quality"),
             value: FixedQ32::ZERO,
         }],
-    ));
-    let (_, _, receipts) = must(solve_preference_target(
-        initial,
-        vec![AxisValue {
-            axis: id("quality"),
-            value: FixedQ32::ONE,
-        }],
+    ))
+}
+
+fn target() -> Vec<AxisValue> {
+    vec![AxisValue {
+        axis: id("quality"),
+        value: FixedQ32::ONE,
+    }]
+}
+
+#[test]
+fn local_step_requires_complete_context_before_protocol_publication() {
+    let context = context("agent-a", b"objective");
+    let (_, _, receipts) = must(solve_preference_target_for_context(
+        &context,
+        initial("agent-a"),
+        target(),
         FixedQ32::from_raw(1_i64 << 30),
     ));
-    let context = NduIterationContextV1 {
-        subject_id: id("agent-a"),
-        subject_class: SubjectClass::Agent,
-        objective_digest: Digest32::of_bytes(b"objective"),
-        generation: must(Generation::new(4)),
-        event_digest: Digest32::of_bytes(b"event"),
-        coefficient_digest: Digest32::of_bytes(b"coefficient"),
-    };
     let bound = must(bind_solver_iteration_receipt_v1(
         &context,
         receipts.first().expect("first solver receipt"),
@@ -63,25 +77,14 @@ fn local_step_requires_complete_context_before_protocol_publication() {
 
 #[test]
 fn zero_context_digest_rejects_before_protocol_publication() {
-    let initial = must(PreferenceState::genesis(
-        id("episode-a"),
-        SubjectClass::Episode,
-        vec![AxisValue {
-            axis: id("quality"),
-            value: FixedQ32::ZERO,
-        }],
-    ));
     let (_, _, receipts) = must(solve_preference_target(
-        initial,
-        vec![AxisValue {
-            axis: id("quality"),
-            value: FixedQ32::ONE,
-        }],
+        initial("agent-a"),
+        target(),
         FixedQ32::from_raw(1_i64 << 30),
     ));
     let context = NduIterationContextV1 {
-        subject_id: id("episode-a"),
-        subject_class: SubjectClass::Episode,
+        subject_id: id("agent-a"),
+        subject_class: SubjectClass::Agent,
         objective_digest: Digest32::ZERO,
         generation: must(Generation::new(1)),
         event_digest: Digest32::of_bytes(b"event"),
@@ -92,4 +95,57 @@ fn zero_context_digest_rejects_before_protocol_publication() {
         bind_solver_iteration_receipt_v1(&context, receipts.first().expect("first solver receipt"))
             .expect_err("zero objective digest must reject");
     assert_eq!(error.code(), "NDU-E002");
+}
+
+#[test]
+fn unbound_local_receipt_cannot_be_published() {
+    let context = context("agent-a", b"objective");
+    let (_, _, receipts) = must(solve_preference_target(
+        initial("agent-a"),
+        target(),
+        FixedQ32::from_raw(1_i64 << 30),
+    ));
+    assert_eq!(
+        bind_solver_iteration_receipt_v1(
+            &context,
+            receipts.first().expect("first solver receipt"),
+        )
+        .expect_err("local receipt must bind canonical context before publication"),
+        NduError::SolverContextRequired
+    );
+}
+
+#[test]
+fn receipt_cannot_be_rebound_to_another_context() {
+    let first = context("agent-a", b"objective-a");
+    let second = context("agent-a", b"objective-b");
+    let (_, _, receipts) = must(solve_preference_target_for_context(
+        &first,
+        initial("agent-a"),
+        target(),
+        FixedQ32::from_raw(1_i64 << 30),
+    ));
+    assert_eq!(
+        bind_solver_iteration_receipt_v1(
+            &second,
+            receipts.first().expect("first solver receipt"),
+        )
+        .expect_err("cross-context rebind must fail"),
+        NduError::SolverContextMismatch
+    );
+}
+
+#[test]
+fn solve_context_must_match_subject() {
+    let context = context("agent-a", b"objective");
+    assert_eq!(
+        solve_preference_target_for_context(
+            &context,
+            initial("agent-b"),
+            target(),
+            FixedQ32::from_raw(1_i64 << 30),
+        )
+        .expect_err("subject drift must fail before solving"),
+        NduError::SolverContextMismatch
+    );
 }

@@ -139,7 +139,10 @@ impl NduProjectionJournalV1 {
         }) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
-        if self.revoked_digests().contains(&projection_digest) {
+        if self
+            .revoked_digests_for(objective_digest, subject_digest)
+            .contains(&projection_digest)
+        {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
         self.append(
@@ -173,7 +176,7 @@ impl NduProjectionJournalV1 {
         objective_digest: Digest32,
         subject_digest: Digest32,
     ) -> Option<Digest32> {
-        let revoked = self.revoked_digests();
+        let revoked = self.revoked_digests_for(objective_digest, subject_digest);
         let mut selected = None;
         for entry in &self.entries {
             if entry.objective_digest != objective_digest || entry.subject_digest != subject_digest
@@ -379,10 +382,18 @@ impl NduProjectionJournalV1 {
         Ok(journal)
     }
 
-    fn revoked_digests(&self) -> BTreeSet<Digest32> {
+    fn revoked_digests_for(
+        &self,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+    ) -> BTreeSet<Digest32> {
         self.entries
             .iter()
-            .filter(|entry| entry.kind == NduProjectionKindV1::Revocation)
+            .filter(|entry| {
+                entry.kind == NduProjectionKindV1::Revocation
+                    && entry.objective_digest == objective_digest
+                    && entry.subject_digest == subject_digest
+            })
             .map(|entry| entry.payload_digest)
             .collect()
     }

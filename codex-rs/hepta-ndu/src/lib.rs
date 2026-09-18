@@ -74,6 +74,8 @@ pub use projection_journal::NduProjectionKindV1;
 pub use protocol::NduIterationContextV1;
 pub use protocol::NduIterationReceiptV1;
 pub use protocol::bind_solver_iteration_receipt_v1;
+pub use protocol::canonical_iteration_context_digest_v1;
+pub use protocol::solve_preference_target_for_context;
 pub use recursive::RecursiveUtilityError;
 pub use recursive::RecursiveUtilityPath;
 pub use recursive::RecursiveUtilityReceipt;
