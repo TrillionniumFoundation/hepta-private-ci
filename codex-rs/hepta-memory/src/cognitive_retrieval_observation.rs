@@ -38,12 +38,24 @@ pub struct RetrievalChannelObservation {
     pub limit: RetrievalLimitObservation,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+pub struct RetrievalChannelRankObservation {
+    pub channel: RetrievalChannel,
+    /// One-based rank after owner-side deduplication and before RRF fusion.
+    pub rank: u32,
+}
+
 /// Digest-only source and scoring facts; raw memory/citation content is absent.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct ObservedRetrievalCandidate {
     pub revalidation: MemoryRevalidationBinding,
+    /// Binds the exact owner-side revision/source facts used to admit this candidate.
+    pub support_sha256: Sha256Digest,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
+    /// Exact per-channel ranks before fusion. This is the canonical adapter input
+    /// for memory.retrieval and prevents callers from inventing replacement scores.
+    pub channel_ranks: Vec<RetrievalChannelRankObservation>,
 }
 
 /// Created only by the owner read API from one SQLite read transaction.
@@ -81,6 +93,11 @@ pub(super) struct GeneratedRetrieval {
     channels: Vec<RetrievalChannelObservation>,
 }
 
+struct ResolvedRetrievalCandidate {
+    candidate: RetrievalCandidate,
+    channel_ranks: Vec<RetrievalChannelRankObservation>,
+}
+
 impl CognitiveStore {
     /// Observe all bounded generator outputs before final top-four truncation.
     /// This optional slow read validates up to 4 * 32 candidate explanations in
@@ -95,8 +112,8 @@ impl CognitiveStore {
         let generated = self
             .generate_retrieval_tx(&mut transaction, access, request, &fts_query)
             .await?;
-        let mut candidates = self
-            .resolve_retrieval_tx(
+        let candidates = self
+            .resolve_observed_retrieval_tx(
                 &mut transaction,
                 access,
                 request,
@@ -104,14 +121,21 @@ impl CognitiveStore {
                 4 * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             )
             .await?;
-        let mut observed = candidates
-            .iter()
-            .map(|candidate| ObservedRetrievalCandidate {
-                revalidation: candidate.revalidation.clone(),
-                reciprocal_rank_score: candidate.reciprocal_rank_score,
-                channels: candidate.channels.clone(),
-            })
-            .collect::<Vec<_>>();
+        let mut observed = Vec::with_capacity(candidates.len());
+        for resolved in &candidates {
+            let support_bytes = serde_json::to_vec(&(
+                "hepta:cognitive:retrieval-candidate-support:v1",
+                &resolved.candidate.revalidation,
+            ))
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+            observed.push(ObservedRetrievalCandidate {
+                revalidation: resolved.candidate.revalidation.clone(),
+                support_sha256: Sha256Digest::for_bytes(&support_bytes),
+                reciprocal_rank_score: resolved.candidate.reciprocal_rank_score,
+                channels: resolved.candidate.channels.clone(),
+                channel_ranks: resolved.channel_ranks.clone(),
+            });
+        }
         observed.sort_by(|left, right| {
             left.revalidation
                 .memory
@@ -124,10 +148,14 @@ impl CognitiveStore {
                         .cmp(&right.revalidation.memory.revision)
                 })
         });
-        candidates.truncate(MAX_RETRIEVAL_RESULTS);
+        let mut legacy_candidates = candidates
+            .into_iter()
+            .map(|resolved| resolved.candidate)
+            .collect::<Vec<_>>();
+        legacy_candidates.truncate(MAX_RETRIEVAL_RESULTS);
         let batch = RetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query.as_bytes()),
-            candidates,
+            candidates: legacy_candidates,
         };
         let bytes = serde_json::to_vec(&(
             "hepta:cognitive:retrieval-observation:v1",
@@ -232,6 +260,28 @@ impl CognitiveStore {
         ranked: Vec<(MemoryKey, AggregatedRank)>,
         maximum_results: usize,
     ) -> Result<Vec<RetrievalCandidate>, CognitiveStoreError> {
+        Ok(self
+            .resolve_observed_retrieval_tx(
+                transaction,
+                access,
+                request,
+                ranked,
+                maximum_results,
+            )
+            .await?
+            .into_iter()
+            .map(|resolved| resolved.candidate)
+            .collect())
+    }
+
+    async fn resolve_observed_retrieval_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        access: &CognitiveAccess,
+        request: &RetrievalRequest,
+        ranked: Vec<(MemoryKey, AggregatedRank)>,
+        maximum_results: usize,
+    ) -> Result<Vec<ResolvedRetrievalCandidate>, CognitiveStoreError> {
         let mut candidates = Vec::with_capacity(maximum_results);
         for (key, rank) in ranked {
             if candidates.len() == maximum_results {
@@ -247,11 +297,19 @@ impl CognitiveStore {
             {
                 continue;
             }
-            candidates.push(RetrievalCandidate {
-                memory: explanation.memory.clone(),
-                reciprocal_rank_score: rank.score,
-                channels: rank.channels.into_iter().collect(),
-                revalidation: binding_from_explanation(&explanation),
+            let channel_ranks = rank
+                .channel_ranks
+                .into_iter()
+                .map(|(channel, rank)| RetrievalChannelRankObservation { channel, rank })
+                .collect();
+            candidates.push(ResolvedRetrievalCandidate {
+                candidate: RetrievalCandidate {
+                    memory: explanation.memory.clone(),
+                    reciprocal_rank_score: rank.score,
+                    channels: rank.channels.into_iter().collect(),
+                    revalidation: binding_from_explanation(&explanation),
+                },
+                channel_ranks,
             });
         }
         Ok(candidates)
