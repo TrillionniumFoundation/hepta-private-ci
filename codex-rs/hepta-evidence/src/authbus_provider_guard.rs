@@ -60,11 +60,14 @@ impl HeptaEvidenceStore {
         let reservation = self
             .begin_reserved_effect(admitted.reservation.reservation_id, &admission.operation_id)
             .await?;
-        let dispatch = self.dispatch_provider_effect_qualification(adapter, intent).await;
+        let dispatch = self
+            .dispatch_provider_effect_qualification(adapter, intent)
+            .await;
         match dispatch {
-            Ok(receipt) => self
-                .close_guarded_dispatch(intent, reservation, receipt)
-                .await,
+            Ok(receipt) => {
+                self.close_guarded_dispatch(intent, reservation, receipt)
+                    .await
+            }
             Err(error) => {
                 let evidence = provider_evidence_digest(
                     intent,
@@ -94,7 +97,9 @@ impl HeptaEvidenceStore {
         if reservation.operation_id.as_str() != key.as_str() {
             return Err(AuthBusProviderEffectError::OperationBindingMismatch);
         }
-        let state = self.reconcile_provider_effect_with_adapter(adapter, key).await?;
+        let state = self
+            .reconcile_provider_effect_with_adapter(adapter, key)
+            .await?;
         match state {
             ProviderEffectState::Completed => {
                 let observed_cost =
@@ -158,9 +163,10 @@ impl HeptaEvidenceStore {
             ProviderEffectState::Completed
             | ProviderEffectState::Pending
             | ProviderEffectState::Accepted
-            | ProviderEffectState::Indeterminate => self
-                .quarantine_reservation(reservation.reservation_id, evidence)
-                .await?,
+            | ProviderEffectState::Indeterminate => {
+                self.quarantine_reservation(reservation.reservation_id, evidence)
+                    .await?
+            }
         };
         Ok(AuthBusProviderEffectReceipt {
             provider_state: receipt.state,
