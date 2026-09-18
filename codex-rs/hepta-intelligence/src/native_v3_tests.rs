@@ -167,24 +167,44 @@ fn ndu_inputs(objective_digest: Digest32) -> (
         ContributionSet {
             objective_digest,
             generation: generation(1),
-            contributions: vec![UtilityContribution {
-                candidate_id: id("read-local"),
-                organ_id: id("planner"),
-                objective_digest,
-                generation: generation(1),
-                feasibility: FeasibilityPosture::Feasible,
-                utility: vec![AxisValue {
-                    axis: axis.clone(),
-                    value: FixedQ32::ONE,
-                }],
-                risk: Vec::new(),
-                resource: Vec::new(),
-                uncertainty: vec![AxisValue {
-                    axis: axis.clone(),
-                    value: FixedQ32::ZERO,
-                }],
-                support_digest: digest("ndu-support"),
-            }],
+            contributions: vec![
+                UtilityContribution {
+                    candidate_id: id("abstain"),
+                    organ_id: id("planner"),
+                    objective_digest,
+                    generation: generation(1),
+                    feasibility: FeasibilityPosture::Feasible,
+                    utility: vec![AxisValue {
+                        axis: axis.clone(),
+                        value: FixedQ32::ZERO,
+                    }],
+                    risk: Vec::new(),
+                    resource: Vec::new(),
+                    uncertainty: vec![AxisValue {
+                        axis: axis.clone(),
+                        value: FixedQ32::ZERO,
+                    }],
+                    support_digest: digest("ndu-abstain-support"),
+                },
+                UtilityContribution {
+                    candidate_id: id("read-local"),
+                    organ_id: id("planner"),
+                    objective_digest,
+                    generation: generation(1),
+                    feasibility: FeasibilityPosture::Feasible,
+                    utility: vec![AxisValue {
+                        axis: axis.clone(),
+                        value: FixedQ32::ONE,
+                    }],
+                    risk: Vec::new(),
+                    resource: Vec::new(),
+                    uncertainty: vec![AxisValue {
+                        axis: axis.clone(),
+                        value: FixedQ32::ZERO,
+                    }],
+                    support_digest: digest("ndu-support"),
+                },
+            ],
         },
         UtilityProfile {
             profile_id: id("utility-profile"),
