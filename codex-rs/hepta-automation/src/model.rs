@@ -259,6 +259,8 @@ pub enum AutomationError {
     Invalid,
     #[error("automation owner denied the request")]
     AccessDenied,
+    #[error("timer owner is retired or its writer epoch is fenced")]
+    TimerFenced,
     #[error("automation state conflict")]
     Conflict,
     #[error("automation state is corrupt")]
