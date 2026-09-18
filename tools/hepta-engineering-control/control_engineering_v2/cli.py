@@ -81,7 +81,7 @@ def parser():
     root = argparse.ArgumentParser(description=__doc__)
     commands = root.add_subparsers(dest="command", required=True)
     schedule = commands.add_parser(
-        "schedule", help="persist an envelope and bounded assignment generation"
+        "schedule", help="local compatibility scheduling; not authenticated product orchestration"
     )
     schedule.add_argument("--database", required=True)
     schedule.add_argument("--envelope", required=True)
@@ -131,6 +131,10 @@ def run(args):
                 generation_id=args.generation_id,
             )
             return {
+                "qualificationClass": "local_compatibility_only",
+                "canonicalSourceAuthenticated": False,
+                "completionAuthenticated": False,
+                "productOrchestrationEvidence": False,
                 "assignment": asdict(receipt),
                 "frontier": store.assignment_frontier(args.generation_id),
             }
