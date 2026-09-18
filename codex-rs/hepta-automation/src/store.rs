@@ -420,7 +420,8 @@ impl AutomationStore {
             .await
             .map_err(unavailable)?;
             let advanced = sqlx::query(
-                "UPDATE automation_tasks SET next_occurrence = next_occurrence + 1
+                "UPDATE automation_tasks
+                 SET next_occurrence = next_occurrence + 1, next_run_at_ms = NULL
                  WHERE task_id = ? AND next_occurrence = ?",
             )
             .bind(task_id.to_string())
