@@ -236,9 +236,7 @@ fn mismatched_predecessor_fails_before_model_execution() {
             None,
             &calibration(&cfg, runtime_digest),
         ),
-        Err(RuntimeError::Protocol(
-            crate::ProtocolError::InvalidCheckpointBinding
-        ))
+        Err(RuntimeError::CheckpointMismatch)
     ));
 }
 
