@@ -225,3 +225,48 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
         ))
     );
 }
+
+#[test]
+fn compile_cue_validates_and_binds_the_exact_snapshot() {
+    let expected = cue();
+    let compiled = compile_cue(CompileCueRequestV1 {
+        cue_id: expected.cue_id.clone(),
+        objective_digest: expected.objective_digest,
+        approved_context_digest: expected.approved_context_digest,
+        snapshot_key: expected.snapshot_key.clone(),
+        cue_profile_digest: expected.cue_profile_digest,
+    })
+    .unwrap_or_else(|error| panic!("cue compilation succeeds: {error}"));
+    assert_eq!(compiled, expected);
+    assert_eq!(compiled.digest(), expected.digest());
+}
+
+#[test]
+fn native_generation_bounds_match_the_target_hot_path_contract() {
+    assert_eq!(MAX_GENERATION_BOUND_CANDIDATES, 512);
+    assert_eq!(MAX_GENERATION_BOUND_RESULTS, 16);
+}
+
+#[test]
+fn low_ranked_tail_risk_cannot_poison_the_returnable_population() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.maximum_results = 2;
+    let group = digest("tail-contradiction");
+
+    let first = candidate(record(1), RetrievalChannelV1::Lexical, 1);
+    let second = candidate(record(2), RetrievalChannelV1::Entity, 1);
+    let mut poison_a = candidate(record(90), RetrievalChannelV1::ContradictionSupport, 1);
+    poison_a.normalized_score = FixedQ32::ZERO;
+    poison_a.ood = ProbabilityQ32::ONE;
+    poison_a.contradiction_group_digest = Some(group);
+    let mut poison_b = candidate(record(91), RetrievalChannelV1::ContradictionSupport, 2);
+    poison_b.normalized_score = FixedQ32::ZERO;
+    poison_b.ood = ProbabilityQ32::ONE;
+    poison_b.contradiction_group_digest = Some(group);
+
+    let packet = recall(&cue, &policy, vec![first, second, poison_a, poison_b])
+        .unwrap_or_else(|error| panic!("tail risk is outside returnable population: {error}"));
+    assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(packet.selections.len(), 2);
+}
