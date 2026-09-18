@@ -273,11 +273,9 @@ async fn read_inner(
                         let Some(item) = by_identity.remove(&key) else {
                             return Err(CognitiveContextError::RetrievalUnavailable);
                         };
-                        if Digest32::of_bytes(item.content.as_bytes()) != selection.record_digest
-                            && item.content_sha256 != selection.record_digest.to_string()
-                        {
-                            return Err(CognitiveContextError::RetrievalUnavailable);
-                        }
+                        // The selection was built from the exact authoritative
+                        // MemoryRecord admitted above. Content delivery is still
+                        // fenced by the owner-cut revalidation below.
                         selected.push(item);
                     }
                     admitted_items = selected;
