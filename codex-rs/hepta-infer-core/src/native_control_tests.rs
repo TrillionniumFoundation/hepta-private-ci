@@ -26,6 +26,7 @@ fn dispatch() -> NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
+        final_use_witness: None,
     }
 }
 
@@ -38,9 +39,12 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         terminal_observed: status != NativeRunStatus::Indeterminate,
         status,
         output: "observed text".to_string(),
+        output_digest: None,
+        output_retained: true,
         observed_output_tokens: tokens,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        final_use_authorized: false,
     }
 }
 
@@ -128,7 +132,12 @@ fn cancellation_intent_and_terminal_failure_do_not_invent_zero_usage() {
     let interrupted = control.settle_native("r1", terminal.clone()).unwrap();
     assert_eq!(interrupted.state, NativeReservationState::Released);
     assert!(interrupted.cancel_requested);
-    assert_eq!(interrupted.observation, Some(terminal));
+    let persisted = interrupted.observation.as_ref().unwrap();
+    assert_eq!(persisted.status, terminal.status);
+    assert_eq!(persisted.observed_output_tokens, terminal.observed_output_tokens);
+    assert!(!persisted.output_retained);
+    assert!(persisted.output.is_empty());
+    assert!(persisted.output_digest.is_some());
     start(&mut control, "r2");
     let failed = control
         .settle_native("r2", output(NativeRunStatus::Failed, None))
@@ -198,51 +207,84 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
 }
 
 #[test]
-fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
-    use std::io::Write;
-    let path = path("byte-budget");
+fn settlement_persists_output_digest_without_raw_provider_text() {
+    let path = path("redacted-settlement");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     start(&mut control, "r1");
-    let mut observed = output(NativeRunStatus::Completed, Some(0));
-    observed.output = "x".repeat(1024 * 1024);
-    for tokens in 0..128 {
-        observed.observed_output_tokens = Some(tokens);
-        let before = control.native_record("r1").unwrap().clone();
-        let bytes_before = std::fs::metadata(&path).unwrap().len();
-        match control.settle_native("r1", observed.clone()) {
-            Ok(_) => continue,
-            Err(error) => {
-                assert_eq!(error, Error::CapacityExceeded);
-                assert_eq!(control.native_record("r1"), Some(&before));
-                assert_eq!(std::fs::metadata(&path).unwrap().len(), bytes_before);
-                assert!(bytes_before > super::super::MAX_JOURNAL_BYTES / 2);
-                break;
-            }
-        }
-    }
-    let expected = control.native_record("r1").unwrap().clone();
+    let mut observed = output(NativeRunStatus::Completed, Some(7));
+    observed.output = "sensitive provider output".to_string();
+    let expected_digest = Digest32::of_bytes(observed.output.as_bytes()).to_string();
+    let settled = control.settle_native("r1", observed).unwrap();
+    let persisted = settled.observation.as_ref().unwrap();
+    assert_eq!(persisted.output_digest.as_deref(), Some(expected_digest.as_str()));
+    assert!(!persisted.output_retained);
+    assert!(persisted.output.is_empty());
+    let journal = std::fs::read_to_string(&path).unwrap();
+    assert!(!journal.contains("sensitive provider output"));
     drop(control);
     let control = DurableInferenceControl::open(&path, 8).unwrap();
-    assert_eq!(control.native_record("r1"), Some(&expected));
+    assert_eq!(control.native_record("r1"), Some(&settled));
     drop(control);
-    // A syntactically valid extra observation still exceeds the total budget.
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn history_redaction_rewrites_legacy_native_output_and_marks_the_journal() {
+    let path = path("history-redaction");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let mut legacy = output(NativeRunStatus::Completed, Some(9));
+    legacy.output = "legacy sensitive provider output".to_string();
     let event = Event::Observe {
         request_id: "r1".to_string(),
-        output: observed,
+        output: legacy,
     };
-    let json = serde_json::to_string(&event).unwrap();
-    let mut file = std::fs::OpenOptions::new()
-        .append(true)
-        .open(&path)
+    control
+        .append(&format!(
+            "{JOURNAL_PREFIX}{}\n",
+            serde_json::to_string(&event).unwrap()
+        ))
         .unwrap();
-    writeln!(file, "{JOURNAL_PREFIX}{json}").unwrap();
-    drop(file);
-    let oversized_bytes = std::fs::metadata(&path).unwrap().len();
-    assert!(matches!(
-        DurableInferenceControl::open(&path, 8),
-        Err(Error::CapacityExceeded)
-    ));
-    assert_eq!(std::fs::metadata(&path).unwrap().len(), oversized_bytes);
+    drop(control);
+
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert!(
+        control
+            .native_record("r1")
+            .unwrap()
+            .observation
+            .as_ref()
+            .unwrap()
+            .output_retained
+    );
+    let receipt = control.redact_native_output_history().unwrap();
+    assert_eq!(receipt.redacted_observations, 1);
+    assert!(receipt.rewritten_journal_bytes <= receipt.previous_journal_bytes + 256);
+    let persisted = control
+        .native_record("r1")
+        .unwrap()
+        .observation
+        .as_ref()
+        .unwrap();
+    assert!(!persisted.output_retained);
+    assert!(persisted.output.is_empty());
+    assert!(persisted.output_digest.is_some());
+    let journal = std::fs::read_to_string(&path).unwrap();
+    assert!(!journal.contains("legacy sensitive provider output"));
+    assert!(journal.contains("OutputHistoryRedacted"));
+    let again = control.redact_native_output_history().unwrap();
+    assert_eq!(again.redacted_observations, 0);
+    assert_eq!(again.previous_journal_bytes, again.rewritten_journal_bytes);
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert!(!control
+        .native_record("r1")
+        .unwrap()
+        .observation
+        .as_ref()
+        .unwrap()
+        .output_retained);
+    drop(control);
     std::fs::remove_file(path).unwrap();
 }
 
@@ -295,7 +337,10 @@ fn late_completed_releases_slot_without_erasing_authority_loss() {
     let settled = control.settle_native("r1", terminal.clone()).unwrap();
     assert_eq!(settled.state, NativeReservationState::Released);
     assert!(settled.cancel_requested);
-    assert_eq!(settled.observation, Some(terminal.clone()));
+    let persisted = settled.observation.as_ref().unwrap();
+    assert_eq!(persisted.status, terminal.status);
+    assert_eq!(persisted.owner_authority, terminal.owner_authority);
+    assert!(!persisted.output_retained);
     assert!(!terminal.succeeded());
     control.reserve_native(request("r2"), 1).unwrap();
     let mut dishonest_upgrade = terminal;
@@ -321,6 +366,18 @@ fn late_completed_releases_slot_without_erasing_authority_loss() {
 }
 
 #[test]
+fn caller_cannot_claim_final_use_success_without_a_durable_dispatch_witness() {
+    let path = path("fake-final-use");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let mut dishonest = output(NativeRunStatus::Completed, Some(1));
+    dishonest.final_use_authorized = true;
+    assert_eq!(control.settle_native("r1", dishonest), Err(Error::Conflict));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     let path = path("legacy-authority");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
@@ -332,10 +389,15 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
         output: old_output,
     };
     let mut json = serde_json::to_value(event).unwrap();
-    json["Observe"]["output"]
-        .as_object_mut()
-        .unwrap()
-        .remove("owner_authority");
+    let legacy_output = json["Observe"]["output"].as_object_mut().unwrap();
+    for field in [
+        "owner_authority",
+        "output_digest",
+        "output_retained",
+        "final_use_authorized",
+    ] {
+        legacy_output.remove(field);
+    }
     // Write an actual pre-upgrade observation record with the field absent.
     control
         .append(&format!(
