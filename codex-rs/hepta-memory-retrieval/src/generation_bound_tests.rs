@@ -306,3 +306,75 @@ fn forged_public_receipts_are_rejected_by_validate() {
         );
     }
 }
+
+
+fn permute<T: Clone>(values: &mut [T], start: usize, out: &mut Vec<Vec<T>>) {
+    if start == values.len() {
+        out.push(values.to_vec());
+        return;
+    }
+    for index in start..values.len() {
+        values.swap(start, index);
+        permute(values, start + 1, out);
+        values.swap(start, index);
+    }
+}
+
+#[test]
+fn candidate_union_is_identical_across_all_small_input_permutations() {
+    let cue = cue();
+    let policy = policy();
+    let first = record(1);
+    let second = record(2);
+    let mut seed = vec![
+        candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
+        candidate(first, RetrievalChannelV1::Entity, 1),
+        candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
+        candidate(second, RetrievalChannelV1::Entity, 2),
+    ];
+    let expected = build_candidate_union(&cue, &policy, seed.clone()).unwrap();
+    let mut permutations = Vec::new();
+    permute(&mut seed, 0, &mut permutations);
+    assert_eq!(permutations.len(), 24);
+    for permutation in permutations {
+        assert_eq!(
+            build_candidate_union(&cue, &policy, permutation).unwrap(),
+            expected
+        );
+    }
+}
+
+#[test]
+fn qualified_candidate_ceiling_accepts_512_and_rejects_513() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.channel_weights = vec![RetrievalChannelWeightV1 {
+        channel: RetrievalChannelV1::Lexical,
+        weight: FixedQ32::ONE,
+        maximum_candidates: MAX_GENERATION_BOUND_CANDIDATES as u32,
+    }];
+    policy.minimum_distinct_channels = 1;
+    policy.maximum_results = MAX_GENERATION_BOUND_RESULTS as u32;
+    let candidates = (0..MAX_GENERATION_BOUND_CANDIDATES)
+        .map(|index| {
+            candidate(
+                record(u64::try_from(index + 1).unwrap()),
+                RetrievalChannelV1::Lexical,
+                u32::try_from(index + 1).unwrap(),
+            )
+        })
+        .collect::<Vec<_>>();
+    let union = build_candidate_union(&cue, &policy, candidates.clone()).unwrap();
+    assert_eq!(union.entries.len(), MAX_GENERATION_BOUND_CANDIDATES);
+
+    let mut too_many = candidates;
+    too_many.push(candidate(
+        record(10_000),
+        RetrievalChannelV1::Lexical,
+        u32::try_from(MAX_GENERATION_BOUND_CANDIDATES + 1).unwrap(),
+    ));
+    assert_eq!(
+        build_candidate_union(&cue, &policy, too_many),
+        Err(RecallErrorV1::CandidateLimitExceeded)
+    );
+}
