@@ -123,11 +123,12 @@
       "operation": "authenticated_product_composition",
       "nativeSymbol": "propose_authenticated_parameter_plasticity_v1",
       "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "state": "adapter_implemented_agentd_host_called_not_target_host_qualified",
+      "state": "adapter_implemented_agentd_host_called_pairwise_roles_not_target_host_qualified",
       "authority": "proposal_append_only",
       "tests": [
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
-        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_generator_evaluator_controller_collision"
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_generator_evaluator_controller_collision",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_observer_evaluator_controller_collision"
       ],
       "sourcePathExists": true,
       "designOperation": "authenticated_product_composition",
@@ -170,7 +171,7 @@
       "operation": "agentd_parameter_host",
       "nativeSymbol": "propose_agentd_plasticity_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
-      "state": "host_callsite_source_implemented_not_target_host_qualified",
+      "state": "host_callsite_source_implemented_owner_evidence_required_not_target_host_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state",
@@ -183,6 +184,25 @@
         "learning.artifacts",
         "learning.ledger",
         "learning.eval"
+      ]
+    },
+    {
+      "operation": "agentd_owner_evidence_resolution",
+      "nativeSymbol": "resolve_agentd_plasticity_owner_evidence_set_v1",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "state": "host_enforced_typed_owner_evidence_resolution_concrete_deployment_adapters_required",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_receipt_is_context_bound",
+        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_rejects_context_substitution"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "agentd_owner_evidence_resolution",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "learning.artifacts",
+        "learning.ledger",
+        "kernel.evidence"
       ]
     },
     {
@@ -257,7 +277,9 @@
       "tests": [
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::canary_accepts_only_after_bounded_success_and_verified_rollback",
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::any_safety_violation_aborts_terminally",
-        "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::receipt_binds_the_full_plan_and_observation_history"
+        "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::receipt_binds_the_full_plan_and_observation_history",
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs::pls3_governed_topology_persists_then_accepts_bounded_canary",
+        "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs::pls3_safety_violation_aborts_after_durable_admission"
       ],
       "sourcePathExists": true,
       "designOperation": "structural_canary_controller",
@@ -266,12 +288,12 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge compilation, tests, lint and document verification for this final source/document head.",
-    "Exercise the Agentd parameter/topology host seams with selected deployment configuration, real telemetry, incident recovery and independently retained rollback-domain storage before changing productionImplementation or productExecutionProved."
+    "Run exact-head and deterministic synthetic-merge compilation, tests, lint, document verification and Lane F qualification for this final source/document head.",
+    "Bind PlasticityOwnerEvidenceResolverV1 to concrete authoritative owner-store adapters in the selected deployment and exercise freshness/provenance failures before changing productionImplementation or productExecutionProved."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
-    "target-host product execution and qualification",
+    "target-host product execution, concrete owner-evidence adapter qualification and telemetry",
     "operator acceptance and incident-recovery exercise",
     "real bounded structural canary execution, promotion, activation and release"
   ],

@@ -48,6 +48,10 @@ def plasticity_status_block(row: dict) -> str:
             f"| `{op['operation']}` | `{op['state']}` | "
             f"`{op.get('sourcePath') or '-'}` | {len(op.get('tests') or [])} |"
         )
+    lines.extend(["", "### Repository-controlled gaps", ""])
+    lines.extend(f"- {gap}" for gap in row.get("repositoryControlledGaps", []))
+    lines.extend(["", "### External evidence gates", ""])
+    lines.extend(f"- {gate}" for gate in row.get("externalEvidenceGates", []))
     lines.extend(["", STATUS_END])
     return "\n".join(lines)
 
@@ -345,6 +349,32 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
+def verify_plasticity_test_references(row: dict, failures: list[str]) -> None:
+    for op in row.get("operations", []):
+        tests = op.get("tests")
+        if not isinstance(tests, list) or not tests:
+            failures.append(
+                f"learning.plasticity: {op.get('operation', '<unknown>')} has no focused test identity"
+            )
+            continue
+        for test in tests:
+            if not isinstance(test, str) or ".rs::" not in test:
+                failures.append(f"learning.plasticity: invalid test identity {test!r}")
+                continue
+            source, test_path = test.split(".rs::", 1)
+            source += ".rs"
+            path = ROOT / source
+            if not path.is_file():
+                failures.append(f"learning.plasticity: missing test source {source}")
+                continue
+            leaf = test_path.rsplit("::", 1)[-1]
+            source_text = path.read_text(encoding="utf-8")
+            if re.search(rf"\bfn\s+{re.escape(leaf)}\s*\(", source_text) is None:
+                failures.append(
+                    f"learning.plasticity: test identity {test} does not name a function"
+                )
+
+
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
@@ -407,6 +437,8 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        if mid == "learning.plasticity":
+            verify_plasticity_test_references(row, failures)
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if not plasticity_status_matches():

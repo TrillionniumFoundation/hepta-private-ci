@@ -11,11 +11,13 @@ The product-workspace adapter entrypoint is
 It can construct and persist a proposal only. It has no selection, training,
 installation, runtime-topology, promotion or release authority. `codex-rs/hepta-agentd::propose_agentd_plasticity_v1` is now the source-level host
 callsite. It recomputes the current artifact and durable learning-ledger frontiers
-before invoking the adapter. This source composition is not evidence that a deployed
+and requires context-bound owner evidence for dataset, update-rule, modulator,
+modulator-broadcast, eligibility and per-parameter signal digests before invoking the adapter. This source composition is not evidence that a deployed
 target host executed or accepted it, so product execution remains unproved.
 
-The selected host owns three independent facts: current learning-evidence trust state,
-current artifact/evidence frontier witness, and the proposal-registry anchor/fence.
+The selected host owns four independent facts: current learning-evidence trust state,
+current artifact/evidence frontier witness, authoritative owner-evidence resolution,
+and the proposal-registry anchor/fence.
 Agentd now provides source implementations for parameter and topology anchor/fence
 stores; deployment must place each anchor store in a rollback domain independent from
 its registry file. The
@@ -50,8 +52,10 @@ real host canary run.
 
 A selected host MUST emit one bounded event for: `proposal_attempt`,
 `generator_rejected`, `evidence_rejected`, `evaluation_rejected`, `registry_conflict`,
-`registry_busy`, `registry_indeterminate`, `registry_poisoned`, `anchor_commit_failed`,
-`anchor_mismatch`, `acknowledged_history_missing`, `proposal_appended`,
+`owner_evidence_missing`, `owner_evidence_unauthorized`, `owner_evidence_stale`,
+`owner_evidence_context_mismatch`, `registry_busy`, `registry_indeterminate`,
+`registry_poisoned`, `anchor_commit_failed`, `anchor_mismatch`,
+`acknowledged_history_missing`, `proposal_appended`,
 `topology_proposal_attempt`, `topology_handoff_rejected`, `topology_proposal_appended`,
 `topology_anchor_commit_failed`, `structural_canary_started`,
 `structural_canary_aborted`, and `structural_canary_observation`.
@@ -73,9 +77,10 @@ credentials, dataset records and payload bytes are prohibited from logs.
   never handled by deleting history in place.
 - **Conflict:** alert when semantic conflicts exceed 1% of proposal attempts in a
   rolling 15-minute window or any single proposal ID/slot produces repeated drift.
-- **Authentication:** page on any accepted request whose authenticated generator and
-  evaluator identities do not satisfy the existing signed-role separation checks;
-  the implementation is expected to make this state unreachable.
+- **Authentication:** page on any accepted request whose authenticated Generator,
+  Observer and Evaluator do not satisfy pairwise signed-role separation, or whose
+  owner-evidence receipt cannot be resolved against its exact artifact/window/dataset
+  context; the implementation is expected to make these states unreachable.
 - **Latency target:** host p99 for authenticated generation + evidence/evaluation
   admission + durable append + external anchor commit should remain below 2 seconds
   for the bounded profile. Exceeding this for 15 minutes disables new plasticity
@@ -98,8 +103,9 @@ until a target-host telemetry stream and exact execution receipts exist.
    frames; reconciliation may inspect them because `open_anchored` proves the trusted
    prefix before any repair. Anchor mismatch or missing acknowledged history requires
    operator recovery; never truncate first.
-5. Reverify current trust/revocation and artifact/evidence frontiers before retrying
-   proposal construction.
+5. Reverify current trust/revocation, artifact/evidence frontiers and every typed
+   owner-evidence receipt before retrying proposal construction. Do not replace an
+   unavailable owner resolver with opaque-digest acceptance.
 6. An identical proposal retry may return the original record. Semantic drift in an
    occupied artifact/window slot remains a conflict.
 7. Topology proposal recovery follows the same rule through
@@ -113,8 +119,9 @@ until a target-host telemetry stream and exact execution receipts exist.
 A production activation claim requires target-host execution evidence in addition to
 the implemented Agentd source callsites, plus an exact-head and synthetic-merge run
 covering: V3 deterministic generation, trust-region
-rejection, signature expiry/revocation, generator/evaluator controller collision,
-missing evaluation, stale/frontier witness, anchored reopen, failed external-anchor
+rejection, signature expiry/revocation, generator/evaluator and observer/evaluator
+controller collisions, missing evaluation, owner-evidence missing/stale/context
+substitution, stale/frontier witness, anchored reopen, failed external-anchor
 commit and poisoned-writer behavior, old-prefix rollback, incomplete-tail recovery,
 writer-fence mismatch, typed parameter-mutation-policy protected-surface denial, topology
 writer-handoff validation, topology anchored reopen, topology self-activation denial,

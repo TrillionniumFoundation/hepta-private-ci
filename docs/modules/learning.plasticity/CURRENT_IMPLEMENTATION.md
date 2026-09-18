@@ -30,15 +30,28 @@ override these machine status facts.
 | `propose_topology_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
 | `verify_topology_proposal_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
 | `durableproposalregistry` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 1 |
-| `authenticated_product_composition` | `adapter_implemented_agentd_host_called_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
+| `authenticated_product_composition` | `adapter_implemented_agentd_host_called_pairwise_roles_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 3 |
 | `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
 | `parameter_mutation_policy` | `source_implemented_authority_free_typed_parameter_allowlist_protected_surfaces` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 1 |
-| `agentd_parameter_host` | `host_callsite_source_implemented_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |
+| `agentd_parameter_host` | `host_callsite_source_implemented_owner_evidence_required_not_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |
+| `agentd_owner_evidence_resolution` | `host_enforced_typed_owner_evidence_resolution_concrete_deployment_adapters_required` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |
 | `topology_governed_admission` | `source_implemented_typed_writer_handoff_validated` | `codex-rs/hepta-plasticity/src/topology_governance.rs` | 2 |
 | `durable_topology_registry` | `source_implemented_anchored_governed_topology_registry` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 1 |
 | `authenticated_topology_product_composition` | `adapter_implemented_agentd_host_called_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 1 |
 | `agentd_topology_host` | `host_callsite_source_implemented_external_anchor_not_target_host_qualified` | `codex-rs/hepta-agentd/src/topology_plasticity_host.rs` | 2 |
-| `structural_canary_controller` | `source_implemented_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 3 |
+| `structural_canary_controller` | `source_implemented_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 5 |
+
+### Repository-controlled gaps
+
+- Run exact-head and deterministic synthetic-merge compilation, tests, lint, document verification and Lane F qualification for this final source/document head.
+- Bind PlasticityOwnerEvidenceResolverV1 to concrete authoritative owner-store adapters in the selected deployment and exercise freshness/provenance failures before changing productionImplementation or productExecutionProved.
+
+### External evidence gates
+
+- independent semantic and security review
+- target-host product execution, concrete owner-evidence adapter qualification and telemetry
+- operator acceptance and incident-recovery exercise
+- real bounded structural canary execution, promotion, activation and release
 
 <!-- END GENERATED IMPLEMENTATION STATUS -->
 
@@ -56,6 +69,7 @@ override these machine status facts.
 | External anchor commit before adapter success | **Implemented fail-closed seam** | `PlasticityAnchorCommitterV1` |
 | Signed generator authentication | **Implemented adapter** | `propose_authenticated_parameter_plasticity_v1` |
 | Signed current artifact/evidence-frontier witness | **Implemented adapter** | `PlasticityAdmissionEvidenceV1` |
+| Typed owner-evidence resolution boundary | **Implemented host-enforced seam; concrete deployment adapters required** | `PlasticityOwnerEvidenceResolverV1` in Agentd |
 | Cryptographically independent evaluator admission | **Implemented adapter** | existing `LearningEvidenceVerifierV1` + signed evaluation path |
 | Evaluation coverage for every generated update | **Implemented adapter** | product adapter rejects missing/duplicate/unexpected evaluations |
 | Product-workspace proposal adapter | **Implemented** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
@@ -81,13 +95,16 @@ proposal crate, and that distinction is intentional and now explicit:
 | --- | --- |
 | `codex-rs/hepta-plasticity` native crate | `codex-hepta-types` only; deterministic proposal/generator/topology/registry mechanics stay authority-free |
 | product-workspace adapter | `codex-hepta-intelligence-eval` and `codex-hepta-learning-ledger` authenticate generator/evaluator evidence and independent decisions |
-| selected host | MUST call the product adapter, read the current `learning.artifacts` and qualification/evidence frontiers, then issue the short-lived trusted Observer attestation bound by `PlasticityAdmissionEvidenceV1` |
+| selected host | MUST call the product adapter, read the current `learning.artifacts` and qualification/evidence frontiers, resolve every dataset/update/modulator/eligibility/per-parameter evidence digest through `PlasticityOwnerEvidenceResolverV1`, then issue the short-lived trusted Observer attestation bound by `PlasticityAdmissionEvidenceV1` |
 | selected host rollback domain | MUST implement `PlasticityAnchorCommitterV1` and monotonic writer-fence issuance outside the registry rollback domain |
 
 `codex-hepta-plasticity` itself still does not query owner stores. The source-selected
 host seam is now `codex-hepta-agentd`: it recomputes the current `ArtifactRegistry`
 and durable learning-ledger frontiers immediately before calling the authenticated
-product adapters and owns separate parameter/topology anchor-fence stores. This is a
+product adapters, requires context-bound owner evidence for every opaque learning
+digest, and owns separate parameter/topology anchor-fence stores. The resolver trait
+has no permissive default; a selected deployment must bind it to the actual owner
+stores rather than echoing caller inputs. This is a
 real source callsite, not proof that a deployed target host has executed or accepted
 it. `productionImplementation` and `productExecutionProved` therefore remain false
 until exact target-host evidence exists.
@@ -129,21 +146,22 @@ product-workspace adapter. It requires, before any durable proposal append:
 1. exact regeneration of the V3 candidate set;
 2. a `Generator` signature over the generator digest under host-owned current trust;
 3. an `Observer` signature over the selected artifact, artifact-registry binding/head,
-   qualification-evidence head, window, generations, dataset/update/modulator/
-   eligibility digests and generator digest;
+   qualification-evidence head, the canonical host-resolved owner-evidence set,
+   window, generations, dataset/update/modulator/eligibility digests and generator digest;
 4. signed independent evaluation for every generated update candidate;
 5. one consistent authenticated evaluator identity across those evaluations;
 6. exact artifact/window/generation lineage and exact durable predecessor.
 
 The existing learning-evidence verifier enforces signer trust, signature validity,
-validity window, revocation, role assignment and generator/evaluator controller
-separation. The adapter derives proposer/evaluator IDs from authenticated principals
+validity window, revocation and role assignment. Product admission now requires
+pairwise Generator/Observer/Evaluator separation across the verifier's principal,
+credential, signing-key and controller boundaries. The adapter derives proposer/evaluator IDs from authenticated principals
 instead of trusting caller-supplied role strings.
 
 The integration regression suite exercises the complete signed adapter path with
 deterministic Ed25519 fixtures and asserts rejection of a tampered artifact-frontier
-witness, generator/evaluator controller collision, and failed external-anchor
-persistence. These fixtures establish source behavior only; they are not proof that an
+witness, generator/evaluator and observer/evaluator controller collisions, owner-evidence
+context substitution, and failed external-anchor persistence. These fixtures establish source behavior only; they are not proof that an
 actual production host invokes the adapter or deployment evidence.
 
 ## Rollback protection
@@ -182,7 +200,9 @@ history.
 
 The repository now contains an Agentd source callsite that supplies current owner
 frontiers and independent anchor/fence services for parameter and topology proposal
-persistence. Remaining gates are execution evidence rather than a missing source seam:
+persistence. The generic owner-evidence seam is source-complete, but the selected deployment must
+still bind it to concrete authoritative owner-store adapters. Remaining gates are
+deployment/execution evidence rather than permission to weaken that boundary:
 independent semantic/security review, target-host qualification, operator recovery
 exercise, real structural-canary execution, activation, promotion and release. Those
 states must stay false until their own evidence exists. CI receipts must refer to the

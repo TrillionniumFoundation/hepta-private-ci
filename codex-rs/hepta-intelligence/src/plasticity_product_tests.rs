@@ -29,6 +29,14 @@ struct Fixture {
 
 impl Fixture {
     fn new(evaluator_controller_collision: bool) -> Self {
+        Self::new_with_evaluator_controller(
+            evaluator_controller_collision.then_some(0),
+        )
+    }
+
+    fn new_with_evaluator_controller(
+        evaluator_controller_collision_with: Option<usize>,
+    ) -> Self {
         let keys = [
             SigningKey::from_bytes(&[11; 32]),
             SigningKey::from_bytes(&[22; 32]),
@@ -57,8 +65,10 @@ impl Fixture {
                 .enumerate()
                 .map(|(index, (principal, key))| TrustedLearningSignerV1 {
                     principal: principal.clone(),
-                    controller_id: if evaluator_controller_collision && index == 2 {
-                        principals[0].principal_id.clone()
+                    controller_id: if index == 2 {
+                        evaluator_controller_collision_with
+                            .map(|other| principals[other].principal_id.clone())
+                            .unwrap_or_else(|| id(&format!("plasticity-controller-{index}")))
                     } else {
                         id(&format!("plasticity-controller-{index}"))
                     },
@@ -127,6 +137,7 @@ impl Fixture {
             artifact_registry_binding: digest("artifact-registry-binding"),
             artifact_registry_head_digest: digest("artifact-registry-head"),
             qualification_evidence_head_digest: digest("qualification-evidence-head"),
+            owner_evidence_set_digest: digest("owner-evidence-set"),
             window,
             baseline_generation: generation(10),
             candidate_generation: generation(11),
@@ -396,6 +407,30 @@ fn product_path_rejects_tampered_frontier_witness() {
 #[test]
 fn product_path_rejects_generator_evaluator_controller_collision() {
     let fixture = Fixture::new(true);
+    let mut writer = writer();
+    let mut anchor_committer = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let result = propose_authenticated_parameter_plasticity_v1(
+        fixture.request(),
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_committer,
+        50,
+    );
+    assert!(matches!(
+        result,
+        Err(ParameterPlasticityProductErrorV1::Evaluation(
+            SignedEvaluationError::Evidence(SignedEvidenceError::ControllerCollision)
+        ))
+    ));
+    assert_eq!(writer.record_count().expect("count"), 0);
+}
+
+#[test]
+fn product_path_rejects_observer_evaluator_controller_collision() {
+    let fixture = Fixture::new_with_evaluator_controller(Some(1));
     let mut writer = writer();
     let mut anchor_committer = AnchorCommitter {
         accept: true,

@@ -15,6 +15,7 @@ use std::fs::File;
 use codex_hepta_intelligence_eval::{
     IndependentEvaluationBundleV1, IndependentEvaluationDispositionV1, MetricRoleContractV2,
     SignedEvaluationError, SignedEvaluationEvidenceV1, decide_with_signed_evidence_v2,
+    evaluation_signing_payload_v2,
 };
 use codex_hepta_learning_ledger::{
     LearningEvidenceRoleV1, LearningEvidenceVerifierV1, SignedEvidenceError,
@@ -37,6 +38,8 @@ pub struct PlasticityAdmissionEvidenceV1 {
     pub artifact_registry_binding: Digest32,
     pub artifact_registry_head_digest: Digest32,
     pub qualification_evidence_head_digest: Digest32,
+    /// Canonical digest of host-resolved, context-bound owner evidence receipts.
+    pub owner_evidence_set_digest: Digest32,
     pub window: ProposalWindowV2,
     pub baseline_generation: Generation,
     pub candidate_generation: Generation,
@@ -246,6 +249,7 @@ pub fn plasticity_admission_signing_payload_v1(
         evidence.artifact_registry_binding,
         evidence.artifact_registry_head_digest,
         evidence.qualification_evidence_head_digest,
+        evidence.owner_evidence_set_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
@@ -355,6 +359,22 @@ pub fn propose_authenticated_parameter_plasticity_v1(
             return Err(E::EvaluatorMismatch);
         }
         evaluator_id.get_or_insert(this_evaluator);
+
+        let evaluator_payload = evaluation_signing_payload_v2(&bundle, &metric_roles)
+            .map_err(|error| E::Evaluation(error.into()))?;
+        let evaluator = verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &evidence.evaluator_bundle,
+                &evaluator_payload,
+                now,
+            )
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+        if evaluator.principal() != &bundle.evaluator {
+            return Err(E::Evaluation(SignedEvaluationError::IdentityBinding));
+        }
+        verify_signed_role_separation(&observer, &evaluator, now)
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
 
         let decision =
             decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, verifier, now)
@@ -480,6 +500,7 @@ fn validate_admission_binding(
             "qualification evidence head",
             evidence.qualification_evidence_head_digest,
         ),
+        ("owner evidence set", evidence.owner_evidence_set_digest),
         ("dataset", evidence.dataset_digest),
         ("update rule", evidence.update_rule_digest),
         ("modulator", evidence.modulator_digest),
@@ -549,6 +570,7 @@ mod tests {
             artifact_registry_binding: Digest32::of_bytes(b"binding"),
             artifact_registry_head_digest: Digest32::of_bytes(b"artifact-head"),
             qualification_evidence_head_digest: Digest32::of_bytes(b"evidence-head"),
+            owner_evidence_set_digest: Digest32::of_bytes(b"owner-evidence-set"),
             window: ProposalWindowV2 {
                 window_id: id("window:1"),
                 window_digest: Digest32::of_bytes(b"window"),
