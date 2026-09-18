@@ -22,8 +22,8 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
-pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 16_384;
-pub const MAX_GENERATION_BOUND_RESULTS: usize = 256;
+pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 512;
+pub const MAX_GENERATION_BOUND_RESULTS: usize = 16;
 const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
 const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
 const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
@@ -47,6 +47,32 @@ pub struct MemoryCueV1 {
     pub approved_context_digest: Digest32,
     pub snapshot_key: CognitiveSnapshotKeyV1,
     pub cue_profile_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompileCueRequestV1 {
+    pub cue_id: StableId,
+    pub objective_digest: Digest32,
+    pub approved_context_digest: Digest32,
+    pub snapshot_key: CognitiveSnapshotKeyV1,
+    pub cue_profile_digest: Digest32,
+}
+
+/// Compile a generation-bound cue from already authorized objective/context digests.
+///
+/// This operation is pure and authority-free. It does not fetch memory, select a
+/// profile, or authenticate the supplied snapshot; the snapshot owner remains
+/// responsible for provenance and currentness.
+pub fn compile_cue(request: CompileCueRequestV1) -> Result<MemoryCueV1, RecallErrorV1> {
+    let cue = MemoryCueV1 {
+        cue_id: request.cue_id,
+        objective_digest: request.objective_digest,
+        approved_context_digest: request.approved_context_digest,
+        snapshot_key: request.snapshot_key,
+        cue_profile_digest: request.cue_profile_digest,
+    };
+    cue.validate()?;
+    Ok(cue)
 }
 
 impl MemoryCueV1 {
@@ -507,11 +533,20 @@ pub fn recall(
     candidates: Vec<RetrievalChannelCandidateV1>,
 ) -> Result<RecallPacketV1, RecallErrorV1> {
     let union = build_candidate_union(cue, policy, candidates)?;
+    let maximum_results = usize::try_from(policy.maximum_results).unwrap_or(0);
+    // Risk is evaluated only over the population that can actually be returned.
+    // Otherwise a low-ranked, caller-visible but ineligible tail candidate can
+    // poison an otherwise coherent top-k recall through OOD/contradiction bits.
+    let risk_len = union.entries.len().min(maximum_results);
+    let risk_entries = &union.entries[..risk_len];
     let minimum_channels = usize::try_from(policy.minimum_distinct_channels).unwrap_or(usize::MAX);
-    let observed_channels = usize::try_from(union.distinct_channels).unwrap_or(0);
-    let contradiction_count = contradiction_population_count(&union.entries);
-    let maximum_ood = union
-        .entries
+    let observed_channels = risk_entries
+        .iter()
+        .flat_map(|entry| entry.channels.iter().copied())
+        .collect::<BTreeSet<_>>()
+        .len();
+    let contradiction_count = contradiction_population_count(risk_entries);
+    let maximum_ood = risk_entries
         .iter()
         .map(|entry| entry.maximum_ood)
         .max()
@@ -530,7 +565,6 @@ pub fn recall(
         None
     };
 
-    let maximum_results = usize::try_from(policy.maximum_results).unwrap_or(0);
     let (disposition, selections, omitted_count) = match reason {
         Some(reason) => (RecallDispositionV1::Abstained(reason), Vec::new(), 0),
         None => {
