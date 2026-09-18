@@ -229,13 +229,6 @@ pub struct AutomationDispatchUncertainty {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AutomationTick {
     Idle,
-    /// Durable Core queue admission. This is intentionally non-terminal for
-    /// the automation occurrence.
-    Admitted {
-        task_id: AutomationTaskId,
-        occurrence: u64,
-        queued_submission_id: String,
-    },
     /// Compatibility-only legacy semantic. New scheduler code must emit
     /// `Admitted` and wait for occurrence terminalization separately.
     Submitted {
