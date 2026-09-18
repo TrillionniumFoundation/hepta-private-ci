@@ -162,38 +162,62 @@
     },
     {
       "module": "kernel.operations",
-      "profile": "bounded_operation_reference_model",
+      "profile": "durable_operation_store_plus_reference_model",
       "formalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md",
+      "implementationDetail": "docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_reference_model",
-        "durability": "not_implemented",
-        "qualification": "model_tests_present",
-        "activation": "inactive",
+        "implementation": "sqlite_store",
+        "durability": "local_fsync_store",
+        "qualification": "partial_bounded_evidence",
+        "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded deterministic operation-state reference model",
-        "bounded in-memory outbox claim and acknowledgement model",
-        "generation-fenced idempotent terminal observation"
+        "bounded deterministic operation-state and outbox reference models",
+        "FULL-synchronous WAL durable operation ledger and transactional source outbox",
+        "atomic prepare commit with semantic idempotency and immutable operation identity",
+        "bounded claim leases, attempts, expiry takeover and monotonically increasing fences",
+        "owner-generation and authority-epoch handoff with dispatched-to-indeterminate recovery",
+        "durable no-blind-retry dispatch boundary and acknowledgement/terminal separation",
+        "terminal outbox retention without authoritative operation identity resurrection",
+        "kernel.authority final-use consumption around one synchronous checked effect closure"
       ],
       "targetOnlyCapabilities": [
-        "durable operation ledger",
-        "transactional durable outbox",
-        "claim lease expiry and crash-reopen takeover",
-        "background reconciliation service"
+        "named authenticated product caller composition",
+        "real destination-owner atomic dedupe and apply binding",
+        "production terminal observer and background reconciliation service",
+        "target-host disk-full backup-restore and performance qualification",
+        "independent acceptance activation promotion and release"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-operations/src/lib.rs",
           "mustContain": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "DurableOperationStore",
+            "mod durable",
             "ReferenceAuthorityWitness"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable.rs",
+          "mustContain": [
+            "pub struct DurableOperationStore",
+            "BEGIN IMMEDIATE",
+            "record_dispatch_started",
+            "handoff_owner",
+            "execute_with_final_use"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0001_operations.sql",
+          "mustContain": [
+            "CREATE TABLE operation_ledger",
+            "CREATE TABLE cross_owner_outbox",
+            "active operations cannot be deleted"
           ]
         },
         {
