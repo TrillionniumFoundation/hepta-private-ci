@@ -10,6 +10,7 @@
 pub mod effect_executor;
 
 mod model;
+mod occurrence;
 mod scheduler;
 mod store;
 mod taskflow;
@@ -34,6 +35,7 @@ pub use model::AutomationTaskDraft;
 pub use model::AutomationTaskId;
 pub use model::AutomationTaskState;
 pub use model::AutomationTick;
+pub use occurrence::AutomationCausalError;
 pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
@@ -85,6 +87,7 @@ pub use taskflow_kernel::TaskFlowFrontier;
 pub use taskflow_kernel::TaskFlowReplayReport;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TaskFlowStructuralPreview;
+pub use taskflow_step::TASKFLOW_STEP_OUTBOX_DEFAULT_BUILD;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_EFFECTS;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED;
