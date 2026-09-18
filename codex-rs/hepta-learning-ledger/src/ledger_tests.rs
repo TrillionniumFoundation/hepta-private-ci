@@ -304,10 +304,7 @@ fn canonical_runtime_delivery_is_ingested_with_runtime_owned_observer() {
     let runtime = runtime_prompt_delivery();
     let expected_observation_digest = must(runtime.semantic_digest());
 
-    must(ledger.append_runtime_prompt_delivery_v1(
-        runtime_prompt_lineage(),
-        runtime.clone(),
-    ));
+    must(ledger.append_runtime_prompt_delivery_v1(runtime_prompt_lineage(), runtime.clone()));
 
     let Some(record) = ledger.records().last() else {
         panic!("delivery record must exist");
@@ -335,10 +332,7 @@ fn invalid_runtime_delivery_contract_cannot_enter_ledger() {
     let mut runtime = runtime_prompt_delivery();
     runtime.delivered = false;
     assert_eq!(
-        must_err(ledger.append_runtime_prompt_delivery_v1(
-            runtime_prompt_lineage(),
-            runtime,
-        )),
+        must_err(ledger.append_runtime_prompt_delivery_v1(runtime_prompt_lineage(), runtime,)),
         LedgerError::InvalidDeliveryObservation
     );
 }
@@ -355,10 +349,7 @@ fn rejected_runtime_delivery_preserves_rejection_lineage() {
         observed_token_positions: Vec::new(),
         truncation_observed: false,
     };
-    must(ledger.append_runtime_prompt_delivery_v1(
-        runtime_prompt_lineage(),
-        runtime,
-    ));
+    must(ledger.append_runtime_prompt_delivery_v1(runtime_prompt_lineage(), runtime));
 
     let Some(record) = ledger.records().last() else {
         panic!("delivery record must exist");
