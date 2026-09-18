@@ -22,6 +22,7 @@ fn candidate(name: &str, score: u64) -> OwnerRankCandidateV1 {
             citations: Vec::new(),
             state: RecordState::Live,
         },
+        snapshot_digest: digest("snapshot"),
         owner_score: score,
         support_digest: digest(&format!("support:{name}")),
     }
@@ -62,6 +63,14 @@ fn owner_rank_binds_support_and_rejects_tombstones() {
     changed.candidates[1].support_digest = digest("changed-support");
     let changed = rank_owner_candidates(changed).expect("changed support");
     assert_ne!(baseline.request_binding_digest, changed.request_binding_digest);
+
+
+    let mut stale = request();
+    stale.candidates[0].snapshot_digest = digest("stale-snapshot");
+    assert_eq!(
+        rank_owner_candidates(stale),
+        Err(OwnerRankErrorV1::SnapshotMismatch("memory:b".to_string()))
+    );
 
     let mut deleted = request();
     deleted.candidates[0].record.state = RecordState::Tombstone;
