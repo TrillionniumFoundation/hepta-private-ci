@@ -70,6 +70,7 @@ def verify() -> None:
     for needle in (
         "admission.policy.admission_binding(",
         "control.reserve_native(",
+        "admission.maximum_budget_units",
         "self.reconcile_existing(&record)",
     ):
         if needle not in worker:
@@ -81,10 +82,26 @@ def verify() -> None:
     for needle in (
         "enforce_quota(&self.records, &request)?",
         "validate_dispatch_authority(record, &dispatch)?",
+        "held_budget_units(",
+        "budget_units > binding.quota.reserved_day_budget",
         "compact_native_journal(",
     ):
         if needle not in core:
             raise SystemExit(f"durable inference owner missing required invariant: {needle}")
+
+
+    policy = (
+        ROOT / "codex-rs/hepta-infer-worker-host/src/native_policy.rs"
+    ).read_text(encoding="utf-8")
+    for needle in (
+        "self.resource.subject.as_ref() != Some(&self.quota.subject)",
+        "self.resource.quota_sha256 != quota_digest",
+        "self.quota.reserved_day_budget < maximum_budget_units",
+        "authority.claim(&signed, &binding)?",
+        "authority.with_verified_use(",
+    ):
+        if needle not in policy:
+            raise SystemExit(f"native inference policy missing required invariant: {needle}")
 
 
 def self_test() -> None:
