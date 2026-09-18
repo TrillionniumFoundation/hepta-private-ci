@@ -86,13 +86,17 @@ in flight therefore fails with `StaleRevocationFeed` without invoking the
 consumer. Revocation updates enter through a separately pinned signed feed.
 
 The revocation control protocol caps signed-feed lifetime at 300,000 ms and
-supports node-signed exact-update acknowledgements. Convergence verification
-requires the pinned feed verifier plus the exact `SignedFinalUseRevocationUpdate`;
-it authenticates distributor identity, freshness, active epoch key and signature
-before accepting any node acknowledgement. The report binds the distributor
+supports node-signed exact-update acknowledgements. A successful local apply
+returns an opaque `FinalUseRevocationReceipt` bound to the exact update digest;
+the node-ack constructor requires that receipt, so an acknowledgement cannot be
+created through the public API from an unapplied raw update or a receipt for a
+different update. Convergence verification then requires the pinned feed
+verifier plus the exact `SignedFinalUseRevocationUpdate`; it authenticates
+distributor identity, freshness, active epoch key and signature before accepting
+any receipt-bound node acknowledgement. The report binds the distributor
 trust-key id and selected key id for every acknowledged node. Missing,
 duplicate, unknown, forged, wrong-head, stale and future-dated acknowledgements
-fail closed. This proves an authenticated enrolled-node acknowledgement set but
+fail closed. This proves an authenticated repository-level apply→ack chain but
 does not perform fleet transport.
 
 ## 5. Capacity and performance profile
@@ -121,6 +125,7 @@ revocation transport. Pilot ceilings are design targets, not measurements.
 - AUTH-10: a revocation acknowledgement dated after verifier current time is rejected.
 - AUTH-11: if signed-feed freshness expires during Bao provider I/O, final consumer entry is denied and no secret is released.
 - AUTH-12: otherwise valid node acknowledgements over an unsigned or forged distributor update cannot produce a convergence report.
+- AUTH-13: a node acknowledgement cannot be constructed with an apply receipt from a semantically different revocation update.
 
 Source tests implement the native cases above. Exact-candidate workflow receipts,
 not test-file existence, establish execution for one candidate.
