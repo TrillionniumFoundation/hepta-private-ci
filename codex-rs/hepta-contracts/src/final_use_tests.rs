@@ -3,6 +3,48 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use std::os::unix::fs::PermissionsExt;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+#[derive(Debug)]
+struct FixedClock(u64);
+
+impl AuthorityClock for FixedClock {
+    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+        Ok(self.0)
+    }
+}
+
+#[derive(Debug)]
+struct MemoryFinalUseFrontier(Mutex<FinalUseFrontier>);
+
+impl AuthorityFrontierStore<FinalUseFrontier> for MemoryFinalUseFrontier {
+    fn load(&self, _owner_id: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {
+        self.0
+            .lock()
+            .map(|frontier| *frontier)
+            .map_err(|_| AuthorityTrustError::Unavailable)
+    }
+
+    fn compare_and_set(
+        &self,
+        _owner_id: &str,
+        expected: &FinalUseFrontier,
+        next: &FinalUseFrontier,
+    ) -> Result<(), AuthorityTrustError> {
+        let mut current = self
+            .0
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        if *current != *expected {
+            return Err(AuthorityTrustError::Conflict);
+        }
+        *current = *next;
+        Ok(())
+    }
+}
 
 fn fixture()
 -> Result<(FinalUseAuthority, SignedFinalUseGrant, tempfile::TempDir), Box<dyn std::error::Error>> {
@@ -190,6 +232,115 @@ fn reopen(directory: &std::path::Path) -> Result<FinalUseAuthority, FinalUseErro
             revoked_grant_ids: BTreeSet::new(),
         },
     )
+}
+
+#[test]
+fn injected_clock_is_the_only_final_use_time_source() {
+    let issuer = SigningKey::from_bytes(&[57; 32]);
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "clock-owner".into(),
+        authority_epoch: 3,
+        grant_id: "clock-use".into(),
+        nonce: [8; 32],
+        binding: FinalUseBinding {
+            subject_id: "agent-one".into(),
+            destination_id: "provider:heptabao".into(),
+            request_sha256: [11; 32],
+            scope_sha256: [12; 32],
+            payload_sha256: [13; 32],
+        },
+        not_before_unix_ms: 1_000,
+        expires_at_unix_ms: 3_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let authority = FinalUseAuthority::open_state_dir_with_clock(
+        directory.path(),
+        "clock-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 3,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+        Arc::new(FixedClock(2_000)),
+    )
+    .unwrap();
+    assert!(authority.claim(&signed, &signed.grant.binding).is_ok());
+}
+
+#[test]
+fn external_final_use_frontier_detects_restored_claim_snapshot() {
+    let issuer = SigningKey::from_bytes(&[58; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 4,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "frontier-owner".into(),
+        authority_epoch: 4,
+        grant_id: "frontier-use".into(),
+        nonce: [14; 32],
+        binding: FinalUseBinding {
+            subject_id: "agent-one".into(),
+            destination_id: "provider:heptabao".into(),
+            request_sha256: [15; 32],
+            scope_sha256: [16; 32],
+            payload_sha256: [17; 32],
+        },
+        not_before_unix_ms: 1_000,
+        expires_at_unix_ms: 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&head).unwrap(),
+    )));
+    let authority = FinalUseAuthority::open_state_dir_with_trust(
+        directory.path(),
+        "frontier-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        head.clone(),
+        Arc::new(FixedClock(2_000)),
+        frontier_store.clone(),
+    )
+    .unwrap();
+    let initial = std::fs::read(directory.path().join("authority.json")).unwrap();
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    drop(token);
+    let advanced = frontier_store.load("frontier-owner").unwrap();
+    assert_ne!(advanced, FinalUseFrontier::for_initial_head(&head).unwrap());
+    drop(authority);
+    std::fs::write(directory.path().join("authority.json"), initial).unwrap();
+    assert_eq!(
+        FinalUseAuthority::open_state_dir_with_trust(
+            directory.path(),
+            "frontier-owner".into(),
+            issuer.verifying_key().to_bytes(),
+            head,
+            Arc::new(FixedClock(2_000)),
+            frontier_store,
+        )
+        .unwrap_err(),
+        FinalUseError::AntiRollbackViolation
+    );
 }
 
 #[test]
