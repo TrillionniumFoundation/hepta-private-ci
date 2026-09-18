@@ -256,6 +256,12 @@ impl AutomationStore {
                    AND NOT EXISTS (
                        SELECT 1 FROM automation_runs r
                        WHERE r.task_id = automation_tasks.task_id AND r.state = 'leased'
+                   )
+                   AND NOT EXISTS (
+                       SELECT 1 FROM automation_occurrences o
+                       WHERE o.owner_agent_id = automation_tasks.owner_agent_id
+                         AND o.task_id = automation_tasks.task_id
+                         AND o.state NOT IN ('succeeded', 'failed', 'cancelled')
                    )",
             )
             .bind(to_i64(resume_at_ms)?)
