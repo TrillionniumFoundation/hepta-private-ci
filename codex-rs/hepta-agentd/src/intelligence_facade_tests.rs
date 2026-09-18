@@ -273,7 +273,6 @@ fn stale_or_changed_envelope_cannot_rebind_an_existing_run() {
     ));
 }
 
-
 #[test]
 fn microsecond_deadline_is_never_widened_by_agentd_adapter() {
     let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
