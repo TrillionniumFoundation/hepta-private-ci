@@ -11,6 +11,13 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+fn model_pin(model: &TabularWorldModelV1) -> WorldModelPinV1 {
+    WorldModelPinV1 {
+        model_digest: model.model_digest,
+        dataset_digest: model.dataset_digest,
+    }
+}
+
 fn sample(name: &str, next: &str, outcome: i64) -> WorldModelSampleV1 {
     WorldModelSampleV1 {
         sample_id: id(name),
@@ -68,14 +75,14 @@ fn op_04_prediction_is_synthetic_and_unsupported_pairs_abstain() {
         Ok(model) => model,
         Err(error) => panic!("valid transition model failed: {error}"),
     };
-    let prediction = match predict_transition(&model, &id("state-a"), &id("action-a")) {
+    let prediction = match predict_transition(&model, &model_pin(&model), &id("state-a"), &id("action-a")) {
         Ok(prediction) => prediction,
         Err(error) => panic!("supported prediction failed: {error}"),
     };
     assert!(prediction.synthetic);
     assert!(!prediction.authority.grants_any());
     assert_eq!(
-        predict_transition(&model, &id("state-unknown"), &id("action-a")),
+        predict_transition(&model, &model_pin(&model), &id("state-unknown"), &id("action-a")),
         Err(WorldModelError::UnsupportedStateAction)
     );
 }
@@ -152,7 +159,23 @@ fn raw_world_model_prediction_rejects_tampered_model() {
     .expect("fit");
     model.estimates[0].sample_count += 1;
     assert_eq!(
-        predict_transition(&model, &id("state-a"), &id("action-a")),
+        predict_transition(&model, &model_pin(&model), &id("state-a"), &id("action-a")),
+        Err(WorldModelError::InvalidModel)
+    );
+}
+
+#[test]
+fn raw_world_model_prediction_rejects_unmatched_pin() {
+    let model = fit_transition_model(
+        id("world-model-pin"),
+        digest("dataset-pin"),
+        vec![sample("sample-pin", "state-b", 10)],
+    )
+    .expect("fit");
+    let mut pin = model_pin(&model);
+    pin.dataset_digest = digest("other-dataset");
+    assert_eq!(
+        predict_transition(&model, &pin, &id("state-a"), &id("action-a")),
         Err(WorldModelError::InvalidModel)
     );
 }
