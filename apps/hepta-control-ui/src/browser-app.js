@@ -287,26 +287,49 @@ export class ControlPlaneApp {
   }
 
   async #executeConfirmed(kind, request, execute, restoreFocusKey, beforeRender) {
+    const restore = () => {
+      beforeRender?.();
+      try {
+        this.render({ restoreFocusKey });
+      } catch {
+        // A concurrent session transition may temporarily make readView unavailable.
+      }
+    };
+
     let confirmed = false;
     try {
       confirmed = (await this.#confirmAction(Object.freeze({ kind, request }))) === true;
     } catch (error) {
+      restore();
       this.#announce(`Confirmation failed: ${error?.message ?? "unknown error"}`, true);
       return;
     }
     if (!confirmed) {
+      restore();
       this.#announce("Request cancelled before submission.");
+      return;
+    }
+    if (
+      !this.#view?.canMutate ||
+      this.#mutationBlock !== null ||
+      request.displayedRevision !== this.#view.revision
+    ) {
+      restore();
+      this.#announce(
+        "Request was invalidated by a runtime/session state change before submission.",
+        true,
+      );
       return;
     }
     try {
       const acknowledgement = await execute();
-      beforeRender?.();
-      this.render({ restoreFocusKey });
+      restore();
       this.#announce(
         `Request ${acknowledgement.operationId} is ${acknowledgement.status}.`,
         acknowledgement.status === "indeterminate" || acknowledgement.recoveryRequired === true,
       );
     } catch (error) {
+      restore();
       this.#announce(`${error?.code ?? "ERROR"}: ${error?.message ?? "request failed"}`, true);
     }
   }
