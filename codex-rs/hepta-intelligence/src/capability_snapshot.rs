@@ -190,6 +190,11 @@ impl CapabilitySnapshotV2 {
     }
 
     #[must_use]
+    pub const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+
+    #[must_use]
     pub const fn digest(&self) -> Digest32 {
         self.snapshot_digest
     }
