@@ -3736,6 +3736,7 @@ dependencies = [
  "codex-hepta-objective",
  "codex-hepta-plasticity",
  "codex-hepta-prompt-optimizer",
+ "codex-hepta-prompt-registry",
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
@@ -4008,7 +4009,11 @@ dependencies = [
 name = "codex-hepta-prompt-optimizer"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-kg",
+ "codex-hepta-learning-ledger",
+ "codex-hepta-prompt-registry",
  "codex-hepta-types",
+ "ed25519-dalek",
 ]
 
 [[package]]

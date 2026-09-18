@@ -113,7 +113,10 @@ impl fmt::Display for LedgerError {
                 formatter.write_str("evaluated policy cannot label its own outcome")
             }
             Self::DeliveryAlreadyExists(id) => {
-                write!(formatter, "prompt delivery already exists for episode: {id}")
+                write!(
+                    formatter,
+                    "prompt delivery already exists for episode: {id}"
+                )
             }
             Self::InvalidDeliveryObservation => {
                 formatter.write_str("prompt delivery observation is internally inconsistent")

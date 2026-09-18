@@ -324,7 +324,9 @@ impl PromptRegistry {
             return Err(Error::InvalidTransition);
         }
         if Digest32::of_bytes(&payload) != binding.payload_digest {
-            return Err(Error::RealizationConflict(binding.realization_id.to_string()));
+            return Err(Error::RealizationConflict(
+                binding.realization_id.to_string(),
+            ));
         }
         binding.validate().map_err(|error| match error {
             PromptRegistryV2Error::EmptyDigest(name) => Error::EmptyDigest(name),
@@ -398,7 +400,9 @@ impl PromptRegistry {
         let binding = self
             .realization_bindings
             .get(realization_id)
-            .ok_or_else(|| PromptRegistryV2Error::RealizationUnavailable(realization_id.to_string()))?;
+            .ok_or_else(|| {
+                PromptRegistryV2Error::RealizationUnavailable(realization_id.to_string())
+            })?;
         let factor_live = self
             .factors
             .get(&binding.factor_id)

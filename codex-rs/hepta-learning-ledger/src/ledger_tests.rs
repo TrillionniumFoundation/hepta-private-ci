@@ -273,4 +273,3 @@ fn revoked_decision_logically_removes_prompt_delivery_lineage() {
     let restored = must(LearningLedger::from_snapshot(ledger.snapshot()));
     assert_eq!(restored.active_records().len(), 1);
 }
-

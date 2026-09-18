@@ -165,7 +165,13 @@ fn anchored(snapshot: &LedgerSnapshot) -> LedgerRecovery {
 #[test]
 fn persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants() {
     let fixture = Fixture::new();
-    let events = vec![decision(), prompt_delivery(), outcome(), credit(), revocation()];
+    let events = vec![
+        decision(),
+        prompt_delivery(),
+        outcome(),
+        credit(),
+        revocation(),
+    ];
     let mut expected = LearningLedger::new();
     for event in &events {
         must(expected.append(event.clone()));
