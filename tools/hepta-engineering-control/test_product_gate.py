@@ -6,12 +6,7 @@ from unittest import mock
 from control_engineering_v2 import product_gate
 
 
-class ProductGateTests(unittest.TestCase):
-    def write_canonical_registry(self, root: Path) -> None:
-        target = root / "docs" / "delivery" / "WORK_PACKAGES.json"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(
-            """{
+CANONICAL_REGISTRY = """{
   "schema": "hepta.work-package-registry.v4",
   "schemaVersion": 4,
   "documentClass": "canonical_registry",
@@ -30,9 +25,16 @@ class ProductGateTests(unittest.TestCase):
     }
   ]
 }
-""",
-            encoding="utf-8",
-        )
+"""
+CANONICAL_PATH = product_gate.CANONICAL_WORK_PACKAGE_PATH.as_posix()
+CANONICAL_BLOB = "9" * 40
+
+
+class ProductGateTests(unittest.TestCase):
+    def write_canonical_registry(self, root: Path) -> None:
+        target = root / "docs" / "delivery" / "WORK_PACKAGES.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(CANONICAL_REGISTRY, encoding="utf-8")
 
     def identity(
         self,
@@ -67,6 +69,8 @@ class ProductGateTests(unittest.TestCase):
             ("rev-parse", "HEAD^{tree}"): merge_tree,
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
             ("show", "-s", "--format=%P", "HEAD"): f"{base} {source}",
+            ("show", f"HEAD:{CANONICAL_PATH}"): CANONICAL_REGISTRY,
+            ("rev-parse", f"HEAD:{CANONICAL_PATH}"): CANONICAL_BLOB,
         }
         with mock.patch.object(
             product_gate,
@@ -105,6 +109,7 @@ class ProductGateTests(unittest.TestCase):
             receipt["canonicalWorkPackage"]["packageId"],
             "ECP-1-ENGINEERING-CONTROL-PLANE",
         )
+        self.assertEqual(receipt["canonicalWorkPackage"]["blobOid"], CANONICAL_BLOB)
         self.assertEqual(
             receipt["canonicalWorkPackage"]["developmentAfter"],
             ["DOC-2-DEFAULT-BRANCH-SELECTION"],
@@ -120,6 +125,8 @@ class ProductGateTests(unittest.TestCase):
             ("rev-parse", "HEAD^{tree}"): source_tree,
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
             ("show", "-s", "--format=%P", "HEAD"): "f" * 40,
+            ("show", f"HEAD:{CANONICAL_PATH}"): CANONICAL_REGISTRY,
+            ("rev-parse", f"HEAD:{CANONICAL_PATH}"): CANONICAL_BLOB,
         }
         with mock.patch.object(
             product_gate,
@@ -200,10 +207,15 @@ class ProductGateTests(unittest.TestCase):
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
             ("show", "-s", "--format=%P", "HEAD"): "f" * 40,
         }
+        def missing_registry(_root, *args):
+            if args == ("show", f"HEAD:{CANONICAL_PATH}"):
+                raise ValueError("git_read_failed")
+            return calls[args]
+
         with mock.patch.object(
             product_gate,
             "_git",
-            side_effect=lambda _root, *args: calls[args],
+            side_effect=missing_registry,
         ):
             with tempfile.TemporaryDirectory() as temp:
                 with self.assertRaisesRegex(
@@ -224,6 +236,10 @@ class ProductGateTests(unittest.TestCase):
             ("rev-parse", "HEAD^{tree}"): source_tree,
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
             ("show", "-s", "--format=%P", "HEAD"): "f" * 40,
+            ("show", f"HEAD:{CANONICAL_PATH}"): CANONICAL_REGISTRY.replace(
+                '"authorityDelta": "none"', '"authorityDelta": "merge"'
+            ),
+            ("rev-parse", f"HEAD:{CANONICAL_PATH}"): CANONICAL_BLOB,
         }
         with mock.patch.object(
             product_gate,
@@ -232,15 +248,6 @@ class ProductGateTests(unittest.TestCase):
         ):
             with tempfile.TemporaryDirectory() as temp:
                 root = Path(temp)
-                self.write_canonical_registry(root)
-                target = root / "docs" / "delivery" / "WORK_PACKAGES.json"
-                target.write_text(
-                    target.read_text(encoding="utf-8").replace(
-                        '"authorityDelta": "none"',
-                        '"authorityDelta": "merge"',
-                    ),
-                    encoding="utf-8",
-                )
                 with self.assertRaisesRegex(
                     ValueError, "canonical_engineering_package_binding"
                 ):
