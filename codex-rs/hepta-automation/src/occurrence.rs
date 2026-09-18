@@ -1,5 +1,6 @@
 use std::fmt;
 
+use codex_hepta_contracts::Sha256Digest;
 use sqlx::Row;
 
 use crate::AutomationError;
@@ -146,6 +147,33 @@ impl AutomationOccurrenceState {
             "failed" => Ok(Self::Failed),
             "cancelled" => Ok(Self::Cancelled),
             _ => Err(AutomationError::Corrupt),
+        }
+    }
+
+    pub const fn is_terminal(self) -> bool {
+        matches!(self, Self::Succeeded | Self::Failed | Self::Cancelled)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AutomationProviderObservationState {
+    Accepted,
+    Running,
+    Succeeded,
+    Failed,
+    Cancelled,
+    Indeterminate,
+}
+
+impl AutomationProviderObservationState {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::Accepted => "accepted",
+            Self::Running => "running",
+            Self::Succeeded => "succeeded",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+            Self::Indeterminate => "indeterminate",
         }
     }
 
@@ -576,6 +604,76 @@ impl AutomationStore {
         self.occurrence(task_id, occurrence)
             .await?
             .ok_or(AutomationError::Corrupt)
+    }
+
+    /// Append one durable provider observation. Exact replay is idempotent.
+    pub async fn record_provider_observation(
+        &self,
+        occurrence_id: &AutomationOccurrenceId,
+        provider_kind: &str,
+        provider_key: &str,
+        observation: AutomationProviderObservationState,
+        receipt_digest: &Sha256Digest,
+        payload_json: &str,
+        observed_at_ms: u64,
+    ) -> Result<(), AutomationError> {
+        if provider_kind.is_empty()
+            || provider_kind.len() > 64
+            || provider_key.is_empty()
+            || provider_key.len() > 256
+            || payload_json.len() > 65_536
+            || provider_kind.bytes().any(|byte| byte < 0x20)
+            || provider_key.bytes().any(|byte| byte < 0x20)
+        {
+            return Err(AutomationError::Invalid);
+        }
+        let occurrence = sqlx::query_scalar::<_, i64>(
+            "SELECT COUNT(*) FROM automation_occurrences
+             WHERE occurrence_id = ? AND owner_agent_id = ?",
+        )
+        .bind(occurrence_id.as_str())
+        .bind(self.owner_agent_id().as_str())
+        .fetch_one(self.taskflow_pool())
+        .await
+        .map_err(unavailable)?;
+        if occurrence != 1 {
+            return Err(AutomationError::Conflict);
+        }
+        sqlx::query(
+            "INSERT OR IGNORE INTO automation_provider_observations (
+                 occurrence_id, provider_kind, provider_key, observation,
+                 receipt_digest, payload_json, observed_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(occurrence_id.as_str())
+        .bind(provider_kind)
+        .bind(provider_key)
+        .bind(observation.as_str())
+        .bind(receipt_digest.as_str())
+        .bind(payload_json)
+        .bind(to_i64(observed_at_ms)?)
+        .execute(self.taskflow_pool())
+        .await
+        .map_err(unavailable)?;
+        Ok(())
+    }
+
+    pub(crate) async fn has_terminal_provider_observation(
+        &self,
+        occurrence_id: &AutomationOccurrenceId,
+        receipt_digest: &Sha256Digest,
+    ) -> Result<bool, AutomationError> {
+        let count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM automation_provider_observations
+             WHERE occurrence_id = ? AND receipt_digest = ?
+               AND observation IN ('succeeded', 'failed', 'cancelled')",
+        )
+        .bind(occurrence_id.as_str())
+        .bind(receipt_digest.as_str())
+        .fetch_one(self.taskflow_pool())
+        .await
+        .map_err(unavailable)?;
+        Ok(count > 0)
     }
 
     /// The only schedule-progression boundary.
