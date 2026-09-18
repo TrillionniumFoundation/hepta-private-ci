@@ -67,10 +67,10 @@ Rollback selects a compatible predecessor for future runs or deterministic abste
 ## 8. Current native implementation and remaining work
 
 - **Kernel:** `codex-rs/hepta-intuition/src/calibrated.rs`, `calibrated_binding.rs`, `qualified.rs`.
-- **Authenticated consumer:** `codex-rs/hepta-intelligence/src/intuition_qualification.rs`.
+- **Authenticated consumer/composition:** `codex-rs/hepta-intelligence/src/intuition_qualification.rs`, including `decide_authenticated_intuition_v2` and `run_qualified_evaluated_shadow_v3`.
 - **Tests:** `codex-rs/hepta-intuition/src/calibrated_tests.rs`, `qualified_tests.rs`, `codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs`.
 - **Performance:** `codex-rs/hepta-intuition/examples/fast_gate.rs`, `codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs`, `.github/workflows/hepta-intuition-qualification.yml`.
-- **Remaining repository composition:** migrate the legacy evaluated-shadow/product host to a native V3/V2-authenticated port so stricter risk profiles do not rely on the `HighOnlySlowPath` compatibility adapter.
-- **Remaining external evidence:** production-selected model/features and target-host measurements; real product execution; independent semantic review; causal/future-time evidence needed for higher claim levels; operator acceptance, canary, promotion and release.
+- **Repository-controlled convergence:** current authenticated V3 shadow composition is source implemented; no remaining repository-controlled gap is asserted by the implementation map.
+- **Remaining external/product evidence:** production-selected model/features and target-host measurements; real product execution; independent semantic review; causal/future-time evidence needed for higher claim levels; operator acceptance, canary, promotion and release.
 
 Source qualification does not self-advance `docs/CURRENT.json` from its evidence-governed capability baseline.
