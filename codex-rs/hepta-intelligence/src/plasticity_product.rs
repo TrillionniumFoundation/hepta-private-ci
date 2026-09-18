@@ -227,14 +227,24 @@ impl AnchoredPlasticityWriterV1 {
         maximum_records: usize,
         anchor: DurableRegistryAnchorV1,
     ) -> Result<Self, AnchoredPlasticityWriterErrorV1> {
+        let registry = DurableProposalRegistry::open_anchored(
+            file,
+            registry_scope_digest,
+            writer_fence,
+            maximum_records,
+            anchor,
+        )?;
+        if registry.current_anchor()? != Some(anchor) {
+            // The registry deliberately preserves complete frames after the trusted
+            // prefix so an operator can reconcile a lost acknowledgement. The
+            // product writer must not silently treat that unacknowledged tail as
+            // healthy or acknowledge it as a side effect of replaying older work.
+            return Err(AnchoredPlasticityWriterErrorV1::Registry(
+                DurableProposalRegistryError::Conflict,
+            ));
+        }
         Ok(Self {
-            registry: DurableProposalRegistry::open_anchored(
-                file,
-                registry_scope_digest,
-                writer_fence,
-                maximum_records,
-                anchor,
-            )?,
+            registry,
             registry_scope_digest,
             writer_fence,
             state: PlasticityWriterStateV1::Healthy,
