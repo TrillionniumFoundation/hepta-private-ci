@@ -243,3 +243,70 @@ impl fmt::Display for ProtocolCodecError {
 }
 
 impl std::error::Error for ProtocolCodecError {}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
+    }
+
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+
+    #[test]
+    fn prompt_factor_v1_round_trips_canonical_json_and_rejects_unknown_fields() {
+        let value = PromptFactorV1 {
+            factor_id: id("factor:1"),
+            semantic_purpose: "verify before mutating".to_owned(),
+            authority_class: "developer_policy".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
+            lifecycle: Lifecycle::Admitted,
+            revision: 7,
+        };
+        let bytes = value
+            .encode_canonical_json()
+            .unwrap_or_else(|error| panic!("encode: {error}"));
+        assert_eq!(
+            PromptFactorV1::decode_canonical_json(&bytes)
+                .unwrap_or_else(|error| panic!("decode: {error}")),
+            value
+        );
+        let mut wire: serde_json::Value =
+            serde_json::from_slice(&bytes).expect("valid json");
+        wire.as_object_mut()
+            .expect("object")
+            .insert("unknown".to_owned(), serde_json::json!(true));
+        let drifted = serde_json::to_vec(&wire).expect("json");
+        assert_eq!(
+            PromptFactorV1::decode_canonical_json(&drifted),
+            Err(ProtocolCodecError::InvalidJson)
+        );
+    }
+
+    #[test]
+    fn prompt_realization_v1_round_trips_digest_fields() {
+        let value = PromptRealizationV1 {
+            factor_id: id("factor:1"),
+            model_id: id("model:1"),
+            model_version: "2026-09-18".to_owned(),
+            tokenizer_digest: digest("tokenizer"),
+            system_template_digest: digest("template"),
+            message_role: "developer".to_owned(),
+            payload_digest: digest("payload"),
+            token_cost_upper_bound: 32,
+            expires_unix_ms: Some(100),
+        };
+        let bytes = value
+            .encode_canonical_json()
+            .unwrap_or_else(|error| panic!("encode: {error}"));
+        assert_eq!(
+            PromptRealizationV1::decode_canonical_json(&bytes)
+                .unwrap_or_else(|error| panic!("decode: {error}")),
+            value
+        );
+    }
+}
