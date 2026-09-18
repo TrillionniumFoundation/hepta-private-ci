@@ -39,32 +39,36 @@ min(remote_response_expiry, capability_lease_expiry, query_deadline)
 
 Post-I/O authority observation must also occur before each of those horizons. A response that finishes after the query deadline, capability expiry or remote response expiry is rejected rather than cached under a longer remote TTL.
 
-## 3. Post-I/O authority revalidation
+## 3. Preflight and post-I/O authority revalidation
 
-`execute_once` accepts a `FederationAuthorityV2` observer. After transport returns a terminal response and before evidence is admitted, the engine obtains a fresh authority observation bound to:
+`execute_once` accepts a `FederationAuthorityV2` observer and uses it twice. Before transport dispatch, the engine requires a fresh authority observation bound to the exact query binding and lease epoch. Only `Current` may reach the transport; `Revoked` or `StaleGeneration` fails closed before any remote I/O is invoked.
+
+After transport returns a terminal response and before evidence is admitted, the engine obtains a second fresh authority observation bound to:
 
 - exact query binding;
 - lease epoch;
 - observation time;
 - current authority state.
 
-States are `Current`, `Revoked` and `StaleGeneration`.
+States are `Current`, `Revoked` and `StaleGeneration`. The post-I/O observation time may not regress behind the preflight observation.
 
-`Revoked` and `StaleGeneration` remain terminally observable results for provenance, but their remote evidence items are suppressed. The result digest binds the authority-observation digest so downstream code cannot replace the post-I/O observation without invalidating the result.
+A post-I/O `Revoked` or `StaleGeneration` state remains terminally observable for provenance, but all remote evidence items are suppressed. The result digest binds the post-I/O authority-observation digest so downstream code cannot replace the final live observation without invalidating the result.
 
 ## 4. Interruptible single-attempt transport
 
-`FederationTransportV2::send_once` now returns a `Send` future. `execute_once` races both transport and post-I/O authority revalidation against `FederationAttemptControlV2`.
+`FederationTransportV2::send_once` returns a `Send` future. `execute_once` races the preflight authority observation, transport, and post-I/O authority revalidation against `FederationAttemptControlV2`.
 
 The product-host contract is:
 
 - one transport attempt per query nonce;
 - no engine-owned retry queue;
 - a dropped transport future is the cancellation boundary and must stop further adapter I/O;
+- transport may not start until preflight live authority is `Current`;
+- the in-flight product stop horizon is `min(query_deadline, capability_lease_expiry)`;
 - deadline/cancellation wins before a pending transport or authority future can complete;
 - a retry, if ever authorized by an outer policy, requires a new nonce/attempt identity.
 
-This removes the old synchronous trait limitation where a blocked `send_once` could outlive the engine deadline.
+This removes the old synchronous trait limitation where a blocked `send_once` could outlive the engine deadline, and prevents an earlier lease expiry from being treated as a later query deadline.
 
 ## 5. Product caller composition
 
@@ -75,12 +79,13 @@ For each physical federated recall:
 1. rediscover currently active capabilities from owner stores;
 2. cap enrolled sources at the existing federation source limit;
 3. build a query and lease bound to consumer, peer, scope, purpose, capability generation/revision, query digest, nonce and deadline;
-4. execute the owner read through `FederationTransportV2`;
-5. seal and verify the remote response digest;
-6. rediscover the current owner capability after I/O;
-7. admit evidence only if post-I/O authority is current;
-8. aggregate explicit requested/completed/failed/truncated coverage;
-9. revalidate each attached memory again at physical model-request assembly.
+4. perform canonical live-authority preflight and require `Current` before dispatch;
+5. execute the owner read through `FederationTransportV2`, interruptible at `min(query_deadline, lease_expiry)`;
+6. seal and verify the remote response digest;
+7. rediscover the current owner capability after I/O;
+8. admit evidence only if the final live authority observation is current;
+9. aggregate explicit requested/completed/failed/truncated coverage;
+10. revalidate each attached memory again at physical model-request assembly.
 
 The product adapter is read-only. It does not enroll peers, mint capability grants, mutate remote memory, inherit owner credentials or retry unknown operations.
 
@@ -112,11 +117,12 @@ The focused V2 suite includes adversarial cases for:
 - response-field tampering after digest sealing;
 - cross-query response replay;
 - result expiry capped by lease/query horizon;
+- preflight revocation blocking transport dispatch entirely;
 - revocation observed after transport;
 - generation drift observed after transport;
 - deadline interrupting a pending transport;
 - cancellation interrupting a pending transport;
-- authority observation after lease expiry;
+- authority/lease horizon enforcement before and after I/O;
 - non-terminal transport remaining indeterminate;
 - stale response generation suppressing items;
 - peer/lease drift;
