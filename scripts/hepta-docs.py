@@ -788,6 +788,13 @@ def status_text(d):
         lines.append(f"| `{k}` | `{v}` |")
     lines += [
         "",
+        "## Claim interpretation",
+        "",
+        "- Source implementation does not advance a baseline capability claim.",
+        "- Source-root presence does not prove product execution.",
+        "- Capability advancement follows the evidence ladder in `docs/evidence/CLAIMS.json`.",
+        "- Queued or passing source CI is candidate evidence, not capability proof.",
+        "",
         "## Authority posture",
         "",
         "Every canonical and subordinate authority flag is present and false. Documentation readiness, source presence, a generated file, a queued workflow or a fixture is not runtime activation, efficacy, selection, merge, operator acceptance, promotion or release.",
@@ -1050,6 +1057,17 @@ def verify() -> int:
         r["exactBaseHead"] == "b621768b70a09d56626bb8a2c331e3dc424e6a4d"
         and r["exactBaseTree"] == "f2e82fd525d337efae355adf6f19398812d4180c",
         "base identity",
+    )
+    interpretation = cur["claimInterpretationPolicy"]
+    need(
+        interpretation
+        == {
+            "sourceImplementationDoesNotAdvanceBaselineClaim": True,
+            "sourcePresenceDoesNotProveProductExecution": True,
+            "capabilityAdvanceRequiresEvidenceLadder": True,
+            "queuedOrPassingSourceCiDoesNotProveCapability": True,
+        },
+        "claim interpretation policy",
     )
     policy = cur["dynamicObservationPolicy"]
     need(
