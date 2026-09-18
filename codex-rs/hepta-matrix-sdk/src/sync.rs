@@ -161,11 +161,27 @@ impl MatrixSyncComposer<'_> {
                 return Err(MatrixSdkError::Store);
             }
             if matches!(mutation.body, MatrixSyncMutationBodyV2::Timeline { .. }) {
-                match outcome.disposition {
-                    MatrixSyncMutationDispositionV2::Applied => accepted += 1,
-                    MatrixSyncMutationDispositionV2::Duplicate => duplicates += 1,
-                    MatrixSyncMutationDispositionV2::Tombstoned => {}
-                    MatrixSyncMutationDispositionV2::Missing => return Err(MatrixSdkError::Store),
+                if mutation.transaction_id.is_some() {
+                    // This timeline item is an egress terminal observation,
+                    // not an admitted inbound event. Do not inflate ingress
+                    // acceptance/deduplication metrics with our own sends.
+                    match outcome.disposition {
+                        MatrixSyncMutationDispositionV2::Applied
+                        | MatrixSyncMutationDispositionV2::Duplicate => {}
+                        MatrixSyncMutationDispositionV2::Tombstoned
+                        | MatrixSyncMutationDispositionV2::Missing => {
+                            return Err(MatrixSdkError::Store);
+                        }
+                    }
+                } else {
+                    match outcome.disposition {
+                        MatrixSyncMutationDispositionV2::Applied => accepted += 1,
+                        MatrixSyncMutationDispositionV2::Duplicate => duplicates += 1,
+                        MatrixSyncMutationDispositionV2::Tombstoned => {}
+                        MatrixSyncMutationDispositionV2::Missing => {
+                            return Err(MatrixSdkError::Store);
+                        }
+                    }
                 }
             } else {
                 match outcome.disposition {
