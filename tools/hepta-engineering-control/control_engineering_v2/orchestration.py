@@ -459,22 +459,88 @@ def persist_orchestration_generation(
         source_tree=envelope.source_tree,
         now_ns=now,
     )
-    by_id = {item.package_id: _package(item) for item in packages}
-    if len(by_id) > 4096:
-        raise EngineeringError("package_limit_exceeded")
-    try:
-        selected = tuple(
-            WorkPackage(
-                by_id[assignment.package_id].priority,
-                assignment.package_id,
-                by_id[assignment.package_id].predecessors,
-                assignment.write_paths,
-            )
-            for assignment in plan.assignments
-        )
-    except KeyError:
-        raise EngineeringError("orchestration_package_missing") from None
+    raw_packages = bounded_tuple(packages, 4096, "package_limit_exceeded")
+    package_values = tuple(_package(item) for item in raw_packages)
+    package_ids = tuple(item.package_id for item in package_values)
+    if len(package_ids) != len(set(package_ids)):
+        raise EngineeringError("duplicate_package_identity")
+    by_id = {item.package_id: item for item in package_values}
 
+    assignment_ids: list[str] = []
+    selected_rows: list[WorkPackage] = []
+    for assignment in plan.assignments:
+        if not isinstance(assignment, EngineeringAssignment):
+            raise EngineeringError("invalid_engineering_assignment")
+        checked_id(assignment.worker_id, "worker_id")
+        checked_id(assignment.package_id, "package_id")
+        package = by_id.get(assignment.package_id)
+        if package is None:
+            raise EngineeringError("orchestration_package_missing")
+        normalized_paths = canonical_paths(assignment.write_paths)
+        expected_score = (
+            package.expected_value_micros
+            + package.architecture_debt_reduction_micros
+            - package.rollback_cost_micros
+        )
+        if (
+            normalized_paths != package.write_paths
+            or assignment.worker_capacity_units != package.worker_capacity_units
+            or assignment.ci_capacity_units != package.ci_capacity_units
+            or tuple(assignment.review_roles) != package.review_roles
+            or assignment.score_micros != expected_score
+        ):
+            raise EngineeringError("orchestration_assignment_mismatch")
+        assignment_ids.append(assignment.package_id)
+        selected_rows.append(
+            WorkPackage(
+                package.priority,
+                package.package_id,
+                package.predecessors,
+                package.write_paths,
+            )
+        )
+    if len(assignment_ids) != len(set(assignment_ids)):
+        raise EngineeringError("duplicate_orchestration_assignment")
+    if tuple(assignment_ids) != plan.integration_order:
+        raise EngineeringError("orchestration_integration_order_mismatch")
+
+    blocked_ids: list[str] = []
+    for blocked in plan.blocked:
+        if (
+            not isinstance(blocked, tuple)
+            or len(blocked) != 2
+            or not isinstance(blocked[0], str)
+            or blocked[0] not in by_id
+            or not isinstance(blocked[1], str)
+            or not blocked[1]
+        ):
+            raise EngineeringError("invalid_orchestration_blocked")
+        blocked_ids.append(blocked[0])
+    if len(blocked_ids) != len(set(blocked_ids)):
+        raise EngineeringError("duplicate_orchestration_blocked")
+    if set(blocked_ids) & set(assignment_ids):
+        raise EngineeringError("orchestration_assignment_blocked_overlap")
+    if set(blocked_ids) | set(assignment_ids) != set(package_ids):
+        raise EngineeringError("orchestration_package_coverage")
+
+    if len(plan.merge_queue) != len(plan.integration_order):
+        raise EngineeringError("orchestration_merge_queue_mismatch")
+    for position, proposal in enumerate(plan.merge_queue, start=1):
+        if not isinstance(proposal, MergeQueueProposal):
+            raise EngineeringError("invalid_merge_queue_proposal")
+        package = by_id.get(proposal.package_id)
+        if (
+            package is None
+            or proposal.position != position
+            or proposal.package_id != plan.integration_order[position - 1]
+            or proposal.integration_group != package.integration_group
+            or tuple(proposal.required_review_roles) != package.review_roles
+            or proposal.ci_capacity_units != package.ci_capacity_units
+            or proposal.merge_authority is not False
+        ):
+            raise EngineeringError("orchestration_merge_queue_mismatch")
+
+    selected = tuple(selected_rows)
     payload = _plan_payload(plan)
     digest = semantic_digest(payload)
     with store._transaction():
