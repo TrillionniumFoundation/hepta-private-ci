@@ -379,6 +379,50 @@ fn authenticated_product_path_generates_evaluates_appends_and_commits_anchor() {
 }
 
 #[test]
+fn durable_v2_evaluation_digest_binds_governed_admission_context() {
+    let fixture = Fixture::new(false);
+
+    let mut first_writer = writer();
+    let mut first_anchor = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let first = propose_authenticated_parameter_plasticity_v1(
+        fixture.request(),
+        &fixture.verifier,
+        &mut first_writer,
+        &mut first_anchor,
+        50,
+    )
+    .expect("first governed proposal");
+
+    let mut changed_request = fixture.request();
+    changed_request.admission.owner_evidence_set_digest = digest("owner-evidence-set:changed");
+    changed_request.admission_attestation = fixture.sign(
+        1,
+        LearningEvidenceRoleV1::Observer,
+        &plasticity_admission_signing_payload_v1(&changed_request.admission),
+    );
+    let mut second_writer = writer();
+    let mut second_anchor = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let second = propose_authenticated_parameter_plasticity_v1(
+        changed_request,
+        &fixture.verifier,
+        &mut second_writer,
+        &mut second_anchor,
+        50,
+    )
+    .expect("second governed proposal");
+
+    assert_eq!(first.proposal.evaluation_digest, first.evaluation_digest);
+    assert_eq!(second.proposal.evaluation_digest, second.evaluation_digest);
+    assert_ne!(first.evaluation_digest, second.evaluation_digest);
+}
+
+#[test]
 fn product_path_rejects_tampered_frontier_witness() {
     let fixture = Fixture::new(false);
     let mut request = fixture.request();
