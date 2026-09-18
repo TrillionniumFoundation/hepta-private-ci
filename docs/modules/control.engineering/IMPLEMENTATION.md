@@ -23,7 +23,14 @@ bytes) and binds its blob OID plus registry/package digests to the tested tree. 
 requires the unique `ECP-1-ENGINEERING-CONTROL-PLANE` row, including its owner,
 state, zero authority delta, write scope and unresolved
 `DOC-2-DEFAULT-BRANCH-SELECTION` predecessors; the binding is emitted by digest
-and does not reinterpret that predecessor as satisfied. It is not a learned code
+and does not reinterpret that predecessor as satisfied.
+On pull requests the named product caller executes independently against source-head
+and the deterministic base-merge candidate. CI retains both lane receipts, then a
+separate aggregation job recomputes each receipt digest, checks common repository/run/source
+identity, ordered merge parents, canonical ECP blob/package identity and zero authority,
+and emits `hepta.control-engineering-product-receipt-pair.v1`. Production-readiness
+projection requires both lane digests and their canonical receipt-set digest; one lane
+plus caller-supplied booleans cannot satisfy product composition. It is not a learned code
 generator, merge service or autonomous release agent.
 
 Review requests and dormant proposals do not themselves merge, activate, deploy,
