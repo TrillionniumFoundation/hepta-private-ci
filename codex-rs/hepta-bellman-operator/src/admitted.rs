@@ -44,10 +44,9 @@ pub fn fit_transition_model(
     dataset_digest: Digest32,
     samples: Vec<WorldModelSampleV1>,
 ) -> Result<TabularWorldModelV1, WorldModelError> {
-    reject_duplicate_evidence(
-        samples.iter().map(|sample| sample.evidence_digest),
-        || WorldModelError::DuplicateSample("duplicate-evidence-digest".to_owned()),
-    )?;
+    reject_duplicate_evidence(samples.iter().map(|sample| sample.evidence_digest), || {
+        WorldModelError::DuplicateSample("duplicate-evidence-digest".to_owned())
+    })?;
     crate::world_model::fit_transition_model(model_id, dataset_digest, samples)
 }
 
@@ -164,6 +163,9 @@ mod tests {
                 digest("evidence-a"),
             )],
         };
-        assert_eq!(fit_tabular_operator(plan), Err(LearnedOperatorError::InvalidGrid));
+        assert_eq!(
+            fit_tabular_operator(plan),
+            Err(LearnedOperatorError::InvalidGrid)
+        );
     }
 }
