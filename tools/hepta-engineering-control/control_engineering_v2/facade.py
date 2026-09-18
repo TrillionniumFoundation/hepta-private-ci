@@ -50,8 +50,14 @@ def issue_work_envelope(
     store: EngineeringStore,
     envelope: WorkEnvelope,
     *,
+    compatibility_only: bool = False,
     now_ns: int | None = None,
 ) -> WorkEnvelope:
+    """Historical local-fixture wrapper; new callers use orchestration admission."""
+    if compatibility_only is not True:
+        from .control_plane import EngineeringError
+
+        raise EngineeringError("authenticated_orchestration_required")
     return store.issue_work_envelope(envelope, now_ns=now_ns)
 
 
@@ -62,8 +68,14 @@ def schedule_ready_packages(
     completed: Iterable[str],
     *,
     generation_id: str,
+    compatibility_only: bool = False,
     now_ns: int | None = None,
 ) -> ScheduleReceipt:
+    """Historical local-fixture scheduler; product callers use plan_engineering_work."""
+    if compatibility_only is not True:
+        from .control_plane import EngineeringError
+
+        raise EngineeringError("authenticated_orchestration_required")
     return store.schedule_ready_packages(
         envelope_id,
         packages,
