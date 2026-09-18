@@ -400,6 +400,19 @@ class EngineeringCliTests(unittest.TestCase):
             deployment_receipt_digest="9" * 64,
             rollback_rehearsed=True,
             rollback_receipt_digest="a" * 64,
+            source_product_receipt_digest="b" * 64,
+            merge_product_receipt_digest="c" * 64,
+            orchestration_product_receipt_digest=semantic_digest(
+                {"sourceHead": "b" * 64, "baseMerge": "c" * 64}
+            ),
+            sandbox_controller_verified=True,
+            sandbox_controller_receipt_digest="d" * 64,
+            generated_test_mutation_gate_verified=True,
+            generated_test_mutation_receipt_digest="e" * 64,
+            distributed_fencing_verified=True,
+            distributed_fencing_receipt_digest="f" * 64,
+            external_audit_anchor_verified=True,
+            external_audit_anchor_receipt_digest="1" * 64,
         )
 
     def test_production_readiness_cli_is_a_real_exit_gate(self):
