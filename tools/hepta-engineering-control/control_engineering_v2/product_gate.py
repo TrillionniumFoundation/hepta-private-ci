@@ -71,6 +71,7 @@ def build_product_receipt(
     source_sha: str,
     base_sha: str | None,
     event_name: str,
+    lane: str,
     pull_request_number: int,
 ) -> dict[str, object]:
     root = Path(repository).resolve()
@@ -90,6 +91,10 @@ def build_product_receipt(
         raise ValueError("run_identity_invalid")
     if event_name not in {"pull_request", "push"}:
         raise ValueError("event_identity_invalid")
+    if lane not in {"source-head", "base-merge"}:
+        raise ValueError("execution_lane_invalid")
+    if lane == "base-merge" and event_name != "pull_request":
+        raise ValueError("execution_lane_event_mismatch")
     if type(pull_request_number) is not int or pull_request_number < 0:
         raise ValueError("pull_request_identity_invalid")
     if (event_name == "pull_request") != (pull_request_number > 0):
@@ -100,7 +105,7 @@ def build_product_receipt(
     source_tree = _sha(_git(root, "rev-parse", f"{source_sha}^{{tree}}"), "source_tree")
     parents = tuple(_git(root, "show", "-s", "--format=%P", "HEAD").split())
 
-    if event_name == "push":
+    if lane == "source-head":
         if tested_sha != source_sha:
             raise ValueError("source_head_mismatch")
         mode = "source-head"
@@ -191,6 +196,7 @@ def build_product_receipt(
             "runId": run_id,
             "runAttempt": run_attempt,
             "eventName": event_name,
+            "executionLane": lane,
             "pullRequestNumber": pull_request_number,
         },
         "sourceSha": source_sha,
@@ -227,6 +233,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--base-sha")
     parser.add_argument("--event-name", required=True)
+    parser.add_argument("--lane", required=True, choices=("source-head", "base-merge"))
     parser.add_argument("--pull-request-number", required=True, type=int)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args(argv)
@@ -242,6 +249,7 @@ def main(argv: list[str] | None = None) -> int:
             source_sha=args.source_sha,
             base_sha=args.base_sha,
             event_name=args.event_name,
+            lane=args.lane,
             pull_request_number=args.pull_request_number,
         )
     except (RuntimeError, ValueError) as error:
