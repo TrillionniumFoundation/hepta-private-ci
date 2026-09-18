@@ -1,11 +1,15 @@
 use std::collections::BTreeMap;
 use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentRecord;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ReleaseId;
+use codex_hepta_fleet::admit_runtime_use_v1;
+use codex_hepta_fleet::read_active_grants_v1;
 use codex_hepta_memory::H7SignedArtifactEnvelope;
 
 use crate::AgentCommand;
@@ -39,6 +43,7 @@ pub struct Supervisor<D: ProcessDriver> {
     pub(crate) registry: FleetRegistry,
     pub(crate) driver: D,
     pub(crate) config: SupervisorConfig,
+    fleet_host_id: Option<String>,
     slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
 }
 
@@ -53,7 +58,20 @@ impl<D: ProcessDriver> Supervisor<D> {
         config: SupervisorConfig,
         now: Instant,
     ) -> Result<(Self, TickReport), SupervisorError> {
+        Self::recover_with_fleet_host_id(registry, driver, config, None, now)
+    }
+
+    pub fn recover_with_fleet_host_id(
+        registry: FleetRegistry,
+        driver: D,
+        config: SupervisorConfig,
+        fleet_host_id: Option<String>,
+        now: Instant,
+    ) -> Result<(Self, TickReport), SupervisorError> {
         config.validate()?;
+        if let Some(host_id) = fleet_host_id.as_deref() {
+            validate_fleet_host_id(host_id)?;
+        }
         let snapshot = registry.load()?;
         let slots = snapshot
             .agents
@@ -65,6 +83,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             registry,
             driver,
             config,
+            fleet_host_id,
             slots,
         };
         let mut report = TickReport::default();
@@ -80,13 +99,62 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // would still bring the daemon up and expose unrelated
                 // mutation RPCs while the outcome is unknown.  Recovery of
                 // this class is therefore a daemon-wide startup failure.
-                if matches!(&error, SupervisorError::SignedIntentRecoveryRequired(_)) {
+                if matches!(
+                    &error,
+                    SupervisorError::SignedIntentRecoveryRequired(_)
+                        | SupervisorError::FleetAllocation(_)
+                ) {
                     return Err(error);
                 }
                 supervisor.record_fault(&agent_id, &error, &mut report);
             }
         }
         Ok((supervisor, report))
+    }
+
+    pub(crate) fn verify_fleet_allocation(
+        &self,
+        agent_id: &AgentId,
+    ) -> Result<(), SupervisorError> {
+        let Some(local_host_id) = self.fleet_host_id.as_deref() else {
+            return Ok(());
+        };
+        let now_ms = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|error| SupervisorError::FleetAllocation(error.to_string()))?
+            .as_millis();
+        let now_ms = u64::try_from(now_ms)
+            .map_err(|_| SupervisorError::FleetAllocation("system clock does not fit u64 milliseconds".to_string()))?;
+        let store = self
+            .registry
+            .allocation_store()
+            .map_err(|error| SupervisorError::FleetAllocation(error.to_string()))?;
+        let grants = read_active_grants_v1(&store, now_ms)
+            .map_err(|error| SupervisorError::FleetAllocation(error.to_string()))?;
+        let mut matches = grants
+            .iter()
+            .filter(|grant| grant.agent_id == *agent_id && grant.host_id == local_host_id);
+        let grant = matches.next().ok_or_else(|| {
+            SupervisorError::FleetAllocation(format!(
+                "agent {agent_id} has no active allocation for local host {local_host_id}"
+            ))
+        })?;
+        if matches.next().is_some() {
+            return Err(SupervisorError::FleetAllocation(format!(
+                "agent {agent_id} has multiple active allocations for local host {local_host_id}"
+            )));
+        }
+        let record = self.record(agent_id)?;
+        admit_runtime_use_v1(
+            &store,
+            now_ms,
+            local_host_id,
+            &grant.allocation_id,
+            agent_id,
+            &record.manifest.resources,
+        )
+        .map_err(|error| SupervisorError::FleetAllocation(error.to_string()))?;
+        Ok(())
     }
 
     pub fn snapshot(&self, agent_id: &AgentId) -> Option<AgentSupervisorSnapshot> {
@@ -719,4 +787,19 @@ impl<D: ProcessDriver> Supervisor<D> {
             message,
         });
     }
+}
+
+
+fn validate_fleet_host_id(value: &str) -> Result<(), SupervisorError> {
+    if value.is_empty()
+        || value.len() > 128
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
+    {
+        return Err(SupervisorError::FleetAllocation(
+            "HEPTA_FLEET_HOST_ID must be a non-empty bounded fleet identity".to_string(),
+        ));
+    }
+    Ok(())
 }
