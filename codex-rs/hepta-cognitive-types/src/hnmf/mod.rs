@@ -114,7 +114,7 @@ impl fmt::Display for CanonicalDigestV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
+#[serde(deny_unknown_fields, tag = "kind", rename_all = "snake_case")]
 pub enum MemoryScopeV1 {
     AgentPrivate {
         agent_id: String,
