@@ -49,8 +49,9 @@ pub use closure_v2::validate_artifact_manifest_v2;
 pub use closure_v2::validate_registry_head_witness;
 pub use control_storage::{
     ArtifactLifecycleSnapshotReceiptV2, DatasetWithdrawalSnapshotReceiptV1,
-    read_artifact_lifecycle_snapshot_v2, read_dataset_withdrawal_snapshot_v1,
-    write_artifact_lifecycle_snapshot_v2, write_dataset_withdrawal_snapshot_v1,
+    read_artifact_lifecycle_snapshot_v2, read_dataset_withdrawal_snapshot_for_domain_v1,
+    read_dataset_withdrawal_snapshot_v1, write_artifact_lifecycle_snapshot_v2,
+    write_dataset_withdrawal_snapshot_for_domain_v1, write_dataset_withdrawal_snapshot_v1,
 };
 pub use dataset_revocation::DatasetRevocationError;
 pub use dataset_revocation::DatasetRevocationRequest;
