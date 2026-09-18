@@ -142,6 +142,7 @@ struct DaemonState<D: ProcessDriver> {
     supervisor: Mutex<Supervisor<D>>,
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
+    production_revocation_frontier: Option<u64>,
     observed_faults: AtomicU64,
 }
 
@@ -156,7 +157,7 @@ pub async fn run_supervisord(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
 ) -> Result<(), SupervisorError> {
-    run_supervisord_inner(fleet_root, cancellation, None).await
+    run_supervisord_inner(fleet_root, cancellation, None, None).await
 }
 
 /// Production entry point for a daemon whose trust root was pinned by an
@@ -169,11 +170,23 @@ pub async fn run_supervisord_with_grant_verifier(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
     verifier: H7H89ProductionGrantVerifier,
+    revocation_frontier: u64,
 ) -> Result<(), SupervisorError> {
     if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
         return Err(SupervisorError::ProductionAuthorityFeatureDisabled);
     }
-    run_supervisord_inner(fleet_root, cancellation, Some(verifier)).await
+    if revocation_frontier == 0 {
+        return Err(SupervisorError::Invalid(
+            "production revocation frontier must be non-zero".to_string(),
+        ));
+    }
+    run_supervisord_inner(
+        fleet_root,
+        cancellation,
+        Some(verifier),
+        Some(revocation_frontier),
+    )
+    .await
 }
 
 #[cfg(unix)]
@@ -181,7 +194,13 @@ async fn run_supervisord_inner(
     fleet_root: HeptaFleetRoot,
     cancellation: CancellationToken,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
+    production_revocation_frontier: Option<u64>,
 ) -> Result<(), SupervisorError> {
+    if production_grant_verifier.is_some() != production_revocation_frontier.is_some() {
+        return Err(SupervisorError::Invalid(
+            "production verifier and revocation frontier must be configured together".to_string(),
+        ));
+    }
     let registry = FleetRegistry::open_existing(fleet_root)?;
     let snapshot = registry.load()?;
     if snapshot.agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
@@ -205,6 +224,7 @@ async fn run_supervisord_inner(
         supervisor: Mutex::new(supervisor),
         supervisor_epoch: SupervisorEpoch::new(),
         production_grant_verifier,
+        production_revocation_frontier,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
     });
     let server = SupervisordServer::bind(
@@ -239,6 +259,7 @@ async fn run_supervisord_inner(
     _fleet_root: HeptaFleetRoot,
     _cancellation: CancellationToken,
     _production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
+    _production_revocation_frontier: Option<u64>,
 ) -> Result<(), SupervisorError> {
     Err(std::io::Error::new(
         ErrorKind::Unsupported,
@@ -612,6 +633,13 @@ async fn handle_recovery_resolution<D: ProcessDriver>(
             /*actual*/ None,
         );
     };
+    let Some(revocation_frontier) = state.production_revocation_frontier else {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production recovery requires a pinned revocation frontier",
+            /*actual*/ None,
+        );
+    };
     let agent_id = fence.agent_id.clone();
     let mut supervisor = state.supervisor.lock().await;
     let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
@@ -633,6 +661,7 @@ async fn handle_recovery_resolution<D: ProcessDriver>(
         &decision,
         &verifier,
         authority_epoch,
+        revocation_frontier,
         unix_seconds_now(),
     ) {
         Ok(receipt) => receipt,
@@ -668,6 +697,13 @@ async fn handle_signed_mutation<D: ProcessDriver>(
             /*actual*/ None,
         );
     };
+    let Some(revocation_frontier) = state.production_revocation_frontier else {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production mutations require a pinned revocation frontier",
+            /*actual*/ None,
+        );
+    };
     if grant.transition != transition {
         return error_payload(
             "production_authority_rejected",
@@ -698,6 +734,7 @@ async fn handle_signed_mutation<D: ProcessDriver>(
         &h7_envelope,
         &verifier,
         authority_epoch,
+        revocation_frontier,
         unix_seconds_now(),
         Instant::now(),
     ) {
@@ -1638,7 +1675,7 @@ mod tests {
 
         let cancellation = CancellationToken::new();
         cancellation.cancel();
-        run_supervisord_inner(fleet_root.clone(), cancellation, None)
+        run_supervisord_inner(fleet_root.clone(), cancellation, None, None)
             .await
             .expect("unresolved signed intent quarantines one Agent but daemon can start");
         let recovered = crate::signed_intent::read_intent(record.layout.run_root())
