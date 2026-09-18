@@ -1,5 +1,8 @@
 use super::*;
 
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
+
 fn id(value: &str) -> StableId {
     let Ok(value) = StableId::new(value) else {
         panic!("test identifier must be valid");
@@ -212,4 +215,110 @@ fn exhausted_revision_preserves_realizations_during_retirement_and_revocation() 
         Ok(active.receipt(MutationDisposition::Unchanged))
     );
     assert_eq!(registry, active);
+}
+
+
+#[test]
+fn signed_admission_persists_scope_evidence_and_grant_lineage() {
+    let mut registry = registry();
+    let value = factor(FactorSource::GovernedInternal);
+    registry
+        .register_factor(value.clone())
+        .unwrap_or_else(|error| panic!("register factor: {error}"));
+
+    let signing_key = SigningKey::from_bytes(&[7; 32]);
+    let authority = AdmissionAuthority::new(
+        id("review-authority:1"),
+        signing_key.verifying_key().to_bytes(),
+    )
+    .unwrap_or_else(|error| panic!("authority: {error}"));
+    let grant = AdmissionGrantV1 {
+        schema_version: 1,
+        signer_id: "review-authority:1".to_owned(),
+        grant_id: "admission:1".to_owned(),
+        binding: AdmissionBindingV1 {
+            factor_id: value.factor_id.to_string(),
+            factor_content_sha256: value.content_digest.into_array(),
+            reviewer_id: "reviewer:1".to_owned(),
+            reviewed_scope_sha256: digest(b"scope").into_array(),
+            evidence_sha256: digest(b"evidence").into_array(),
+        },
+        not_before_unix_ms: 10,
+        expires_at_unix_ms: 100,
+    };
+    let signature = signing_key
+        .sign(
+            &grant
+                .signing_bytes()
+                .unwrap_or_else(|error| panic!("signing bytes: {error}")),
+        )
+        .to_bytes()
+        .to_vec();
+    let signed = SignedAdmissionGrantV1 { grant, signature };
+    let verified = authority
+        .verify(&signed, &value, 20)
+        .unwrap_or_else(|error| panic!("verify admission: {error}"));
+    registry
+        .admit_factor_verified(verified, 20)
+        .unwrap_or_else(|error| panic!("admit verified: {error}"));
+
+    let event = registry
+        .lifecycle_events()
+        .last()
+        .expect("admission lifecycle event");
+    assert_eq!(event.kind, LifecycleEventKind::Admitted);
+    assert_eq!(event.actor_id, id("reviewer:1"));
+    assert_eq!(event.admission_grant_id, Some(id("admission:1")));
+    assert_eq!(event.scope_digest, Some(digest(b"scope")));
+    assert_eq!(event.evidence_digest, digest(b"evidence"));
+    assert_eq!(registry.admission_event_digest(&value.factor_id), Some(event.event_digest));
+}
+
+#[test]
+fn verified_admission_cannot_be_used_after_expiry() {
+    let mut registry = registry();
+    let value = factor(FactorSource::GovernedInternal);
+    registry
+        .register_factor(value.clone())
+        .unwrap_or_else(|error| panic!("register factor: {error}"));
+
+    let signing_key = SigningKey::from_bytes(&[8; 32]);
+    let authority = AdmissionAuthority::new(
+        id("review-authority:2"),
+        signing_key.verifying_key().to_bytes(),
+    )
+    .unwrap_or_else(|error| panic!("authority: {error}"));
+    let grant = AdmissionGrantV1 {
+        schema_version: 1,
+        signer_id: "review-authority:2".to_owned(),
+        grant_id: "admission:2".to_owned(),
+        binding: AdmissionBindingV1 {
+            factor_id: value.factor_id.to_string(),
+            factor_content_sha256: value.content_digest.into_array(),
+            reviewer_id: "reviewer:2".to_owned(),
+            reviewed_scope_sha256: digest(b"scope:2").into_array(),
+            evidence_sha256: digest(b"evidence:2").into_array(),
+        },
+        not_before_unix_ms: 10,
+        expires_at_unix_ms: 30,
+    };
+    let signature = signing_key
+        .sign(
+            &grant
+                .signing_bytes()
+                .unwrap_or_else(|error| panic!("signing bytes: {error}")),
+        )
+        .to_bytes()
+        .to_vec();
+    let verified = authority
+        .verify(&SignedAdmissionGrantV1 { grant, signature }, &value, 20)
+        .unwrap_or_else(|error| panic!("verify admission: {error}"));
+    assert_eq!(
+        registry.admit_factor_verified(verified, 30),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(
+        registry.factor(&value.factor_id).map(|factor| factor.lifecycle),
+        Some(Lifecycle::Draft)
+    );
 }
