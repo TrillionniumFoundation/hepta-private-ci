@@ -93,7 +93,10 @@ impl PromptRegistry {
         if active_predecessors.next().is_some() {
             return Err(Error::IntegrityMismatch("multiple active realization keys"));
         }
-        match (active_predecessor.as_ref(), &binding.predecessor_realization_id) {
+        match (
+            active_predecessor.as_ref(),
+            &binding.predecessor_realization_id,
+        ) {
             (None, None) => {}
             (Some(active), Some(predecessor)) if active == predecessor => {}
             (Some(active), _) => {
@@ -178,7 +181,10 @@ impl PromptRegistry {
             return Err(PromptRegistryV2Error::ReadLimitExceeded);
         }
         required_factor_ids.sort();
-        if required_factor_ids.windows(2).any(|pair| pair[0] == pair[1]) {
+        if required_factor_ids
+            .windows(2)
+            .any(|pair| pair[0] == pair[1])
+        {
             let duplicate = required_factor_ids
                 .windows(2)
                 .find(|pair| pair[0] == pair[1])
@@ -253,9 +259,12 @@ impl PromptRegistry {
         if current_snapshot != *expected_snapshot {
             return Err(PromptRegistryV2Error::SnapshotStale);
         }
-        let binding = self.realization_bindings.get(realization_id).ok_or_else(|| {
-            PromptRegistryV2Error::RealizationUnavailable(realization_id.to_string())
-        })?;
+        let binding = self
+            .realization_bindings
+            .get(realization_id)
+            .ok_or_else(|| {
+                PromptRegistryV2Error::RealizationUnavailable(realization_id.to_string())
+            })?;
         if !self.binding_is_live(binding, model_tuple, now_unix_ms) {
             return Err(PromptRegistryV2Error::RealizationUnavailable(
                 realization_id.to_string(),

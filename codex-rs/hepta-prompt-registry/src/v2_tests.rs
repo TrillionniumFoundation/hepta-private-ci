@@ -291,10 +291,8 @@ fn required_factors_are_reserved_before_result_truncation() {
 fn required_factor_order_is_canonical_and_digest_stable() {
     let mut registry = registry();
     let authority = TestAuthority::new();
-    for (factor_id, nonce, value) in [
-        ("factor:a", 41, "payload-a"),
-        ("factor:b", 42, "payload-b"),
-    ] {
+    for (factor_id, nonce, value) in [("factor:a", 41, "payload-a"), ("factor:b", 42, "payload-b")]
+    {
         registry
             .register_factor(factor_with_id(factor_id, FactorSource::GovernedInternal))
             .expect("register factor");
@@ -439,10 +437,7 @@ fn payload_bytes_are_mandatory_bounded_and_digest_bound() {
         Err(crate::Error::PayloadDigestMismatch)
     );
     assert_eq!(
-        registry.register_realization_v2(
-            binding,
-            vec![b'x'; MAX_REALIZATION_PAYLOAD_BYTES + 1],
-        ),
+        registry.register_realization_v2(binding, vec![b'x'; MAX_REALIZATION_PAYLOAD_BYTES + 1],),
         Err(crate::Error::PayloadTooLarge)
     );
 }

@@ -32,8 +32,8 @@ fn restart_reopens_factor_admission_payload_and_revocation_without_resurrection(
     let directory = tempfile::tempdir().expect("store temp dir");
     let authority = TestAuthority::new();
     {
-        let mut store = DurablePromptRegistry::open_or_create(directory.path(), 64)
-            .expect("create store");
+        let mut store =
+            DurablePromptRegistry::open_or_create(directory.path(), 64).expect("create store");
         store
             .register_factor(factor_with_id("factor:1", FactorSource::GovernedInternal))
             .expect("register factor");
@@ -80,8 +80,8 @@ fn restart_reopens_factor_admission_payload_and_revocation_without_resurrection(
 fn durable_admission_consumes_scope_bound_authority_before_publication() {
     let directory = tempfile::tempdir().expect("store temp dir");
     let authority = TestAuthority::new();
-    let mut store = DurablePromptRegistry::open_or_create(directory.path(), 64)
-        .expect("create store");
+    let mut store =
+        DurablePromptRegistry::open_or_create(directory.path(), 64).expect("create store");
     store
         .register_factor(factor_with_id("factor:1", FactorSource::GovernedInternal))
         .expect("register factor");
@@ -117,15 +117,15 @@ fn durable_admission_consumes_scope_bound_authority_before_publication() {
 fn tampered_durable_state_fails_closed_on_reopen() {
     let directory = tempfile::tempdir().expect("store temp dir");
     {
-        let mut store = DurablePromptRegistry::open_or_create(directory.path(), 64)
-            .expect("create store");
+        let mut store =
+            DurablePromptRegistry::open_or_create(directory.path(), 64).expect("create store");
         store
             .register_factor(factor_with_id("factor:1", FactorSource::GovernedInternal))
             .expect("register factor");
     }
     let path = directory.path().join(STATE_FILE);
-    let mut value: serde_json::Value = serde_json::from_slice(&std::fs::read(&path).expect("read"))
-        .expect("json");
+    let mut value: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).expect("read")).expect("json");
     value["registryDigest"] = serde_json::Value::String(digest("tampered").to_string());
     std::fs::write(&path, serde_json::to_vec(&value).expect("encode")).expect("tamper state");
     assert!(matches!(
@@ -203,8 +203,8 @@ fn interrupted_replacement_restores_last_durable_generation_on_reopen() {
 #[test]
 fn durable_store_rejects_concurrent_authoritative_writer() {
     let directory = tempfile::tempdir().expect("store temp dir");
-    let first = DurablePromptRegistry::open_or_create(directory.path(), 64)
-        .expect("create first writer");
+    let first =
+        DurablePromptRegistry::open_or_create(directory.path(), 64).expect("create first writer");
     assert!(matches!(
         DurablePromptRegistry::open(directory.path()),
         Err(PromptRegistryStoreError::WriterBusy)

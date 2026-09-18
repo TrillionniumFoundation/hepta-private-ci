@@ -175,12 +175,7 @@ impl DurablePromptRegistry {
         cutoff_unix_ms: u64,
     ) -> Result<RegistryReceipt, PromptRegistryStoreError> {
         self.mutate(|registry| {
-            registry.revoke_factor_with_reason(
-                factor_id,
-                actor_id,
-                reason_digest,
-                cutoff_unix_ms,
-            )
+            registry.revoke_factor_with_reason(factor_id, actor_id, reason_digest, cutoff_unix_ms)
         })
     }
 
@@ -209,10 +204,7 @@ impl DurablePromptRegistry {
         Ok(true)
     }
 
-    fn persist_registry(
-        &self,
-        registry: &PromptRegistry,
-    ) -> Result<(), PromptRegistryStoreError> {
+    fn persist_registry(&self, registry: &PromptRegistry) -> Result<(), PromptRegistryStoreError> {
         let bytes = encode_registry_state(registry)
             .map_err(|error| PromptRegistryStoreError::Protocol(error.to_string()))?;
         atomic_write(&self.directory, &bytes)

@@ -205,10 +205,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
-    pub fn retire_factor(
-        &mut self,
-        _factor_id: &StableId,
-    ) -> Result<RegistryReceipt, Error> {
+    pub fn retire_factor(&mut self, _factor_id: &StableId) -> Result<RegistryReceipt, Error> {
         Err(Error::LifecycleReasonRequired)
     }
 
@@ -252,10 +249,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
-    pub fn revoke_factor(
-        &mut self,
-        _factor_id: &StableId,
-    ) -> Result<RegistryReceipt, Error> {
+    pub fn revoke_factor(&mut self, _factor_id: &StableId) -> Result<RegistryReceipt, Error> {
         Err(Error::LifecycleReasonRequired)
     }
 
