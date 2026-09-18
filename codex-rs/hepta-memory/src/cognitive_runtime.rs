@@ -595,17 +595,27 @@ async fn revalidate_federated_product(
             FederationRevalidationDrift::CapabilityMissing,
         ));
     };
-    let readers =
-        FederatedMemoryReader::discover(owner_layout, consumer_agent_id, now_unix_seconds).await?;
-    let Some(reader) = readers
-        .into_iter()
-        .find(|reader| reader.capability().id() == binding.capability.id())
-    else {
-        return Ok(FederatedRevalidationStatus::Stale(
-            FederationRevalidationDrift::CapabilityMissing,
-        ));
+    let revalidation = async {
+        let readers =
+            FederatedMemoryReader::discover(owner_layout, consumer_agent_id, now_unix_seconds)
+                .await?;
+        let Some(reader) = readers
+            .into_iter()
+            .find(|reader| reader.capability().id() == binding.capability.id())
+        else {
+            return Ok(FederatedRevalidationStatus::Stale(
+                FederationRevalidationDrift::CapabilityMissing,
+            ));
+        };
+        reader.revalidate(access, binding, now_unix_seconds).await
     };
-    reader.revalidate(access, binding, now_unix_seconds).await
+    tokio::time::timeout(PRODUCT_FEDERATION_TOTAL_BUDGET, revalidation)
+        .await
+        .map_err(|_| {
+            CognitiveStoreError::Unavailable(
+                "memory federation final revalidation timed out".to_string(),
+            )
+        })?
 }
 
 struct ProductReaderTransport<'a> {
