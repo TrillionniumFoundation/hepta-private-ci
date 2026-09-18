@@ -15,6 +15,20 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::ProbabilityQ32;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
+
+use crate::KnowledgeEdgeIdentityV2;
+use crate::KnowledgeEdgeV2;
+use crate::KnowledgeGenerationErrorV2;
+use crate::KnowledgeGenerationV2;
+use crate::KnowledgeNodeV2;
+use crate::KnowledgeProjectionInputV2;
+use crate::KnowledgeRelationKindV2;
+use crate::KnowledgeSupportV2;
+use crate::build_complete_generation;
 use sha2::Digest;
 use sha2::Sha256;
 
@@ -65,6 +79,8 @@ pub enum DurableProjectionErrorV2 {
     InvalidMemoryRevision,
     InvalidSourceRevision,
     EmptyIdentity(&'static str),
+    InvalidStableIdentity(&'static str),
+    Generation(KnowledgeGenerationErrorV2),
 }
 
 impl fmt::Display for DurableProjectionErrorV2 {
@@ -82,6 +98,10 @@ impl fmt::Display for DurableProjectionErrorV2 {
                 formatter.write_str("durable KG support source revision must be positive")
             }
             Self::EmptyIdentity(label) => write!(formatter, "durable KG {label} must not be empty"),
+            Self::InvalidStableIdentity(label) => {
+                write!(formatter, "durable KG {label} cannot be represented as a stable identity")
+            }
+            Self::Generation(error) => error.fmt(formatter),
         }
     }
 }
@@ -215,6 +235,200 @@ pub fn durable_projection_digest_v2(
         frame_part(&mut hasher, &edge.source_revision.to_be_bytes());
     }
     Ok(finish_digest(hasher))
+}
+
+
+/// Adapts one exact durable SQLite projection cut into the canonical V2
+/// generation model without losing open-ended product relation vocabulary.
+///
+/// The legacy durable output digest remains the persisted physical digest. The
+/// returned V2 generation adds typed relation identity and explicit support
+/// lineage over the same rows.
+pub fn build_durable_generation_v2(
+    generation: Generation,
+    scope: &str,
+    heads: &[DurableProjectionHeadV2],
+    nodes: &[DurableProjectionNodeV2],
+    edges: &[DurableProjectionEdgeV2],
+) -> Result<KnowledgeGenerationV2, DurableProjectionErrorV2> {
+    validate_durable_projection_v2(nodes, edges)?;
+    let source_snapshot_digest = durable_input_heads_digest_v2(scope, heads);
+    let generation_vector_digest = domain_digest(
+        b"hepta.knowledge-durable-generation-vector.v2",
+        &[scope.as_bytes(), source_snapshot_digest.as_array()],
+    );
+    let graph_profile_digest =
+        Digest32::of_bytes(b"hepta.knowledge-durable-sqlite-profile.v2");
+
+    let v2_nodes = nodes
+        .iter()
+        .map(durable_node_to_v2)
+        .collect::<Result<Vec<_>, _>>()?;
+    let v2_edges = edges
+        .iter()
+        .map(durable_edge_to_v2)
+        .collect::<Result<Vec<_>, _>>()?;
+
+    build_complete_generation(
+        generation,
+        KnowledgeProjectionInputV2 {
+            source_snapshot_digest,
+            generation_vector_digest,
+            graph_profile_digest,
+            complete_source_cut: true,
+            nodes: v2_nodes,
+            edges: v2_edges,
+        },
+    )
+    .map_err(DurableProjectionErrorV2::Generation)
+}
+
+pub fn durable_relation_kind_v2(
+    relation: &str,
+) -> Result<KnowledgeRelationKindV2, DurableProjectionErrorV2> {
+    let builtin = match relation {
+        "supports" => Some(KnowledgeRelationKindV2::Supports),
+        "contradicts" => Some(KnowledgeRelationKindV2::Contradicts),
+        "temporal_before" => Some(KnowledgeRelationKindV2::TemporalBefore),
+        "temporal_after" => Some(KnowledgeRelationKindV2::TemporalAfter),
+        "causes" => Some(KnowledgeRelationKindV2::Causes),
+        "enables" => Some(KnowledgeRelationKindV2::Enables),
+        "procedure_step" => Some(KnowledgeRelationKindV2::ProcedureStep),
+        "prompt_complements" => Some(KnowledgeRelationKindV2::PromptComplements),
+        "prompt_substitutes" => Some(KnowledgeRelationKindV2::PromptSubstitutes),
+        "prompt_conflicts" => Some(KnowledgeRelationKindV2::PromptConflicts),
+        _ => None,
+    };
+    if let Some(kind) = builtin {
+        return Ok(kind);
+    }
+    ensure_nonempty("relation", relation)?;
+    let digest = Digest32::of_bytes(relation.as_bytes());
+    let predicate_id = StableId::new(format!("kg-predicate:v2:{digest}"))
+        .map_err(|_| DurableProjectionErrorV2::InvalidStableIdentity("relation predicate"))?;
+    Ok(KnowledgeRelationKindV2::CustomPredicate(predicate_id))
+}
+
+fn durable_node_to_v2(
+    node: &DurableProjectionNodeV2,
+) -> Result<KnowledgeNodeV2, DurableProjectionErrorV2> {
+    let node_id = stable_id("node id", &node.node_id)?;
+    let kind_digest = Digest32::of_bytes(node.entity_type.as_bytes());
+    let node_kind_id = StableId::new(format!("kg-node-kind:v2:{kind_digest}"))
+        .map_err(|_| DurableProjectionErrorV2::InvalidStableIdentity("node kind"))?;
+    let payload_digest = domain_digest(
+        b"hepta.knowledge-durable-node-payload.v2",
+        &[
+            node.canonical_entity_id.as_bytes(),
+            node.entity_type.as_bytes(),
+            node.label.as_bytes(),
+            &node.valid_from.to_be_bytes(),
+            &node.valid_to.unwrap_or(i64::MIN).to_be_bytes(),
+        ],
+    );
+    Ok(KnowledgeNodeV2 {
+        node_id,
+        node_kind_id,
+        payload_digest,
+        supports: vec![durable_support_v2(
+            &node.source_id,
+            node.source_revision,
+            b"hepta.knowledge-durable-node-support.v2",
+            &[
+                node.memory_id.as_bytes(),
+                &node.memory_revision.to_be_bytes(),
+                node.canonical_entity_id.as_bytes(),
+                node.entity_type.as_bytes(),
+                node.label.as_bytes(),
+            ],
+            node.valid_from,
+            node.valid_to,
+        )?],
+    })
+}
+
+fn durable_edge_to_v2(
+    edge: &DurableProjectionEdgeV2,
+) -> Result<KnowledgeEdgeV2, DurableProjectionErrorV2> {
+    let validity_digest = validity_digest(edge.valid_from, edge.valid_to);
+    Ok(KnowledgeEdgeV2 {
+        identity: KnowledgeEdgeIdentityV2 {
+            source_node_id: stable_id("edge source node id", &edge.from_node_id)?,
+            relation: durable_relation_kind_v2(&edge.relation)?,
+            target_node_id: stable_id("edge target node id", &edge.to_node_id)?,
+        },
+        confidence: ProbabilityQ32::ONE,
+        validity_digest,
+        supports: vec![durable_support_v2(
+            &edge.source_id,
+            edge.source_revision,
+            b"hepta.knowledge-durable-edge-support.v2",
+            &[
+                edge.memory_id.as_bytes(),
+                &edge.memory_revision.to_be_bytes(),
+                edge.canonical_relation_id.as_bytes(),
+                edge.relation.as_bytes(),
+                edge.from_node_id.as_bytes(),
+                edge.to_node_id.as_bytes(),
+            ],
+            edge.valid_from,
+            edge.valid_to,
+        )?],
+    })
+}
+
+fn durable_support_v2(
+    source_id: &str,
+    source_revision: i64,
+    domain: &[u8],
+    fact_parts: &[&[u8]],
+    valid_from: i64,
+    valid_to: Option<i64>,
+) -> Result<KnowledgeSupportV2, DurableProjectionErrorV2> {
+    let source_revision = u64::try_from(source_revision)
+        .ok()
+        .and_then(|value| Revision::new(value).ok())
+        .ok_or(DurableProjectionErrorV2::InvalidSourceRevision)?;
+    let mut support_parts = Vec::with_capacity(fact_parts.len() + 2);
+    support_parts.extend_from_slice(fact_parts);
+    let from = valid_from.to_be_bytes();
+    let to = valid_to.unwrap_or(i64::MIN).to_be_bytes();
+    support_parts.push(&from);
+    support_parts.push(&to);
+    Ok(KnowledgeSupportV2 {
+        source_id: stable_id("support source id", source_id)?,
+        source_revision,
+        source_fact_digest: domain_digest(domain, &support_parts),
+        validity_digest: validity_digest(valid_from, valid_to),
+        tombstoned: false,
+    })
+}
+
+fn stable_id(
+    label: &'static str,
+    value: &str,
+) -> Result<StableId, DurableProjectionErrorV2> {
+    StableId::new(value.to_string())
+        .map_err(|_| DurableProjectionErrorV2::InvalidStableIdentity(label))
+}
+
+fn validity_digest(valid_from: i64, valid_to: Option<i64>) -> Digest32 {
+    domain_digest(
+        b"hepta.knowledge-durable-validity.v2",
+        &[
+            &valid_from.to_be_bytes(),
+            &valid_to.unwrap_or(i64::MIN).to_be_bytes(),
+        ],
+    )
+}
+
+fn domain_digest(domain: &[u8], parts: &[&[u8]]) -> Digest32 {
+    let mut hasher = Sha256::new();
+    frame_part(&mut hasher, domain);
+    for part in parts {
+        frame_part(&mut hasher, part);
+    }
+    finish_digest(hasher)
 }
 
 fn ensure_nonempty(
