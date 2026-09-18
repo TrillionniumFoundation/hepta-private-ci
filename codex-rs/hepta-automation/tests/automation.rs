@@ -670,11 +670,12 @@ async fn unknown_provider_outcome_is_quarantined_across_store_recovery_until_rec
         queued_submission_id: "provider-receipt-unknown-recovered".to_string(),
         client_user_message_id: uncertain[0].client_user_message_id.clone(),
     };
-    let completed = reopened
+    let admitted = reopened
         .reconcile_dispatch(task.task_id, 1, &receipt, 200)
         .await
         .expect("reconcile provider receipt");
-    assert_eq!(completed.state, AutomationTaskState::Completed);
+    assert_eq!(admitted.state, AutomationTaskState::Enabled);
+    assert_eq!(admitted.next_run_at_ms, None);
     assert!(
         reopened
             .uncertain_dispatches(10)
@@ -1097,7 +1098,7 @@ async fn explicit_dispatch_failure_retries_same_occurrence_and_client_id() {
             .expect("read task")
             .unwrap()
             .state,
-        AutomationTaskState::Completed
+        AutomationTaskState::Enabled
     );
 }
 
