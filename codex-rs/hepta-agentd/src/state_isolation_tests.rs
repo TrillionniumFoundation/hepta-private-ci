@@ -144,6 +144,13 @@ async fn live_control_routes_run_lifecycle_through_agentd_state() {
     };
     assert_eq!(attached.phase, RunPhase::ContextAttached);
 
+    let dispatch_binding = RunDispatchBinding::new(
+        "run.live.1",
+        "5".repeat(64),
+        "thread.live.1",
+        "7".repeat(64),
+    )
+    .expect("valid dispatch binding");
     let dispatched = state
         .response(
             12,
@@ -151,6 +158,7 @@ async fn live_control_routes_run_lifecycle_through_agentd_state() {
             crate::AgentdMethod::RunMarkDispatched {
                 run_id: "run.live.1".to_string(),
                 expected_revision: attached.revision,
+                binding: dispatch_binding,
             },
         )
         .await
