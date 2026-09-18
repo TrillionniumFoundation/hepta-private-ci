@@ -28,10 +28,7 @@
         "symbol": "pub fn connect(",
         "buildTarget": "hepta-native"
       },
-      "delegatedCallees": [
-        "codex-rs/hepta-native-app/src/backend.rs",
-        "codex-rs/hepta-agentd/src/client.rs"
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-native-app/src/backend.rs",
@@ -54,9 +51,7 @@
         "symbol": "pub fn render_backend_view(",
         "buildTarget": "hepta-native"
       },
-      "delegatedCallees": [
-        "codex-rs/hepta-native-app/src/backend.rs"
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-native-app/src/runtime.rs",
@@ -79,11 +74,7 @@
         "symbol": "pub fn request_platform_capability(",
         "buildTarget": "hepta-native"
       },
-      "delegatedCallees": [
-        "codex-rs/hepta-native-app/src/persistence.rs",
-        "codex-rs/hepta-native-app/src/platform.rs",
-        "codex-rs/hepta-contracts/src/final_use.rs"
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-native-app/src/runtime.rs",
@@ -106,9 +97,7 @@
         "symbol": "pub fn stage_and_schedule(",
         "buildTarget": "hepta-native"
       },
-      "delegatedCallees": [
-        "codex-rs/hepta-native-app/src/bin/updater.rs"
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-native-app/src/update.rs",
@@ -123,10 +112,9 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Harden FinalUseAuthority durable state on Windows before native effects or updater activation there."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
+    "cross-module activation dependency: kernel.authority must provide a hardened Windows FinalUseAuthority durable state before Windows effects/update can activate",
     "macOS signing/notarization identity and packaged .app acceptance",
     "Windows Authenticode/MSIX signing identity and packaged installer acceptance",
     "independent screen-reader and packaged crash/restart/update acceptance on supported operating systems"
