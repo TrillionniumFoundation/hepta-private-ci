@@ -68,6 +68,9 @@ pub struct PromptFactor {
     pub factor_id: StableId,
     pub proposer_id: StableId,
     pub semantic_version: StableId,
+    pub semantic_purpose: String,
+    pub authority_class: String,
+    pub eligible_objective_dimensions: Vec<StableId>,
     pub content_digest: Digest32,
     pub source: FactorSource,
     pub lifecycle: Lifecycle,
@@ -108,6 +111,7 @@ pub enum Error {
     RealizationProfileConflict(String),
     PayloadTooLarge,
     PayloadDigestMismatch,
+    InvalidFactorMetadata,
     FactorNotFound(String),
     FactorNotAdmitted(String),
     ExternalSelfAdmission,
@@ -220,6 +224,7 @@ impl PromptRegistry {
         &mut self,
         factor: PromptFactor,
     ) -> Result<RegistryReceipt, Error> {
+        protocol::validate_factor_semantics(&factor).map_err(|_| Error::InvalidFactorMetadata)?;
         if factor.content_digest.is_zero() {
             return Err(Error::EmptyDigest("factor content"));
         }
@@ -557,6 +562,33 @@ impl PromptRegistry {
         self.realization_bindings.get(realization_id)
     }
 
+    pub fn factor_protocol_v1(
+        &self,
+        factor_id: &StableId,
+    ) -> Result<Option<PromptFactorV1>, ProtocolCodecError> {
+        let Some(factor) = self.factors.get(factor_id) else {
+            return Ok(None);
+        };
+        let revision = self
+            .lifecycle_events
+            .iter()
+            .rev()
+            .find(|event| &event.factor_id == factor_id)
+            .map(|event| event.revision.get())
+            .ok_or(ProtocolCodecError::MissingAuthoritativeLineage)?;
+        PromptFactorV1::from_registry(factor, revision).map(Some)
+    }
+
+    pub fn realization_protocol_v1(
+        &self,
+        realization_id: &StableId,
+    ) -> Result<Option<PromptRealizationV1>, ProtocolCodecError> {
+        let Some(binding) = self.realization_bindings.get(realization_id) else {
+            return Ok(None);
+        };
+        PromptRealizationV1::from_binding(binding).map(Some)
+    }
+
     pub fn lifecycle_events(&self) -> &[LifecycleEvent] {
         &self.lifecycle_events
     }
@@ -596,6 +628,16 @@ impl PromptRegistry {
             push_id(&mut bytes, &factor.factor_id);
             push_id(&mut bytes, &factor.proposer_id);
             push_id(&mut bytes, &factor.semantic_version);
+            push_text(&mut bytes, &factor.semantic_purpose);
+            push_text(&mut bytes, &factor.authority_class);
+            bytes.extend_from_slice(
+                &u32::try_from(factor.eligible_objective_dimensions.len())
+                    .unwrap_or(u32::MAX)
+                    .to_be_bytes(),
+            );
+            for dimension in &factor.eligible_objective_dimensions {
+                push_id(&mut bytes, dimension);
+            }
             bytes.extend_from_slice(factor.content_digest.as_array());
             bytes.push(match factor.source {
                 FactorSource::GovernedInternal => 0,
@@ -737,7 +779,11 @@ fn lifecycle_code(lifecycle: Lifecycle) -> u8 {
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    let raw = value.as_str().as_bytes();
+    push_text(bytes, value.as_str());
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    let raw = value.as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
