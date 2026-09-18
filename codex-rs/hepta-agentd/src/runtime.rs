@@ -171,6 +171,13 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         // alive until that drain finishes or the bounded timeout expires.
         outcome = drain_app_server(&state, &mut app_server_task).await;
         completed_task = Some(CompletedRuntimeTask::AppServer);
+    } else {
+        // A child can win the select race against the process-signal future,
+        // including the App Server completing its own signal-driven drain.
+        // Any non-normal Agentd exit must still close new admission and persist
+        // conservative run reconciliation before we tear down sibling tasks.
+        let reconciliation = reconcile_ungraceful_shutdown(&state);
+        outcome = combine_shutdown_outcomes(outcome, reconciliation);
     }
     cancellation.cancel();
     if completed_task != Some(CompletedRuntimeTask::AuthBus) {
@@ -319,6 +326,31 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
     }
     client.shutdown().await?;
     Ok(())
+}
+
+fn reconcile_ungraceful_shutdown(state: &AgentdState) -> Result<(), AgentdError> {
+    let drain = state.mark_draining();
+    let reconcile = state.mark_unfinished_runs_for_shutdown().map(|_| ());
+    match (drain, reconcile) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
+        (Err(drain_error), Err(reconcile_error)) => Err(AgentdError::Protocol(format!(
+            "failed to mark Agentd draining ({drain_error}); lifecycle reconciliation also failed ({reconcile_error})"
+        ))),
+    }
+}
+
+fn combine_shutdown_outcomes(
+    primary: Result<(), AgentdError>,
+    reconciliation: Result<(), AgentdError>,
+) -> Result<(), AgentdError> {
+    match (primary, reconciliation) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
+        (Err(primary), Err(reconciliation)) => Err(AgentdError::Protocol(format!(
+            "{primary}; Agentd lifecycle shutdown reconciliation also failed: {reconciliation}"
+        ))),
+    }
 }
 
 async fn drain_app_server(
