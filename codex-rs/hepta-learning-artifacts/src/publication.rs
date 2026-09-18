@@ -311,7 +311,6 @@ mod tests {
     use super::*;
     use codex_hepta_types::AuthorityPosture;
     use codex_hepta_types::Generation;
-    use codex_hepta_types::LogicalSequence;
 
     use crate::ArtifactKind;
     use crate::DatasetWithdrawalDomainV1;
