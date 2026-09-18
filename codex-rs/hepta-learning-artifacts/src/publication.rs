@@ -101,7 +101,7 @@ pub fn prepare_artifact_publication_transaction_v1(
     let v2 = &admission.validated_manifest.manifest;
     let bridge = candidate_records[current_records.len()..]
         .iter()
-        .filter_map(|record| match &record.event {
+        .find_map(|record| match &record.event {
             ArtifactEvent::Register { manifest, .. } if manifest.artifact_id == v2.artifact_id => {
                 Some(manifest)
             }
@@ -109,7 +109,6 @@ pub fn prepare_artifact_publication_transaction_v1(
             | ArtifactEvent::Quarantine(_)
             | ArtifactEvent::Revoke(_) => None,
         })
-        .next()
         .ok_or(ArtifactPublicationError::ManifestBridgeMissing)?;
 
     if bridge.kind != v2.kind
@@ -265,8 +264,8 @@ mod tests {
             provenance_mode: ProvenanceModeV1::DatasetDerived,
             source_dataset_digests: vec![digest("dataset")],
             lineage_digests: vec![digest("lineage")],
-            predecessor_ids: Vec::new(),
-            rollback_predecessor: None,
+            predecessor_ids: vec![id("base")],
+            rollback_predecessor: Some(id("base")),
             bytes_digest: digest("bytes"),
             encoded_size_bytes: 512,
             training_code_digest: digest("training"),
@@ -282,8 +281,30 @@ mod tests {
         }
     }
 
-    fn candidate_registry() -> ArtifactRegistry {
+    fn base_registry() -> ArtifactRegistry {
         let mut registry = ArtifactRegistry::new();
+        registry
+            .append(ArtifactEvent::Register {
+                event_id: id("register-base"),
+                manifest: ArtifactManifest {
+                    artifact_id: id("base"),
+                    kind: ArtifactKind::Model,
+                    generation: Generation::new(1).unwrap(),
+                    predecessor_id: None,
+                    content_digest: digest("base-bytes"),
+                    objective_digest: digest("objective-v1"),
+                    support_digest: digest("base-support"),
+                    producer_id: id("producer"),
+                    compatibility_digest: digest("compatibility"),
+                    encoded_size_bytes: 256,
+                },
+            })
+            .unwrap();
+        registry
+    }
+
+    fn candidate_registry(current: &ArtifactRegistry) -> ArtifactRegistry {
+        let mut registry = current.clone();
         let receipt = registry
             .append(ArtifactEvent::Register {
                 event_id: id("register-artifact"),
@@ -291,7 +312,7 @@ mod tests {
                     artifact_id: id("artifact"),
                     kind: ArtifactKind::Model,
                     generation: Generation::new(2).unwrap(),
-                    predecessor_id: None,
+                    predecessor_id: Some(id("base")),
                     content_digest: digest("bytes"),
                     objective_digest: digest("objective-v1"),
                     support_digest: digest("support-v1"),
@@ -348,10 +369,11 @@ mod tests {
             20,
         )
         .unwrap();
-        let current = ArtifactRegistry::new();
-        let candidate = candidate_registry();
+        let current = base_registry();
+        let candidate = candidate_registry(&current);
+        let predecessor_head = current.snapshot().head_digest;
         let candidate_head = candidate.snapshot().head_digest;
-        let witness = witness(2, candidate_head, Digest32::ZERO);
+        let witness = witness(2, candidate_head, predecessor_head);
         prepare_artifact_publication_transaction_v1(
             &admission,
             &domain,
@@ -359,7 +381,7 @@ mod tests {
             &current,
             &candidate,
             &witness,
-            &requirement(2, Digest32::ZERO),
+            &requirement(2, predecessor_head),
             20,
         )
         .unwrap()
