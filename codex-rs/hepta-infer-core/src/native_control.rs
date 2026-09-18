@@ -31,6 +31,14 @@ pub enum NativeRunStatus {
     Completed,
     Failed,
     Interrupted,
+    /// App Server definitively rejected turn/start before admission.
+    Rejected,
+    /// App Server ingress was saturated and definitively rejected turn/start.
+    Overloaded,
+    /// The caller deadline elapsed after dispatch; acknowledgement is unknown.
+    TimedOut,
+    /// The transport was lost after dispatch; acknowledgement is unknown.
+    Unavailable,
     Indeterminate,
 }
 
@@ -61,6 +69,12 @@ pub struct NativeRunOutput {
     pub output: String,
     pub observed_output_tokens: Option<u64>,
     pub terminal_observed: bool,
+    /// Exact runtime.codex request/receipt digests, when the native caller was
+    /// composed through the Codex adapter. Historical records may omit them.
+    #[serde(default)]
+    pub codex_request_digest: Option<String>,
+    #[serde(default)]
+    pub codex_receipt_digest: Option<String>,
     pub stop_reason: Option<String>,
     #[serde(default)]
     pub owner_authority: NativeOwnerAuthority,
@@ -94,6 +108,14 @@ pub struct NativeDispatch {
     pub model_provider: String,
     /// Exact serialized additional context, including its owner snapshot.
     pub context_digest: String,
+    /// runtime.codex correlation persisted before turn/start. Historical
+    /// records may omit these fields and remain fail-closed for reconciliation.
+    #[serde(default)]
+    pub codex_session_id: Option<String>,
+    #[serde(default)]
+    pub codex_deadline_ms: Option<u64>,
+    #[serde(default)]
+    pub codex_request_digest: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -384,6 +406,21 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                match (
+                    dispatch.codex_session_id.as_deref(),
+                    dispatch.codex_deadline_ms,
+                    dispatch.codex_request_digest.as_deref(),
+                ) {
+                    (Some(session_id), Some(deadline_ms), Some(request_digest)) => {
+                        validate_identity(session_id, "Codex session")?;
+                        if deadline_ms == 0 {
+                            return Err(Error::InvalidIdentity("Codex deadline"));
+                        }
+                        validate_digest(request_digest, "Codex request digest")?;
+                    }
+                    (None, None, None) => {}
+                    _ => return Err(Error::InvalidIdentity("incomplete Codex dispatch binding")),
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -435,8 +472,19 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
             .turn_id
             .as_ref()
             .is_some_and(|turn| turn != &output.turn_id)
+        || matches!(
+            (
+                dispatch.codex_request_digest.as_deref(),
+                output.codex_request_digest.as_deref(),
+            ),
+            (Some(expected), Some(actual)) if expected != actual
+        )
     {
         return Err(Error::AssignmentMismatch);
+    }
+    if record.turn_id.is_none() && !output.turn_id.is_empty() {
+        validate_identity(&output.turn_id, "reconciled native turn")?;
+        record.turn_id = Some(output.turn_id.clone());
     }
     if output.output.len() > 1024 * 1024
         || output
@@ -451,13 +499,33 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::InvalidIdentity("owner authority loss reason"));
     }
-    if output.terminal_observed == (output.status == NativeRunStatus::Indeterminate)
+    let terminal_status = matches!(
+        output.status,
+        NativeRunStatus::Completed | NativeRunStatus::Failed | NativeRunStatus::Interrupted
+    );
+    let definitive_rejection = matches!(
+        output.status,
+        NativeRunStatus::Rejected | NativeRunStatus::Overloaded
+    );
+    if output.terminal_observed != terminal_status
         || (output.turn_id.is_empty()
-            && (output.terminal_observed
+            && (terminal_status
                 || output.observed_output_tokens.is_some()
                 || !output.output.is_empty()))
+        || (definitive_rejection && !output.turn_id.is_empty())
     {
         return Err(Error::TerminalObservationMissing);
+    }
+    match (
+        output.codex_request_digest.as_deref(),
+        output.codex_receipt_digest.as_deref(),
+    ) {
+        (Some(request_digest), Some(receipt_digest)) => {
+            validate_digest(request_digest, "Codex request digest")?;
+            validate_digest(receipt_digest, "Codex receipt digest")?;
+        }
+        (None, None) => {}
+        _ => return Err(Error::InvalidIdentity("incomplete Codex receipt binding")),
     }
     if let Some(previous) = &record.observation {
         // A late provider completion or usage refinement cannot erase a lost
@@ -477,6 +545,11 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         {
             return Err(Error::Conflict);
         }
+        if previous.codex_request_digest.is_some()
+            && previous.codex_request_digest != output.codex_request_digest
+        {
+            return Err(Error::Conflict);
+        }
         if previous.observed_output_tokens.is_some_and(|tokens| {
             output
                 .observed_output_tokens
@@ -489,7 +562,7 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         validate_identity(&output.turn_id, "native turn")?;
         record.turn_id = Some(output.turn_id.clone());
     }
-    record.state = if output.terminal_observed {
+    record.state = if output.terminal_observed || definitive_rejection {
         NativeReservationState::Released
     } else {
         NativeReservationState::Indeterminate

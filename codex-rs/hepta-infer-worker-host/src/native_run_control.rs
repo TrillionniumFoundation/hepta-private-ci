@@ -59,6 +59,12 @@ impl AppServerModelDriver {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
         if record.state != NativeReservationState::Reserved {
+            if record.state != NativeReservationState::Released
+                && let Some(reconciled) = self.reconcile_existing(&record).await?
+            {
+                control.settle_native(&record.request.request_id, reconciled.clone())?;
+                return Ok(reconciled);
+            }
             if let Some(output) = record.observation {
                 return Ok(output);
             }
@@ -72,11 +78,20 @@ impl AppServerModelDriver {
                 output: String::new(),
                 observed_output_tokens: None,
                 terminal_observed: false,
+                codex_request_digest: dispatch.codex_request_digest,
+                codex_receipt_digest: None,
                 owner_authority: NativeOwnerAuthority::Unverified,
                 stop_reason: Some(
-                    "reopened after possible dispatch; reservation held, no replay".to_string(),
+                    "reopened after possible dispatch; exact reconciliation unavailable, no replay"
+                        .to_string(),
                 ),
             };
+            // Historical records can lack runtime.codex correlation entirely.
+            // New records keep the original request digest in the dispatch,
+            // but no receipt is invented when reconciliation produced no fact.
+            if output.codex_request_digest.is_some() {
+                return Ok(output);
+            }
             control.settle_native(&record.request.request_id, output.clone())?;
             return Ok(output);
         }

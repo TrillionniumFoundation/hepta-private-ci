@@ -132,9 +132,10 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "named deployed Agentd caller identity",
-    "real model/provider stream observation",
-    "real tool terminal observation and acknowledgement-loss qualification"
+    "authenticated target-host Agentd/App Server execution receipt",
+    "real model/provider terminal stream observation under the target deployment",
+    "delegated external tool terminal and acknowledgement-loss qualification",
+    "independent acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -153,13 +154,67 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "composed",
+  "productionWriterState": "existing_app_server_owner",
   "owner": "codex-integration",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/runtime.codex/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
+  ],
+  "productionCallerBindings": [
+    {
+      "role": "production_caller",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "pub(super) async fn run_once(",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Sends real v2 thread/start and turn/start requests, routes typed turn/start errors and matching TurnCompleted notifications through hepta-codex-adapter, and never replays an unknown turn/start acknowledgement."
+    },
+    {
+      "role": "durable_reconciler",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "symbol": "pub(super) async fn reconcile_existing(",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Uses thread/read with includeTurns against the original Agentd/App Server generation and matches the stable client_user_message_id without submitting a new turn."
+    },
+    {
+      "role": "durable_owner",
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "symbol": "pub struct NativeRunRecord",
+      "buildTarget": "codex-hepta-infer-core",
+      "semantics": "Persists exact session/thread/request-digest correlation, unknown-outcome slot retention, reconciled turn identity, and typed terminal/request-level outcomes."
+    }
+  ],
+  "compositionTests": [
+    {
+      "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+      "command": "just test -p codex-hepta-codex-adapter",
+      "covers": [
+        "terminal status correctness",
+        "thread/turn correlation",
+        "overload vs unknown outcome",
+        "late terminal observation"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "command": "just test -p codex-hepta-infer-core",
+      "covers": [
+        "durable replay fencing",
+        "rejection release",
+        "unknown-outcome capacity hold",
+        "Codex request-digest reconciliation"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "duplicate no-replay",
+        "pre-dispatch failure",
+        "durable reopen"
+      ]
+    }
   ]
 }

@@ -7,11 +7,14 @@ use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
+use codex_app_server_client::TypedRequestError;
 use codex_app_server_protocol::AdditionalContextEntry;
 use codex_app_server_protocol::AdditionalContextKind;
 use codex_app_server_protocol::AskForApproval;
@@ -20,6 +23,9 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::ThreadReadParams;
+use codex_app_server_protocol::ThreadReadResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
@@ -31,12 +37,23 @@ use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
+use codex_hepta_codex_adapter::APP_SERVER_PROTOCOL_V2;
+use codex_hepta_codex_adapter::AdapterStatus;
+use codex_hepta_codex_adapter::AppServerObservation;
+use codex_hepta_codex_adapter::CodexAdapterReceipt;
+use codex_hepta_codex_adapter::CodexOperationIntent;
+use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
+use codex_hepta_codex_adapter::adapt as adapt_codex;
+use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
@@ -54,6 +71,111 @@ const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+fn codex_deadline(timeout: Duration) -> Result<(u64, u64)> {
+    let now_ms = SystemTime::now()
+        .duration_since(UNIX_EPOCH)?
+        .as_millis();
+    let now_ms = u64::try_from(now_ms).map_err(|_| "system time does not fit u64 milliseconds")?;
+    let timeout_ms = u64::try_from(timeout.as_millis())
+        .map_err(|_| "native worker timeout does not fit u64 milliseconds")?;
+    let deadline_ms = now_ms
+        .checked_add(timeout_ms)
+        .ok_or("native worker deadline overflow")?;
+    Ok((now_ms, deadline_ms))
+}
+
+fn codex_intent(
+    request_id: &str,
+    session_id: &str,
+    thread_id: &str,
+    payload_digest: &str,
+    owner_generation: u64,
+    deadline_ms: u64,
+) -> Result<CodexOperationIntent> {
+    let operation_id = StableId::new(format!(
+        "codex:{}",
+        control::digest(request_id.as_bytes())
+    ))?;
+    let session_id = StableId::new(session_id.to_string())?;
+    let thread_id = StableId::new(thread_id.to_string())?;
+    let method_id = StableId::new(TURN_START_METHOD_ID.to_string())?;
+    let payload_digest = payload_digest.parse::<Digest32>()?;
+    Ok(CodexOperationIntent {
+        operation_id,
+        session_id,
+        thread_id,
+        method_id,
+        payload_digest,
+        lease_payload_digest: payload_digest,
+        owner_generation,
+        protocol_version: APP_SERVER_PROTOCOL_V2,
+        deadline_ms,
+    })
+}
+
+fn bind_codex_receipt(output: &mut NativeRunOutput, receipt: &CodexAdapterReceipt) {
+    output.codex_request_digest = Some(receipt.request_digest.to_string());
+    output.codex_receipt_digest = Some(receipt.receipt_digest.to_string());
+}
+
+fn native_status_from_pre_turn_receipt(receipt: &CodexAdapterReceipt) -> Result<NativeRunStatus> {
+    match receipt.status {
+        AdapterStatus::Rejected => Ok(NativeRunStatus::Rejected),
+        AdapterStatus::Overloaded => Ok(NativeRunStatus::Overloaded),
+        AdapterStatus::TimedOut => Ok(NativeRunStatus::TimedOut),
+        AdapterStatus::Unavailable => Ok(NativeRunStatus::Unavailable),
+        AdapterStatus::Indeterminate => Ok(NativeRunStatus::Indeterminate),
+        AdapterStatus::Succeeded | AdapterStatus::Failed | AdapterStatus::Interrupted => {
+            Err("pre-turn observation cannot be terminal".into())
+        }
+    }
+}
+
+fn bind_terminal_codex_receipt(
+    output: &mut NativeRunOutput,
+    intent: &CodexOperationIntent,
+    notification: &ServerNotification,
+) -> std::result::Result<(), String> {
+    let ServerNotification::TurnCompleted(completed) = notification else {
+        return Ok(());
+    };
+    if completed.thread_id != output.thread_id || completed.turn.id != output.turn_id {
+        return Ok(());
+    }
+    let expected_turn_id =
+        StableId::new(output.turn_id.clone()).map_err(|error| error.to_string())?;
+    let observation = AppServerObservation::from_turn_completed(
+        intent,
+        &expected_turn_id,
+        completed,
+    )
+    .map_err(|error| error.to_string())?;
+    // A real terminal event remains evidence even if it arrives after the
+    // caller deadline. runtime.codex intentionally accepts that late fact.
+    let receipt = adapt_codex(intent.deadline_ms, intent.clone(), Some(observation))
+        .map_err(|error| error.to_string())?;
+    bind_codex_receipt(output, &receipt);
+    Ok(())
+}
+
+fn bind_nonterminal_codex_receipt(
+    output: &mut NativeRunOutput,
+    intent: &CodexOperationIntent,
+    reason: &str,
+) -> Result<()> {
+    let observation = if reason == "deadline elapsed" {
+        Some(AppServerObservation::timed_out(intent)?)
+    } else if reason.starts_with("transport:") {
+        Some(AppServerObservation::transport_lost(intent)?)
+    } else {
+        None
+    };
+    let receipt = adapt_codex(/*now_ms*/ 0, intent.clone(), observation)?;
+    output.status = native_status_from_pre_turn_receipt(&receipt)?;
+    bind_codex_receipt(output, &receipt);
+    Ok(())
+}
 
 /// Local operator-selected connection, fenced by the existing Agent identity.
 pub struct NativeWorkerConfig {
@@ -83,6 +205,205 @@ impl AppServerModelDriver {
             return Err("invalid native worker configuration".into());
         }
         Ok(Self { config })
+    }
+
+    /// Reconcile a previously dispatched request without submitting any new
+    /// model input. This is best-effort: ephemeral thread history can disappear
+    /// with the owning App Server process, in which case the durable record
+    /// remains indeterminate and its slot stays held.
+    pub(super) async fn reconcile_existing(
+        &self,
+        record: &NativeRunRecord,
+    ) -> Result<Option<NativeRunOutput>> {
+        if matches!(
+            record.state,
+            codex_hepta_infer_core::durable_control::native::NativeReservationState::Reserved
+                | codex_hepta_infer_core::durable_control::native::NativeReservationState::Released
+        ) {
+            return Ok(None);
+        }
+        let Some(dispatch) = record.dispatch.as_ref() else {
+            return Ok(None);
+        };
+        let (
+            Some(session_id),
+            Some(deadline_ms),
+            Some(expected_request_digest),
+        ) = (
+            dispatch.codex_session_id.as_deref(),
+            dispatch.codex_deadline_ms,
+            dispatch.codex_request_digest.as_deref(),
+        )
+        else {
+            // Historical dispatches predate exact runtime.codex correlation.
+            return Ok(None);
+        };
+
+        let owner = match AgentdClient::new(
+            self.config.agentd_socket.clone(),
+            self.config.agent_id.clone(),
+            self.config.generation,
+        ) {
+            Ok(owner) => owner,
+            Err(_) => return Ok(None),
+        };
+        let health = match owner.health().await {
+            Ok(health) if health.ready && !health.fenced => health,
+            _ => return Ok(None),
+        };
+        let ingress = match owner.session_ingress().await {
+            Ok(ingress) => ingress,
+            Err(_) => return Ok(None),
+        };
+        let socket_path = match AbsolutePathBuf::from_absolute_path(ingress.socket_path) {
+            Ok(path) => path,
+            Err(_) => return Ok(None),
+        };
+        let mut client = match timeout(
+            RPC_TIMEOUT,
+            RemoteAppServerClient::connect_with_bounded_events(
+                RemoteAppServerConnectArgs {
+                    endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+                    client_name: "hepta-infer-worker-reconcile".to_string(),
+                    client_version: env!("CARGO_PKG_VERSION").to_string(),
+                    experimental_api: true,
+                    mcp_server_openai_form_elicitation: false,
+                    opt_out_notification_methods: Vec::new(),
+                    channel_capacity: 8,
+                },
+                /*event_channel_capacity*/ 32,
+            ),
+        )
+        .await
+        {
+            Ok(Ok(client)) => client,
+            _ => return Ok(None),
+        };
+        if client.codex_home() != health.home_root.to_str() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Ok(None);
+        }
+
+        let read = timeout(
+            RPC_TIMEOUT,
+            client.request_typed::<ThreadReadResponse>(ClientRequest::ThreadRead {
+                request_id: RequestId::Integer(20),
+                params: ThreadReadParams {
+                    thread_id: dispatch.thread_id.clone(),
+                    include_turns: true,
+                },
+            }),
+        )
+        .await;
+        let response = match read {
+            Ok(Ok(response)) => response,
+            _ => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Ok(None);
+            }
+        };
+        if response.thread.id != dispatch.thread_id || response.thread.session_id != session_id {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("reconciled App Server thread/session correlation mismatch".into());
+        }
+
+        let mut matching_turns = response.thread.turns.into_iter().filter(|turn| {
+            turn.items.iter().any(|item| {
+                matches!(
+                    item,
+                    ThreadItem::UserMessage {
+                        client_id: Some(client_id),
+                        ..
+                    } if client_id == &record.request.request_id
+                )
+            })
+        });
+        let Some(turn) = matching_turns.next() else {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Ok(None);
+        };
+        if matching_turns.next().is_some() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("multiple App Server turns share one native request id".into());
+        }
+
+        let intent = codex_intent(
+            &record.request.request_id,
+            session_id,
+            &dispatch.thread_id,
+            &record.request.payload_digest,
+            record.request.worker_generation,
+            deadline_ms,
+        )?;
+        if codex_request_digest(&intent)?.to_string() != expected_request_digest {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("durable runtime.codex request digest mismatch".into());
+        }
+
+        let mut recovered_output = String::new();
+        for item in &turn.items {
+            if let ThreadItem::AgentMessage { text, .. } = item {
+                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(recovered_output.len()) {
+                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                    return Err("reconciled output byte limit exceeded".into());
+                }
+                recovered_output.push_str(text);
+            }
+        }
+        let terminal_observed = !matches!(turn.status, TurnStatus::InProgress);
+        let status = match turn.status {
+            TurnStatus::Completed => NativeRunStatus::Completed,
+            TurnStatus::Failed => NativeRunStatus::Failed,
+            TurnStatus::Interrupted => NativeRunStatus::Interrupted,
+            TurnStatus::InProgress => NativeRunStatus::Indeterminate,
+        };
+        let owner_authority = match record
+            .observation
+            .as_ref()
+            .map(|observation| &observation.owner_authority)
+        {
+            Some(NativeOwnerAuthority::Lost { reason }) => NativeOwnerAuthority::Lost {
+                reason: reason.clone(),
+            },
+            _ => NativeOwnerAuthority::Unverified,
+        };
+        let stop_reason = turn
+            .error
+            .as_ref()
+            .map(|error| error.message.chars().take(1024).collect())
+            .or_else(|| {
+                (!terminal_observed)
+                    .then(|| "reconciled exact turn is still in progress".to_string())
+            });
+        let mut output = NativeRunOutput {
+            thread_id: dispatch.thread_id.clone(),
+            turn_id: turn.id.clone(),
+            model: record.request.model.clone(),
+            model_provider: dispatch.model_provider.clone(),
+            status,
+            output: recovered_output,
+            observed_output_tokens: None,
+            terminal_observed,
+            codex_request_digest: None,
+            codex_receipt_digest: None,
+            stop_reason,
+            owner_authority,
+        };
+        let receipt = if terminal_observed {
+            let expected_turn_id = StableId::new(turn.id.clone())?;
+            let completed = codex_app_server_protocol::TurnCompletedNotification {
+                thread_id: dispatch.thread_id.clone(),
+                turn,
+            };
+            let observation =
+                AppServerObservation::from_turn_completed(&intent, &expected_turn_id, &completed)?;
+            adapt_codex(deadline_ms, intent, Some(observation))?
+        } else {
+            adapt_codex(/*now_ms*/ 0, intent, None)?
+        };
+        bind_codex_receipt(&mut output, &receipt);
+        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+        Ok(Some(output))
     }
 
     /// Execute once. Transport loss after turn/start remains indeterminate and
@@ -177,12 +498,31 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
+        let payload_digest = control
+            .native_record(request_id)
+            .ok_or("missing durable native request before Codex dispatch")?
+            .request
+            .payload_digest
+            .clone();
+        let (codex_now_ms, codex_deadline_ms) = codex_deadline(self.config.timeout)?;
+        let codex_intent = codex_intent(
+            request_id,
+            &started.thread.session_id,
+            &started.thread.id,
+            &payload_digest,
+            self.config.generation,
+            codex_deadline_ms,
+        )?;
+        let exact_codex_request_digest = codex_request_digest(&codex_intent)?;
         control.dispatch_native(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
                 context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                codex_session_id: Some(started.thread.session_id.clone()),
+                codex_deadline_ms: Some(codex_deadline_ms),
+                codex_request_digest: Some(exact_codex_request_digest.to_string()),
             },
         )?;
         let response = timeout(
@@ -205,20 +545,61 @@ impl AppServerModelDriver {
         .await;
         let turn = match response {
             Ok(Ok(response)) => response.turn,
-            _ => {
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Ok(NativeRunOutput {
+            Ok(Err(error)) => {
+                let reason = error.to_string();
+                let observation = match &error {
+                    TypedRequestError::Server { source, .. } => {
+                        Some(AppServerObservation::from_request_error(&codex_intent, source)?)
+                    }
+                    TypedRequestError::Transport { .. } => {
+                        Some(AppServerObservation::transport_lost(&codex_intent)?)
+                    }
+                    // A response existed but could not be decoded. The method
+                    // may already have crossed its effect boundary.
+                    TypedRequestError::Deserialize { .. } => None,
+                };
+                let receipt = adapt_codex(codex_now_ms, codex_intent.clone(), observation)?;
+                let status = native_status_from_pre_turn_receipt(&receipt)?;
+                let mut output = NativeRunOutput {
                     thread_id: started.thread.id,
                     turn_id: String::new(),
                     model: started.model,
                     model_provider: started.model_provider,
-                    status: NativeRunStatus::Indeterminate,
+                    status,
                     output: String::new(),
                     observed_output_tokens: None,
                     terminal_observed: false,
+                    codex_request_digest: None,
+                    codex_receipt_digest: None,
                     owner_authority: NativeOwnerAuthority::Unverified,
-                    stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
-                });
+                    stop_reason: Some(reason.chars().take(1024).collect()),
+                };
+                bind_codex_receipt(&mut output, &receipt);
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Ok(output);
+            }
+            Err(_) => {
+                let observation = AppServerObservation::timed_out(&codex_intent)?;
+                let receipt =
+                    adapt_codex(codex_now_ms, codex_intent.clone(), Some(observation))?;
+                let status = native_status_from_pre_turn_receipt(&receipt)?;
+                let mut output = NativeRunOutput {
+                    thread_id: started.thread.id,
+                    turn_id: String::new(),
+                    model: started.model,
+                    model_provider: started.model_provider,
+                    status,
+                    output: String::new(),
+                    observed_output_tokens: None,
+                    terminal_observed: false,
+                    codex_request_digest: None,
+                    codex_receipt_digest: None,
+                    owner_authority: NativeOwnerAuthority::Unverified,
+                    stop_reason: Some("turn/start acknowledgement timed out; reconcile, do not replay".to_string()),
+                };
+                bind_codex_receipt(&mut output, &receipt);
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Ok(output);
             }
         };
         let mut output = NativeRunOutput {
@@ -230,6 +611,8 @@ impl AppServerModelDriver {
             output: String::new(),
             observed_output_tokens: None,
             terminal_observed: false,
+            codex_request_digest: None,
+            codex_receipt_digest: None,
             owner_authority: NativeOwnerAuthority::Unverified,
             stop_reason: None,
         };
@@ -246,6 +629,7 @@ impl AppServerModelDriver {
                 deadline,
                 cancellation,
                 Some(&owner),
+                &codex_intent,
             )
             .await;
         if let Err(reason) = result {
@@ -272,10 +656,18 @@ impl AppServerModelDriver {
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
+                    &codex_intent,
                 )
                 .await;
             loss_recorded?;
             cancel_recorded?;
+        }
+        if !output.terminal_observed && output.codex_receipt_digest.is_none() {
+            let reason = output
+                .stop_reason
+                .clone()
+                .unwrap_or_else(|| "unknown post-dispatch outcome".to_string());
+            bind_nonterminal_codex_receipt(&mut output, &codex_intent, &reason)?;
         }
         if output.terminal_observed {
             let _ = timeout(
@@ -307,6 +699,7 @@ impl AppServerModelDriver {
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
+        codex_intent: &CodexOperationIntent,
     ) -> std::result::Result<(), String> {
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
@@ -320,10 +713,11 @@ impl AppServerModelDriver {
                 },
                 event = timeout_at(deadline, client.next_event()) => event
                     .map_err(|_| "deadline elapsed".to_string())?
-                    .ok_or_else(|| "provider event stream ended".to_string())?,
+                    .ok_or_else(|| "transport: provider event stream ended".to_string())?,
             };
             match event {
                 AppServerEvent::ServerNotification(notification) => {
+                    bind_terminal_codex_receipt(output, codex_intent, &notification)?;
                     if observe_notification(output, *notification)? {
                         return Ok(());
                     }
@@ -346,8 +740,12 @@ impl AppServerModelDriver {
                     .map_err(|_| "approval rejection timed out".to_string())?
                     .map_err(|error| error.to_string())?;
                 }
-                AppServerEvent::Lagged { .. } => return Err("provider events lost".to_string()),
-                AppServerEvent::Disconnected { message } => return Err(message),
+                AppServerEvent::Lagged { .. } => {
+                    return Err("transport: provider events lost".to_string());
+                }
+                AppServerEvent::Disconnected { message } => {
+                    return Err(format!("transport: {message}"));
+                }
             }
         }
     }

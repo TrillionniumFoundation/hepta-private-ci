@@ -13,6 +13,8 @@ fn output() -> NativeRunOutput {
         status: NativeRunStatus::Indeterminate,
         output: String::new(),
         observed_output_tokens: None,
+        codex_request_digest: None,
+        codex_receipt_digest: None,
         terminal_observed: false,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
