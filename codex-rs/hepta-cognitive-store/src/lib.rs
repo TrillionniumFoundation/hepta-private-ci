@@ -26,9 +26,13 @@ pub use v2::MAX_V2_INTENT_JOURNAL_ENTRIES;
 pub use v2::MAX_V2_ORDINARY_RECORD_REVISIONS;
 pub use v2::MAX_V2_RECORD_REVISIONS;
 pub use v2::MAX_V2_SNAPSHOT_LEASE_MS;
+pub use v2::MAX_V2_SNAPSHOT_PAGE_RECORDS;
+pub use v2::SnapshotCursorV2;
 pub use v2::SnapshotOpenRequestV2;
+pub use v2::SnapshotPageOpenRequestV2;
 pub use v2::StoreAuthorityVerifierV2;
 pub use v2::StoreIntentImageEntryV2;
+pub use v2::StoreSnapshotPageV2;
 pub use v2::StoreSnapshotV2;
 
 const MAX_RECORDS: usize = 16_384;
