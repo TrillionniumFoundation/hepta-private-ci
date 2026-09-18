@@ -351,17 +351,32 @@ fn calibration_is_fail_closed_and_uses_independently_bound_artifacts() {
 
 #[test]
 fn plasticity_requires_explicit_parameter_group_broadcast_and_is_deterministic() {
+    let sparse_config = checked(config().to_sparse_config(&native()));
+    let execution = model_execution();
+    let first_tick = input(1, Digest32::ZERO).to_sparse_tick(&scope(), &execution);
+    let (first_checkpoint, _) = checked(sparse_tick(
+        &sparse_config,
+        &first_tick,
+        None,
+    ));
+    let second_tick =
+        input(2, first_checkpoint.digest()).to_sparse_tick(&scope(), &execution);
+    let (second_checkpoint, _) = checked(sparse_tick(
+        &sparse_config,
+        &second_tick,
+        Some(&first_checkpoint),
+    ));
     let history = vec![
-        PlasticitySampleV1 {
-            checkpoint_digest: digest("checkpoint.1"),
-            eligibility_q24: vec![Q, Q / 2, 0, 0, 0],
-            independent_modulator_q24: vec![Q / 2, Q / 4],
-        },
-        PlasticitySampleV1 {
-            checkpoint_digest: digest("checkpoint.2"),
-            eligibility_q24: vec![Q / 2, Q / 4, Q / 4, 0, 0],
-            independent_modulator_q24: vec![Q / 4, Q / 2],
-        },
+        checked(PlasticitySampleV1::from_checkpoint(
+            &first_checkpoint,
+            vec![Q / 2, Q / 4],
+            digest("modulator-evidence.1"),
+        )),
+        checked(PlasticitySampleV1::from_checkpoint(
+            &second_checkpoint,
+            vec![Q / 4, Q / 2],
+            digest("modulator-evidence.2"),
+        )),
     ];
     let groups = vec![
         EligibilityParameterGroupV1 {
