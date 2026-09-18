@@ -35,6 +35,7 @@ pub fn fit_tabular_operator_strict_v2(
     Ok(fit_tabular_operator(plan)?)
 }
 
+#[cfg(test)]
 pub fn predict_tabular_operator_indexed_v2(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
