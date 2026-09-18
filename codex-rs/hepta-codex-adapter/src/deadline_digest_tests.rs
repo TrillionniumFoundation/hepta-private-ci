@@ -15,9 +15,13 @@ fn intent(deadline_ms: u64) -> CodexOperationIntent {
     CodexOperationIntent {
         operation_id: id("operation:deadline"),
         thread_id: id("thread:deadline"),
+        expected_turn_id: None,
         method_id: id("method:deadline"),
         payload_digest: digest(b"payload"),
         lease_payload_digest: digest(b"payload"),
+        connection_digest: digest(b"connection"),
+        session_generation: 11,
+        protocol_version: 2,
         deadline_ms,
     }
 }
@@ -35,6 +39,29 @@ fn deadline_is_bound_into_the_codex_request_digest() {
     let later = must_adapt(intent(/*deadline_ms*/ 3_000));
 
     assert_ne!(earlier.request_digest, later.request_digest);
+}
+
+#[test]
+fn transport_session_and_protocol_are_bound_into_request_digest() {
+    let base = must_adapt(intent(2_000));
+
+    let mut other_connection = intent(2_000);
+    other_connection.connection_digest = digest(b"other-connection");
+    assert_ne!(
+        base.request_digest,
+        must_adapt(other_connection).request_digest
+    );
+
+    let mut other_generation = intent(2_000);
+    other_generation.session_generation = 12;
+    assert_ne!(
+        base.request_digest,
+        must_adapt(other_generation).request_digest
+    );
+
+    let mut other_protocol = intent(2_000);
+    other_protocol.protocol_version = 3;
+    assert_ne!(base.request_digest, must_adapt(other_protocol).request_digest);
 }
 
 #[test]
