@@ -33,19 +33,6 @@ async fn owner_observation_adapts_to_engine_channels_without_free_scores() {
     let store = CognitiveStore::open(&layout).await.expect("store");
     let access = CognitiveAccess::agent_private(owner);
     let scope = CognitiveScope::AgentPrivate;
-    let citation = store
-        .append_source(
-            &access,
-            &SourceDraft {
-                scope: scope.clone(),
-                kind: LedgerSourceKind::ExplicitMemoryDirective,
-                event_key: "adapter-source".to_string(),
-                content: b"Ada studied the analytical engine.".to_vec(),
-                observed_at_unix_seconds: 100,
-            },
-        )
-        .await
-        .expect("source");
     store
         .remember_with_kg(
             &access,
@@ -65,7 +52,7 @@ async fn owner_observation_adapts_to_engine_channels_without_free_scores() {
                     lifecycle: MemoryLifecycleState::Active,
                     valid_from_unix_seconds: 100,
                     valid_to_unix_seconds: None,
-                    citations: vec![citation],
+                    citations: Vec::new(),
                 },
             },
             &KgFactSetDraft {
