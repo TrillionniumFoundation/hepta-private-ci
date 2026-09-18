@@ -58,6 +58,7 @@ const driver = new SubprocessBrowserDriver({
   profileRoot: requiredAbsolutePath("HEPTA_BROWSER_PROFILE_ROOT"),
   launcher: new LinuxBubblewrapLauncher({
     bwrapPath: process.env.HEPTA_BROWSER_BWRAP_PATH ?? "/usr/bin/bwrap",
+    bwrapDigest: requiredDigest("HEPTA_BROWSER_BWRAP_SHA256"),
   }),
 });
 const journal = new FileBrowserOperationJournal(

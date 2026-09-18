@@ -14,12 +14,17 @@ const workerPath = resolve(process.argv[2] ?? "");
 if (!process.argv[2]) throw new Error("usage: real-worker-smoke.js WORKER_BINARY");
 const bytes = await readFile(workerPath);
 const workerDigest = createHash("sha256").update(bytes).digest("hex");
+const bwrapBytes = await readFile("/usr/bin/bwrap");
+const bwrapDigest = createHash("sha256").update(bwrapBytes).digest("hex");
 const root = await mkdtemp(join(tmpdir(), "hepta-servo-worker-smoke-"));
 const driver = new SubprocessBrowserDriver({
   workerPath,
   workerDigest,
   profileRoot: join(root, "profiles"),
-  launcher: new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" }),
+  launcher: new LinuxBubblewrapLauncher({
+    bwrapPath: "/usr/bin/bwrap",
+    bwrapDigest,
+  }),
 });
 const digest = "1".repeat(64);
 

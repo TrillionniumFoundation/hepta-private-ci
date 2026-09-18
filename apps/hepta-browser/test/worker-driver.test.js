@@ -61,6 +61,7 @@ function fakeLauncher({
   corruptResponseBinding = false,
 } = {}) {
   return {
+    async verify() {},
     posture: {
       sourceContractOnly: true,
       inheritedPrivateChannel: true,
@@ -333,7 +334,10 @@ test(
   "Linux bubblewrap source contract exposes only the explicit runtime closure",
   { skip: process.platform !== "linux" },
   () => {
-    const launcher = new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" });
+    const launcher = new LinuxBubblewrapLauncher({
+      bwrapPath: "/usr/bin/bwrap",
+      bwrapDigest: D1,
+    });
     const argv = launcher.argv({
       workerPath: "/opt/hepta/servo-worker",
       profileDir: "/var/lib/hepta/browser/profile-1",
@@ -428,3 +432,26 @@ test("subprocess driver rejects a pre-existing broad profile root", async (t) =>
     /profile root permissions are too broad/,
   );
 });
+
+
+test(
+  "Linux bubblewrap launcher binds the exact selected binary digest",
+  { skip: process.platform !== "linux" },
+  async () => {
+    const root = await mkdtemp(join(tmpdir(), "hepta-bwrap-identity-"));
+    const bwrapPath = join(root, "bwrap");
+    const bytes = Buffer.from("fake-bwrap-exact-bytes", "utf8");
+    await writeFile(bwrapPath, bytes, { mode: 0o500 });
+    const launcher = new LinuxBubblewrapLauncher({
+      bwrapPath,
+      bwrapDigest: digest(bytes),
+    });
+    await launcher.verify();
+
+    const mismatched = new LinuxBubblewrapLauncher({
+      bwrapPath,
+      bwrapDigest: D1,
+    });
+    await assert.rejects(mismatched.verify(), /launcher digest mismatch/);
+  },
+);

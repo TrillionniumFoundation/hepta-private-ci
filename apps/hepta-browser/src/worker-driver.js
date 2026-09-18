@@ -19,6 +19,7 @@ import {
 const DIGEST = /^[0-9a-f]{64}$/;
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const MAX_WORKER_ARTIFACT_BYTES = 512 * 1024 * 1024;
+const MAX_BWRAP_ARTIFACT_BYTES = 64 * 1024 * 1024;
 const MAX_ABANDONED_RESPONSES = 1024;
 
 function requireRecord(value, name) {
@@ -83,12 +84,13 @@ function abortError(message = "browser worker request aborted") {
 }
 
 export class LinuxBubblewrapLauncher {
-  constructor({ bwrapPath = "/usr/bin/bwrap" } = {}) {
+  constructor({ bwrapPath = "/usr/bin/bwrap", bwrapDigest } = {}) {
     if (process.platform !== "linux") {
       throw new TypeError("LinuxBubblewrapLauncher requires Linux");
     }
     if (!isAbsolute(bwrapPath)) throw new TypeError("bwrapPath must be absolute");
-    this.bwrapPath = bwrapPath;
+    this.bwrapPath = resolve(bwrapPath);
+    this.bwrapDigest = expectedDigest(bwrapDigest, "bwrapDigest");
     this.posture = Object.freeze({
       sourceContractOnly: true,
       inheritedPrivateChannel: true,
@@ -98,6 +100,32 @@ export class LinuxBubblewrapLauncher {
       hostFilesystemRestricted: true,
       parentDeathCleanup: true,
     });
+  }
+
+  async verify() {
+    if ((await realpath(this.bwrapPath)) !== this.bwrapPath) {
+      throw new TypeError("Bubblewrap launcher path contains a symlink");
+    }
+    const noFollow = constants.O_NOFOLLOW ?? 0;
+    const handle = await open(this.bwrapPath, constants.O_RDONLY | noFollow);
+    try {
+      const info = await handle.stat();
+      if (
+        !info.isFile() ||
+        info.size < 1 ||
+        info.size > MAX_BWRAP_ARTIFACT_BYTES
+      ) {
+        throw new TypeError(
+          "Bubblewrap launcher must be a bounded regular file",
+        );
+      }
+      const bytes = await handle.readFile();
+      if (sha256(bytes) !== this.bwrapDigest) {
+        throw new TypeError("Bubblewrap launcher digest mismatch");
+      }
+    } finally {
+      await handle.close();
+    }
   }
 
   argv({ workerPath, profileDir }) {
@@ -428,6 +456,9 @@ export class SubprocessBrowserDriver {
         throw new TypeError(`launcher source contract does not declare ${key}`);
       }
     }
+    if (typeof launcher.verify !== "function") {
+      throw new TypeError("launcher.verify must be a function");
+    }
     if (typeof launcher.spawn !== "function") {
       throw new TypeError("launcher.spawn must be a function");
     }
@@ -445,6 +476,7 @@ export class SubprocessBrowserDriver {
     const generation = positiveInteger(input.generation, "generation");
     const manifestDigest = expectedDigest(input.manifestDigest, "manifestDigest");
     const grantDigest = expectedDigest(input.grantDigest, "grantDigest");
+    await this.#launcher.verify();
     const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
     await ensurePrivateProfileRoot(this.#profileRoot);
     this.#profileDir = join(

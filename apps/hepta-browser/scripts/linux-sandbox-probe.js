@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn, spawnSync } from "node:child_process";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import {
   access,
   chmod,
@@ -159,7 +159,12 @@ await writeFile(
 );
 
 try {
-  const launcher = new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" });
+  const bwrapBytes = await readFile("/usr/bin/bwrap");
+  const launcher = new LinuxBubblewrapLauncher({
+    bwrapPath: "/usr/bin/bwrap",
+    bwrapDigest: createHash("sha256").update(bwrapBytes).digest("hex"),
+  });
+  await launcher.verify();
   await mkdir(profileDir, { mode: 0o700 });
   const child = launcher.spawn({ workerPath: probePath, profileDir });
   child.stdin.end();
