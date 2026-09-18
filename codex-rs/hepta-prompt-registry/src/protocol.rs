@@ -30,6 +30,11 @@ const AUTHORITY_CLASSES: [&str; 4] = [
     "registered_prompt_factor",
 ];
 
+pub(crate) const LEGACY_UNRESOLVED_FACTOR_PURPOSE: &str =
+    "legacy imported factor; semantic purpose unavailable";
+pub(crate) const LEGACY_UNRESOLVED_MODEL_ID: &str = "model:legacy-imported";
+pub(crate) const LEGACY_UNRESOLVED_MODEL_VERSION: &str = "legacy-imported";
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptFactorV1 {
     pub factor_id: StableId,
@@ -56,6 +61,9 @@ impl PromptFactorV1 {
         factor: &PromptFactor,
         revision: u64,
     ) -> Result<Self, ProtocolCodecError> {
+        if factor.semantic_purpose == LEGACY_UNRESOLVED_FACTOR_PURPOSE {
+            return Err(ProtocolCodecError::MissingAuthoritativeLineage);
+        }
         let value = Self {
             factor_id: factor.factor_id.clone(),
             semantic_purpose: factor.semantic_purpose.clone(),
@@ -154,6 +162,11 @@ impl PromptRealizationV1 {
     pub(crate) fn from_binding(
         binding: &PromptRealizationBindingV2,
     ) -> Result<Self, ProtocolCodecError> {
+        if binding.model_id.as_str() == LEGACY_UNRESOLVED_MODEL_ID
+            && binding.model_version == LEGACY_UNRESOLVED_MODEL_VERSION
+        {
+            return Err(ProtocolCodecError::MissingAuthoritativeLineage);
+        }
         let value = Self {
             factor_id: binding.factor_id.clone(),
             model_id: binding.model_id.clone(),
