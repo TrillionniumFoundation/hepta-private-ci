@@ -105,6 +105,80 @@ test("close drains in-flight acknowledgement under immutable origin provenance b
   assert.equal(session.pendingReconciliation, 1);
 });
 
+test("reconnect does not reconcile an operation while its original mutation dispatch is in flight", async () => {
+  let connection = 0;
+  let reconcileCalls = 0;
+  let requestResolve;
+  let requestStartedResolve;
+  const requestStarted = new Promise((resolve) => { requestStartedResolve = resolve; });
+  const transport = {
+    async connect(input) {
+      connection += 1;
+      return {
+        authenticated: true,
+        sessionId: `session.${connection}`,
+        connectionGeneration: connection,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request(method, input) {
+      requestStartedResolve({ method, input });
+      return new Promise((resolve) => { requestResolve = resolve; });
+    },
+    async reconcile(query) {
+      reconcileCalls += 1;
+      return {
+        ...query,
+        status: "succeeded",
+        terminalObserved: true,
+        outcomeDigest: D3,
+      };
+    },
+    async close() {},
+  };
+  const client = new RuntimeClient({
+    transport,
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  await connectWithSnapshot(client);
+
+  const submission = client.submitRequest({
+    operationId: "operation.reconnect-inflight",
+    subjectId: "runtime.agentd",
+    action: "request_retry",
+    expectedRevision: 4,
+    displayedView: displayedViewBinding(),
+  });
+  const started = await requestStarted;
+
+  const reconnected = await client.connect({
+    endpointId: "runtime.1",
+    protocolVersion: 1,
+    manifestDigest: D1,
+  });
+  assert.equal(reconnected.sessionId, "session.2");
+  assert.equal(reconnected.pendingReconciliation, 1);
+  assert.equal(reconcileCalls, 0);
+
+  requestResolve({
+    accepted: true,
+    method: started.method,
+    sessionId: started.input.sessionId,
+    connectionGeneration: started.input.connectionGeneration,
+    runtimeGeneration: started.input.runtimeGeneration,
+    operationId: started.input.operationId,
+    semanticDigest: started.input.semanticDigest,
+  });
+  const acknowledgement = await submission;
+  assert.equal(acknowledgement.accepted, true);
+  assert.equal(reconcileCalls, 0);
+
+  await client.reconcilePending({ force: true });
+  assert.equal(reconcileCalls, 1);
+  assert.equal(client.readView().pending, 0);
+});
+
 test("durable pending identity survives reload without persisting request payload", async () => {
   const storage = new MemoryStorage();
   const store = new LocalStoragePendingStore({ storage, key: "hepta.pending.test" });
@@ -246,6 +320,71 @@ test("browser action lock collapses rapid duplicate clicks and restores focus af
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(submitCalls, 1);
   assert.equal(document.activeElement?.textContent, "Retry runtime.agentd");
+});
+
+test("browser logical action lock survives a polling rerender while acknowledgement is in flight", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  let currentView = sampleView();
+  let idCalls = 0;
+  let submitCalls = 0;
+  let requestResolve;
+  let requestStartedResolve;
+  const requestStarted = new Promise((resolve) => { requestStartedResolve = resolve; });
+  const client = {
+    readView: () => currentView,
+    async submitRequest(request) {
+      submitCalls += 1;
+      requestStartedResolve(request);
+      return new Promise((resolve) => { requestResolve = () => resolve({ operationId: request.operationId, status: "pending" }); });
+    },
+    async requestStop() { assert.fail("stop should not run"); },
+  };
+  const app = new ControlPlaneApp({
+    root,
+    client,
+    operationIdFactory: () => `operation.${++idCalls}`,
+    confirmAction: async () => true,
+  });
+
+  app.render();
+  const firstRetry = allElements(root).find(
+    (element) => element.tagName === "button" && element.textContent.startsWith("Retry "),
+  );
+  firstRetry.listeners.get("click")();
+  await requestStarted;
+  assert.equal(submitCalls, 1);
+
+  currentView = Object.freeze({
+    ...sampleView(),
+    generation: 8,
+    revision: 10,
+    modules: Object.freeze([
+      Object.freeze({
+        moduleId: "runtime.agentd",
+        status: "ready",
+        revision: 5,
+        digest: D3,
+        ready: true,
+      }),
+    ]),
+  });
+  app.render();
+  const rerenderedRetry = allElements(root).find(
+    (element) => element.tagName === "button" && element.textContent.startsWith("Retry "),
+  );
+  assert.equal(rerenderedRetry.disabled, true);
+
+  // Fake DOM dispatch does not suppress disabled listeners, so invoking it
+  // directly also verifies the handler-level logical lock.
+  rerenderedRetry.listeners.get("click")();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(idCalls, 1);
+  assert.equal(submitCalls, 1);
+
+  requestResolve();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(submitCalls, 1);
 });
 
 test("browser host can block mutations after snapshot connectivity loss", async () => {
