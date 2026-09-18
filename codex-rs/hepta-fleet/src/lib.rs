@@ -20,6 +20,7 @@ mod model;
 mod registry;
 mod release;
 mod resource;
+mod runtime_allocator;
 
 pub use allocation::calculate_local_allocation_v1;
 pub use allocation_store::FLEET_ALLOCATION_STORE_SCHEMA_VERSION;
@@ -75,6 +76,12 @@ pub use release::ReleaseProgramMetadata;
 pub use resource::FleetResourceArithmeticError;
 pub use resource::FleetResourceAxisV1;
 pub use resource::FleetResourceVectorV1;
+pub use runtime_allocator::DEFAULT_RUNTIME_GRANT_RETENTION_MS;
+pub use runtime_allocator::DEFAULT_RUNTIME_LEASE_RENEW_MARGIN_MS;
+pub use runtime_allocator::DEFAULT_RUNTIME_LEASE_TTL_MS;
+pub use runtime_allocator::FleetMaintenanceReport;
+pub use runtime_allocator::FleetRuntimeAllocator;
+pub use runtime_allocator::FleetRuntimeAllocatorError;
 
 #[cfg(test)]
 #[path = "allocation_tests.rs"]
