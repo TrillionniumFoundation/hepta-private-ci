@@ -8,7 +8,23 @@ use codex_extension_api::ToolPolicyError;
 use codex_hepta_contracts::ActionId;
 use codex_hepta_contracts::GovernanceMode;
 use codex_hepta_contracts::PolicyPhase;
+use codex_hepta_contracts::IndependentDecisionReceiptV1;
+use codex_hepta_evidence::AppendDisposition;
+use codex_hepta_evidence::AuthenticatedEvidenceIssuerV1;
+use codex_hepta_evidence::EvidenceCandidateV1;
+use codex_hepta_evidence::EvidenceClaimClassV1;
+use codex_hepta_evidence::EvidenceDispositionV1;
+use codex_hepta_evidence::EvidenceError;
+use codex_hepta_evidence::EvidenceExternalCheckpointV1;
+use codex_hepta_evidence::EvidenceIssuerRevocationsV1;
+use codex_hepta_evidence::EvidenceIssuerRoleV1;
+use codex_hepta_evidence::EvidenceReferenceV1;
+use codex_hepta_evidence::EvidenceTrustRootV1;
 use codex_hepta_evidence::HeptaEvidenceStore;
+use codex_hepta_evidence::SignedEvidenceIssuerCertificateV1;
+use codex_hepta_evidence::SignedEvidenceIssuerKeyRevocationV1;
+use codex_hepta_evidence::SignedQualificationEvidenceEnvelopeV1;
+use codex_hepta_evidence::authenticate_evidence_issuer;
 
 #[derive(Default)]
 pub(crate) struct InProcessClaims {
@@ -49,6 +65,99 @@ impl GovernanceState {
             claims: Mutex::new(InProcessClaims::default()),
         }
     }
+    fn qualification_store(&self) -> Result<Arc<HeptaEvidenceStore>, EvidenceError> {
+        if !self.enabled {
+            return Err(EvidenceError::Unavailable(
+                "governance product host is disabled".to_string(),
+            ));
+        }
+        self.evidence.clone().map_err(|detail| {
+            EvidenceError::Unavailable(format!(
+                "governance product host evidence store is unavailable: {detail}"
+            ))
+        })
+    }
+
+    pub fn authenticate_qualification_issuer(
+        &self,
+        root: &EvidenceTrustRootV1,
+        revocations: &EvidenceIssuerRevocationsV1,
+        signed: SignedEvidenceIssuerCertificateV1,
+        now_unix_ms: u64,
+    ) -> Result<AuthenticatedEvidenceIssuerV1, EvidenceError> {
+        if !self.enabled {
+            return Err(EvidenceError::Unavailable(
+                "governance product host is disabled".to_string(),
+            ));
+        }
+        authenticate_evidence_issuer(root, revocations, signed, now_unix_ms)
+    }
+
+    pub async fn append_qualification_receipt(
+        &self,
+        signed: &SignedQualificationEvidenceEnvelopeV1,
+        issuer: &AuthenticatedEvidenceIssuerV1,
+    ) -> Result<AppendDisposition, EvidenceError> {
+        self.qualification_store()?.append_receipt(signed, issuer).await
+    }
+
+    pub async fn append_independent_decision_receipt(
+        &self,
+        signed: &SignedQualificationEvidenceEnvelopeV1,
+        issuer: &AuthenticatedEvidenceIssuerV1,
+        decision: &IndependentDecisionReceiptV1,
+    ) -> Result<AppendDisposition, EvidenceError> {
+        self.qualification_store()?
+            .append_independent_decision_receipt(signed, issuer, decision)
+            .await
+    }
+
+    pub async fn append_qualification_issuer_key_revocation(
+        &self,
+        signed: &SignedEvidenceIssuerKeyRevocationV1,
+        authority: &AuthenticatedEvidenceIssuerV1,
+    ) -> Result<AppendDisposition, EvidenceError> {
+        self.qualification_store()?
+            .append_issuer_key_revocation(signed, authority)
+            .await
+    }
+
+    pub async fn query_qualification_claim(
+        &self,
+        candidate: &EvidenceCandidateV1,
+        claim_class: EvidenceClaimClassV1,
+    ) -> Result<Vec<EvidenceReferenceV1>, EvidenceError> {
+        self.qualification_store()?
+            .query_claim(candidate, claim_class)
+            .await
+    }
+
+    pub async fn verify_qualification_chain(
+        &self,
+        candidate: &EvidenceCandidateV1,
+        required_roles: &[EvidenceIssuerRoleV1],
+        now_unix_ms: u64,
+    ) -> Result<EvidenceDispositionV1, EvidenceError> {
+        self.qualification_store()?
+            .verify_chain(candidate, required_roles, now_unix_ms)
+            .await
+    }
+
+    pub async fn capture_evidence_external_checkpoint(
+        &self,
+    ) -> Result<EvidenceExternalCheckpointV1, EvidenceError> {
+        self.qualification_store()?.capture_external_checkpoint().await
+    }
+
+    pub async fn verify_evidence_external_checkpoint(
+        &self,
+        checkpoint: &EvidenceExternalCheckpointV1,
+    ) -> Result<(), EvidenceError> {
+        self.qualification_store()?
+            .verify_external_checkpoint(checkpoint)
+            .await
+    }
+
     pub(crate) fn owns_action(
         &self,
         action_id: &ActionId,
