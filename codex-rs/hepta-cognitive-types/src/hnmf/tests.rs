@@ -307,3 +307,27 @@ fn canonical_set_order_is_insertion_independent() {
     };
     assert_eq!(left.to_canonical_json(), right.to_canonical_json());
 }
+
+
+#[test]
+fn canonical_json_omits_absent_optionals_and_rejects_explicit_null() {
+    let span = text_span();
+    let Ok(bytes) = span.to_canonical_json() else {
+        panic!("valid span must encode");
+    };
+    let Ok(text) = String::from_utf8(bytes) else {
+        panic!("canonical JSON must be UTF-8");
+    };
+    assert!(!text.contains("featureBlobSha256"));
+    assert!(!text.contains("symbolicProjectionSha256"));
+    assert!(!text.contains("redactionMaskSha256"));
+
+    let explicit_null = text.replace(
+        "\"uncertaintyPpm\":",
+        "\"featureBlobSha256\":null,\"uncertaintyPpm\":",
+    );
+    assert_eq!(
+        ModalitySpanRefV1::from_canonical_json(explicit_null.as_bytes()),
+        Err(HnmfContractError::NonCanonicalJson)
+    );
+}
