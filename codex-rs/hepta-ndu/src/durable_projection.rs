@@ -585,7 +585,7 @@ fn read_digest(
     bytes: &[u8],
     offset: &mut usize,
 ) -> Result<Digest32, NduDurableProjectionError> {
-    let end = offset
+    let end = (*offset)
         .checked_add(32)
         .ok_or(NduDurableProjectionError::Corrupt)?;
     let array = bytes
