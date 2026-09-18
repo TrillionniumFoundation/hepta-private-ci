@@ -27,6 +27,7 @@ pub use canonical_v1::CanonicalPromptErrorV1;
 pub use canonical_v1::MAX_CANONICAL_PROMPT_CANDIDATES_V1;
 pub use canonical_v1::PromptAuthenticationErrorV1;
 pub use canonical_v1::PromptCandidateBindingV1;
+pub use canonical_v1::PromptCandidateRoleV1;
 pub use canonical_v1::PromptCandidateEnumerationRequestV1;
 pub use canonical_v1::PromptCandidateSetReceiptV1;
 pub use canonical_v1::PromptCandidateSourceAuthenticatorV1;
