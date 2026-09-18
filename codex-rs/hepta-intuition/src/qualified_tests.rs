@@ -191,6 +191,22 @@ fn v3_can_tighten_risk_routing_from_the_authenticated_profile() {
 }
 
 #[test]
+fn v3_rejects_nonzero_distribution_on_deterministic_assignment() {
+    let (mut request, profile, _) = fixture();
+    request.candidates[0].assignment_probability = ProbabilityQ32::ONE;
+    request.completeness.candidate_set_digest =
+        canonical_candidate_set_digest_v1(&request.candidates).unwrap();
+    let scoring =
+        scoring_commitment_for_request_v1(&request, &profile, digest("feature-snapshot")).unwrap();
+    assert_eq!(
+        decide_calibrated_v3(request, &profile, &scoring),
+        Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "deterministic assignment probability"
+        ))
+    );
+}
+
+#[test]
 fn v3_rejects_score_mutation_after_scoring_commitment() {
     let (mut request, profile, scoring) = fixture();
     request.candidates[0].utility = FixedQ32::from_raw(2);
