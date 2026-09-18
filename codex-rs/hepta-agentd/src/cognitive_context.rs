@@ -15,12 +15,11 @@ use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::MemoryRevalidationBinding;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::RevalidationStatus;
-use codex_hepta_memory_retrieval::MAX_GENERATION_BOUND_RESULTS;
-use codex_hepta_memory_retrieval::RetrievalCandidate as BoundedRetrievalCandidate;
-use codex_hepta_memory_retrieval::RetrievalRequest as BoundedRetrievalRequest;
-use codex_hepta_memory_retrieval::retrieve_v2;
+use codex_hepta_memory_retrieval::MAX_OWNER_RANK_RESULTS;
+use codex_hepta_memory_retrieval::OwnerRankCandidateV1;
+use codex_hepta_memory_retrieval::OwnerRankRequestV1;
+use codex_hepta_memory_retrieval::rank_owner_candidates;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -154,15 +153,12 @@ where
         }) else {
             continue;
         };
-        let owner_score = i64::try_from(observed.reciprocal_rank_score).map_err(|error| {
-            CognitiveStoreError::Corrupt(format!("retrieval score overflow: {error}"))
-        })?;
-        bounded_candidates.push(BoundedRetrievalCandidate {
+        bounded_candidates.push(OwnerRankCandidateV1 {
             record: record.clone(),
-            snapshot_digest: read.snapshot_digest(),
-            lexical_score: FixedQ32::from_raw(owner_score),
-            graph_score: FixedQ32::ZERO,
-            freshness_score: FixedQ32::ZERO,
+            owner_score: observed.reciprocal_rank_score,
+            support_digest: Digest32::of_bytes(
+                observation.observation_sha256().as_str().as_bytes(),
+            ),
         });
         candidate_bindings.push(observed.revalidation.clone());
     }
@@ -173,17 +169,17 @@ where
     let query_digest = Digest32::of_bytes(&query_binding);
     let query_id = StableId::new(format!("query:{query_digest}"))
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let bounded = retrieve_v2(BoundedRetrievalRequest {
+    let bounded = rank_owner_candidates(OwnerRankRequestV1 {
         query_id,
         query_digest,
         snapshot_digest: read.snapshot_digest(),
-        maximum_results: MAX_GENERATION_BOUND_RESULTS,
+        maximum_results: MAX_OWNER_RANK_RESULTS,
         candidates: bounded_candidates,
     })
     .map_err(|error| CognitiveStoreError::Corrupt(format!("bounded retrieval failed: {error}")))?;
 
-    let mut ranked_bindings = Vec::with_capacity(bounded.retrieval.results.len());
-    for result in &bounded.retrieval.results {
+    let mut ranked_bindings = Vec::with_capacity(bounded.results.len());
+    for result in &bounded.results {
         let Some(binding) = candidate_bindings
             .iter()
             .find(|binding| binding.memory.memory_id.as_str() == result.record_id.as_str())
