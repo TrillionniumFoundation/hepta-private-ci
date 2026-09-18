@@ -186,7 +186,8 @@ async fn duplicate_reservation_retry_survives_active_limit() {
 #[tokio::test]
 async fn bus_02_duplicate_settlement_is_idempotent_and_changed_cost_conflicts() {
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let sqlite = config(&temp);
+    let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
     let (principal, action, quota, end) = provision(&store, 10).await;
     let request = request(
         "operation:settlement",
@@ -206,13 +207,15 @@ async fn bus_02_duplicate_settlement_is_idempotent_and_changed_cost_conflicts() 
         .settle_reservation(admitted.reservation.reservation_id, 7, evidence)
         .await
         .unwrap();
-    let duplicate = store
+    store.pool.close().await;
+    let reopened = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let duplicate = reopened
         .settle_reservation(admitted.reservation.reservation_id, 7, evidence)
         .await
         .unwrap();
     assert_eq!(first, duplicate);
     assert!(matches!(
-        store
+        reopened
             .settle_reservation(
                 admitted.reservation.reservation_id,
                 8,
@@ -221,17 +224,19 @@ async fn bus_02_duplicate_settlement_is_idempotent_and_changed_cost_conflicts() 
             .await,
         Err(AuthBusControlError::ReservationConflict)
     ));
-    let snapshot = store.quota_snapshot(&quota).await.unwrap();
+    let snapshot = reopened.quota_snapshot(&quota).await.unwrap();
     assert_eq!(
         (snapshot.reserved, snapshot.consumed, snapshot.available()),
         (0, 7, 3)
     );
 }
 
-#[tokio::test]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn bus_03_expiry_racing_terminal_result_never_double_refunds() {
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let sqlite = config(&temp);
+    let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let racer = HeptaEvidenceStore::open(&sqlite).await.unwrap();
     let (principal, action, quota, _) = provision(&store, 10).await;
     let now = u64::try_from(now_millis().unwrap()).unwrap();
     let request = request(
@@ -247,17 +252,16 @@ async fn bus_03_expiry_racing_terminal_result_never_double_refunds() {
         .begin_reserved_effect(admitted.reservation.reservation_id, &request.operation_id)
         .await
         .unwrap();
-    std::thread::sleep(Duration::from_millis(4));
-    assert_eq!(store.expire_reservations().await.unwrap(), 0);
-    store
-        .settle_reservation(
-            admitted.reservation.reservation_id,
-            6,
-            Digest32::of_bytes(b"terminal-after-expiry"),
-        )
-        .await
-        .unwrap();
-    assert_eq!(store.expire_reservations().await.unwrap(), 0);
+    tokio::time::sleep(Duration::from_millis(4)).await;
+    let reservation_id = admitted.reservation.reservation_id;
+    let terminal = Digest32::of_bytes(b"terminal-after-expiry");
+    let (expiry, settlement) = tokio::join!(
+        racer.expire_reservations(),
+        store.settle_reservation(reservation_id, 6, terminal)
+    );
+    assert_eq!(expiry.unwrap(), 0);
+    settlement.unwrap();
+    assert_eq!(racer.expire_reservations().await.unwrap(), 0);
     let snapshot = store.quota_snapshot(&quota).await.unwrap();
     assert_eq!(
         (snapshot.reserved, snapshot.consumed, snapshot.available()),
@@ -268,7 +272,9 @@ async fn bus_03_expiry_racing_terminal_result_never_double_refunds() {
 #[tokio::test]
 async fn bus_04_stale_or_denied_policy_cannot_cross_effect_boundary() {
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let sqlite = config(&temp);
+    let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let effect_host = HeptaEvidenceStore::open(&sqlite).await.unwrap();
     let (principal, action, quota, end) = provision(&store, 10).await;
     let request = request(
         "operation:revoked-policy",
@@ -292,17 +298,17 @@ async fn bus_04_stale_or_denied_policy_cannot_cross_effect_boundary() {
         .unwrap();
 
     assert!(matches!(
-        store
+        effect_host
             .begin_reserved_effect(admitted.reservation.reservation_id, &request.operation_id)
             .await,
         Err(AuthBusControlError::StalePolicyRevision)
     ));
-    let reservation = store
+    let reservation = effect_host
         .reservation(admitted.reservation.reservation_id)
         .await
         .unwrap();
     assert_eq!(reservation.state, ReservationState::Cancelled);
-    let snapshot = store.quota_snapshot(&quota).await.unwrap();
+    let snapshot = effect_host.quota_snapshot(&quota).await.unwrap();
     assert_eq!((snapshot.reserved, snapshot.consumed), (0, 0));
 }
 
