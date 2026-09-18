@@ -37,6 +37,21 @@
       "delegatedCallees": []
     },
     {
+      "operation": "read_legacy_v1",
+      "nativeSymbol": "read",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/lib.rs",
+      "state": "legacy_shadow_compatibility_primitive",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/lib_tests.rs",
+        "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "legacy_caller_supplied_snapshot_projection",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "read_v2",
       "nativeSymbol": "read_v2",
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
