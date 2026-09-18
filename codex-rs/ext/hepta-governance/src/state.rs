@@ -95,6 +95,14 @@ impl GovernanceState {
         })
     }
 
+    fn qualification_authority(&self) -> Result<&EvidenceIssuerAuthorityV1, EvidenceError> {
+        self.qualification_authority.as_deref().ok_or_else(|| {
+            EvidenceError::Unavailable(
+                "qualification issuer trust root is not configured by the product host".to_string(),
+            )
+        })
+    }
+
     pub fn authenticate_qualification_issuer(
         &self,
         signed: SignedEvidenceIssuerCertificateV1,
@@ -105,13 +113,8 @@ impl GovernanceState {
                 "governance product host is disabled".to_string(),
             ));
         }
-        let authority = self.qualification_authority.as_ref().ok_or_else(|| {
-            EvidenceError::Unavailable(
-                "qualification issuer trust root is not configured by the product host"
-                    .to_string(),
-            )
-        })?;
-        authority.authenticate(signed, now_unix_ms)
+        self.qualification_authority()?
+            .authenticate(signed, now_unix_ms)
     }
 
     pub async fn append_qualification_receipt(
@@ -119,7 +122,11 @@ impl GovernanceState {
         signed: &SignedQualificationEvidenceEnvelopeV1,
         issuer: &AuthenticatedEvidenceIssuerV1,
     ) -> Result<EvidenceId, EvidenceError> {
-        self.qualification_store()?.append_receipt(signed, issuer).await
+        let store = self.qualification_store()?;
+        store
+            .verify_qualification_trust(self.qualification_authority()?)
+            .await?;
+        store.append_receipt(signed, issuer).await
     }
 
     pub async fn append_independent_decision_receipt(
@@ -128,7 +135,11 @@ impl GovernanceState {
         issuer: &AuthenticatedEvidenceIssuerV1,
         decision: &IndependentDecisionReceiptV1,
     ) -> Result<AppendDisposition, EvidenceError> {
-        self.qualification_store()?
+        let store = self.qualification_store()?;
+        store
+            .verify_qualification_trust(self.qualification_authority()?)
+            .await?;
+        store
             .append_independent_decision_receipt(signed, issuer, decision)
             .await
     }
@@ -138,9 +149,11 @@ impl GovernanceState {
         signed: &SignedEvidenceIssuerKeyRevocationV1,
         authority: &AuthenticatedEvidenceIssuerV1,
     ) -> Result<AppendDisposition, EvidenceError> {
-        self.qualification_store()?
-            .append_issuer_key_revocation(signed, authority)
-            .await
+        let store = self.qualification_store()?;
+        store
+            .verify_qualification_trust(self.qualification_authority()?)
+            .await?;
+        store.append_issuer_key_revocation(signed, authority).await
     }
 
     pub async fn query_qualification_claim(
@@ -149,7 +162,7 @@ impl GovernanceState {
         claim_class: EvidenceClaimClassV1,
     ) -> Result<Vec<EvidenceReferenceV1>, EvidenceError> {
         self.qualification_store()?
-            .query_claim(candidate, claim_class)
+            .query_claim_with_authority(candidate, claim_class, self.qualification_authority()?)
             .await
     }
 
@@ -160,23 +173,34 @@ impl GovernanceState {
         now_unix_ms: u64,
     ) -> Result<EvidenceDispositionV1, EvidenceError> {
         self.qualification_store()?
-            .verify_chain(candidate, required_roles, now_unix_ms)
+            .verify_chain_with_authority(
+                candidate,
+                required_roles,
+                now_unix_ms,
+                self.qualification_authority()?,
+            )
             .await
     }
 
     pub async fn capture_evidence_external_checkpoint(
         &self,
     ) -> Result<EvidenceExternalCheckpointV1, EvidenceError> {
-        self.qualification_store()?.capture_external_checkpoint().await
+        let store = self.qualification_store()?;
+        store
+            .verify_qualification_trust(self.qualification_authority()?)
+            .await?;
+        store.capture_external_checkpoint().await
     }
 
     pub async fn verify_evidence_external_checkpoint(
         &self,
         checkpoint: &EvidenceExternalCheckpointV1,
     ) -> Result<(), EvidenceError> {
-        self.qualification_store()?
-            .verify_external_checkpoint(checkpoint)
-            .await
+        let store = self.qualification_store()?;
+        store
+            .verify_qualification_trust(self.qualification_authority()?)
+            .await?;
+        store.verify_external_checkpoint(checkpoint).await
     }
 
     pub(crate) fn owns_action(

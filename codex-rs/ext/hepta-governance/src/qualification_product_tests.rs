@@ -164,7 +164,7 @@ async fn governance_product_host_composes_authenticated_writer_reader_and_termin
     );
     let state = GovernanceState::enabled_with_qualification_authority(
         GovernanceMode::Enforce,
-        Ok(store),
+        Ok(store.clone()),
         authority,
     );
 
@@ -237,4 +237,73 @@ async fn governance_product_host_composes_authenticated_writer_reader_and_termin
         .verify_evidence_external_checkpoint(&checkpoint)
         .await
         .expect("verify checkpoint");
+
+    let revoked_authority = Arc::new(
+        EvidenceIssuerAuthorityV1::new(
+            EvidenceTrustRootV1::new(
+                "root:governance-product".to_string(),
+                root_signing.verifying_key().to_bytes(),
+            )
+            .expect("root"),
+            EvidenceIssuerRevocationsV1 {
+                root_id: "root:governance-product".to_string(),
+                revision: 2,
+                revoked_key_ids: BTreeSet::from(["key:product-terminal".to_string()]),
+            },
+        )
+        .expect("revoked qualification authority"),
+    );
+    let revoked_state = GovernanceState::enabled_with_qualification_authority(
+        GovernanceMode::Enforce,
+        Ok(store.clone()),
+        revoked_authority,
+    );
+    let revoked_refs = revoked_state
+        .query_qualification_claim(&candidate(), EvidenceClaimClassV1::ProviderEffect)
+        .await
+        .expect("query with current revocation head");
+    assert_eq!(revoked_refs.len(), 1);
+    assert!(revoked_refs[0].revoked);
+    let revoked_disposition = revoked_state
+        .verify_qualification_chain(
+            &candidate(),
+            &[EvidenceIssuerRoleV1::TerminalObserver],
+            30_000,
+        )
+        .await
+        .expect("verify with current revocation head");
+    assert!(matches!(
+        revoked_disposition,
+        EvidenceDispositionV1::Missing { roles }
+            if roles == vec![EvidenceIssuerRoleV1::TerminalObserver]
+    ));
+
+    let other_root_signing = SigningKey::from_bytes(&[34; 32]);
+    let untrusted_state = GovernanceState::enabled_with_qualification_authority(
+        GovernanceMode::Enforce,
+        Ok(store),
+        Arc::new(
+            EvidenceIssuerAuthorityV1::new(
+                EvidenceTrustRootV1::new(
+                    "root:governance-product-other".to_string(),
+                    other_root_signing.verifying_key().to_bytes(),
+                )
+                .expect("other root"),
+                EvidenceIssuerRevocationsV1 {
+                    root_id: "root:governance-product-other".to_string(),
+                    revision: 1,
+                    revoked_key_ids: BTreeSet::new(),
+                },
+            )
+            .expect("other qualification authority"),
+        ),
+    );
+    let trust_error = untrusted_state
+        .query_qualification_claim(&candidate(), EvidenceClaimClassV1::SourceExecution)
+        .await
+        .expect_err("stored issuer certificates must chain to the pinned product root");
+    assert!(matches!(
+        trust_error,
+        codex_hepta_evidence::EvidenceError::Corrupt(_)
+    ));
 }

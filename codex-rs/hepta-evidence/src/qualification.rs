@@ -356,6 +356,38 @@ impl EvidenceIssuerAuthorityV1 {
     ) -> Result<AuthenticatedEvidenceIssuerV1, EvidenceError> {
         authenticate_evidence_issuer(&self.root, &self.revocations, signed, now_unix_ms)
     }
+
+    fn verify_certificate_signature(
+        &self,
+        signed: &SignedEvidenceIssuerCertificateV1,
+    ) -> Result<(), EvidenceError> {
+        signed.certificate.validate()?;
+        if signed.certificate.root_id != self.root.root_id {
+            return invalid("stored issuer certificate is bound to a different trust root");
+        }
+        let signature = Signature::from_slice(&signed.signature)
+            .map_err(|_| invalid_error("stored issuer certificate signature is malformed"))?;
+        self.root
+            .verifying_key
+            .verify_strict(&signed.certificate.signing_bytes()?, &signature)
+            .map_err(|_| invalid_error("stored issuer certificate signature is invalid"))?;
+        let verifying_key = VerifyingKey::from_bytes(&signed.certificate.verifying_key)
+            .map_err(|_| invalid_error("stored issuer certificate verifying key is invalid"))?;
+        if verifying_key.is_weak() {
+            return invalid("stored issuer certificate verifying key is weak");
+        }
+        Ok(())
+    }
+
+    fn extend_revoked_keys(&self, keys: &mut BTreeSet<(String, String)>) {
+        for key_id in &self.revocations.revoked_key_ids {
+            keys.insert((self.root.root_id.clone(), key_id.clone()));
+        }
+    }
+
+    fn is_key_revoked(&self, root_id: &str, key_id: &str) -> bool {
+        root_id == self.root.root_id && self.revocations.revoked_key_ids.contains(key_id)
+    }
 }
 
 #[derive(Clone)]
@@ -744,6 +776,93 @@ impl HeptaEvidenceStore {
         })
     }
 
+    pub async fn verify_qualification_trust(
+        &self,
+        authority: &EvidenceIssuerAuthorityV1,
+    ) -> Result<(), EvidenceError> {
+        verify_qualification_evidence_rows(&self.pool).await?;
+        let rows = sqlx::query(
+            "SELECT DISTINCT issuer_certificate_json, issuer_certificate_signature
+             FROM qualification_evidence
+             ORDER BY issuer_certificate_sha256",
+        )
+        .fetch_all(&self.pool)
+        .await
+        .map_err(classify_sqlx_error)?;
+        for row in rows {
+            let certificate_json: String = row
+                .try_get("issuer_certificate_json")
+                .map_err(classify_sqlx_error)?;
+            let certificate: EvidenceIssuerCertificateV1 =
+                serde_json::from_str(&certificate_json).map_err(|error| {
+                    EvidenceError::Corrupt(format!(
+                        "stored qualification issuer certificate failed to decode: {error}"
+                    ))
+                })?;
+            let signature: Vec<u8> = row
+                .try_get("issuer_certificate_signature")
+                .map_err(classify_sqlx_error)?;
+            authority
+                .verify_certificate_signature(&SignedEvidenceIssuerCertificateV1 {
+                    certificate,
+                    signature,
+                })
+                .map_err(|error| {
+                    EvidenceError::Corrupt(format!(
+                        "stored qualification issuer certificate is not trusted: {error}"
+                    ))
+                })?;
+        }
+        Ok(())
+    }
+
+    pub async fn query_claim_with_authority(
+        &self,
+        candidate: &EvidenceCandidateV1,
+        claim_class: EvidenceClaimClassV1,
+        authority: &EvidenceIssuerAuthorityV1,
+    ) -> Result<Vec<EvidenceReferenceV1>, EvidenceError> {
+        self.verify_qualification_trust(authority).await?;
+        candidate.validate()?;
+        let rows = sqlx::query(
+            "SELECT q.receipt_id, q.claim_class, q.issuer_role, q.issuer_principal,
+                    q.issuer_root_id, q.issuer_key_id, q.payload_sha256,
+                    q.observed_unix_ms, q.expires_unix_ms,
+                    EXISTS(
+                        SELECT 1 FROM qualification_evidence r
+                        WHERE r.revokes_receipt_id = q.receipt_id
+                    ) AS revoked
+             FROM qualification_evidence q
+             WHERE q.candidate_id = ? AND q.source_commit = ? AND q.source_tree = ?
+               AND q.claim_class = ?
+             ORDER BY q.seq DESC
+             LIMIT 513",
+        )
+        .bind(&candidate.candidate_id)
+        .bind(&candidate.source_commit)
+        .bind(&candidate.source_tree)
+        .bind(claim_class.as_str())
+        .fetch_all(&self.pool)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if rows.len() > QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS {
+            return invalid("qualification claim query exceeds the bounded result limit");
+        }
+        rows.into_iter()
+            .map(|row| {
+                let root_id: String = row
+                    .try_get("issuer_root_id")
+                    .map_err(classify_sqlx_error)?;
+                let key_id: String = row.try_get("issuer_key_id").map_err(classify_sqlx_error)?;
+                let mut reference = reference_from_row(row)?;
+                if authority.is_key_revoked(&root_id, &key_id) {
+                    reference.revoked = true;
+                }
+                Ok(reference)
+            })
+            .collect()
+    }
+
     pub async fn query_claim(
         &self,
         candidate: &EvidenceCandidateV1,
@@ -783,6 +902,29 @@ impl HeptaEvidenceStore {
         required_roles: &[EvidenceIssuerRoleV1],
         now_unix_ms: u64,
     ) -> Result<EvidenceDispositionV1, EvidenceError> {
+        self.verify_chain_inner(candidate, required_roles, now_unix_ms, None)
+            .await
+    }
+
+    pub async fn verify_chain_with_authority(
+        &self,
+        candidate: &EvidenceCandidateV1,
+        required_roles: &[EvidenceIssuerRoleV1],
+        now_unix_ms: u64,
+        authority: &EvidenceIssuerAuthorityV1,
+    ) -> Result<EvidenceDispositionV1, EvidenceError> {
+        self.verify_qualification_trust(authority).await?;
+        self.verify_chain_inner(candidate, required_roles, now_unix_ms, Some(authority))
+            .await
+    }
+
+    async fn verify_chain_inner(
+        &self,
+        candidate: &EvidenceCandidateV1,
+        required_roles: &[EvidenceIssuerRoleV1],
+        now_unix_ms: u64,
+        authority: Option<&EvidenceIssuerAuthorityV1>,
+    ) -> Result<EvidenceDispositionV1, EvidenceError> {
         candidate.validate()?;
         if required_roles.is_empty() || required_roles.len() > 32 || now_unix_ms == 0 {
             return invalid("qualification chain verification request is invalid");
@@ -791,7 +933,9 @@ impl HeptaEvidenceStore {
         if unique_roles.len() != required_roles.len() {
             return invalid("qualification chain required roles contain duplicates");
         }
-        verify_qualification_evidence_rows(&self.pool).await?;
+        if authority.is_none() {
+            verify_qualification_evidence_rows(&self.pool).await?;
+        }
         let rows = sqlx::query(
             "SELECT seq, issuer_root_id, envelope_json
              FROM qualification_evidence
@@ -832,7 +976,10 @@ impl HeptaEvidenceStore {
             .iter()
             .filter_map(|receipt| receipt.envelope.revokes_receipt_id.as_deref())
             .collect::<BTreeSet<_>>();
-        let revoked_keys = load_revoked_keys(&self.pool, now_unix_ms).await?;
+        let mut revoked_keys = load_revoked_keys(&self.pool, now_unix_ms).await?;
+        if let Some(authority) = authority {
+            authority.extend_revoked_keys(&mut revoked_keys);
+        }
 
         let mut missing = Vec::new();
         let mut expired = Vec::new();
