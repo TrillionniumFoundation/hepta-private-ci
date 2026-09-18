@@ -31,7 +31,6 @@ use crate::StateChange;
 
 const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
 const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 4096;
 const MAX_HEAD: usize = 4096;
 const MAGIC: &str = "HEPTAR01";
 const HEAD_MAGIC: &str = "HEPTAH01";
@@ -212,7 +211,7 @@ pub fn read_registry_snapshot(
 ) -> Result<ArtifactRegistry, ArtifactStorageError> {
     if expected.binding.is_zero()
         || expected.file_digest.is_zero()
-        || expected.records > MAX_RECORDS
+        || expected.records > crate::MAX_DURABLE_HISTORY_RECORDS
         || expected.encoded_bytes > MAX_SNAPSHOT
         || expected.encoded_bytes == 0
         || (expected.records == 0) != expected.head_digest.is_zero()
@@ -470,7 +469,7 @@ fn encode_snapshot(
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     let count = registry.records().len();
-    if count > MAX_RECORDS {
+    if count > crate::MAX_DURABLE_HISTORY_RECORDS {
         return Err(ArtifactStorageError::Capacity);
     }
     let mut text = format!("{MAGIC}\n{binding}\n{count}\n");
