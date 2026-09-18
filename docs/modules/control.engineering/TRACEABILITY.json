@@ -230,6 +230,17 @@
       "tests": [],
       "state": "source_implemented",
       "capabilityCeiling": "read-only CI product execution; no merge/deploy/release authority"
+    },
+    {
+      "designOperation": "persist_orchestration_generation",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "persist_orchestration_generation",
+      "ownerSymbol": "SQLite orchestration_generations + assignment_generations",
+      "tests": [
+        "FullOrchestrationClosureTests.test_scheduler_consumes_signed_completion_and_multidimensional_capacity"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "immutable rich work-assignment projection only"
     }
   ],
   "negativeAuthorityInvariants": [
