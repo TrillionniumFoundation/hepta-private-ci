@@ -287,6 +287,36 @@ fn shared_fixture_is_valid_in_reference() {
         privacy_class: PrivacyClass::AgentPrivate,
         redaction_mask_sha256: None,
     };
+    let image_span = ModalitySpanRef {
+        span_id: fixture_u64("secondSpanId"),
+        modality: ModalityKind::Image,
+        asset_sha256: Digest32::parse(fixture_string("assetSha256")).unwrap(),
+        range: SpanRange::PixelRect {
+            x: 0,
+            y: 0,
+            width: u32::try_from(fixture_u64("imageWidth")).unwrap(),
+            height: u32::try_from(fixture_u64("imageHeight")).unwrap(),
+        },
+        preprocessor_manifest_sha256:
+            Digest32::parse(fixture_string("preprocessorSha256")).unwrap(),
+        feature_blob_sha256: None,
+        symbolic_projection_sha256: None,
+        uncertainty_ppm: 25_000,
+        privacy_class: PrivacyClass::AgentPrivate,
+        redaction_mask_sha256: None,
+    };
+    let binding = CrossModalBinding {
+        binding_id: fixture_u64("bindingId"),
+        event_id: fixture_u64("eventId"),
+        span_ids: BTreeSet::from([
+            fixture_u64("spanId"),
+            fixture_u64("secondSpanId"),
+        ]),
+        alignment_kind: AlignmentKind::SameObservation,
+        confidence_ppm: 900_000,
+        producer_manifest_sha256:
+            Digest32::parse(fixture_string("preprocessorSha256")).unwrap(),
+    };
     let event = MemoryEvent {
         event_id: fixture_u64("eventId"),
         episode_id: fixture_u64("episodeId"),
@@ -297,8 +327,8 @@ fn shared_fixture_is_valid_in_reference() {
             start_unix_ms: fixture_i64("observedAtUnixMs"),
             end_unix_ms: None,
         },
-        modality_spans: vec![span],
-        cross_modal_bindings: Vec::new(),
+        modality_spans: vec![span, image_span],
+        cross_modal_bindings: vec![binding],
         semantic_keys: BTreeSet::from(["door".to_string(), "red".to_string()]),
         provenance: vec![ProvenanceRef {
             source_id: fixture_string("sourceId"),
@@ -339,4 +369,60 @@ fn shared_fixture_rejects_modality_range_mismatch_in_reference() {
 #[test]
 fn shared_fixture_modality_closed_world_in_reference() {
     assert_eq!(ModalityKind::ALL.len(), 9);
+}
+
+
+#[test]
+fn shared_fixture_cross_modal_binding_is_valid_in_reference() {
+    let text = ModalitySpanRef {
+        span_id: fixture_u64("spanId"),
+        modality: ModalityKind::Text,
+        asset_sha256: Digest32::parse(fixture_string("assetSha256")).unwrap(),
+        range: SpanRange::ByteRange {
+            start: 0,
+            end: fixture_u64("rangeEnd"),
+        },
+        preprocessor_manifest_sha256:
+            Digest32::parse(fixture_string("preprocessorSha256")).unwrap(),
+        feature_blob_sha256: None,
+        symbolic_projection_sha256: None,
+        uncertainty_ppm: 25_000,
+        privacy_class: PrivacyClass::AgentPrivate,
+        redaction_mask_sha256: None,
+    };
+    let image = ModalitySpanRef {
+        span_id: fixture_u64("secondSpanId"),
+        modality: ModalityKind::Image,
+        asset_sha256: Digest32::parse(fixture_string("assetSha256")).unwrap(),
+        range: SpanRange::PixelRect {
+            x: 0,
+            y: 0,
+            width: u32::try_from(fixture_u64("imageWidth")).unwrap(),
+            height: u32::try_from(fixture_u64("imageHeight")).unwrap(),
+        },
+        preprocessor_manifest_sha256:
+            Digest32::parse(fixture_string("preprocessorSha256")).unwrap(),
+        feature_blob_sha256: None,
+        symbolic_projection_sha256: None,
+        uncertainty_ppm: 25_000,
+        privacy_class: PrivacyClass::AgentPrivate,
+        redaction_mask_sha256: None,
+    };
+    let mut spans = std::collections::BTreeMap::new();
+    spans.insert(text.span_id, &text);
+    spans.insert(image.span_id, &image);
+    let binding = CrossModalBinding {
+        binding_id: fixture_u64("bindingId"),
+        event_id: fixture_u64("eventId"),
+        span_ids: BTreeSet::from([text.span_id, image.span_id]),
+        alignment_kind: AlignmentKind::SameObservation,
+        confidence_ppm: 900_000,
+        producer_manifest_sha256:
+            Digest32::parse(fixture_string("preprocessorSha256")).unwrap(),
+    };
+    assert!(
+        binding
+            .validate_against(fixture_u64("eventId"), &spans)
+            .is_ok()
+    );
 }
