@@ -334,7 +334,7 @@ fn durable_publication_is_required_before_agentd_run_admission() {
     )
     .expect_err("stale runtime must reject after idempotent durable publication");
     assert!(matches!(
-        error,
+        &error,
         ObjectiveProductRunError::Runtime {
             error: ObjectiveHostError::Runtime(AgentRunError::RuntimeBindingMismatch),
             ..
