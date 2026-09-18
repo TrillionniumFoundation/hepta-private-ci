@@ -135,6 +135,14 @@ fn deadline_is_enforced_after_admission_and_expires_dispatched_runs_conservative
     assert_eq!(expired.len(), 1);
     assert_eq!(expired[0].phase, RunPhase::Cancelling);
     assert_eq!(expired[0].cancel_reason.as_deref(), Some("deadline_exceeded"));
+    assert_eq!(expired[0].cancellation_ack_deadline_ms, Some(21_000));
+
+    let uncertain = coordinator
+        .expire_deadlines(21_000)
+        .expect("expire cancellation acknowledgement");
+    assert_eq!(uncertain.len(), 1);
+    assert_eq!(uncertain[0].phase, RunPhase::Indeterminate);
+    assert_eq!(uncertain[0].cancellation_ack_deadline_ms, None);
 }
 
 #[test]
@@ -173,6 +181,7 @@ fn cancellation_preserves_dispatch_boundary_reason_and_idempotency() {
         .expect("observe unknown terminality");
     assert_eq!(terminal.phase, RunPhase::Indeterminate);
     assert!(!terminal.terminal_observed);
+    assert_eq!(terminal.cancellation_ack_deadline_ms, None);
 }
 
 #[test]
