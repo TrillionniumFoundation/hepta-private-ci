@@ -36,6 +36,7 @@ const PROTOCOL_VERSION: u64 = 1;
 const MAX_FRAME_BYTES: usize = 1_048_576;
 const MAX_SERVICE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_WORKER_BYTES: usize = 512 * 1024 * 1024;
+const MAX_BWRAP_BYTES: usize = 64 * 1024 * 1024;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -613,6 +614,7 @@ pub struct BrowserServoProcessConfig {
     pub profile_root: PathBuf,
     pub journal_path: PathBuf,
     pub bwrap_path: PathBuf,
+    pub bwrap_sha256: [u8; 32],
     pub driver_timeout_ms: u64,
 }
 
@@ -639,6 +641,7 @@ impl BrowserServoProcessConfig {
         }
         verify_file_digest(&self.service_path, self.service_sha256, MAX_SERVICE_BYTES)?;
         verify_file_digest(&self.worker_path, self.worker_sha256, MAX_WORKER_BYTES)?;
+        verify_file_digest(&self.bwrap_path, self.bwrap_sha256, MAX_BWRAP_BYTES)?;
         Ok(())
     }
 }
@@ -672,6 +675,10 @@ impl ChildBrowserTransport {
             .env("HEPTA_BROWSER_PROFILE_ROOT", &config.profile_root)
             .env("HEPTA_BROWSER_JOURNAL_PATH", &config.journal_path)
             .env("HEPTA_BROWSER_BWRAP_PATH", &config.bwrap_path)
+            .env(
+                "HEPTA_BROWSER_BWRAP_SHA256",
+                hex_lower(&config.bwrap_sha256),
+            )
             .env(
                 "HEPTA_BROWSER_DRIVER_TIMEOUT_MS",
                 config.driver_timeout_ms.to_string(),

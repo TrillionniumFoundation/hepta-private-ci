@@ -44,6 +44,7 @@ struct HostConfig {
     profile_root: PathBuf,
     journal_path: PathBuf,
     bwrap_path: PathBuf,
+    bwrap_sha256: String,
     driver_timeout_ms: u64,
 }
 
@@ -115,6 +116,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         profile_root: config.profile_root,
         journal_path: config.journal_path,
         bwrap_path: config.bwrap_path,
+        bwrap_sha256: parse_digest(&config.bwrap_sha256, "bwrap_sha256")?,
         driver_timeout_ms: config.driver_timeout_ms,
     };
     let transport = ChildBrowserTransport::spawn(&process)?;
