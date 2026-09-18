@@ -304,6 +304,17 @@ impl CognitiveStore {
         .fetch_one(&mut *transaction)
         .await
         .map_err(unavailable)?;
+        let citation_count: i64 = sqlx::query_scalar(
+            "SELECT count(*) FROM memory_citations c
+             JOIN memory_revisions r ON r.memory_id = c.memory_id AND r.revision = c.memory_revision
+             WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?",
+        )
+        .bind(self.owner_agent_id.as_str())
+        .bind(scope_kind)
+        .bind(workspace)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
         let tombstone_count: i64 = sqlx::query_scalar(
             "SELECT count(*) FROM memory_revisions
              WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?
@@ -393,6 +404,7 @@ impl CognitiveStore {
         let cut_digest = lane_c_page_cut_digest(
             &scope_id,
             &frontiers,
+            u64::try_from(citation_count).map_err(corrupt)?,
             head_set_digest,
             now_unix_seconds,
         );
@@ -901,12 +913,14 @@ impl CognitiveStore {
 fn lane_c_page_cut_digest(
     scope_id: &StableId,
     frontiers: &CognitiveOwnerFrontiers,
+    citation_count: u64,
     head_set_digest: Digest32,
     observed_at_unix_seconds: i64,
 ) -> Digest32 {
     let mut bytes = b"hepta.sqlite.lane-c.page-cut.v1".to_vec();
     push_stable_id(&mut bytes, scope_id);
     push_frontiers(&mut bytes, frontiers);
+    bytes.extend_from_slice(&citation_count.to_be_bytes());
     bytes.extend_from_slice(head_set_digest.as_array());
     bytes.extend_from_slice(&observed_at_unix_seconds.to_be_bytes());
     Digest32::of_bytes(&bytes)
