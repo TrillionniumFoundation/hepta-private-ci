@@ -1481,6 +1481,9 @@ mod tests {
             logs: Vec::new(),
             control_revision: 0,
             restart_pending: false,
+            automatic_restart: false,
+            restart_attempts: 0,
+            restart_not_before_pending: false,
             release_state_generation: record.release_state.generation,
             runtime_phase: None,
             runtime_release: None,
@@ -1584,7 +1587,7 @@ mod tests {
 
     #[cfg(unix)]
     #[tokio::test(flavor = "current_thread")]
-    async fn unresolved_signed_intent_blocks_daemon_startup_before_socket_bind() {
+    async fn unresolved_signed_intent_quarantines_agent_without_blocking_daemon_startup() {
         let temp = tempfile::tempdir().expect("create temporary fleet");
         let fleet_root = HeptaFleetRoot::parse(temp.path().join("fleet")).expect("fleet root");
         let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
@@ -1633,18 +1636,21 @@ mod tests {
         crate::signed_intent::write_intent(record.layout.run_root(), &intent)
             .expect("persist signed intent");
 
-        let error =
-            match run_supervisord_inner(fleet_root.clone(), CancellationToken::new(), None).await {
-                Ok(_) => panic!("unresolved signed intent must stop daemon startup"),
-                Err(error) => error,
-            };
-        assert!(matches!(
-            error,
-            SupervisorError::SignedIntentRecoveryRequired(id) if id == agent_id
-        ));
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        run_supervisord_inner(fleet_root.clone(), cancellation, None)
+            .await
+            .expect("unresolved signed intent quarantines one Agent but daemon can start");
+        let recovered = crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read recovered intent")
+            .expect("recovered intent exists");
+        assert_eq!(
+            recovered.status,
+            crate::signed_intent::SignedIntentStatus::RecoveryRequired
+        );
         assert!(
             !registry.layout().supervisor_socket().exists(),
-            "daemon must not bind a control socket after fail-closed recovery"
+            "clean cancellation removes the recovery-capable control socket"
         );
     }
 }
