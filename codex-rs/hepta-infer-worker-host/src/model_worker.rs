@@ -125,6 +125,9 @@ pub struct WorkerRequest {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DriverModelHandle {
     pub opaque_id: String,
+    /// Memory the runtime actually reserved before declaring the model loaded.
+    pub reserved_memory_bytes: u64,
+    /// Resident/device memory observed at the completed load boundary.
     pub observed_memory_bytes: u64,
 }
 
@@ -208,7 +211,11 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 pub trait ModelDriver {
-    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
+    fn load(
+        &mut self,
+        manifest: &ModelManifest,
+        grant: &ResourceGrant,
+    ) -> Result<DriverModelHandle, Error>;
     fn run(
         &mut self,
         handle: &DriverModelHandle,
@@ -285,9 +292,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
+        let handle = self.driver.load(&manifest, &self.grant)?;
         validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        if handle.reserved_memory_bytes == 0
+            || handle.reserved_memory_bytes > self.grant.maximum_memory_bytes
+            || handle.observed_memory_bytes > handle.reserved_memory_bytes
+        {
             self.driver.unload(handle)?;
             return Err(Error::ModelCapacity);
         }
