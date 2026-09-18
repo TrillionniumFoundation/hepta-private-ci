@@ -80,6 +80,10 @@ pub fn decide_with_signed_evidence_v1(
     })
 }
 
+/// Production external-admission entrypoint for qualification-scoped claims.
+/// The host supplies independently provisioned current trust; this function
+/// authenticates the generator plan and exact evaluator request before the
+/// trusted deterministic V2 core runs. It never grants selection/release authority.
 pub fn decide_with_signed_evidence_v2(
     bundle: IndependentEvaluationBundleV1,
     roles: Vec<MetricRoleContractV2>,
