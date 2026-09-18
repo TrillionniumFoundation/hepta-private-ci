@@ -98,7 +98,7 @@ available_for_plan(axis) = endowment(axis) - essential_floor(axis)
 
 Both terms are non-negative fixed-point values, and the floor cannot exceed the endowment. Every candidate must explicitly report each registered resource axis; missing axes are unavailable rather than zero. Unknown axes reject rather than widening the budget.
 
-The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
+The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. `canonical_resource_profile_digest` canonicalizes the sorted `(axis, endowment, essential_floor)` tuples; `prepare_plan` recomputes that digest and rejects `ResourceProfileMismatch` before filtering. A nonzero but unrelated caller digest is therefore insufficient. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
 
 `prepare_plan` filters resource-infeasible candidates before NDU evaluation and records their IDs in `resource_rejected_candidate_ids`. The intrinsic `abstain` candidate must remain feasible after this filter. The digest of the source candidate set and the digest of the feasible candidate set are both retained, so resource filtering cannot be hidden.
 
@@ -183,7 +183,7 @@ Each entry contains sequence, kind, idempotency identity, payload digest, predec
 - selected-plan projection;
 - revocation edges that prevent reselection and restart resurrection.
 
-A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention policy and backup/restore qualification.
+A selected plan must already have a decision record. Reopen replays that semantic rule and rejects a selection after revocation even when all serialized hashes are internally valid. `PlannerJournalStoreV1` is the owner-local durable-store candidate for Unix hosts: it holds a single-writer file lock, requires private regular files, wraps the journal in a bounded versioned envelope, fsyncs the temporary file, atomically replaces the journal, fsyncs the parent directory, read-back verifies, and migrates legacy bare `HCPJNL01` bytes deterministically. A caller may require a previously trusted entry head on reopen; restoring a backup that lacks that head fails closed. The trusted head must be retained outside the same backup domain. Product activation still requires selecting the deployed state root, retention/rotation policy, backup procedure and operator recovery profile.
 
 ## 9. Failure and degradation semantics
 
@@ -197,10 +197,11 @@ Failures are classified as:
 - expired snapshot or prepared plan;
 - unknown required owner;
 - missing or unknown resource axis;
+- canonical resource-profile/reservation mismatch;
 - infeasible intrinsic abstain;
 - NDU binding, candidate-set or disposition mismatch;
 - prepared-plan or payload mismatch;
-- journal integrity, truncation, identity conflict or revocation.
+- journal integrity, truncation, identity conflict, invalid semantic replay, trusted-head rollback or revocation.
 
 A failure before finalization leaves no plan receipt. A failure after durable decision publication but before acknowledgement is recovered by the original operation identity and equal digest. Unknown external effects remain indeterminate and are reconciled by the existing effect owner; the planner cannot infer success from queue admission or handler return.
 
@@ -240,6 +241,11 @@ Target metrics include snapshot age, stale/missing owner counts, candidate and r
 - `RCP-13`: operation, payload, resource or required-owner mutation after finalization rejects before grant-request construction.
 - `RCP-14`: grant-request construction revalidates snapshot masks and digest.
 - `RCP-15`: the NDU evaluation policy and resource profile are frozen before evaluation and bound through the final receipt.
+- `RCP-16`: reservation drift with an unchanged resource-profile digest fails before candidate filtering.
+- `RCP-17`: hash-valid journal bytes cannot select without a prior decision or after revocation.
+- `RCP-18`: the durable journal migrates the legacy envelope and rejects an older restored backup against a trusted head.
+- `RCP-19`: authenticated multi-owner composition rejects an unauthenticated owner and binds authentication-evidence drift into the snapshot and plan receipt.
+- `RCP-20`: the live Agentd context caller uses one process-local monotonic planner clock rather than wall-clock Unix micros.
 
 Native mappings and tests are recorded in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
@@ -295,6 +301,26 @@ an observed digital task, not an estimate of model quality or memory capacity.
 The single-observation owner summary has its own initial revision and an explicit
 request-local generation fence. It does not impersonate a database revision or
 global revocation frontier. Existing host authorization and generation checks
-remain required before and after the read. Context bytes exclude the planning
-metadata to avoid a self-referential digest; the host separately bounds the final
-response envelope. Neither helper grants effects or proves long-term improvement.
+remain required before and after the read. Agentd supplies planner observation
+and expiry values from one process-local `Instant` epoch; Unix wall clock remains
+separate and is used only by storage-domain APIs that require civil time. Context
+bytes exclude the planning metadata to avoid a self-referential digest; the host
+separately bounds the final response envelope. Neither helper grants effects or
+proves long-term improvement.
+
+## Authenticated global composition candidate
+
+`evaluate_global_plan_v1` is the owner-local global coordinator candidate. A
+host-provided `OwnerSummaryAuthenticatorV1` must authenticate every supplied
+owner summary and return nonzero evidence. Control domain-separates that evidence
+with the owner's support digest before collecting the coherent snapshot, so
+authentication drift changes the sealed snapshot. The coordinator then runs
+`prepare_plan`, the real NDU owner evaluation, `finalize_plan` and
+`request_execution_grants`.
+
+This coordinator deliberately ends at `GrantRequestSetV1`. It does not construct
+or deserialize a usable authority token. A selected product host must hand each
+operation/final-payload-bound request to independent `kernel.authority` and must
+leave terminal-effect reconciliation with the effect owner. No named global
+product caller, cross-process protocol admission, activation or release is
+claimed by this source candidate.
