@@ -113,7 +113,7 @@ pub(crate) struct ReleaseSelectionRecord {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub recovery_decision_sha256: Option<Sha256Digest>,
     pub selection_sha256: Sha256Digest,
-
+}
 
 impl ReleaseSelectionRecord {
     pub(crate) fn snapshot(&self) -> ReleaseSelectionSnapshot {
