@@ -3,22 +3,14 @@ name: Hepta architecture convergence
 on:
   pull_request:
     paths:
-      - "codex-rs/hepta-contracts/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-browser/**"
+      - "codex-rs/hepta-*/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
       - "apps/hepta-browser/**"
-      - "codex-rs/hepta-objective/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-operations/**"
-      - "codex-rs/hepta-automation/**"
-      - "codex-rs/hepta-supervisor/**"
-      - "codex-rs/hepta-infer-core/**"
-      - "codex-rs/hepta-infer-worker-host/**"
-      - "codex-rs/hepta-control-plane/**"
-      - "codex-rs/hepta-learning-ledger/**"
-      - "codex-rs/hepta-prompt-optimizer/**"
       - "docs/**"
       - "scripts/**"
+      - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-architecture-convergence.yml"
   workflow_dispatch:
 
@@ -29,83 +21,120 @@ concurrency:
   group: hepta-architecture-convergence-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
 jobs:
-  exact-head:
-    name: Exact-head architecture convergence
+  qualification:
+    name: Architecture convergence (${{ matrix.lane }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-
+      - name: Construct the canonical prospective merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Bind tested identity
+        env:
+          CANDIDATE: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          git diff --check
+          printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+      - name: Test execution-record rejection and retained diagnostics
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runner-tests.json" -- python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_exec*.py'
+      - name: Prepare native prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash for existing integration tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0
-
-      - name: Verify exact identity
-        shell: bash
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified V8 artifacts
         env:
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Inference owner regressions and streaming digest
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          git diff --check
-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
       - name: Converged authority and browser semantics
-        shell: bash
         run: |
           set -euo pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
       - name: Durable operation and external-effect recovery
-        shell: bash
         run: |
           set -euo pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
-
-      - name: Module lifecycle generations
-        shell: bash
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
+      - name: Module lifecycle generations and migration rollback
         run: |
           set -euo pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
-
-      - name: Concurrent durable inference and compaction
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core concurrent_handles_share_budget_without_holding_the_lock_during_execution
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core compaction_archives_full_history_and_preserves_indeterminate_fences
-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor
       - name: Selected-artifact adoption and explicit rollback
-        shell: bash
         run: |
           set -euo pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval closure
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/eval.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval closure
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
       - name: Objective and prompt policy convergence
-        shell: bash
         run: |
           set -euo pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
-          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
-
-      - name: Canonical document and registry checks
-        shell: bash
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
+      - name: Derived-view drift and unchanged source
         run: |
           set -euo pipefail
-          python3 scripts/hepta_module_registry.py --strict
-          python3 scripts/hepta-module-docs.py refresh-derived --check
-          python3 scripts/hepta-docs.py verify
-          python3 scripts/hepta-module-docs.py verify
+          # Global document/module verification already runs on both identities
+          # in hepta-development-docs. Do not execute those nested gates again.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/derived.json" -- python3 scripts/hepta-module-docs.py refresh-derived --check
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain command records and bounded stdout stderr
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-architecture-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-command-records/*
+          if-no-files-found: error
+          retention-days: 30
