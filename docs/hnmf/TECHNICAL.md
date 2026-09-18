@@ -452,3 +452,19 @@ The HNMF blocker set is divided into seven reference work packages:
 - `HNM-6-STRUCTURAL-EVOLUTION`: add, split, merge, retire, and rewire proposal envelopes with no self-activation.
 
 All seven are `closed_reference` only when the validator and executable tests pass at the exact candidate. Activation, acceptance, selection, promotion, and release remain separate external states.
+
+
+### Canonical production contract binding
+
+HNMF V1 wire ownership is implemented in `codex-rs/hepta-cognitive-types/src/hnmf_v1`.
+Every wire object uses an explicit `schema` / `schemaVersion` envelope, strict
+unknown-field rejection, bounded canonical JSON and deny-all authority. 64-bit
+identities and counters are decimal strings on the JSON wire so Rust,
+TypeScript/JavaScript and Python preserve exact values beyond IEEE-754's safe
+integer range. `qualification/hnmf-contract-reference` is only a compatibility
+façade over those production types; it is not a second schema owner.
+
+The pre-existing global `TopologyProposalV1` remains owned by
+`learning.plasticity`. HNMF memory-structure proposals use the scoped
+`CognitiveTopologyProposalV1` contract to avoid changing that V1 protocol in
+place.
