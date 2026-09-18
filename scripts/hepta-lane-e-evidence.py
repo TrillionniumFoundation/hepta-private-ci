@@ -20,6 +20,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC_INPUTS = [
+    Path(".github/workflows/hepta-lane-e-gap-closure.yml"),
+    Path("scripts/hepta-lane-e-evidence.py"),
     Path("codex-rs/Cargo.lock"),
     Path("codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"),
     Path("codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md"),
