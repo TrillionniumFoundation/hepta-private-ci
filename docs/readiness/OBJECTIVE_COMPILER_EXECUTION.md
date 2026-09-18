@@ -63,7 +63,7 @@ caller legalActionClasses when abstain is implicit: 0..=127
 compiled legal actions including intrinsic abstain: <=128
 ```
 
-These are semantic-capacity bounds, not post-hoc truncation rules. The canonical readiness protocol registry must match these enforced source bounds, or the source protocol must be versioned, before this candidate may be merged as a coherent V1 contract.
+These are semantic-capacity bounds, not post-hoc truncation rules. The canonical readiness protocol registry now matches these enforced V1 source bounds: caller legal actions are 0..=127, source hard constraints are <=246 before the ten generated resource/risk rows, and the success/terminal/evidence aggregate is <=128. Any future widening requires a versioned protocol or a matching implementation change.
 
 ## 3. Constraint precedence and conflict resolution
 
@@ -232,7 +232,7 @@ Coding entry still requires a current `CanonicalSourceReceiptV1`, frozen contrac
 - every V1-representable source semantic maps without truncation or guessing;
 - unsupported V1 comparators fail closed instead of being described as implemented rich wire semantics;
 - intrinsic `abstain`, hard-feasibility, aggregate-bound and conflict fixtures pass;
-- `PROTOCOLS.json`/schema projections match the enforced source contract or the protocol is versioned before merge;
+- `PROTOCOLS.json` matches the enforced V1 source/aggregate bounds;
 - outputs remain deny-all and the durable caller boundary is named rather than inferred;
 - canonical wire projection and production snapshot persistence are proven separately;
 - exact-head and synthetic-merge checks pass before source completion is claimed.
