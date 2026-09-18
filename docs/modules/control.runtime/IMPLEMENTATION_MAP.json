@@ -10,8 +10,8 @@
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "narrow_agentd_context_caller_composed_global_planner_not_composed",
+  "productionWriterState": "durable_store_candidate_not_activated",
   "operations": [
     {
       "operation": "collect_snapshot",
@@ -188,11 +188,161 @@
         {
           "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
           "symbol": "revocation_clears_selection_and_prevents_reselection"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_journal_tests.rs",
+          "symbol": "semantic_replay_rejects_hash_valid_invalid_selection_history"
         }
       ],
       "designOperation": "PlannerJournalV1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "canonical_resource_profile_digest",
+      "nativeSymbol": "codex_hepta_control_plane::canonical_resource_profile_digest",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "ResourceReservationV1 list"
+      ],
+      "outputs": [
+        "Digest32"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "resource_profile_and_snapshot_policy_are_mandatory_and_digest_bound"
+        }
+      ],
+      "designOperation": "canonical_resource_profile_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "evaluate_prepared_plan_with_ndu",
+      "nativeSymbol": "codex_hepta_control_plane::evaluate_prepared_plan_with_ndu",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "inputs": [
+        "GlobalStateSnapshotV1",
+        "PreparedPlanInputV1",
+        "NduPlanningInputV1",
+        "current monotonic time"
+      ],
+      "outputs": [
+        "EvaluatedPlanV1"
+      ],
+      "state": "source_implemented_owner_composition",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+          "symbol": "owner_evaluation_composes_into_real_planner_without_self_reported_selection"
+        }
+      ],
+      "designOperation": "evaluate_prepared_plan_with_ndu",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_ndu::evaluate_candidates_with_policy"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "plan_observed_context",
+      "nativeSymbol": "codex_hepta_control_plane::plan_observed_context",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "inputs": [
+        "ObservedContextV1"
+      ],
+      "outputs": [
+        "ObservedContextPlanV1"
+      ],
+      "state": "source_implemented_narrow_product_composed",
+      "authority": "deny_all",
+      "productCaller": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+          "symbol": "measured_context_is_selected_and_budget_excess_abstains"
+        }
+      ],
+      "designOperation": "plan_observed_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "evaluate_prepared_plan_with_ndu"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "evaluate_global_plan_v1",
+      "nativeSymbol": "codex_hepta_control_plane::evaluate_global_plan_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_global.rs",
+      "inputs": [
+        "authenticated owner summaries",
+        "SnapshotRequestV1",
+        "PlanningRequestV1",
+        "NduPlanningInputV1",
+        "current monotonic time"
+      ],
+      "outputs": [
+        "GlobalPlanningOutputV1"
+      ],
+      "state": "source_implemented_global_coordinator_no_product_caller",
+      "authority": "deny_all",
+      "nonClaim": "stops at GrantRequestSetV1; does not issue kernel.authority capability",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_global_tests.rs",
+          "symbol": "authenticated_multi_owner_flow_reaches_deny_all_grant_requests"
+        }
+      ],
+      "designOperation": "evaluate_global_plan_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "collect_snapshot",
+        "prepare_plan",
+        "evaluate_prepared_plan_with_ndu",
+        "request_execution_grants"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "PlannerJournalStoreV1",
+      "nativeSymbol": "codex_hepta_control_plane::PlannerJournalStoreV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "inputs": [
+        "owner-local state directory",
+        "optional trusted minimum head"
+      ],
+      "outputs": [
+        "fsync-backed bounded journal",
+        "trusted head"
+      ],
+      "state": "source_implemented_durable_store_candidate_unix_not_activated",
+      "authority": "none",
+      "nonClaim": "not an activated production writer; trusted anti-rollback head must be retained outside the journal backup domain",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "durable_store_round_trips_and_rejects_older_backup_against_trusted_head"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "bare_v0_journal_is_migrated_atomically_to_store_envelope"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "live_writer_lock_excludes_a_second_store"
+        }
+      ],
+      "designOperation": "PlannerJournalStoreV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "PlannerJournalV1"
+      ],
       "sourcePathExists": true
     }
   ],
@@ -206,19 +356,24 @@
     "NduPlanEvaluationV1",
     "FeasiblePlanReceiptV1",
     "GrantRequestSetV1",
-    "PlannerJournalEntryV1"
+    "PlannerJournalEntryV1",
+    "GlobalPlanningInputV1",
+    "GlobalPlanningOutputV1"
   ],
   "completion": {
     "specification": "complete",
     "nativePlanningKernel": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
     "canonicalExternalProtocolAdmission": "not_established",
-    "productionCaller": "not_established",
-    "productionWriter": "not_established",
+    "productionCaller": "global_not_established",
+    "productionWriter": "not_activated",
     "exactHeadQualification": "required",
     "independentAcceptance": "not_established",
     "activation": "not_established",
-    "release": "not_established"
+    "release": "not_established",
+    "globalCoordinator": "candidate_implemented_not_product_composed",
+    "durableWriterCandidate": "candidate_implemented_unix_not_activated",
+    "narrowProductCaller": "established_agentd_context_only"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -236,15 +391,17 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "narrowProductExecutionComposed": true,
+    "globalProductExecutionProved": false
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind evaluate_global_plan_v1 to a named authenticated multi-owner product host and route GrantRequestSetV1 into independent kernel.authority.",
+    "Select and activate the durable journal root plus trusted anti-rollback head storage; exact-head, synthetic-merge and named-host profile evidence must pass before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
