@@ -124,9 +124,11 @@ Security controls include final payload/provenance binding, live revocation line
 
 ## 10. Performance, capacity and hot-path policy
 
-Current hard source bounds include <=128 origins/profile; <=1024 effect grants/profile; <=1024 nonterminal operations/profile; <=256 terminal operations retained in host memory; <=64 queued mutations per serialization key; <=1 MiB host observation request; <=256 KiB semantic observation returned by the real Servo worker; <=1 MiB private worker frame; <=64 MiB file journal with automatic compaction beginning at 48 MiB; bounded action fields; and explicit Browser driver/authority deadlines.
+Current hard source bounds include <=128 origins/profile; <=1024 effect grants/profile; <=1024 nonterminal operations/profile; <=256 terminal operations retained in host memory; <=64 queued mutations per serialization key; <=16 simultaneously live worker profiles by default; <=1 MiB host observation request; <=256 KiB semantic observation returned by the real Servo worker; <=1 MiB private worker frame; <=64 MiB file journal with automatic compaction beginning at 48 MiB; bounded action fields; and explicit Browser driver/authority deadlines.
 
-The current worker is one WebView/profile generation. The dossier's <=16 concurrent-tab pilot target is not a current claim and requires a later measured scheduler/profile.
+The Linux production launcher is wrapped by `prlimit`, with default per-worker ceilings of 8 GiB virtual address space, 300 CPU seconds, 4096 file descriptors and 256 processes/threads. Agentd exposes explicit environment overrides for those values and for the global live-profile/process ceiling. These are source-enforced ceilings, not target performance measurements; target resource/soak evidence remains a deployment qualification gate.
+
+Each current worker is one WebView/profile generation. The dossier's <=16 concurrent-tab pilot target is not a current claim and requires a later measured scheduler/profile.
 
 ## 11. Observability and operations
 
