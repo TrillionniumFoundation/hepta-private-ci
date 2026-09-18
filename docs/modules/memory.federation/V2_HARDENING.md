@@ -50,9 +50,9 @@ After transport returns a terminal response and before evidence is admitted, the
 - observation time;
 - current authority state.
 
-States are `Current`, `Revoked` and `StaleGeneration`. The post-I/O observation time may not regress behind the preflight observation.
+States are `Current`, `Revoked` and `StaleGeneration`. Every observation also carries the live authority expiry. A `Current` observation is invalid if already expired, and the engine rejects any lease whose expiry exceeds the live authority horizon. The post-I/O observation time may not regress behind the preflight observation.
 
-A post-I/O `Revoked` or `StaleGeneration` state remains terminally observable for provenance, but all remote evidence items are suppressed. The result digest binds the post-I/O authority-observation digest so downstream code cannot replace the final live observation without invalidating the result.
+A post-I/O `Revoked` or `StaleGeneration` state remains terminally observable for provenance, but all remote evidence items are suppressed. The final result expiry is additionally capped by the post-I/O live authority expiry. The authority-observation digest binds that expiry and the state, so downstream code cannot replace the final live horizon without invalidating the result.
 
 ## 4. Interruptible single-attempt transport
 
@@ -117,7 +117,9 @@ The focused V2 suite includes adversarial cases for:
 - response-field tampering after digest sealing;
 - self-consistent result digests with contradictory completeness/items/truncation state;
 - cross-query response replay;
-- result expiry capped by lease/query horizon;
+- result expiry capped by response/lease/query/live-authority horizons;
+- forged or widened lease expiry rejected against live authority;
+- expired `Current` authority observations rejected;
 - preflight revocation blocking transport dispatch entirely;
 - revocation observed after transport;
 - generation drift observed after transport;
