@@ -49,7 +49,7 @@ impl<'a> AgentdIntelligenceCaller<'a> {
 
         let started = self
             .coordinator
-            .start_run(
+            .start_intelligence_run(
                 now_ms,
                 RunSnapshot {
                     run_id: envelope.run_id.to_string(),
@@ -57,14 +57,12 @@ impl<'a> AgentdIntelligenceCaller<'a> {
                     objective_digest: envelope.objective_digest.to_string(),
                     body_digest: envelope.body_digest.to_string(),
                     artifact_set_digest: envelope.artifact_set_digest.to_string(),
-                    intelligence_envelope_digest: Some(envelope.envelope_digest.to_string()),
-                    expected_context_digest: Some(envelope.context_digest.to_string()),
-                    expected_context_receipt_digest: Some(
-                        envelope.context_receipt_digest.to_string(),
-                    ),
                     authority_epoch: envelope.authority_epoch,
                     deadline_ms,
                 },
+                envelope.envelope_digest.to_string(),
+                envelope.context_digest.to_string(),
+                envelope.context_receipt_digest.to_string(),
             )
             .map_err(IntelligenceFacadeCallerError::Runtime)?;
 
