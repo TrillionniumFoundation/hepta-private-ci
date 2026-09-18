@@ -47,7 +47,7 @@ Worker stderr is always drained but is not copied into receipts or journals, avo
 
 ## Capacity and backpressure
 
-Browser service process/profile admission is also bounded globally (default 1 active profile/worker, configurable only up to 64 and never above the injected driver's declared active-profile capability). Profile mutations use a bounded serialization queue (64 queued operations per key by default) and fail with `BrowserBackpressureError` on overload. Separate ceilings cover origins, grants, active operations, terminal in-memory replay cache, action fields, semantic observations, frames, journal size and call deadlines.
+Browser service process/profile admission is bounded globally by a profile-affine worker pool (default 16 active profiles/workers, hard configurable ceiling 64). Each current one-WebView subprocess worker permits one outstanding effect. Profile mutations use a bounded serialization queue (64 queued operations per key by default) and fail with `BrowserBackpressureError` on overload. Separate ceilings cover origins, grants, active operations, terminal in-memory replay cache, action fields, semantic observations, frames, journal size and call deadlines.
 
 ## Verification
 
@@ -87,3 +87,11 @@ indeterminate.
 The selected upstream Servo qualification candidate is
 `servo/servo@5cc5bd32d02619acdec5736055515e38c5840ce1`; promotion requirements are in
 `docs/modules/browser.servo/SERVO_PIN_AUDIT.md`.
+
+
+The real qualification path also proves that one profile actually retains its
+own cookie before asserting that a second simultaneous profile does not receive
+it. The same E2E checks forbidden subresources and redirects, while the broker
+unit suite binds HTTPS CONNECT to the exact granted authority and port. A
+32-cycle real-worker soak records RSS and file-descriptor bounds. Target-host
+execution receipts remain distinct from these source oracles.

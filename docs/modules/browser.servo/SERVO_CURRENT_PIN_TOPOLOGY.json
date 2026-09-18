@@ -68,7 +68,9 @@
     "agentdControlTransport": "existing_private_agentd_uds",
     "egressBroker": "apps/hepta-browser/src/egress-broker.js::GrantScopedEgressBroker",
     "persistedReconciler": "apps/hepta-browser/src/persisted-reconciler.js::FilePersistedEffectReconciler",
-    "workerTerminalSettlementPersisted": true
+    "workerTerminalSettlementPersisted": true,
+    "childRecovery": "drop_failed_child_without_retry_then_spawn_on_next_call",
+    "agentdControlTimeoutSeconds": 130
   },
   "linuxHostIsolation": {
     "launcher": "apps/hepta-browser/src/worker-driver.js::LinuxBubblewrapLauncher",
@@ -99,7 +101,8 @@
     "parentDeathCleanup": true,
     "realProbe": "apps/hepta-browser/scripts/linux-sandbox-probe.js",
     "authorizedEgress": "sandbox_loopback_relay_to_private_profile_unix_socket_to_host_exact_origin_broker",
-    "privateAddressPolicy": "deny_by_default_test_only_opt_in"
+    "privateAddressPolicy": "deny_by_default_test_only_opt_in",
+    "httpsConnect": "exact_granted_authority_and_port_no_tls_mitm"
   },
   "buildEvidenceGate": {
     "workflow": ".github/workflows/hepta-browser-servo-worker-dev.yml",
@@ -114,7 +117,10 @@
     "requiresRealWorkerSmoke": true,
     "sourcePresenceIsPassEvidence": false,
     "requiresRealBrowserE2E": true,
-    "requiresGrantScopedEgressE2E": true
+    "requiresGrantScopedEgressE2E": true,
+    "requiresRedirectEscapeDenial": true,
+    "requiresCrossProfileCookieIsolation": true,
+    "requiresBoundedResourceSoak": true
   },
   "deploymentEvidenceGate": {
     "workflow": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
@@ -161,11 +167,11 @@
     "review and commit generated Cargo.lock for the selected candidate pin",
     "terminal-success reproducible worker artifact and SPDX-2.3 SBOM receipt",
     "trusted target-host Linux namespace listener egress and host-filesystem qualification",
-    "cross-profile cookie cache storage isolation",
+    "cache and other persistent-storage isolation beyond the proved two-profile cookie oracle",
     "macOS and Windows isolation equivalents when targeted",
     "credential upload and download capability implementations if admitted later",
     "trusted remote-system persisted-effect receipts for real business terminality",
-    "target resource and soak measurements",
+    "retained trusted-target soak/resource evidence beyond the bounded source oracle",
     "independent deployment operator promotion and release acceptance"
   ]
 }

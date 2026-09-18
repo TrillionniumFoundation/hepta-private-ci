@@ -129,7 +129,7 @@ Security controls include final payload/provenance binding, live revocation line
 
 ## 10. Performance, capacity and hot-path policy
 
-Current hard source bounds include <=1 active profile/worker process per Browser service by default (configurable only up to 64 and never above the injected driver's declared active-profile capability); <=128 origins/profile; <=1024 effect grants/profile; a generic owner ceiling of <=1024 nonterminal operations/profile with the current one-WebView subprocess driver restricted to 1 outstanding effect; <=256 terminal operations retained in host memory; <=64 queued mutations per serialization key; <=1 MiB host observation request; <=256 KiB semantic observation returned by the real Servo worker; <=1 MiB private worker frame; <=64 MiB file journal with automatic compaction beginning at 48 MiB; bounded action fields; explicit Browser driver/authority deadlines; and Linux worker defaults of 8 GiB RLIMIT_AS, 300 seconds RLIMIT_CPU, 4096 RLIMIT_NOFILE and 256 RLIMIT_NPROC. Agentd binds the exact `prlimit` path/digest and these numeric ceilings into the Browser child environment.
+Current hard source bounds include a profile-affine worker pool with 16 active profiles/workers by default and a hard configured ceiling of 64; each current one-WebView subprocess worker permits 1 outstanding effect; <=128 origins/profile; <=1024 effect grants/profile; a generic owner ceiling of <=1024 nonterminal operation identities/profile for alternate compatible drivers; <=256 terminal operations retained in host memory; <=64 queued mutations per serialization key; <=1 MiB host observation request; <=256 KiB semantic observation returned by the real Servo worker; <=1 MiB private worker frame; <=64 MiB file journal with automatic compaction beginning at 48 MiB; bounded action fields; explicit Browser driver/authority deadlines; and Linux worker defaults of 8 GiB RLIMIT_AS, 300 seconds RLIMIT_CPU, 4096 RLIMIT_NOFILE and 256 RLIMIT_NPROC. Agentd binds the exact `prlimit` path/digest and these numeric ceilings into the Browser child environment.
 
 The current worker is one WebView/profile generation. The dossier's <=16 concurrent-tab pilot target is not a current claim and requires a later measured scheduler/profile.
 
@@ -241,3 +241,18 @@ External gates still include target-host enforcement, cross-profile cookie/cache
 isolation, target soak/resource measurements, platform equivalents where
 targeted, independently trusted remote business terminal observations, operator
 acceptance, promotion and release.
+
+
+### Post-closure recovery and egress qualification notes
+
+A private-channel protocol, unavailable-child or indeterminate failure never
+retries the current Browser semantic call. Agentd drops the failed Browser child;
+the next call starts a clean private Browser service against the same durable
+journal, allowing an explicit `reconcile_persisted_operation` request to
+consume trusted recovery evidence without redispatch.
+
+The real Browser qualification path also checks HTTP subresource escape, an
+allowed-origin redirect to an ungranted origin, exact HTTPS CONNECT
+authority/port admission, same-profile cookie persistence, cross-profile cookie
+isolation, and a 32-cycle worker RSS/FD soak. These are source qualification
+oracles until an exact target-host run produces retained evidence.

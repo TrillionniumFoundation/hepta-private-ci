@@ -132,7 +132,7 @@ The launcher separately binds the exact host `prlimit` executable by SHA-256 and
 
 ## 9. Resource and backpressure policy
 
-Profile mutations use a bounded single-writer queue. By default one Browser service admits at most one active profile/worker process; compatible injected drivers may raise that constructor ceiling only up to 64, and the configured ceiling may never exceed the injected driver's declared `maxActiveProfiles` capability. No more than 64 operations may be queued for one serialization key; overload fails with `BrowserBackpressureError` rather than allowing unbounded promise growth.
+Profile mutations use a bounded single-writer queue. The product pool admits up to 16 active profile/worker processes by default with a hard configurable ceiling of 64; each current one-WebView subprocess worker advertises one outstanding effect. Alternate injected drivers must explicitly declare compatible active-profile and outstanding-effect ceilings. No more than 64 operations may be queued for one serialization key; overload fails with `BrowserBackpressureError` rather than allowing unbounded promise growth.
 
 Independent hard bounds cover origins, admitted grants, nonterminal operations, terminal in-memory replay cache, action fields, semantic observation bytes, protocol frame bytes, journal bytes and driver/authority call deadlines. Linux launch also carries exact RLIMIT_AS/RLIMIT_CPU/RLIMIT_NOFILE/RLIMIT_NPROC ceilings; these are source defaults until the real probe observes them on the selected target. The current worker is one-WebView/one-profile-generation; the <=16-tab pilot target remains a future measured capability, not a current claim.
 
@@ -148,7 +148,7 @@ A generated `Cargo.lock` is a candidate until reviewed/committed. A successful s
 
 `.github/workflows/hepta-browser-servo-deployment-qualification.yml` remains manual and main-only. It executes only the workflow-dispatch `github.sha` on `refs/heads/main`, verifies the referenced successful worker-build run came from the expected workflow on that exact main SHA, requires `cargoLockCommitted=true`, rehashes Cargo.lock/worker/SPDX/source tree, records kernel/Bubblewrap identity, reruns sandbox/worker checks and emits target execution evidence without self-issuing operator acceptance, promotion or release.
 
-Still separately required where applicable: reviewed exact `Cargo.lock` and terminal-success reproducible worker artifact/SBOM receipt; independent Linux no-listener/no-egress/descendant/profile isolation evidence; macOS/Windows equivalent isolation if targeted; functional credential-reference broker if credential use is enabled; real upload/download terminal observers if enabled; real remote business terminal reconciliation; target resource/soak measurements; trusted long-running authority/revocation feed for default daemon activation; and independent operator acceptance/promotion/release.
+Still separately required where applicable: reviewed exact `Cargo.lock` and terminal-success reproducible worker artifact/SBOM receipt; retained Linux target-host no-listener/egress/descendant enforcement evidence; cache/other persistent-storage isolation beyond the real two-profile cookie oracle; macOS/Windows equivalent isolation if targeted; functional credential/upload/download implementations if admitted later; real remote business terminal reconciliation; longer target resource/soak policy beyond the bounded source oracle; a trusted long-running authority/revocation feed; and independent operator acceptance/promotion/release.
 
 ## 12. Claim boundary
 
@@ -183,3 +183,19 @@ The dedicated worker CI runs the real built Servo artifact through the complete
 Browser lifecycle and the egress-denial fixture before reproducibility/SBOM
 evidence is issued. The selected upstream candidate is
 `5cc5bd32d02619acdec5736055515e38c5840ce1`; [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md) defines its promotion oracle.
+
+
+## 14. Child replacement and exact egress oracles
+
+Agentd's persistent Browser owner never retries an uncertain call. Protocol,
+transport or indeterminate failure retires the private Browser child, and only a
+later call may create a replacement child. This makes crash recovery compatible
+with the durable no-redispatch journal: a later
+`reconcile_persisted_operation` observes the prior identity instead of
+executing it again.
+
+The egress qualification suite separately checks exact HTTP origin admission,
+HTTPS CONNECT authority+port binding, forbidden subresource denial, redirect
+escape denial, production denial of mapped/private address classes, and
+two-profile cookie isolation. The broker does not terminate TLS; Servo retains
+certificate/SNI validation inside the CONNECT tunnel.

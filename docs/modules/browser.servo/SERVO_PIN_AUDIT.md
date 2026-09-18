@@ -81,15 +81,19 @@ when one exact source SHA establishes all of the following:
 3. real Bubblewrap/prlimit isolation probe;
 4. real Servo `open -> navigate -> observe -> type -> observe -> click ->
    observe -> close` E2E;
-5. grant-scoped egress permits the admitted origin and denies an ungranted
-   subresource origin;
-6. crash recovery remains indeterminate until an exact trusted persisted-effect
+5. grant-scoped egress permits the admitted origin, binds HTTPS CONNECT to the
+   exact authority/port, and denies ungranted subresource and redirect targets;
+6. two simultaneous profiles prove cookie persistence within A and absence of
+   A's cookie in B;
+7. crash recovery remains indeterminate until an exact trusted persisted-effect
    receipt is supplied;
-7. two release builds are byte-identical;
-8. dynamic-library closure, deterministic SPDX 2.3 SBOM and checksummed build
-   receipt are retained;
-9. the generated candidate `Cargo.lock` is reviewed and committed before
-   trusted target deployment qualification.
+8. a bounded 32-cycle real-worker RSS/FD soak completes without unbounded FD
+   growth;
+9. two release builds are byte-identical;
+10. dynamic-library closure, deterministic SPDX 2.3 SBOM and checksummed build
+    receipt are retained;
+11. the generated candidate `Cargo.lock` is reviewed and committed before
+    trusted target deployment qualification.
 
 Target-host soak, cross-profile storage isolation, independent operator
 acceptance, promotion and release remain separate evidence/decision gates.
