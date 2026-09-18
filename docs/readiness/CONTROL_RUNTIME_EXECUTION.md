@@ -60,7 +60,7 @@ Each `OwnerSummaryV1` binds owner identity and revision, objective digest, body 
 
 `SnapshotRequestV1` binds the required owner set, objective, generation, configuration, revocation frontier, snapshot policy, collection time, maximum owner age and expiry. `collect_snapshot` canonicalizes owners, rejects duplicates/future observations/mixed identities and records missing, stale and unavailable masks. Any non-empty hard mask blocks planning.
 
-A composed global caller first obtains `AuthenticatedOwnerSummaryV1` using `authenticate_owner_summary_v1`. The wrapper is not publicly constructible; admission requires a non-zero proof digest and a verifier supplied by the producer/host integration. The verifier is intentionally external to Control so trust roots do not migrate into the optimizer.
+A composed global caller admits owner observations as `AuthenticatedOwnerSummaryV1`. The compatibility seam `authenticate_owner_summary_v1` still accepts a caller-supplied verifier, while the concrete production-facing path uses `OwnerSummaryVerifierV1`: the host pins an Ed25519 public key for one producer identity, and `SignedOwnerSummaryV1` signs canonical bytes covering every `OwnerSummaryV1` field. Producer identity mismatch, weak/invalid trust or signature drift fail closed. Signing keys remain with the producer; Control contains only pinned verification trust.
 
 ## 4. Candidate preparation and canonical resource profile
 
@@ -105,7 +105,7 @@ A result is always scoped to the supplied bounded candidate set. `SearchDisclosu
 
 Each `GrantRequestV1` binds operation, candidate, plan, final payload, objective, snapshot, current revocation frontier and expiry. The enclosing `GrantRequestSetV1` remains `DENY_ALL`.
 
-`handoff_grant_requests_v1` is an explicit independent-owner seam. It forwards each immutable request to a caller-owned authority function and returns the caller-owned results without interpreting or caching them. A concrete `kernel.authority` adapter remains separate integration work; Control never imports effect authority merely to complete composition.
+`handoff_grant_requests_v1` remains the generic independent-owner seam. The concrete adapter `with_authorized_grant_request_v1` maps one immutable `GrantRequestV1` to `codex_hepta_contracts::FinalUseBinding`, including a digest over operation, candidate, plan, final payload, objective, snapshot, revocation frontier and planner expiry. It then consumes an independently signed `SignedFinalUseGrant` through the existing `FinalUseAuthority::claim` and `FinalUseAuthority::with_verified_use` path. That authority owner performs Ed25519 verification, durable single-use nonce claiming and final revocation/time revalidation. Control never holds the signing key and never constructs `VerifiedUseToken` directly.
 
 ## 8. Decision journal, strict restart replay and non-resurrection
 
@@ -119,7 +119,9 @@ Each `GrantRequestV1` binds operation, candidate, plan, final payload, objective
 - revocation requires a preceding decision;
 - a decision already revoked cannot be selected later.
 
-This detects hash-valid but semantically impossible histories created through the generic reference `append` API. It does not replace storage authenticity or physical durability. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention and backup/restore qualification.
+This detects hash-valid but semantically impossible histories created through the generic reference `append` API.
+
+`PlannerJournalStoreV1` is the owner-local durable Unix profile. It requires a private owner directory and process lock, uses no-follow/private file opens, validates strict semantic replay before commit, writes and fsyncs a temporary generation, atomically renames it, then fsyncs the directory. Exactly one verified predecessor is retained for explicit rollback. `planner-journal.raw.v1` is admitted only through strict replay and migrated deterministically. Missing/corrupt state never becomes an empty journal. Non-Unix platforms reject this durability profile rather than claiming equivalent semantics. A named production host still has to compose the store and qualify its actual filesystem/power-loss behavior.
 
 ## 9. Clock-domain requirements
 
@@ -174,18 +176,25 @@ Named-host latency, saturation, restart/reopen timing and fault-injection values
 - `RCP-20`: an owner summary cannot enter global composition when the authenticator rejects it.
 - `RCP-21`: authenticated owner + real NDU + sealed decision + grant-request handoff compose while Control remains deny-all.
 - `RCP-22`: bounded Agentd context planning uses a monotonic planner clock and canonical serialized-byte resource profile.
+- `RCP-23`: pinned Ed25519 producer trust admits only the exact signed owner summary.
+- `RCP-24`: planner grant authority requires an independently signed final-use grant and consumes its nonce exactly once.
+- `RCP-25`: payload or scope drift changes the final-use binding and cannot reuse prior authority.
+- `RCP-26`: durable journal commit reopens under an exclusive process lock.
+- `RCP-27`: predecessor restore is explicit and strictly replayed.
+- `RCP-28`: hash-valid semantic forgery is rejected before durable commit.
+- `RCP-29`: legacy raw journal bytes migrate only after strict semantic replay.
 
 Native mappings and tests are recorded in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
 ## 13. Implementation sequence and completion state
 
-Repository source closure now consists of coherent snapshot validation, canonical resource-profile binding, actual NDU execution, sealed finalization, grant-request construction, authenticated-owner composition seam, strict journal semantic replay and bounded Agentd product composition.
+Repository source closure now consists of coherent snapshot validation, canonical resource-profile binding, actual NDU execution, sealed finalization, grant-request construction, pinned-key Ed25519 owner verification, a concrete adapter to the independently owned final-use authority, strict journal semantic replay, a locked/fsync/atomic owner-local journal store and bounded Agentd product composition.
 
-Repository source completion for this closure branch still requires exact-head and synthetic-merge CI to pass. Promotion-eligible global product composition separately requires a named caller, concrete producer authentication, concrete `kernel.authority` adapter, production durability, named-host qualification and independent acceptance.
+Repository source completion for the current closure head still requires exact-head and synthetic-merge CI to pass. Promotion-eligible global product composition separately requires one named host to compose the implemented owner trust, planner store and final-use authority adapter, followed by named-host load/latency/restart/fault-injection qualification and independent acceptance.
 
 ## Appendix A. Contract mapping
 
-Produced owner-local types include `GlobalStateSnapshotV1`, `PreparedPlanInputV1`, `NduPlanEvaluationV1`, `FeasiblePlanReceiptV1`, `GrantRequestSetV1`, `PlannerJournalEntryV1` and `AuthenticatedOwnerSummaryV1`.
+Produced owner-local types include `GlobalStateSnapshotV1`, `PreparedPlanInputV1`, `NduPlanEvaluationV1`, `FeasiblePlanReceiptV1`, `GrantRequestSetV1`, `PlannerJournalEntryV1`, `AuthenticatedOwnerSummaryV1`, `SignedOwnerSummaryV1`, `GrantAuthorityContextV1` and `PlannerJournalStoreV1`.
 
 Canonical domain reads remain `DomainRead::global_state_snapshotV1` and `DomainRead::optimization_decisionV1`. Owner-local Rust types do not automatically create an external wire protocol; cross-process protocol admission remains explicit.
 
