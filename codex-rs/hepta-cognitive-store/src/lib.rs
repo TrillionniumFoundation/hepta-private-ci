@@ -22,6 +22,8 @@ pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
 pub use v2::CognitiveStoreV2Error;
 pub use v2::ForgetIntentV2;
+pub use v2::MAX_V2_INTENT_JOURNAL_ENTRIES;
+pub use v2::MAX_V2_ORDINARY_RECORD_REVISIONS;
 pub use v2::MAX_V2_RECORD_REVISIONS;
 pub use v2::MAX_V2_SNAPSHOT_LEASE_MS;
 pub use v2::SnapshotOpenRequestV2;
