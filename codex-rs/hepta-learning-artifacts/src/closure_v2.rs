@@ -16,12 +16,12 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactKind;
+use crate::MAX_DURABLE_ARTIFACT_RECORDS;
 
 const MAX_ARTIFACT_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_DATASET_INPUTS: usize = 64;
 const MAX_LINEAGE_DIGESTS: usize = 1_024;
 const MAX_PREDECESSORS: usize = 64;
-const MAX_WITHDRAWALS: usize = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ProvenanceModeV1 {
@@ -240,7 +240,7 @@ impl DatasetWithdrawalRegistry {
                 WithdrawalAppendDispositionV1::IdempotentReplay,
             ));
         }
-        if self.records.len() >= MAX_WITHDRAWALS {
+        if self.records.len() >= MAX_DURABLE_ARTIFACT_RECORDS {
             return Err(ArtifactClosureError::WithdrawalLimit);
         }
         let sequence_value = u64::try_from(self.records.len())
