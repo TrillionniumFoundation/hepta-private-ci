@@ -23,7 +23,7 @@
   "implementationReceipt": {
     "branch": "fix/learning-artifacts-qualification-closure",
     "pullRequest": 690,
-    "codeCommit": "b47f7acc560c9eeb9101141d435642eae04da5c5",
+    "codeCommit": "6bf358096bb1680658d8838f998fb2700adabdcb",
     "status": "source_candidate_pending_exact_head_and_merge_qualification"
   },
   "operations": [
@@ -170,7 +170,7 @@
     },
     {
       "operation": "bind_withdrawal_domain",
-      "nativeSymbol": "withdrawal_head_digest_v3",
+      "nativeSymbol": "withdrawal_authority_domain_digest_v1 / withdrawal_head_digest_v3",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
@@ -226,7 +226,7 @@
     },
     {
       "operation": "persist_withdrawal_snapshot",
-      "nativeSymbol": "write_dataset_withdrawal_snapshot_v1 / read_dataset_withdrawal_snapshot_v1",
+      "nativeSymbol": "write_dataset_withdrawal_snapshot_for_domain_v1 / read_dataset_withdrawal_snapshot_for_domain_v1",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/control_storage.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
@@ -291,6 +291,20 @@
       ],
       "sourcePathExists": true,
       "designOperation": "inspect_owner_service_status",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "cleanup_zero_length_storage_orphan",
+      "nativeSymbol": "ArtifactStorageAdminV1::cleanup_zero_length_orphan",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage_hygiene.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "storage_hygiene.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "cleanup_zero_length_storage_orphan",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
