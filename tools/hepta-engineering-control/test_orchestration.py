@@ -101,6 +101,33 @@ class OrchestrationTests(unittest.TestCase):
 
         self.assertTrue(callable(facade.issue_work_envelope))
         self.assertTrue(callable(facade.schedule_ready_packages))
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                with self.assertRaisesRegex(
+                    ValueError, "authenticated_orchestration_required"
+                ):
+                    facade.issue_work_envelope(
+                        store,
+                        self.envelope,
+                        now_ns=self.now,
+                    )
+                facade.issue_work_envelope(
+                    store,
+                    self.envelope,
+                    compatibility_only=True,
+                    now_ns=self.now,
+                )
+                with self.assertRaisesRegex(
+                    ValueError, "authenticated_orchestration_required"
+                ):
+                    facade.schedule_ready_packages(
+                        store,
+                        self.envelope.envelope_id,
+                        (WorkPackage(0, "compat", (), ("src/compat",)),),
+                        (),
+                        generation_id="compat-generation",
+                        now_ns=self.now,
+                    )
 
     def test_authenticated_completion_and_multidimensional_capacity(self):
         with tempfile.TemporaryDirectory() as temp:
