@@ -20,6 +20,8 @@ use crate::cognitive_intelligence_writer::occurrence_edge_id;
 use crate::cognitive_intelligence_writer::occurrence_node_id;
 use crate::cognitive_intelligence_writer::verify_revision_fact_digests;
 use crate::cognitive_kg_kernel::backfill_kernel_receipts;
+use crate::cognitive_kg_kernel::build_kernel_generation;
+use crate::cognitive_kg_kernel::support_fact_digests;
 use crate::cognitive_kg_store::MAX_PROJECTION_SCOPES;
 use crate::cognitive_kg_store::MAX_SCOPE_EDGES;
 use crate::cognitive_kg_store::MAX_SCOPE_HEADS;
@@ -1127,6 +1129,30 @@ async fn verify_current_projection_contents(
         if expected_output.as_str() != stored_output {
             return Err(CognitiveStoreError::Corrupt(format!(
                 "KG current projection `{projection_scope}` output digest failed canonical recomputation"
+            )));
+        }
+        let expected_kernel = build_kernel_generation(
+            u64::try_from(generation).map_err(|_| {
+                CognitiveStoreError::Corrupt("negative KG generation".to_string())
+            })?,
+            &stored_input,
+            &expected_nodes,
+            &expected_edges,
+            &support_fact_digests(&heads),
+        )?;
+        let stored_kernel: String = sqlx::query_scalar(
+            "SELECT generation_sha256
+             FROM kg_projection_kernel_receipts
+             WHERE projection_scope = ? AND generation = ?",
+        )
+        .bind(&projection_scope)
+        .bind(generation)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if stored_kernel != expected_kernel.generation_digest.to_string() {
+            return Err(CognitiveStoreError::Corrupt(format!(
+                "KG current projection `{projection_scope}` hepta-kg digest failed canonical recomputation"
             )));
         }
     }
