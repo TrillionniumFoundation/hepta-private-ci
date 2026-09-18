@@ -16,6 +16,7 @@ mod error;
 mod journal;
 mod ledger;
 mod model;
+mod persistent_index;
 mod segment_codec;
 mod segments;
 mod shadow;
@@ -65,6 +66,10 @@ pub use model::OutcomeFinality;
 pub use model::OutcomeObservation;
 pub use model::Revocation;
 pub use model::RunStartPublicationV1;
+pub use persistent_index::PersistentHistoricalIndexV1;
+pub use persistent_index::PersistentIndexErrorV1;
+pub use persistent_index::PersistentIndexedLearningLedgerV1;
+pub use persistent_index::PersistentIndexedLedgerErrorV1;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;
@@ -94,3 +99,11 @@ pub use witnessed::WitnessedLearningJournal;
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
 mod shadow_tests;
+
+#[cfg(test)]
+#[path = "persistent_index_integration_tests.rs"]
+mod persistent_index_integration_tests;
+
+#[cfg(test)]
+#[path = "persistent_index_reconcile_tests.rs"]
+mod persistent_index_reconcile_tests;
