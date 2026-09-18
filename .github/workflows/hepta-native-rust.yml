@@ -49,7 +49,8 @@ jobs:
             libxkbcommon-x11-dev \
             libwayland-dev \
             libgl1-mesa-dev \
-            libssl-dev
+            libssl-dev \
+            desktop-file-utils
 
       - name: Install Rust components
         run: rustup component add rustfmt clippy
@@ -78,13 +79,49 @@ jobs:
       - name: Build release binaries
         run: cargo build --release --bins
 
-      - name: Package unsigned development artifact (Unix)
+      - name: Smoke release binary (Unix)
         if: runner.os != 'Windows'
         shell: bash
+        run: ./target/release/hepta-native --self-test
+
+      - name: Smoke release binary (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: .\\target\\release\\hepta-native.exe --self-test
+
+      - name: Package unsigned macOS app bundle
+        if: runner.os == 'macOS'
+        shell: bash
         run: |
-          mkdir -p dist
-          tar -C target/release -czf "dist/hepta-native-${RUNNER_OS}-${RUNNER_ARCH}-unsigned.tar.gz" \
-            hepta-native hepta-native-updater hepta-native-credential
+          set -euo pipefail
+          rm -rf dist
+          app="dist/Hepta Native.app"
+          mkdir -p "$app/Contents/MacOS" "$app/Contents/Helpers"
+          cp packaging/macos/Info.plist "$app/Contents/Info.plist"
+          cp target/release/hepta-native "$app/Contents/MacOS/hepta-native"
+          cp target/release/hepta-native-updater "$app/Contents/Helpers/hepta-native-updater"
+          cp target/release/hepta-native-credential "$app/Contents/Helpers/hepta-native-credential"
+          plutil -lint "$app/Contents/Info.plist"
+          archive="$RUNNER_TEMP/hepta-native-${RUNNER_OS}-${RUNNER_ARCH}-unsigned.tar.gz"
+          tar -C dist -czf "$archive" "Hepta Native.app"
+          mv "$archive" dist/
+
+      - name: Package unsigned Linux application directory
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist
+          appdir="dist/HeptaNative.AppDir"
+          mkdir -p "$appdir/usr/bin" "$appdir/usr/share/applications"
+          cp target/release/hepta-native "$appdir/usr/bin/"
+          cp target/release/hepta-native-updater "$appdir/usr/bin/"
+          cp target/release/hepta-native-credential "$appdir/usr/bin/"
+          cp packaging/linux/hepta-native.desktop "$appdir/usr/share/applications/"
+          desktop-file-validate "$appdir/usr/share/applications/hepta-native.desktop"
+          archive="$RUNNER_TEMP/hepta-native-${RUNNER_OS}-${RUNNER_ARCH}-unsigned.tar.gz"
+          tar -C dist -czf "$archive" "HeptaNative.AppDir"
+          mv "$archive" dist/
 
       - name: Package unsigned development artifact (Windows)
         if: runner.os == 'Windows'
