@@ -20,7 +20,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "partial_narrow_agentd_signed_text_composed",
+  "productCallerState": "partial_agentd_ingress_and_bao_effect_candidate",
   "productionWriterState": "candidate_owner_store_implemented_not_accepted",
   "operations": [
     {
@@ -128,11 +128,30 @@
       "designOperation": "replay-retirement",
       "mappingClass": "delegated_durable_owner",
       "delegatedCallees": []
+    },
+    {
+      "operation": "consume_kv_v2_with_authbus",
+      "nativeSymbol": "consume_kv_v2_with_authbus",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "state": "source_candidate_product_composed_not_accepted",
+      "authority": "final_use_plus_authbus_reservation",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "effect_adapter",
+      "mappingClass": "delegated_effect_consumer",
+      "delegatedCallees": [
+        "validate_authbus_reservation_for_effect",
+        "settle_authbus_reservation",
+        "quarantine_authbus_reservation",
+        "cancel_authbus_reservation"
+      ]
     }
   ],
   "repositoryControlledGaps": [
     "Run exact-head and deterministic synthetic-merge tests for the new policy/quota/reservation candidate.",
-    "Compose authorize+reserve+final-use+observed settlement into a registered external-effect caller.",
+    "Run exact-head product tests for the Bao AuthBus effect wrapper and bind receipts to the candidate source.",
     "Retain and verify independently governed restore checkpoints in the selected production host."
   ],
   "externalEvidenceGates": [
@@ -170,6 +189,11 @@
       "path": "codex-rs/hepta-agentd",
       "role": "narrow signed-text product caller; not a general effect adapter"
     },
-    "effectComposition": "not_yet_product_composed"
+    "effectComposition": {
+      "owner": "secrets.heptabao",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "state": "source_candidate_not_accepted",
+      "semantics": "final-use reservation check before HTTPS; definitive observation settles one unit; indeterminate outcome quarantines"
+    }
   }
 }
