@@ -73,10 +73,10 @@
       "id": "ModalitySpanRefV1",
       "maximumEncodedBytes": 32768,
       "requiredFields": [
+        "spanId",
         "modality",
         "assetSha256",
-        "start",
-        "end",
+        "range",
         "preprocessorManifestSha256",
         "uncertaintyPpm",
         "privacyClass"
@@ -91,12 +91,14 @@
         "scope",
         "observedInterval",
         "modalitySpans",
+        "crossModalBindings",
         "semanticKeys",
         "provenance",
         "verification",
         "retentionPolicy",
         "objectiveDigest",
-        "nduStateDigest"
+        "nduStateDigest",
+        "lifecycle"
       ]
     },
     {
@@ -447,7 +449,7 @@
       "source-aware multimodal recall packet compilation"
     ],
     "intelligence.control": [
-      "composition fa\u00e7ade only; no durable fact or model execution ownership"
+      "composition façade only; no durable fact or model execution ownership"
     ]
   },
   "prohibitedSubstitutions": [
