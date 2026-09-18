@@ -193,19 +193,20 @@ impl AnchoredPlasticityWriterV1 {
         writer_fence: u64,
         maximum_records: usize,
     ) -> Result<Self, AnchoredPlasticityWriterErrorV1> {
-        let metadata = file
-            .metadata()
-            .map_err(|error| AnchoredPlasticityWriterErrorV1::Io(error.kind()))?;
-        if metadata.len() != 0 {
-            return Err(AnchoredPlasticityWriterErrorV1::BootstrapFileNotEmpty);
-        }
+        let registry = match DurableProposalRegistry::open_bootstrap_empty(
+            file,
+            registry_scope_digest,
+            writer_fence,
+            maximum_records,
+        ) {
+            Ok(registry) => registry,
+            Err(DurableProposalRegistryError::BootstrapRequiresEmptyFile) => {
+                return Err(AnchoredPlasticityWriterErrorV1::BootstrapFileNotEmpty);
+            }
+            Err(error) => return Err(AnchoredPlasticityWriterErrorV1::Registry(error)),
+        };
         Ok(Self {
-            registry: DurableProposalRegistry::open(
-                file,
-                registry_scope_digest,
-                writer_fence,
-                maximum_records,
-            )?,
+            registry,
             registry_scope_digest,
             writer_fence,
             state: PlasticityWriterStateV1::Healthy,
