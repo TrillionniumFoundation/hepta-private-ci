@@ -100,6 +100,82 @@ CREATE TABLE automation_provider_observations (
 CREATE INDEX automation_provider_observation_lookup
     ON automation_provider_observations(task_id, occurrence, observed_at_ms, observation_id);
 
+
+-- Durable TaskFlow step intent/outbox is now part of the default store schema.
+-- This table is append-only evidence; provider authority remains a separate
+-- final-use verification boundary.
+CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
+    owner_agent_id TEXT NOT NULL,
+    run_id TEXT NOT NULL,
+    step_id TEXT NOT NULL,
+    attempt INTEGER NOT NULL CHECK (attempt > 0 AND attempt <= 1000000),
+    event_seq INTEGER NOT NULL CHECK (event_seq > 0),
+    event_kind TEXT NOT NULL CHECK (
+        event_kind IN ('prepared', 'claimed', 'recorded', 'reconciled')
+    ),
+    command_id TEXT NOT NULL,
+    command_digest TEXT NOT NULL CHECK (
+        length(command_digest) = 64 AND command_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    intent_digest TEXT NOT NULL CHECK (
+        length(intent_digest) = 64 AND intent_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    payload_digest TEXT NOT NULL CHECK (
+        length(payload_digest) = 64 AND payload_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    receipt_digest TEXT CHECK (
+        receipt_digest IS NULL OR
+        (length(receipt_digest) = 64 AND receipt_digest NOT GLOB '*[^0-9a-f]*')
+    ),
+    observation TEXT CHECK (
+        observation IS NULL OR observation IN ('succeeded', 'failed', 'indeterminate')
+    ),
+    final_outcome TEXT CHECK (
+        final_outcome IS NULL OR final_outcome IN ('succeeded', 'failed', 'cancelled')
+    ),
+    owner_id TEXT NOT NULL,
+    owner_epoch INTEGER NOT NULL CHECK (owner_epoch > 0),
+    generation INTEGER NOT NULL CHECK (generation > 0),
+    fencing_token TEXT NOT NULL CHECK (length(fencing_token) BETWEEN 1 AND 256),
+    previous_event_digest TEXT NOT NULL CHECK (
+        length(previous_event_digest) = 64 AND
+        previous_event_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    event_digest TEXT NOT NULL CHECK (
+        length(event_digest) = 64 AND event_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    recorded_at_ms INTEGER NOT NULL CHECK (recorded_at_ms >= 0),
+    PRIMARY KEY (owner_agent_id, run_id, step_id, attempt, event_seq),
+    UNIQUE (owner_agent_id, command_id),
+    FOREIGN KEY (owner_agent_id, run_id)
+        REFERENCES taskflow_runs(owner_agent_id, run_id),
+    CHECK (
+        (event_kind IN ('prepared', 'claimed') AND
+            receipt_digest IS NULL AND observation IS NULL AND final_outcome IS NULL)
+        OR
+        (event_kind = 'recorded' AND
+            receipt_digest IS NOT NULL AND observation IS NOT NULL AND final_outcome IS NULL)
+        OR
+        (event_kind = 'reconciled' AND
+            receipt_digest IS NOT NULL AND observation IS NULL AND final_outcome IS NOT NULL)
+    )
+);
+
+CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_update
+BEFORE UPDATE ON taskflow_step_outbox
+BEGIN
+    SELECT RAISE(ABORT, 'TaskFlow step outbox is append-only');
+END;
+
+CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_delete
+BEFORE DELETE ON taskflow_step_outbox
+BEGIN
+    SELECT RAISE(ABORT, 'TaskFlow step outbox is append-only');
+END;
+
+CREATE INDEX IF NOT EXISTS taskflow_step_outbox_lookup
+    ON taskflow_step_outbox(owner_agent_id, run_id, step_id, attempt, event_seq);
+
 DROP TRIGGER automation_meta_no_update;
 UPDATE automation_meta SET schema_version = 4 WHERE singleton = 1;
 CREATE TRIGGER automation_meta_no_update
