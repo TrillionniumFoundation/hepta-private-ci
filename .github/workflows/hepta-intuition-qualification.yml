@@ -54,16 +54,22 @@ jobs:
         shell: bash
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Format qualified policy surfaces
-        run: cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence -- --config imports_granularity=Item --check
+        run: cargo fmt --package codex-hepta-intuition --package codex-hepta-intelligence --package codex-hepta-learning-ledger -- --check
       - name: Compile all qualified policy targets
         run: cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets
       - name: Run policy and frozen-data qualification tests
         run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
-      - name: Run independent fast-policy gate
+      - name: Run kernel fast-policy gate
         shell: bash
         run: |
           set -euo pipefail
-          cargo run --locked --release -p codex-hepta-intuition --example fast_gate | tee ../intuition-fast-gate.csv
+          cargo run --locked --release -p codex-hepta-intuition --example fast_gate | tee ../intuition-fast-kernel.csv
+      - name: Run authenticated end-to-end fast-policy gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --release -p codex-hepta-intelligence --test intuition_authenticated_fast_gate -- --nocapture 2>&1 | tee ../intuition-fast-authenticated.txt
+          grep -q "authenticated_e2e,128" ../intuition-fast-authenticated.txt
       - name: Verify patch hygiene
         working-directory: ${{ github.workspace }}
         run: git diff --check
@@ -71,7 +77,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: intuition-fast-${{ github.event.pull_request.head.sha || github.sha }}
-          path: intuition-fast-gate.csv
+          path: |
+            intuition-fast-kernel.csv
+            intuition-fast-authenticated.txt
           if-no-files-found: error
           retention-days: 30
 
@@ -111,8 +119,10 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Test qualified policy on merge candidate
         run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
-      - name: Gate fast policy on merge candidate
+      - name: Gate kernel fast policy on merge candidate
         run: cargo run --locked --release -p codex-hepta-intuition --example fast_gate
+      - name: Gate authenticated fast policy on merge candidate
+        run: cargo test --locked --release -p codex-hepta-intelligence --test intuition_authenticated_fast_gate -- --nocapture
       - name: Verify patch hygiene
         working-directory: ${{ github.workspace }}
         run: git diff --check
