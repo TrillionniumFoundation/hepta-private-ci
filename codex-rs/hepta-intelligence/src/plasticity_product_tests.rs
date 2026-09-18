@@ -1,10 +1,11 @@
 use super::*;
+use std::fs::OpenOptions;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_plasticity::*;
 use codex_hepta_types::{Digest32, FixedQ32, Generation, StableId};
 use ed25519_dalek::{Signer, SigningKey};
-use tempfile::tempfile;
+use tempfile::{NamedTempFile, tempfile};
 
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("id {value}: {error}"))
@@ -351,6 +352,121 @@ fn writer() -> AnchoredPlasticityWriterV1 {
         32,
     )
     .expect("writer")
+}
+
+fn open_file(path: &std::path::Path) -> std::fs::File {
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(path)
+        .expect("open plasticity registry")
+}
+
+fn raw_parameter_proposal(
+    proposal_id: &str,
+    window_id: &str,
+    window_digest: &str,
+) -> ParameterProposalV2 {
+    let selected_artifact_digest = digest("reopen-selected-artifact");
+    let window = ProposalWindowV2 {
+        window_id: id(window_id),
+        window_digest: digest(window_digest),
+    };
+    let generated = generate_parameter_candidates_v3(ParameterGeneratorProfileV3 {
+        selected_artifact_digest,
+        window: window.clone(),
+        norm_layers: vec![LayerNormDenominatorV2 {
+            layer_id: id("layer:reopen"),
+            baseline_squared_l2_raw_q64: 1_u128 << 64,
+        }],
+        update_scales: vec![FixedQ32::ONE],
+        signals: vec![ParameterPlasticitySignalV3 {
+            layer_id: id("layer:reopen"),
+            parameter_id: id("parameter:reopen"),
+            eligibility: FixedQ32::ONE,
+            modulator: FixedQ32::ONE,
+            learning_rate: FixedQ32::from_raw(1_i64 << 20),
+            lower_bound: FixedQ32::from_raw(-(1_i64 << 24)),
+            upper_bound: FixedQ32::from_raw(1_i64 << 24),
+            evidence_digest: digest("reopen-parameter-evidence"),
+        }],
+    })
+    .expect("generate raw reopen proposal");
+    propose_v2(ParameterProposalRequestV2 {
+        proposal_id: id(proposal_id),
+        proposer_id: id("reopen-generator"),
+        evaluator_id: id("reopen-evaluator"),
+        selected_artifact_digest,
+        window,
+        baseline_generation: generation(1),
+        candidate_generation: generation(2),
+        dataset_digest: digest("reopen-dataset"),
+        update_rule_digest: digest("reopen-update-rule"),
+        modulator_digest: digest("reopen-modulator"),
+        modulator_broadcast_digest: digest("reopen-broadcast"),
+        eligibility_digest: digest("reopen-eligibility"),
+        evaluation_digest: digest("reopen-evaluation"),
+        rollback_predecessor_digest: selected_artifact_digest,
+        norm_layers: generated.norm_layers,
+        candidates: generated.candidates,
+    })
+    .expect("raw parameter proposal")
+}
+
+
+#[test]
+fn product_reopen_rejects_complete_unacknowledged_parameter_tail() {
+    let fixture = NamedTempFile::new().expect("named tempfile");
+    let scope = digest("plasticity-registry-scope:recovery-tail");
+    let anchor = {
+        let mut registry = DurableProposalRegistry::open_bootstrap_empty(
+            open_file(fixture.path()),
+            scope,
+            29,
+            8,
+        )
+        .expect("bootstrap raw registry");
+        let first = registry
+            .append_v2(
+                Digest32::ZERO,
+                raw_parameter_proposal("proposal:reopen:1", "window:reopen:1", "window-one"),
+            )
+            .expect("append first");
+        let acknowledged = DurableRegistryAnchorV1 {
+            sequence: first.sequence,
+            frame_digest: first.frame_digest,
+        };
+        registry
+            .append_v2(
+                first.frame_digest,
+                raw_parameter_proposal("proposal:reopen:2", "window:reopen:2", "window-two"),
+            )
+            .expect("append unacknowledged tail");
+        acknowledged
+    };
+
+    assert!(matches!(
+        AnchoredPlasticityWriterV1::reopen_anchored(
+            open_file(fixture.path()),
+            scope,
+            29,
+            8,
+            anchor,
+        ),
+        Err(AnchoredPlasticityWriterErrorV1::Registry(
+            DurableProposalRegistryError::Conflict
+        ))
+    ));
+
+    let recovered = DurableProposalRegistry::open_anchored(
+        open_file(fixture.path()),
+        scope,
+        29,
+        8,
+        anchor,
+    )
+    .expect("raw reconciliation reopen");
+    assert_eq!(recovered.record_count(), Ok(2));
 }
 
 #[test]
