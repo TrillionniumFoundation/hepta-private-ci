@@ -28,6 +28,13 @@ use crate::framing::frame_part;
 pub const MAX_CROSS_OWNER_OPERATION_ROWS: i64 = 100_000;
 pub const MAX_CROSS_OWNER_OPERATION_PAYLOAD_BYTES: usize = 1_048_576;
 
+const REQUIRED_CROSS_OWNER_SCHEMA_OBJECTS: &[(&str, &str)] = &[
+    ("cognitive_cross_owner_operations", "table"),
+    ("cognitive_cross_owner_operations_source_lookup", "index"),
+    ("cognitive_cross_owner_operations_no_update", "trigger"),
+    ("cognitive_cross_owner_operations_no_delete", "trigger"),
+];
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CrossOwnerOperationApply {
     pub operation_id: String,
@@ -350,6 +357,26 @@ pub(crate) async fn verify_cross_owner_operations(
     pool: &SqlitePool,
     owner: &codex_hepta_contracts::AgentId,
 ) -> Result<(), CognitiveStoreError> {
+    for (name, expected_type) in REQUIRED_CROSS_OWNER_SCHEMA_OBJECTS {
+        let row = sqlx::query("SELECT type, sql FROM sqlite_schema WHERE name = ?")
+            .bind(name)
+            .fetch_optional(pool)
+            .await
+            .map_err(unavailable)?
+            .ok_or_else(|| {
+                CognitiveStoreError::Corrupt(format!(
+                    "required cross-owner schema object `{name}` is missing"
+                ))
+            })?;
+        let object_type: String = row.try_get("type").map_err(unavailable)?;
+        let sql: Option<String> = row.try_get("sql").map_err(unavailable)?;
+        if object_type != *expected_type || sql.is_none_or(|value| value.trim().is_empty()) {
+            return Err(CognitiveStoreError::Corrupt(format!(
+                "required cross-owner schema object `{name}` has the wrong definition class"
+            )));
+        }
+    }
+
     let rows = sqlx::query(
         "SELECT * FROM cognitive_cross_owner_operations ORDER BY operation_id LIMIT ?",
     )
@@ -463,6 +490,33 @@ mod tests {
                 .await
                 .unwrap();
         assert_eq!(count, 0);
+    }
+
+    #[tokio::test]
+    async fn destination_receipts_are_immutable_and_append_only() {
+        let temp = TempDir::new().unwrap();
+        let store = store(&temp).await;
+        store.apply_cross_owner_operation(&apply()).await.unwrap();
+        assert!(
+            sqlx::query(
+                "UPDATE cognitive_cross_owner_operations
+                 SET source_owner_id = 'changed'
+                 WHERE operation_id = ?",
+            )
+            .bind(&apply().operation_id)
+            .execute(&store.pool)
+            .await
+            .is_err()
+        );
+        assert!(
+            sqlx::query(
+                "DELETE FROM cognitive_cross_owner_operations WHERE operation_id = ?",
+            )
+            .bind(&apply().operation_id)
+            .execute(&store.pool)
+            .await
+            .is_err()
+        );
     }
 
     #[tokio::test]
