@@ -124,6 +124,12 @@ pub fn validate_artifact_publication_v3(
     verify_artifact_admission_v3(admission, domain, current_head, now)
 }
 
+pub fn withdrawal_authority_domain_digest_v1(
+    domain: &WithdrawalAuthorityDomainV1,
+) -> Result<Digest32, ArtifactAdmissionError> {
+    digest_withdrawal_domain(domain)
+}
+
 fn digest_withdrawal_domain(
     domain: &WithdrawalAuthorityDomainV1,
 ) -> Result<Digest32, ArtifactAdmissionError> {
