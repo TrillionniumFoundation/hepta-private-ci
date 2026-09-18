@@ -177,7 +177,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs); named case: `generation_vector_digest_binds_every_generation`.
 - [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs); named case: `snapshot_is_canonical_and_authority_free`.
 - [codex-rs/hepta-cognitive-types/src/hnmf/tests.rs](../../../codex-rs/hepta-cognitive-types/src/hnmf/tests.rs); covers canonical wire round trips, unknown fields/enums, golden bytes, revocation/lifecycle conflicts, and next-snapshot-only proposals.
-- [codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs](../../../codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs); drives the same checked-in fixtures through production and the qualification reference.
+- [codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs](../../../codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs); drives the same checked-in span/event/cross-modal fixture through production and the structurally homologous contract reference. The deterministic runtime reference remains the semantic oracle for non-isomorphic engram/recall/replay/plasticity/forget behavior.
 
 In `codex-rs`, run `just test -p codex-hepta-cognitive-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) separately labels target acceptance designs.
 
