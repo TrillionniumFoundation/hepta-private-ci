@@ -12,8 +12,10 @@ fn hex(bytes: &[u8]) -> String {
 #[test]
 fn frozen_cross_language_vector_matches_exact_bytes_and_digest() {
     let type_id = id("platform.types:canonical-fixture");
-    let subject = StableId::with_profile("module:alpha-1", IdProfileV1::Namespaced)
-        .expect("subject id");
+    let subject = StableId::with_profile("module:alpha-1", IdProfileV1::Namespaced);
+    let Ok(subject) = subject else {
+        panic!("canonical fixture subject ID should be valid");
+    };
     let evidence = Digest32::of_bytes(b"vector-digest");
     let weights = [CanonicalValueV1::I64(-2), CanonicalValueV1::U128(3)];
     let labels = [
@@ -52,16 +54,23 @@ fn frozen_cross_language_vector_matches_exact_bytes_and_digest() {
             value: CanonicalValueV1::Digest(evidence),
         },
     ];
-    let encoded = canonical_encode_v1(&type_id, 1, &fields).expect("canonical bytes");
+    let encoded = canonical_encode_v1(&type_id, 1, &fields);
+    let Ok(encoded) = encoded else {
+        panic!("canonical fixture should encode");
+    };
     assert_eq!(encoded.len(), 265);
     assert_eq!(
         hex(&encoded),
         "485054430001002868657074612e706c6174666f726d2e74797065732e63616e6f6e6963616c2d6469676573742e76310020706c6174666f726d2e74797065733a63616e6f6e6963616c2d6669787475726500000001000000060007656e61626c65640101000865766964656e636507be5df7bbbf50c940858b5b6a58a01308df2144a5a8461207f1ac5cb53066b3a400066c6162656c730a0000000200016102000000000000000100017a06000000046c61737400077061796c6f61640500000004000102ff00077375626a65637408000e6d6f64756c653a616c7068612d31000777656967687473090000000204fffffffffffffffe0300000000000000000000000000000003"
     );
     assert_eq!(
-        canonical_digest_v1(&type_id, 1, &fields)
-            .expect("digest")
-            .to_string(),
+        {
+            let digest = canonical_digest_v1(&type_id, 1, &fields);
+            let Ok(digest) = digest else {
+                panic!("canonical fixture should digest");
+            };
+            digest.to_string()
+        },
         "d2b04b7011cdef013c9f01053b8ed70a8a924db7632714e9840bcfea17d72736"
     );
 }
@@ -177,7 +186,10 @@ fn malformed_canonical_inputs_fail_closed() {
         ),
         Err(CanonicalDigestError::InvalidSchemaVersion)
     );
-    let unnamespaced = StableId::new("plain-id").expect("legacy stable id");
+    let unnamespaced = StableId::new("plain-id");
+    let Ok(unnamespaced) = unnamespaced else {
+        panic!("legacy stable ID fixture should be valid");
+    };
     assert_eq!(
         canonical_encode_v1(&unnamespaced, 1, &[]),
         Err(CanonicalDigestError::InvalidTypeId)
