@@ -159,7 +159,12 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+/// Trusted in-process compatibility evaluator retained only for legacy fixtures.
+/// External or production qualification must use the signature-verified V2/V3
+/// admission entry points exported below; this helper is intentionally not public.
+fn evaluate_legacy_inprocess_v1(
+    mut request: EvaluationRequest,
+) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
     }
