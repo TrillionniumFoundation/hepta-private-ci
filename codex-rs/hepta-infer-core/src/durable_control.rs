@@ -26,6 +26,7 @@ const MAX_JOURNAL_LINE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_TOKENS: u32 = 1_000_000;
 const LEGACY_CHECKPOINT_PREFIX: &str = "checkpoint-legacy-v1|";
 const ARCHIVE_SUFFIX_PREFIX: &str = "archive-";
+const COMPACTION_PREFIX: &str = "compaction-v1|";
 
 #[derive(Deserialize, Serialize, Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RequestState {
@@ -208,6 +209,7 @@ impl DurableInferenceControl {
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
+        let mut compaction_archive_digest: Option<String> = None;
         let mut line = Vec::new();
         loop {
             line.clear();
@@ -233,7 +235,12 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
+            if let Some(digest) = line.strip_prefix(COMPACTION_PREFIX) {
+                validate_digest(digest, "compaction archive")?;
+                if compaction_archive_digest.replace(digest.to_string()).is_some() {
+                    return Err(Error::CorruptJournal("duplicate compaction header"));
+                }
+            } else if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
                 let record: RequestRecord = serde_json::from_str(json)
                     .map_err(|_| Error::CorruptJournal("legacy checkpoint decode"))?;
                 validate_checkpoint_record(&record)?;
@@ -253,6 +260,7 @@ impl DurableInferenceControl {
                 return Err(Error::CapacityExceeded);
             }
         }
+        verify_compaction_archive(&path, compaction_archive_digest.as_deref())?;
         #[cfg(unix)]
         {
             let parent = path
@@ -400,6 +408,7 @@ impl DurableInferenceControl {
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(current_file.try_clone()?);
         let mut journal_bytes = 0_u64;
+        let mut compaction_archive_digest: Option<String> = None;
         let mut line = Vec::new();
         loop {
             line.clear();
@@ -424,7 +433,12 @@ impl DurableInferenceControl {
             if line.is_empty() {
                 continue;
             }
-            if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
+            if let Some(digest) = line.strip_prefix(COMPACTION_PREFIX) {
+                validate_digest(digest, "compaction archive")?;
+                if compaction_archive_digest.replace(digest.to_string()).is_some() {
+                    return Err(Error::CorruptJournal("duplicate compaction header"));
+                }
+            } else if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
                 let record: RequestRecord = serde_json::from_str(json)
                     .map_err(|_| Error::CorruptJournal("legacy checkpoint decode"))?;
                 validate_checkpoint_record(&record)?;
@@ -444,6 +458,10 @@ impl DurableInferenceControl {
                 return Err(Error::CapacityExceeded);
             }
         }
+        verify_compaction_archive(
+            &self.path,
+            compaction_archive_digest.as_deref(),
+        )?;
         self.records = records;
         self.native = native;
         self.journal_bytes = journal_bytes;
@@ -460,8 +478,11 @@ impl DurableInferenceControl {
         let _writer_fence = self.reload_locked()?;
 
         let original = fs::read(&self.path)?;
-        let archive = archive_path(&self.path, &original)?;
-        if !archive.exists() {
+        let archive_digest = digest_hex(Digest32::of_bytes(&original));
+        let archive = archive_path(&self.path, &archive_digest)?;
+        if archive.exists() {
+            verify_archive_file(&archive, &archive_digest)?;
+        } else {
             let archive_tmp = sibling_temp_path(&archive, "tmp");
             let mut archived = OpenOptions::new()
                 .create_new(true)
@@ -471,9 +492,15 @@ impl DurableInferenceControl {
             archived.flush()?;
             archived.sync_all()?;
             fs::rename(&archive_tmp, &archive)?;
+            let parent = self
+                .path
+                .parent()
+                .filter(|parent| !parent.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new("."));
+            File::open(parent)?.sync_all()?;
         }
 
-        let mut compacted = Vec::new();
+        let mut compacted = format!("{COMPACTION_PREFIX}{archive_digest}\n").into_bytes();
         for record in self.records.values() {
             let json = serde_json::to_string(record)
                 .map_err(|_| Error::CorruptJournal("legacy checkpoint encode"))?;
@@ -696,20 +723,41 @@ fn sibling_temp_path(path: &Path, suffix: &str) -> PathBuf {
     path.with_file_name(format!("{file_name}.{suffix}"))
 }
 
-fn archive_path(path: &Path, bytes: &[u8]) -> Result<PathBuf, Error> {
-    let digest = Digest32::of_bytes(bytes);
+fn digest_hex(digest: Digest32) -> String {
     let mut hex = String::with_capacity(64);
     const HEX: &[u8; 16] = b"0123456789abcdef";
-    for byte in digest.as_array() {
+    for &byte in digest.as_array() {
         hex.push(HEX[(byte >> 4) as usize] as char);
         hex.push(HEX[(byte & 0x0f) as usize] as char);
     }
+    hex
+}
+
+fn archive_path(path: &Path, digest: &str) -> Result<PathBuf, Error> {
+    validate_digest(digest, "compaction archive")?;
     let file_name = path
         .file_name()
         .and_then(|name| name.to_str())
         .ok_or(Error::InvalidIdentity("journal path"))?;
-    Ok(path.with_file_name(format!("{file_name}.{ARCHIVE_SUFFIX_PREFIX}{hex}")))
+    Ok(path.with_file_name(format!("{file_name}.{ARCHIVE_SUFFIX_PREFIX}{digest}")))
 }
+
+fn verify_archive_file(path: &Path, expected_digest: &str) -> Result<(), Error> {
+    let bytes = fs::read(path)?;
+    if digest_hex(Digest32::of_bytes(&bytes)) != expected_digest {
+        return Err(Error::CorruptJournal("compaction archive digest"));
+    }
+    Ok(())
+}
+
+fn verify_compaction_archive(path: &Path, expected_digest: Option<&str>) -> Result<(), Error> {
+    let Some(expected_digest) = expected_digest else {
+        return Ok(());
+    };
+    let archive = archive_path(path, expected_digest)?;
+    verify_archive_file(&archive, expected_digest)
+}
+
 
 fn validate_checkpoint_record(record: &RequestRecord) -> Result<(), Error> {
     validate_request(0, &record.request)?;
