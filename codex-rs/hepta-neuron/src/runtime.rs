@@ -518,12 +518,21 @@ where
         }
         let mut results = Vec::with_capacity(entries.len());
         for (input, observation) in entries {
-            results.push(self.tick(input, observation)?);
+            match self.tick(input, observation) {
+                Ok(result) => results.push(result),
+                Err(error) => {
+                    self.poisoned = true;
+                    return Err(error);
+                }
+            }
         }
         Ok(results)
     }
 
     pub fn current_checkpoint(&self) -> Result<Option<&SparseCheckpoint>, RuntimeError> {
+        if self.poisoned {
+            return Err(RuntimeError::Poisoned);
+        }
         Ok(self.journal.current()?)
     }
 
