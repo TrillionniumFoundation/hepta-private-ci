@@ -1,7 +1,7 @@
 # objective.compiler: implementation design
 
 Parent: `docs/modules/objective.compiler/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
-Status: source candidate implemented and mapped; exact-head qualification and product composition remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md` and `docs/contracts/OBJECTIVE_ERRORS.json`.
+Status: source candidate implemented and mapped; signed Agentd product-caller candidate composed; exact-head qualification, activation and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md` and `docs/contracts/OBJECTIVE_ERRORS.json`.
 
 ## 1. Source and work envelope
 
@@ -11,16 +11,20 @@ This candidate changes no authority, effect or writer ownership. The module rema
 
 ## 2. Native operations and contract details
 
-The implemented path is:
+The implemented Source V1 path is:
 
 ```text
 decode_source_envelope_json_v1(bytes)
 ObjectiveSourceEnvelopeV1::validate_structure()
 canonical_objective_intent_digest_v1(envelope)
 admit_and_compile_objective_v1(envelope, profile, authenticated_context)
-check_feasibility_v1(grammar, atoms, budget)
-compile(native_envelope)
+  -> adapt_source(...)
+  -> compiler::compile(AdmittedObjectiveSource)
+     -> scalar_conflict(...)
+        -> check_feasibility_v1(grammar, scalar_atoms, Duration::MAX)
 ```
+
+The generic `check_feasibility_v1` API is also public for separately registered scalar/enum/action/identity grammars. That generic support is not evidence that every atom kind is reachable from Source V1; current reachability is enumerated in `docs/modules/objective.compiler/SEMANTIC_SUPPORT.md`.
 
 Admission validates source authentication, principal scope, schema, normalization, profile, source and intent digests before mapping every represented field. Unknown or unrepresentable semantics fail closed. The admission receipt and compiler output carry no effect authority.
 
@@ -28,15 +32,15 @@ Admission validates source authentication, principal scope, schema, normalizatio
 
 ## 3. State, identity and publication
 
-The compiler owns no durable store. Its pure output binds request, principal, source, schema, selected profile, hard constraints, legal actions, success and terminal predicates, evidence requirements, resource/risk policy and semantic digest. A product caller must publish the immutable objective and `RunStartSnapshotV1` atomically and reconcile by exact semantic identity.
+The compiler owns no durable store. Its pure output binds request, principal, source, schema, selected profile, hard constraints, legal actions, success and terminal predicates, evidence requirements, resource/risk policy and semantic digest. The Agentd signed-objective caller candidate now materializes `ObjectiveRunPublicationV1` and `RunStartSnapshotV1`, persists the complete publication atomically under the owner Agent home, reconstructs signed replay frontiers after restart and admits the runtime snapshot only after durable rename. Exact replay is idempotent; run-identity drift conflicts.
 
 A typed hard conflict produces `ObjectiveConflictReceiptV1`. `CompileDisposition::ExplicitAbstain` is a successful non-error outcome in which abstain is the sole legal action. Stable error meanings are generated from `docs/contracts/OBJECTIVE_ERRORS.json`; Markdown or Rust code may not locally redefine a code.
 
 ## 4. Deterministic algorithm and complexity
 
-Decode and normalize bounded fields, authenticate source, map registered units/IDs, classify P0-P4 precedence, intersect scalar or finite-enum domains, close bounded positive action implications and stable-sort all sets. Infeasible hard atoms use deterministic deletion filtering and return an inclusion-minimal conflict set.
+Decode and normalize bounded fields, authenticate source, map registered units/IDs, classify P0-P4 precedence and stable-sort all Source V1 sets. The Source V1 compiler compatibility IR currently admits closed scalar equality/lower/upper bounds; V1 strict/disequality/set comparators that cannot be represented fail closed. The generic feasibility API separately supports finite-enum intersection and bounded positive action implications. Infeasible hard atoms use deterministic deletion filtering and return an inclusion-minimal conflict set.
 
-Normalization and canonical sorting are `O(n log n)`. A feasibility oracle has profile cost `C(n)`. Inclusion-minimal conflict extraction performs at most `n+1` oracle calls and `O(n C(n))` work. These paths have separate CPU, wall-clock and metric budgets. Exhaustion preserves every original hard constraint and returns unavailable.
+Normalization and canonical sorting are `O(n log n)`. A feasibility oracle has profile cost `C(n)`. Inclusion-minimal conflict extraction performs at most `n+1` oracle calls and `O(n C(n))` work. The semantic solver is deterministic; the explicit availability wrapper additionally enforces a caller wall-clock budget and records elapsed time, so near-deadline exhaustion may reflect host scheduling. The legacy scalar compiler uses an unbounded wall-clock sentinel and remains timing-independent. Exhaustion preserves every original hard constraint and returns unavailable.
 
 ## 5. Capacity and performance profile
 
@@ -54,18 +58,18 @@ Latency claims require a named host, compiler, build profile, input class and ex
 - `OBJ-DETAIL-06`: 127 caller actions plus implicit abstain compile to 128; 128 without abstain reject.
 - `OBJ-DETAIL-07`: source, schema, profile, normalization or intent digest mismatch fails before native compile.
 
-Native test files and symbols are registered in the implementation map. A green fixture proves only the tested source boundary; it is not a production-caller or efficacy receipt.
+Native test files and symbols are registered in the implementation map. Agentd product-caller fixtures additionally exercise atomic publication exact replay, semantic-identity conflict, restart replay-frontier recovery and corruption rejection. A green fixture proves only the tested source/composition boundary; it is not an activation or efficacy receipt.
 
 ## 7. Integration, rollback and capability ceiling
 
 Compile before adaptive selection. NDU and Control consume the frozen objective but cannot mutate its hard constraints, observer requirements or legal effects. Rollback reuses a prior objective only when request/principal compatibility and current revocation checks pass; otherwise it starts a newly authorized run or abstains.
 
-The candidate issues no runtime, model, provider, network, filesystem, tool, secret, Matrix, fleet, acceptance, merge, promotion or release authority. Product composition, independent review and exact-head workflow success remain separately governed.
+The objective output and signed Agentd caller issue no model, provider, network, tool, secret, Matrix, fleet, external-effect, acceptance, merge, promotion or release authority. The caller has only its owner-local publication filesystem boundary. Downstream effect activation, independent review and exact-head workflow success remain separately governed.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `admit_and_compile_objective_v1` in [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs); `check_feasibility_v1` in [codex-rs/hepta-objective/src/feasibility.rs](../../../codex-rs/hepta-objective/src/feasibility.rs). Profile-bound source admission, deterministic compile and feasibility oracle implemented.
-- **State and recovery:** Stateless outputs bind the immutable source/principal/profile/schema/unit/time/intent tuple; unknown mappings fail closed. The owner caller must persist objective and run snapshot publication; the native compiler has no durable objective database.
-- **Source tests:** [codex-rs/hepta-objective/src/objective_admission_tests.rs](../../../codex-rs/hepta-objective/src/objective_admission_tests.rs), [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md](../../../docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md), [docs/modules/objective.compiler/IMPLEMENTATION_MAP.json](../../../docs/modules/objective.compiler/IMPLEMENTATION_MAP.json).
-- **Remaining work:** Authenticate actual source context and compose the production caller; conflict-oracle budgets and target latency need separate measurements from ordinary compilation.
+- **Implemented entrypoints:** `admit_and_compile_objective_v1` in [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs); `check_feasibility_v1` in [codex-rs/hepta-objective/src/feasibility.rs](../../../codex-rs/hepta-objective/src/feasibility.rs); signed product composition in [codex-rs/hepta-agentd/src/objective_runtime.rs](../../../codex-rs/hepta-agentd/src/objective_runtime.rs). Profile-bound source admission, private admitted-source compiler boundary, native run-start publication and durable Agentd caller are implemented candidates.
+- **State and recovery:** The compiler remains stateless. Agentd persists one canonical admission/compile/run publication before runtime handoff, reconciles exact replay, conflicts on semantic drift, restores the issuer sequence frontier and re-admits unexpired snapshots after restart.
+- **Source tests:** [codex-rs/hepta-objective/src/objective_admission_tests.rs](../../../codex-rs/hepta-objective/src/objective_admission_tests.rs), [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs), [codex-rs/hepta-objective/src/publication_tests.rs](../../../codex-rs/hepta-objective/src/publication_tests.rs), [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implementation and operating references:** [docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md](../../../docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md), [docs/modules/objective.compiler/SEMANTIC_SUPPORT.md](../../../docs/modules/objective.compiler/SEMANTIC_SUPPORT.md), [docs/modules/objective.compiler/IMPLEMENTATION_MAP.json](../../../docs/modules/objective.compiler/IMPLEMENTATION_MAP.json).
+- **Remaining work:** Obtain current exact-head and synthetic-merge workflow receipts for the final candidate; run normal and conflict-extraction characterization on a named target host; complete independent semantic review and downstream activation/acceptance. The caller candidate remains deny-all and is not release evidence.
