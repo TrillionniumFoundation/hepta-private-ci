@@ -398,7 +398,7 @@ fn digest_generated_set(
         push_id(&mut bytes, &layer.layer_id)?;
         bytes.extend_from_slice(&layer.baseline_squared_l2_raw_q64.to_be_bytes());
     }
-    bytes.extend_from_slice(profile.mutation_policy.manifest_digest.as_array());
+    bytes.extend_from_slice(profile.mutation_policy.policy_digest.as_array());
     push_len(&mut bytes, profile.update_scales.len())?;
     for scale in &profile.update_scales {
         bytes.extend_from_slice(&scale.raw().to_be_bytes());
@@ -487,7 +487,7 @@ mod tests {
                 baseline_squared_l2_raw_q64: 1_u128 << 64,
             }],
             mutation_policy: build_parameter_mutation_policy_v1(
-                id("grammar:generator-test"),
+                id("policy:generator-test"),
                 digest(b"artifact"),
                 ProposalWindowV2 {
                     window_id: id("window:1"),
@@ -501,7 +501,7 @@ mod tests {
                     maximum_delta: FixedQ32::from_raw(1_i64 << 24),
                 }],
             )
-            .expect("grammar"),
+            .expect("policy"),
             update_scales: vec![FixedQ32::ONE, FixedQ32::from_raw(1_i64 << 31)],
             signals: vec![ParameterPlasticitySignalV3 {
                 layer_id: id("layer:1"),
@@ -560,6 +560,13 @@ mod tests {
 
         let mut artifact = profile();
         artifact.selected_artifact_digest = digest(b"other-artifact");
+        artifact.mutation_policy = build_parameter_mutation_policy_v1(
+            id("policy:artifact-context"),
+            artifact.selected_artifact_digest,
+            artifact.window.clone(),
+            artifact.mutation_policy.rules.clone(),
+        )
+        .expect("artifact policy");
         let artifact_update = generate_parameter_candidates_v3(artifact)
             .expect("artifact")
             .candidates
@@ -571,6 +578,13 @@ mod tests {
 
         let mut window = profile();
         window.window.window_digest = digest(b"other-window");
+        window.mutation_policy = build_parameter_mutation_policy_v1(
+            id("policy:window-context"),
+            window.selected_artifact_digest,
+            window.window.clone(),
+            window.mutation_policy.rules.clone(),
+        )
+        .expect("window policy");
         let window_update = generate_parameter_candidates_v3(window)
             .expect("window")
             .candidates

@@ -1,6 +1,6 @@
-//! Typed mutation grammar for governed parameter plasticity.
+//! Typed parameter mutation policy for governed parameter plasticity.
 //!
-//! The manifest is an explicit allowlist/protected-surface policy. A digest alone
+//! The policy is an explicit allowlist/protected-surface boundary. A digest alone
 //! is never treated as authorization: every generated signal must match one typed
 //! rule bound to the exact selected artifact and proposal window.
 
@@ -48,11 +48,11 @@ pub struct ParameterMutationRuleV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParameterMutationPolicyV1 {
-    pub manifest_id: StableId,
+    pub policy_id: StableId,
     pub selected_artifact_digest: Digest32,
     pub window: ProposalWindowV2,
     pub rules: Vec<ParameterMutationRuleV1>,
-    pub manifest_digest: Digest32,
+    pub policy_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -80,43 +80,43 @@ impl fmt::Display for ParameterMutationPolicyErrorV1 {
 impl StdError for ParameterMutationPolicyErrorV1 {}
 
 pub fn build_parameter_mutation_policy_v1(
-    manifest_id: StableId,
+    policy_id: StableId,
     selected_artifact_digest: Digest32,
     window: ProposalWindowV2,
     mut rules: Vec<ParameterMutationRuleV1>,
 ) -> Result<ParameterMutationPolicyV1, ParameterMutationPolicyErrorV1> {
     validate_context(selected_artifact_digest, &window, &mut rules)?;
-    let mut manifest = ParameterMutationPolicyV1 {
-        manifest_id,
+    let mut policy = ParameterMutationPolicyV1 {
+        policy_id,
         selected_artifact_digest,
         window,
         rules,
-        manifest_digest: Digest32::ZERO,
+        policy_digest: Digest32::ZERO,
     };
-    manifest.manifest_digest = digest_manifest(&manifest)?;
-    Ok(manifest)
+    policy.policy_digest = digest_policy(&policy)?;
+    Ok(policy)
 }
 
 pub fn verify_parameter_mutation_policy_v1(
-    manifest: &ParameterMutationPolicyV1,
+    policy: &ParameterMutationPolicyV1,
 ) -> Result<(), ParameterMutationPolicyErrorV1> {
-    let mut rules = manifest.rules.clone();
+    let mut rules = policy.rules.clone();
     validate_context(
-        manifest.selected_artifact_digest,
-        &manifest.window,
+        policy.selected_artifact_digest,
+        &policy.window,
         &mut rules,
     )?;
-    if rules != manifest.rules || manifest.manifest_digest.is_zero() {
+    if rules != policy.rules || policy.policy_digest.is_zero() {
         return Err(ParameterMutationPolicyErrorV1::DigestMismatch);
     }
-    if digest_manifest(manifest)? != manifest.manifest_digest {
+    if digest_policy(policy)? != policy.policy_digest {
         return Err(ParameterMutationPolicyErrorV1::DigestMismatch);
     }
     Ok(())
 }
 
 pub fn authorize_parameter_mutation_v1(
-    manifest: &ParameterMutationPolicyV1,
+    policy: &ParameterMutationPolicyV1,
     selected_artifact_digest: Digest32,
     window: &ProposalWindowV2,
     layer_id: &StableId,
@@ -124,18 +124,18 @@ pub fn authorize_parameter_mutation_v1(
     lower_bound: FixedQ32,
     upper_bound: FixedQ32,
 ) -> Result<(), ParameterMutationPolicyErrorV1> {
-    verify_parameter_mutation_policy_v1(manifest)?;
-    if manifest.selected_artifact_digest != selected_artifact_digest {
+    verify_parameter_mutation_policy_v1(policy)?;
+    if policy.selected_artifact_digest != selected_artifact_digest {
         return Err(ParameterMutationPolicyErrorV1::ArtifactMismatch);
     }
-    if &manifest.window != window {
+    if &policy.window != window {
         return Err(ParameterMutationPolicyErrorV1::WindowMismatch);
     }
     let rule = manifest
         .rules
         .binary_search_by(|rule| rule.parameter_id.cmp(parameter_id))
         .ok()
-        .and_then(|index| manifest.rules.get(index))
+        .and_then(|index| policy.rules.get(index))
         .ok_or_else(|| ParameterMutationPolicyErrorV1::MissingRule(parameter_id.to_string()))?;
     if &rule.layer_id != layer_id {
         return Err(ParameterMutationPolicyErrorV1::LayerMismatch(
@@ -186,16 +186,16 @@ fn validate_context(
     Ok(())
 }
 
-fn digest_manifest(
-    manifest: &ParameterMutationPolicyV1,
+fn digest_policy(
+    policy: &ParameterMutationPolicyV1,
 ) -> Result<Digest32, ParameterMutationPolicyErrorV1> {
-    let mut bytes = b"hepta.plasticity.mutation-grammar.v1\0".to_vec();
-    push_id(&mut bytes, &manifest.manifest_id)?;
-    bytes.extend_from_slice(manifest.selected_artifact_digest.as_array());
-    push_id(&mut bytes, &manifest.window.window_id)?;
-    bytes.extend_from_slice(manifest.window.window_digest.as_array());
-    push_len(&mut bytes, manifest.rules.len())?;
-    for rule in &manifest.rules {
+    let mut bytes = b"hepta.plasticity.parameter-mutation-policy.v1\0".to_vec();
+    push_id(&mut bytes, &policy.policy_id)?;
+    bytes.extend_from_slice(policy.selected_artifact_digest.as_array());
+    push_id(&mut bytes, &policy.window.window_id)?;
+    bytes.extend_from_slice(policy.window.window_digest.as_array());
+    push_len(&mut bytes, policy.rules.len())?;
+    for rule in &policy.rules {
         push_id(&mut bytes, &rule.parameter_id)?;
         push_id(&mut bytes, &rule.layer_id)?;
         bytes.push(rule.surface.tag());
@@ -248,15 +248,15 @@ mod tests {
     #[test]
     fn learnable_rule_authorizes_only_exact_context_and_bounds() {
         let artifact = digest(b"artifact");
-        let manifest = build_parameter_mutation_policy_v1(
-            id("grammar:1"),
+        let policy = build_parameter_mutation_policy_v1(
+            id("policy:1"),
             artifact,
             window(),
             vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
         )
-        .expect("manifest");
+        .expect("policy");
         authorize_parameter_mutation_v1(
-            &manifest,
+            &policy,
             artifact,
             &window(),
             &id("layer:1"),
@@ -270,16 +270,16 @@ mod tests {
     #[test]
     fn protected_surface_fails_closed() {
         let artifact = digest(b"artifact");
-        let manifest = build_parameter_mutation_policy_v1(
-            id("grammar:1"),
+        let policy = build_parameter_mutation_policy_v1(
+            id("policy:1"),
             artifact,
             window(),
             vec![rule(ParameterMutationSurfaceV1::Authority)],
         )
-        .expect("manifest");
+        .expect("policy");
         assert!(matches!(
             authorize_parameter_mutation_v1(
-                &manifest,
+                &policy,
                 artifact,
                 &window(),
                 &id("layer:1"),
