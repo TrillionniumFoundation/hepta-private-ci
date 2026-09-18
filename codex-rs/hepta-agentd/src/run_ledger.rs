@@ -263,6 +263,36 @@ fn run_error(error: AgentRunError) -> AgentdError {
 mod tests {
     use super::*;
 
+    #[cfg(unix)]
+    #[test]
+    fn private_file_validation_rejects_symlink_hardlink_and_open_mode() {
+        use std::os::unix::fs::PermissionsExt;
+        use std::os::unix::fs::symlink;
+
+        let temp = tempfile::tempdir().expect("tempdir");
+        let file = temp.path().join("ledger.json");
+        std::fs::write(&file, b"{}").expect("write ledger");
+        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600))
+            .expect("mode 0600");
+        validate_private_regular_file(&file).expect("private regular file");
+
+        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o644))
+            .expect("mode 0644");
+        assert!(validate_private_regular_file(&file).is_err());
+        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600))
+            .expect("restore mode");
+
+        let hardlink = temp.path().join("hardlink.json");
+        std::fs::hard_link(&file, &hardlink).expect("hardlink");
+        assert!(validate_private_regular_file(&file).is_err());
+        std::fs::remove_file(&hardlink).expect("remove hardlink");
+        validate_private_regular_file(&file).expect("single link restored");
+
+        let link = temp.path().join("symlink.json");
+        symlink(&file, &link).expect("symlink");
+        assert!(validate_private_regular_file(&link).is_err());
+    }
+
     #[test]
     fn ledger_filename_is_owner_local_and_fixed() {
         assert_eq!(RUN_LEDGER_FILE, "agentd-run-lifecycle-v1.json");
