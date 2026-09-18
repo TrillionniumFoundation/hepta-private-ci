@@ -227,15 +227,14 @@ mod tests {
     fn art_05_admission_binds_exact_withdrawal_head() {
         let registry = DatasetWithdrawalRegistry::new();
         let head = registry.snapshot().head_digest;
-        let admission =
-            admit_manifest_at_withdrawal_head_v3(
-                &registry,
-                scope("tenant-a"),
-                head,
-                manifest(digest("dataset")),
-                20,
-            )
-                .expect("admission succeeds");
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            scope("tenant-a"),
+            head,
+            manifest(digest("dataset")),
+            20,
+        )
+        .expect("admission succeeds");
         validate_artifact_publication_v3(&admission, &registry, &scope("tenant-a"), 20)
             .expect("unchanged head remains valid");
         assert!(!admission.authority.grants_any());
