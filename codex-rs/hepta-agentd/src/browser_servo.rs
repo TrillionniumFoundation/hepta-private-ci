@@ -14,7 +14,6 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Child;
-use std::process::ChildStdin;
 use std::process::Command;
 use std::process::Stdio;
 use std::sync::Mutex;
@@ -117,7 +116,11 @@ impl BrowserServoCall {
 }
 
 pub trait BrowserServoTransport: Send {
-    fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError>;
+    fn write_frame_timeout(
+        &mut self,
+        bytes: &[u8],
+        timeout: Duration,
+    ) -> Result<(), BrowserServoError>;
     fn read_frame_timeout(
         &mut self,
         timeout: Duration,
@@ -209,6 +212,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                 "method": call.method.wire_name(),
                 "input": call.input,
             }),
+            self.frame_timeout,
         )?;
 
         let first = receive_frame(&mut state, self.frame_timeout)?;
@@ -283,6 +287,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                         "authorityEpoch": authority_epoch,
                         "requestDigest": request_digest_text,
                     }),
+                    self.frame_timeout,
                 )?;
                 let boundary = receive_frame(state, self.frame_timeout)?;
                 if boundary.request_id != request_id {
@@ -367,6 +372,7 @@ fn send_frame<T: BrowserServoTransport>(
     kind: &str,
     request_id: &str,
     payload: Value,
+    timeout: Duration,
 ) -> Result<(), BrowserServoError> {
     if !matches!(kind, "request" | "authority_enter") {
         return Err(BrowserServoError::Protocol(
@@ -398,7 +404,7 @@ fn send_frame<T: BrowserServoTransport>(
     let mut bytes = Vec::with_capacity(body.len() + 4);
     bytes.extend_from_slice(&(body.len() as u32).to_be_bytes());
     bytes.extend_from_slice(&body);
-    state.transport.write_frame(&bytes)
+    state.transport.write_frame_timeout(&bytes, timeout)
 }
 
 fn receive_frame<T: BrowserServoTransport>(
@@ -729,9 +735,14 @@ impl BrowserServoProcessConfig {
     }
 }
 
+struct ChildWriteRequest {
+    bytes: Vec<u8>,
+    ack: mpsc::SyncSender<Result<(), BrowserServoError>>,
+}
+
 pub struct ChildBrowserTransport {
     child: Child,
-    stdin: ChildStdin,
+    stdin_tx: mpsc::Sender<ChildWriteRequest>,
     stdout_rx: mpsc::Receiver<Result<Vec<u8>, BrowserServoError>>,
     closed: bool,
 }
@@ -801,6 +812,34 @@ impl ChildBrowserTransport {
         let stdout = child.stdout.take().ok_or_else(|| {
             BrowserServoError::Unavailable("Browser child stdout was not piped".into())
         })?;
+        let (stdin_tx, stdin_rx) = mpsc::channel::<ChildWriteRequest>();
+        if let Err(error) = thread::Builder::new()
+            .name("hepta-browser-child-writer".to_string())
+            .spawn(move || {
+                let mut stdin = stdin;
+                for request in stdin_rx {
+                    let result = stdin
+                        .write_all(&request.bytes)
+                        .and_then(|_| stdin.flush())
+                        .map_err(|error| {
+                            BrowserServoError::Indeterminate(format!(
+                                "Browser private-channel write failed: {error}"
+                            ))
+                        });
+                    let terminal = result.is_err();
+                    let _ = request.ack.send(result);
+                    if terminal {
+                        break;
+                    }
+                }
+            })
+        {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(BrowserServoError::Unavailable(format!(
+                "failed to start bounded Browser child writer: {error}"
+            )));
+        }
         let (stdout_tx, stdout_rx) = mpsc::sync_channel(8);
         let mut reader = BufReader::new(stdout);
         if let Err(error) = thread::Builder::new()
@@ -821,7 +860,7 @@ impl ChildBrowserTransport {
         }
         Ok(Self {
             child,
-            stdin,
+            stdin_tx,
             stdout_rx,
             closed: false,
         })
@@ -862,7 +901,11 @@ fn read_private_child_frame(reader: &mut impl Read) -> Result<Vec<u8>, BrowserSe
 }
 
 impl BrowserServoTransport for ChildBrowserTransport {
-    fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError> {
+    fn write_frame_timeout(
+        &mut self,
+        bytes: &[u8],
+        timeout: Duration,
+    ) -> Result<(), BrowserServoError> {
         if self.closed {
             return Err(BrowserServoError::Unavailable(
                 "Browser private child is closed".into(),
@@ -873,16 +916,33 @@ impl BrowserServoTransport for ChildBrowserTransport {
                 "Browser output frame bytes are outside bounds".into(),
             ));
         }
-        self.stdin.write_all(bytes).map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel write failed: {error}"
-            ))
-        })?;
-        self.stdin.flush().map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel flush failed: {error}"
-            ))
-        })
+        let (ack_tx, ack_rx) = mpsc::sync_channel(1);
+        self.stdin_tx
+            .send(ChildWriteRequest {
+                bytes: bytes.to_vec(),
+                ack: ack_tx,
+            })
+            .map_err(|_| {
+                BrowserServoError::Indeterminate(
+                    "Browser private-channel writer is unavailable".into(),
+                )
+            })?;
+        match ack_rx.recv_timeout(timeout) {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => {
+                self.terminate();
+                Err(BrowserServoError::Indeterminate(
+                    "Browser private-channel write timed out; child terminated before releasing the final-use fence"
+                        .into(),
+                ))
+            }
+            Err(mpsc::RecvTimeoutError::Disconnected) => {
+                self.terminate();
+                Err(BrowserServoError::Indeterminate(
+                    "Browser private-channel writer terminated without an acknowledgement".into(),
+                ))
+            }
+        }
     }
 
     fn read_frame_timeout(
@@ -992,13 +1052,27 @@ mod tests {
     struct ChannelTransport {
         outbound: mpsc::Sender<Vec<u8>>,
         inbound: mpsc::Receiver<Vec<u8>>,
+        writes: usize,
+        stall_second_write: bool,
     }
 
     impl BrowserServoTransport for ChannelTransport {
-        fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError> {
+        fn write_frame_timeout(
+            &mut self,
+            bytes: &[u8],
+            timeout: Duration,
+        ) -> Result<(), BrowserServoError> {
+            self.writes += 1;
             self.outbound
                 .send(bytes.to_vec())
-                .map_err(|_| BrowserServoError::Unavailable("test Browser receiver closed".into()))
+                .map_err(|_| BrowserServoError::Unavailable("test Browser receiver closed".into()))?;
+            if self.stall_second_write && self.writes == 2 {
+                thread::sleep(timeout);
+                return Err(BrowserServoError::Indeterminate(
+                    "test Browser frame write timed out".into(),
+                ));
+            }
+            Ok(())
         }
 
         fn read_frame_timeout(
@@ -1031,6 +1105,13 @@ mod tests {
     }
 
     fn harness_with_timeout(frame_timeout: Duration) -> Harness {
+        harness_with_timeout_and_write_stall(frame_timeout, false)
+    }
+
+    fn harness_with_timeout_and_write_stall(
+        frame_timeout: Duration,
+        stall_second_write: bool,
+    ) -> Harness {
         let state = tempfile::tempdir().expect("authority tempdir");
         let signing = SigningKey::from_bytes(&[7u8; 32]);
         let authority = FinalUseAuthority::open_state_dir(
@@ -1082,6 +1163,8 @@ mod tests {
                 ChannelTransport {
                     outbound: to_browser,
                     inbound: from_browser,
+                    writes: 0,
+                    stall_second_write,
                 },
                 frame_timeout,
             )
@@ -1214,6 +1297,62 @@ mod tests {
         revoked_rx
             .recv_timeout(Duration::from_secs(1))
             .expect("revocation unblocked")
+            .expect("revocation succeeded");
+        revoke.join().expect("revocation thread");
+    }
+
+    #[test]
+    fn final_use_authority_enter_write_timeout_releases_revocation_fence() {
+        let harness = harness_with_timeout_and_write_stall(Duration::from_millis(75), true);
+        let port = Arc::clone(&harness.port);
+        let invocation = harness.invocation.clone();
+        let call = thread::spawn(move || {
+            port.call(
+                BrowserServoCall::effect(json!({"operationId":"operation.write-timeout"}), invocation)
+                    .expect("effect call"),
+            )
+        });
+
+        let _request = harness.outbound.recv().expect("request");
+        harness
+            .inbound
+            .send(inbound_frame(
+                1,
+                "authority_challenge",
+                "browser.agentd.1",
+                json!({
+                    "request": {"operationId":"operation.write-timeout"},
+                    "requestDigest": hex_lower(&harness.request_digest),
+                    "authorityEpoch": 7,
+                }),
+            ))
+            .expect("challenge");
+        let enter = decode_outbound(&harness.outbound.recv().expect("authority enter"));
+        assert_eq!(enter["kind"], "authority_enter");
+
+        let authority = harness.authority.clone();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        let revoke = thread::spawn(move || {
+            let result = authority.update_revocations(FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["browser-grant.1".to_string()]),
+            });
+            revoked_tx.send(result).expect("revocation result");
+        });
+        assert!(matches!(
+            revoked_rx.recv_timeout(Duration::from_millis(25)),
+            Err(mpsc::RecvTimeoutError::Timeout)
+        ));
+
+        let error = call
+            .join()
+            .expect("call thread")
+            .expect_err("stalled authority-enter write must time out");
+        assert!(matches!(error, BrowserServoError::Indeterminate(_)));
+        revoked_rx
+            .recv_timeout(Duration::from_secs(1))
+            .expect("revocation unblocked after write timeout")
             .expect("revocation succeeded");
         revoke.join().expect("revocation thread");
     }
