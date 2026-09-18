@@ -6,8 +6,8 @@ use codex_hepta_matrix_protocol::outbox_id;
 use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_matrix_store::MatrixDispatchContext;
 use codex_hepta_matrix_store::MatrixDurableConfig;
-use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxDisposition;
+use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_store::matrix_dispatch_operation_id;
@@ -85,7 +85,11 @@ async fn fixture() -> (TempDir, MatrixDurableStore, SendIntent) {
 #[tokio::test]
 async fn facade_has_no_second_state_owner_and_reconciles_durably() {
     let (_temp, store, intent) = fixture().await;
-    let claimed = store.claim_outbox(10, 20, 1).await.expect("claim").remove(0);
+    let claimed = store
+        .claim_outbox(10, 20, 1)
+        .await
+        .expect("claim")
+        .remove(0);
     let observer = MatrixSendObserver::new(&store);
     let prepared = observer
         .prepare_send(10, &intent)
@@ -98,12 +102,7 @@ async fn facade_has_no_second_state_owner_and_reconciles_durably() {
         .expect("dispatch attempt");
     let event_id = MatrixEventId::parse("$observed:example.test").expect("event id");
     store
-        .record_matrix_transport_acceptance(
-            &claimed.stable_txn_id,
-            claimed.attempts,
-            &event_id,
-            11,
-        )
+        .record_matrix_transport_acceptance(&claimed.stable_txn_id, claimed.attempts, &event_id, 11)
         .await
         .expect("transport acceptance");
     let terminal = observer
@@ -135,7 +134,11 @@ async fn facade_has_no_second_state_owner_and_reconciles_durably() {
 #[tokio::test]
 async fn redaction_keeps_send_evidence_separate() {
     let (_temp, store, intent) = fixture().await;
-    let claimed = store.claim_outbox(10, 20, 1).await.expect("claim").remove(0);
+    let claimed = store
+        .claim_outbox(10, 20, 1)
+        .await
+        .expect("claim")
+        .remove(0);
     let observer = MatrixSendObserver::new(&store);
     observer.prepare_send(10, &intent).await.expect("prepare");
     store
@@ -144,12 +147,7 @@ async fn redaction_keeps_send_evidence_separate() {
         .expect("attempt");
     let event_id = MatrixEventId::parse("$observed:example.test").expect("event id");
     store
-        .record_matrix_transport_acceptance(
-            &claimed.stable_txn_id,
-            claimed.attempts,
-            &event_id,
-            11,
-        )
+        .record_matrix_transport_acceptance(&claimed.stable_txn_id, claimed.attempts, &event_id, 11)
         .await
         .expect("accepted");
     observer
