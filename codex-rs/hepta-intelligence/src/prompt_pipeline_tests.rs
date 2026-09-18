@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 
 use super::*;
+use codex_hepta_context_compiler::{ContextDeliveryDispositionV2, observe_delivery};
 use codex_hepta_prompt_optimizer::canonical::{
     CandidateEvidenceV1, PortfolioBudgetV1,
 };
@@ -135,4 +136,29 @@ fn canonical_caller_compiles_exercised_prompt_portfolio() {
         receipt.portfolio.receipt_digest
     );
     assert!(!receipt.context.receipt.authority.grants_any());
+
+    let handoff = must(prepare_canonical_prompt_attachment_v1(
+        &receipt,
+        id("serialization"),
+        id("attachment"),
+        digest(b"serialized-payload"),
+    ));
+    let delivery = must(observe_delivery(
+        &handoff.attachment,
+        id("delivery"),
+        Some(handoff.attachment.payload_digest),
+        true,
+        ContextDeliveryDispositionV2::Delivered,
+        20,
+    ));
+    let exposure = must(admit_canonical_prompt_delivery_v1(
+        &receipt,
+        &handoff,
+        &delivery,
+        id("exposure"),
+        id("episode"),
+    ));
+    assert_eq!(exposure.selected_count, 2);
+    assert!(!exposure.exposure_digest.is_zero());
+    assert!(!exposure.authority.grants_any());
 }
