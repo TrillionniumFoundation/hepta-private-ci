@@ -38,18 +38,34 @@ fields are private; the state is returned only after full validation/computation
 must authenticate input provenance, enforce expiry/revocation and CAS the exact
 predecessor while atomically persisting the checkpoint and receipt. Concurrent
 proposals may be computed; only the host's single writer may publish one.
-Serialization, crash/reopen, deletion rebuild, real encoder invocation and the
-canonical wire-protocol adapter are still separate integration work.
+The composed owner path is `NeuronRuntimeHost`: it consumes canonical typed
+Neuron inputs, invokes a required `FrozenModelExecutor`, validates the exact
+weights/tokenizer/preprocessor/quantization/backend/device receipt, commits the
+sparse state through `SparseJournal`, and advances a separately durable recovery
+witness before acknowledgement. Strict canonical-JSON adapters exist for the
+registered Neuron protocols. Segment rotation preserves the exact witnessed
+checkpoint as genesis, and deletion rebuild replays only through the live lineage
+policy; a failed rebuild is poisoned and cannot be reused.
+
+The executor is an integration boundary, not evidence of a concrete local model.
+The existing inference-worker model driver is still injected, so actual model
+weights/device execution and target-host qualification remain external work.
 
 ## No manufactured intelligence evidence
 
-Prediction error is a bounded residual against a supplied frozen prediction,
-not a trained world model or calibrated uncertainty estimate. Every receipt
-has `requires_calibration=true` and `AuthorityPosture::DENY_ALL`. Consumers must
-use the existing deterministic/slow path until an independently qualified
-confidence/OOD adapter exists. No current weight, topology or artifact is changed.
-Real model receipts, ablations, measured latency and longitudinal efficacy remain
-external or later-package evidence, not consequences of these unit tests.
+Prediction error remains a bounded residual, not a manufactured uncertainty
+estimate. The raw sparse receipt keeps `requires_calibration=true`; the canonical
+host may clear the slow-path requirement only by applying a digest-bound,
+generation-bound calibration/OOD artifact whose artifact, subgroup audit,
+detector and support lineage are all currently admissible. Missing, expired,
+OOD, low-confidence, collapse or resource evidence abstains. Every runtime result
+remains `AuthorityPosture::DENY_ALL`.
+
+Eligibility-to-parameter-group accumulation and bounded low-dimensional
+modulation now produce next-snapshot sufficient statistics only; selected weights,
+topology and current-run artifacts are never mutated. Real-model execution,
+target-host resource measurements, ablation outcomes and longitudinal efficacy
+remain external evidence, not consequences of unit tests.
 
 ## Verification and rollback
 
