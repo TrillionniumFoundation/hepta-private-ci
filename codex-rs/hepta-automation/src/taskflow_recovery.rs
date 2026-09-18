@@ -29,12 +29,7 @@ impl AutomationStore {
         recovery_lease_ms: u64,
     ) -> Result<(), TaskFlowError> {
         match self
-            .reconcile_occurrence_taskflow_terminal(
-                work,
-                terminal,
-                terminal_receipt_digest,
-                now_ms,
-            )
+            .reconcile_occurrence_taskflow_terminal(work, terminal, terminal_receipt_digest, now_ms)
             .await
         {
             Ok(()) => return Ok(()),
@@ -48,7 +43,9 @@ impl AutomationStore {
         let run = self
             .taskflow_run(&work.occurrence.taskflow_run_id)
             .await?
-            .ok_or_else(|| TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
+            })?;
         if run.state != TaskFlowRunState::Running {
             // Re-run the normal idempotent check for a concurrently repaired
             // Indeterminate/terminal run.
@@ -115,7 +112,9 @@ impl AutomationStore {
         let quarantined = self
             .taskflow_run(&work.occurrence.taskflow_run_id)
             .await?
-            .ok_or_else(|| TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
+            })?;
         if quarantined.state != TaskFlowRunState::Indeterminate {
             return Err(TaskFlowError::Conflict(
                 "recovered automation run did not enter indeterminate state".to_string(),
@@ -143,10 +142,9 @@ impl AutomationStore {
         &self,
         run_id: &str,
     ) -> Result<TaskFlowFence, TaskFlowError> {
-        let run = self
-            .taskflow_run(run_id)
-            .await?
-            .ok_or_else(|| TaskFlowError::Conflict("automation TaskFlow run is missing".to_string()))?;
+        let run = self.taskflow_run(run_id).await?.ok_or_else(|| {
+            TaskFlowError::Conflict("automation TaskFlow run is missing".to_string())
+        })?;
         Ok(TaskFlowFence {
             owner_agent_id: self.taskflow_owner_agent_id().clone(),
             owner_id: run.owner_id.ok_or_else(|| {
