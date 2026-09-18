@@ -112,6 +112,19 @@ impl DurableOperationStore {
         .transpose()
     }
 
+    /// Settle one dispatched/indeterminate source operation from a receipt
+    /// produced by the destination owner's own atomic dedupe/domain transaction.
+    pub async fn reconcile_destination_receipt(
+        &self,
+        scope: &StableId,
+        operation_id: &StableId,
+        observer_generation: Generation,
+        receipt: &DestinationReceipt,
+    ) -> Result<DurableOperationRecord, DurableOperationError> {
+        self.settle_from_receipt(scope, operation_id, observer_generation, receipt)
+            .await
+    }
+
     pub async fn reconcile_from_destination(
         &self,
         destination_store: &DurableOperationStore,
