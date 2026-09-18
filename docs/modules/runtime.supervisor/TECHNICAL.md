@@ -143,6 +143,8 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md).
 
+Native Agent fault recovery is configured per supervisor generation with bounded minimum/maximum exponential backoff, a fixed attempt budget and a stable-health recovery window; budget exhaustion closes the inactive lifecycle as `Stopped`. Unexpected exit and startup-health failure consume that budget; operator-requested restart remains explicit. Stop/kill cancels both a pending retry and an in-flight failure shutdown before that shutdown can schedule another launch. Spawn acquisition keeps the exact child handle live until terminal observation when durable lease publication fails, so a cleanup-kill failure cannot turn the child into an untracked process.
+
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
@@ -185,6 +187,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-supervisor/src/daemon_platform_tests.rs](../../../codex-rs/hepta-supervisor/src/daemon_platform_tests.rs); named case: `unsupported_host_rejects_daemon_before_accessing_fleet_state`.
 - [codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs](../../../codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs); named case: `cross_directory_publish_rejects_without_changing_either_file`.
+- [codex-rs/hepta-supervisor/src/supervisor_tests.rs](../../../codex-rs/hepta-supervisor/src/supervisor_tests.rs); named regressions: `preflight_accepts_matrix_only_release_change`, `lease_write_and_cleanup_kill_failure_keeps_child_tracked_until_exit`, `unexpected_agent_failure_uses_bounded_exponential_restart_budget`, `stable_recovery_window_replenishes_fault_restart_budget`, `stop_cancels_pending_fault_restart_without_relaunch`, and `operator_kill_cancels_health_timeout_recovery_before_exit`.
 
 In `codex-rs`, run `just test -p codex-hepta-supervisor`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) separately labels target acceptance designs.
 

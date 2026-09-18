@@ -71,6 +71,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        if self.cancel_fault_restart_without_runtime(agent_id, slot)? {
+            return Ok(());
+        }
+        if let Some(runtime) = slot.runtime.as_mut() {
+            runtime.restart_on_failure_exit = false;
+        }
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
             return Ok(());
         }
@@ -97,6 +103,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        if self.cancel_fault_restart_without_runtime(agent_id, slot)? {
+            return Ok(());
+        }
+        if let Some(runtime) = slot.runtime.as_mut() {
+            runtime.restart_on_failure_exit = false;
+        }
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
@@ -146,6 +158,27 @@ impl<D: ProcessDriver> Supervisor<D> {
         let generation = active_runtime(agent_id, slot)?.generation;
         slot.event(generation, SupervisorEventKind::RestartQueued);
         Ok(())
+    }
+
+    fn cancel_fault_restart_without_runtime(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+    ) -> Result<bool, SupervisorError> {
+        if slot.runtime.is_some() || slot.fault_restart_retry_at.take().is_none() {
+            return Ok(false);
+        }
+        slot.fault_restart_healthy_since = None;
+        let lifecycle = self.record(agent_id)?.lifecycle;
+        if lifecycle.lifecycle == AgentLifecycle::Failed {
+            self.transition_without_runtime(
+                agent_id,
+                slot,
+                lifecycle.generation,
+                AgentLifecycle::Stopped,
+            )?;
+        }
+        Ok(true)
     }
 
     fn prepare_termination(

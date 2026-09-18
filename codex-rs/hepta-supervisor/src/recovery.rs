@@ -131,18 +131,51 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: release.release_id().clone(),
             identity: spawned.identity.clone(),
         };
-        if let Err(error) = write_lease(record.layout.run_root(), &lease) {
-            let _ = spawned.process.kill();
-            self.transition_without_runtime(
+        if let Err(lease_error) = write_lease(record.layout.run_root(), &lease) {
+            // Lease publication can fail after the child exists. Never drop the
+            // only live handle in that window: retain the exact process until
+            // terminal observation, even when the first cleanup kill fails.
+            let lease_persisted = matches!(
+                read_lease(record.layout.run_root()),
+                Ok(Some(actual)) if actual == lease
+            );
+            let cleanup_error = spawned.process.kill().err();
+            let transition = self.transition_without_runtime(
                 agent_id,
                 slot,
                 starting.generation,
                 AgentLifecycle::Failed,
-            )?;
-            return Err(error);
+            );
+            let generation = transition.as_ref().copied().unwrap_or(starting.generation);
+            slot.last_command = Some(release.command().clone());
+            slot.active_release = Some(release);
+            slot.runtime = Some(AgentRuntime {
+                process: spawned.process,
+                identity: spawned.identity,
+                spawn_generation: starting.generation,
+                release_id: lease.release_id,
+                generation,
+                phase: RuntimePhase::Killing,
+                healthy: false,
+                fenced: false,
+                restart_on_failure_exit: false,
+                lease_persisted,
+            });
+            if cleanup_error.is_none() {
+                slot.event(generation, SupervisorEventKind::KillRequested);
+            }
+            if let Err(error) = transition {
+                return Err(error);
+            }
+            if let Some(error) = cleanup_error {
+                return Err(driver_error(agent_id, error));
+            }
+            return Err(lease_error);
         }
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
+        slot.fault_restart_retry_at = None;
+        slot.fault_restart_healthy_since = None;
         slot.runtime = Some(AgentRuntime {
             process: spawned.process,
             identity: spawned.identity,
@@ -154,6 +187,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             },
             healthy: false,
             fenced: false,
+            restart_on_failure_exit: false,
+            lease_persisted: true,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
         Ok(())
@@ -247,6 +282,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                     phase,
                     healthy: false,
                     fenced: false,
+                    restart_on_failure_exit: false,
+                    lease_persisted: true,
                 });
                 slot.event(
                     record.lifecycle.generation,
