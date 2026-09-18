@@ -87,6 +87,7 @@ Produced contracts:
 
 - `EvaluationReceiptV1`
 - `LongitudinalEvaluationReceiptV1`
+- `NduConvergenceCertificateV1`
 - `ModulePort::learning.eval::intelligence.control`
 - `ModulePort::learning.eval::learning.plasticity`
 - `UnlearningComplianceReceiptV1`
@@ -127,6 +128,7 @@ Critical protocol schemas:
 - `LearningEpisodeV1`
 - `LocalModelRuntimeReceiptV1`
 - `LongitudinalEvaluationReceiptV1`
+- `NduConvergenceCertificateV1`
 - `OperatorSensorCoreManifestV1`
 - `OutcomeReceiptV1`
 - `PromptCandidateSetReceiptV1`
@@ -144,6 +146,12 @@ Evaluation rejects zero or stale composite plan digests before fitting or estima
 `TemporalEvaluationReceipt.evidence_digest` uses the unframed `hepta.ope.temporal-holdout-pipeline.v2` domain and binds, in order, evaluation ID, composite plan digest, objective digest, fitted model digest, fitted predictions digest and cluster-estimate evidence digest. Version 2 is not wire-compatible with the previous v1 digest preimage: historical v1 evidence stays version-tagged and cannot be reinterpreted as v2. These internal digest profiles do not create a published contract or alter the authority of `EvaluationReceiptV1` and `LongitudinalEvaluationReceiptV1`.
 
 Canonical vector `TEMPORAL-PLAN-DIGEST-GV-001` fixes the complete 293-byte composite preimage and expected digest `dba5b45f87d6a8ef08dccfc9b2108a1456d94b226c3315777c3de2f15f4219b3`; source tests must compare against that hard-coded oracle rather than a value emitted by the implementation under test.
+
+### NDU convergence certificate admission
+
+`learning.eval` owns the native admission representation for canonical `NduConvergenceCertificateV1`. The source type follows the registered certificate fields and bounds and does not grant authority. Admission checks objective-class and solver identity, non-self evaluation, at most 64 iterations, non-negative diagnostics and, for an `accepted` decision, maximum residual <=2^-20 in Q32, conservation residual <=1 raw Q32 unit, resolved multiple-solution disposition and spectral-radius upper 95% bound strictly below 0.95. Rejected or unavailable evidence remains recordable without being converted into acceptance.
+
+This function validates an independently issued certificate; it does not run the independent experiment, authenticate the evaluator, manufacture a certificate from `utility.ndu` local receipts, select an artifact or activate a runtime. Exact-candidate independent evaluation and evidence publication remain required before any acceptance claim.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -217,6 +225,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intelligence-eval/src/closure_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/closure_tests.rs); named case: `eval_03_intersects_superiority_safety_retention_and_unlearning`.
 - [codex-rs/hepta-intelligence-eval/src/lib_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/lib_tests.rs); named case: `eligible_is_not_promotion`.
+- [codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs); native NDU certificate admission covers objective/solver drift, self-evaluation, residual/conservation/spectral gates, multiple-solution disposition and canonical evaluator-identity bounds.
 
 In `codex-rs`, run `just test -p codex-hepta-intelligence-eval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md) separately labels target acceptance designs.
 
@@ -243,7 +252,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. The NDU convergence admission source path is not itself an independently issued convergence decision. Composition requires a named caller and qualification requires current exact-candidate evidence produced by the registered independent path. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `learning.eval`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
