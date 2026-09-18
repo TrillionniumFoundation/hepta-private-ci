@@ -221,7 +221,7 @@ fn durable_frame_without_sidecar_commit_is_reconciled_from_bounded_tail() {
     drop(prepared);
     drop(ledger);
 
-    let mut recovered = must(f.recover(3, minimum));
+    let recovered = must(f.recover(3, minimum));
     assert_eq!(recovered.head_anchor().sequence, 1);
     assert_eq!(must(recovered.metrics()).retained_payload_records, 1);
     assert!(must(recovered.metrics()).historical_cache_entries <= 3);
@@ -230,7 +230,7 @@ fn durable_frame_without_sidecar_commit_is_reconciled_from_bounded_tail() {
     // checkpoint and verifies that the repaired semantic rows are reusable.
     let repaired_minimum = must(recovered.checkpoint());
     drop(recovered);
-    let reopened = must(f.recover(3, repaired_minimum));
+    let mut reopened = must(f.recover(3, repaired_minimum));
     let replay = must(reopened.append(Digest32::ZERO, decision(0)));
     assert_eq!(replay.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(replay.sequence.get(), 1);
