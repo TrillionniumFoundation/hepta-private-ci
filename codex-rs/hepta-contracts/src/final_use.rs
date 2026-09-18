@@ -208,6 +208,20 @@ impl FinalUseAuthority {
         })))
     }
 
+    /// Return the currently trusted durable revocation head. This is metadata
+    /// only; it grants no authority and exposes no signing material.
+    pub fn revocation_head(&self) -> Result<FinalUseRevocations, FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(state.head.clone())
+    }
+
     /// Called only by the trusted host, not from a provider response or grant.
     /// Revocations are monotonic within an epoch and are never silently dropped.
     pub fn update_revocations(&self, head: FinalUseRevocations) -> Result<(), FinalUseError> {
