@@ -7,6 +7,9 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod lease_ledger;
 
+pub mod capacity;
+pub mod placement;
+
 mod allocation;
 mod allocation_digest;
 mod allocation_model;
@@ -15,8 +18,22 @@ mod error;
 mod model;
 mod registry;
 mod release;
+mod resource;
 
 pub use allocation::calculate_local_allocation_v1;
+pub use capacity::CapacityObservationError;
+pub use capacity::CapacityObservationRequestV1;
+pub use capacity::FleetCapacityObserver;
+pub use capacity::LocalCapacityPolicyV1;
+pub use capacity::LocalSystemCapacityObserver;
+pub use capacity::ObservedFleetCapacityV1;
+pub use capacity::FLEET_CAPACITY_OBSERVATION_SCHEMA_VERSION;
+pub use placement::FleetPlacementAssignmentV1;
+pub use placement::FleetPlacementError;
+pub use placement::FleetPlacementHostV1;
+pub use placement::FleetPlacementPlanV1;
+pub use placement::FleetPlacementRequestV1;
+pub use placement::calculate_fleet_placement_v1;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;
 pub use allocation_model::LocalAllocationCalculationV1;
 pub use allocation_model::LocalAllocationCandidateV1;
@@ -50,6 +67,9 @@ pub use release::RegisteredRelease;
 pub use release::ReleaseId;
 pub use release::ReleaseMetadata;
 pub use release::ReleaseProgramMetadata;
+pub use resource::FleetResourceArithmeticError;
+pub use resource::FleetResourceAxisV1;
+pub use resource::FleetResourceVectorV1;
 
 #[cfg(test)]
 #[path = "allocation_tests.rs"]
