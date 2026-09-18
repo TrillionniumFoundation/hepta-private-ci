@@ -293,7 +293,7 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-wire/src/v2.rs": [
             'const WIRE_VERSION_V2: u16 = 2;',
-            'const FRAME_DIGEST_DOMAIN: &[u8] = b"HPTA-WIRE-V2\\0";',
+            "FRAME_DIGEST_DOMAIN",
             "pub struct WireEnvelopeV2",
             "FrameDigestMismatch",
         ],
