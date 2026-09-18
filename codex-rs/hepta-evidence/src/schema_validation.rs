@@ -108,6 +108,42 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         ],
     },
     SchemaObjectSpec {
+        name: "authbus_policy_heads",
+        object_type: "table",
+        table_name: "authbus_policy_heads",
+        required_sql_fragments: &["create table", "policy_id", "revision", "revoked", "without rowid"],
+    },
+    SchemaObjectSpec {
+        name: "authbus_policy_rules",
+        object_type: "table",
+        table_name: "authbus_policy_rules",
+        required_sql_fragments: &["create table", "principal_id", "action_id", "scope_digest", "allow", "without rowid"],
+    },
+    SchemaObjectSpec {
+        name: "authbus_quota_registry",
+        object_type: "table",
+        table_name: "authbus_quota_registry",
+        required_sql_fragments: &["create table", "endowment", "reserved", "consumed", "without rowid"],
+    },
+    SchemaObjectSpec {
+        name: "authbus_quota_reservations",
+        object_type: "table",
+        table_name: "authbus_quota_reservations",
+        required_sql_fragments: &["create table", "operation_id", "policy_revision", "'active','settled','cancelled','expired','quarantined'", "without rowid"],
+    },
+    SchemaObjectSpec {
+        name: "authbus_restore_checkpoint",
+        object_type: "table",
+        table_name: "authbus_restore_checkpoint",
+        required_sql_fragments: &["create table", "singleton", "generation", "checkpoint_digest"],
+    },
+    SchemaObjectSpec {
+        name: "authbus_retired_epochs",
+        object_type: "table",
+        table_name: "authbus_retired_epochs",
+        required_sql_fragments: &["create table", "issuer_id", "key_epoch", "checkpoint_generation", "checkpoint_digest", "without rowid"],
+    },
+    SchemaObjectSpec {
         name: "governance_decisions",
         object_type: "table",
         table_name: "governance_decisions",
