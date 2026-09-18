@@ -93,11 +93,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             )));
         }
         if !slot.restart_pending {
-            self.reset_restart_budget_for_release(
-                agent_id,
-                slot,
-                release.release_id().clone(),
-            )?;
+            self.reset_restart_budget_for_release(agent_id, slot, release.release_id().clone())?;
         }
         let starting = self.registry.compare_and_transition(
             agent_id,
