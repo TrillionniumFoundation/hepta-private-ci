@@ -36,6 +36,7 @@ use super::REQUIRED_SCHEMA_ORACLE_SHA256;
 use super::unavailable;
 use crate::ProductionAuthorityLease;
 use crate::ProductionAuthorityVerifier;
+use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
 #[path = "cognitive_store_recovery_read_only.rs"]
@@ -136,7 +137,7 @@ impl CognitiveStore {
             .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
 
         let root = layout.cognitive_root();
-        let canonical_root = super::canonical_path_without_redirection(root)
+        let canonical_root = canonical_path_without_redirection(root)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
             .ok_or_else(|| {
                 CognitiveRecoveryError::Unavailable(
