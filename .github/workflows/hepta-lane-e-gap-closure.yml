@@ -19,6 +19,9 @@ on:
 
 permissions:
   contents: read
+  id-token: write
+  attestations: write
+  artifact-metadata: write
 
 concurrency:
   group: hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}
@@ -48,7 +51,7 @@ jobs:
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
-          components: clippy,rustfmt
+          components: clippy,rustfmt,llvm-tools-preview
 
       - name: Bind exact source
         shell: bash
@@ -194,6 +197,15 @@ jobs:
           python3 scripts/hepta-lane-e-evidence.py verify \
             --receipt .hepta-evidence/lane-e-exact-head.json
 
+      - name: Attest exact-head Lane E qualification evidence
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763
+        with:
+          subject-path: |
+            .hepta-evidence/lane-e-exact-head.json
+            .hepta-evidence/learning-eval.lcov
+            .hepta-evidence/learning-eval-stress.log
+            .hepta-evidence/learning-eval-e2e.log
       - name: Retain exact-head Lane E qualification evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -342,6 +354,13 @@ jobs:
           python3 scripts/hepta-lane-e-evidence.py verify \
             --receipt .hepta-evidence/lane-e-synthetic-merge.json
 
+      - name: Attest synthetic-merge Lane E qualification evidence
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763
+        with:
+          subject-path: |
+            .hepta-evidence/lane-e-synthetic-merge.json
+            .hepta-evidence/learning-eval-synthetic-e2e.log
       - name: Retain synthetic-merge Lane E qualification evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
