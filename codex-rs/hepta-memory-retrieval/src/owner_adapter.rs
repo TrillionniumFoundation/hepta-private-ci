@@ -74,6 +74,7 @@ pub enum OwnerAdapterErrorV1 {
     InvalidRecord(String),
     DuplicateOwnerChannel(OwnerRetrievalChannelV1),
     MissingOwnerChannel(OwnerRetrievalChannelV1),
+    MissingCanonicalChannel(RetrievalChannelV1),
     DuplicateOwnerCandidateChannel(String),
     InvalidOwnerRank(String),
     CandidateCountMismatch(OwnerRetrievalChannelV1),
@@ -191,6 +192,21 @@ pub fn adapt_owner_observation(
         }
     }
 
+    let observed_by_physical = observation
+        .candidates
+        .iter()
+        .flat_map(|candidate| candidate.channel_ranks.iter().map(|rank| rank.channel))
+        .fold(BTreeMap::<OwnerRetrievalChannelV1, usize>::new(), |mut counts, channel| {
+            *counts.entry(channel).or_insert(0) += 1;
+            counts
+        });
+    for fact in channel_facts.values() {
+        let observed = observed_by_physical.get(&fact.channel).copied().unwrap_or(0);
+        if observed > usize::try_from(fact.candidate_count).unwrap_or(usize::MAX) {
+            return Err(OwnerAdapterErrorV1::CandidateCountMismatch(fact.channel));
+        }
+    }
+
     let mut builders = BTreeMap::<RetrievalChannelV1, BatchBuilder>::new();
     for channel in &observation.channels {
         let canonical = canonical_channel(channel.channel);
@@ -239,9 +255,7 @@ pub fn adapt_owner_observation(
         }
         for (channel, rank) in best_canonical_rank {
             let Some(builder) = builders.get_mut(&channel) else {
-                return Err(OwnerAdapterErrorV1::MissingOwnerChannel(
-                    OwnerRetrievalChannelV1::MemoryFts,
-                ));
+                return Err(OwnerAdapterErrorV1::MissingCanonicalChannel(channel));
             };
             builder.candidates.push(RetrievalChannelCandidateV1 {
                 record: candidate.record.clone(),
@@ -256,22 +270,6 @@ pub fn adapt_owner_observation(
                 contradiction_group_digest: None,
                 generation_vector_digest: observation.generation_vector_digest,
             });
-        }
-    }
-
-    for fact in channel_facts.values() {
-        let observed = observation
-            .candidates
-            .iter()
-            .filter(|candidate| {
-                candidate
-                    .channel_ranks
-                    .iter()
-                    .any(|rank| rank.channel == fact.channel)
-            })
-            .count();
-        if observed > usize::try_from(fact.candidate_count).unwrap_or(usize::MAX) {
-            return Err(OwnerAdapterErrorV1::CandidateCountMismatch(fact.channel));
         }
     }
 
