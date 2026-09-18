@@ -295,6 +295,13 @@ impl MatrixDurableStore {
         }
         let decision_seq =
             insert_commit_decision_tx(&mut transaction, batch, &decision_digest).await?;
+        // Server-event observation is committed under the same write lock and
+        // before source mutations so a redaction in this exact batch can
+        // append to an already-established terminal send without replacing
+        // its original success evidence.
+        for observation in server_observations {
+            record_server_event_observation_tx(&mut transaction, observation).await?;
+        }
 
         let mut outcomes = Vec::with_capacity(batch.mutations.len());
         let mut remaining_scrub_budget = self.config.event_capacity;
@@ -305,9 +312,6 @@ impl MatrixDurableStore {
             );
         }
         insert_decision_outcomes_tx(&mut transaction, decision_seq, &outcomes).await?;
-        for observation in server_observations {
-            record_server_event_observation_tx(&mut transaction, observation).await?;
-        }
 
         let updated_at_ms = existing
             .as_ref()
