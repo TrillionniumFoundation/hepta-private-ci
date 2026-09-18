@@ -391,9 +391,11 @@
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
         "\\.\\s*verify_use\\s*\\(",
-        "AuthorityLeaseRegistry\\s*::\\s*verify_use\\s*\\("
+        "AuthorityLeaseVerifier\\s*::\\s*verify_use\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ]
     },
     {
       "id": "authority_lease_delivery",
@@ -401,9 +403,11 @@
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
         "\\.\\s*with_verified_use\\s*\\(",
-        "AuthorityLeaseRegistry\\s*::\\s*with_verified_use\\s*\\("
+        "AuthorityLeaseVerifier\\s*::\\s*with_verified_use\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ]
     }
   ]
 }
