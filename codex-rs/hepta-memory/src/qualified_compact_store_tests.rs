@@ -104,12 +104,7 @@ fn unix_seconds() -> u64 {
         .as_secs()
 }
 
-async fn prepared() -> (
-    TempDir,
-    CognitiveStore,
-    LocalLeaseOutbox,
-    CompactFence,
-) {
+async fn prepared() -> (TempDir, CognitiveStore, LocalLeaseOutbox, CompactFence) {
     let temp = TempDir::new().expect("temp");
     let owner = agent_id(84);
     let store = CognitiveStore::open(&layout(&temp, &owner))
@@ -262,7 +257,13 @@ async fn uncommitted_publication_transaction_disappears_after_restart() {
     .bind(proof.candidate_digest.to_string())
     .bind(proof.proof_digest.to_string())
     .bind(checkpoint.source_snapshot.vector_digest.to_string())
-    .bind(checkpoint.source_snapshot.vector.tokenizer_digest.to_string())
+    .bind(
+        checkpoint
+            .source_snapshot
+            .vector
+            .tokenizer_digest
+            .to_string(),
+    )
     .bind(publication.to_string())
     .bind(checkpoint_json)
     .bind(proof_json)
