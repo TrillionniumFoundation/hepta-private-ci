@@ -1,9 +1,20 @@
 {
   "schemaVersion": 1,
   "defaultBranch": "main",
-  "protectedBranches": ["main"],
+  "protectedBranches": [
+    "main"
+  ],
   "candidatePatterns": [],
-  "deprecatedPatterns": ["integration/**", "candidate/**", "codex/**", "vnext-main"],
+  "deprecatedPatterns": [
+    "integration/**",
+    "candidate/**",
+    "codex/**",
+    "vnext-main"
+  ],
   "source": "repository",
-  "description": "Canonical branch policy consumed by CI and release tooling. Deprecated patterns are retained only for audit detection and must not be added to workflow triggers."
+  "description": "Canonical desired branch policy consumed by CI and release tooling. The protectedBranches list is required state, not evidence that GitHub settings currently enforce it. Self-iteration activation must obtain a fresh live repository-settings observation. Deprecated patterns are retained only for audit detection and must not be added to workflow triggers.",
+  "protectedBranchesAreRequiredStateNotObservation": true,
+  "liveObservationSource": "GitHub repository settings at activation time",
+  "selfIterationActivationRequiresLiveProtection": true,
+  "selfIterationActivationWorkflow": ".github/workflows/hepta-self-iteration-activation.yml"
 }
