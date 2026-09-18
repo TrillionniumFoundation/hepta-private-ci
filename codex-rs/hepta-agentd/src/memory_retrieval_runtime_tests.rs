@@ -2,6 +2,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
+use codex_hepta_learning_ledger::EpisodeDecision;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
@@ -33,6 +34,22 @@ fn id(value: &str) -> StableId {
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+
+#[derive(Default)]
+struct DecisionSink {
+    decisions: Mutex<Vec<EpisodeDecision>>,
+}
+
+impl MemoryRetrievalDecisionSink for DecisionSink {
+    fn append_decision(&self, decision: EpisodeDecision) -> Result<Digest32, String> {
+        let mut decisions = self.decisions.lock().map_err(|_| "lock poisoned")?;
+        decisions.push(decision.clone());
+        Ok(Digest32::of_bytes(
+            format!("{:?}", decision).as_bytes(),
+        ))
+    }
 }
 
 struct CurrentProfile {
@@ -164,8 +181,14 @@ async fn runtime_binds_owner_cut_and_detects_profile_change() {
     let current = Arc::new(CurrentProfile {
         revision: Mutex::new(1),
     });
-    let runtime =
-        PinnedMemoryRetrievalRuntime::new(owner.clone(), 1, current.clone()).unwrap();
+    let sink = Arc::new(DecisionSink::default());
+    let runtime = PinnedMemoryRetrievalRuntime::new(
+        owner.clone(),
+        1,
+        current.clone(),
+        sink,
+    )
+    .unwrap();
     let prepared = runtime
         .prepare(&owner, 1, "lemon", &cut, &observation)
         .unwrap();
