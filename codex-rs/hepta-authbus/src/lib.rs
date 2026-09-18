@@ -11,6 +11,8 @@
 
 mod control;
 mod signed;
+pub use control::AUTHBUS_MAX_ACTIVE_RESERVATIONS_PER_POLICY;
+pub use control::AUTHBUS_MAX_EXPIRY_SWEEP_ROWS;
 pub use control::AUTHBUS_MAX_RESERVATION_TTL_MS;
 pub use control::AuthBusReplayCheckpoint;
 pub use control::AuthBusTrustHead;
