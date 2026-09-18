@@ -126,6 +126,46 @@ impl fmt::Debug for VerifiedUseToken {
     }
 }
 
+/// Ephemeral, non-serializable proof exposed only while the live revocation
+/// fence is held. Consumers may derive durable audit evidence from its public
+/// fields, but cannot construct this value themselves.
+pub struct VerifiedUseWitness<'a> {
+    grant: &'a FinalUseGrant,
+}
+
+impl fmt::Debug for VerifiedUseWitness<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("VerifiedUseWitness([REDACTED])")
+    }
+}
+
+impl VerifiedUseWitness<'_> {
+    #[must_use]
+    pub fn signer_id(&self) -> &str {
+        &self.grant.signer_id
+    }
+
+    #[must_use]
+    pub fn authority_epoch(&self) -> u64 {
+        self.grant.authority_epoch
+    }
+
+    #[must_use]
+    pub fn grant_id(&self) -> &str {
+        &self.grant.grant_id
+    }
+
+    #[must_use]
+    pub fn expires_at_unix_ms(&self) -> u64 {
+        self.grant.expires_at_unix_ms
+    }
+
+    #[must_use]
+    pub fn binding(&self) -> &FinalUseBinding {
+        &self.grant.binding
+    }
+}
+
 impl FinalUseAuthority {
     pub fn open_state_dir(
         directory: &std::path::Path,
@@ -237,6 +277,18 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
+        self.with_verified_use_witness(token, expected, |_| consumer())
+    }
+
+    /// Variant for effect adapters that must persist an audit witness while the
+    /// same live revocation fence is held. The witness cannot outlive this call
+    /// and is deliberately not serializable or constructible outside this module.
+    pub fn with_verified_use_witness<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl for<'witness> FnOnce(VerifiedUseWitness<'witness>) -> T,
+    ) -> Result<T, FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
@@ -249,7 +301,9 @@ impl FinalUseAuthority {
             return Err(FinalUseError::Unavailable);
         }
         validate_live(&token.grant, &state.head)?;
-        let result = consumer();
+        let result = consumer(VerifiedUseWitness {
+            grant: &token.grant,
+        });
         drop(state);
         Ok(result)
     }

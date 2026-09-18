@@ -57,6 +57,29 @@ fn signed_claim_is_single_use_and_delivers_under_same_owner() {
 }
 
 #[test]
+fn live_witness_exposes_only_the_claimed_grant_under_the_same_fence() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    let observed = authority
+        .with_verified_use_witness(token, &binding, |witness| {
+            (
+                witness.signer_id().to_string(),
+                witness.authority_epoch(),
+                witness.grant_id().to_string(),
+                witness.expires_at_unix_ms(),
+                witness.binding().clone(),
+            )
+        })
+        .unwrap();
+    assert_eq!(observed.0, signed.grant.signer_id);
+    assert_eq!(observed.1, signed.grant.authority_epoch);
+    assert_eq!(observed.2, signed.grant.grant_id);
+    assert_eq!(observed.3, signed.grant.expires_at_unix_ms);
+    assert_eq!(observed.4, binding);
+}
+
+#[test]
 fn changing_signed_data_or_substituting_a_key_does_not_authorize() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.binding.request_sha256 = [6; 32];

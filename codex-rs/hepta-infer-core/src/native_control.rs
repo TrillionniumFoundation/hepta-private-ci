@@ -3,7 +3,16 @@
 //! Unknown execution retains that slot; unknown token usage remains `None`.
 
 use std::collections::BTreeMap;
+use std::fs;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Write;
+use std::path::PathBuf;
 
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::VerifiedUseWitness;
+use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -58,21 +67,36 @@ pub struct NativeRunOutput {
     pub model: String,
     pub model_provider: String,
     pub status: NativeRunStatus,
+    /// Raw text exists only in the live call. Durable observations redact it.
     pub output: String,
+    /// Digest of the complete observed output. Historical records may omit it.
+    #[serde(default)]
+    pub output_digest: Option<String>,
+    /// False means the durable record intentionally retained only the digest.
+    #[serde(default = "default_output_retained")]
+    pub output_retained: bool,
     pub observed_output_tokens: Option<u64>,
     pub terminal_observed: bool,
     pub stop_reason: Option<String>,
     #[serde(default)]
     pub owner_authority: NativeOwnerAuthority,
+    /// True only when the durable dispatch carries a final-use witness.
+    #[serde(default)]
+    pub final_use_authorized: bool,
+}
+
+const fn default_output_retained() -> bool {
+    true
 }
 
 impl NativeRunOutput {
-    /// The CLI and callers must not infer authorized success from provider
-    /// completion alone, including when replaying a historical observation.
+    /// Provider completion and owner health are observations, not effect authority.
+    /// Success additionally requires a durable final-use admission witness.
     pub fn succeeded(&self) -> bool {
         self.terminal_observed
             && self.status == NativeRunStatus::Completed
             && self.owner_authority == NativeOwnerAuthority::ObservedReady
+            && self.final_use_authorized
     }
 }
 
@@ -89,11 +113,95 @@ pub enum NativeReservationState {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct NativeFinalUseWitness {
+    pub signer_id: String,
+    pub authority_epoch: u64,
+    pub grant_id: String,
+    pub expires_at_unix_ms: u64,
+    /// Digest of the exact FinalUseBinding admitted by kernel.authority.
+    pub binding_digest: String,
+}
+
+impl NativeFinalUseWitness {
+    fn from_verified(value: &VerifiedUseWitness<'_>) -> Result<Self, Error> {
+        let binding_digest = Digest32::of_bytes(
+            &serde_json::to_vec(value.binding())
+                .map_err(|_| Error::CorruptJournal("native final-use binding encode"))?,
+        )
+        .to_string();
+        Ok(Self {
+            signer_id: value.signer_id().to_string(),
+            authority_epoch: value.authority_epoch(),
+            grant_id: value.grant_id().to_string(),
+            expires_at_unix_ms: value.expires_at_unix_ms(),
+            binding_digest,
+        })
+    }
+}
+
+/// Canonical exact effect binding used by both the host verifier and the
+/// durable owner. The request payload digest already binds prompt/query/socket
+/// and timeout; this adds the resolved context and exact provider identity.
+pub fn native_final_use_binding(
+    request: &NativeRequest,
+    model_provider: &str,
+    context_digest: &str,
+) -> Result<FinalUseBinding, Error> {
+    validate_identity(&request.request_id, "native request")?;
+    validate_identity(&request.principal_id, "native principal")?;
+    validate_identity(model_provider, "native provider")?;
+    validate_digest(&request.payload_digest, "native payload")?;
+    validate_digest(context_digest, "native context")?;
+    if request.worker_generation == 0
+        || request.model.is_empty()
+        || request.model.len() > 256
+        || format!("provider:{model_provider}").len() > 128
+    {
+        return Err(Error::InvalidIdentity("native final-use binding"));
+    }
+    let request_bytes = serde_json::to_vec(&(
+        "hepta.inference.final-use.request.v1",
+        request,
+        model_provider,
+        context_digest,
+    ))
+    .map_err(|_| Error::CorruptJournal("native final-use request encode"))?;
+    let scope_bytes = serde_json::to_vec(&(
+        "hepta.inference.final-use.scope.v1",
+        &request.principal_id,
+        request.worker_generation,
+        &request.model,
+        model_provider,
+    ))
+    .map_err(|_| Error::CorruptJournal("native final-use scope encode"))?;
+    let payload_bytes = serde_json::to_vec(&(
+        "hepta.inference.final-payload.v1",
+        &request.payload_digest,
+        context_digest,
+        &request.model,
+        model_provider,
+    ))
+    .map_err(|_| Error::CorruptJournal("native final-use payload encode"))?;
+    Ok(FinalUseBinding {
+        subject_id: request.principal_id.clone(),
+        destination_id: format!("provider:{model_provider}"),
+        request_sha256: Digest32::of_bytes(&request_bytes).into_array(),
+        scope_sha256: Digest32::of_bytes(&scope_bytes).into_array(),
+        payload_sha256: Digest32::of_bytes(&payload_bytes).into_array(),
+    })
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct NativeDispatch {
     pub thread_id: String,
     pub model_provider: String,
     /// Exact serialized additional context, including its owner snapshot.
     pub context_digest: String,
+    /// Public evidence that an opaque final-use token admitted this dispatch.
+    /// This is not a serialized VerifiedUseToken and cannot grant authority.
+    #[serde(default)]
+    pub final_use_witness: Option<NativeFinalUseWitness>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -114,6 +222,7 @@ pub struct NativeRunRecord {
 #[derive(Clone, Debug, Default)]
 pub(super) struct NativeJournal {
     maximum_in_flight: Option<usize>,
+    output_history_redacted: bool,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
 }
 
@@ -143,6 +252,9 @@ enum Event {
         request_id: String,
         output: NativeRunOutput,
     },
+    /// Marker written only by the atomic history rewrite. New observations after
+    /// this marker are already digest-only, so subsequent opens can skip rescans.
+    OutputHistoryRedacted,
 }
 
 impl DurableInferenceControl {
@@ -192,20 +304,47 @@ impl DurableInferenceControl {
         )
     }
 
-    /// Must commit before `turn/start`, including before awaiting its response.
+    /// Unverified/reference dispatch. It can preserve historical state-machine
+    /// behavior, but it can never install a final-use witness or authorize a
+    /// successful provider effect.
     pub fn dispatch_native(
         &mut self,
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<NativeRunRecord, Error> {
-        self.ensure_native_dispatch_space()?;
-        self.commit_native(
-            request_id,
-            Event::Dispatch {
-                request_id: request_id.to_string(),
-                dispatch,
-            },
-        )
+        if dispatch.final_use_witness.is_some() {
+            return Err(Error::Conflict);
+        }
+        self.commit_native_dispatch(request_id, dispatch)
+    }
+
+    /// Production dispatch entrypoint. Only a sealed witness supplied by
+    /// kernel.authority while its live revocation fence is held can install the
+    /// durable audit witness used by later settlement.
+    pub fn dispatch_native_authorized(
+        &mut self,
+        request_id: &str,
+        mut dispatch: NativeDispatch,
+        verified: VerifiedUseWitness<'_>,
+    ) -> Result<NativeRunRecord, Error> {
+        if dispatch.final_use_witness.is_some() {
+            return Err(Error::Conflict);
+        }
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        let expected = native_final_use_binding(
+            &record.request,
+            &dispatch.model_provider,
+            &dispatch.context_digest,
+        )?;
+        if verified.binding() != &expected {
+            return Err(Error::Conflict);
+        }
+        dispatch.final_use_witness = Some(NativeFinalUseWitness::from_verified(&verified)?);
+        self.commit_native_dispatch(request_id, dispatch)
     }
 
     pub fn native_started(
@@ -260,13 +399,23 @@ impl DurableInferenceControl {
     pub fn settle_native(
         &mut self,
         request_id: &str,
-        output: NativeRunOutput,
+        mut output: NativeRunOutput,
     ) -> Result<NativeRunRecord, Error> {
         let record = self
             .native
             .records
             .get(request_id)
             .ok_or(Error::RequestNotFound)?;
+        let authorized = record
+            .dispatch
+            .as_ref()
+            .and_then(|dispatch| dispatch.final_use_witness.as_ref())
+            .is_some();
+        if output.final_use_authorized && !authorized {
+            return Err(Error::Conflict);
+        }
+        output.final_use_authorized = authorized;
+        let output = persisted_observation(output)?;
         if record.observation.as_ref() == Some(&output) {
             return Ok(record.clone());
         }
@@ -279,8 +428,145 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Rewrite native observation history without raw provider text. The old
+    /// journal remains locked until the fully-synced replacement is atomically
+    /// installed and locked, so there is no second-writer admission window.
+    pub fn redact_native_output_history(&mut self) -> Result<NativeOutputRedactionReceipt, Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        if self.native.output_history_redacted {
+            return Ok(NativeOutputRedactionReceipt {
+                previous_journal_bytes: self.journal_bytes,
+                rewritten_journal_bytes: self.journal_bytes,
+                redacted_observations: 0,
+            });
+        }
+        self.file.sync_all()?;
+        let mut source = Vec::new();
+        File::open(&self.path)?
+            .take(super::MAX_JOURNAL_BYTES + 1)
+            .read_to_end(&mut source)?;
+        if source.len() as u64 > super::MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+        if !source.is_empty() && source.last() != Some(&b'\n') {
+            return Err(Error::CorruptJournal("incomplete line"));
+        }
+        let mut rewritten = Vec::with_capacity(source.len());
+        let mut next_native = NativeJournal::default();
+        let mut redacted_observations = 0_usize;
+        let body = source.strip_suffix(b"\n").unwrap_or(source.as_slice());
+        if !body.is_empty() {
+            for raw_line in body.split(|byte| *byte == b'\n') {
+                let line = raw_line.strip_suffix(b"\r").unwrap_or(raw_line);
+                let text = std::str::from_utf8(line).map_err(|_| Error::CorruptJournal("utf8"))?;
+                if let Some(json) = text.strip_prefix(JOURNAL_PREFIX) {
+                    let mut event: Event = serde_json::from_str(json)
+                        .map_err(|_| Error::CorruptJournal("native decode"))?;
+                    if let Event::Observe { output, .. } = &mut event {
+                        if output.output_retained {
+                            redacted_observations = redacted_observations
+                                .checked_add(1)
+                                .ok_or(Error::ArithmeticOverflow)?;
+                        }
+                        *output = persisted_observation(output.clone())?;
+                    }
+                    next_native.apply(event.clone())?;
+                    let json = serde_json::to_string(&event)
+                        .map_err(|_| Error::CorruptJournal("native encode"))?;
+                    rewritten.extend_from_slice(JOURNAL_PREFIX.as_bytes());
+                    rewritten.extend_from_slice(json.as_bytes());
+                    rewritten.push(b'\n');
+                } else {
+                    rewritten.extend_from_slice(raw_line);
+                    rewritten.push(b'\n');
+                }
+            }
+        }
+        let marker = Event::OutputHistoryRedacted;
+        next_native.apply(marker.clone())?;
+        let marker_json =
+            serde_json::to_string(&marker).map_err(|_| Error::CorruptJournal("native encode"))?;
+        rewritten.extend_from_slice(JOURNAL_PREFIX.as_bytes());
+        rewritten.extend_from_slice(marker_json.as_bytes());
+        rewritten.push(b'\n');
+        if rewritten.len() as u64 > super::MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+
+        let next_path = native_redaction_path(&self.path);
+        let mut options = OpenOptions::new();
+        options.create_new(true).append(true).read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut replacement = options.open(&next_path)?;
+        let prepared = (|| -> Result<(), Error> {
+            replacement
+                .try_lock()
+                .map_err(|_| Error::WriterUnavailable)?;
+            replacement.write_all(&rewritten)?;
+            replacement.flush()?;
+            replacement.sync_all()?;
+            Ok(())
+        })();
+        if let Err(error) = prepared {
+            drop(replacement);
+            let _ = fs::remove_file(&next_path);
+            return Err(error);
+        }
+        if let Err(error) = fs::rename(&next_path, &self.path) {
+            drop(replacement);
+            let _ = fs::remove_file(&next_path);
+            return Err(error.into());
+        }
+        // The pathname now names the replacement inode. Switch the live locked
+        // handle immediately so no later fallible durability step can leave this
+        // owner holding only the unlinked predecessor lock.
+        let old = std::mem::replace(&mut self.file, replacement);
+        drop(old);
+        let previous_journal_bytes = self.journal_bytes;
+        self.journal_bytes = rewritten.len() as u64;
+        self.native = next_native;
+        #[cfg(unix)]
+        {
+            let parent = self
+                .path
+                .parent()
+                .filter(|parent| !parent.as_os_str().is_empty())
+                .unwrap_or_else(|| std::path::Path::new("."));
+            if let Err(error) = File::open(parent).and_then(|directory| directory.sync_all()) {
+                self.poisoned = true;
+                return Err(error.into());
+            }
+        }
+        Ok(NativeOutputRedactionReceipt {
+            previous_journal_bytes,
+            rewritten_journal_bytes: self.journal_bytes,
+            redacted_observations,
+        })
+    }
+
     pub fn native_record(&self, request_id: &str) -> Option<&NativeRunRecord> {
         self.native.records.get(request_id)
+    }
+
+    fn commit_native_dispatch(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+    ) -> Result<NativeRunRecord, Error> {
+        self.ensure_native_dispatch_space()?;
+        self.commit_native(
+            request_id,
+            Event::Dispatch {
+                request_id: request_id.to_string(),
+                dispatch,
+            },
+        )
     }
 
     fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
@@ -317,6 +603,10 @@ impl NativeJournal {
     }
 
     fn apply(&mut self, event: Event) -> Result<(), Error> {
+        if matches!(&event, Event::OutputHistoryRedacted) {
+            self.output_history_redacted = true;
+            return Ok(());
+        }
         if let Event::Reserve {
             request,
             maximum_in_flight,
@@ -367,7 +657,9 @@ impl NativeJournal {
             return Ok(());
         }
         let id = match &event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::OutputHistoryRedacted => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
@@ -376,7 +668,9 @@ impl NativeJournal {
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::OutputHistoryRedacted => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Dispatch { dispatch, .. } => {
                 if record.state != NativeReservationState::Reserved {
                     return Err(Error::InvalidTransition);
@@ -384,6 +678,14 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                if let Some(witness) = &dispatch.final_use_witness {
+                    validate_final_use_identity(&witness.signer_id, "native final-use signer")?;
+                    validate_final_use_identity(&witness.grant_id, "native final-use grant")?;
+                    validate_digest(&witness.binding_digest, "native final-use binding")?;
+                    if witness.authority_epoch == 0 || witness.expires_at_unix_ms == 0 {
+                        return Err(Error::InvalidTime);
+                    }
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -428,6 +730,9 @@ impl NativeJournal {
 
 fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
     let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
+    if output.final_use_authorized != dispatch.final_use_witness.is_some() {
+        return Err(Error::Conflict);
+    }
     if output.thread_id != dispatch.thread_id
         || output.model_provider != dispatch.model_provider
         || output.model != record.request.model
@@ -446,6 +751,7 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::CapacityExceeded);
     }
+    let output_identity = observation_output_digest(&output)?;
     if let NativeOwnerAuthority::Lost { reason } = &output.owner_authority
         && (reason.is_empty() || reason.len() > 4096)
     {
@@ -470,10 +776,15 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         {
             return Err(Error::Conflict);
         }
+        if previous.final_use_authorized != output.final_use_authorized
+            || (!previous.output_retained && output.output_retained)
+        {
+            return Err(Error::Conflict);
+        }
         if previous.terminal_observed
             && (previous.status != output.status
                 || !output.terminal_observed
-                || previous.output != output.output)
+                || observation_output_digest(previous)? != output_identity)
         {
             return Err(Error::Conflict);
         }
@@ -496,6 +807,75 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     };
     record.observation = Some(output);
     Ok(())
+}
+
+fn persisted_observation(mut output: NativeRunOutput) -> Result<NativeRunOutput, Error> {
+    if output.output_retained {
+        let digest = Digest32::of_bytes(output.output.as_bytes()).to_string();
+        if output
+            .output_digest
+            .as_ref()
+            .is_some_and(|existing| existing != &digest)
+        {
+            return Err(Error::Conflict);
+        }
+        output.output_digest = Some(digest);
+        output.output.clear();
+        output.output_retained = false;
+    } else {
+        if !output.output.is_empty() || output.output_digest.is_none() {
+            return Err(Error::CorruptJournal("redacted native output"));
+        }
+        validate_digest(
+            output.output_digest.as_deref().unwrap_or_default(),
+            "native output",
+        )?;
+    }
+    Ok(output)
+}
+
+fn observation_output_digest(output: &NativeRunOutput) -> Result<String, Error> {
+    if let Some(digest) = &output.output_digest {
+        validate_digest(digest, "native output")?;
+        if output.output_retained {
+            let observed = Digest32::of_bytes(output.output.as_bytes()).to_string();
+            if observed != *digest {
+                return Err(Error::Conflict);
+            }
+        } else if !output.output.is_empty() {
+            return Err(Error::CorruptJournal("redacted native output"));
+        }
+        return Ok(digest.clone());
+    }
+    if output.output_retained {
+        return Ok(Digest32::of_bytes(output.output.as_bytes()).to_string());
+    }
+    Err(Error::CorruptJournal("missing native output digest"))
+}
+
+fn validate_final_use_identity(value: &str, field: &'static str) -> Result<(), Error> {
+    if value.is_empty()
+        || value.len() > 128
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+    {
+        return Err(Error::InvalidIdentity(field));
+    }
+    Ok(())
+}
+
+fn native_redaction_path(path: &std::path::Path) -> PathBuf {
+    let mut value = path.as_os_str().to_os_string();
+    value.push(".redact-next");
+    PathBuf::from(value)
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct NativeOutputRedactionReceipt {
+    pub previous_journal_bytes: u64,
+    pub rewritten_journal_bytes: u64,
+    pub redacted_observations: usize,
 }
 
 #[cfg(test)]

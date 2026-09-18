@@ -32,16 +32,21 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
+use codex_hepta_infer_core::durable_control::native::NativeRequest;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+pub use codex_hepta_infer_core::durable_control::native::native_final_use_binding;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
+pub use control::NativeLocalSlotAdmission;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -61,7 +66,17 @@ pub struct NativeWorkerConfig {
     pub agent_id: AgentId,
     pub generation: u64,
     pub model: String,
+    /// Exact provider identity expected from App Server before turn dispatch.
+    pub model_provider: String,
     pub timeout: Duration,
+}
+
+/// Kernel-owned final-use verifier plus one independently issued exact grant.
+/// Replayed/terminal requests do not need a fresh grant because they never
+/// dispatch another provider effect.
+pub struct NativeFinalUseAdmission<'a> {
+    pub authority: &'a FinalUseAuthority,
+    pub grant: &'a SignedFinalUseGrant,
 }
 
 /// A real provider client. Each new request uses a fresh ephemeral thread
@@ -77,6 +92,8 @@ impl AppServerModelDriver {
             || config.generation == 0
             || config.model.is_empty()
             || config.model.len() > 256
+            || !final_use_identifier(&config.model_provider)
+            || format!("provider:{}", config.model_provider).len() > 128
             || config.timeout.is_zero()
             || config.timeout > Duration::from_secs(3600)
         {
@@ -90,7 +107,8 @@ impl AppServerModelDriver {
     async fn run_once(
         &self,
         control: &mut DurableInferenceControl,
-        request_id: &str,
+        request: &NativeRequest,
+        final_use: &NativeFinalUseAdmission<'_>,
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
@@ -101,6 +119,7 @@ impl AppServerModelDriver {
         if cancellation.is_cancelled() {
             return Err("cancelled before admission".into());
         }
+        let request_id = request.request_id.as_str();
         let owner = AgentdClient::new(
             self.config.agentd_socket.clone(),
             self.config.agent_id.clone(),
@@ -171,20 +190,33 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
         }
+        if started.model_provider != self.config.model_provider {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("provider substituted the configured provider identity".into());
+        }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
-        control.dispatch_native(
-            request_id,
-            NativeDispatch {
-                thread_id: started.thread.id.clone(),
-                model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
-            },
-        )?;
+        let context_digest = control::digest(&serde_json::to_vec(&additional_context)?);
+        let binding = native_final_use_binding(request, &started.model_provider, &context_digest)?;
+        let verified = final_use.authority.claim(final_use.grant, &binding)?;
+        final_use
+            .authority
+            .with_verified_use_witness(verified, &binding, |witness| {
+                control.dispatch_native_authorized(
+                    request_id,
+                    NativeDispatch {
+                        thread_id: started.thread.id.clone(),
+                        model_provider: started.model_provider.clone(),
+                        context_digest,
+                        final_use_witness: None,
+                    },
+                    witness,
+                )
+            })??;
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
@@ -215,8 +247,11 @@ impl AppServerModelDriver {
                     status: NativeRunStatus::Indeterminate,
                     output: String::new(),
                     observed_output_tokens: None,
+                    output_digest: None,
+                    output_retained: true,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
+                    final_use_authorized: true,
                     stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
                 });
             }
@@ -229,8 +264,11 @@ impl AppServerModelDriver {
             status: NativeRunStatus::Indeterminate,
             output: String::new(),
             observed_output_tokens: None,
+            output_digest: None,
+            output_retained: true,
             terminal_observed: false,
             owner_authority: NativeOwnerAuthority::Unverified,
+            final_use_authorized: true,
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
@@ -351,6 +389,14 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn final_use_identifier(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 119
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
 }
 
 async fn verify_owner_health(

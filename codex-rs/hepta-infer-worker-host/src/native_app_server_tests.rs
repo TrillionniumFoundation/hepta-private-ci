@@ -12,10 +12,13 @@ fn output() -> NativeRunOutput {
         model_provider: "provider".to_string(),
         status: NativeRunStatus::Indeterminate,
         output: String::new(),
+        output_digest: None,
+        output_retained: true,
         observed_output_tokens: None,
         terminal_observed: false,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        final_use_authorized: false,
     }
 }
 
@@ -33,6 +36,34 @@ fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification 
             duration_ms: None,
         },
     })
+}
+
+#[test]
+fn final_use_binding_changes_with_provider_context_and_request_payload() {
+    let request = NativeRequest {
+        request_id: "request-1".to_string(),
+        principal_id: "agent-1".to_string(),
+        worker_generation: 7,
+        model: "model-a".to_string(),
+        payload_digest: "a".repeat(64),
+    };
+    let base = native_final_use_binding(&request, "provider-a", &"b".repeat(64)).unwrap();
+    assert_eq!(base.destination_id, "provider:provider-a");
+    let changed_provider =
+        native_final_use_binding(&request, "provider-b", &"b".repeat(64)).unwrap();
+    assert_ne!(base.request_sha256, changed_provider.request_sha256);
+    assert_ne!(base.scope_sha256, changed_provider.scope_sha256);
+    assert_ne!(base.payload_sha256, changed_provider.payload_sha256);
+    let changed_context =
+        native_final_use_binding(&request, "provider-a", &"c".repeat(64)).unwrap();
+    assert_ne!(base.request_sha256, changed_context.request_sha256);
+    assert_ne!(base.payload_sha256, changed_context.payload_sha256);
+    let mut changed_request = request;
+    changed_request.payload_digest = "d".repeat(64);
+    let changed_payload =
+        native_final_use_binding(&changed_request, "provider-a", &"b".repeat(64)).unwrap();
+    assert_ne!(base.request_sha256, changed_payload.request_sha256);
+    assert_ne!(base.payload_sha256, changed_payload.payload_sha256);
 }
 
 #[test]
@@ -291,6 +322,8 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     )
     .await
     .unwrap();
+    assert!(!output.succeeded());
+    output.final_use_authorized = true;
     assert!(output.succeeded());
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
