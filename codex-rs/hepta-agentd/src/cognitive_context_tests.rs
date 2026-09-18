@@ -85,7 +85,6 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     assert!(read(&store, &other, 1, "lemon", 4, None).await.is_err());
 }
 
-
 #[tokio::test]
 async fn post_ranking_tombstone_fails_closed_before_context_delivery() {
     let temp = tempfile::tempdir().unwrap();
@@ -128,37 +127,29 @@ async fn post_ranking_tombstone_fails_closed_before_context_delivery() {
         .await
         .unwrap();
 
-    let result = read_with_test_hook(
-        &store,
-        &owner,
-        1,
-        "lemon",
-        4,
-        None,
-        || {
-            let store = &store;
-            let access = access.clone();
-            let scope = scope.clone();
-            let citation = citation.clone();
-            let memory_id = memory.id.memory_id.clone();
-            async move {
-                store
-                    .forget_memory(
-                        &access,
-                        &memory_id,
-                        1,
-                        &ForgetMemoryDraft {
-                            scope,
-                            reason: "revoked after ranking".to_string(),
-                            valid_from_unix_seconds: 200,
-                            citations: vec![citation],
-                        },
-                    )
-                    .await
-                    .unwrap();
-            }
-        },
-    )
+    let result = read_with_test_hook(&store, &owner, 1, "lemon", 4, None, || {
+        let store = &store;
+        let access = access.clone();
+        let scope = scope.clone();
+        let citation = citation.clone();
+        let memory_id = memory.id.memory_id.clone();
+        async move {
+            store
+                .forget_memory(
+                    &access,
+                    &memory_id,
+                    1,
+                    &ForgetMemoryDraft {
+                        scope,
+                        reason: "revoked after ranking".to_string(),
+                        valid_from_unix_seconds: 200,
+                        citations: vec![citation],
+                    },
+                )
+                .await
+                .unwrap();
+        }
+    })
     .await;
     assert!(result.is_err(), "a post-ranking tombstone must fail closed");
 }

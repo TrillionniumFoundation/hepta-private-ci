@@ -226,7 +226,6 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
     );
 }
 
-
 #[test]
 fn compile_cue_validates_and_binds_the_exact_snapshot() {
     let expected = cue();
@@ -265,7 +264,10 @@ fn generation_bound_limits_match_the_hot_path_contract() {
     assert_eq!(MAX_GENERATION_BOUND_RESULTS, 16);
     let mut invalid = policy();
     invalid.maximum_results = 17;
-    assert_eq!(invalid.validate(), Err(RecallErrorV1::InvalidMaximumResults));
+    assert_eq!(
+        invalid.validate(),
+        Err(RecallErrorV1::InvalidMaximumResults)
+    );
 }
 
 #[test]
