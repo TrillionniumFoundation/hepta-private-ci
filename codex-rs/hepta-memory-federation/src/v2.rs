@@ -753,6 +753,12 @@ where
             } else {
                 Vec::new()
             };
+            items.sort_by(|left, right| {
+                left.source_owner_id
+                    .cmp(&right.source_owner_id)
+                    .then_with(|| left.record_id.cmp(&right.record_id))
+                    .then_with(|| left.record_revision.cmp(&right.record_revision))
+            });
             items.truncate(maximum_results);
             let truncated_items = remote_item_count.saturating_sub(items.len());
             let completeness = if !matches!(final_validity, FederatedValidityV2::Valid) {
