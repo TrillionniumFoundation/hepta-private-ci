@@ -14,17 +14,17 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, replace
 import re
-from typing import Iterable
+from typing import Iterable, Mapping
 
-from .control_plane import semantic_digest
+from .control_plane import EngineeringStore, semantic_digest
 from .external import (
     AuditAnchorReceipt,
     ExternalFactReceipt,
     KeyCustodyReceipt,
     ReceiptVerifier,
-    verify_audit_anchor,
     verify_external_fact_receipts,
-    verify_key_custody,
+    verify_key_custody_set,
+    verify_store_audit_anchor,
 )
 
 _SHA1 = re.compile(r"[0-9a-f]{40}\Z")
@@ -220,11 +220,11 @@ def evaluate_authenticated_production_readiness(
     subject_digest: str,
     external_fact_receipts: Iterable[ExternalFactReceipt],
     audit_anchor: AuditAnchorReceipt,
-    key_custody: KeyCustodyReceipt,
+    key_custody_receipts: Iterable[KeyCustodyReceipt],
+    required_role_keys: Mapping[str, str],
     verifier: ReceiptVerifier,
-    expected_store_identity_digest: str,
-    expected_audit_sequence: int,
-    expected_audit_head_digest: str,
+    store: EngineeringStore,
+    store_identity_digest: str,
     now_ns: int | None = None,
 ) -> ProductionReadinessDecision:
     """Verify external facts before projecting deployment readiness.
@@ -242,18 +242,20 @@ def evaluate_authenticated_production_readiness(
         subject_digest=subject_digest,
         now_ns=now_ns,
     )
-    audit_digest = verify_audit_anchor(
+    audit_digest = verify_store_audit_anchor(
+        store,
         audit_anchor,
         verifier,
-        expected_store_identity_digest=expected_store_identity_digest,
-        expected_sequence=expected_audit_sequence,
-        expected_head_digest=expected_audit_head_digest,
+        store_identity_digest=store_identity_digest,
         now_ns=now_ns,
     )
-    custody_digest = verify_key_custody(
-        key_custody,
+    required_roles = {"source_authority", "engineering_evidence_binder"}
+    if set(required_role_keys) != required_roles:
+        raise ValueError("exact source/evidence key identities required")
+    custody_digest = verify_key_custody_set(
+        key_custody_receipts,
         verifier,
-        required_roles=("source_authority", "engineering_evidence_binder"),
+        required_role_keys=required_role_keys,
         now_ns=now_ns,
     )
     distributed_digest = fact_digests.get("distributed_fencing_verified", "")
