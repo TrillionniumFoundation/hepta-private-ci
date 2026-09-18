@@ -292,7 +292,11 @@ impl PromptRegistry {
     pub fn admit_factor_verified(
         &mut self,
         admission: VerifiedAdmission,
+        now_unix_ms: u64,
     ) -> Result<RegistryReceipt, Error> {
+        if !admission.is_live_at(now_unix_ms) {
+            return Err(Error::InvalidTransition);
+        }
         let Some(factor) = self.factors.get(admission.factor_id()) else {
             return Err(Error::FactorNotFound(admission.factor_id().to_string()));
         };
@@ -338,7 +342,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
-    pub fn register_realization(
+    pub(crate) fn register_realization(
         &mut self,
         realization: PromptRealization,
     ) -> Result<RegistryReceipt, Error> {
