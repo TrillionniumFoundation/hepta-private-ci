@@ -1,4 +1,5 @@
 use codex_hepta_contracts::SecretLeaseBindingError;
+use codex_hepta_contracts::SecretLeaseCreateDisposition;
 use codex_hepta_contracts::SecretLeaseFuture;
 use codex_hepta_contracts::SecretLeaseRecord;
 use codex_hepta_contracts::SecretLeaseState;
@@ -34,7 +35,7 @@ impl HeptaEvidenceStore {
     pub async fn create_secret_lease_record(
         &self,
         record: &SecretLeaseRecord,
-    ) -> Result<(), SecretLeaseStoreError> {
+    ) -> Result<SecretLeaseCreateDisposition, SecretLeaseStoreError> {
         record.validate().map_err(SecretLeaseStoreError::InvalidRecord)?;
         let (payload_json, record_sha256) = encode_record(record)?;
         let mut transaction = self
@@ -42,7 +43,7 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(map_sqlx)?;
-        sqlx::query(
+        let insert = sqlx::query(
             "INSERT INTO secret_lease_records (
                 lease_key, provider_id, provider_path, request_sha256,
                 provider_lease_id, state, revision, schema_version,
@@ -72,7 +73,11 @@ impl HeptaEvidenceStore {
             return Err(SecretLeaseStoreError::Conflict);
         }
         transaction.commit().await.map_err(map_sqlx)?;
-        Ok(())
+        Ok(if insert.rows_affected() == 1 {
+            SecretLeaseCreateDisposition::Inserted
+        } else {
+            SecretLeaseCreateDisposition::AlreadyPresent
+        })
     }
 
     pub async fn compare_and_swap_secret_lease_record(
@@ -143,7 +148,10 @@ impl SecretLeaseStore for HeptaEvidenceStore {
         Box::pin(async move { self.load_secret_lease_record(lease_key).await })
     }
 
-    fn create<'a>(&'a self, record: &'a SecretLeaseRecord) -> SecretLeaseFuture<'a, ()> {
+    fn create<'a>(
+        &'a self,
+        record: &'a SecretLeaseRecord,
+    ) -> SecretLeaseFuture<'a, SecretLeaseCreateDisposition> {
         Box::pin(async move { self.create_secret_lease_record(record).await })
     }
 
