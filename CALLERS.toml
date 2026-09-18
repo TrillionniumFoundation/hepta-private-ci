@@ -67,8 +67,8 @@ id = "agentd_production_writer_host"
 symbol = "AgentdProductionWriterHost::open_with_store"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
 definition_markers = ["pub struct AgentdProductionWriterHost", "pub async fn open_with_store", "ProductionAuthorityVerifier"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
+caller_markers = ["dispatch_final_use", "dispatch_final_use(&self.authority", "BrowserServoError"]
 
 [[boundary]]
 id = "provider_effect_coordinator"
@@ -99,8 +99,8 @@ id = "final_use_claim"
 symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
-caller_markers = ["claim_final_use", "claim_final_use(authority, grant, &binding)", "BaoClientError::Authority"]
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
+caller_markers = ["claim_final_use", "claim_final_use(authority, grant, &binding)", "BaoClientError::Authority", "claim_final_use(", "BrowserServoError"]
 
 [[boundary]]
 id = "final_use_claim_raw"
