@@ -394,6 +394,42 @@ async fn terminal_outbox_compaction_preserves_ledger_identity_and_prevents_resur
 }
 
 #[tokio::test]
+async fn reopen_rejects_ledger_outbox_relational_drift() {
+    let temp = TempDir::new().unwrap();
+    let sqlite = config(temp.path());
+    let store = DurableOperationStore::open(&sqlite).await.unwrap();
+    prepare(&store).await;
+    sqlx::query(
+        "UPDATE cross_owner_outbox SET state = 'dispatched'
+         WHERE operation_id = ?",
+    )
+    .bind(intent().operation_id.as_str())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+    store.pool.close().await;
+
+    assert!(matches!(
+        DurableOperationStore::open(&sqlite).await,
+        Err(OperationError::Corrupt(_))
+    ));
+}
+
+#[tokio::test]
+async fn dispatch_lease_debug_never_contains_payload_bytes() {
+    let temp = TempDir::new().unwrap();
+    let store = DurableOperationStore::open(&config(temp.path()))
+        .await
+        .unwrap();
+    prepare(&store).await;
+    let lease = claim(&store, 60_000).await;
+    let rendered = format!("{lease:?}");
+    assert!(!rendered.contains("payload"));
+    assert!(rendered.contains("payload_len"));
+    assert_eq!(lease.payload(), b"payload");
+}
+
+#[tokio::test]
 async fn missing_schema_guard_fails_closed_on_reopen() {
     let temp = TempDir::new().unwrap();
     let sqlite = config(temp.path());
