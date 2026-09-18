@@ -798,11 +798,11 @@ export class PooledSubprocessBrowserDriver {
     const session = this.#sessions.get(profileId);
     if (!session) return { contained: true };
     this.#validateSessionIdentity(input, session);
-    try {
-      return await session.driver.contain(input);
-    } finally {
-      this.#sessions.delete(profileId);
-    }
+    // Containment kills the effect-capable worker immediately, but keep the
+    // session reserved until the owner closes the profile. Subprocess stop is
+    // intentionally idempotent after containment and performs private-profile
+    // cleanup; releasing the pool slot here would orphan that cleanup state.
+    return session.driver.contain(input);
   }
 
   async stop(input, options = {}) {
