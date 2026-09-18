@@ -654,6 +654,19 @@ async fn verify_policy_heads(pool: &SqlitePool) -> Result<(), EvidenceError> {
         let policy_id = stable_id_column(&row, "policy_id")?;
         let revision = u64_blob(&row, "revision")?;
         let expected = digest_column(&row, "policy_digest")?;
+        let highest: Vec<u8> = sqlx::query_scalar(
+            "SELECT revision FROM authbus_policy_versions
+             WHERE policy_id = ? ORDER BY revision DESC LIMIT 1",
+        )
+        .bind(policy_id.as_str())
+        .fetch_one(pool)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if u64_blob_value(&highest, "highest policy revision")? != revision {
+            return Err(EvidenceError::Corrupt(
+                "AuthBus policy head is not the highest immutable revision".into(),
+            ));
+        }
         let mut tx = pool.begin().await.map_err(classify_sqlx_error)?;
         let policy = load_policy_version(&mut tx, &policy_id, revision)
             .await?
