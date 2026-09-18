@@ -1,52 +1,86 @@
 # cognitive.read: implementation design
 
 Parent: `docs/modules/cognitive.read/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded V2 read projection and existing SQLite-cut consumer implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: authoritative read boundary, existing SQLite owner provider and Agentd product caller are source-composed; exact-candidate qualification and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-cognitive-read`.
 Packages: `MEM-READ-1-SNAPSHOT-PORT`.
+Product composition: `composed`; production writer: `not_applicable_read_only`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+The cognitive-read crate owns the read contract and deterministic projection only. `hepta-memory` is the delegated durable owner adapter and `hepta-agentd` is the named product caller. These delegated callsites do not create a second memory writer or widen the module's exclusive source root.
 
 ## 2. Public operations and contract details
 
-`acquire_snapshot(scope, source_frontiers, generations) -> SnapshotReadPort`; `read_ids(snapshot, ids, fields) -> BoundedReadResult`; `revalidate(packet, current_revocation_frontier) -> ValidatedAttachment | Stale`. No mutation/SQL-writer handle is exposed. Cross-owner reads bind a coherent declared cut and report missing/lagging owners explicitly.
+The product contract is `read_authoritative(provider, now, acquisition_request, read_request) -> AuthoritativeReadResultV1`, followed by `revalidate_authoritative_read(...)` immediately before product consumption.
+
+`SnapshotAcquisitionRequestV1` binds request identity, scope, purpose, minimum memory/source/tombstone/knowledge frontiers, minimum knowledge-graph generation, authority epoch and deadline. `AuthoritativeReadGenerationVectorV1` binds the exact owner-observed values plus a consumer-profile digest. `AuthoritativeSnapshotV1` binds that vector to one immutable `CognitiveSnapshot`, provider identity, acquisition time, short lease and snapshot receipt digest.
+
+The lower-level `read_v2` typed projection remains in `src/v2.rs`, but it is not re-exported from the crate root. Product callers therefore do not obtain a weaker public path that validates only caller-supplied snapshot bytes.
+
+No mutation, SQL-writer handle, runtime authority or external-effect grant is exposed. Authoritative read results retain `DENY_ALL` authority.
 
 ## 3. State records and transaction design
 
-No authoritative domain facts. Cache keys include principal/purpose, source/event revisions, tombstone frontier, KG/engram generation, encoder/preprocessor identity and requested fields. Cache values are bounded redacted projections. A read snapshot holds leases/pins on actual source generations and releases them on completion/cancellation.
+The cognitive-read crate owns no durable state. The real owner is the existing `hepta-memory::CognitiveStore` and `cognitive_1.sqlite3`.
+
+`CognitiveStore::lane_c_snapshot` reads heads, immutable revisions, citations and owner frontiers in one SQLite transaction and materializes a `DurableCognitiveSnapshot`. A `LaneCAuthoritativeSnapshotProvider` can only be constructed from that immutable cut and is bound to the acquisition-request digest. It cannot re-read independently moving `visible()` and `fetch()` state.
+
+The read-specific generation vector intentionally excludes prompt, compact, model, tokenizer, template and tool-schema generations. Those values are owned and consumed elsewhere; fabricating placeholders for them would create a false authority proof. The cognitive vector contains only the owner/host state this read actually consumes and can revalidate truthfully.
 
 ## 4. Deterministic algorithm and scheduling
 
-Authenticate purpose and scope before lookup; acquire the declared coherent source cut; fetch exact revisions; apply redaction and current revocation; return bounded facts with provenance. Before physical model-request attachment, revalidate the packet against one current compatible snapshot. Do not combine source rows from different frontiers because each individual read succeeded.
+1. Agentd validates the bounded query/result request and captures one host time.
+2. StateControl supplies the current fleet lifecycle generation as the host authority epoch.
+3. The SQLite owner acquires one immutable Lane-C cut.
+4. Agentd derives a consumer-profile digest from the exact read request, query, limit, body generation and ranker-presence bit.
+5. The owner cut constructs a request-bound `LaneCAuthoritativeSnapshotProvider` with a short lease.
+6. `read_authoritative` validates acquisition, scope/purpose, authority epoch, all declared frontiers/generations, lease, snapshot integrity and receipt binding, then invokes the internal deterministic `read_v2` projection.
+7. Retrieval/ranking may use current indexes, but only exact revision/content digests admitted by the frozen authoritative result may cross into the context payload.
+8. Immediately before return, Agentd reacquires the owner cut and calls `revalidate_authoritative_read`. Any changed owner snapshot/vector/frontier, expired original lease, provider mismatch or digest mismatch fails closed.
+9. StateControl refreshes fleet generation after I/O and fences the response if the authority epoch changed.
+
+The authoritative result binding digest, not the raw `read_v2` receipt alone, is passed into context planning.
 
 ## 5. Capacity and performance profile
 
-Pilot read <= 512 IDs and <= 1 MiB encoded result subject to context limits; snapshot lifetime <= the request deadline; cache bytes and pins are host-profile ceilings. A slow reader must expire or receive unavailable rather than hold unbounded history.
+The native projection enforces its existing result-count and encoded-byte caps. Agentd currently requests at most 1 MiB from the read port and independently caps the final context JSON at 24 KiB with a caller result limit of 1..=4.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+The product authoritative lease is 5 seconds and the acquisition deadline is 10 seconds. Lease expiry is a hard unavailable failure; a slow request never silently widens the validity interval. The Lane-C owner retains its existing materialization bounds for revisions, citations and source rows.
+
+These are source constants/constraints, not target-host latency measurements. External performance qualification remains separate.
 
 ## 6. Concrete verification cases
 
-- READ-01: a packet becomes stale when one selected source revision or tombstone frontier changes.
-- READ-02: cross-principal cache lookup is rejected even for equal query text.
-- READ-03: cancellation releases read pins/descriptors without granting write access.
-- READ-04: incomplete projection generation is reported unavailable, never presented as a complete snapshot.
+- READ-01: a source-frontier advance after the authoritative result is computed but before final consume-time revalidation returns fail-closed rather than stale context.
+- READ-02: a committed tombstone/revocation in the same mid-flight window returns fail-closed rather than the already-computed content.
+- READ-03: scope, purpose or host authority-epoch drift rejects the authoritative envelope/result.
+- READ-04: memory, source, tombstone, knowledge-fact or knowledge-graph minimum-frontier drift rejects acquisition/revalidation.
+- READ-05: lease expiry, deadline expiry, snapshot mismatch, generation-vector digest mismatch or receipt mismatch rejects; no fallback to raw `read_v2` occurs.
+- READ-06: identical current owner state may produce a fresh reacquisition receipt while still validating the original authoritative result; changed vector/snapshot may not.
+- READ-07: exact/prefix typed projection remains deterministic under input permutation and respects missing/stale/resource-cap semantics.
+- READ-08: a future backend cannot be product-composed unless it first materializes one immutable owner cut from which its authoritative provider is constructed.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+Source identities for these cases include [authoritative tests](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs), [Lane-C owner tests](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs), [Agentd cognitive-context tests](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs) and [Agentd product E2E](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs). These are executable source tests; a pass claim still requires the exact-candidate workflow receipt.
 
 ## 7. Integration, rollback and capability ceiling
 
-Implement the source-store reader adapter and fixture port against identical contracts. The no-owned-state test is required. Rollback invalidates incompatible cache/snapshot generations; cached reads cannot suppress immediate revocation.
+The product path is deliberately one-way: SQLite owner cut -> request-bound authoritative provider -> `read_authoritative` -> bounded context construction -> owner/authoritative revalidation -> StateControl authority-epoch fence.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+There is no production escape hatch to a crate-root `read_v2`. Rollback of this change restores the predecessor product path only as an explicit code rollback; it must not be represented as equivalent to the stronger authoritative contract.
+
+Immediate correction/deletion/source-frontier changes remain effective because final owner-cut equality is rechecked. Host lifecycle revocation remains effective because the fleet generation is both digest-bound into the read vector and compared after asynchronous I/O. Read outputs retain `DENY_ALL` effect authority.
+
+External gates remain non-self-certifiable: exact-candidate CI, merge-candidate qualification, independent semantic review, target-host qualification, operator acceptance, canary, promotion and release are distinct from source composition.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `read_v2` in [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); `DurableCognitiveSnapshot` in [codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs). Bounded V2 read projection and existing SQLite-cut consumer implemented.
-- **State and recovery:** read_v2 reuses V1 selection, adds request-bound canonical bytes, sorts citations and accounts for byte-limit omissions. DurableCognitiveSnapshot reads an owner-acquired SQLite cut; native bytes are not an admitted ModulePort/wire protocol.
-- **Source tests:** [codex-rs/hepta-cognitive-read/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-read/src/v2_tests.rs), [codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs](../../../codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs), [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
-- **Remaining work:** Before delivery revalidate exact fetched revision/digest and current host authority; the historical read cut does not lease future effects. Register cross-module formats through their existing owner.
+- **Implemented entrypoints:** `read_authoritative` in [codex-rs/hepta-cognitive-read/src/authoritative.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative.rs); `LaneCAuthoritativeSnapshotProvider` in [codex-rs/hepta-memory/src/lane_c_snapshot.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs); `cognitive_context::read` in [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs). These form the named source-composed production path.
+- **Internal primitive:** `read_v2` in [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs) implements deterministic typed projection and is intentionally not re-exported at the crate root.
+- **State and recovery:** `DurableCognitiveSnapshot` is an immutable, digest-only historical SQLite cut. The request-bound provider binds only actual read-owned frontiers plus purpose/profile/authority epoch. Final consumption reacquires the owner cut, validates the original lease/receipt/vector and requires the same StateControl lifecycle epoch.
+- **Source tests:** [codex-rs/hepta-cognitive-read/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-read/src/v2_tests.rs), [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs), [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs), [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs), [codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs).
+- **Implementation and operating reference:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
+- **Revision-fence status:** exact owner cut/revision/time revalidation before context consumption is implemented and product-wired.
+- **Broader authoritative status:** scope/purpose, authority epoch, memory/source/tombstone/knowledge frontiers, generation-vector digest, bounded lease and snapshot/read receipt binding are implemented and source-composed in the same production path.
+- **Remaining work:** obtain passing exact-candidate/merge-candidate receipts and independently governed target-host/acceptance/canary/release evidence. Register any future cross-module wire format through its existing owner; no new wire format is claimed here.
