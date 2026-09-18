@@ -77,6 +77,8 @@ class ProductionReadinessFacts:
     rollback_rehearsed: bool
     rollback_receipt_digest: str
     authority_delta: bool = False
+    source_product_receipt_digest: str = ""
+    merge_product_receipt_digest: str = ""
     orchestration_product_receipt_digest: str = ""
     sandbox_controller_verified: bool = False
     sandbox_controller_receipt_digest: str = ""
@@ -150,8 +152,23 @@ def evaluate_production_readiness(
         implementation.append("synthetic_merge_ci_not_passed")
     if facts.product_tests_passed is not True:
         implementation.append("product_tests_not_passed")
+    source_product_valid = _valid_sha256(facts.source_product_receipt_digest)
+    merge_product_valid = _valid_sha256(facts.merge_product_receipt_digest)
+    if not source_product_valid:
+        implementation.append("source_product_receipt_invalid")
+    if not merge_product_valid:
+        implementation.append("merge_product_receipt_invalid")
     if not _valid_sha256(facts.orchestration_product_receipt_digest):
         implementation.append("orchestration_product_receipt_invalid")
+    elif source_product_valid and merge_product_valid:
+        expected_product_set_digest = semantic_digest(
+            {
+                "sourceHead": facts.source_product_receipt_digest,
+                "baseMerge": facts.merge_product_receipt_digest,
+            }
+        )
+        if facts.orchestration_product_receipt_digest != expected_product_set_digest:
+            implementation.append("orchestration_product_receipt_set_mismatch")
     if facts.sandbox_controller_verified is not True:
         implementation.append("sandbox_controller_not_verified")
     if not _valid_sha256(facts.sandbox_controller_receipt_digest):
