@@ -71,8 +71,13 @@ pub struct ObjectiveRunAdmission {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ObjectiveStartOutcome {
-    Admitted { receipt: ObjectiveRunAdmission },
-    Conflict { run_id: String, conflict_digest: String },
+    Admitted {
+        receipt: ObjectiveRunAdmission,
+    },
+    Conflict {
+        run_id: String,
+        conflict_digest: String,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
