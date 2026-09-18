@@ -160,7 +160,7 @@ fn op_05_raw_prediction_rejects_noncanonical_public_artifact() {
     artifact.cells.swap(0, 1);
     assert_eq!(
         predict_tabular_operator(&artifact, &artifact_pin(&artifact), &id("sensor-a"), &id("action-a")),
-        Err(LearnedOperatorError::ArtifactBinding)
+        Err(LearnedOperatorError::InvalidGrid)
     );
 }
 
