@@ -116,7 +116,7 @@ covering: V3 deterministic generation, trust-region
 rejection, signature expiry/revocation, generator/evaluator controller collision,
 missing evaluation, stale/frontier witness, anchored reopen, failed external-anchor
 commit and poisoned-writer behavior, old-prefix rollback, incomplete-tail recovery,
-writer-fence mismatch, typed mutation-grammar protected-surface denial, topology
+writer-fence mismatch, typed parameter-mutation-policy protected-surface denial, topology
 writer-handoff validation, topology anchored reopen, topology self-activation denial,
 and structural-canary abort semantics. A real bounded canary must additionally emit
 host telemetry and operator evidence. Until those receipts exist, product execution,
