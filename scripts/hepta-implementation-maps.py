@@ -196,7 +196,8 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         ],
         "claimBoundary": {
             "nativeSourceMappingComplete": all(
-                op["sourcePathExists"] and op["nativeSymbol"] for op in operations
+                op["sourcePathExists"] and op["nativeSymbol"] and op.get("tests")
+                for op in operations
             ),
             "sourceRootPresent": all((ROOT / x).exists() for x in effective_roots),
             "productionImplementation": False,
@@ -304,7 +305,11 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     migrated["claimBoundary"] = {
         **boundary,
         "nativeSourceMappingComplete": all(
-            bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+            bool(
+                op.get("sourcePathExists")
+                and op.get("nativeSymbol")
+                and op.get("tests")
+            )
             for op in operations
         ),
         "sourceRootPresent": migrated["sourceRootPresent"],
@@ -480,6 +485,26 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        elif policy is not None:
+            mapping_complete = (
+                isinstance(source_base, dict)
+                and source_base_tracks_paths(
+                    source_base, expected_effective, row.get("sourceRootTrees")
+                )
+                and documented_symbols.issubset(actual_symbols)
+                and all(
+                    bool(
+                        op.get("sourcePathExists")
+                        and op.get("nativeSymbol")
+                        and op.get("tests")
+                    )
+                    for op in ops
+                )
+            )
+            if boundary.get("nativeSourceMappingComplete") is not mapping_complete:
+                failures.append(
+                    f"{mid}: nativeSourceMappingComplete does not match verified evidence"
+                )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
