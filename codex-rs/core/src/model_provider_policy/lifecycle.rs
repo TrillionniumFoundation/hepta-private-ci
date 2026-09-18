@@ -32,11 +32,15 @@ pub(crate) enum ModelProviderPolicyBegin {
 /// Exact policy contributors active before any asynchronous request composition.
 pub(crate) struct ActiveModelProviderPolicies {
     contributors: Vec<Arc<dyn codex_extension_api::ModelProviderPolicyContributor>>,
+    required: bool,
 }
 
 impl ActiveModelProviderPolicies {
-    pub(crate) fn is_empty(&self) -> bool {
-        self.contributors.is_empty()
+    /// Whether this physical provider request must pass through the policy
+    /// lifecycle. A required-but-missing policy still needs the gate so begin
+    /// can fail closed instead of silently taking the ordinary fast path.
+    pub(crate) fn needs_gate(&self) -> bool {
+        self.required || !self.contributors.is_empty()
     }
 }
 
@@ -44,6 +48,7 @@ impl ActiveModelProviderPolicies {
 pub(crate) fn active_model_provider_policies<C: Sync>(
     registry: &ExtensionRegistry<C>,
     thread_store: &ExtensionData,
+    required: bool,
 ) -> ActiveModelProviderPolicies {
     ActiveModelProviderPolicies {
         contributors: registry
@@ -52,6 +57,7 @@ pub(crate) fn active_model_provider_policies<C: Sync>(
             .filter(|contributor| contributor.is_active(thread_store))
             .cloned()
             .collect(),
+        required,
     }
 }
 
@@ -74,8 +80,9 @@ pub(crate) fn has_active_model_provider_policy<C: Sync>(
 pub(crate) async fn begin_model_provider_policy<C: Sync>(
     registry: &ExtensionRegistry<C>,
     input: ModelProviderInvocationInput<'_>,
+    required: bool,
 ) -> Result<ModelProviderPolicyBegin, ModelProviderPolicyError> {
-    let active = active_model_provider_policies(registry, input.thread_store);
+    let active = active_model_provider_policies(registry, input.thread_store, required);
     begin_active_model_provider_policy(active, input).await
 }
 
@@ -86,6 +93,7 @@ pub(crate) async fn begin_active_model_provider_policy(
 ) -> Result<ModelProviderPolicyBegin, ModelProviderPolicyError> {
     let supervisor = LeaseSupervisor::new();
     let mut lease_count = 0usize;
+    let required = active.required;
 
     for contributor in active.contributors {
         match contributor.begin(copy_input(&input)).await {
@@ -147,7 +155,12 @@ pub(crate) async fn begin_active_model_provider_policy(
         }
     }
 
-    if lease_count == 0 {
+    if lease_count == 0 && required {
+        Err(ModelProviderPolicyError::new(
+            "model_provider_policy_required_missing",
+            "Hepta governance requires an active physical provider-policy contributor",
+        ))
+    } else if lease_count == 0 {
         Ok(ModelProviderPolicyBegin::NoPolicy)
     } else {
         Ok(ModelProviderPolicyBegin::Allow {
