@@ -231,6 +231,7 @@ fn bindings(record_id: &str, run_id: &str, predecessor: Digest32) -> ProductionR
         model_tuple_digest: digest("model-tuple"),
         prompt_registry_digest: digest("prompt-registry"),
         artifact_set_digest: digest("artifact-set"),
+        runtime_body_digest: digest("runtime-body"),
         authority_epoch: 11,
         generation: 3,
         fence_digest: digest("fence"),
@@ -296,6 +297,7 @@ fn product_objective_is_one_durable_replayable_run_start() {
         publication.compile.objective.semantic_digest,
         receipt.objective.objective.semantic_digest
     );
+    assert_eq!(publication.runtime_body_digest, digest("runtime-body"));
     assert_eq!(
         publication.objective_v1_digest,
         receipt.objective_v1_digest,
