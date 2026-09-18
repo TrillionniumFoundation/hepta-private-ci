@@ -11,7 +11,7 @@
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "candidate_composed_pending_exact_head_qualification",
   "productionWriterState": "not_applicable_stateless",
   "operations": [
     {
@@ -97,7 +97,7 @@
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_entrypoint",
       "authority": "deny_all",
       "tests": [
         {
@@ -162,7 +162,7 @@
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_private_core",
       "authority": "none",
       "tests": [
         {
@@ -181,6 +181,54 @@
       "designOperation": "compile",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
+      "sourcePathExists": true,
+      "publicSurface": "crate_private"
+    },
+    {
+      "operation": "validate_compiled_objective_v1",
+      "nativeSymbol": "codex_hepta_objective::validate_compiled_objective_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
+      "inputs": [
+        "ObjectiveFunction"
+      ],
+      "outputs": [
+        "validated canonical objective"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
+          "symbol": "compiled_objective_revalidates_before_publication"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
+          "symbol": "compiled_objective_digest_drift_is_rejected"
+        }
+      ],
+      "designOperation": "validate_compiled_objective_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "bind_run_start_snapshot_v1",
+      "nativeSymbol": "RunStartSnapshotV1::bind",
+      "sourcePath": "codex-rs/hepta-objective/src/run_start.rs",
+      "inputs": [
+        "run identity",
+        "validated ObjectiveFunction",
+        "preference/model/prompt/artifact/fence bindings"
+      ],
+      "outputs": [
+        "RunStartSnapshotV1"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [],
+      "designOperation": "bind_run_start_snapshot_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
       "sourcePathExists": true
     }
   ],
@@ -194,7 +242,7 @@
     "specification": "complete",
     "source": "candidate_implemented",
     "exactHeadQualification": "required",
-    "productComposition": "not_established",
+    "productComposition": "candidate_implemented_pending_exact_head_qualification",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -222,12 +270,32 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head source, cross-owner composition and deterministic synthetic-merge workflows for the final candidate.",
+    "Retain conflict-oracle performance as a separate measurement path from ordinary and durable publication."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "semanticSupport": "docs/modules/objective.compiler/SEMANTIC_SUPPORT.json",
+  "qualificationTarget": {
+    "mode": "event_source_head",
+    "workflows": [
+      ".github/workflows/hepta-objective-admission.yml",
+      ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      ".github/workflows/hepta-objective-product-composition.yml"
+    ],
+    "syntheticMergeRequired": true
+  },
+  "crossOwnerComposition": {
+    "caller": "codex_hepta_intelligence::prepare_intelligence_run_v1",
+    "callerPath": "codex-rs/hepta-intelligence/src/production_objective.rs",
+    "durableOwner": "learning.ledger",
+    "durableEvent": "RunStartPublicationV1",
+    "runtimeConsumer": "codex_hepta_agentd::start_intelligence_run_v1",
+    "runtimeConsumerPath": "codex-rs/hepta-agentd/src/objective_host.rs",
+    "authority": "deny_all",
+    "state": "candidate_implemented_pending_exact_head_qualification"
+  }
 }
