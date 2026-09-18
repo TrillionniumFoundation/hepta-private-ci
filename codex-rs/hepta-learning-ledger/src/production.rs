@@ -56,7 +56,9 @@ const MAX_PRODUCTION_CANDIDATES: usize = 128;
 pub struct ProductionDecisionV2 {
     pub record_id: StableId,
     pub episode_id: StableId,
+    pub run_snapshot_digest: Digest32,
     pub objective_digest: Digest32,
+    pub policy_digest: Digest32,
     pub candidate_ids: Vec<StableId>,
     pub selected_candidate_id: StableId,
     pub selected_propensity: ProbabilityQ32,
@@ -221,7 +223,9 @@ impl LedgerWriter {
         let event = LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
             record_id: request.record_id,
             episode_id: request.episode_id,
+            run_snapshot_digest: request.run_snapshot_digest,
             objective_digest: request.objective_digest,
+            policy_digest: request.policy_digest,
             generator_id: principal.principal_id.clone(),
             generator_controller_id: verified.controller_id().clone(),
             generator_credential_chain_digest: principal.credential_chain_digest,
@@ -472,7 +476,9 @@ pub fn decision_signing_payload_v2(
     let mut bytes = b"hepta.learning-ledger.production-decision.v2".to_vec();
     push_id(&mut bytes, &request.record_id);
     push_id(&mut bytes, &request.episode_id);
+    bytes.extend_from_slice(request.run_snapshot_digest.as_array());
     bytes.extend_from_slice(request.objective_digest.as_array());
+    bytes.extend_from_slice(request.policy_digest.as_array());
     bytes.extend_from_slice(completeness_digest.as_array());
     bytes.extend_from_slice(&(ids.len() as u64).to_be_bytes());
     for id in ids {
@@ -591,7 +597,9 @@ pub fn freeze_dataset_from_ledger(
 fn validate_production_completeness(
     request: &ProductionDecisionV2,
 ) -> Result<Digest32, ProductionLedgerError> {
-    if request.candidate_ids.is_empty()
+    if request.run_snapshot_digest.is_zero()
+        || request.policy_digest.is_zero()
+        || request.candidate_ids.is_empty()
         || request.candidate_ids.len() > MAX_PRODUCTION_CANDIDATES
         || request.completeness.candidate_count as usize != request.candidate_ids.len()
         || request.completeness.omitted_count_bound != 0
