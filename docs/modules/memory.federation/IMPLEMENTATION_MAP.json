@@ -18,20 +18,26 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "candidate_composed_pending_qualification",
   "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "execute_once",
       "nativeSymbol": "execute_once",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_candidate_pending_qualification",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "execute_once",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_federation.rs::retrieve_reader_through_canonical_v2"
+      ]
     },
     {
       "operation": "observe_cancellation",
@@ -39,7 +45,9 @@
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
@@ -47,8 +55,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain exact-head and deterministic synthetic-merge qualification for PR #693 before changing the claim boundary.",
+    "Qualify any non-local or network FederationTransportV2 implementation with authenticated peer identity, cancellation safety, deadline enforcement and target-host evidence.",
+    "Keep product attachment coverage bound through model-input delivery and preserve revocation revalidation at the final attachment boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -66,5 +75,17 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-federation"
-  ]
+  ],
+  "candidateAttestation": {
+    "baseCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "codeCandidateCommit": "7e730df638124b68ee7de133bdc49c045d095a9f",
+    "pullRequest": 693,
+    "branch": "fix/memory-federation-production-closure",
+    "composition": [
+      "codex-rs/hepta-memory/src/cognitive_federation.rs",
+      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+    ],
+    "status": "candidate_pending_exact_head_ci",
+    "note": "sourceBase is the repository-wide generated-map baseline and must remain identical across all module maps; this field records the newer module-specific candidate without falsely changing the global audited baseline."
+  }
 }
