@@ -151,28 +151,21 @@ impl AppServerModelDriver {
         owner: &AgentdClient,
         context_query: Option<String>,
     ) -> Result<Option<HashMap<String, AdditionalContextEntry>>> {
-        context_query
-            .map(|query| async move {
-                let snapshot = owner.cognitive_context(query, /*limit*/ 4).await?;
-                let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_MODEL_CONTEXT_BYTES {
-                    return Err::<_, Box<dyn std::error::Error + Send + Sync>>(
-                        "verified context exceeds the model attachment byte limit".into(),
-                    );
-                }
-                Ok(HashMap::from([(
-                    "hepta-cognitive-owner".to_string(),
-                    AdditionalContextEntry {
-                        value,
-                        kind: AdditionalContextKind::Untrusted,
-                    },
-                )]))
-            })
-            .map_or_else(
-                || Box::pin(async { Ok(None) }) as _,
-                |future| Box::pin(async move { future.await.map(Some) }),
-            )
-            .await
+        let Some(query) = context_query else {
+            return Ok(None);
+        };
+        let snapshot = owner.cognitive_context(query, /*limit*/ 4).await?;
+        let value = serde_json::to_string(&snapshot)?;
+        if value.len() > MAX_MODEL_CONTEXT_BYTES {
+            return Err("verified context exceeds the model attachment byte limit".into());
+        }
+        Ok(Some(HashMap::from([(
+            "hepta-cognitive-owner".to_string(),
+            AdditionalContextEntry {
+                value,
+                kind: AdditionalContextKind::Untrusted,
+            },
+        )])))
     }
 
     fn input(prompt: String) -> Vec<UserInput> {
