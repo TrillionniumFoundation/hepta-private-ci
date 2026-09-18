@@ -41,7 +41,7 @@ For one V2 attempt:
 
 There is no blind retry. Dropping the transport future is the in-flight cancellation boundary; a production transport must stop further adapter I/O when that future is dropped. Any separately authorized retry requires a new nonce/attempt identity.
 
-Product `CognitiveRuntime::AvailableFederatedV2` applies this boundary per currently enrolled owner. Aggregate coverage preserves requested, completed, failed and truncated counts. A scope/transport failure is not relabeled as a successful empty result.
+Product `CognitiveRuntime::AvailableFederatedV2` applies this boundary per currently enrolled owner. Aggregate coverage preserves requested, completed, failed and truncated counts. A scope/transport failure is not relabeled as a successful empty result. A clean discovery with no active grant consumes no request slot, while an owner store whose enrollment state cannot be observed contributes a bounded failed slot. Post-I/O revoked/stale terminal attempts also contribute failed aggregate coverage because they produced no admissible evidence.
 
 ## 5. Capacity and performance profile
 
@@ -62,7 +62,9 @@ Source tests now include identities for:
 - FED-07: cancellation/deadline or an earlier lease expiry interrupts a pending transport future;
 - FED-08: duplicate remote record identity rejects;
 - FED-09: final result digest binds the post-I/O authority observation;
-- FED-10: product runtime keeps explicit requested/completed/failed/truncated coverage and revalidates an attachment against current owner capability state.
+- FED-10: product runtime keeps explicit requested/completed/failed/truncated coverage and revalidates an attachment against current owner capability state;
+- FED-11: unobservable owner capability discovery and post-I/O revoked/stale attempts remain failed aggregate coverage instead of disappearing;
+- FED-12: combined local+federated model input preserves the exact federation coverage vector.
 
 Test source identity is not an execution receipt. Exact-head/merge-candidate outputs determine pass/fail for the candidate revision.
 
