@@ -81,6 +81,9 @@ try {
   retry.click();
   const dialog = await waitFor(() => document.querySelector("dialog[data-hepta-confirm='operation']"));
   if (!dialog.getAttribute("aria-labelledby")) throw new Error("confirmation dialog missing accessible name binding");
+  if (document.activeElement !== dialog.querySelector("[data-hepta-confirm-cancel='true']")) {
+    throw new Error("dangerous confirmation did not default focus to cancel");
+  }
   const exact = dialog.querySelector("pre[aria-label='Exact request payload']");
   if (!exact || !exact.textContent.includes("request_retry")) throw new Error("exact immutable request is not visible");
   dialog.querySelector("[data-hepta-confirm-submit='true']").click();
