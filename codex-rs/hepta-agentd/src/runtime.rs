@@ -44,6 +44,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let retrieval_runtime = config.memory_retrieval_runtime();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -63,6 +64,14 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .cognitive_ranker
             .set(ranker)
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
+    }
+    if let Some(retrieval_runtime) = retrieval_runtime {
+        state
+            .memory_retrieval_runtime
+            .set(retrieval_runtime)
+            .map_err(|_| {
+                AgentdError::Invalid("memory retrieval runtime already attached".to_string())
+            })?;
     }
     if let Some(path) = trust_file {
         state.refresh_generation()?;
