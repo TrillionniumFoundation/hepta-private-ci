@@ -152,14 +152,10 @@ async fn target_append_and_query_are_exact_candidate_and_claim_class_bound() {
             EXPIRES,
         ),
     );
-    assert_eq!(
-        store.append_receipt(&signed, &issuer).await.expect("append"),
-        AppendDisposition::Inserted
-    );
-    assert_eq!(
-        store.append_receipt(&signed, &issuer).await.expect("replay"),
-        AppendDisposition::AlreadyPresent
-    );
+    let first_id = store.append_receipt(&signed, &issuer).await.expect("append");
+    let replay_id = store.append_receipt(&signed, &issuer).await.expect("replay");
+    assert_eq!(first_id.as_str(), "qe:fixture:1");
+    assert_eq!(replay_id, first_id);
 
     let fixture = store
         .query_claim(&candidate(), EvidenceClaimClassV1::Fixture)
