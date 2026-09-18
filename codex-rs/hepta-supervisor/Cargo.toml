@@ -22,6 +22,11 @@ path = "src/main.rs"
 test = false
 
 [[bin]]
+name = "hepta-supervisor-intent-recovery"
+path = "src/bin/hepta-supervisor-intent-recovery.rs"
+test = false
+
+[[bin]]
 name = "hepta-authority-signer"
 path = "src/bin/hepta-authority-signer.rs"
 test = false
@@ -30,18 +35,6 @@ required-features = ["production-authority"]
 [[bin]]
 name = "hepta-final-use-signer"
 path = "src/bin/hepta-final-use-signer.rs"
-test = false
-required-features = ["production-authority"]
-
-[[bin]]
-name = "hepta-final-use-approver"
-path = "src/bin/hepta-final-use-approver.rs"
-test = false
-required-features = ["production-authority"]
-
-[[bin]]
-name = "hepta-final-use-revocation-signer"
-path = "src/bin/hepta-final-use-revocation-signer.rs"
 test = false
 required-features = ["production-authority"]
 

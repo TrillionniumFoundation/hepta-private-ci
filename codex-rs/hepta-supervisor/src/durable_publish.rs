@@ -1,9 +1,8 @@
-//! Publish an already-synchronized staging file without a cross-volume copy.
-//! A reported failure never permits the caller to acknowledge the new durable state.
-
 use std::io;
 use std::path::Path;
 
+/// Replace one already-synchronized staging file within the same directory.
+/// Unix synchronizes the parent directory; Windows uses write-through replace.
 pub(crate) fn publish(staging: &Path, destination: &Path) -> io::Result<()> {
     let parent = staging.parent().ok_or_else(|| {
         io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")
@@ -35,9 +34,6 @@ fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> 
     use windows_sys::Win32::Storage::FileSystem::MOVEFILE_WRITE_THROUGH;
     use windows_sys::Win32::Storage::FileSystem::MoveFileExW;
 
-    // Canonicalizing the existing common parent supplies the OS verbatim
-    // prefix, preserving std::fs::rename's support for paths above MAX_PATH.
-    // The destination itself need not exist on the initial publication.
     let parent = staging.parent().ok_or_else(|| {
         io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")
     })?;
@@ -62,9 +58,7 @@ fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> 
     let staging = wide_path(&parent.join(staging_name))?;
     let destination = wide_path(&parent.join(destination_name))?;
     // SAFETY: Both buffers are NUL-terminated UTF-16 paths with no interior NUL,
-    // and remain alive for the synchronous call. No delayed or copy fallback is
-    // allowed. WRITE_THROUGH waits for the move to reach disk before success:
-    // https://learn.microsoft.com/windows/win32/api/winbase/nf-winbase-movefileexw
+    // and remain alive for this synchronous call.
     let result = unsafe {
         MoveFileExW(
             staging.as_ptr(),
@@ -103,7 +97,3 @@ fn publish_same_directory(_staging: &Path, _destination: &Path) -> io::Result<()
         "durable publication is unsupported on this platform",
     ))
 }
-
-#[cfg(test)]
-#[path = "signed_intent_publish_tests.rs"]
-mod tests;
