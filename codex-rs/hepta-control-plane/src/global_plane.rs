@@ -387,14 +387,10 @@ fn q32_u64(value: u64) -> Result<FixedQ32, GlobalPlaneError> {
 }
 
 fn ceil_div(value: u64, divisor: u64) -> Result<u64, GlobalPlaneError> {
-    if value == 0 {
-        return Ok(0);
+    if divisor == 0 {
+        return Err(GlobalPlaneError::Arithmetic);
     }
-    value
-        .checked_sub(1)
-        .and_then(|v| v.checked_div(divisor))
-        .and_then(|v| v.checked_add(1))
-        .ok_or(GlobalPlaneError::Arithmetic)
+    Ok(value.div_ceil(divisor))
 }
 
 fn stable(value: &str) -> Result<StableId, GlobalPlaneError> {
