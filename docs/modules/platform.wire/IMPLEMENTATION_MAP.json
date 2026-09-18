@@ -18,29 +18,97 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_read_only_gateway",
   "productionWriterState": "not_established",
   "operations": [
     {
-      "operation": "wireenvelope",
+      "operation": "wire_v1",
       "nativeSymbol": "WireEnvelope",
       "sourcePath": "codex-rs/hepta-wire/src/envelope.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_backward_compatible",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-wire/src/envelope_tests.rs",
+        "codex-rs/hepta-wire/src/boundary_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "wireenvelope",
+      "designOperation": "wire_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "wire_v2",
+      "nativeSymbol": "WireEnvelopeV2",
+      "sourcePath": "codex-rs/hepta-wire/src/envelope_v2.rs",
+      "state": "source_implemented_product_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/envelope_v2_tests.rs",
+        "codex-rs/hepta-native-gateway/src/lib.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "wire_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-runtime/src/lib.rs",
+        "codex-rs/hepta-native-gateway/src/lib.rs"
+      ]
+    },
+    {
+      "operation": "negotiate",
+      "nativeSymbol": "negotiate",
+      "sourcePath": "codex-rs/hepta-wire/src/version.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/version_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "negotiate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "schema_admission",
+      "nativeSymbol": "SchemaRegistry",
+      "sourcePath": "codex-rs/hepta-wire/src/schema.rs",
+      "state": "source_implemented_framework",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/schema_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "schema_admission",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "stream_decode",
+      "nativeSymbol": "StreamingDecoder",
+      "sourcePath": "codex-rs/hepta-wire/src/stream.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/stream_tests.rs",
+        "codex-rs/hepta-wire/src/property_tests.rs",
+        "codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "stream_decode",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the versioned implementation and product source caller.",
+    "Bind HPTN negotiation and encoded HPTA frames to the selected authenticated production transport/session.",
+    "Register and qualify each additional product-domain schema codec before admitting it."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic and security review",
+    "target-host product execution and authenticated transport qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
