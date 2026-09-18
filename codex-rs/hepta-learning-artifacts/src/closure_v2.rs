@@ -285,6 +285,11 @@ impl DatasetWithdrawalRegistry {
             .map_or(Digest32::ZERO, |record| record.chain_digest)
     }
 
+    #[must_use]
+    pub fn record_count(&self) -> usize {
+        self.records.len()
+    }
+
     pub fn admit_manifest(
         &self,
         manifest: LearningArtifactManifestV2,
