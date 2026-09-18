@@ -9,9 +9,9 @@ be declared complete merely by editing this file.
 | Priority | Gate | Current state | Closure evidence required |
 | --- | --- | --- | --- |
 | P1 | Durable operations ledger/outbox | Not implemented; bounded memory oracle only | transactional backend, same state-machine suite, crash/reopen, corruption, migration and multi-writer tests |
-| P1 | AuthBus host trust and recovery | Signed authentication and SQLite replay implemented; host provisioning and external rollback protection remain | enrolled caller, managed issuer keys/revocation, trusted time and independently retained restore checkpoint |
-| P1 | Authorization policy and quota ledger | Not implemented | durable policy revision, conservation-safe reservation/settlement, crash reconciliation and real caller |
-| P1 | Bao operation/evidence/quota composition | Host composition required | durable intent before dispatch, observed outcome, evidence append and settlement receipts |
+| P1 | AuthBus host trust and recovery | Managed issuer enrollment/revocation/rotation/retirement and a rollback hash-chain/checkpoint verifier are source-implemented; independently governed checkpoint retention/trusted time remain external | exact-head/merge execution, protected enrolled caller, independently retained restore checkpoint and restore/rollback exercise |
+| P1 | Authorization policy and quota ledger | Source candidate implements immutable policy revisions, payload/audience-bound decisions, integer quota conservation and reserve/settle/cancel/expire/quarantine/reconcile | exact-head/merge native receipts, independent semantic review and an enrolled production effect caller |
+| P1 | Bao operation/evidence/quota composition | Qualification provider seam now authorizes and reserves before the durable effect boundary and settles Completed only from separate observed-cost evidence; Bao/general production caller remains uncomposed | production caller composition, real observed-cost source, final-use authority, evidence append and settlement receipts |
 | P1 | Authority trusted time and external anti-rollback | Local wall clock/filesystem only | independently governed time/checkpoint source and rollback tests |
 | P1 | Cross-language wire/authority conformance | Rust source vector only | independent client implementations and golden-vector execution |
 | P2 | Fuzz, disk-full and fault campaigns | Partial | retained exact-candidate fuzz/crash/fault receipts |
