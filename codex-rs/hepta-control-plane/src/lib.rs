@@ -19,6 +19,7 @@ mod organ_wire;
 mod planner;
 mod planner_context;
 mod planner_journal;
+mod ndu_adaptive;
 mod planner_ndu;
 #[path = "embodiment/timing.rs"]
 mod timing;
@@ -122,6 +123,9 @@ pub use planner_journal::PlannerJournalError;
 pub use planner_journal::PlannerJournalKindV1;
 pub use planner_journal::PlannerJournalV1;
 pub use planner_ndu::EvaluatedPlanV1;
+pub use ndu_adaptive::NduAdaptiveAdmissionError;
+pub use ndu_adaptive::NduAdaptiveAdmissionInputV1;
+pub use ndu_adaptive::admit_adaptive_ndu_profile_v1;
 pub use planner_ndu::NduPlanningError;
 pub use planner_ndu::NduPlanningInputV1;
 pub use planner_ndu::canonical_ndu_planning_policy_digest;
