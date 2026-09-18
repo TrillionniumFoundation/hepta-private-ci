@@ -12,7 +12,7 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-intelligence-e
 
 ## 2. Public operations and contract details
 
-`estimate_ope(plan, rows) -> OpeEstimate`; `estimate_cluster_intervals(plan, rows, assignments) -> ClusterOpeEstimate`; `estimate_sequential(plan, trajectories) -> SequentialEstimate`; `fit_temporal_fold(plan, training, targets) -> TemporalFoldReceipt`; `evaluate_temporal_holdout(plan, training, targets, observations, assignments) -> TemporalEvaluationReceipt`; `freeze_cross_fold_plan(plan) -> CrossFoldPlanReceiptV1`; `FinalHoldoutRegistry::consume(&frozen_plan_receipt) -> HoldoutUseReceiptV1`; `decide_independently(bundle) -> IndependentEvaluationDecisionV1`.
+`estimate_ope(plan, rows) -> OpeEstimate`; `estimate_cluster_intervals(plan, rows, assignments) -> ClusterOpeEstimate`; `estimate_sequential(plan, trajectories) -> SequentialEstimate`; `fit_temporal_fold(plan, training, targets) -> TemporalFoldReceipt`; `evaluate_temporal_holdout(plan, training, targets, observations, assignments) -> TemporalEvaluationReceipt`; `freeze_cross_fold_plan(plan) -> CrossFoldPlanReceiptV1`; `FinalHoldoutRegistry::consume(&frozen_plan_receipt) -> HoldoutUseReceiptV1`; `decide_independently(bundle) -> IndependentEvaluationDecisionV1`; `evaluate_ndu_convergence_v1(evidence) -> NduConvergenceCertificateV1`.
 
 The estimand class is mandatory. A single-decision estimate cannot certify a long-horizon policy. Estimator receipts and the independent eligibility decision are separate outputs; neither selects or releases an artifact.
 
@@ -25,6 +25,8 @@ Analysis outputs are immutable evidence with plan/data/code/model IDs, eligibili
 The in-memory `FinalHoldoutRegistry` consumes that typed receipt. It permits an exact idempotent retry, rejects semantic mutation under the same plan identity, and prevents a second plan from reusing either the final-holdout digest or final-holdout window. Its sealed use receipt binds the complete frozen-plan semantics and registry state. A product adapter must persist both registry and receipts under an exclusive writer and authenticated storage boundary.
 
 `IndependentEvaluationBundleV1` consumes authenticated generator/evaluator roles, the exact sealed frozen-plan and holdout-use receipts, objective, dataset, estimand, estimate, support, confidence, retention, unlearning, snapshot and future-window facts. It validates receipt integrity and semantic equality before statistical admission. The evaluator cannot share a principal, credential chain or signing key with the generator.
+
+`NduConvergenceEvidenceV1` separately binds the NDU certificate identity, subject class, current and evaluated objective-class digests, solver and initialization, iteration/residual/conservation diagnostics, evaluator/producer separation, operating region and independent perturbation/stability/conservation support. The source evaluator applies the registered residual, conservation and `<0.95` spectral-radius-upper-95% gates and maps missing support or unresolved multiple solutions to unavailable. It does not generate the underlying observations.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -50,6 +52,7 @@ System-longitudinal ESS is at least `max(400, ceil(0.1*n), stricter slice minimu
 - EVAL-02: correlated repeated decisions do not count as independent bootstrap samples.
 - EVAL-03: stricter profile wins when ESS floors differ; missing metrics block acceptance.
 - EVAL-04: future leakage, holdout reuse, role collision, old-task regression and restored deleted lineage invalidate the corresponding claim.
+- EVAL-05: NDU self-evaluation cannot issue a certificate; missing independent support is unavailable; stale objective, residual/conservation failure or spectral-radius upper 95% at/above 0.95 rejects.
 
 Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. The OP-03 cross-module test also confirms that excellent in-sample fit without retention or unlearning remains insufficient.
 
@@ -61,11 +64,11 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `evaluate_temporal_holdout` in [codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs). Point/sequential/temporal estimators and independent decision source implemented.
+- **Implemented entrypoints:** `evaluate_temporal_holdout` in [codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs) and `evaluate_ndu_convergence_v1` in [codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs). Point/sequential/temporal estimators, independent decision source and native NDU convergence-certificate decision are implemented.
 - **State and recovery:** Temporal evaluation binds a frozen plan and exact joined held-out cohort, isolates training labels and checks cluster lineage. FinalHoldoutRegistry remains the in-memory semantic registry. DurableFinalHoldoutJournalV1 now wraps its journal with locked, synced, independently anchored file recovery; host authentication/currentness and production scheduling remain external. Signed SystemLongitudinal admission requires V3 observed-time evidence, not window IDs alone.
 - **Source tests:** [codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs), [codex-rs/hepta-intelligence-eval/src/closure_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/closure_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md](../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md), [codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md](../../../codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md).
-- **Remaining work:** Bind the durable holdout adapter to the product nuisance-model scheduler and independently retained current anchor; provide live authenticated outcomes and real future-window evidence; estimator fixtures cannot establish longitudinal efficacy.
+- **Remaining work:** Bind the durable holdout adapter to the product nuisance-model scheduler and independently retained current anchor; authenticate real NDU perturbation/stability/conservation evidence and canonical wire/consumer admission; provide live outcomes and real future-window evidence. Source fixtures cannot establish longitudinal efficacy or target-host activation.
 
 ## 9. Native closure and remaining evidence
 

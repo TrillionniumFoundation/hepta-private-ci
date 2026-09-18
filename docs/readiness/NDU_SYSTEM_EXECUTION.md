@@ -110,7 +110,7 @@ U_k = project(instant_utility + discount * continuation_utility)
 
 These local records are not an activation certificate. They deliberately do not use the name `NduConvergenceCertificateV1`.
 
-The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It additionally binds independent evaluator identity, operating region, residuals, resource/risk conservation, perturbation evidence and the spectral-radius upper confidence bound. A certificate with a spectral-radius upper 95% bound `>=0.95`, stale objective, unsupported dimension or missing independent decision cannot activate an adaptive artifact.
+The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. Its native source decision now validates evaluator/producer separation, current objective class, solver/initialization, bounded iterations, residual/conservation diagnostics, operating region, perturbation/stability/conservation support and the strict spectral-radius upper 95% `<0.95` gate. Missing independent support or unresolved multiple solutions is unavailable; stale objective or failed numeric gates rejects. This source path consumes evidence and cannot self-prove independence, real perturbations, target-host qualification or activation.
 
 `bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only after binding:
 
