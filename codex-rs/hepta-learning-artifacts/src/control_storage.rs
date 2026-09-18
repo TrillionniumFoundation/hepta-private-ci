@@ -15,6 +15,7 @@ use crate::{
     CreateOnlyArtifactFile, DatasetWithdrawalNoticeV1, DatasetWithdrawalRecordV1,
     DatasetWithdrawalRegistry, DatasetWithdrawalRegistrySnapshotV1, LifecycleActorEvidenceV2,
     LifecycleActorRoleV2, MAX_DURABLE_ARTIFACT_RECORDS, MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES,
+    WithdrawalAuthorityDomainV1, withdrawal_authority_domain_digest_v1,
 };
 use crate::storage::{read_bounded, write_new};
 
@@ -55,6 +56,29 @@ pub fn write_dataset_withdrawal_snapshot_v1(
     };
     write_new(file, &bytes)?;
     Ok(receipt)
+}
+
+pub fn write_dataset_withdrawal_snapshot_for_domain_v1(
+    file: CreateOnlyArtifactFile,
+    snapshot: &DatasetWithdrawalRegistrySnapshotV1,
+    domain: &WithdrawalAuthorityDomainV1,
+) -> Result<DatasetWithdrawalSnapshotReceiptV1, ArtifactStorageError> {
+    let binding = withdrawal_authority_domain_digest_v1(domain)
+        .map_err(|_| ArtifactStorageError::InvalidBinding)?;
+    write_dataset_withdrawal_snapshot_v1(file, snapshot, binding)
+}
+
+pub fn read_dataset_withdrawal_snapshot_for_domain_v1(
+    file: File,
+    expected: DatasetWithdrawalSnapshotReceiptV1,
+    domain: &WithdrawalAuthorityDomainV1,
+) -> Result<DatasetWithdrawalRegistry, ArtifactStorageError> {
+    let binding = withdrawal_authority_domain_digest_v1(domain)
+        .map_err(|_| ArtifactStorageError::InvalidBinding)?;
+    if expected.binding != binding {
+        return Err(ArtifactStorageError::InvalidReceipt);
+    }
+    read_dataset_withdrawal_snapshot_v1(file, expected)
 }
 
 pub fn read_dataset_withdrawal_snapshot_v1(
@@ -478,6 +502,55 @@ mod tests {
         let reopened =
             read_dataset_withdrawal_snapshot_v1(File::open(&target).unwrap(), receipt).unwrap();
         assert_eq!(reopened.snapshot(), snapshot);
+        let _ = std::fs::remove_file(target);
+    }
+
+    #[test]
+    fn withdrawal_snapshot_is_bound_to_authority_domain_and_epoch() {
+        let mut registry = DatasetWithdrawalRegistry::new();
+        registry
+            .append(DatasetWithdrawalNoticeV1 {
+                notice_id: id("domain-notice"),
+                dataset_digest: digest("domain-dataset"),
+                source_tombstone_digest: digest("domain-tombstone"),
+                authority_id: id("withdrawal-authority"),
+                credential_chain_digest: digest("domain-credential"),
+                signing_key_digest: digest("domain-key"),
+                authority_epoch: 7,
+                issued_at: 20,
+            })
+            .unwrap();
+        let domain = WithdrawalAuthorityDomainV1 {
+            registry_id: id("withdrawal-registry"),
+            scope_digest: digest("tenant-a"),
+            authority_id: id("withdrawal-authority"),
+            authority_epoch: 7,
+        };
+        let mut rotated = domain.clone();
+        rotated.authority_epoch = 8;
+        let target = path("withdrawal-domain");
+        let receipt = write_dataset_withdrawal_snapshot_for_domain_v1(
+            CreateOnlyArtifactFile::create(&target).unwrap(),
+            &registry.snapshot(),
+            &domain,
+        )
+        .unwrap();
+
+        assert_eq!(
+            read_dataset_withdrawal_snapshot_for_domain_v1(
+                File::open(&target).unwrap(),
+                receipt,
+                &rotated,
+            ),
+            Err(ArtifactStorageError::InvalidReceipt)
+        );
+        let reopened = read_dataset_withdrawal_snapshot_for_domain_v1(
+            File::open(&target).unwrap(),
+            receipt,
+            &domain,
+        )
+        .unwrap();
+        assert_eq!(reopened.snapshot(), registry.snapshot());
         let _ = std::fs::remove_file(target);
     }
 
