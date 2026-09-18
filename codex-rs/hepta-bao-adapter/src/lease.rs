@@ -399,6 +399,7 @@ impl BaoClient {
         &self,
         authority: &FinalUseAuthority,
         grant: &SignedFinalUseGrant,
+        registry: &SecretLeaseRegistry,
         handle: &SecretLeaseHandle,
         request: &SecretLeaseRenewRequest,
     ) -> Result<SecretLeaseMutationOutcome<SecretLeaseRenewal>, BaoClientError> {
@@ -407,6 +408,10 @@ impl BaoClient {
         let verified = authority
             .claim(grant, &binding)
             .map_err(BaoClientError::Authority)?;
+        registry
+            .begin_operation(operation_sha256, "renew", now_unix_ms()?)
+            .await
+            .map_err(BaoClientError::LeaseRegistry)?;
         authority
             .with_verified_use(verified, &binding, || ())
             .map_err(BaoClientError::Authority)?;
@@ -429,6 +434,7 @@ impl BaoClient {
         let mut response = match network_request.send().await {
             Ok(response) => response,
             Err(_) => {
+                persist_indeterminate(registry, operation_sha256).await?;
                 return Ok(SecretLeaseMutationOutcome::Indeterminate {
                     operation_sha256,
                 });
@@ -439,8 +445,15 @@ impl BaoClient {
             StatusCode::UNAUTHORIZED
             | StatusCode::FORBIDDEN
             | StatusCode::BAD_REQUEST
-            | StatusCode::NOT_FOUND => return Ok(SecretLeaseMutationOutcome::Rejected),
+            | StatusCode::NOT_FOUND => {
+                registry
+                    .mark_rejected(operation_sha256, now_unix_ms()?)
+                    .await
+                    .map_err(BaoClientError::LeaseRegistry)?;
+                return Ok(SecretLeaseMutationOutcome::Rejected);
+            }
             _ if response.status().is_server_error() => {
+                persist_indeterminate(registry, operation_sha256).await?;
                 return Ok(SecretLeaseMutationOutcome::Indeterminate {
                     operation_sha256,
                 });
@@ -450,6 +463,7 @@ impl BaoClient {
         let body = match read_bounded_body(&mut response).await {
             Ok(body) => body,
             Err(BaoClientError::TimedOut | BaoClientError::TransportUnavailable) => {
+                persist_indeterminate(registry, operation_sha256).await?;
                 return Ok(SecretLeaseMutationOutcome::Indeterminate {
                     operation_sha256,
                 });
@@ -470,13 +484,23 @@ impl BaoClient {
                     .ok_or(BaoClientError::InvalidResponse)?,
             )
             .ok_or(BaoClientError::InvalidResponse)?;
-        Ok(SecretLeaseMutationOutcome::Applied(SecretLeaseRenewal {
+        let renewal = SecretLeaseRenewal {
             lease_id_sha256: handle.lease_id_sha256(),
             operation_sha256,
             observed_at_unix_ms,
             expires_at_unix_ms,
             renewable: decoded.renewable,
-        }))
+        };
+        registry
+            .record_renewed(
+                operation_sha256,
+                handle.lease_id_sha256(),
+                &renewal,
+                observed_at_unix_ms,
+            )
+            .await
+            .map_err(|_| BaoClientError::LeaseRegistryAfterProviderEffect)?;
+        Ok(SecretLeaseMutationOutcome::Applied(renewal))
     }
 
     pub fn secret_lease_revoke_binding(
