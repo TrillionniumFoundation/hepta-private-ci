@@ -18,6 +18,7 @@ mod model;
 mod pinned;
 mod publication;
 mod registry;
+mod service;
 mod storage;
 
 pub use admission_v3::ArtifactAdmissionError;
