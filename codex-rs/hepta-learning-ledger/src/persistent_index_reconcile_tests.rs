@@ -100,7 +100,8 @@ fn write_only_record_index(root: &PathBuf, record: &crate::LedgerRecord) {
         .create_new(true)
         .open(path)
         .expect("create partial record index");
-    file.write_all(&envelope).expect("write partial record index");
+    file.write_all(&envelope)
+        .expect("write partial record index");
     file.sync_all().expect("sync partial record index");
 }
 
