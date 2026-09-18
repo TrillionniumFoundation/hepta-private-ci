@@ -373,8 +373,8 @@ pub type FederationAuthorityFuture<'a> = Pin<
     >,
 >;
 
-/// Current authority observation performed after remote I/O and before evidence
-/// becomes eligible for use.
+/// Current authority observation performed before transport dispatch and again
+/// after remote I/O before evidence becomes eligible for use.
 pub trait FederationAuthorityV2: Send + Sync {
     fn revalidate<'a>(
         &'a self,
@@ -393,7 +393,7 @@ pub type FederationStopFuture<'a> =
     Pin<Box<dyn Future<Output = FederationStopReasonV2> + Send + 'a>>;
 
 /// Product-host cancellation/deadline source. The engine races this future
-/// against both transport and post-I/O authority revalidation.
+/// against preflight authority observation, transport and post-I/O revalidation.
 pub trait FederationAttemptControlV2: Send + Sync {
     fn wait_for_stop<'a>(
         &'a self,
@@ -453,6 +453,7 @@ impl FederatedResultV2 {
                 || self.remote_response_digest.is_some()
                 || self.authority_observation_digest.is_some()
                 || self.coverage.failed_peers != 1
+                || self.coverage.truncated_items != 0
             {
                 return Err(FederationV2Error::InvalidCompleteness);
             }
@@ -464,12 +465,28 @@ impl FederatedResultV2 {
             {
                 return Err(FederationV2Error::InvalidCoverage);
             }
+            if matches!(self.completeness, FederatedCompletenessV2::Empty)
+                && !self.items.is_empty()
+            {
+                return Err(FederationV2Error::InvalidCompleteness);
+            }
+            if matches!(self.completeness, FederatedCompletenessV2::Complete)
+                && (self.items.is_empty() || self.coverage.truncated_items != 0)
+            {
+                return Err(FederationV2Error::InvalidCompleteness);
+            }
             if matches!(
                 self.validity,
                 FederatedValidityV2::StaleGeneration | FederatedValidityV2::Revoked
-            ) && !self.items.is_empty()
-            {
-                return Err(FederationV2Error::StaleEvidenceExposed);
+            ) {
+                if !self.items.is_empty() {
+                    return Err(FederationV2Error::StaleEvidenceExposed);
+                }
+                if !matches!(self.completeness, FederatedCompletenessV2::Partial)
+                    || self.coverage.truncated_items != 0
+                {
+                    return Err(FederationV2Error::InvalidCompleteness);
+                }
             }
         }
         validate_unique_items(&self.items)?;
