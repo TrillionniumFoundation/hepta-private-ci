@@ -599,9 +599,8 @@ impl fmt::Display for PlannerError {
                     "invalid essential resource reservation for {axis}"
                 )
             }
-            Self::ResourceProfileMismatch => formatter.write_str(
-                "resource profile digest does not match the canonical reservations",
-            ),
+            Self::ResourceProfileMismatch => formatter
+                .write_str("resource profile digest does not match the canonical reservations"),
             Self::MissingResourceAxis { candidate, axis } => {
                 write!(
                     formatter,
