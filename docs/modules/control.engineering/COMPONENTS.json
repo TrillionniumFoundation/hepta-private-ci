@@ -180,7 +180,8 @@
         "path_outside_candidate_envelope",
         "no_change_missing",
         "candidate_oracle_path",
-        "mutation_path_conflict"
+        "mutation_path_conflict",
+        "changed_file_limit"
       ],
       "resourceBounds": {
         "maximumCandidates": 32,
@@ -406,7 +407,9 @@
       "failureModel": [
         "sandbox_capacity_exhausted",
         "network_isolation_unavailable",
-        "git_operation_failed"
+        "git_operation_failed",
+        "invalid_sandbox_execution_policy",
+        "sandbox_parallelism_invariant"
       ],
       "resourceBounds": {
         "maximumParallelSandboxes": 8,
@@ -425,12 +428,19 @@
       "failureModel": [
         "mutation_test_empty",
         "mutation_baseline_failed",
-        "duplicate_mutant_identity"
+        "duplicate_mutant_identity",
+        "mutation_baseline_invalid",
+        "mutation_strong_sandbox_required",
+        "mutation_check_set_mismatch",
+        "mutation_execution_policy_mismatch",
+        "mutation_execution_receipt_binding",
+        "invalid_mutant"
       ],
       "resourceBounds": {
         "maximumMutants": 32
       },
-      "rollback": "reject the generated test claim when any mutant survives"
+      "rollback": "reject the generated test claim when any mutant survives",
+      "physicalState": "Qualification receipt binds strong baseline receipt, every mutant receipt digest/attempt count, evaluator check-set digest and one sandbox policy digest"
     },
     {
       "id": "external-production-controls",
@@ -439,7 +449,9 @@
         "DistributedFenceReceipt",
         "AuditAnchorAttestation",
         "KeyCustodyReceipt",
-        "verify_production_controls"
+        "verify_production_controls",
+        "DistributedRevocationFrontierReceipt",
+        "verify_distributed_revocation_frontier"
       ],
       "state": "source_implemented_external_evidence_required",
       "failureModel": [
@@ -452,7 +464,16 @@
         "distributed_fence_window_exceeds_owner",
         "audit_anchor_empty",
         "audit_anchor_window_exceeds_envelope",
-        "key_custody_roles"
+        "key_custody_roles",
+        "distributed_revocation_frontier_required",
+        "distributed_revocation_frontier_order",
+        "distributed_revocation_frontier_stale",
+        "distributed_revocation_frontier_signature",
+        "distributed_fence_revocation_frontier_mismatch",
+        "distributed_fence_revocation_frontier_older",
+        "distributed_fence_outlives_revocation_frontier",
+        "audit_anchor_receipt_required",
+        "audit_anchor_store_required"
       ],
       "resourceBounds": {
         "authorityMinted": 0
@@ -466,7 +487,7 @@
         "build_product_receipt",
         "main"
       ],
-      "state": "source_implemented_execution_pending",
+      "state": "source_implemented_dual_lane_execution_pending",
       "failureModel": [
         "repository_identity_mismatch",
         "ordered_merge_parent_mismatch",
