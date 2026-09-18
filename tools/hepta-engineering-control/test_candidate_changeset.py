@@ -89,8 +89,11 @@ class CandidateChangeSetTests(unittest.TestCase):
             generate_candidates(envelope, (bundle,))
 
     def test_atomic_changeset_can_create_only_required_parent_directories(self):
-        root = self.repository()
-        envelope = self.envelope(root)
+        temp, root, base = self.fixture()
+        self.addCleanup(temp.cleanup)
+        envelope = CandidateEnvelope(
+            "env", base, ("src",), require_network_isolation=False
+        )
         change = MutationSet(
             (
                 Mutation(
@@ -108,9 +111,17 @@ class CandidateChangeSetTests(unittest.TestCase):
         candidate = generate_candidates(envelope, (change,))[1]
         tested, receipt = sandbox_candidate(
             root,
-            replace(envelope, require_network_isolation=False),
+            envelope,
             candidate,
-            ((sys.executable, "-c", "import pathlib; assert pathlib.Path('src/newpkg/first.py').is_file()"),),
+            (
+                (
+                    sys.executable,
+                    "-c",
+                    "from pathlib import Path; "
+                    "assert Path('src/newpkg/first.py').is_file(); "
+                    "assert Path('src/newpkg/nested/second.py').is_file()",
+                ),
+            ),
         )
         self.assertTrue(receipt.passed)
         self.assertEqual(tested.state, "fixture_tested")
@@ -120,24 +131,35 @@ class CandidateChangeSetTests(unittest.TestCase):
         )
 
     def test_rename_can_create_required_destination_parent_directory(self):
-        root = self.repository()
-        envelope = self.envelope(root)
+        temp, root, base = self.fixture()
+        self.addCleanup(temp.cleanup)
+        envelope = CandidateEnvelope(
+            "env", base, ("src",), require_network_isolation=False
+        )
         rename = Mutation(
             "rename_file",
-            "src/module.py",
-            target_path="src/newpkg/module.py",
+            "src/b.txt",
+            target_path="src/newpkg/b.txt",
         )
         candidate = generate_candidates(envelope, (rename,))[1]
         tested, receipt = sandbox_candidate(
             root,
-            replace(envelope, require_network_isolation=False),
+            envelope,
             candidate,
-            ((sys.executable, "-c", "import pathlib; assert pathlib.Path('src/newpkg/module.py').is_file()"),),
+            (
+                (
+                    sys.executable,
+                    "-c",
+                    "from pathlib import Path; "
+                    "assert not Path('src/b.txt').exists(); "
+                    "assert Path('src/newpkg/b.txt').read_text() == 'B\\n'",
+                ),
+            ),
         )
         self.assertTrue(receipt.passed)
         self.assertEqual(
             tested.changed_paths,
-            ("src/module.py", "src/newpkg/module.py"),
+            ("src/b.txt", "src/newpkg/b.txt"),
         )
 
     def test_rename_is_bound_as_two_path_change(self):
