@@ -2,9 +2,14 @@
 
 The canonical implementation guide is [IMPLEMENTATION.md](IMPLEMENTATION.md).
 Concrete source lives in `tools/hepta-engineering-control/control_engineering_v2/`;
-`__init__.py` exports authenticated public composition, `control_plane.py` directly
-owns the SQLite v5 schema/transactions, `candidate.py` is the sole sandbox owner,
-and `cli.py` exposes local scheduling and candidate qualification.
+`__init__.py` exports the canonical authenticated v2 composition; `control_plane.py`
+directly owns the SQLite v5 schema/transactions; `orchestration.py` owns verified
+source issuance, signed predecessor completion and multidimensional planning;
+`candidate.py` owns exact Git materialization/strong isolation while
+`candidate_bundle.py` adds atomic multi-file/rename grammar; `execution_control.py`
+owns host sandbox slots/retry/mutation admission; `external_control.py` verifies
+external fencing/audit/key-custody receipts; and `product_caller.py` is the named
+read-only repository caller. `cli.py` remains a bounded local compatibility surface.
 
 [COMPONENTS.json](COMPONENTS.json) and [TRACEABILITY.json](TRACEABILITY.json) are
 source/test navigation maps. They do not self-certify maturity or grant authority.
@@ -23,13 +28,18 @@ key-rotation and incident procedures are in [OPERATIONS.md](OPERATIONS.md).
 Repository promotion of the `production_implementation` fact is fail-closed.
 `control_engineering_v2.production.evaluate_production_readiness` projects
 already-authenticated evidence into two separate states. Production implementation
-requires exact source/merge CI, verified native mapping, a named product caller
-and executable product tests. Deployment readiness additionally requires a
-distinct independent reviewer, authorized handoff, external key custody, strong
-sandbox observation, observed target deployment and a rollback rehearsal. The
+requires exact source/merge CI, verified native mapping, a named product caller,
+executable product tests, authenticated source issuance, authenticated predecessor
+completion and the multidimensional orchestration path. Deployment readiness additionally requires a
+distinct independent reviewer, authorized handoff, external hardware-backed key
+custody, a signed external audit anchor, strong sandbox observation, observed target
+deployment and a rollback rehearsal; multi-host execution also requires an external
+leader/fencing backend receipt at the worker-write boundary. The
 projection grants no authority and cannot authenticate those external receipts.
 
-Owner work stops at durable assignments, candidate qualification, signed review
-eligibility or a dormant external-system proposal. Independent key custody,
-production callers and adapters, measured benefit, real target operation,
-reviewer acceptance and deployment remain separate deliverables.
+Owner work stops at durable assignments, merge-queue proposals, candidate
+qualification, signed review eligibility or a dormant external-system proposal.
+The named repository CI caller is composed but does not create a production writer.
+Independent acceptance, measured benefit, real target operation, authorized
+handoff/deployment, canary/promotion/release and externally governed custody/anchors
+remain separate deliverables.
