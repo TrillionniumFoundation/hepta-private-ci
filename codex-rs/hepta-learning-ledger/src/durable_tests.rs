@@ -15,6 +15,7 @@ use crate::CreditAssignment;
 use crate::EpisodeDecision;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
+use crate::PromptDeliveryObservation;
 use crate::Revocation;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
@@ -79,6 +80,24 @@ fn credit() -> LedgerEvent {
         support_digest: Digest32::of_bytes(b"credit-support"),
     })
 }
+
+fn prompt_delivery() -> LedgerEvent {
+    LedgerEvent::PromptDelivery(PromptDeliveryObservation {
+        record_id: id("delivery-1"),
+        episode_id: id("episode-1"),
+        compilation_id: id("compilation-1"),
+        observer_id: id("runtime-observer"),
+        portfolio_receipt_digest: Digest32::of_bytes(b"portfolio-receipt"),
+        provider_request_digest: Digest32::of_bytes(b"provider-request"),
+        delivered: true,
+        rejected_reason_digest: None,
+        observed_token_positions_digest: Some(Digest32::of_bytes(b"token-positions")),
+        truncation_observed: false,
+        context_delivery_observation_digest: Digest32::of_bytes(b"context-delivery"),
+        support_digest: Digest32::of_bytes(b"delivery-support"),
+    })
+}
+
 fn revocation() -> LedgerEvent {
     LedgerEvent::Revocation(Revocation {
         record_id: id("revocation-1"),
@@ -146,7 +165,7 @@ fn anchored(snapshot: &LedgerSnapshot) -> LedgerRecovery {
 #[test]
 fn persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants() {
     let fixture = Fixture::new();
-    let events = vec![decision(), outcome(), credit(), revocation()];
+    let events = vec![decision(), prompt_delivery(), outcome(), credit(), revocation()];
     let mut expected = LearningLedger::new();
     for event in &events {
         must(expected.append(event.clone()));
@@ -161,7 +180,7 @@ fn persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants
             .iter()
             .all(|row| matches!(row.event, LedgerEvent::Revocation(_)))
     );
-    assert_eq!(must(reopened.records()).len(), 4); // Logical exclusion, not physical erasure.
+    assert_eq!(must(reopened.records()).len(), 5); // Logical exclusion, not physical erasure.
 }
 
 #[test]
