@@ -87,7 +87,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
                 "sourcePathExists": False,
             }
         ]
-    return {
+    result = {
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
@@ -124,6 +124,70 @@ def map_for(module: dict, source_base: dict, lanes: dict):
             "release": False,
         },
     }
+    if mid == "learning.ledger":
+        root = ROOT / "codex-rs/hepta-learning-ledger"
+        convergence = {
+            "ledgerWriter": root / "src/writer.rs",
+            "independentWitness": root / "src/witness.rs",
+            "trustRootVerifier": root / "src/trust_root.rs",
+            "canonicalProtocolAdapters": root / "src/protocol_adapters.rs",
+            "indexCheckpoint": root / "src/checkpoint.rs",
+            "convergenceGuide": root / "CONVERGENCE.md",
+        }
+        result["convergenceGuide"] = "codex-rs/hepta-learning-ledger/CONVERGENCE.md"
+        result["statusDimensions"] = {
+            "packagePlanningState": {
+                "LRN-0-CAUSAL-LEARNING-CONTRACTS": "planned",
+                "LRN-1-DURABLE-EPISODE-LEDGER": "planned",
+            },
+            "sourceImplementationState": (
+                "convergence_candidate_present"
+                if all(path.exists() for path in convergence.values())
+                else "base_source_present"
+            ),
+            "productCompositionState": result["productCallerState"],
+            "qualificationState": "pending_exact_candidate_execution",
+            "trustDeploymentState": (
+                "pinned_root_mechanism_present_external_root_unbound"
+                if convergence["trustRootVerifier"].exists()
+                else "not_implemented"
+            ),
+            "targetHostState": "not_qualified",
+            "activationState": "inactive",
+            "releaseState": "not_released",
+        }
+        result["candidateDelta"] = {
+            "status": "source_candidate_not_yet_exact_head_qualified",
+            "operations": [
+                {
+                    "nativeSymbol": "LedgerWriter",
+                    "sourcePath": "codex-rs/hepta-learning-ledger/src/writer.rs",
+                    "purpose": "authenticated witnessed production write boundary",
+                },
+                {
+                    "nativeSymbol": "IndependentLedgerWitness",
+                    "sourcePath": "codex-rs/hepta-learning-ledger/src/witness.rs",
+                    "purpose": "independent durable acknowledgement frontier",
+                },
+                {
+                    "nativeSymbol": "verify_learning_trust_manifest",
+                    "sourcePath": "codex-rs/hepta-learning-ledger/src/trust_root.rs",
+                    "purpose": "pinned root signer-distribution verification",
+                },
+                {
+                    "nativeSymbol": "CanonicalJsonProtocol",
+                    "sourcePath": "codex-rs/hepta-learning-ledger/src/protocol_adapters.rs",
+                    "purpose": "canonical registry Rust/wire compatibility",
+                },
+                {
+                    "nativeSymbol": "generate_index_checkpoint",
+                    "sourcePath": "codex-rs/hepta-learning-ledger/src/checkpoint.rs",
+                    "purpose": "verifiable rebuildable long-history index checkpoint",
+                },
+            ],
+        }
+    return result
+
 
 
 def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
