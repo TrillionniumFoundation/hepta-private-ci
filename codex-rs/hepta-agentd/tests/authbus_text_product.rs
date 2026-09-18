@@ -70,6 +70,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &trust_file,
         &agent.agent_id,
         &key,
+        /*trust_revision*/ 1,
         &[],
         /*revoked*/ false,
     )?;
@@ -94,6 +95,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &trust_file,
         &agent.agent_id,
         &key,
+        /*trust_revision*/ 2,
         std::slice::from_ref(&thread),
         /*revoked*/ false,
     )?;
@@ -145,6 +147,7 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &trust_file,
         &agent.agent_id,
         &key,
+        /*trust_revision*/ 3,
         std::slice::from_ref(&thread),
         /*revoked*/ true,
     )?;
@@ -200,11 +203,13 @@ fn write_trust(
     path: &Path,
     agent_id: &AgentId,
     key: &SigningKey,
+    trust_revision: u64,
     thread_ids: &[String],
     revoked: bool,
 ) -> Result<()> {
     let registration = serde_json::json!({
-        "schema_version": 1,
+        "schema_version": 2,
+        "trust_revision": trust_revision,
         "agent_id": agent_id.to_string(),
         "issuer_id": ISSUER_ID,
         "key_epoch": 1,
