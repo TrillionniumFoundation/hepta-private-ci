@@ -16,6 +16,16 @@ This page describes executable behavior in the source, including gaps that requi
 
 The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-control`, and `hepta-matrix-send-observer` entry points exit 64 with the real owner or missing integration named. Their former empty mains returned success without doing work. Existing component tests now run as library tests, with sibling test sources.
 
+## Agentd run lifecycle daemon
+
+The per-Agent host now routes a typed run-lifecycle state machine through its live UDS control service rather than exporting the coordinator only as a Rust library. Shared wire/internal types bind run ID, request/objective/body/artifact digests, authority epoch, deadline, revision, phase, context receipt identity and cancellation reason. The public client can start a run, attach verified context, mark the dispatch boundary, cancel, observe terminal/indeterminate outcomes, read status and remove closed records.
+
+Lifecycle metadata is crash-recoverable in the registered Agent run root. The file contains only identities and digests required for reconciliation; it is not a second prompt, memory, artifact or execution store. Restart never redispatches uncertain work: pre-dispatch records close locally and post-dispatch records become `Indeterminate` pending an owner observation.
+
+SIGINT, SIGTERM and SIGHUP close new Agentd lifecycle/session admissions while the embedded App Server performs its own graceful drain. Agentd keeps the control/reconciliation surface alive during that bounded wait. Saturated UDS work capacity uses a separately bounded typed-overload responder rather than silently dropping every excess request.
+
+This closes the former repository source gaps in daemon routing, lifecycle wire API, frozen authority/deadline binding, local deadline state transitions, cancellation reason semantics and restart bookkeeping. It does **not** prove product composition: a named non-test Codex caller must still supply authentic frozen-tuple and context-compilation receipts, and target-host drain/overload/restart measurements remain qualification evidence.
+
 ## Canonical memory to actual model execution
 
 `AgentdMethod::CognitiveContext { query, limit }` and `AgentdClient::cognitive_context` use the normal owner/generation-fenced local protocol. The host selects its own Agent identity and private scope; callers cannot supply another scope or a success receipt.
@@ -60,6 +70,7 @@ The journal has a 64 MiB total byte budget, an 8 MiB encoded-line budget and at 
 
 ## Remaining implementation work
 
+- Bind a named non-test Codex caller to the Agentd run-lifecycle API with authentic frozen-tuple/context receipts, and qualify the lifecycle ledger/drain/overload/restart behavior on the selected target host.
 - Connect economic quota and device-capacity authorities, and implement authenticated provider reconciliation after process loss. Native local-slot reservations and observed usage settlement are wired; hosted execution does not prove local model artifacts, memory/device grants or process isolation.
 - Connect TaskFlow's existing durable step outbox to a real final-use-authorized effect provider and crash reconciliation. Queue acceptance must remain distinct from effect completion.
 - Persist resource leases under the existing Fleet owner and use real capacity/pressure observations; caller-provided capacity is not hardware discovery.

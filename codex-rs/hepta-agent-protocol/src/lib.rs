@@ -92,6 +92,272 @@ pub struct MemoryFederationCapabilitySnapshot {
     pub state: MemoryFederationCapabilityState,
 }
 
+pub const MAX_RUN_CANCEL_REASON_BYTES: usize = 512;
+pub const MAX_RUN_EXECUTION_ID_BYTES: usize = 256;
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RunPhase {
+    Admitted,
+    ContextAttached,
+    Dispatched,
+    Cancelling,
+    Cancelled,
+    Succeeded,
+    Failed,
+    Indeterminate,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunSnapshot {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ContextAttachment {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+    pub context_digest: String,
+    pub compilation_receipt_digest: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunDispatchBinding {
+    pub run_id: String,
+    pub context_digest: String,
+    pub thread_id: String,
+    pub provider_request_digest: String,
+    pub binding_digest: String,
+}
+
+impl RunDispatchBinding {
+    pub fn new(
+        run_id: impl Into<String>,
+        context_digest: impl Into<String>,
+        thread_id: impl Into<String>,
+        provider_request_digest: impl Into<String>,
+    ) -> Result<Self, String> {
+        let mut value = Self {
+            run_id: run_id.into(),
+            context_digest: context_digest.into(),
+            thread_id: thread_id.into(),
+            provider_request_digest: provider_request_digest.into(),
+            binding_digest: String::new(),
+        };
+        value.binding_digest = value.compute_digest();
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        validate_run_protocol_id(&self.run_id, "run id", 128)?;
+        validate_run_protocol_id(&self.thread_id, "Codex thread id", MAX_RUN_EXECUTION_ID_BYTES)?;
+        validate_run_protocol_digest(&self.context_digest, "context digest")?;
+        validate_run_protocol_digest(&self.provider_request_digest, "provider request digest")?;
+        validate_run_protocol_digest(&self.binding_digest, "dispatch binding digest")?;
+        if self.binding_digest != self.compute_digest() {
+            return Err("dispatch binding digest mismatch".to_string());
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn compute_digest(&self) -> String {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(b"hepta.agentd.run-dispatch-binding.v1");
+        push_run_protocol_text(&mut bytes, &self.run_id);
+        push_run_protocol_text(&mut bytes, &self.context_digest);
+        push_run_protocol_text(&mut bytes, &self.thread_id);
+        push_run_protocol_text(&mut bytes, &self.provider_request_digest);
+        Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunExecutionBinding {
+    pub run_id: String,
+    pub dispatch_binding_digest: String,
+    pub thread_id: String,
+    pub turn_id: String,
+    pub binding_digest: String,
+}
+
+impl RunExecutionBinding {
+    pub fn new(
+        run_id: impl Into<String>,
+        dispatch_binding_digest: impl Into<String>,
+        thread_id: impl Into<String>,
+        turn_id: impl Into<String>,
+    ) -> Result<Self, String> {
+        let mut value = Self {
+            run_id: run_id.into(),
+            dispatch_binding_digest: dispatch_binding_digest.into(),
+            thread_id: thread_id.into(),
+            turn_id: turn_id.into(),
+            binding_digest: String::new(),
+        };
+        value.binding_digest = value.compute_digest();
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        validate_run_protocol_id(&self.run_id, "run id", 128)?;
+        validate_run_protocol_id(&self.thread_id, "Codex thread id", MAX_RUN_EXECUTION_ID_BYTES)?;
+        validate_run_protocol_id(&self.turn_id, "Codex turn id", MAX_RUN_EXECUTION_ID_BYTES)?;
+        validate_run_protocol_digest(&self.dispatch_binding_digest, "dispatch binding digest")?;
+        validate_run_protocol_digest(&self.binding_digest, "execution binding digest")?;
+        if self.binding_digest != self.compute_digest() {
+            return Err("execution binding digest mismatch".to_string());
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn compute_digest(&self) -> String {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(b"hepta.agentd.run-execution-binding.v1");
+        push_run_protocol_text(&mut bytes, &self.run_id);
+        push_run_protocol_text(&mut bytes, &self.dispatch_binding_digest);
+        push_run_protocol_text(&mut bytes, &self.thread_id);
+        push_run_protocol_text(&mut bytes, &self.turn_id);
+        Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunTerminalObservation {
+    pub run_id: String,
+    pub dispatch_binding_digest: String,
+    pub execution_binding_digest: String,
+    pub thread_id: String,
+    pub turn_id: String,
+    pub phase: RunPhase,
+    pub observation_digest: String,
+}
+
+impl RunTerminalObservation {
+    pub fn new(
+        run_id: impl Into<String>,
+        dispatch_binding_digest: impl Into<String>,
+        execution_binding_digest: impl Into<String>,
+        thread_id: impl Into<String>,
+        turn_id: impl Into<String>,
+        phase: RunPhase,
+    ) -> Result<Self, String> {
+        let mut value = Self {
+            run_id: run_id.into(),
+            dispatch_binding_digest: dispatch_binding_digest.into(),
+            execution_binding_digest: execution_binding_digest.into(),
+            thread_id: thread_id.into(),
+            turn_id: turn_id.into(),
+            phase,
+            observation_digest: String::new(),
+        };
+        value.observation_digest = value.compute_digest();
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        validate_run_protocol_id(&self.run_id, "run id", 128)?;
+        validate_run_protocol_id(&self.thread_id, "Codex thread id", MAX_RUN_EXECUTION_ID_BYTES)?;
+        validate_run_protocol_id(&self.turn_id, "Codex turn id", MAX_RUN_EXECUTION_ID_BYTES)?;
+        validate_run_protocol_digest(&self.dispatch_binding_digest, "dispatch binding digest")?;
+        validate_run_protocol_digest(&self.execution_binding_digest, "execution binding digest")?;
+        validate_run_protocol_digest(&self.observation_digest, "terminal observation digest")?;
+        if !matches!(self.phase, RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed) {
+            return Err("terminal observation must carry a terminal run phase".to_string());
+        }
+        if self.observation_digest != self.compute_digest() {
+            return Err("terminal observation digest mismatch".to_string());
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn compute_digest(&self) -> String {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(b"hepta.agentd.run-terminal-observation.v1");
+        push_run_protocol_text(&mut bytes, &self.run_id);
+        push_run_protocol_text(&mut bytes, &self.dispatch_binding_digest);
+        push_run_protocol_text(&mut bytes, &self.execution_binding_digest);
+        push_run_protocol_text(&mut bytes, &self.thread_id);
+        push_run_protocol_text(&mut bytes, &self.turn_id);
+        bytes.push(match self.phase {
+            RunPhase::Cancelled => 0,
+            RunPhase::Succeeded => 1,
+            RunPhase::Failed => 2,
+            RunPhase::Admitted
+            | RunPhase::ContextAttached
+            | RunPhase::Dispatched
+            | RunPhase::Cancelling
+            | RunPhase::Indeterminate => u8::MAX,
+        });
+        Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    }
+}
+
+fn validate_run_protocol_id(value: &str, label: &str, maximum: usize) -> Result<(), String> {
+    if value.is_empty()
+        || value.len() > maximum
+        || !value.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
+    {
+        return Err(format!("{label} is invalid"));
+    }
+    Ok(())
+}
+
+fn validate_run_protocol_digest(value: &str, label: &str) -> Result<(), String> {
+    Sha256Digest::parse(value.to_string()).map_err(|_| format!("{label} is invalid"))?;
+    if value.bytes().all(|byte| byte == b'0') {
+        return Err(format!("{label} must not be the zero digest"));
+    }
+    Ok(())
+}
+
+fn push_run_protocol_text(bytes: &mut Vec<u8>, value: &str) {
+    bytes.extend_from_slice(&(value.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunReceipt {
+    pub run_id: String,
+    pub revision: u64,
+    pub phase: RunPhase,
+    pub context_digest: Option<String>,
+    pub terminal_observed: bool,
+    pub idempotent: bool,
+    pub cancel_reason: Option<String>,
+    pub cancellation_ack_deadline_ms: Option<u64>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CancellationDisposition {
+    CancelledBeforeDispatch,
+    CancellingAfterDispatch,
+    AlreadyTerminal,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AgentdRequest {
@@ -135,6 +401,136 @@ impl AgentdRequest {
             request_id,
             spawn_generation,
             method: AgentdMethod::SessionIngress,
+        }
+    }
+
+    pub fn run_start(request_id: u64, spawn_generation: u64, snapshot: RunSnapshot) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunStart { snapshot },
+        }
+    }
+
+    pub fn run_attach_context(
+        request_id: u64,
+        spawn_generation: u64,
+        expected_revision: u64,
+        attachment: ContextAttachment,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunAttachContext {
+                expected_revision,
+                attachment,
+            },
+        }
+    }
+
+    pub fn run_mark_dispatched(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        binding: RunDispatchBinding,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunMarkDispatched {
+                run_id,
+                expected_revision,
+                binding,
+            },
+        }
+    }
+
+    pub fn run_bind_execution(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        binding: RunExecutionBinding,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunBindExecution {
+                run_id,
+                expected_revision,
+                binding,
+            },
+        }
+    }
+
+    pub fn run_cancel(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunCancel {
+                run_id,
+                expected_revision,
+                reason,
+            },
+        }
+    }
+
+    pub fn run_observe_terminal(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        phase: RunPhase,
+        observation: Option<RunTerminalObservation>,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunObserveTerminal {
+                run_id,
+                expected_revision,
+                phase,
+                observation,
+            },
+        }
+    }
+
+    pub fn run_status(request_id: u64, spawn_generation: u64, run_id: String) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunStatus { run_id },
+        }
+    }
+
+    pub fn run_remove_closed(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunRemoveClosed {
+                run_id,
+                expected_revision,
+            },
         }
     }
 
@@ -266,6 +662,41 @@ pub enum AgentdMethod {
     Health,
     Lifecycle,
     SessionIngress,
+    RunStart {
+        snapshot: RunSnapshot,
+    },
+    RunAttachContext {
+        expected_revision: u64,
+        attachment: ContextAttachment,
+    },
+    RunMarkDispatched {
+        run_id: String,
+        expected_revision: u64,
+        binding: RunDispatchBinding,
+    },
+    RunBindExecution {
+        run_id: String,
+        expected_revision: u64,
+        binding: RunExecutionBinding,
+    },
+    RunCancel {
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    },
+    RunObserveTerminal {
+        run_id: String,
+        expected_revision: u64,
+        phase: RunPhase,
+        observation: Option<RunTerminalObservation>,
+    },
+    RunStatus {
+        run_id: String,
+    },
+    RunRemoveClosed {
+        run_id: String,
+        expected_revision: u64,
+    },
     AuthBusText {
         request: AuthBusTextIngress,
     },
@@ -328,6 +759,14 @@ pub enum AgentdPayload {
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
+    RunReceipt(RunReceipt),
+    RunCancellation {
+        disposition: CancellationDisposition,
+        receipt: RunReceipt,
+    },
+    RunStatus {
+        receipt: Option<RunReceipt>,
+    },
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
@@ -668,6 +1107,135 @@ mod tests {
             .expect("utf8")
             .replace(&"a".repeat(64), "not-a-digest");
         assert!(serde_json::from_str::<AgentdRequest>(&malformed).is_err());
+    }
+
+    #[test]
+    fn run_lifecycle_wire_binds_complete_snapshot_and_cancel_reason() {
+        let snapshot = RunSnapshot {
+            run_id: "run.1".to_string(),
+            request_digest: "1".repeat(64),
+            objective_digest: "2".repeat(64),
+            body_digest: "3".repeat(64),
+            artifact_set_digest: "4".repeat(64),
+            authority_epoch: 9,
+            deadline_ms: 12_345,
+        };
+        let start = AgentdRequest::run_start(21, 3, snapshot.clone());
+        let bytes = serde_json::to_vec(&start).expect("serialize run start");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse run start"),
+            start
+        );
+
+        let attachment = ContextAttachment {
+            run_id: snapshot.run_id.clone(),
+            request_digest: snapshot.request_digest.clone(),
+            objective_digest: snapshot.objective_digest.clone(),
+            body_digest: snapshot.body_digest.clone(),
+            artifact_set_digest: snapshot.artifact_set_digest.clone(),
+            authority_epoch: snapshot.authority_epoch,
+            deadline_ms: snapshot.deadline_ms,
+            context_digest: "5".repeat(64),
+            compilation_receipt_digest: "6".repeat(64),
+        };
+        let attach = AgentdRequest::run_attach_context(22, 3, 1, attachment);
+        let attach_bytes = serde_json::to_vec(&attach).expect("serialize attach");
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&attach_bytes).expect("parse attach"),
+            attach
+        );
+
+        let dispatch_binding = RunDispatchBinding::new(
+            snapshot.run_id.clone(),
+            "5".repeat(64),
+            "thread.1",
+            "7".repeat(64),
+        )
+        .expect("dispatch binding");
+        let dispatch = AgentdRequest::run_mark_dispatched(
+            23,
+            3,
+            snapshot.run_id.clone(),
+            2,
+            dispatch_binding.clone(),
+        );
+        let dispatch_bytes = serde_json::to_vec(&dispatch).expect("serialize dispatch");
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&dispatch_bytes).expect("parse dispatch"),
+            dispatch
+        );
+
+        let execution_binding = RunExecutionBinding::new(
+            snapshot.run_id.clone(),
+            dispatch_binding.binding_digest.clone(),
+            dispatch_binding.thread_id.clone(),
+            "turn.1",
+        )
+        .expect("execution binding");
+        let bind = AgentdRequest::run_bind_execution(
+            24,
+            3,
+            snapshot.run_id.clone(),
+            3,
+            execution_binding.clone(),
+        );
+        let bind_bytes = serde_json::to_vec(&bind).expect("serialize execution binding");
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bind_bytes).expect("parse execution binding"),
+            bind
+        );
+
+        let terminal = RunTerminalObservation::new(
+            snapshot.run_id.clone(),
+            dispatch_binding.binding_digest,
+            execution_binding.binding_digest,
+            execution_binding.thread_id,
+            execution_binding.turn_id,
+            RunPhase::Succeeded,
+        )
+        .expect("terminal observation");
+        let observe = AgentdRequest::run_observe_terminal(
+            25,
+            3,
+            snapshot.run_id.clone(),
+            4,
+            RunPhase::Succeeded,
+            Some(terminal),
+        );
+        let observe_bytes = serde_json::to_vec(&observe).expect("serialize terminal observation");
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&observe_bytes)
+                .expect("parse terminal observation"),
+            observe
+        );
+
+        let cancel =
+            AgentdRequest::run_cancel(26, 3, snapshot.run_id, 4, "operator_requested".to_string());
+        let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancel");
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&cancel_bytes).expect("parse cancel"),
+            cancel
+        );
+
+        let payload = AgentdPayload::RunCancellation {
+            disposition: CancellationDisposition::CancellingAfterDispatch,
+            receipt: RunReceipt {
+                run_id: "run.1".to_string(),
+                revision: 3,
+                phase: RunPhase::Cancelling,
+                context_digest: Some("5".repeat(64)),
+                terminal_observed: false,
+                idempotent: false,
+                cancel_reason: Some("operator_requested".to_string()),
+                cancellation_ack_deadline_ms: Some(13_000),
+            },
+        };
+        let payload_bytes = serde_json::to_vec(&payload).expect("serialize run payload");
+        assert_eq!(
+            serde_json::from_slice::<AgentdPayload>(&payload_bytes).expect("parse run payload"),
+            payload
+        );
     }
 
     #[test]

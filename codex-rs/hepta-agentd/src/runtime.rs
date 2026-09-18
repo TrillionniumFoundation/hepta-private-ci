@@ -29,6 +29,7 @@ use crate::automation::run_automation_scheduler;
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const APP_SERVER_PROBE_TIMEOUT: Duration = Duration::from_secs(2);
+const GRACEFUL_DRAIN_TIMEOUT: Duration = Duration::from_secs(30);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum CompletedRuntimeTask {
@@ -101,6 +102,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         state.attach_automation_store(store.clone())?;
     }
     let cancellation = CancellationToken::new();
+    let app_server_shutdown = CancellationToken::new();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),
         Arc::clone(&state),
@@ -113,6 +115,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         arg0_paths,
         cognitive_runtime,
         Arc::clone(&state),
+        app_server_shutdown.clone(),
     ));
     let mut monitor_task = tokio::spawn(monitor_runtime(Arc::clone(&state)));
     let automation_cancellation = cancellation.clone();
@@ -138,7 +141,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         cancellation.clone(),
     ));
 
-    let (outcome, completed_task) = tokio::select! {
+    let (mut outcome, mut completed_task) = tokio::select! {
         result = &mut authbus_task => (
             joined("AuthBus text relay", result),
             Some(CompletedRuntimeTask::AuthBus),
@@ -160,11 +163,31 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             Some(CompletedRuntimeTask::Automation),
         ),
         signal = shutdown_signal() => {
-            signal?;
-            state.mark_draining()?;
-            (Ok(()), None)
+            // Agentd is the sole OS-signal owner. Close the lifecycle
+            // admission boundary first, then ask the embedded App Server to
+            // reject new execution starts and drain its already-running turns.
+            let outcome = signal.and_then(|()| state.mark_draining());
+            if outcome.is_ok() {
+                app_server_shutdown.cancel();
+            }
+            (outcome, None)
         }
     };
+    if completed_task.is_none() && outcome.is_ok() {
+        // Agentd has already closed lifecycle admission and explicitly
+        // triggered the embedded App Server's execution-admission drain.
+        // Keep Agentd control and reconciliation alive until existing turns
+        // finish or the bounded timeout expires.
+        outcome = drain_app_server(&state, &mut app_server_task).await;
+        completed_task = Some(CompletedRuntimeTask::AppServer);
+    } else {
+        // A child can win the select race against the process-signal future,
+        // including the App Server completing its own signal-driven drain.
+        // Any non-normal Agentd exit must still close new admission and persist
+        // conservative run reconciliation before we tear down sibling tasks.
+        let reconciliation = reconcile_ungraceful_shutdown(&state);
+        outcome = combine_shutdown_outcomes(outcome, reconciliation);
+    }
     cancellation.cancel();
     if completed_task != Some(CompletedRuntimeTask::AuthBus) {
         abort_and_join(&mut authbus_task).await;
@@ -268,6 +291,9 @@ async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
             state.mark_fenced();
             return Err(error);
         }
+        state
+            .expire_run_deadlines_and_interrupt(unix_time_ms()?)
+            .await?;
         if !app_server_ready {
             match probe_app_server(state.identity()).await {
                 Ok(()) => {
@@ -311,6 +337,65 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
     }
     client.shutdown().await?;
     Ok(())
+}
+
+fn reconcile_ungraceful_shutdown(state: &AgentdState) -> Result<(), AgentdError> {
+    let drain = state.mark_draining();
+    let reconcile = state.mark_unfinished_runs_for_shutdown().map(|_| ());
+    match (drain, reconcile) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
+        (Err(drain_error), Err(reconcile_error)) => Err(AgentdError::Protocol(format!(
+            "failed to mark Agentd draining ({drain_error}); lifecycle reconciliation also failed ({reconcile_error})"
+        ))),
+    }
+}
+
+fn combine_shutdown_outcomes(
+    primary: Result<(), AgentdError>,
+    reconciliation: Result<(), AgentdError>,
+) -> Result<(), AgentdError> {
+    match (primary, reconciliation) {
+        (Ok(()), Ok(())) => Ok(()),
+        (Err(error), Ok(())) | (Ok(()), Err(error)) => Err(error),
+        (Err(primary), Err(reconciliation)) => Err(AgentdError::Protocol(format!(
+            "{primary}; Agentd lifecycle shutdown reconciliation also failed: {reconciliation}"
+        ))),
+    }
+}
+
+async fn drain_app_server(
+    state: &AgentdState,
+    app_server_task: &mut JoinHandle<std::io::Result<()>>,
+) -> Result<(), AgentdError> {
+    let app_server_outcome = match timeout(GRACEFUL_DRAIN_TIMEOUT, &mut *app_server_task).await {
+        Ok(result) => match result {
+            Ok(Ok(())) => Ok(()),
+            Ok(Err(error)) => Err(error.into()),
+            Err(error) => Err(AgentdError::Protocol(format!(
+                "Codex App Server task failed during drain: {error}"
+            ))),
+        },
+        Err(_) => {
+            // An unobserved external effect is never upgraded to success just
+            // because shutdown timed out. Attempt conservative reconciliation,
+            // but always terminate the embedded task even if persistence fails.
+            let reconciliation = state.mark_unfinished_runs_for_shutdown();
+            abort_and_join(app_server_task).await;
+            reconciliation?;
+            return Ok(());
+        }
+    };
+    state.mark_unfinished_runs_for_shutdown()?;
+    app_server_outcome
+}
+
+fn unix_time_ms() -> Result<u64, AgentdError> {
+    let elapsed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+    u64::try_from(elapsed.as_millis())
+        .map_err(|_| AgentdError::Protocol("system clock millisecond overflow".to_string()))
 }
 
 fn joined(
@@ -373,10 +458,20 @@ async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, Au
 
 #[cfg(unix)]
 async fn shutdown_signal() -> Result<(), AgentdError> {
-    let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
-    terminate.recv().await.ok_or_else(|| {
-        AgentdError::Protocol("SIGTERM listener closed before receiving a signal".to_string())
-    })
+    use tokio::signal::unix::SignalKind;
+    use tokio::signal::unix::signal;
+
+    let mut terminate = signal(SignalKind::terminate())?;
+    let mut hangup = signal(SignalKind::hangup())?;
+    tokio::select! {
+        result = tokio::signal::ctrl_c() => result.map_err(Into::into),
+        signal = terminate.recv() => signal.map(|_| ()).ok_or_else(|| {
+            AgentdError::Protocol("SIGTERM listener closed before receiving a signal".to_string())
+        }),
+        signal = hangup.recv() => signal.map(|_| ()).ok_or_else(|| {
+            AgentdError::Protocol("SIGHUP listener closed before receiving a signal".to_string())
+        }),
+    }
 }
 
 #[cfg(not(unix))]

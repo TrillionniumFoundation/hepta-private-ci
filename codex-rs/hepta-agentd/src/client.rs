@@ -20,6 +20,8 @@ use crate::AgentdError;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
 use crate::AgentdResponse;
+use crate::CancellationDisposition;
+use crate::ContextAttachment;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
@@ -27,6 +29,9 @@ use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
+use crate::RunPhase;
+use crate::RunReceipt;
+use crate::RunSnapshot;
 use crate::SessionIngress;
 
 pub struct AgentdClient {
@@ -73,15 +78,26 @@ impl AgentdClient {
     }
 
     pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
-        match self
+        self.health_with_generation()
+            .await
+            .map(|(snapshot, _)| snapshot)
+    }
+
+    /// Return the health payload together with the current supervisor
+    /// lifecycle generation carried by the authenticated Agentd response.
+    ///
+    /// Callers that create run snapshots must bind authority_epoch to this
+    /// exact value rather than infer it from the process spawn generation.
+    pub async fn health_with_generation(&self) -> Result<(HealthSnapshot, u64), AgentdError> {
+        let response = self
             .send(AgentdRequest::health(
                 self.request_id(),
                 self.spawn_generation,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::Health(snapshot) => Ok(snapshot),
+            .await?;
+        let current_generation = response.current_generation;
+        match response.payload {
+            AgentdPayload::Health(snapshot) => Ok((snapshot, current_generation)),
             payload => unexpected(payload),
         }
     }
@@ -110,6 +126,169 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::SessionIngress(ingress) => Ok(ingress),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_start(&self, snapshot: RunSnapshot) -> Result<RunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_start(
+                self.request_id(),
+                self.spawn_generation,
+                snapshot,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_attach_context(
+        &self,
+        expected_revision: u64,
+        attachment: ContextAttachment,
+    ) -> Result<RunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_attach_context(
+                self.request_id(),
+                self.spawn_generation,
+                expected_revision,
+                attachment,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_mark_dispatched(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        binding: crate::RunDispatchBinding,
+    ) -> Result<RunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_mark_dispatched(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                binding,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_bind_execution(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        binding: crate::RunExecutionBinding,
+    ) -> Result<RunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_bind_execution(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                binding,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_cancel(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    ) -> Result<(CancellationDisposition, RunReceipt), AgentdError> {
+        match self
+            .send(AgentdRequest::run_cancel(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                reason,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunCancellation {
+                disposition,
+                receipt,
+            } => Ok((disposition, receipt)),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_observe_terminal(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        phase: RunPhase,
+        observation: Option<crate::RunTerminalObservation>,
+    ) -> Result<RunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_observe_terminal(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                phase,
+                observation,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_status(&self, run_id: String) -> Result<Option<RunReceipt>, AgentdError> {
+        match self
+            .send(AgentdRequest::run_status(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunStatus { receipt } => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_remove_closed(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Result<RunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_remove_closed(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
             payload => unexpected(payload),
         }
     }
@@ -387,11 +566,33 @@ impl AgentdClient {
 
 fn unexpected<T>(payload: AgentdPayload) -> Result<T, AgentdError> {
     match payload {
+        AgentdPayload::Error { code, message } if code == "overloaded" => {
+            Err(AgentdError::Overloaded(message))
+        }
         AgentdPayload::Error { code, message } => Err(AgentdError::Protocol(format!(
             "agentd rejected request ({code}): {message}"
         ))),
         other => Err(AgentdError::Protocol(format!(
             "agentd returned unexpected payload {other:?}"
         ))),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn overload_response_maps_to_typed_client_error() {
+        let error = unexpected::<()>(AgentdPayload::Error {
+            code: "overloaded".to_string(),
+            message: "retry with bounded backoff".to_string(),
+        })
+        .expect_err("overload must fail");
+        assert!(matches!(
+            error,
+            AgentdError::Overloaded(message)
+                if message == "retry with bounded backoff"
+        ));
     }
 }
