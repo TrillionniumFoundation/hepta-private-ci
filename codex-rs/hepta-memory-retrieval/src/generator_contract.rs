@@ -35,8 +35,11 @@ const GENERATOR_RECALL_RECEIPT_DOMAIN: &[u8] = b"hepta.retrieval-generator-recal
 pub enum RetrievalChannelCompletenessV1 {
     /// The producer exhausted the bounded source it is responsible for.
     Exhausted,
-    /// The producer hit its own source/query bound. The exact number of rows
-    /// outside that bound is intentionally not claimed.
+    /// The producer hit its own source/query bound. Uninspected rows may exist,
+    /// but their existence or count is not asserted.
+    BoundReached,
+    /// The producer independently proves that at least this many otherwise
+    /// eligible candidates were omitted.
     Truncated { omitted_at_least: u32 },
 }
 
@@ -61,7 +64,7 @@ pub struct RetrievalChannelBatchV1 {
 pub struct RetrievalGeneratorReceiptV1 {
     pub manifest_digest: Digest32,
     pub candidate_count: u32,
-    pub truncated_channels: Vec<RetrievalChannelV1>,
+    pub non_exhaustive_channels: Vec<RetrievalChannelV1>,
 }
 
 /// Candidate union plus the generator manifest that produced its exact input.
@@ -133,7 +136,7 @@ fn validate_and_bind_batches(
     let expected_generation = cue.snapshot_key.vector_digest;
     let mut channels = BTreeSet::new();
     let mut total = 0usize;
-    let mut truncated_channels = Vec::new();
+    let mut non_exhaustive_channels = Vec::new();
     for batch in &batches {
         if !channels.insert(batch.channel) {
             return Err(GeneratorContractErrorV1::DuplicateChannel(batch.channel));
@@ -148,11 +151,14 @@ fn validate_and_bind_batches(
         }
         match batch.completeness {
             RetrievalChannelCompletenessV1::Exhausted => {}
+            RetrievalChannelCompletenessV1::BoundReached => {
+                non_exhaustive_channels.push(batch.channel);
+            }
             RetrievalChannelCompletenessV1::Truncated {
                 omitted_at_least: 0,
             } => return Err(GeneratorContractErrorV1::InvalidTruncation),
             RetrievalChannelCompletenessV1::Truncated { .. } => {
-                truncated_channels.push(batch.channel);
+                non_exhaustive_channels.push(batch.channel);
             }
         }
         total = total
@@ -175,7 +181,7 @@ fn validate_and_bind_batches(
         }
     }
 
-    let generator = bind_generator_manifest(&batches, total, truncated_channels)?;
+    let generator = bind_generator_manifest(&batches, total, non_exhaustive_channels)?;
     let candidates = batches
         .into_iter()
         .flat_map(|batch| batch.candidates)
@@ -186,7 +192,7 @@ fn validate_and_bind_batches(
 fn bind_generator_manifest(
     batches: &[RetrievalChannelBatchV1],
     candidate_count: usize,
-    truncated_channels: Vec<RetrievalChannelV1>,
+    non_exhaustive_channels: Vec<RetrievalChannelV1>,
 ) -> Result<RetrievalGeneratorReceiptV1, GeneratorContractErrorV1> {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(GENERATOR_MANIFEST_DOMAIN);
@@ -198,8 +204,9 @@ fn bind_generator_manifest(
         bytes.extend_from_slice(batch.generation_vector_digest.as_array());
         match batch.completeness {
             RetrievalChannelCompletenessV1::Exhausted => bytes.push(0),
+            RetrievalChannelCompletenessV1::BoundReached => bytes.push(1),
             RetrievalChannelCompletenessV1::Truncated { omitted_at_least } => {
-                bytes.push(1);
+                bytes.push(2);
                 bytes.extend_from_slice(&omitted_at_least.to_be_bytes());
             }
         }
@@ -231,7 +238,7 @@ fn bind_generator_manifest(
         manifest_digest: Digest32::of_bytes(&bytes),
         candidate_count: u32::try_from(candidate_count)
             .map_err(|_| GeneratorContractErrorV1::Arithmetic)?,
-        truncated_channels,
+        non_exhaustive_channels,
     })
 }
 
