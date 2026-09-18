@@ -75,7 +75,9 @@ pub struct EpisodeDecision {
 pub struct AuthenticatedDecisionRecordV2 {
     pub record_id: StableId,
     pub episode_id: StableId,
+    pub run_snapshot_digest: Digest32,
     pub objective_digest: Digest32,
+    pub policy_digest: Digest32,
     pub generator_id: StableId,
     pub generator_controller_id: StableId,
     pub generator_credential_chain_digest: Digest32,
