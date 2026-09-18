@@ -228,6 +228,43 @@ impl IterationLedgerV1 {
                 receipt.actor_id.to_string(),
             ));
         }
+        // Generation, independent evaluation, selection, promotion and release
+        // are distinct control roles. A single identity must not evaluate its
+        // own evidence and then select/promote/release the same candidate.
+        let actor_for = |state| {
+            self.events
+                .iter()
+                .rev()
+                .find(|event| event.candidate_id == *candidate_id && event.to == state)
+                .map(|event| &event.evidence.actor_id)
+        };
+        let collides = match next {
+            IterationCandidateStateV1::Selected => actor_for(
+                IterationCandidateStateV1::IndependentlyEvaluated,
+            )
+            .is_some_and(|actor| actor == &receipt.actor_id),
+            IterationCandidateStateV1::Promoted => [
+                IterationCandidateStateV1::IndependentlyEvaluated,
+                IterationCandidateStateV1::Selected,
+            ]
+            .into_iter()
+            .filter_map(actor_for)
+            .any(|actor| actor == &receipt.actor_id),
+            IterationCandidateStateV1::Released => [
+                IterationCandidateStateV1::IndependentlyEvaluated,
+                IterationCandidateStateV1::Selected,
+                IterationCandidateStateV1::Promoted,
+            ]
+            .into_iter()
+            .filter_map(actor_for)
+            .any(|actor| actor == &receipt.actor_id),
+            _ => false,
+        };
+        if collides {
+            return Err(IterationLedgerError::IndependentActorConflict(
+                receipt.actor_id.to_string(),
+            ));
+        }
         if expected_kind(next) != receipt.kind {
             return Err(IterationLedgerError::EvidenceKindMismatch);
         }
@@ -384,6 +421,61 @@ mod tests {
             )
             .unwrap();
         assert_eq!(ledger.events().len(), 3);
+    }
+
+    #[test]
+    fn evaluator_selector_promoter_and_releaser_are_role_separated() {
+        let mut ledger = IterationLedgerV1::new(envelope()).unwrap();
+        ledger.append_candidate(candidate()).unwrap();
+        let steps = [
+            (IterationCandidateStateV1::StaticallyValidated, IterationEvidenceKindV1::StaticValidation, "generator", 8),
+            (IterationCandidateStateV1::SandboxTested, IterationEvidenceKindV1::Sandbox, "generator", 9),
+            (IterationCandidateStateV1::IndependentlyEvaluated, IterationEvidenceKindV1::Evaluation, "evaluator", 10),
+            (IterationCandidateStateV1::ReviewRequested, IterationEvidenceKindV1::Review, "reviewer", 11),
+            (IterationCandidateStateV1::AcceptedCandidate, IterationEvidenceKindV1::Decision, "reviewer", 12),
+        ];
+        for (state, kind, actor, n) in steps {
+            ledger.transition(&id("candidate"), state, receipt(kind, actor, n)).unwrap();
+        }
+        assert!(matches!(
+            ledger.transition(
+                &id("candidate"),
+                IterationCandidateStateV1::Selected,
+                receipt(IterationEvidenceKindV1::Selection, "evaluator", 13),
+            ),
+            Err(IterationLedgerError::IndependentActorConflict(_))
+        ));
+        ledger.transition(
+            &id("candidate"),
+            IterationCandidateStateV1::Selected,
+            receipt(IterationEvidenceKindV1::Selection, "selector", 14),
+        ).unwrap();
+        assert!(matches!(
+            ledger.transition(
+                &id("candidate"),
+                IterationCandidateStateV1::Promoted,
+                receipt(IterationEvidenceKindV1::Promotion, "selector", 15),
+            ),
+            Err(IterationLedgerError::IndependentActorConflict(_))
+        ));
+        ledger.transition(
+            &id("candidate"),
+            IterationCandidateStateV1::Promoted,
+            receipt(IterationEvidenceKindV1::Promotion, "promoter", 16),
+        ).unwrap();
+        assert!(matches!(
+            ledger.transition(
+                &id("candidate"),
+                IterationCandidateStateV1::Released,
+                receipt(IterationEvidenceKindV1::Release, "promoter", 17),
+            ),
+            Err(IterationLedgerError::IndependentActorConflict(_))
+        ));
+        ledger.transition(
+            &id("candidate"),
+            IterationCandidateStateV1::Released,
+            receipt(IterationEvidenceKindV1::Release, "releaser", 18),
+        ).unwrap();
     }
 
     #[test]
