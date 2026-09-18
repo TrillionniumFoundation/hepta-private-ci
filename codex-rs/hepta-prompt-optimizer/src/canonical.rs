@@ -397,14 +397,15 @@ pub fn select_portfolio(
     }
 
     let selected_candidate_ids = selected.into_iter().collect::<Vec<_>>();
-    let selected_factor_ids = selected_candidate_ids
-        .iter()
-        .map(|id| prices.get(id).expect("validated selected id").candidate.factor_id.clone())
-        .collect::<Vec<_>>();
-    let selected_realization_ids = selected_candidate_ids
-        .iter()
-        .map(|id| prices.get(id).expect("validated selected id").candidate.realization_id.clone())
-        .collect::<Vec<_>>();
+    let mut selected_factor_ids = Vec::with_capacity(selected_candidate_ids.len());
+    let mut selected_realization_ids = Vec::with_capacity(selected_candidate_ids.len());
+    for id in &selected_candidate_ids {
+        let Some(price) = prices.get(id) else {
+            return Err(CanonicalError::UnknownRelationEndpoint(id.to_string()));
+        };
+        selected_factor_ids.push(price.candidate.factor_id.clone());
+        selected_realization_ids.push(price.candidate.realization_id.clone());
+    }
     let total_token_cost = budget
         .token_budget
         .checked_sub(remaining)
