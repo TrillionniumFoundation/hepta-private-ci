@@ -69,6 +69,27 @@ pub struct EpisodeDecision {
     pub support_digest: Digest32,
 }
 
+/// Production decision fact with authenticated generator identity and a
+/// generator-relative candidate-completeness receipt bound into the durable row.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AuthenticatedDecisionRecordV2 {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub objective_digest: Digest32,
+    pub generator_id: StableId,
+    pub generator_controller_id: StableId,
+    pub generator_credential_chain_digest: Digest32,
+    pub generator_signing_key_digest: Digest32,
+    pub generator_scope_digest: Digest32,
+    pub generator_authority_epoch: u64,
+    pub candidate_ids: Vec<StableId>,
+    pub selected_candidate_id: StableId,
+    pub selected_propensity: ProbabilityQ32,
+    pub candidate_completeness_digest: Digest32,
+    pub support_digest: Digest32,
+    pub authentication_digest: Digest32,
+}
+
 /// Legacy V1 outcome record retained for backward readability. Product writers
 /// use `AuthenticatedOutcomeRecordV2` so authentication, delayed-outcome state
 /// and correction lineage are durable rather than caller-local assertions.
@@ -92,6 +113,7 @@ pub struct AuthenticatedOutcomeRecordV2 {
     pub outcome_id: StableId,
     pub episode_id: StableId,
     pub observer_id: StableId,
+    pub observer_controller_id: StableId,
     pub observer_credential_chain_digest: Digest32,
     pub observer_signing_key_digest: Digest32,
     pub observer_scope_digest: Digest32,
@@ -141,6 +163,7 @@ pub struct CreditAllocationBatchRecordV2 {
     pub episode_id: StableId,
     pub outcome_id: StableId,
     pub allocator_id: StableId,
+    pub allocator_controller_id: StableId,
     pub allocator_credential_chain_digest: Digest32,
     pub allocator_signing_key_digest: Digest32,
     pub allocator_scope_digest: Digest32,
@@ -181,6 +204,7 @@ pub enum LedgerEvent {
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
     Revocation(Revocation),
+    AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2),
     AuthenticatedOutcomeV2(AuthenticatedOutcomeRecordV2),
     CreditBatchV2(CreditAllocationBatchRecordV2),
     UnlearningLineageV1(UnlearningLineageEventV1),
@@ -193,6 +217,7 @@ impl LedgerEvent {
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
             Self::Revocation(value) => &value.record_id,
+            Self::AuthenticatedDecisionV2(value) => &value.record_id,
             Self::AuthenticatedOutcomeV2(value) => &value.record_id,
             Self::CreditBatchV2(value) => &value.record_id,
             Self::UnlearningLineageV1(value) => &value.record_id,
