@@ -363,6 +363,32 @@ async fn expired_and_corrupt_capabilities_fail_closed_without_cross_agent_fallba
 }
 
 #[tokio::test]
+async fn unavailable_dynamic_owner_is_explicit_discovery_failure() {
+    let temp = TempDir::new().expect("temp dir");
+    let consumer_id = agent_id(70);
+    let unavailable_owner_id = agent_id(71);
+    let unavailable_owner_layout = layout(&temp, &unavailable_owner_id);
+    let set = FederatedRecallSet::discover(
+        consumer_id.clone(),
+        vec![unavailable_owner_layout],
+        150,
+    )
+    .await;
+    let access =
+        FederationConsumerAccess::new(consumer_id, workspace("discovery-failure-consumer"));
+    let batch = set
+        .retrieve(&access, &RetrievalRequest::new("unavailable owner", 150))
+        .await
+        .expect("coverage batch");
+    assert!(batch.candidates.is_empty());
+    assert_eq!(batch.coverage.requested_sources, 0);
+    assert_eq!(batch.coverage.completed_sources, 0);
+    assert_eq!(batch.coverage.failed_sources, 0);
+    assert_eq!(batch.coverage.discovery_failures, 1);
+    assert!(batch.coverage.is_partial());
+}
+
+#[tokio::test]
 async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() {
     let temp = TempDir::new().expect("temp dir");
     let ids = (60..65).map(agent_id).collect::<Vec<_>>();
