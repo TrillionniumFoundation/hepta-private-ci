@@ -146,6 +146,46 @@ fn overload_is_definitive_request_rejection_and_safe_to_retry() {
 }
 
 #[test]
+fn internal_request_error_is_indeterminate_and_reconcile_only() {
+    let value = intent();
+    let observation = AppServerObservation::from_request_error(
+        &value,
+        &JSONRPCErrorError {
+            code: -32603,
+            message: "failed to submit turn input".to_string(),
+            data: None,
+        },
+    )
+    .unwrap();
+    let receipt = adapt(1_000, value, Some(observation)).unwrap();
+    assert_eq!(receipt.status, AdapterStatus::Indeterminate);
+    assert_eq!(receipt.replay, ReplayDisposition::ReconcileOnly);
+    assert_eq!(
+        receipt.failure_kind,
+        Some(FailureKind::JsonRpcIndeterminate)
+    );
+    assert_eq!(receipt.turn_id, None);
+}
+
+#[test]
+fn invalid_request_is_definitive_pre_admission_rejection() {
+    let value = intent();
+    let observation = AppServerObservation::from_request_error(
+        &value,
+        &JSONRPCErrorError {
+            code: -32600,
+            message: "thread not found".to_string(),
+            data: None,
+        },
+    )
+    .unwrap();
+    let receipt = adapt(1_000, value, Some(observation)).unwrap();
+    assert_eq!(receipt.status, AdapterStatus::Rejected);
+    assert_eq!(receipt.replay, ReplayDisposition::SafeToRetry);
+    assert_eq!(receipt.failure_kind, Some(FailureKind::JsonRpcRejected));
+}
+
+#[test]
 fn timeout_and_transport_loss_require_reconciliation() {
     let timeout_intent = intent();
     let timeout_observation = AppServerObservation::timed_out(&timeout_intent).unwrap();
