@@ -213,10 +213,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         } else {
             lifecycle.generation
         };
-        slot.event(
-            generation,
-            SupervisorEventKind::AutomaticRestartCancelled,
-        );
+        slot.event(generation, SupervisorEventKind::AutomaticRestartCancelled);
         Ok(true)
     }
 
