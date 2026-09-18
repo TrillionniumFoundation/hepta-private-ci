@@ -96,9 +96,6 @@ fn encode_value(
     output: &mut Vec<u8>,
     depth: usize,
 ) -> Result<(), CanonicalDigestError> {
-    if depth > MAX_CANONICAL_DEPTH_V1 {
-        return Err(CanonicalDigestError::DepthExceeded);
-    }
     match value {
         CanonicalValueV1::Bool(value) => {
             append_u8(output, 0x01)?;
@@ -136,6 +133,9 @@ fn encode_value(
             append_len_u16(output, value.as_str().as_bytes())
         }
         CanonicalValueV1::Array(values) => {
+            if depth >= MAX_CANONICAL_DEPTH_V1 {
+                return Err(CanonicalDigestError::DepthExceeded);
+            }
             if values.len() > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
                 return Err(CanonicalDigestError::TooManyItems);
             }
@@ -150,6 +150,9 @@ fn encode_value(
             Ok(())
         }
         CanonicalValueV1::Map(entries) => {
+            if depth >= MAX_CANONICAL_DEPTH_V1 {
+                return Err(CanonicalDigestError::DepthExceeded);
+            }
             if entries.len() > MAX_CANONICAL_CONTAINER_ITEMS_V1 {
                 return Err(CanonicalDigestError::TooManyItems);
             }
