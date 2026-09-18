@@ -220,7 +220,10 @@ fn authentication_rejection_and_drift_are_bound_into_planning() {
         input(),
     )
     .expect("changed plan");
-    assert_ne!(first.snapshot.snapshot_digest(), changed.snapshot.snapshot_digest());
+    assert_ne!(
+        first.snapshot.snapshot_digest(),
+        changed.snapshot.snapshot_digest()
+    );
     assert_ne!(
         first.evaluation.plan.receipt_digest(),
         changed.evaluation.plan.receipt_digest()
