@@ -57,7 +57,7 @@ The SQLite owner exposes `CognitiveStore::lane_c_snapshot`, which materializes a
 
 The `hepta-agentd` product caller now composes that owner cut into an authoritative provider. It freezes a `LaneCGenerationVectorV1` containing the exact memory/source/tombstone/knowledge frontiers, KG generation, scope, purpose, lifecycle authority epoch, retrieval/query-encoder identities, optional pinned ranker payload digest and explicit identities for host dimensions not consumed by this path. It calls `read_authoritative`, uses the authoritative binding digest in context planning, then reacquires a new owner cut and requires `AuthoritativeReadGuardV1::revalidate` before returning the context.
 
-The lifecycle authority epoch is not inferred from model text or caller input. Cognitive context is admitted only while Agentd is Running and ready. `AgentdState::refresh_generation` constrains Running to exactly `spawn_generation + 1`; the read binds that epoch, and `state_control` independently refreshes lifecycle and requires Running+Ready again after the async read. Optional ranker registry currentness is also revalidated before return.
+The lifecycle authority epoch is not inferred from model text or caller input. Cognitive context is admitted only after `AgentdState::refresh_generation` reports a Running, ready generation. `state_control` passes that exact `current_generation` into the read; after the async read it refreshes lifecycle again, requires Running+Ready, and rejects if the generation differs from the originally bound epoch. Optional ranker registry currentness is also revalidated before return.
 
 Direct dependencies:
 
