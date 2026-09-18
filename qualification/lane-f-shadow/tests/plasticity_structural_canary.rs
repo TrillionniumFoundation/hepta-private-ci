@@ -63,6 +63,7 @@ fn proposal_and_handoff() -> (
 ) {
     let handoff = bind_topology_writer_handoff_v1(TopologyWriterHandoffV1 {
         module_id: id("module:adaptive-head"),
+        operation: TopologyOperationV2::Rewire,
         source_writer_id: id("writer:current"),
         destination_writer_id: id("writer:next"),
         source_domain_digest: digest("domain:current"),
