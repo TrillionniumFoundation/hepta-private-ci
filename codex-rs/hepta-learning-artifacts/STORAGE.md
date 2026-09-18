@@ -36,7 +36,8 @@ The original one-shot `write_registry_snapshot`, `write_candidate_payload` and
 `write_registry_head_witness` APIs remain compatibility wrappers. Hosts that
 control a root directory may use `CreateOnlyArtifactFile::create_in(root, relative)`
 to reject absolute paths, parent traversal and symlinked ancestor escapes before
-final-component creation.
+final-component creation. `ArtifactStorageAdminV1::enroll` exposes the same
+canonical-root discipline for inspection and deliberately narrow orphan cleanup.
 
 `write_registry_snapshot` writes one new empty target and syncs it before
 returning a `RegistrySnapshotReceipt`. `read_registry_snapshot` requires that
@@ -86,8 +87,11 @@ write indicates interference and returns `Indeterminate`. Lock contention
 returns `Busy` without this writer writing bytes. A write or synchronization
 failure is `Indeterminate`; the caller must reconcile the exact target and
 expected digest. It must never truncate, overwrite, silently adopt or retry
-through the same path. Removal of a proven orphan is a separately authorized
-host operation.
+through the same path. Removal of a proven orphan remains separately authorized by the host.
+`ArtifactStorageAdminV1::cleanup_zero_length_orphan` is the crate-owned safe
+mechanism for that operation: it removes only a zero-length regular file below
+an enrolled canonical root, refuses symlinks/non-empty/special entries, and
+syncs the containing directory after deletion.
 
 ## Host transaction and trust boundary
 
@@ -109,7 +113,9 @@ artifact.
 `create_in` additionally canonicalizes a host-selected root and target parent and
 rejects lexical traversal or symlink-parent escape. It still cannot retain a
 path-to-inode binding against a hostile rename race, synchronize the parent
-directory or isolate hostile writers. The host owns target-host openat-style
+directory for ordinary writes or isolate hostile writers. Orphan cleanup does
+sync its containing directory after a successful removal, but that does not
+upgrade ordinary publication into a hostile-filesystem proof. The host owns target-host openat-style
 containment where required, containing-directory sync, encryption,
 quota/retention, revocation freshness, physical erasure, backup deletion,
 independent witness storage and selection/rollback. File locks fence cooperative
@@ -123,7 +129,8 @@ Regression coverage must include real-file reopen, every snapshot truncation
 point, independent witness mismatch, canonical form, existing nonempty, empty and
 truncate-to-zero rejection, regular and dangling symlink rejection where
 supported, exactly one concurrent creator, lock contention, post-create
-interference, payload integrity, revocation descendants and invalid binding.
+interference, payload integrity, revocation descendants, invalid binding, parent-escape
+rejection and zero-length-only orphan cleanup.
 Exact source and actual-base synthetic-merge compilation, tests, lint and format
 remain mandatory.
 
