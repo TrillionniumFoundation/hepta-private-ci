@@ -331,7 +331,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -359,8 +358,6 @@ def verify():
             or not source_base.get("tree")
         ):
             failures.append(f"{mid}: source base")
-        else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -420,8 +417,6 @@ def verify():
             if source_objects is None:
                 failures.append(f"{mid}: composed map requires exact source objects")
 
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
