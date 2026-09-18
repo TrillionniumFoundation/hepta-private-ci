@@ -20,7 +20,7 @@ use codex_hepta_types::StableId;
 
 pub const MAX_KNOWLEDGE_NODES_V2: usize = 65_536;
 pub const MAX_KNOWLEDGE_EDGES_V2: usize = 262_144;
-pub const MAX_SUPPORTS_PER_RELATION_V2: usize = 64;
+pub const MAX_SUPPORTS_PER_RELATION_V2: usize = 128;
 const GENERATION_DOMAIN: &[u8] = b"hepta.knowledge-generation.v2";
 const PUBLICATION_DOMAIN: &[u8] = b"hepta.knowledge-publication.v2";
 const QUERY_DOMAIN: &[u8] = b"hepta.knowledge-query-result.v2";
