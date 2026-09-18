@@ -355,6 +355,8 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         )
         .map_err(E::AdmissionEvidence)?;
     verify_signed_role_separation(&generator, &observer, now).map_err(E::AdmissionEvidence)?;
+    let generator_authentication_digest = attestation_digest(&request.generator_attestation);
+    let admission_authentication_digest = attestation_digest(&request.admission_attestation);
 
     if request.generator_attestation.objective_digest != request.admission.objective_digest
         || request.admission_attestation.objective_digest != request.admission.objective_digest
@@ -384,6 +386,8 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     let mut evaluation_binding =
         b"hepta.intelligence.plasticity-evaluations-and-host-evidence.v1\0".to_vec();
     evaluation_binding.extend_from_slice(host_evidence_verification_digest.as_array());
+    evaluation_binding.extend_from_slice(generator_authentication_digest.as_array());
+    evaluation_binding.extend_from_slice(admission_authentication_digest.as_array());
     for candidate in update_candidates {
         let candidate_id = candidate.candidate_id.clone();
         let CandidateEvaluationAdmissionV1 {
@@ -493,8 +497,6 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     }
     writer.mark_anchor_committed();
 
-    let generator_authentication_digest = attestation_digest(&request.generator_attestation);
-    let admission_authentication_digest = attestation_digest(&request.admission_attestation);
     let mut composition = b"hepta.intelligence.plasticity-composition.v1\0".to_vec();
     for digest in [
         proposal.proposal_digest,
