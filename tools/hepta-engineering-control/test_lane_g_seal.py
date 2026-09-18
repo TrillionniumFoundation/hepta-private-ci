@@ -207,7 +207,7 @@ class SealedEvidenceBoundaryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             database = Path(temporary) / "engineering.sqlite3"
             with EngineeringStore(database) as store:
-                self.assertEqual(store.connection.execute("PRAGMA user_version").fetchone()[0], 5)
+                self.assertEqual(store.connection.execute("PRAGMA user_version").fetchone()[0], 6)
                 record_integration_decision(
                     store,
                     "decision-a",
