@@ -110,7 +110,7 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         };
         match result {
             Ok(event_id) => {
-                store
+                let dispatch = store
                     .record_transport_accepted(
                         &record.stable_txn_id,
                         record.attempts,
@@ -119,7 +119,14 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                     )
                     .await
                     .map_err(store_error)?;
-                stats.accepted += 1;
+                if matches!(
+                    dispatch.state,
+                    MatrixDispatchState::ObservedTerminal | MatrixDispatchState::Redacted
+                ) {
+                    stats.terminal_reconciled += 1;
+                } else {
+                    stats.accepted += 1;
+                }
             }
             Err(MatrixTransportError::Retryable) => {
                 let dispatch = store
