@@ -609,13 +609,22 @@ export class RuntimeClient {
     const session = this.#captureSession();
     const eligible = [];
     const now = this.#now();
-    for (const entry of this.#pending.values()) {
-      this.#refreshRecoveryRequirement(entry, now);
+    let recoveryChanged = false;
+    const candidates = [...this.#pending.values()].sort(
+      (left, right) =>
+        left.nextReconcileAtMs - right.nextReconcileAtMs ||
+        left.createdAtMs - right.createdAtMs ||
+        left.operationId.localeCompare(right.operationId),
+    );
+    for (const entry of candidates) {
+      recoveryChanged =
+        this.#refreshRecoveryRequirement(entry, now) || recoveryChanged;
       if (entry.recoveryRequired && !includeRecoveryRequired) continue;
       if (!ignoreBackoff && entry.nextReconcileAtMs > now) continue;
       eligible.push(entry);
       if (eligible.length >= RECONCILE_BATCH_SIZE) break;
     }
+    if (recoveryChanged) this.#persistBestEffort();
     if (eligible.length === 0) return;
     await Promise.all(eligible.map((entry) => this.#reconcileEntry(entry, session)));
   }
@@ -653,11 +662,14 @@ export class RuntimeClient {
         "reconciliation observation",
       );
       this.#reconcileObservation(safeObservation, entry, session);
-    } catch {
+    } catch (error) {
       entry.recoveryRequired = true;
       cloneAcknowledgement(entry, "indeterminate", {
         accepted: entry.accepted,
-        errorCode: ERROR_CODES.PROTOCOL_VIOLATION,
+        errorCode:
+          error instanceof UiControlError
+            ? error.code
+            : ERROR_CODES.PROTOCOL_VIOLATION,
       });
       this.#persistBestEffort();
     }
@@ -674,8 +686,9 @@ export class RuntimeClient {
 
   #refreshRecoveryRequirement(entry, now = this.#now()) {
     if (
-      entry.reconcileAttempts >= RECONCILE_AUTO_ATTEMPTS ||
-      now - entry.createdAtMs >= RECONCILE_RECOVERY_AGE_MS
+      !entry.recoveryRequired &&
+      (entry.reconcileAttempts >= RECONCILE_AUTO_ATTEMPTS ||
+        now - entry.createdAtMs >= RECONCILE_RECOVERY_AGE_MS)
     ) {
       entry.recoveryRequired = true;
       if (PERSISTABLE_STATUSES.has(entry.status)) {
@@ -684,18 +697,23 @@ export class RuntimeClient {
           errorCode: ERROR_CODES.BACKEND_UNAVAILABLE,
         });
       }
+      return true;
     }
+    return false;
   }
 
   #scheduleReconciliation() {
     if (!this.#session || !this.#setTimer) return;
     let due = null;
     const now = this.#now();
+    let recoveryChanged = false;
     for (const entry of this.#pending.values()) {
-      this.#refreshRecoveryRequirement(entry, now);
+      recoveryChanged =
+        this.#refreshRecoveryRequirement(entry, now) || recoveryChanged;
       if (entry.recoveryRequired) continue;
       if (due === null || entry.nextReconcileAtMs < due) due = entry.nextReconcileAtMs;
     }
+    if (recoveryChanged) this.#persistBestEffort();
     if (due === null) {
       this.#cancelReconciliationTimer();
       return;
