@@ -70,19 +70,17 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The implementation is intentionally split so the canonical federation contract does not become another memory or authority owner:
 
-- `typed ingress`
-- `policy core`
-- `transactional writer`
-- `bounded read projection`
-- `outbox adapter`
+- `FederatedQueryV2` / `FederatedLeaseV2`: exact peer, consumer, scope, purpose, generation, query, nonce, epoch and deadline binding.
+- `FederationAuthorityV2`: pre- and post-transport current-authority observations. Enrollment, revocation and capability lifetime remain owned by the existing authority/cognitive-store boundary.
+- `FederationTransportV2`: one async attempt represented as a cancellable future. The engine owns the timeout/cancellation race and does not contain a retry queue.
+- `RemoteFederatedResponseV2`: terminal digest-only evidence sealed over the exact query binding and every security-relevant response field.
+- `FederatedResultV2`: validated complete/partial/empty/indeterminate output with explicit validity, coverage, effective expiry and authority-observation digest.
+- Product adapter: `codex-rs/hepta-memory/src/cognitive_federation_v2.rs` maps the existing SQLite federation capability owner and cognitive-store retrieval into these canonical V2 contracts. Raw retrieval payload is request-local and is released only after the V2 evidence set is admitted.
+- Physical model-input consumer: `codex-rs/ext/hepta-memory/src/cognitive/federation.rs` binds source coverage and V2 admission expiry into the prepared attachment and revalidates before physical model input.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
-
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+The product adapter does not create a second peer registry, capability database, remote fact store or writer. The existing `CognitiveStore` remains the durable fact and federation-capability owner. A future cross-host transport must implement the same canonical interface without inheriting credentials or weakening the authority checks.
 
 ## 5. Contracts, ports and compatibility
 
@@ -124,13 +122,28 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.federation.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md).
+`execute_once` is asynchronous. It validates query/lease state, observes current authority, derives an attempt cutoff from the minimum of query deadline, lease expiry and authority expiry, then races the transport future against cancellation and an engine-owned timeout. No module lock is held across transport I/O and no detached retry/background queue is permitted by this boundary.
+
+After transport completion the engine obtains a second authority observation. Only then can a terminal remote response be admitted. The product adapter reads the persisted federation capability head for both observations and checks the exact owner-memory frontier before and after the owner retrieval. A changing frontier makes that attempt unavailable rather than pretending to be a coherent empty/complete read.
+
+The product multi-reader aggregator is deterministic: successful batches contribute candidates; failures increment explicit failed-source coverage; ranking is stable and bounded before truncation. The aggregate admission expiry is the minimum successful-peer V2 expiry.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.federation.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+The canonical boundary distinguishes:
+
+- terminal valid/empty/partial responses;
+- nonterminal unavailable/timed-out/cancelled/no-terminal-observation outcomes, returned as indeterminate;
+- response-generation drift;
+- post-transport revocation;
+- post-transport authority expiry;
+- malformed, replayed or tampered response digests.
+
+A non-current result never exposes remote evidence items. Successful result expiry is capped by remote response expiry, query deadline, lease expiry and current authority expiry. The product model-input path carries that admitted expiry into its source binding and refuses a federated attachment after expiry even if the raw memory record still exists.
+
+A failed peer in a multi-peer read is counted as failed coverage; it is not converted into a valid empty peer. The module has no retry queue, and a timeout cannot widen scope or trigger unrestricted fallback.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -140,19 +153,19 @@ Owned threat entries:
 
 None.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Remote responses are domain-separated and cryptographically bound to the exact query plus peer/scope/purpose/generation/frontier/expiry/completeness and evidence digests; replay across query bindings or payload mutation fails closed. Authority is observed both before dispatch and after transport completion to close the in-flight revocation/generation TOCTOU window. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-memory-federation/src/lib.rs](../../../codex-rs/hepta-memory-federation/src/lib.rs) and the linked implementation components.
+The canonical V2 contract enforces at most 512 evidence items in one peer response/query. The composed product memory retrieval retains its existing stricter product result bound and uses a two-second single-attempt transport deadline, additionally capped by capability expiry. Multi-peer product coverage is explicit and aggregate admission lifetime is the minimum successful-peer lifetime. These are enforced code bounds, not throughput or latency measurements. Target-host performance measurements remain qualification evidence rather than documentation claims.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-The native federation contract validates scoped remote observations; its result does not enroll a peer or establish a network service. A deployed host must supply authenticated peer transport and current grants. Preserve partial coverage/unavailable on timeout, and invalidate cached observations on revocation or deletion.
+The canonical federation contract validates scoped remote observations and still does not enroll peers or mint grants. The currently composed product caller uses the existing persisted federation capability records and existing owner cognitive store as its authority/transport substrate. It reports requested/completed/failed source coverage and carries V2 admission expiry to the physical model-input boundary. This composition does not by itself establish a cross-host network federation service; any network transport must separately authenticate the peer and satisfy the same V2 response/authority checks.
 
 Current operating and state-format references:
 
@@ -166,7 +179,9 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-memory-federation/src/lib_tests.rs](../../../codex-rs/hepta-memory-federation/src/lib_tests.rs); named case: `missing_terminal_observation_is_indeterminate`.
-- [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs); named case: `one_attempt_returns_bounded_partial_result`.
+- [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs); cases cover response tamper/replay, canonical digest ordering, expiry ceiling, timeout/cancellation, pre/post revocation and generation drift, duplicate identity and empty zero-frontier semantics.
+- [codex-rs/hepta-memory/src/cognitive_federation_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_federation_tests.rs); cases cover the real persisted grant/revoke owner, product V2 routing and explicit partial multi-peer coverage.
+- [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs); extension tests cover the physical model-input proposal and revalidation boundary.
 
 In `codex-rs`, run `just test -p codex-hepta-memory-federation`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) separately labels target acceptance designs.
 
@@ -184,7 +199,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+A named product caller candidate is now composed: `FederatedMemoryReader::retrieve` routes through the canonical V2 product adapter and the extension consumes the admitted result at the model-input boundary. This is composition evidence, not activation or release. Exact-candidate CI, independent semantic/security review, target-host qualification and the activation predecessors remain mandatory before changing activation/release claims.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
@@ -255,3 +270,5 @@ The bootstrap source-location obligation for `memory.federation` is implemented 
 - `codex-rs/hepta-memory-federation`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+The current composed code candidate is additionally identified by `currentHeadAttestation` in `IMPLEMENTATION_MAP.json`; it binds the canonical V2 source to the `hepta-memory` product adapter and extension physical consumer without changing the repository-wide shared map `sourceBase`. The attestation is provenance metadata, not a CI pass or release receipt.
