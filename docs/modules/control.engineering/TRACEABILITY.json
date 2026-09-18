@@ -247,10 +247,12 @@
       "ownerSymbol": "build_product_receipt",
       "tests": [
         "ProductGateTests.test_pull_request_product_caller_composes_v2_orchestrator",
-        "ProductGateTests.test_source_push_requires_exact_head"
+        "ProductGateTests.test_source_push_requires_exact_head",
+        "ProductGateTests.test_pull_request_source_head_product_caller_composes_same_v2_path",
+        "ProductGateTests.test_base_merge_lane_is_invalid_on_push"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "repository CI product execution receipt only"
+      "capabilityCeiling": "exact-source/base-merge product execution receipt only; no merge or release authority"
     }
   ],
   "negativeAuthorityInvariants": [
