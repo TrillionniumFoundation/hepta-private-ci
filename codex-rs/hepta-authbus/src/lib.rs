@@ -9,7 +9,23 @@
 
 #![forbid(unsafe_code)]
 
+mod control;
 mod signed;
+pub use control::AUTHBUS_MAX_RESERVATION_TTL_MS;
+pub use control::AuthBusReplayCheckpoint;
+pub use control::AuthBusTrustHead;
+pub use control::AuthPolicyRule;
+pub use control::ControlWriteDisposition;
+pub use control::EffectAdmission;
+pub use control::EffectAdmissionRequest;
+pub use control::PolicyDecision;
+pub use control::PolicyEffect;
+pub use control::QuotaRegistryEntry;
+pub use control::QuotaSnapshot;
+pub use control::Reservation;
+pub use control::ReservationReconcileOutcome;
+pub use control::ReservationState;
+pub use control::Settlement;
 pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;
