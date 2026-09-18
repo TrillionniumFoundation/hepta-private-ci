@@ -60,6 +60,10 @@ use std::time::Duration;
 use tempfile::TempDir;
 use test_case::test_case;
 
+use super::model_provider_policy::ProviderPolicyState;
+use super::model_provider_policy::TestDecision;
+use super::model_provider_policy::test_provider_policy;
+
 const CONFIGURED_CONTEXT_WINDOW: i64 = 128_000;
 const AUTO_COMPACT_FALLBACK_PROMPT: &str = "Save the important state before rollover.";
 
@@ -687,9 +691,19 @@ async fn assert_token_budget_skips_notes_thread_hint(
     install_active_tool_policy: bool,
 ) -> Result<()> {
     let mut builder = test_codex();
+    let mut extensions = ExtensionRegistryBuilder::<Config>::new();
+    let mut has_custom_extensions = false;
     if install_active_tool_policy {
-        let mut extensions = ExtensionRegistryBuilder::<Config>::new();
         extensions.tool_policy_contributor(Arc::new(ActiveTokenBudgetToolPolicy));
+        has_custom_extensions = true;
+    }
+    if enable_hepta_governance {
+        let provider_policy = ProviderPolicyState::new(true, TestDecision::Allow);
+        provider_policy.terminal_release.add_permits(8);
+        extensions.model_provider_policy_contributor(test_provider_policy(provider_policy));
+        has_custom_extensions = true;
+    }
+    if has_custom_extensions {
         builder = builder.with_extensions(Arc::new(extensions.build()));
     }
 
