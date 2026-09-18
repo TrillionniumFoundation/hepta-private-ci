@@ -200,3 +200,21 @@ fn artifact_drift_fails_before_runtime_connection() {
         Err(Error::DriverFailure(message)) if message.contains("weights digest mismatch")
     ));
 }
+
+#[test]
+fn group_or_world_accessible_runtime_socket_is_rejected() {
+    let fixture = fixture("socket-mode");
+    let _listener = UnixListener::bind(&fixture.socket).unwrap();
+    fs::set_permissions(&fixture.socket, fs::Permissions::from_mode(0o666)).unwrap();
+    let mut driver = LocalProcessDriver::single_model(
+        fixture.socket.clone(),
+        fixture.manifest.model_id.clone(),
+        fixture.artifacts.clone(),
+        Duration::from_secs(1),
+    )
+    .unwrap();
+    assert!(matches!(
+        driver.load(&fixture.manifest, &grant()),
+        Err(Error::DriverFailure(message)) if message.contains("accessible by group or world")
+    ));
+}
