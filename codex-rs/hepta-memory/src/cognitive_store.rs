@@ -1227,6 +1227,11 @@ pub(crate) fn recovered_database_filename(
     );
     frame_part(&mut hasher, anchor.state_digest.as_str().as_bytes());
     frame_part(&mut hasher, writer_fence.as_str().as_bytes());
+    frame_part(&mut hasher, &std::process::id().to_be_bytes());
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |duration| duration.as_nanos());
+    frame_part(&mut hasher, &nonce.to_be_bytes());
     let generation = Sha256Digest::from_sha256_output(hasher.finalize());
     format!(
         "{COGNITIVE_RECOVERED_DB_PREFIX}{}.sqlite3",
