@@ -146,9 +146,14 @@ dataset, generation, layer/parameter identity and observation time; the returned
 that exact query. `PlasticityOwnerEvidencePolicyV1` also requires an explicit
 kind-to-owner allow-policy, so an otherwise valid receipt from the wrong owner is
 rejected before proposal persistence. Every returned receipt is checked for non-empty
-owner receipt/frontier digests and current validity. All receipts for one proposal
-must agree on the exact qualification-evidence frontier that was signed by the
-Observer.
+owner receipt/frontier digests and current validity. Agentd canonicalizes the verified
+receipt set, binds the owner-policy digest and exact evidence frontier into one
+`host_evidence_verification_digest`, overwrites any caller value with that digest, and
+the product adapter binds it into the final proposal/evaluation digest and returns it
+for audit. Verification time is used only for freshness and is not part of the
+semantic digest, so an identical retry does not drift merely because the clock moved.
+All receipts for one proposal must agree on the exact qualification-evidence frontier
+that was signed by the Observer.
 
 The repository supplies the host seam and verification logic, not a fake universal
 owner-store implementation. A selected deployment must bind concrete adapters for the
@@ -156,7 +161,10 @@ actual owner registries.
 
 ## 6. Durable parameter rollback protection
 
-`AnchoredPlasticityWriterV1` now has an explicit lifecycle:
+`AnchoredPlasticityWriterV1` now enrolls through a lock-scoped empty-file bootstrap
+check in `DurableProposalRegistry`; topology uses the equivalent
+`DurableTopologyProposalRegistryV2` gate. A pre-lock metadata check is not trusted for
+production enrollment. The writer also has an explicit lifecycle:
 
 ```text
 Healthy
