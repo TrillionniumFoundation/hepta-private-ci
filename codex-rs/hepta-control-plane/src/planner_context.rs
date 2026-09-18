@@ -30,6 +30,7 @@ use crate::PlanningRequestV1;
 use crate::ResourceReservationV1;
 use crate::SnapshotRequestV1;
 use crate::canonical_ndu_planning_policy_digest;
+use crate::canonical_resource_profile_digest;
 use crate::collect_snapshot;
 use crate::evaluate_prepared_plan_with_ndu;
 use crate::prepare_plan;
@@ -159,6 +160,13 @@ pub fn plan_observed_context(
             }
         })
         .collect();
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: bytes_axis.clone(),
+        endowment: budget,
+        essential_floor: FixedQ32::ZERO,
+    }];
+    let resource_profile_digest =
+        canonical_resource_profile_digest(&resource_reservations).map_err(E::Planner)?;
     let prepared = prepare_plan(
         &snapshot,
         PlanningRequestV1 {
@@ -166,13 +174,9 @@ pub fn plan_observed_context(
             now_micros: observed.observed_at_micros,
             deadline_micros: observed.expires_at_micros,
             evaluation_policy_digest: configuration_digest,
-            resource_profile_digest: objective_digest,
+            resource_profile_digest,
             candidates,
-            resource_reservations: vec![ResourceReservationV1 {
-                axis: bytes_axis.clone(),
-                endowment: budget,
-                essential_floor: FixedQ32::ZERO,
-            }],
+            resource_reservations,
         },
     )
     .map_err(E::Planner)?;
