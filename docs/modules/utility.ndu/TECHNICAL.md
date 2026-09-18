@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `utility.ndu`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared root is materialized, and source-level product composition now exists through `hepta-control-plane::evaluate_prepared_plan_with_ndu`, request-local `plan_observed_context`, and the read-only intelligence vertical. That fact is recorded separately from exact-head qualification, durable-writer host selection, activation and release. Source composition grants no runtime/effect authority and does not issue independent acceptance. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -120,7 +120,7 @@ Critical protocol schemas:
 - `ObjectiveFunctionV1`
 - `RunStartSnapshotV1`
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+Every producer validates output before publication and binds semantic fields into the declared digest scope. `UtilityProfile` digest v2 additionally binds the immutable axis/unit/scale registry and normalization/clipping manifest. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. The legacy evaluator entrypoint is removed; compatibility semantics are expressed only as an explicit `EvaluationPolicyV1` passed to `evaluate_candidates_with_policy`. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
@@ -143,7 +143,7 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Projection domains rebuild from declared sources and publish complete generations atomically. `NduProjectionJournalV1` remains the in-memory/reference codec. `NduDurableProjectionJournalV1` is now a host-authorized file writer candidate: it takes an already opened regular file, acquires an exclusive cooperative lock, prepares semantics before writing, appends one canonical frame, calls `sync_all`, and publishes memory only after that sync. Recovery can require an independently retained `(sequence, entry_digest)` anchor, so a wholesale self-consistent journal rewrite is not trusted merely because its internal hash chain recomputes. Host selection, directory durability, migration, retention, backup/restore and activation remain separate gates. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -177,7 +177,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. Projection journals are bounded owner-local references and must not be substituted for an independently selected production writer.
+Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. The in-memory projection journal is a bounded owner-local reference. The fsync-backed durable writer candidate is implemented, but it must not be called an activated production writer until a named host selects it and qualifies directory durability, migration/retention and backup/restore.
 
 Current operating and state-format references:
 
