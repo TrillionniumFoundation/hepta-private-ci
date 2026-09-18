@@ -69,6 +69,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
+**Implemented entrypoints:** `WireEnvelope` in [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs), `WireEnvelopeV2` in [codex-rs/hepta-wire/src/integrity.rs](../../../codex-rs/hepta-wire/src/integrity.rs), `negotiate` in [codex-rs/hepta-wire/src/negotiation.rs](../../../codex-rs/hepta-wire/src/negotiation.rs), `SchemaRegistry` in [codex-rs/hepta-wire/src/schema.rs](../../../codex-rs/hepta-wire/src/schema.rs), `read_frame` in [codex-rs/hepta-wire/src/stream.rs](../../../codex-rs/hepta-wire/src/stream.rs).
+
 - **Frozen V1:** `WireEnvelope` in
   [`codex-rs/hepta-wire/src/envelope.rs`](../../../codex-rs/hepta-wire/src/envelope.rs)
   retains the original `HPTA/1` byte layout and payload-only digest semantics.
