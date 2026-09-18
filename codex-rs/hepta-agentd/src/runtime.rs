@@ -161,9 +161,8 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             Some(CompletedRuntimeTask::Automation),
         ),
         signal = shutdown_signal() => {
-            signal?;
-            state.mark_draining()?;
-            (Ok(()), None)
+            let outcome = signal.and_then(|()| state.mark_draining());
+            (outcome, None)
         }
     };
     if completed_task.is_none() && outcome.is_ok() {
@@ -336,10 +335,11 @@ async fn drain_app_server(
         },
         Err(_) => {
             // An unobserved external effect is never upgraded to success just
-            // because shutdown timed out. Persist conservative reconciliation
-            // state before terminating the embedded server task.
-            state.mark_unfinished_runs_for_shutdown()?;
+            // because shutdown timed out. Attempt conservative reconciliation,
+            // but always terminate the embedded task even if persistence fails.
+            let reconciliation = state.mark_unfinished_runs_for_shutdown();
             abort_and_join(app_server_task).await;
+            reconciliation?;
             return Ok(());
         }
     };
