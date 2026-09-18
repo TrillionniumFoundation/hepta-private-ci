@@ -4,7 +4,7 @@ The legacy `resolve` and `assess_secret_boundary_v1` remain metadata-only;
 `PROVIDER_DISPATCH_ENABLED` remains false for that API. A caller-provided
 `Granted` observation cannot enable this separate client.
 
-`BaoClient::consume_kv_v2` is the executable host integration point. It reads
+`BaoClient::consume_kv_v2` is the exact-version KV v2 integration point. Provider-native dynamic credentials use the separate `request_secret_lease`, `renew_secret_lease`, `revoke_secret_lease` and `reconcile_secret_lease` lifecycle in `src/lease_lifecycle.rs`. The KV path reads
 `GET /v1/{mount}/data/{path}?version=N`, supplies `X-Vault-Token` and
 `X-Vault-Namespace`, requires a configured CA and hostname-valid HTTPS, disables
 redirects and ambient proxies, and caps the complete response at 1 MiB.
@@ -66,6 +66,43 @@ The config contains `endpoint`, `ca_pem_file`, `signer_id`, `verifying_key`
 and `expected_secret_sha256` (32-byte array). Public trust configuration must
 be delivered through the host's protected configuration channel.
 
+## Provider-native dynamic SecretLease lifecycle
+
+Dynamic issuance accepts one bounded provider path, GET or POST, an optional
+bounded string request map and an explicit bounded list of string response
+fields for the registered final consumer. The grant binds the exact origin,
+pinned CA, namespace, path, logical lease key, complete request and selected
+fields; it does not pretend to bind credential bytes that do not exist until
+the provider creates them.
+
+The durable lifecycle is owned by `SecretLeaseRecord` and `SecretLeaseStore`.
+The current `HeptaEvidenceStore` implementation uses SQLite migration 0011
+and revision compare-and-swap. Issuance creates `Requesting` before dispatch
+and only the caller that wins the durable insert is allowed to contact the
+provider. Renewal and revocation write `Renewing` or `RevokePending` before
+their provider call.
+
+Successful dynamic issuance persists `Active` metadata before selected secret
+strings enter the synchronous trusted `BaoSecretFields` callback. Raw values
+are not stored in the lease registry and the dynamic path deliberately does
+not retain a per-value SHA-256 fingerprint.
+
+There is no automatic provider mutation retry. Transport loss, timeout,
+provider 5xx or an unusable successful response moves the durable operation
+toward `Unknown` when that transition can be recorded. Known provider lease
+IDs can be reconciled through `/v1/sys/leases/lookup`. Generic issuance whose
+response was lost before a lease ID was observed returns
+`ReconciliationRequired`; it is never reissued blindly.
+
+Renewal uses `/v1/sys/leases/renew` and treats the provider-returned TTL and
+renewable value as authoritative. Revocation uses
+`/v1/sys/leases/revoke` with `sync=true`. A provider lease ID, once observed,
+is immutable in the local lifecycle record.
+
+The checked-in SQLite owner coordinates multiple handles/processes sharing one
+database but is not a multi-host consensus backend. See
+`docs/modules/secrets.heptabao/{CURRENT_IMPLEMENTATION,SECRET_LEASE_DESIGN,FAILURE_RECOVERY,HA_AND_STORAGE,SECURITY_INVARIANTS}.md`.
+
 ## Independent issuer and revocation
 
 The separate `hepta-final-use-signer` binary in `hepta-supervisor` is enabled
@@ -86,8 +123,8 @@ five minutes. Signing material remains outside the adapter and normal runtime.
 `FinalUseAuthority::update_revocations` accepts only monotonic trusted host
 updates. Within one epoch, revoked IDs cannot be removed. `open_state_dir`
 requires a Unix owner-only state directory (0700), creates private regular
-files (0600), and holds an operating-system process lock until exit. Claims
-and revocation updates are synced and atomically replaced before success.
+files (0600), and holds an operating-system process lock until exit. Revocation-head updates are synced and atomically replaced before success;
+nonce claims are appended as fixed-width durable records before success.
 The example automatically reopens this state: used nonces remain rejected
 after restart without a manual epoch change. Corrupt, missing previously
 initialized state, unsafe permissions, or a concurrent owner cause denial.
@@ -95,25 +132,31 @@ Storage errors fence that authority instance until recovery. Preserve this
 state across deployments; deleting or restoring it from an old backup is an
 authority reset and requires an independently changed issuer trust/epoch.
 Other platforms fail closed until an equivalent owner ACL store exists.
-The 16,384-entry registry never evicts claims silently; exhaustion rejects new
-dispatch until a trusted epoch transition. A failed/timeout request does not
-refund its nonce or retry automatically. A new grant requires owner action.
+Schema 2 stores the bounded revocation head separately from an append-only
+`authority.claims` nonce journal. Claims no longer rewrite the complete JSON
+state and there is no former 16,384-claim logical ceiling. Revoked grant IDs
+remain separately bounded, and long epochs still consume memory/disk. A
+failed/timeout request does not refund its nonce or retry automatically. A new
+grant requires owner action.
 
 Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
 malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+Dynamic lease mutation APIs use their own durable CAS lifecycle and explicit
+uncertainty/reconciliation semantics; they do not reuse read retry rules.
 
 ## Verification
 
 Targeted tests cover a real loopback TLS exchange, exact request headers and
 version, forged signature rejection, nonce replay rejection, provider denial,
 revocation during a network wait, incorrect trust root and response bounds.
-Kernel tests cover signed-field changes, wrong issuer, expiry and epoch fences.
-Run `just test -p codex-hepta-bao-adapter -p codex-hepta-contracts` in the normal
-workspace and the repository formatting/lint gates before merging.
+Dynamic lifecycle tests cover the one-durable-insert issuance winner and
+ambiguous lost-response quarantine. Kernel tests cover signed-field changes,
+wrong issuer, expiry, epoch fences and schema-1 replay-state migration; evidence
+store tests cover exact-idempotent lease creation and revision CAS. Run
+`cargo test --locked -p codex-hepta-contracts -p codex-hepta-bao-adapter -p codex-hepta-evidence`
+and the repository formatting/lint gates before merging.
 
 For the separate real service check, build this crate's `consume_secret`
 example and the supervisor's `hepta-final-use-signer` binary with

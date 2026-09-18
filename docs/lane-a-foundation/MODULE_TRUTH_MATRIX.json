@@ -233,7 +233,7 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0010",
+        "durability": "sqlite_migrations_0001_0011",
         "qualification": "source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
@@ -284,6 +284,14 @@
           "mustContain": [
             "CREATE TABLE authbus_outbox",
             "authbus_outbox_active_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_secret_lease_registry.sql",
+          "mustContain": [
+            "CREATE TABLE secret_lease_records",
+            "secret_lease_records_transition",
+            "secret_lease_records_no_delete"
           ]
         }
       ]
@@ -380,30 +388,31 @@
     },
     {
       "module": "secrets.heptabao",
-      "profile": "bounded_external_secret_reader",
+      "profile": "bounded_external_secret_lifecycle",
       "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+      "implementationDetail": "docs/modules/secrets.heptabao/SECRET_LEASE_DESIGN.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_kv_v2_reader",
-        "durability": "external_authority_plus_local_final_use_state",
-        "qualification": "partial_bounded_evidence",
+        "implementation": "kv_v2_and_dynamic_lease_lifecycle",
+        "durability": "external_authority_plus_sqlite_lease_cas_plus_local_final_use_journal",
+        "qualification": "source_tests_present_exact_candidate_workflow_required",
         "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "pinned-CA HTTPS read of one exact KV-v2 string field",
-        "final-use grant binding and single-use dispatch",
-        "metadata-only receipt without raw secret value"
+        "provider-native dynamic lease issue renew revoke and reconciliation",
+        "durable SecretLease metadata lifecycle with revision compare-and-swap",
+        "append-only durable final-use nonce replay journal",
+        "trusted synchronous final-consumer delivery without raw secret lifecycle records"
       ],
       "targetOnlyCapabilities": [
         "secret mutation",
-        "generic lease renewal API",
-        "generic revoke API",
-        "durable operation and evidence composition",
+        "multi-host active-active lease and final-use authority backend",
+        "provider-specific reconciliation for issuance lost before lease identity is observed",
         "automatic production enrollment"
       ],
       "sourceAnchors": [
@@ -417,10 +426,38 @@
           ]
         },
         {
+          "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+          "mustContain": [
+            "request_secret_lease",
+            "renew_secret_lease",
+            "revoke_secret_lease",
+            "reconcile_secret_lease",
+            "SecretLeaseCreateDisposition::Inserted"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/secret_lease.rs",
+          "mustContain": [
+            "pub struct SecretLeaseRecord",
+            "pub enum SecretLeaseState",
+            "pub trait SecretLeaseStore",
+            "compare_and_swap"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_secret_lease_registry.sql",
+          "mustContain": [
+            "CREATE TABLE secret_lease_records",
+            "secret_lease_records_transition",
+            "secret_lease_records_no_delete"
+          ]
+        },
+        {
           "path": "codex-rs/hepta-bao-adapter/README.md",
           "mustContain": [
             "Authorized HeptaBao HTTPS consumer",
-            "Only read operations exist here"
+            "Provider-native dynamic SecretLease lifecycle",
+            "ReconciliationRequired"
           ]
         }
       ]

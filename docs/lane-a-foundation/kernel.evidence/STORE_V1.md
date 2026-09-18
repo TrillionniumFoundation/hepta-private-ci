@@ -15,6 +15,7 @@ ordered and checksum-bound:
 8. `0008_provider_effect_ack_source.sql`
 9. `0009_authbus_replay.sql`
 10. `0010_authbus_outbox.sql`
+11. `0011_secret_lease_registry.sql`
 
 Unknown, missing, incomplete, failed or checksum-mismatched migration rows cause
 store open to **fail closed**. They are never treated as an empty, current or
@@ -37,6 +38,8 @@ creates or migrates it.
 A transaction encloses each logical append and content-equivalence check.
 Provider-effect operations also use one process-local mutex for clones of one
 store. This mutex does not serialize other processes or independent opens.
+
+SecretLease metadata uses the same SQLite owner with `BEGIN IMMEDIATE` and revision CAS. Creation is exact-idempotent, a reused logical lease key with changed semantics conflicts, and a provider lease ID cannot change after it is observed. This is multi-handle/process safe for one SQLite database; it is not a claim of multi-host distributed consensus.
 
 AuthBus signed admission uses `BEGIN IMMEDIATE` to serialize replay and capacity
 checks across independent handles. Its sequence update commits before a receipt

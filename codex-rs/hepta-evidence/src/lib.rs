@@ -14,6 +14,7 @@ mod provider_insert;
 mod provider_record;
 mod provider_store;
 mod schema_validation;
+mod secret_lease_store;
 mod store;
 mod summary;
 
@@ -100,3 +101,7 @@ mod authbus_outbox_tests;
 #[cfg(test)]
 #[path = "authbus_outbox_quarantine_tests.rs"]
 mod authbus_outbox_quarantine_tests;
+
+#[cfg(test)]
+#[path = "secret_lease_store_tests.rs"]
+mod secret_lease_store_tests;
