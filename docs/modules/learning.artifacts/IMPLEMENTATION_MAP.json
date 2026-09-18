@@ -298,6 +298,23 @@
       "delegatedCallees": []
     },
     {
+      "operation": "stage_artifact_publication_v1",
+      "nativeSymbol": "stage_artifact_publication_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+          "command": "cd codex-rs && cargo test -p codex-hepta-learning-artifacts"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "stage_artifact_publication_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "prepare_artifact_publication_v1",
       "nativeSymbol": "prepare_artifact_publication_v1",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
