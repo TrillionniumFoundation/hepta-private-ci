@@ -6,6 +6,14 @@ use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::LedgerRecovery;
+use codex_hepta_learning_artifacts::IterationCandidateStateV1;
+use codex_hepta_learning_artifacts::IterationCandidateV1;
+use codex_hepta_learning_artifacts::IterationEnvelopeV1;
+use codex_hepta_learning_artifacts::IterationEvidenceKindV1;
+use codex_hepta_learning_artifacts::IterationEvidenceV1;
+use codex_hepta_learning_artifacts::IterationLedgerV1;
+use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
+use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
 use codex_hepta_types::ProbabilityQ32;
 use pretty_assertions::assert_eq;
 use std::fs;
@@ -197,6 +205,125 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
         )))
     ));
     assert_eq!(fs::read(&path).unwrap(), original_bytes);
+}
+
+#[test]
+fn future_holdout_improvement_is_independently_selected_then_consumed_and_degradation_is_rejected() {
+    let mut fixture = Fixture::new();
+    let evaluation = decide_with_signed_evidence_v2(
+        fixture.bundle.clone(),
+        fixture.roles.clone(),
+        &fixture.evidence,
+        &fixture.verifier,
+        /*now*/ 50,
+    )
+    .expect("authenticated independent evaluation");
+    assert_eq!(
+        evaluation.decision.disposition,
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+    );
+
+    let envelope = IterationEnvelopeV1 {
+        envelope_id: id("self-evolution-envelope"),
+        base_commit: digest("base-commit"),
+        base_tree: digest("base-tree"),
+        objective_digest: fixture.bundle.objective_digest,
+        grammar_digest: digest("bounded-mutation-grammar"),
+        maximum_files: 8,
+        maximum_diff_bytes: 128 * 1024,
+        maximum_candidates: 4,
+        maximum_parallel_sandboxes: 2,
+        expiry_unix_seconds: 100,
+    };
+    let mut iteration = IterationLedgerV1::new(envelope.clone()).expect("iteration ledger");
+    iteration
+        .append_candidate(IterationCandidateV1 {
+            candidate_id: fixture.bundle.candidate_id.clone(),
+            envelope_id: envelope.envelope_id.clone(),
+            generator_identity: id("generator"),
+            semantic_diff_digest: Digest32::of_bytes(&fixture.bytes),
+            test_plan_digest: digest("candidate-test-plan"),
+            rollback_digest: digest("rollback-to-no-change-baseline"),
+            predecessor: Some(fixture.bundle.baseline_id.clone()),
+            state: IterationCandidateStateV1::Drafted,
+        })
+        .expect("candidate");
+    let transition = |iteration: &mut IterationLedgerV1,
+                      state,
+                      kind,
+                      actor: &str,
+                      evidence_digest: Digest32,
+                      n: u64| {
+        iteration
+            .transition(
+                &fixture.bundle.candidate_id,
+                state,
+                IterationEvidenceV1 {
+                    evidence_id: id(&format!("iteration-evidence-{n}")),
+                    candidate_id: fixture.bundle.candidate_id.clone(),
+                    actor_id: id(actor),
+                    kind,
+                    evidence_digest,
+                    observed_unix_seconds: 50 + n,
+                },
+            )
+            .expect("valid iteration transition");
+    };
+    transition(&mut iteration, IterationCandidateStateV1::StaticallyValidated, IterationEvidenceKindV1::StaticValidation, "generator", digest("static"), 1);
+    transition(&mut iteration, IterationCandidateStateV1::SandboxTested, IterationEvidenceKindV1::Sandbox, "generator", digest("sandbox"), 2);
+    transition(&mut iteration, IterationCandidateStateV1::IndependentlyEvaluated, IterationEvidenceKindV1::Evaluation, "evaluator", evaluation.decision.evidence_digest, 3);
+    transition(&mut iteration, IterationCandidateStateV1::ReviewRequested, IterationEvidenceKindV1::Review, "reviewer", digest("review"), 4);
+    transition(&mut iteration, IterationCandidateStateV1::AcceptedCandidate, IterationEvidenceKindV1::Decision, "reviewer", digest("acceptance"), 5);
+    transition(&mut iteration, IterationCandidateStateV1::Selected, IterationEvidenceKindV1::Selection, "selector", digest("selection"), 6);
+    assert_eq!(
+        iteration.candidate(&fixture.bundle.candidate_id).unwrap().state,
+        IterationCandidateStateV1::Selected
+    );
+
+    // The selected artifact is consumed only by the next immutable generation.
+    fixture.run.snapshot.learning_artifact_generation = 2;
+    fixture.intuition.policy_generation = 2;
+    fixture.intuition.calibration.generation = 2;
+    fixture.intuition.ood.generation = 2;
+    fixture.intuition.state_digest = fixture.run.snapshot.digest().unwrap();
+    fixture.resign_evaluator();
+    let temp = tempfile::tempdir().unwrap();
+    let mut ledger = ledger_at(&temp.path().join("selected-ledger"));
+    let mut ports = Ports::new(&fixture);
+    let consumed = run_evaluated_shadow_v1(
+        fixture.request(),
+        &fixture.verifier,
+        &mut ledger,
+        &mut ports,
+        /*now*/ 50,
+    )
+    .expect("selected next generation consumed");
+    assert!(consumed.learning.is_some());
+    assert_eq!(consumed.pipeline.disposition, PipelineDispositionV1::DispatchProposed);
+
+    // A later candidate that does not beat the no-change baseline is rejected
+    // before any host port or durable Decision can consume it.
+    let mut degraded = Fixture::new();
+    degraded.bundle.metrics[0].candidate.lower = codex_hepta_types::FixedQ32::ZERO;
+    degraded.bundle.metrics[0].candidate.upper = codex_hepta_types::FixedQ32::ZERO;
+    degraded.resign_evaluator();
+    let mut degraded_ports = Ports::new(&degraded);
+    let temp = tempfile::tempdir().unwrap();
+    let mut degraded_ledger = ledger_at(&temp.path().join("degraded-ledger"));
+    assert!(matches!(
+        run_evaluated_shadow_v1(
+            degraded.request(),
+            &degraded.verifier,
+            &mut degraded_ledger,
+            &mut degraded_ports,
+            /*now*/ 50,
+        ),
+        Err(EvaluatedShadowError::Ineligible(
+            IndependentEvaluationDispositionV1::Ineligible
+        ))
+    ));
+    assert!(degraded_ports.calls.is_empty());
+    assert!(degraded_ledger.records().unwrap().is_empty());
 }
 
 #[test]
