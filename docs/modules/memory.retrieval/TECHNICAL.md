@@ -164,7 +164,7 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named cases: `channel_completion_order_cannot_change_union_or_recall`, `compile_cue_validates_and_binds_the_exact_snapshot`, `low_ranked_tail_risk_cannot_poison_the_returnable_population`.
+- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named cases: `channel_completion_order_cannot_change_union_or_recall`, `compile_cue_validates_and_binds_the_exact_snapshot`, `low_ranked_tail_risk_cannot_poison_the_returnable_population`, `ret04_baseline_profiles_are_digest_distinct`.
 - [codex-rs/hepta-memory-retrieval/src/lib_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/lib_tests.rs); named cases: `ranking_is_deterministic_and_explainable`, `legacy_native_bounds_match_target_contract`.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `revocation_between_ranking_and_publication_fails_closed`.
 
