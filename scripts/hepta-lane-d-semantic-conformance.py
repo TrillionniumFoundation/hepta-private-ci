@@ -164,6 +164,12 @@ def verify() -> int:
     objective = (
         ROOT / "codex-rs/hepta-objective/src/objective_admission.rs"
     ).read_text(encoding="utf-8")
+    objective_lib = (ROOT / "codex-rs/hepta-objective/src/lib.rs").read_text(
+        encoding="utf-8"
+    )
+    product_caller = (
+        ROOT / "codex-rs/hepta-agentd/src/objective_runtime.rs"
+    ).read_text(encoding="utf-8")
     for token in [
         "MAX_PROFILE_CONSTRAINTS",
         "MAX_PROFILE_ENCODED_BYTES",
@@ -171,6 +177,25 @@ def verify() -> int:
         'InvalidProfile("risk ordering")',
     ]:
         need(token in objective, "objective hardening " + token)
+    need(
+        "pub use compiler::compile;" not in objective_lib,
+        "raw objective compiler must not be publicly re-exported",
+    )
+    for token in [
+        'cfg(feature = "legacy-objective-compile")',
+        "compile_prevalidated_legacy_objective",
+        "Product callers must use",
+    ]:
+        need(token in objective_lib, "objective API boundary " + token)
+    for token in [
+        "admit_publish_and_start_objective_run_v1",
+        "ObjectiveRunFileStore",
+        "file.sync_all()?",
+        "fs::rename(&temp_path, &final_path)",
+        "CompileDisposition::ExplicitAbstain",
+        ".start_run(",
+    ]:
+        need(token in product_caller, "objective product caller " + token)
 
     ndu = (ROOT / "codex-rs/hepta-ndu/src/evaluator.rs").read_text(encoding="utf-8")
     for token in [
