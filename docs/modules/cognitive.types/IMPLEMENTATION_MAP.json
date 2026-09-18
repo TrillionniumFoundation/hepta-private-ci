@@ -256,7 +256,7 @@
     "bind HNMF V1 contracts to authenticated product consumer callsites before changing composed state",
     "add a first-class runtime-oracle validation surface for arbitrary RecallPacketV1 only if product semantics require recall packets to cross an untrusted boundary",
     "run exact-head CI and independent acceptance before changing qualified or activated state",
-    "migrate the legacy MemoryRecord/CognitiveSnapshot public-field compatibility surface to validated constructors in a separately staged caller migration"
+    "migrate remaining direct legacy MemoryRecord/CognitiveSnapshot field callers onto the new validated constructors, then privatize compatibility fields in a separately staged cross-module caller migration"
   ],
   "claimBoundary": {
     "sourceRootPresent": true,
