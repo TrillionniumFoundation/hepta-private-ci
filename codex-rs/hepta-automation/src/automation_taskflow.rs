@@ -328,7 +328,7 @@ impl AutomationStore {
             return Ok(());
         }
         let fence = self
-            .historical_automation_fence(work.occurrence.task_id, work.occurrence.occurrence)
+            .historical_automation_fence(&work.occurrence.taskflow_run_id)
             .await?;
         let step_attempt = self
             .automation_occurrence_step_attempt(work.occurrence.task_id, work.occurrence.occurrence)
@@ -405,7 +405,7 @@ impl AutomationStore {
         now_ms: u64,
     ) -> Result<(), TaskFlowError> {
         let fence = self
-            .historical_automation_fence(work.occurrence.task_id, work.occurrence.occurrence)
+            .historical_automation_fence(&work.occurrence.taskflow_run_id)
             .await?;
         let step_attempt = self
             .automation_occurrence_step_attempt(work.occurrence.task_id, work.occurrence.occurrence)
@@ -506,34 +506,26 @@ impl AutomationStore {
 
     async fn historical_automation_fence(
         &self,
-        task_id: crate::AutomationTaskId,
-        occurrence: u64,
+        run_id: &str,
     ) -> Result<TaskFlowFence, TaskFlowError> {
-        let row = sqlx::query(
-            "SELECT claim_generation, claim_token FROM automation_occurrence_lifecycle
-             WHERE task_id = ? AND occurrence = ? AND owner_agent_id = ?",
-        )
-        .bind(task_id.to_string())
-        .bind(i64::try_from(occurrence).map_err(|_| TaskFlowError::Invalid("occurrence overflow".to_string()))?)
-        .bind(self.taskflow_owner_agent_id().as_str())
-        .fetch_optional(self.taskflow_pool())
-        .await
-        .map_err(|_| TaskFlowError::Unavailable)?
-        .ok_or_else(|| TaskFlowError::Conflict("automation occurrence is missing".to_string()))?;
-        let generation = u64::try_from(
-            row.try_get::<i64, _>("claim_generation")
-                .map_err(|_| TaskFlowError::Corrupt("claim generation column".to_string()))?,
-        )
-        .map_err(|_| TaskFlowError::Corrupt("claim generation column".to_string()))?;
-        let token: String = row
-            .try_get("claim_token")
-            .map_err(|_| TaskFlowError::Corrupt("claim token column".to_string()))?;
+        let run = self
+            .taskflow_run(run_id)
+            .await?
+            .ok_or_else(|| TaskFlowError::Conflict("automation TaskFlow run is missing".to_string()))?;
         Ok(TaskFlowFence {
             owner_agent_id: self.taskflow_owner_agent_id().clone(),
-            owner_id: format!("automation.scheduler:{task_id}"),
-            owner_epoch: generation,
-            generation,
-            fencing_token: token,
+            owner_id: run.owner_id.ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run lost owner id".to_string())
+            })?,
+            owner_epoch: run.owner_epoch.ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run lost owner epoch".to_string())
+            })?,
+            generation: run.generation.ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run lost generation".to_string())
+            })?,
+            fencing_token: run.fencing_token.ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run lost fencing token".to_string())
+            })?,
         })
     }
 }
