@@ -73,7 +73,7 @@ The bounded components are:
 - `browser interaction controller`
 - `accessibility and error recovery`
 
-`src/protocol.js` owns bounded canonical values, stable typed errors and semantic SHA-256 binding. `src/control.js` owns the authority-free display projection and UI operation proposal. `src/runtime-client.js` owns authenticated session-local state, coherent snapshots, pending operation identities and reconciliation. `src/browser-app.js` is the source browser shell and consumes only the projected client view.
+`src/protocol.js` owns bounded canonical values, stable typed errors and semantic SHA-256 binding. `src/control.js` owns the authority-free display projection and UI operation proposal. `src/runtime-client.js` owns authenticated session-local state, coherent snapshots, pending operation identities and reconciliation. `src/pending-store.js` provides a bounded non-authoritative durable mirror of unresolved identities. `src/http-transport.js` and `src/browser-host.js` provide the repository-owned same-origin HTTPS/CSRF transport/bootstrap boundary. `src/browser-app.js` and `src/web-main.js` provide the framework-free browser shell and deployable source composition.
 
 Ingress validates identity, version, size, scope and revision before domain logic. Backend module observations are projected through an explicit display allowlist before `readView()`; provider-specific payloads or secret-bearing fields never become browser view fields merely because the backend supplied them. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary.
 
@@ -122,7 +122,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.control.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md).
 
-The client keeps at most the current and immediately previous coherent runtime snapshots and at most 1024 unresolved operation identities in memory. An operation is inserted into the pending map before transport I/O. Identical operation identity plus identical canonical semantics is idempotent locally; the same identity with changed semantics fails closed.
+The client keeps at most the current and immediately previous coherent runtime snapshots in memory and at most 1024 unresolved operation identities. When a `pendingStore` is configured, only bounded identity/provenance/reconciliation metadata is durably mirrored; proposal/scope payloads are excluded. An operation is inserted and durably mirrored before transport I/O, so persistence failure prevents dispatch. Identical operation identity plus identical canonical semantics is idempotent locally; the same identity with changed semantics fails closed.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -130,7 +130,7 @@ The client keeps at most the current and immediately previous coherent runtime s
 
 The runtime/client boundary exposes stable typed error codes for invalid input, unauthenticated sessions, incompatible protocol versions, stale snapshots, request rejection, backend unavailability, protocol violations, reconciliation mismatch, capacity exhaustion and oversized projected views.
 
-A transport exception after submission does not erase the local operation and does not imply backend cancellation. The operation becomes `indeterminate`. Reconnect preserves the operation ID, semantic digest and origin provenance and calls the injected reconciliation boundary; it does not blindly re-submit the mutation. Only a provenance-valid registered terminal status accompanied by `terminalObserved: true` removes pending work.
+A transport exception after submission does not erase the local operation and does not imply backend cancellation. The operation becomes `indeterminate`. Reconnect preserves the operation ID, semantic digest and immutable origin provenance and calls the reconciliation boundary; it does not blindly re-submit the mutation. In-flight acknowledgements are checked against that captured provenance even if close/reconnect changes the current session while the request is awaiting I/O. Reconciliation backs off from 1 s to 60 s and stops automatic attempts after 64 failures/absences or 24 h, marking `recoveryRequired` for explicit read-only operator reconciliation. Only a provenance-valid registered terminal status accompanied by `terminalObserved: true` removes pending work.
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.control.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md). A source library or fixture cannot stand in for an unimplemented durable backend recovery or external reconciler.
 
@@ -144,7 +144,7 @@ None.
 
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
-The source client computes semantic SHA-256 from the final canonical proposal/scope instead of trusting a caller-supplied digest. Transport request and reconciliation envelopes are immutable at the JavaScript boundary. Stop scope is an explicit bounded record. The browser shell renders through DOM `textContent` and disables mutation from stale views.
+The source client computes semantic SHA-256 from the final canonical proposal/scope instead of trusting a caller-supplied digest. Transport request and reconciliation envelopes are immutable at the JavaScript boundary. Stop scope is an explicit bounded record. The browser shell renders through DOM `textContent`, collapses duplicate logical actions, restores action focus after rerender and disables mutation from stale or externally blocked views. The concrete HTTP adapter is same-origin, HTTPS outside loopback, `credentials: same-origin`, `cache: no-store`, redirect-fail-closed and fresh-CSRF protected for POSTs.
 
 Negative tests cover denied capabilities, stale views, replay with payload drift, unknown fields, oversize input, provenance mismatch, hostile local fixture objects, scope shape, secret/provider leakage and response-loss reconciliation. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
@@ -158,7 +158,7 @@ Current limits are implemented in [apps/hepta-control-ui/src/protocol.js](../../
 
 ## 11. Observability and operations
 
-JavaScript presentation/client boundary and source browser shell, not a server or authority issuer. Connect an authenticated versioned backend, preserve request IDs over reconnect and visibly distinguish stale/pending/indeterminate states. The source browser shell provides status/alert regions and stale-control blocking, but deployed authentication, CSP/CSRF/CORS/WebSocket topology, browser support matrix, focus recovery and end-to-end accessibility acceptance must match the selected host deployment.
+JavaScript presentation/client boundary and static browser artifact, not a server or authority issuer. Connect an authenticated versioned backend, preserve request IDs over reconnect and visibly distinguish stale/pending/indeterminate/recovery-required states. The repository now emits a security-header policy and same-origin HTTPS/CSRF adapter, and the shell implements focus recovery plus duplicate-action blocking. The selected host must actually apply the headers/session policy, and real backend authority plus independent cross-browser/screen-reader acceptance remain external qualification gates.
 
 Current operating and state-format references:
 
@@ -176,6 +176,8 @@ Current focused test sources (source references, not pass receipts):
 - [apps/hepta-control-ui/test/runtime-client.test.js](../../../apps/hepta-control-ui/test/runtime-client.test.js) — transport payload, semantic digest, response loss, reconnect, provenance, capacity and typed failure cases.
 - [apps/hepta-control-ui/test/protocol-regression.test.js](../../../apps/hepta-control-ui/test/protocol-regression.test.js) — hostile fixture objects, exact byte/identifier boundaries, independent target/display revisions and explicit stop scope.
 - [apps/hepta-control-ui/test/browser-app.test.js](../../../apps/hepta-control-ui/test/browser-app.test.js) — display-safe browser model, stale mutation blocking and final revision binding.
+- [apps/hepta-control-ui/test/hardening.test.js](../../../apps/hepta-control-ui/test/hardening.test.js) — in-flight provenance races, durable pending identity, persistence fail-closed behavior, duplicate-action collapse, focus recovery and same-origin CSRF transport policy.
+- `npm --prefix apps/hepta-control-ui run browser-e2e` — real-Chrome smoke over the generated static artifact and a bounded mock backend; this is source qualification, not independent deployment acceptance.
 
 From the repository root, run:
 
@@ -265,4 +267,4 @@ The bootstrap source-location obligation for `ui.control` is implemented by work
 
 - `apps/hepta-control-ui`
 
-The control-ui package is checked at exact PR source and deterministic synthetic merge by `.github/workflows/hepta-ui-control.yml`, and Lane-B source closure also runs its package check/build. `.github/workflows/hepta-consolidated-source.yml` remains a broader repository qualification workflow; it is not treated as the sole package-level execution receipt for `ui.control`. These receipts are source implementation evidence only. They grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The control-ui package is checked and built at exact PR source and deterministic synthetic merge by `.github/workflows/hepta-ui-control.yml`; the dedicated workflow also exercises the built artifact in real Google Chrome. Lane-B source closure also runs its package check/build. `.github/workflows/hepta-consolidated-source.yml` remains a broader repository qualification workflow; it is not treated as the sole package-level execution receipt for `ui.control`. These receipts are source implementation evidence only. They grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

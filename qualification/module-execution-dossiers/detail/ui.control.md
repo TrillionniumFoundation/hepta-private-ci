@@ -98,15 +98,8 @@ activation, acceptance, merge, promotion or release authority.
 - **Browser source shell:** `ControlPlaneApp` in `src/browser-app.js`, with
   stale-view mutation blocking, final immutable confirmation and text-only DOM
   rendering.
-- **State/recovery:** authenticated session, current/prior coherent snapshot,
-  maximum 1024 pending requests, indeterminate retention and provenance-bound
-  reconnect reconciliation.
-- **Source tests:** `test/control.test.js`, `test/runtime-client.test.js` and
-  `test/browser-app.test.js`; package commands are `npm run check` and
-  `npm run build` from `apps/hepta-control-ui`.
-- **CI:** `.github/workflows/hepta-ui-control.yml` verifies exact source and a
-  deterministic synthetic merge; Lane-B also invokes the package check/build.
-- **Remaining work:** deploy the selected hosting/transport topology, bind real
-  backend authentication/authority, qualify CSP/CSRF/CORS/WebSocket behavior,
-  perform full keyboard/screen-reader E2E acceptance and collect independent
-  deployment/performance evidence.
+- **State/recovery:** authenticated session, current/prior coherent snapshot, maximum 1024 unresolved identities, optional bounded durable identity mirror with no request payload, immutable in-flight provenance, exponential reconciliation backoff and explicit `recoveryRequired` after the automatic ceiling.
+- **Browser/deployment source boundary:** `SameOriginHttpTransport`, authenticated bootstrap, accessible native confirmation, content-hashed/SRI static artifact and generated security-header policy.
+- **Source tests:** `test/control.test.js`, `test/runtime-client.test.js`, `test/browser-app.test.js`, `test/protocol-regression.test.js` and `test/hardening.test.js`; package commands are `npm run check`, `npm run build` and CI-owned real-Chrome `npm run browser-e2e`.
+- **CI:** `.github/workflows/hepta-ui-control.yml` verifies exact source and a deterministic synthetic merge, builds the static artifact and runs it in real Google Chrome against a bounded mock backend; Lane-B also invokes the package check/build.
+- **Remaining work:** bind and independently qualify the real authenticated backend authority/RBAC/effect adapter; deploy the selected TLS/session/reverse-proxy topology and prove generated CSP/security headers plus CSRF/CORS/cookie policy are applied; perform independent selected-browser/screen-reader E2E against that real backend and collect deployment/performance evidence.

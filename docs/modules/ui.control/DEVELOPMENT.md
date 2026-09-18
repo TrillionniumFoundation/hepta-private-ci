@@ -22,11 +22,13 @@ JavaScript/browser implementation without widening that authority boundary.
 - `test/runtime-client.test.js` — protocol, failure, capacity and reconciliation
   tests.
 - `test/browser-app.test.js` — browser presentation and stale-control tests.
-- `scripts/build.mjs` — dependency-free ESM build/copy step into `dist/`.
+- `scripts/build.mjs` — dependency-free static browser build that emits hashed ESM/CSS, SRI, an asset manifest, a web manifest and a deployer security-header policy into `dist/`.
+- `scripts/browser-e2e.mjs` — real Chromium/Chrome smoke qualification against the built artifact and a bounded mock control backend.
+- `src/pending-store.js` — bounded, schema-validated durable mirror for unresolved operation identities only.
+- `src/http-transport.js` — same-origin HTTPS JSON transport with fresh CSRF tokens, bounded responses and fail-closed origin policy.
+- `src/browser-host.js` / `src/web-main.js` — browser bootstrap, native accessible confirmation dialog and deployable source composition.
 
-The browser shell is a source implementation. Deployed authentication,
-CSP/CSRF/WebSocket topology, a selected hosting profile and end-to-end
-accessibility/deployment qualification remain separate gates.
+The browser shell and static artifact are source implementations. The repository now supplies a same-origin HTTPS/CSRF HTTP adapter, generated security-header policy and a real-Chrome smoke harness. Real backend authority/RBAC/effects, selected TLS/session/reverse-proxy deployment and independent cross-browser/assistive-technology qualification remain separate gates; source controls are not deployment evidence.
 
 ## 2. Runtime snapshot ingress
 
@@ -56,8 +58,7 @@ revision regression and duplicate module IDs, and passes every module through
 `projectRuntime()` before it becomes visible to `readView()`. Unknown provider
 or secret fields therefore do not cross the presentation boundary. The
 projected view is bounded to 1 MiB and the module list is bounded to 4096
-entries. The current and immediately previous coherent snapshot generations are
-retained only in memory; neither is an authoritative store.
+entries. The current and immediately previous coherent snapshot generations are retained only in memory. Unresolved operation identities may additionally be mirrored in the bounded `LocalStoragePendingStore` so browser reload/crash recovery can reconcile without replaying a mutation. The durable mirror excludes the proposal/stop payload and is not an authoritative store; deployments must use an opaque principal-scoped `persistenceNamespace` and rotate it when the authenticated principal changes.
 
 Do not render raw backend snapshot objects. New display fields must first be
 registered and added to the explicit projection with corresponding negative
@@ -179,8 +180,7 @@ operation provenance:
 }
 ```
 
-The client rejects observations with changed method, digest, origin generation,
-current session, or runtime generation.
+The client rejects observations with changed method, digest, origin generation, current session, or runtime generation. An in-flight acknowledgement is always checked against the immutable provenance captured in its pending entry, never against mutable `this.#session` / `this.#snapshot` state after an `await`.
 
 ## 6. Pending, indeterminate and terminal state
 
@@ -191,10 +191,10 @@ The local state machine is deliberately conservative:
 2. A valid backend acknowledgement leaves the operation `pending`.
 3. A transport exception leaves it `indeterminate`; it is not removed and it is
    not blindly retried.
-4. Reconnect marks unresolved work indeterminate and calls
-   `transport.reconcile()` for each retained operation ID.
-5. Only a provenance-valid observation with a registered terminal status and
-   `terminalObserved: true` removes the operation from the pending map.
+4. Reconnect marks unresolved work indeterminate and calls `transport.reconcile()` for each retained operation ID; it never replays the mutation.
+5. Failed or absent reconciliation advances an exponential retry schedule from 1 s up to 60 s. After 64 automatic attempts or 24 h of unresolved age, the entry becomes `recoveryRequired` and automatic attempts stop; an operator may still force an explicit read-only reconciliation.
+6. Only a provenance-valid observation with a registered terminal status and `terminalObserved: true` removes the operation from the pending map and durable mirror.
+7. Failure to persist an operation identity before dispatch fails closed: `transport.request()` is not called. Failure to durably remove a terminal entry also fails closed into `recoveryRequired` rather than silently forgetting the identity.
 
 This closes the response-lost-after-accept ambiguity without claiming exactly
 once execution. The backend must implement durable operation identity and
@@ -264,9 +264,9 @@ for assistive technology, exposes pending/indeterminate state, and disables all
 mutating controls while the view is stale. The final confirmed request is the
 same immutable object passed to `RuntimeClient`.
 
-A production host must still define focus restoration, complete keyboard and
-screen-reader flows, localization, authentication/session expiry behavior,
-CSP, CSRF/CORS policy and WebSocket/HTTP transport deployment.
+`ControlPlaneApp` now collapses rapid duplicate logical actions while confirmation/acknowledgement is outstanding, exposes `aria-busy`, restores focus to the initiating action after rerender and can be externally mutation-blocked after snapshot/connectivity loss. The native confirmation host displays the exact immutable request in an accessible `<dialog>`.
+
+A production host must still define localization and real authentication/session-expiry behavior, apply the generated CSP/security-header policy at the TLS/reverse-proxy boundary, and independently qualify the selected browser/screen-reader matrix against the real backend.
 
 ## 10. Local development
 
@@ -278,9 +278,9 @@ npm --prefix apps/hepta-control-ui run build
 ```
 
 `check` performs JavaScript syntax validation and executes all control-ui tests.
-`build` produces `apps/hepta-control-ui/dist/` from the source ESM modules and
-syntax-checks the output. `dist/` is a build artifact and must not be treated as
-an authoritative source or evidence receipt.
+`build` produces a static `apps/hepta-control-ui/dist/` with content-hashed ESM/CSS, rewritten hashed imports, top-level SRI, `asset-manifest.json`, `manifest.webmanifest` and `security-headers.json`, then syntax-checks every generated JavaScript asset. `dist/` remains a derived build artifact, not authoritative source or an independent deployment receipt.
+
+The dedicated UI workflow additionally runs `npm run browser-e2e` in real Google Chrome at the exact PR source and deterministic synthetic merge. That source-owned smoke test covers exact confirmation, rapid duplicate-click collapse, focus restoration and the generated security-header surface; it is not a substitute for independent real-backend accessibility acceptance.
 
 ## 11. Required regression cases
 
@@ -294,7 +294,10 @@ retain tests for:
 - reused operation identity with changed semantics fails closed;
 - response-lost-after-accept becomes indeterminate and reconciles after
   reconnect without duplicate submission;
-- cross-session/origin provenance cannot settle a pending operation;
+- cross-session/origin provenance cannot settle a pending operation, and in-flight acknowledgement provenance remains bound across close/reconnect races;
+- reload/crash recovery reconciles the durable operation identity without persisting the request payload or resubmitting mutation;
+- persistence failure before dispatch prevents transport I/O;
+- rapid duplicate logical actions collapse to one request while pending and rerender restores focus;
 - terminal state requires explicit terminal observation;
 - 1 MiB view and 1024 pending-operation limits are enforced;
 - protocol mismatch and backend rejection expose stable typed errors;
@@ -309,10 +312,10 @@ Source completion is not deployment qualification. Before changing
 `productionImplementation`, `deploymentQualificationComplete`, `activation` or
 `release` claims, record independent evidence for all of the following:
 
-- selected browser support matrix and real built artifact;
-- authenticated backend endpoint and protocol version negotiation;
-- deployed TLS/WebSocket/HTTP topology;
-- CSP, CSRF/CORS, cookie/token and origin policy;
+- selected browser support matrix and independently retained evidence for the selected built artifact;
+- real authenticated backend endpoint, authority/RBAC enforcement and protocol version negotiation;
+- deployed TLS/session/reverse-proxy topology and any selected WebSocket bridge;
+- verification that the generated CSP/security headers plus CSRF/CORS, cookie/token and origin policy are actually applied by the selected host;
 - backend durable operation deduplication/reconciliation;
 - accessibility E2E for keyboard and screen-reader users, including error focus
   recovery and stop request;
@@ -323,3 +326,22 @@ Source completion is not deployment qualification. Before changing
 
 Do not translate passing source tests into activation, acceptance, promotion or
 release authority.
+
+
+## 13. Concrete browser host and endpoint contract
+
+The repository-owned static host expects these same-origin endpoints beneath the bootstrap-selected `basePath`:
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/api/ui-control/bootstrap` | Return the bounded endpoint/protocol/manifest/persistence namespace and polling configuration. |
+| GET | `/api/ui-control/csrf` | Return a fresh bounded CSRF token used by every mutation-like POST. |
+| POST | `/api/ui-control/connect` | Establish an authenticated runtime observation session. |
+| GET | `/api/ui-control/snapshot` | Return the current bounded runtime snapshot. |
+| POST | `/api/ui-control/request` | Carry the package-local operation/stop envelope to the separately authorized backend adapter. |
+| POST | `/api/ui-control/reconcile` | Read-only reconciliation by immutable operation identity/digest/provenance. |
+| POST | `/api/ui-control/close` | Close the current observation session. |
+
+`SameOriginHttpTransport` sends credentials only to the current origin, refuses redirects, forbids cross-origin/userinfo/fragment URLs, requires HTTPS outside loopback, obtains a fresh CSRF token for POSTs, requires JSON responses and enforces response/request byte bounds. The browser client still has no authority to turn these HTTP endpoints into effect authority: the server adapter must authenticate, authorize, validate revisions/digests/scopes, deduplicate operation IDs and expose terminal observation separately.
+
+The `persistenceNamespace` is intentionally supplied by the authenticated bootstrap rather than derived from user-visible identity. It must be opaque and principal/session-domain scoped so one authenticated principal cannot inherit another principal's pending-operation mirror on a shared browser profile.
