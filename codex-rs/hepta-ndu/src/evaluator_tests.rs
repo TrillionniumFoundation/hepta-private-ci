@@ -440,7 +440,10 @@ fn axis_semantics_digest_is_required_and_changes_profile_and_evaluation_identity
     ));
 
     assert_ne!(base_digest, changed_digest);
-    assert_ne!(base.base.utility_profile_digest, changed.base.utility_profile_digest);
+    assert_ne!(
+        base.base.utility_profile_digest,
+        changed.base.utility_profile_digest
+    );
     assert_ne!(base.evaluation_digest_v2, changed.evaluation_digest_v2);
 
     base_profile.axis_semantics_digest = Digest32::ZERO;
