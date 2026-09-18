@@ -42,6 +42,7 @@ fn retry_stable_binding_has_fresh_physical_attempt_identity() {
     let registry = ExtensionRegistryBuilder::<crate::config::Config>::new().build();
     let (session_store, thread_store, turn_store) = stores();
     let context = ModelProviderPolicyContext {
+        require_active_policy: false,
         registry: &registry,
         session_store: &session_store,
         thread_store: &thread_store,
