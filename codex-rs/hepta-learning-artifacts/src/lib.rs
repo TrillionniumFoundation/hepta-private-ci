@@ -84,6 +84,7 @@ pub use pinned::load_pinned_candidate;
 pub use publication::ArtifactPublicationContractV1;
 pub use publication::ArtifactPublicationError;
 pub use publication::ArtifactPublicationPhaseV1;
+pub use publication::ArtifactPublicationRegistryBindingV1;
 pub use publication::ArtifactPublicationTransactionV1;
 pub use publication::artifact_registry_event_for_admission_v3;
 pub use publication::prepare_artifact_publication_v1;
