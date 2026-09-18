@@ -1,6 +1,9 @@
-//! Canonical bounded codec for durable objective publication frames.
-
-use std::str::FromStr;
+//! Bounded versioned binary codec for durable objective publication frames.
+//!
+//! This codec is owner-local persistence, not a public wire protocol. It uses
+//! fixed-width numeric fields, raw 32-byte digests and length-prefixed stable
+//! identifiers. Decode rejects trailing bytes and every collection is bounded
+//! before allocation.
 
 use codex_hepta_objective::ActionClass;
 use codex_hepta_objective::CompileDisposition;
@@ -20,458 +23,454 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
-use serde::Deserialize;
-use serde::Serialize;
 
 use super::ObjectivePublicationStoreErrorV1;
 use super::RunStartSnapshotV1;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-pub(super) struct StoredPublicationBody {
-    admission: StoredAdmission,
-    objective: StoredCompileReceipt,
-    run_start: StoredRunStart,
-}
+const BODY_MAGIC: &[u8; 8] = b"OBJPUB01";
+const MAX_ID_BYTES: usize = 128;
+const MAX_CONSTRAINTS: usize = 256;
+const MAX_PREDICATES: usize = 128;
+const MAX_ACTIONS: usize = 128;
+const MAX_SOFT_DIMENSIONS: usize = 64;
 
-impl StoredPublicationBody {
-    pub(super) fn from_typed(
-        admission: &ObjectiveAdmissionReceiptV1,
-        objective: &ObjectiveCompileReceipt,
-        run_start: &RunStartSnapshotV1,
-    ) -> Self {
-        Self {
-            admission: StoredAdmission::from(admission),
-            objective: StoredCompileReceipt::from(objective),
-            run_start: StoredRunStart::from(run_start),
+pub(super) fn encode_publication(
+    admission: &ObjectiveAdmissionReceiptV1,
+    objective: &ObjectiveCompileReceipt,
+    run_start: &RunStartSnapshotV1,
+) -> Result<Vec<u8>, ObjectivePublicationStoreErrorV1> {
+    if admission.authority.grants_any() {
+        return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+    }
+    let mut out = Writer::new();
+    out.raw(BODY_MAGIC);
+    out.id(&admission.profile_id)?;
+    out.u64(admission.profile_revision.get());
+    out.digest(admission.profile_digest);
+    out.digest(admission.supplied_source_digest);
+    out.digest(admission.intent_digest);
+    out.digest(admission.admitted_source_digest);
+    out.u64(admission.observed_at_unix_micros);
+    match admission.deadline_unix_micros {
+        Some(value) => {
+            out.u8(1);
+            out.u64(value);
         }
+        None => out.u8(0),
+    }
+    out.u8(0); // AuthorityPosture::DENY_ALL
+
+    encode_objective(&mut out, &objective.objective)?;
+    out.u8(match objective.disposition {
+        CompileDisposition::Compiled => 0,
+        CompileDisposition::ExplicitAbstain => 1,
+    });
+    out.count(objective.removed_action_ids.len(), MAX_ACTIONS)?;
+    for id in &objective.removed_action_ids {
+        out.id(id)?;
     }
 
-    pub(super) fn into_typed(
-        self,
-    ) -> Result<
-        (
-            ObjectiveAdmissionReceiptV1,
-            ObjectiveCompileReceipt,
-            RunStartSnapshotV1,
-        ),
-        ObjectivePublicationStoreErrorV1,
-    > {
-        Ok((
-            self.admission.into_typed()?,
-            self.objective.into_typed()?,
-            self.run_start.into_typed()?,
-        ))
+    out.id(&run_start.run_id)?;
+    out.digest(run_start.objective_digest);
+    out.digest(run_start.hard_constraint_digest);
+    out.digest(run_start.preference_state_digest);
+    out.digest(run_start.model_tuple_digest);
+    out.digest(run_start.prompt_registry_digest);
+    out.digest(run_start.artifact_set_digest);
+    out.u64(run_start.authority_epoch);
+    out.u64(run_start.generation);
+    out.digest(run_start.fence_digest);
+    Ok(out.finish())
+}
+
+pub(super) fn decode_publication(
+    payload: &[u8],
+) -> Result<
+    (
+        ObjectiveAdmissionReceiptV1,
+        ObjectiveCompileReceipt,
+        RunStartSnapshotV1,
+    ),
+    ObjectivePublicationStoreErrorV1,
+> {
+    let mut input = Reader::new(payload);
+    if input.raw(BODY_MAGIC.len())? != BODY_MAGIC {
+        return Err(ObjectivePublicationStoreErrorV1::Corrupt);
     }
+    let admission = ObjectiveAdmissionReceiptV1 {
+        profile_id: input.id()?,
+        profile_revision: input.revision()?,
+        profile_digest: input.digest()?,
+        supplied_source_digest: input.digest()?,
+        intent_digest: input.digest()?,
+        admitted_source_digest: input.digest()?,
+        observed_at_unix_micros: input.u64()?,
+        deadline_unix_micros: match input.u8()? {
+            0 => None,
+            1 => Some(input.u64()?),
+            _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
+        },
+        authority: match input.u8()? {
+            0 => AuthorityPosture::DENY_ALL,
+            _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
+        },
+    };
+    let objective = ObjectiveCompileReceipt {
+        objective: decode_objective(&mut input)?,
+        disposition: match input.u8()? {
+            0 => CompileDisposition::Compiled,
+            1 => CompileDisposition::ExplicitAbstain,
+            _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
+        },
+        removed_action_ids: read_ids(&mut input, MAX_ACTIONS)?,
+    };
+    let run_start = RunStartSnapshotV1 {
+        run_id: input.id()?,
+        objective_digest: input.digest()?,
+        hard_constraint_digest: input.digest()?,
+        preference_state_digest: input.digest()?,
+        model_tuple_digest: input.digest()?,
+        prompt_registry_digest: input.digest()?,
+        artifact_set_digest: input.digest()?,
+        authority_epoch: input.u64()?,
+        generation: input.u64()?,
+        fence_digest: input.digest()?,
+    };
+    input.finish()?;
+    Ok((admission, objective, run_start))
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct StoredAdmission {
-    profile_id: String,
-    profile_revision: u64,
-    profile_digest: String,
-    supplied_source_digest: String,
-    intent_digest: String,
-    admitted_source_digest: String,
-    observed_at_unix_micros: u64,
-    deadline_unix_micros: Option<u64>,
-    authority: String,
-}
+fn encode_objective(
+    out: &mut Writer,
+    objective: &ObjectiveFunction,
+) -> Result<(), ObjectivePublicationStoreErrorV1> {
+    out.id(&objective.request_id)?;
+    out.id(&objective.principal_scope)?;
+    out.u64(objective.revision.get());
+    out.digest(objective.source_digest);
+    out.digest(objective.schema_digest);
+    out.digest(objective.hard_constraint_digest);
+    out.digest(objective.semantic_digest);
 
-impl From<&ObjectiveAdmissionReceiptV1> for StoredAdmission {
-    fn from(value: &ObjectiveAdmissionReceiptV1) -> Self {
-        Self {
-            profile_id: value.profile_id.to_string(),
-            profile_revision: value.profile_revision.get(),
-            profile_digest: value.profile_digest.to_string(),
-            supplied_source_digest: value.supplied_source_digest.to_string(),
-            intent_digest: value.intent_digest.to_string(),
-            admitted_source_digest: value.admitted_source_digest.to_string(),
-            observed_at_unix_micros: value.observed_at_unix_micros,
-            deadline_unix_micros: value.deadline_unix_micros,
-            authority: "deny_all".to_string(),
-        }
+    out.count(objective.constraints.len(), MAX_CONSTRAINTS)?;
+    for constraint in &objective.constraints {
+        out.id(&constraint.id)?;
+        out.u8(match constraint.class {
+            ConstraintClass::Constitutional => 0,
+            ConstraintClass::Principal => 1,
+            ConstraintClass::Environment => 2,
+            ConstraintClass::Task => 3,
+        });
+        out.id(&constraint.axis)?;
+        out.u8(relation_tag(constraint.relation));
+        out.i64(constraint.bound.raw());
+        out.id(&constraint.evidence_source)?;
     }
-}
 
-impl StoredAdmission {
-    fn into_typed(self) -> Result<ObjectiveAdmissionReceiptV1, ObjectivePublicationStoreErrorV1> {
-        if self.authority != "deny_all" {
-            return Err(ObjectivePublicationStoreErrorV1::Corrupt);
-        }
-        Ok(ObjectiveAdmissionReceiptV1 {
-            profile_id: stable_id(self.profile_id)?,
-            profile_revision: revision(self.profile_revision)?,
-            profile_digest: digest(self.profile_digest)?,
-            supplied_source_digest: digest(self.supplied_source_digest)?,
-            intent_digest: digest(self.intent_digest)?,
-            admitted_source_digest: digest(self.admitted_source_digest)?,
-            observed_at_unix_micros: self.observed_at_unix_micros,
-            deadline_unix_micros: self.deadline_unix_micros,
-            authority: AuthorityPosture::DENY_ALL,
-        })
+    out.count(objective.success_predicates.len(), MAX_PREDICATES)?;
+    for predicate in &objective.success_predicates {
+        out.id(&predicate.id)?;
+        out.id(&predicate.axis)?;
+        out.u8(relation_tag(predicate.relation));
+        out.i64(predicate.bound.raw());
+        out.id(&predicate.evidence_source)?;
+        out.u8(match predicate.terminality {
+            PredicateTerminality::Intermediate => 0,
+            PredicateTerminality::Terminal => 1,
+        });
     }
-}
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct StoredCompileReceipt {
-    objective: StoredObjectiveFunction,
-    disposition: String,
-    removed_action_ids: Vec<String>,
-}
-
-impl From<&ObjectiveCompileReceipt> for StoredCompileReceipt {
-    fn from(value: &ObjectiveCompileReceipt) -> Self {
-        Self {
-            objective: StoredObjectiveFunction::from(&value.objective),
-            disposition: match value.disposition {
-                CompileDisposition::Compiled => "compiled",
-                CompileDisposition::ExplicitAbstain => "explicit_abstain",
-            }
-            .to_string(),
-            removed_action_ids: value
-                .removed_action_ids
-                .iter()
-                .map(ToString::to_string)
-                .collect(),
-        }
+    out.count(objective.legal_actions.len(), MAX_ACTIONS)?;
+    for action in &objective.legal_actions {
+        out.id(&action.id)?;
+        out.u8(match action.confirmation {
+            ConfirmationPolicy::NotRequired => 0,
+            ConfirmationPolicy::Required => 1,
+        });
     }
+
+    out.count(objective.soft_preferences.len(), MAX_SOFT_DIMENSIONS)?;
+    for preference in &objective.soft_preferences {
+        out.id(&preference.dimension)?;
+        out.u8(match preference.direction {
+            SoftDirection::Maximize => 0,
+            SoftDirection::Minimize => 1,
+        });
+        out.i64(preference.weight.raw());
+    }
+    Ok(())
 }
 
-impl StoredCompileReceipt {
-    fn into_typed(self) -> Result<ObjectiveCompileReceipt, ObjectivePublicationStoreErrorV1> {
-        Ok(ObjectiveCompileReceipt {
-            objective: self.objective.into_typed()?,
-            disposition: match self.disposition.as_str() {
-                "compiled" => CompileDisposition::Compiled,
-                "explicit_abstain" => CompileDisposition::ExplicitAbstain,
+fn decode_objective(
+    input: &mut Reader<'_>,
+) -> Result<ObjectiveFunction, ObjectivePublicationStoreErrorV1> {
+    let request_id = input.id()?;
+    let principal_scope = input.id()?;
+    let revision = input.revision()?;
+    let source_digest = input.digest()?;
+    let schema_digest = input.digest()?;
+    let hard_constraint_digest = input.digest()?;
+    let semantic_digest = input.digest()?;
+
+    let constraint_count = input.count(MAX_CONSTRAINTS)?;
+    let mut constraints = Vec::with_capacity(constraint_count);
+    for _ in 0..constraint_count {
+        constraints.push(Constraint {
+            id: input.id()?,
+            class: match input.u8()? {
+                0 => ConstraintClass::Constitutional,
+                1 => ConstraintClass::Principal,
+                2 => ConstraintClass::Environment,
+                3 => ConstraintClass::Task,
                 _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
             },
-            removed_action_ids: self
-                .removed_action_ids
-                .into_iter()
-                .map(stable_id)
-                .collect::<Result<Vec<_>, _>>()?,
-        })
+            axis: input.id()?,
+            relation: relation(input.u8()?)?,
+            bound: FixedQ32::from_raw(input.i64()?),
+            evidence_source: input.id()?,
+        });
     }
-}
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct StoredObjectiveFunction {
-    request_id: String,
-    principal_scope: String,
-    revision: u64,
-    source_digest: String,
-    schema_digest: String,
-    hard_constraint_digest: String,
-    semantic_digest: String,
-    constraints: Vec<StoredConstraint>,
-    success_predicates: Vec<StoredSuccessPredicate>,
-    legal_actions: Vec<StoredAction>,
-    soft_preferences: Vec<StoredSoftPreference>,
-}
-
-impl From<&ObjectiveFunction> for StoredObjectiveFunction {
-    fn from(value: &ObjectiveFunction) -> Self {
-        Self {
-            request_id: value.request_id.to_string(),
-            principal_scope: value.principal_scope.to_string(),
-            revision: value.revision.get(),
-            source_digest: value.source_digest.to_string(),
-            schema_digest: value.schema_digest.to_string(),
-            hard_constraint_digest: value.hard_constraint_digest.to_string(),
-            semantic_digest: value.semantic_digest.to_string(),
-            constraints: value.constraints.iter().map(StoredConstraint::from).collect(),
-            success_predicates: value
-                .success_predicates
-                .iter()
-                .map(StoredSuccessPredicate::from)
-                .collect(),
-            legal_actions: value.legal_actions.iter().map(StoredAction::from).collect(),
-            soft_preferences: value
-                .soft_preferences
-                .iter()
-                .map(StoredSoftPreference::from)
-                .collect(),
-        }
-    }
-}
-
-impl StoredObjectiveFunction {
-    fn into_typed(self) -> Result<ObjectiveFunction, ObjectivePublicationStoreErrorV1> {
-        Ok(ObjectiveFunction {
-            request_id: stable_id(self.request_id)?,
-            principal_scope: stable_id(self.principal_scope)?,
-            revision: revision(self.revision)?,
-            source_digest: digest(self.source_digest)?,
-            schema_digest: digest(self.schema_digest)?,
-            hard_constraint_digest: digest(self.hard_constraint_digest)?,
-            semantic_digest: digest(self.semantic_digest)?,
-            constraints: self
-                .constraints
-                .into_iter()
-                .map(StoredConstraint::into_typed)
-                .collect::<Result<Vec<_>, _>>()?,
-            success_predicates: self
-                .success_predicates
-                .into_iter()
-
-                .map(StoredSuccessPredicate::into_typed)
-                .collect::<Result<Vec<_>, _>>()?,
-            legal_actions: self
-                .legal_actions
-                .into_iter()
-                .map(StoredAction::into_typed)
-                .collect::<Result<Vec<_>, _>>()?,
-            soft_preferences: self
-                .soft_preferences
-                .into_iter()
-                .map(StoredSoftPreference::into_typed)
-                .collect::<Result<Vec<_>, _>>()?,
-        })
-    }
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct StoredConstraint {
-    id: String,
-    class: String,
-    axis: String,
-    relation: String,
-    bound_raw: i64,
-    evidence_source: String,
-}
-
-impl From<&Constraint> for StoredConstraint {
-    fn from(value: &Constraint) -> Self {
-        Self {
-            id: value.id.to_string(),
-            class: match value.class {
-                ConstraintClass::Constitutional => "constitutional",
-                ConstraintClass::Principal => "principal",
-                ConstraintClass::Environment => "environment",
-                ConstraintClass::Task => "task",
-            }
-            .to_string(),
-            axis: value.axis.to_string(),
-            relation: relation_text(value.relation).to_string(),
-            bound_raw: value.bound.raw(),
-            evidence_source: value.evidence_source.to_string(),
-        }
-    }
-}
-
-impl StoredConstraint {
-    fn into_typed(self) -> Result<Constraint, ObjectivePublicationStoreErrorV1> {
-        Ok(Constraint {
-            id: stable_id(self.id)?,
-            class: match self.class.as_str() {
-                "constitutional" => ConstraintClass::Constitutional,
-                "principal" => ConstraintClass::Principal,
-                "environment" => ConstraintClass::Environment,
-                "task" => ConstraintClass::Task,
+    let predicate_count = input.count(MAX_PREDICATES)?;
+    let mut success_predicates = Vec::with_capacity(predicate_count);
+    for _ in 0..predicate_count {
+        success_predicates.push(SuccessPredicate {
+            id: input.id()?,
+            axis: input.id()?,
+            relation: relation(input.u8()?)?,
+            bound: FixedQ32::from_raw(input.i64()?),
+            evidence_source: input.id()?,
+            terminality: match input.u8()? {
+                0 => PredicateTerminality::Intermediate,
+                1 => PredicateTerminality::Terminal,
                 _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
             },
-            axis: stable_id(self.axis)?,
-            relation: relation(&self.relation)?,
-            bound: FixedQ32::from_raw(self.bound_raw),
-            evidence_source: stable_id(self.evidence_source)?,
-        })
+        });
     }
-}
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct StoredSuccessPredicate {
-    id: String,
-    axis: String,
-    relation: String,
-    bound_raw: i64,
-    evidence_source: String,
-    terminality: String,
-}
-
-impl From<&SuccessPredicate> for StoredSuccessPredicate {
-    fn from(value: &SuccessPredicate) -> Self {
-        Self {
-            id: value.id.to_string(),
-            axis: value.axis.to_string(),
-            relation: relation_text(value.relation).to_string(),
-            bound_raw: value.bound.raw(),
-            evidence_source: value.evidence_source.to_string(),
-            terminality: match value.terminality {
-                PredicateTerminality::Intermediate => "intermediate",
-                PredicateTerminality::Terminal => "terminal",
-            }
-            .to_string(),
-        }
-    }
-}
-
-impl StoredSuccessPredicate {
-    fn into_typed(self) -> Result<SuccessPredicate, ObjectivePublicationStoreErrorV1> {
-        Ok(SuccessPredicate {
-            id: stable_id(self.id)?,
-            axis: stable_id(self.axis)?,
-            relation: relation(&self.relation)?,
-            bound: FixedQ32::from_raw(self.bound_raw),
-            evidence_source: stable_id(self.evidence_source)?,
-            terminality: match self.terminality.as_str() {
-                "intermediate" => PredicateTerminality::Intermediate,
-                "terminal" => PredicateTerminality::Terminal,
+    let action_count = input.count(MAX_ACTIONS)?;
+    let mut legal_actions = Vec::with_capacity(action_count);
+    for _ in 0..action_count {
+        legal_actions.push(ActionClass {
+            id: input.id()?,
+            confirmation: match input.u8()? {
+                0 => ConfirmationPolicy::NotRequired,
+                1 => ConfirmationPolicy::Required,
                 _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
             },
-        })
+        });
     }
-}
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct StoredAction {
-    id: String,
-    confirmation: String,
-}
-
-impl From<&ActionClass> for StoredAction {
-    fn from(value: &ActionClass) -> Self {
-        Self {
-            id: value.id.to_string(),
-            confirmation: match value.confirmation {
-                ConfirmationPolicy::NotRequired => "not_required",
-                ConfirmationPolicy::Required => "required",
-            }
-            .to_string(),
-        }
-    }
-}
-
-impl StoredAction {
-    fn into_typed(self) -> Result<ActionClass, ObjectivePublicationStoreErrorV1> {
-        Ok(ActionClass {
-            id: stable_id(self.id)?,
-            confirmation: match self.confirmation.as_str() {
-                "not_required" => ConfirmationPolicy::NotRequired,
-                "required" => ConfirmationPolicy::Required,
+    let preference_count = input.count(MAX_SOFT_DIMENSIONS)?;
+    let mut soft_preferences = Vec::with_capacity(preference_count);
+    for _ in 0..preference_count {
+        soft_preferences.push(SoftPreference {
+            dimension: input.id()?,
+            direction: match input.u8()? {
+                0 => SoftDirection::Maximize,
+                1 => SoftDirection::Minimize,
                 _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
             },
-        })
+            weight: FixedQ32::from_raw(input.i64()?),
+        });
     }
+
+    Ok(ObjectiveFunction {
+        request_id,
+        principal_scope,
+        revision,
+        source_digest,
+        schema_digest,
+        hard_constraint_digest,
+        semantic_digest,
+        constraints,
+        success_predicates,
+        legal_actions,
+        soft_preferences,
+    })
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-struct StoredSoftPreference {
-    dimension: String,
-    direction: String,
-    weight_raw: i64,
-}
-
-impl From<&SoftPreference> for StoredSoftPreference {
-    fn from(value: &SoftPreference) -> Self {
-        Self {
-            dimension: value.dimension.to_string(),
-            direction: match value.direction {
-                SoftDirection::Maximize => "maximize",
-                SoftDirection::Minimize => "minimize",
-            }
-            .to_string(),
-            weight_raw: value.weight.raw(),
-        }
+fn read_ids(
+    input: &mut Reader<'_>,
+    maximum: usize,
+) -> Result<Vec<StableId>, ObjectivePublicationStoreErrorV1> {
+    let count = input.count(maximum)?;
+    let mut values = Vec::with_capacity(count);
+    for _ in 0..count {
+        values.push(input.id()?);
     }
+    Ok(values)
 }
 
-impl StoredSoftPreference {
-    fn into_typed(self) -> Result<SoftPreference, ObjectivePublicationStoreErrorV1> {
-        Ok(SoftPreference {
-            dimension: stable_id(self.dimension)?,
-            direction: match self.direction.as_str() {
-                "maximize" => SoftDirection::Maximize,
-                "minimize" => SoftDirection::Minimize,
-                _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
-            },
-            weight: FixedQ32::from_raw(self.weight_raw),
-        })
-    }
-}
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
-pub(super) struct StoredRunStart {
-    run_id: String,
-    objective_digest: String,
-    hard_constraint_digest: String,
-    preference_state_digest: String,
-    model_tuple_digest: String,
-    prompt_registry_digest: String,
-    artifact_set_digest: String,
-    authority_epoch: u64,
-    generation: u64,
-    fence_digest: String,
-}
-
-impl From<&RunStartSnapshotV1> for StoredRunStart {
-    fn from(value: &RunStartSnapshotV1) -> Self {
-        Self {
-            run_id: value.run_id.to_string(),
-            objective_digest: value.objective_digest.to_string(),
-            hard_constraint_digest: value.hard_constraint_digest.to_string(),
-            preference_state_digest: value.preference_state_digest.to_string(),
-            model_tuple_digest: value.model_tuple_digest.to_string(),
-            prompt_registry_digest: value.prompt_registry_digest.to_string(),
-            artifact_set_digest: value.artifact_set_digest.to_string(),
-            authority_epoch: value.authority_epoch,
-            generation: value.generation,
-            fence_digest: value.fence_digest.to_string(),
-        }
-    }
-}
-
-impl StoredRunStart {
-    fn into_typed(self) -> Result<RunStartSnapshotV1, ObjectivePublicationStoreErrorV1> {
-        Ok(RunStartSnapshotV1 {
-            run_id: stable_id(self.run_id)?,
-            objective_digest: digest(self.objective_digest)?,
-            hard_constraint_digest: digest(self.hard_constraint_digest)?,
-            preference_state_digest: digest(self.preference_state_digest)?,
-            model_tuple_digest: digest(self.model_tuple_digest)?,
-            prompt_registry_digest: digest(self.prompt_registry_digest)?,
-            artifact_set_digest: digest(self.artifact_set_digest)?,
-            authority_epoch: self.authority_epoch,
-            generation: self.generation,
-            fence_digest: digest(self.fence_digest)?,
-        })
-    }
-}
-
-fn relation_text(relation: ConstraintRelation) -> &'static str {
+const fn relation_tag(relation: ConstraintRelation) -> u8 {
     match relation {
-        ConstraintRelation::AtLeast => "at_least",
-        ConstraintRelation::AtMost => "at_most",
-        ConstraintRelation::Equal => "equal",
+        ConstraintRelation::AtLeast => 0,
+        ConstraintRelation::AtMost => 1,
+        ConstraintRelation::Equal => 2,
     }
 }
 
-fn relation(value: &str) -> Result<ConstraintRelation, ObjectivePublicationStoreErrorV1> {
-    match value {
-        "at_least" => Ok(ConstraintRelation::AtLeast),
-        "at_most" => Ok(ConstraintRelation::AtMost),
-        "equal" => Ok(ConstraintRelation::Equal),
+fn relation(tag: u8) -> Result<ConstraintRelation, ObjectivePublicationStoreErrorV1> {
+    match tag {
+        0 => Ok(ConstraintRelation::AtLeast),
+        1 => Ok(ConstraintRelation::AtMost),
+        2 => Ok(ConstraintRelation::Equal),
         _ => Err(ObjectivePublicationStoreErrorV1::Corrupt),
     }
 }
 
-fn stable_id(value: String) -> Result<StableId, ObjectivePublicationStoreErrorV1> {
-    StableId::new(value).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)
+struct Writer {
+    bytes: Vec<u8>,
 }
 
-fn revision(value: u64) -> Result<Revision, ObjectivePublicationStoreErrorV1> {
-    Revision::new(value).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)
+impl Writer {
+    fn new() -> Self {
+        Self { bytes: Vec::new() }
+    }
+
+    fn finish(self) -> Vec<u8> {
+        self.bytes
+    }
+
+    fn raw(&mut self, value: &[u8]) {
+        self.bytes.extend_from_slice(value);
+    }
+
+    fn u8(&mut self, value: u8) {
+        self.bytes.push(value);
+    }
+
+    fn u32(&mut self, value: u32) {
+        self.raw(&value.to_be_bytes());
+    }
+
+    fn u64(&mut self, value: u64) {
+        self.raw(&value.to_be_bytes());
+    }
+
+    fn i64(&mut self, value: i64) {
+        self.raw(&value.to_be_bytes());
+    }
+
+    fn digest(&mut self, value: Digest32) {
+        self.raw(value.as_array());
+    }
+
+    fn id(&mut self, value: &StableId) -> Result<(), ObjectivePublicationStoreErrorV1> {
+        let text = value.as_str().as_bytes();
+        if text.len() > MAX_ID_BYTES {
+            return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+        }
+        self.count(text.len(), MAX_ID_BYTES)?;
+        self.raw(text);
+        Ok(())
+    }
+
+    fn count(
+        &mut self,
+        value: usize,
+        maximum: usize,
+    ) -> Result<(), ObjectivePublicationStoreErrorV1> {
+        if value > maximum {
+            return Err(ObjectivePublicationStoreErrorV1::Capacity);
+        }
+        let value =
+            u32::try_from(value).map_err(|_| ObjectivePublicationStoreErrorV1::Capacity)?;
+        self.u32(value);
+        Ok(())
+    }
 }
 
-fn digest(value: String) -> Result<Digest32, ObjectivePublicationStoreErrorV1> {
-    Digest32::from_str(&value).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)
+struct Reader<'a> {
+    bytes: &'a [u8],
+    cursor: usize,
+}
+
+impl<'a> Reader<'a> {
+    fn new(bytes: &'a [u8]) -> Self {
+        Self { bytes, cursor: 0 }
+    }
+
+    fn finish(self) -> Result<(), ObjectivePublicationStoreErrorV1> {
+        if self.cursor == self.bytes.len() {
+            Ok(())
+        } else {
+            Err(ObjectivePublicationStoreErrorV1::Corrupt)
+        }
+    }
+
+    fn raw(&mut self, length: usize) -> Result<&'a [u8], ObjectivePublicationStoreErrorV1> {
+        let end = self
+            .cursor
+            .checked_add(length)
+            .ok_or(ObjectivePublicationStoreErrorV1::Corrupt)?;
+        let value = self
+            .bytes
+            .get(self.cursor..end)
+            .ok_or(ObjectivePublicationStoreErrorV1::Corrupt)?;
+        self.cursor = end;
+        Ok(value)
+    }
+
+    fn u8(&mut self) -> Result<u8, ObjectivePublicationStoreErrorV1> {
+        self.raw(1)?
+            .first()
+            .copied()
+            .ok_or(ObjectivePublicationStoreErrorV1::Corrupt)
+    }
+
+    fn u32(&mut self) -> Result<u32, ObjectivePublicationStoreErrorV1> {
+        Ok(u32::from_be_bytes(
+            self.raw(4)?
+                .try_into()
+                .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?,
+        ))
+    }
+
+    fn u64(&mut self) -> Result<u64, ObjectivePublicationStoreErrorV1> {
+        Ok(u64::from_be_bytes(
+            self.raw(8)?
+                .try_into()
+                .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?,
+        ))
+    }
+
+    fn i64(&mut self) -> Result<i64, ObjectivePublicationStoreErrorV1> {
+        Ok(i64::from_be_bytes(
+            self.raw(8)?
+                .try_into()
+                .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?,
+        ))
+    }
+
+    fn digest(&mut self) -> Result<Digest32, ObjectivePublicationStoreErrorV1> {
+        let bytes: [u8; 32] = self
+            .raw(32)?
+            .try_into()
+            .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?;
+        Ok(Digest32::from_array(bytes))
+    }
+
+    fn revision(&mut self) -> Result<Revision, ObjectivePublicationStoreErrorV1> {
+        Revision::new(self.u64()?).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)
+    }
+
+    fn id(&mut self) -> Result<StableId, ObjectivePublicationStoreErrorV1> {
+        let length = self.count(MAX_ID_BYTES)?;
+        let text = std::str::from_utf8(self.raw(length)?)
+            .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?;
+        StableId::new(text.to_string()).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)
+    }
+
+    fn count(
+        &mut self,
+        maximum: usize,
+    ) -> Result<usize, ObjectivePublicationStoreErrorV1> {
+        let value =
+            usize::try_from(self.u32()?).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?;
+        if value > maximum {
+            return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+        }
+        Ok(value)
+    }
 }
