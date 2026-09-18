@@ -1,6 +1,8 @@
 use std::path::PathBuf;
+use std::process::Command;
 
 use hepta_native::security::TrustedKeySet;
+use hepta_native::updater::UpdateManager;
 use hepta_native::updater::activate_staged_update;
 
 fn main() {
@@ -23,7 +25,30 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Err("unexpected updater arguments".into());
     }
     let key_set = TrustedKeySet::from_path(&trusted_keys)?;
+    let update_root = pending
+        .parent()
+        .ok_or("pending update record must have a parent directory")?
+        .to_path_buf();
+    let manager = UpdateManager::new(key_set.clone(), update_root)?;
     activate_staged_update(&pending, &key_set, &target, protocol)?;
+
+    let smoke = Command::new(&target).arg("--self-test").status();
+    match smoke {
+        Ok(status) if status.success() => {
+            if !manager.confirm_current_digest(&target)? {
+                manager.rollback_unconfirmed()?;
+                return Err("activated binary passed smoke test but update confirmation was absent".into());
+            }
+        }
+        Ok(status) => {
+            manager.rollback_unconfirmed()?;
+            return Err(format!("activated binary self-test failed with {status}").into());
+        }
+        Err(error) => {
+            manager.rollback_unconfirmed()?;
+            return Err(format!("activated binary could not start: {error}").into());
+        }
+    }
     Ok(())
 }
 
