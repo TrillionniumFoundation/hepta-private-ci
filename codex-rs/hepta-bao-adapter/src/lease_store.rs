@@ -19,7 +19,6 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::BaoLeaseError;
-use super::BaoLeaseOperation;
 use super::LeaseJournalRecord;
 use super::StoreState;
 use super::StoredOperation;
