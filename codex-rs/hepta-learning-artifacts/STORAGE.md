@@ -119,7 +119,9 @@ Create payload -> sync -> create canonical registry snapshot -> sync -> durably
 publish the receipt/current-head witness -> acknowledge the producer/source ->
 independent evaluation/decision -> separately owned next-run selection.
 
-`ArtifactPublicationTransactionV1` makes that host transaction contract
+`stage_artifact_publication_v1` first validates the current withdrawal frontier and applies the projected V1 append to a clone of the caller's current `ArtifactRegistry`. It returns that staged registry, exact append receipt and prepared transaction together; any error leaves the caller's current registry untouched. Only the returned staged registry is eligible for the subsequent durable write.
+
+`ArtifactPublicationTransactionV1` makes the remaining host transaction contract
 executable without claiming impossible cross-file atomicity. It binds the V3
 admission, scoped withdrawal frontier, artifact-registry namespace identity,
 exact registry append, snapshot receipt and current-head witness. The V3-to-V1
