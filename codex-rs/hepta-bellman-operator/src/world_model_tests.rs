@@ -87,7 +87,7 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
         fit_transition_model(
             id("world-model-1"),
             digest("dataset"),
-            vec![duplicate.clone(), duplicate],
+            vec![duplicate.clone(), duplicate.clone()],
         ),
         Err(WorldModelError::DuplicateSample("sample-1".to_owned()))
     );
