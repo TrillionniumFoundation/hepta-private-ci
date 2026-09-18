@@ -250,6 +250,15 @@ impl ReconciliationReceiptV1 {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DestinationRetirementReadinessV1 {
+    pub destination: StableId,
+    pub active_operations: u64,
+    pub unsettled_effects: u64,
+    pub pending_outbox: u64,
+    pub retirable: bool,
+}
+
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct OperationBacklogMetrics {
     pub active_operations: u64,
