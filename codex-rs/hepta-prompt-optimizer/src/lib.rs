@@ -17,6 +17,7 @@ use codex_hepta_types::StableId;
 pub mod local_shadow;
 
 mod canonical_v1;
+mod pricing_v1;
 
 pub use canonical_v1::CANONICAL_NO_INTERVENTION_ID_V1;
 pub use canonical_v1::CanonicalPromptErrorV1;
@@ -30,6 +31,13 @@ pub use canonical_v1::PromptCandidateSourceAuthenticatorV1;
 pub use canonical_v1::PromptCandidateSourceV1;
 pub use canonical_v1::PromptModelProfileV1;
 pub use canonical_v1::enumerate_factors_v1;
+pub use pricing_v1::PromptCostBreakdownV1;
+pub use pricing_v1::PromptPriceAvailabilityV1;
+pub use pricing_v1::PromptPriceV1;
+pub use pricing_v1::PromptPricingEvidenceAuthenticatorV1;
+pub use pricing_v1::PromptPricingEvidenceV1;
+pub use pricing_v1::PromptPricingReceiptV1;
+pub use pricing_v1::price_factors_v1;
 
 
 const MAX_CANDIDATES: usize = 4_096;
