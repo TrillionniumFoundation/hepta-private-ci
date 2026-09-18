@@ -297,3 +297,89 @@ fn distinct_keys_do_not_make_one_controller_independent() {
         Ok(())
     );
 }
+
+#[test]
+fn selector_role_is_explicit_and_independent_from_evaluator() {
+    let mut selected = trust();
+    selected.signers.push(signer(
+        "selector",
+        "controller-c",
+        3,
+        LearningEvidenceRoleV1::Selector,
+    ));
+    let verifier = LearningEvidenceVerifierV1::new(selected).expect("selector trust");
+    let selector = verifier
+        .verify(
+            LearningEvidenceRoleV1::Selector,
+            &sign(
+                &verifier,
+                "selector",
+                LearningEvidenceRoleV1::Selector,
+                3,
+                b"selection",
+            ),
+            b"selection",
+            50,
+        )
+        .expect("selector");
+    let evaluator = verifier
+        .verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &sign(
+                &verifier,
+                "evaluator",
+                LearningEvidenceRoleV1::Evaluator,
+                2,
+                b"evaluation",
+            ),
+            b"evaluation",
+            50,
+        )
+        .expect("evaluator");
+    assert_eq!(selector.controller_id(), &id("controller-c"));
+    assert_eq!(
+        verify_verified_role_separation(&selector, &evaluator, 50),
+        Ok(())
+    );
+
+    let mut collided = trust();
+    collided.signers.push(signer(
+        "selector",
+        "controller-b",
+        3,
+        LearningEvidenceRoleV1::Selector,
+    ));
+    let verifier = LearningEvidenceVerifierV1::new(collided).expect("collided trust");
+    let selector = verifier
+        .verify(
+            LearningEvidenceRoleV1::Selector,
+            &sign(
+                &verifier,
+                "selector",
+                LearningEvidenceRoleV1::Selector,
+                3,
+                b"selection",
+            ),
+            b"selection",
+            50,
+        )
+        .expect("selector");
+    let evaluator = verifier
+        .verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &sign(
+                &verifier,
+                "evaluator",
+                LearningEvidenceRoleV1::Evaluator,
+                2,
+                b"evaluation",
+            ),
+            b"evaluation",
+            50,
+        )
+        .expect("evaluator");
+    assert_eq!(
+        verify_verified_role_separation(&selector, &evaluator, 50),
+        Err(SignedEvidenceError::ControllerCollision)
+    );
+}

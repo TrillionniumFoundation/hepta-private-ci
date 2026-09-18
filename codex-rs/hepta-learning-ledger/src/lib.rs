@@ -85,6 +85,7 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
+pub use signed_evidence::verify_verified_role_separation;
 pub use witness::LedgerWitnessStore;
 pub use witness::WitnessStoreError;
 pub use witnessed::WitnessedAppendError;
