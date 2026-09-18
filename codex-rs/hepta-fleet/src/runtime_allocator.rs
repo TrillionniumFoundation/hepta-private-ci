@@ -140,6 +140,7 @@ impl FleetRuntimeAllocator {
         agent_id: &AgentId,
         budget: &ResourceBudget,
         lifecycle_generation: u64,
+        release_id: &str,
         control_state_digest: &str,
         now_ms: u64,
     ) -> Result<AllocationGrant, FleetRuntimeAllocatorError> {
@@ -149,6 +150,8 @@ impl FleetRuntimeAllocator {
             ));
         }
         validate_digest(control_state_digest)?;
+        let release_id = crate::ReleaseId::parse(release_id.to_string())
+            .map_err(|error| FleetRuntimeAllocatorError::Invalid(error.to_string()))?;
         self.ensure_fresh_capacity(now_ms)?;
 
         let principal_id = agent_id.to_string();
@@ -197,11 +200,18 @@ impl FleetRuntimeAllocator {
             &host,
             self.writer_epoch,
             lifecycle_generation,
+            release_id.as_str(),
             control_state_digest,
             resources,
         )?;
+        let next_state_revision = self
+            .store
+            .current()
+            .revision
+            .checked_add(1)
+            .ok_or_else(|| FleetRuntimeAllocatorError::Invalid("allocation revision overflow".to_string()))?;
         let allocation_id = format!(
-            "runtime:{agent_id}:{lifecycle_generation}:{}",
+            "runtime:{agent_id}:{lifecycle_generation}:{}:{next_state_revision}",
             self.writer_epoch
         );
         let grant = AllocationGrant {
@@ -430,6 +440,7 @@ fn grant_digest(
     host: &HostObservation,
     authority_epoch: u64,
     lifecycle_generation: u64,
+    release_id: &str,
     control_state_digest: &str,
     resources: FleetResourceVectorV1,
 ) -> Result<String, FleetRuntimeAllocatorError> {
@@ -445,6 +456,7 @@ fn grant_digest(
         host_observation_digest: &'a str,
         authority_epoch: u64,
         lifecycle_generation: u64,
+        release_id: &'a str,
         control_state_digest: &'a str,
         resources: FleetResourceVectorV1,
     }
@@ -460,6 +472,7 @@ fn grant_digest(
         host_observation_digest: &host.semantic_digest,
         authority_epoch,
         lifecycle_generation,
+        release_id,
         control_state_digest,
         resources,
     })?;

@@ -69,6 +69,7 @@ fn durable_grant_reopens_and_new_writer_epoch_fences_it() {
             &agent,
             &ResourceBudget::local_default(),
             1,
+            "release.one",
             &digest(),
             200,
         )
@@ -112,7 +113,7 @@ fn start_reservation_is_durable_and_full_budget() {
     let agent = AgentId::parse("00000000-0000-4000-8000-000000000001").expect("agent");
     let budget = ResourceBudget::local_default();
     let grant = allocator
-        .reserve_agent_start(&agent, &budget, 1, &digest(), 200)
+        .reserve_agent_start(&agent, &budget, 1, "release.one", &digest(), 200)
         .expect("grant");
     assert_eq!(grant.resources, FleetResourceVectorV1::from(&budget));
     assert_eq!(
@@ -122,6 +123,46 @@ fn start_reservation_is_durable_and_full_budget() {
             .grant_for_principal(agent.as_str(), 200),
         Some(&grant)
     );
+}
+
+#[test]
+fn start_grant_binds_release_identity_and_retry_gets_new_allocation_identity() {
+    let (_temp, registry) = registry();
+    let mut allocator = FleetRuntimeAllocator::open_with_observer(
+        &registry,
+        7,
+        100,
+        Box::new(ScriptedObserver {
+            capacities: VecDeque::from([Ok(capacity())]),
+            ttl_ms: 60_000,
+        }),
+    )
+    .expect("allocator");
+    let agent = AgentId::parse("00000000-0000-4000-8000-000000000001").expect("agent");
+    let budget = ResourceBudget::local_default();
+    let first = allocator
+        .reserve_agent_start(
+            &agent,
+            &budget,
+            1,
+            "release.one",
+            &digest(),
+            200,
+        )
+        .expect("first grant");
+    allocator.release_agent(&agent, 201).expect("release");
+    let second = allocator
+        .reserve_agent_start(
+            &agent,
+            &budget,
+            1,
+            "release.two",
+            &digest(),
+            202,
+        )
+        .expect("second grant");
+    assert_ne!(first.allocation_id, second.allocation_id);
+    assert_ne!(first.semantic_digest, second.semantic_digest);
 }
 
 struct SpoofingObserver;
@@ -179,6 +220,7 @@ fn failed_capacity_refresh_blocks_lease_maintenance() {
             &agent,
             &ResourceBudget::local_default(),
             1,
+            "release.one",
             &digest(),
             200,
         )

@@ -221,11 +221,21 @@ async fn run_supervisord_inner(
     for (agent_id, record) in &snapshot.agents {
         let runtime_snapshot = supervisor.snapshot(agent_id);
         if runtime_snapshot.as_ref().is_some_and(|runtime| runtime.active) {
+            let active_release = runtime_snapshot
+                .as_ref()
+                .and_then(|runtime| runtime.active_release.as_deref())
+                .ok_or_else(|| {
+                    SupervisorError::Invalid(format!(
+                        "active agent {agent_id} has no release identity for fleet grant recovery"
+                    ))
+                })?
+                .to_string();
             let status = status_from(&supervisor_epoch, record, runtime_snapshot)?;
             let grant = fleet_allocator.reserve_agent_start(
                 agent_id,
                 &record.manifest.resources,
                 record.lifecycle.generation,
+                &active_release,
                 status.control_fence.state_digest.as_str(),
                 now_ms,
             )?;
@@ -771,6 +781,7 @@ async fn reserve_start_allocation<D: ProcessDriver>(
     state: &DaemonState<D>,
     agent_id: &AgentId,
     accepted: &SupervisordAgentStatus,
+    target: &AgentRelease,
 ) -> Result<(), SupervisorError> {
     let record = state
         .registry
@@ -789,6 +800,7 @@ async fn reserve_start_allocation<D: ProcessDriver>(
         agent_id,
         &record.manifest.resources,
         lifecycle_generation,
+        target.identity(),
         accepted.control_fence.state_digest.as_str(),
         now_ms,
     )?;
@@ -901,8 +913,9 @@ async fn handle_mutation<D: ProcessDriver>(
     }
 
     let start_reserved = matches!(&prepared, PreparedMutation::Start(_));
-    if start_reserved
-        && let Err(error) = reserve_start_allocation(&state, &agent_id, &actual).await
+    if let PreparedMutation::Start(target) = &prepared
+        && let Err(error) =
+            reserve_start_allocation(&state, &agent_id, &actual, target).await
     {
         let refreshed = agent_status_locked(&state, &supervisor, &agent_id).ok();
         return safe_rejection(
