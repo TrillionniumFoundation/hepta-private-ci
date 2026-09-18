@@ -124,7 +124,6 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
     ));
 }
 
-
 #[cfg(unix)]
 mod durable_operations_control {
     use std::collections::BTreeSet;
@@ -229,8 +228,11 @@ mod durable_operations_control {
             20_000,
             10_000,
         );
-        let intent =
-            automation_task_operation_intent(automation.owner_agent_id(), &draft, Generation::new(1)?)?;
+        let intent = automation_task_operation_intent(
+            automation.owner_agent_id(),
+            &draft,
+            Generation::new(1)?,
+        )?;
         let response = state
             .response(
                 41,
