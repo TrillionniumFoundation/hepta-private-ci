@@ -51,6 +51,7 @@ pub struct SecretLeaseRecord {
     pub schema_version: u32,
     pub lease_key: String,
     pub provider_id: String,
+    pub provider_namespace: String,
     pub provider_path: String,
     pub request_sha256: Sha256Digest,
     pub provider_lease_id: Option<String>,
@@ -72,6 +73,7 @@ impl fmt::Debug for SecretLeaseRecord {
             .field("schema_version", &self.schema_version)
             .field("lease_key", &self.lease_key)
             .field("provider_id", &self.provider_id)
+            .field("provider_namespace", &self.provider_namespace)
             .field("provider_path", &self.provider_path)
             .field("request_sha256", &self.request_sha256)
             .field(
@@ -96,6 +98,7 @@ impl SecretLeaseRecord {
     pub fn requesting(
         lease_key: String,
         provider_id: String,
+        provider_namespace: String,
         provider_path: String,
         request_sha256: Sha256Digest,
         operation_id: String,
@@ -105,6 +108,7 @@ impl SecretLeaseRecord {
             schema_version: SECRET_LEASE_CONTRACT_SCHEMA_VERSION,
             lease_key,
             provider_id,
+            provider_namespace,
             provider_path,
             request_sha256,
             provider_lease_id: None,
@@ -132,6 +136,9 @@ impl SecretLeaseRecord {
         }
         if !identifier(&self.provider_id, MAX_SECRET_LEASE_KEY_BYTES) {
             return Err(SecretLeaseBindingError::InvalidProvider);
+        }
+        if !self.provider_namespace.is_empty() && !segmented(&self.provider_namespace) {
+            return Err(SecretLeaseBindingError::InvalidProviderNamespace);
         }
         if !provider_path(&self.provider_path) {
             return Err(SecretLeaseBindingError::InvalidProviderPath);
@@ -244,6 +251,7 @@ impl SecretLeaseRecord {
         self.validate()?;
         if self.lease_key != previous.lease_key
             || self.provider_id != previous.provider_id
+            || self.provider_namespace != previous.provider_namespace
             || self.provider_path != previous.provider_path
             || self.request_sha256 != previous.request_sha256
         {
@@ -338,6 +346,7 @@ pub enum SecretLeaseBindingError {
     SchemaVersion,
     InvalidLeaseKey,
     InvalidProvider,
+    InvalidProviderNamespace,
     InvalidProviderPath,
     InvalidProviderLeaseId,
     InvalidOperationId,
@@ -417,14 +426,19 @@ fn identifier(value: &str, maximum: usize) -> bool {
             .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
 }
 
-fn provider_path(value: &str) -> bool {
-    !value.is_empty()
-        && value.len() <= MAX_SECRET_LEASE_PROVIDER_PATH_BYTES
+fn segmented(value: &str) -> bool {
+    value.len() <= 1024
         && !value.starts_with('/')
         && !value.ends_with('/')
         && value
             .split('/')
             .all(|segment| identifier(segment, MAX_SECRET_LEASE_KEY_BYTES) && segment != "." && segment != "..")
+}
+
+fn provider_path(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= MAX_SECRET_LEASE_PROVIDER_PATH_BYTES
+        && segmented(value)
 }
 
 fn provider_lease_id(value: &str) -> bool {
@@ -455,6 +469,7 @@ mod tests {
         SecretLeaseRecord::requesting(
             "lease:one".into(),
             "provider:heptabao".into(),
+            "team/one".into(),
             "database/creds/reader".into(),
             digest(b"logical"),
             "operation:issue:1".into(),
@@ -470,6 +485,7 @@ mod tests {
             schema_version: 1,
             lease_key: request.lease_key.clone(),
             provider_id: request.provider_id.clone(),
+            provider_namespace: request.provider_namespace.clone(),
             provider_path: request.provider_path.clone(),
             request_sha256: request.request_sha256.clone(),
             provider_lease_id: Some("database/creds/reader/abc".into()),
