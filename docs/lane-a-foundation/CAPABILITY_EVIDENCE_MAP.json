@@ -537,7 +537,7 @@
           ]
         }
       ],
-      "durability": "sqlite_migrations_0001_0010",
+      "durability": "sqlite_migrations_0001_0011",
       "activation": "feature_gated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
@@ -577,7 +577,7 @@
           ]
         }
       ],
-      "durability": "sqlite_migrations_0001_0010",
+      "durability": "sqlite_migrations_0001_0011",
       "activation": "feature_gated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
@@ -616,7 +616,7 @@
           ]
         }
       ],
-      "durability": "sqlite_migrations_0001_0010",
+      "durability": "sqlite_migrations_0001_0011",
       "activation": "feature_gated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
@@ -961,8 +961,8 @@
         {
           "path": "codex-rs/hepta-evidence/migrations/0011_authbus_control.sql",
           "mustContain": [
-            "authbus_auth_policy_history",
-            "authbus_auth_policy_heads"
+            "authbus_policy_history",
+            "authbus_policy_heads"
           ]
         }
       ],
