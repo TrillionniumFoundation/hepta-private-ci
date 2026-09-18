@@ -1,0 +1,90 @@
+name: Hepta native Rust
+
+on:
+  pull_request:
+    paths:
+      - "apps/hepta-native/**"
+      - ".github/workflows/hepta-native-rust.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/hepta-native/**"
+      - ".github/workflows/hepta-native-rust.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-native-rust-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: native-${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: apps/hepta-native
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux native UI dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev \
+            libxcb-shape0-dev \
+            libxcb-xfixes0-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev \
+            libwayland-dev \
+            libgl1-mesa-dev \
+            libssl-dev
+
+      - name: Install Rust components
+        run: rustup component add rustfmt clippy
+
+      - name: Format
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test
+        run: cargo test --all-targets
+
+      - name: Headless product smoke contract
+        run: cargo run --bin hepta-native -- --self-test
+
+      - name: Build release binaries
+        run: cargo build --release --bins
+
+      - name: Package unsigned development artifact (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          mkdir -p dist
+          tar -C target/release -czf "dist/hepta-native-${RUNNER_OS}-${RUNNER_ARCH}-unsigned.tar.gz" \
+            hepta-native hepta-native-updater
+
+      - name: Package unsigned development artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Compress-Archive -Force `
+            -Path target/release/hepta-native.exe,target/release/hepta-native-updater.exe `
+            -DestinationPath "dist/hepta-native-$env:RUNNER_OS-$env:RUNNER_ARCH-unsigned.zip"
+
+      - name: Upload unsigned development artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-native-${{ runner.os }}-${{ runner.arch }}-unsigned
+          path: apps/hepta-native/dist/*
+          if-no-files-found: error
