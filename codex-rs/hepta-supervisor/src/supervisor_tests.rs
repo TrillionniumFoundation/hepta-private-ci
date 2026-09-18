@@ -1549,6 +1549,223 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     Ok(())
 }
 
+#[test]
+fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_bytes(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source_id = ReleaseId::parse("recovery-source")?;
+    let target_id = ReleaseId::parse("recovery-target")?;
+    let source_program = fleet.write_release_source()?;
+    fleet
+        .registry
+        .install_release(source_id.clone(), &source_program, Vec::new())?;
+    std::fs::write(&source_program, b"#!/bin/sh\necho target\n")?;
+    fleet
+        .registry
+        .install_release(target_id.clone(), &source_program, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &source_id)?;
+    fleet.registry.allow_release(&fleet.first, &target_id)?;
+
+    let parse_digest = |value: String| {
+        Sha256Digest::parse(value)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))
+    };
+    let source_provenance = fleet
+        .registry
+        .release_provenance(&fleet.first, &source_id)?;
+    let target_provenance = fleet
+        .registry
+        .release_provenance(&fleet.first, &target_id)?;
+    let binding = crate::ReleaseSelectionBinding::new(
+        parse_digest(source_provenance.manifest_sha256)?,
+        parse_digest(source_provenance.agentd_sha256)?,
+        source_provenance
+            .matrixd_sha256
+            .map(&parse_digest)
+            .transpose()?,
+        parse_digest(target_provenance.manifest_sha256.clone())?,
+        parse_digest(target_provenance.agentd_sha256.clone())?,
+        target_provenance
+            .matrixd_sha256
+            .clone()
+            .map(&parse_digest)
+            .transpose()?,
+        Sha256Digest::for_bytes(b"compatibility-receipt"),
+        7,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    let grant_sha256 = Sha256Digest::for_bytes(b"recovery-grant");
+    let grant = crate::H7H89ProductionGrant {
+        schema_version: crate::SIGNED_AUTHORITY_SCHEMA_VERSION,
+        namespace: crate::SIGNED_AUTHORITY_NAMESPACE.to_string(),
+        agent_id: fleet.first.to_string(),
+        source_release: source_id.to_string(),
+        target_release: target_id.to_string(),
+        transition: crate::H7H89ProductionTransition::Upgrade,
+        h7_envelope_sha256: Sha256Digest::for_bytes(b"recovery-h7"),
+        artifact_sha256: Sha256Digest::for_bytes(b"recovery-artifact"),
+        release_selection: binding,
+        expected_control_revision: 0,
+        expected_lifecycle_generation: 2,
+        authority_epoch: 19,
+        signer_id: "operator".to_string(),
+        signer_epoch: 4,
+        issued_at_unix_seconds: 100,
+        expires_at_unix_seconds: 200,
+        production_authority: true,
+        external_effects: true,
+        operator_acceptance: true,
+        promotion: true,
+        governance_bypass: false,
+        signature_base64: "AA==".to_string(),
+        grant_sha256: grant_sha256.clone(),
+    };
+
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(target_id.clone()),
+        Some(source_id.clone()),
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    let running = fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let failed = fleet.registry.compare_and_transition(
+        &fleet.first,
+        running.generation,
+        AgentLifecycle::Failed,
+    )?;
+    assert_eq!(failed.generation, 3);
+
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant_sha256.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        source_id.to_string(),
+        target_id.to_string(),
+        0,
+        running.generation,
+        19,
+        crate::signed_intent::SignedIntentStatus::RecoveryRequired,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let selection = crate::release_selection::ReleaseSelectionRecord::prepared(
+        &grant,
+        1,
+        running.generation,
+    )?
+    .with_status(crate::release_selection::ReleaseSelectionStatus::RecoveryRequired)?;
+    crate::release_selection::write_release_selection(record.layout.run_root(), &selection)?;
+
+    let (mut recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert!(
+        report
+            .faults
+            .iter()
+            .any(|fault| fault.agent_id == fleet.first),
+        "unresolved production intent remains quarantined until independent recovery"
+    );
+    recovered.set_production_revocation_frontier(7)?;
+
+    let signer = crate::H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32])
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let verifier = crate::H7H89ProductionGrantVerifier::new(
+        "operator",
+        4,
+        signer.verifying_key(),
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let target_manifest = parse_digest(target_provenance.manifest_sha256)?;
+    let target_agentd = parse_digest(target_provenance.agentd_sha256)?;
+    let target_matrixd = target_provenance
+        .matrixd_sha256
+        .map(&parse_digest)
+        .transpose()?;
+    let decision = signer
+        .sign_recovery(
+            &fleet.first,
+            grant_sha256,
+            intent.intent_sha256.clone(),
+            target_id.to_string(),
+            target_manifest,
+            target_agentd,
+            target_matrixd,
+            crate::ProductionRecoveryOutcome::Committed,
+            1,
+            failed.generation,
+            23,
+            7,
+            120,
+            180,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    assert!(matches!(
+        recovered.resolve_production_recovery(
+            &fleet.first,
+            &decision,
+            &verifier,
+            23,
+            8,
+            150,
+        ),
+        Err(SupervisorError::ProductionAuthority(_))
+    ));
+    assert_eq!(
+        recovered
+            .production_mutation_receipt(&fleet.first)?
+            .expect("recovery receipt")
+            .status,
+        crate::ProductionMutationStatus::RecoveryRequired
+    );
+
+    let receipt = recovered.resolve_production_recovery(
+        &fleet.first,
+        &decision,
+        &verifier,
+        23,
+        7,
+        150,
+    )?;
+    assert_eq!(receipt.status, crate::ProductionMutationStatus::Committed);
+    assert_eq!(receipt.target_release, target_id.to_string());
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("terminal intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::Committed
+    );
+    assert_eq!(
+        crate::release_selection::read_release_selection(record.layout.run_root())?
+            .expect("terminal selection")
+            .status,
+        crate::release_selection::ReleaseSelectionStatus::Committed
+    );
+    Ok(())
+}
+
+
 fn write_matrix_binding(
     registry: &FleetRegistry,
     agent_id: &AgentId,
