@@ -285,6 +285,21 @@
         "docs/readiness/NDU_SYSTEM_EXECUTION.md",
         "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
       ]
+    },
+    {
+      "id": "LANE-D-OBJ-CALLER-029",
+      "severity": "P0",
+      "title": "Objective compiler had no authenticated durable product caller",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-agent-protocol/src/authbus.rs",
+        "codex-rs/hepta-agentd/src/objective_runtime.rs",
+        "codex-rs/hepta-agentd/src/state_control.rs",
+        "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md"
+      ],
+      "nonClaim": "source composition is not independent acceptance, activation or release"
     }
   ],
   "externalGates": [
