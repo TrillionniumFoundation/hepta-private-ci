@@ -177,6 +177,7 @@ jobs:
           retention-days: 90
 
   synthetic-merge:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
