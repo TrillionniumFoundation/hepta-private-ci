@@ -310,23 +310,37 @@ export async function startControlPlane({
 
       if (client && samePersistenceDomain) {
         const recoveringClient = client;
+        const previousWriterLease = writerLease;
         try {
-          await recoveringClient.close();
-        } catch {
-          // close is best-effort here; RuntimeClient still clears local session state.
-        }
-        if (!lifecycleCurrent(recoveryGeneration)) return null;
-
-        await recoveringClient.connect(connectArgs(nextConfig));
-        if (!lifecycleCurrent(recoveryGeneration)) {
           try {
             await recoveringClient.close();
           } catch {
-            // A suspended/disposed page must not retain the just-opened session.
+            // close is best-effort here; RuntimeClient still clears local session state.
           }
-          return null;
+          if (!lifecycleCurrent(recoveryGeneration)) {
+            nextWriterLease?.lease.release();
+            return null;
+          }
+
+          await recoveringClient.connect(connectArgs(nextConfig));
+          if (!lifecycleCurrent(recoveryGeneration)) {
+            try {
+              await recoveringClient.close();
+            } catch {
+              // A suspended/disposed page must not retain the just-opened session.
+            }
+            nextWriterLease?.lease.release();
+            return null;
+          }
+          if (nextWriterLease) {
+            writerLease = nextWriterLease;
+            previousWriterLease?.lease.release();
+          }
+          config = nextConfig;
+        } catch (error) {
+          nextWriterLease?.lease.release();
+          throw error;
         }
-        config = nextConfig;
       } else {
         const previousClient = client;
         const previousWriterLease = writerLease;
