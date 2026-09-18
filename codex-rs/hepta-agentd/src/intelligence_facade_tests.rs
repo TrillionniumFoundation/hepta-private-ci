@@ -241,8 +241,8 @@ fn agentd_admits_exact_v3_envelope_then_marks_actual_dispatch() {
     let attached = caller.admit(1_000_000, &envelope).expect("admit");
     assert_eq!(attached.phase, RunPhase::ContextAttached);
     assert_eq!(
-        attached.context_digest.as_deref(),
-        Some(envelope.context_digest.to_string().as_str())
+        attached.context_digest,
+        Some(envelope.context_digest.to_string())
     );
 
     let dispatched = caller
