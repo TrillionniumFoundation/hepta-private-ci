@@ -94,7 +94,10 @@ pub struct TimeIntervalV1 {
 }
 
 impl TimeIntervalV1 {
-    pub fn try_new(start_unix_ms: i64, end_unix_ms: Option<i64>) -> Result<Self, HnmfContractError> {
+    pub fn try_new(
+        start_unix_ms: i64,
+        end_unix_ms: Option<i64>,
+    ) -> Result<Self, HnmfContractError> {
         let value = Self {
             start_unix_ms,
             end_unix_ms,
