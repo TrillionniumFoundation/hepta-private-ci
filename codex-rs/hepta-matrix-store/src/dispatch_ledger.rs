@@ -328,13 +328,41 @@ impl MatrixDurableStore {
             return Err(MatrixDurableError::Conflict);
         }
         if current.state == MatrixDispatchState::ObservedTerminal {
-            if current.terminal_event_id.as_ref() == Some(event_id)
-                && current.send_observation_digest.as_deref() == Some(observation_digest.as_str())
-            {
+            if current.terminal_event_id.as_ref() != Some(event_id) {
+                return Err(MatrixDurableError::Conflict);
+            }
+            if let Some(digest) = current.send_observation_digest.as_deref() {
+                if digest != observation_digest.as_str() {
+                    return Err(MatrixDurableError::Conflict);
+                }
                 transaction.commit().await.map_err(unavailable)?;
                 return Ok(Some(current));
             }
-            return Err(MatrixDurableError::Conflict);
+            sqlx::query(
+                "UPDATE matrix_dispatch_ledger
+                 SET send_observation_digest = ?, updated_at_ms = MAX(updated_at_ms, ?)
+                 WHERE stable_txn_id = ? AND send_observation_digest IS NULL",
+            )
+            .bind(observation_digest.as_str())
+            .bind(to_i64(now_ms)?)
+            .bind(txn_id.as_str())
+            .execute(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            insert_observation_tx(
+                &mut transaction,
+                txn_id,
+                "server_event",
+                Some(event_id),
+                observation_digest,
+                now_ms,
+            )
+            .await?;
+            let upgraded = dispatch_by_txn_tx(&mut transaction, txn_id)
+                .await?
+                .ok_or(MatrixDurableError::Corrupt)?;
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(Some(upgraded));
         }
         if current.state == MatrixDispatchState::TerminalFailure
             || outbox.state == OutboxState::PermanentFailure
@@ -518,6 +546,30 @@ pub(super) async fn record_outbox_claim_tx(
 pub(super) async fn reconcile_terminal_outbox(
     pool: &sqlx::SqlitePool,
 ) -> Result<(), MatrixDurableError> {
+    sqlx::query(
+        "UPDATE matrix_dispatch_ledger
+         SET state = 'observed_terminal',
+             terminal_event_id = (
+                 SELECT sent_event_id FROM outbox_messages
+                 WHERE outbox_messages.stable_txn_id = matrix_dispatch_ledger.stable_txn_id
+             ),
+             terminal_at_ms = COALESCE(terminal_at_ms, (
+                 SELECT updated_at_ms FROM outbox_messages
+                 WHERE outbox_messages.stable_txn_id = matrix_dispatch_ledger.stable_txn_id
+             )),
+             updated_at_ms = MAX(updated_at_ms, (
+                 SELECT updated_at_ms FROM outbox_messages
+                 WHERE outbox_messages.stable_txn_id = matrix_dispatch_ledger.stable_txn_id
+             ))
+         WHERE stable_txn_id IN (
+             SELECT stable_txn_id FROM outbox_messages
+             WHERE state = 'sent' AND sent_event_id IS NOT NULL
+         )
+           AND state IN ('dispatched', 'accepted', 'indeterminate')",
+    )
+    .execute(pool)
+    .await
+    .map_err(unavailable)?;
     sqlx::query(
         "UPDATE matrix_dispatch_ledger
          SET state = 'terminal_failure',
