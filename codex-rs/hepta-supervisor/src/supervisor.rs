@@ -153,6 +153,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                         ControlRuntimePhase::AwaitingHealth
                     }
                     crate::runtime::RuntimePhase::Running => ControlRuntimePhase::Running,
+                    crate::runtime::RuntimePhase::Unhealthy { .. } => {
+                        ControlRuntimePhase::Unhealthy
+                    }
                     crate::runtime::RuntimePhase::Draining { .. } => ControlRuntimePhase::Draining,
                     crate::runtime::RuntimePhase::Stopping { .. } => ControlRuntimePhase::Stopping,
                     crate::runtime::RuntimePhase::Killing => ControlRuntimePhase::Killing,
