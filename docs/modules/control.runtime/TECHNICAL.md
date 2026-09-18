@@ -159,13 +159,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. The planner enforces the declared collection ceilings in source. `planner_profile_tests.rs` contains an explicitly ignored named-host profile that exercises the 32-owner/128-candidate planner and 4096-record journal reopen path; its p95/p99 output becomes evidence only when a workflow records the exact source, host, compiler and build profile. Target ceilings are not latency claims.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Bounded planner and organ-runtime libraries. The real Agentd context caller compares read-context with abstain under measured serialized-byte limits. That local decision is distinct from global adaptive topology/resource reconfiguration; physical execution grants remain separately issued by the owner.
+Bounded planner and organ-runtime libraries. The real Agentd context caller compares read-context with abstain under measured serialized-byte limits and now uses a process-local monotonic planner clock. `evaluate_global_plan_v1` additionally provides an authenticated multi-owner source candidate, but it has no named global product caller. Both paths stop before authority issuance; physical execution grants remain independently issued by `kernel.authority`.
 
 Current operating and state-format references:
 
@@ -178,8 +178,14 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/cart_tests.rs); named case: `typed_controller_and_plant_replay_the_explicit_euler_q24_golden`.
-- [codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs](../../../codex-rs/hepta-control-plane/src/embodiment/timing_tests.rs); named case: `blocking_and_higher_priority_interference_are_included`.
+- [planner_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_tests.rs) — resource-profile sealing, snapshot freshness and grant-request mutation rejection.
+- [planner_ndu_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu_tests.rs) — real NDU owner evaluation and policy freezing.
+- [planner_global_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_global_tests.rs) — authenticated multi-owner composition and authentication-drift binding.
+- [planner_journal_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_tests.rs) — hash integrity plus semantic replay.
+- [planner_store_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_store_tests.rs) — single-writer durability, V0 migration and trusted-head restore rejection on Unix.
+- [planner_context_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_context_tests.rs) and Agentd cognitive-context tests — bounded narrow product composition and monotonic planner time.
+- [planner_profile_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_profile_tests.rs) — ignored named-host p95/p99 measurement fixture.
+- Existing cart/timing/organ tests remain applicable to their separate local runtime surfaces.
 
 In `codex-rs`, run `just test -p codex-hepta-control-plane`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) separately labels target acceptance designs.
 
@@ -316,4 +322,4 @@ The bootstrap source-location obligation for `control.runtime` is implemented by
 
 - `codex-rs/hepta-control-plane`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and the Lane-D semantic workflow, including closed-world inventory, source-head and deterministic synthetic-merge execution, package tests, all-target compilation, strict Clippy, clean tracked state and the explicit named-host planner profile. A workflow definition is not a pass receipt; claims advance only after the exact candidate run completes successfully. These checks grant no external-effect authority, independent acceptance, activation, promotion or release.
