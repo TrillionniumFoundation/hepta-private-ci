@@ -11,7 +11,9 @@ use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 
 use crate::error::ShellError;
+use crate::model::EndpointManifest;
 use crate::model::PlatformAction;
+use crate::model::sha256_hex;
 use crate::model::SignedPlatformGrantV1;
 use crate::model::validate_digest;
 use crate::model::validate_stable_id;
@@ -26,6 +28,105 @@ pub struct PlatformGrantContext<'a> {
     pub action: PlatformAction,
     pub payload_digest: &'a str,
     pub now_unix_ms: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SignedEndpointManifestV1 {
+    pub schema: String,
+    pub endpoint_id: String,
+    pub address: String,
+    pub protocol_version: u32,
+    pub gateway_credential_account: String,
+    pub issued_unix_ms: u64,
+    pub expires_unix_ms: u64,
+    pub key_id: String,
+    pub manifest_digest: String,
+    pub signature_base64: String,
+}
+
+#[derive(Debug, Clone)]
+pub struct VerifiedEndpointManifest {
+    pub manifest: EndpointManifest,
+    pub gateway_credential_account: String,
+}
+
+impl SignedEndpointManifestV1 {
+    pub fn payload_message(&self) -> String {
+        format!(
+            "hepta.endpoint-manifest-payload.v1\nschema={}\nendpoint_id={}\naddress={}\nprotocol_version={}\ngateway_credential_account={}\nissued_unix_ms={}\nexpires_unix_ms={}\nkey_id={}\n",
+            self.schema,
+            self.endpoint_id,
+            self.address,
+            self.protocol_version,
+            self.gateway_credential_account,
+            self.issued_unix_ms,
+            self.expires_unix_ms,
+            self.key_id
+        )
+    }
+
+    pub fn computed_manifest_digest(&self) -> String {
+        sha256_hex(self.payload_message().as_bytes())
+    }
+
+    pub fn signing_message(&self) -> String {
+        format!(
+            "hepta.endpoint-manifest-signature.v1\nmanifest_digest={}\n",
+            self.manifest_digest
+        )
+    }
+
+    pub fn verify(&self, keys: &TrustedKeySet) -> Result<VerifiedEndpointManifest, ShellError> {
+        if self.schema != "hepta.endpoint-manifest.v1" {
+            return Err(ShellError::Security(
+                "unsupported native endpoint manifest schema".to_owned(),
+            ));
+        }
+        validate_stable_id(&self.endpoint_id, "endpoint manifest endpoint_id")?;
+        validate_stable_id(
+            &self.gateway_credential_account,
+            "endpoint manifest gateway credential account",
+        )?;
+        validate_stable_id(&self.key_id, "endpoint manifest key_id")?;
+        validate_digest(&self.manifest_digest, "endpoint manifest digest")?;
+        if self.protocol_version == 0 {
+            return Err(ShellError::Security(
+                "endpoint manifest protocol version must be positive".to_owned(),
+            ));
+        }
+        let now = now_unix_ms()?;
+        if self.issued_unix_ms > now.saturating_add(MAX_CLOCK_SKEW_MS)
+            || self.expires_unix_ms < now
+            || self.expires_unix_ms <= self.issued_unix_ms
+            || self.expires_unix_ms.saturating_sub(self.issued_unix_ms) > 24 * 60 * 60 * 1000
+        {
+            return Err(ShellError::Security(
+                "native endpoint manifest time window is invalid".to_owned(),
+            ));
+        }
+        if self.computed_manifest_digest() != self.manifest_digest {
+            return Err(ShellError::Security(
+                "native endpoint manifest digest mismatch".to_owned(),
+            ));
+        }
+        keys.verify_message(
+            &self.key_id,
+            &self.signature_base64,
+            self.signing_message().as_bytes(),
+        )?;
+        let manifest = EndpointManifest {
+            endpoint_id: self.endpoint_id.clone(),
+            address: self.address.clone(),
+            manifest_digest: self.manifest_digest.clone(),
+            protocol_version: self.protocol_version,
+        };
+        manifest.validate()?;
+        Ok(VerifiedEndpointManifest {
+            manifest,
+            gateway_credential_account: self.gateway_credential_account.clone(),
+        })
+    }
 }
 
 pub trait GrantVerifier: Send + Sync {
