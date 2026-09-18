@@ -29,7 +29,10 @@
       "delegatedCallees": [
         {
           "path": "codex-rs/hepta-fleet/src/allocation_store.rs",
-          "symbol": "pub fn admit_host("
+          "symbol": "pub fn admit_host(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
         }
       ],
       "tests": [
@@ -57,15 +60,24 @@
       "delegatedCallees": [
         {
           "path": "codex-rs/hepta-fleet/src/placement.rs",
-          "symbol": "pub fn plan_placement_v1("
+          "symbol": "pub fn plan_placement_v1(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
         },
         {
           "path": "codex-rs/hepta-fleet/src/allocation.rs",
-          "symbol": "pub fn calculate_local_allocation_v1("
+          "symbol": "pub fn calculate_local_allocation_v1(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
         },
         {
           "path": "codex-rs/hepta-fleet/src/allocation_store.rs",
-          "symbol": "pub(crate) fn commit_ledger("
+          "symbol": "pub(crate) fn commit_ledger(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
         }
       ],
       "tests": [
@@ -98,7 +110,10 @@
       "delegatedCallees": [
         {
           "path": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-          "symbol": "pub fn renew_or_revoke("
+          "symbol": "pub fn renew_or_revoke(",
+          "role": "delegated_callee",
+          "ownerModule": "runtime.fleet",
+          "buildTarget": "codex-hepta-fleet"
         }
       ],
       "tests": [
