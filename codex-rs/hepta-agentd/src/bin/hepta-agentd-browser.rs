@@ -159,9 +159,7 @@ fn bounded_file(path: PathBuf, maximum: u64) -> Result<Vec<u8>, Box<dyn std::err
 
 fn bounded_stdin(maximum: u64) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     let mut bytes = Vec::new();
-    std::io::stdin()
-        .take(maximum + 1)
-        .read_to_end(&mut bytes)?;
+    std::io::stdin().take(maximum + 1).read_to_end(&mut bytes)?;
     if bytes.len() as u64 > maximum {
         return Err(format!("Browser call exceeds {maximum} bytes").into());
     }
