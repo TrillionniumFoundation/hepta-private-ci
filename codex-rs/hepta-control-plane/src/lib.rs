@@ -7,9 +7,9 @@
 
 #![forbid(unsafe_code)]
 
+mod authority_bridge;
 #[path = "embodiment/cart.rs"]
 mod cart;
-mod authority_bridge;
 mod global_plane;
 #[path = "embodiment/io.rs"]
 mod io;
@@ -26,6 +26,11 @@ mod planner_store;
 #[path = "embodiment/timing.rs"]
 mod timing;
 
+pub use authority_bridge::AuthorityBridgeError;
+pub use authority_bridge::claim_final_use_for_grant_request_v1;
+pub use authority_bridge::final_use_binding_for_grant_request_v1;
+pub use authority_bridge::grant_request_digest_v1;
+pub use authority_bridge::with_authorized_grant_request_v1;
 pub use cart::CART_Q24_SCALE;
 pub use cart::CartCommandV1;
 pub use cart::CartControlMode;
@@ -36,11 +41,6 @@ pub use cart::CartSimulatorV1;
 pub use cart::CartStateV1;
 pub use cart::SyntheticCartObservationV1;
 pub use cart::SyntheticCartPlant;
-pub use authority_bridge::AuthorityBridgeError;
-pub use authority_bridge::claim_final_use_for_grant_request_v1;
-pub use authority_bridge::final_use_binding_for_grant_request_v1;
-pub use authority_bridge::grant_request_digest_v1;
-pub use authority_bridge::with_authorized_grant_request_v1;
 pub use global_plane::AdmittedOwnerSummaryV1;
 pub use global_plane::FLEET_ACCELERATOR_MILLIS_AXIS;
 pub use global_plane::FLEET_CPU_MILLIS_AXIS;
