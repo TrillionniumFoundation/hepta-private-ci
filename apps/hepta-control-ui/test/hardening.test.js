@@ -640,3 +640,95 @@ test("bootstrap timeout covers response body streaming", async () => {
   );
 });
 
+test("close invalidates an in-flight connect before it can become current", async () => {
+  let releaseConnect;
+  const gate = new Promise((resolve) => { releaseConnect = resolve; });
+  const transport = {
+    async connect(input) {
+      await gate;
+      return {
+        authenticated: true,
+        sessionId: "session.late",
+        connectionGeneration: 1,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request() { assert.fail("request should not run"); },
+    async reconcile() { return null; },
+    async close() {},
+  };
+  const client = new RuntimeClient({
+    transport,
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  const connecting = client.connect({
+    endpointId: "runtime.1",
+    protocolVersion: 1,
+    manifestDigest: D1,
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  await client.close();
+  releaseConnect();
+  await assert.rejects(
+    connecting,
+    (error) => error.code === ERROR_CODES.PROTOCOL_VIOLATION,
+  );
+  assert.throws(
+    () => client.readView(),
+    (error) => error.code === ERROR_CODES.NOT_CONNECTED,
+  );
+});
+
+test("post-dispatch persistence failure is visible in the returned acknowledgement", async () => {
+  let saves = 0;
+  const store = {
+    load: () => [],
+    save: () => {
+      saves += 1;
+      if (saves >= 2) throw new Error("storage unavailable");
+    },
+  };
+  const transport = {
+    async connect(input) {
+      return {
+        authenticated: true,
+        sessionId: "session.1",
+        connectionGeneration: 1,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request(method, input) {
+      return {
+        accepted: true,
+        method,
+        sessionId: input.sessionId,
+        connectionGeneration: input.connectionGeneration,
+        runtimeGeneration: input.runtimeGeneration,
+        operationId: input.operationId,
+        semanticDigest: input.semanticDigest,
+      };
+    },
+    async reconcile() { return null; },
+    async close() {},
+  };
+  const client = new RuntimeClient({
+    transport,
+    pendingStore: store,
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  await connectWithSnapshot(client);
+  const acknowledgement = await client.submitRequest({
+    operationId: "operation.persist-after-dispatch",
+    subjectId: "runtime.agentd",
+    action: "request_retry",
+    expectedRevision: 4,
+    displayedRevision: 9,
+  });
+  assert.equal(acknowledgement.status, "indeterminate");
+  assert.equal(acknowledgement.recoveryRequired, true);
+  assert.equal(acknowledgement.errorCode, ERROR_CODES.PERSISTENCE_UNAVAILABLE);
+  assert.equal(client.readView().recoveryRequired, 1);
+});
+
