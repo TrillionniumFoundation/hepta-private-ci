@@ -1,6 +1,8 @@
 use std::future;
 use std::future::Future;
 use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 use std::task::Context;
 use std::task::Poll;
 use std::task::Wake;
@@ -84,6 +86,14 @@ impl FederationTransportV2 for PendingTransport {
     }
 }
 
+struct PanicTransport;
+
+impl FederationTransportV2 for PanicTransport {
+    fn send_once<'a>(&'a self, _query: &'a FederatedQueryV2) -> FederationTransportFuture<'a> {
+        panic!("transport must not be invoked when preflight authority is not current")
+    }
+}
+
 #[derive(Clone, Copy)]
 struct FixtureAuthority {
     state: FederationAuthorityStateV2,
@@ -106,6 +116,44 @@ impl FederationAuthorityV2 for FixtureAuthority {
     }
 }
 
+#[derive(Clone)]
+struct SequencedAuthority {
+    first: FixtureAuthority,
+    second: FixtureAuthority,
+    calls: Arc<AtomicUsize>,
+}
+
+impl SequencedAuthority {
+    fn new(first: FixtureAuthority, second: FixtureAuthority) -> Self {
+        Self {
+            first,
+            second,
+            calls: Arc::new(AtomicUsize::new(0)),
+        }
+    }
+}
+
+impl FederationAuthorityV2 for SequencedAuthority {
+    fn revalidate<'a>(
+        &'a self,
+        query: &'a FederatedQueryV2,
+        _lease: &'a FederatedLeaseV2,
+    ) -> FederationAuthorityFuture<'a> {
+        let selected = if self.calls.fetch_add(1, Ordering::SeqCst) == 0 {
+            self.first
+        } else {
+            self.second
+        };
+        let observation = FederationAuthorityObservationV2 {
+            query_binding_digest: query.binding_digest(),
+            lease_epoch: query.lease_epoch,
+            observed_unix_ms: selected.observed_unix_ms,
+            state: selected.state,
+        };
+        Box::pin(async move { Ok(observation) })
+    }
+}
+
 #[derive(Clone, Copy)]
 enum FixtureControl {
     Pending,
@@ -113,7 +161,11 @@ enum FixtureControl {
 }
 
 impl FederationAttemptControlV2 for FixtureControl {
-    fn wait_for_stop<'a>(&'a self, _query: &'a FederatedQueryV2) -> FederationStopFuture<'a> {
+    fn wait_for_stop<'a>(
+        &'a self,
+        _query: &'a FederatedQueryV2,
+        _lease: &'a FederatedLeaseV2,
+    ) -> FederationStopFuture<'a> {
         match self {
             Self::Pending => Box::pin(future::pending()),
             Self::Stop(reason) => Box::pin(future::ready(*reason)),
@@ -232,10 +284,13 @@ fn post_io_revocation_suppresses_remote_items() {
             &query,
         ))),
     };
-    let authority = FixtureAuthority {
-        state: FederationAuthorityStateV2::Revoked,
-        observed_unix_ms: 20,
-    };
+    let authority = SequencedAuthority::new(
+        current_authority(),
+        FixtureAuthority {
+            state: FederationAuthorityStateV2::Revoked,
+            observed_unix_ms: 21,
+        },
+    );
     let control = FixtureControl::Pending;
     let result = block_on(execute_once(
         &transport,
@@ -259,10 +314,13 @@ fn post_io_generation_drift_suppresses_remote_items() {
             &query,
         ))),
     };
-    let authority = FixtureAuthority {
-        state: FederationAuthorityStateV2::StaleGeneration,
-        observed_unix_ms: 20,
-    };
+    let authority = SequencedAuthority::new(
+        current_authority(),
+        FixtureAuthority {
+            state: FederationAuthorityStateV2::StaleGeneration,
+            observed_unix_ms: 21,
+        },
+    );
     let control = FixtureControl::Pending;
     let result = block_on(execute_once(
         &transport,
@@ -275,6 +333,29 @@ fn post_io_generation_drift_suppresses_remote_items() {
     .unwrap_or_else(|error| panic!("stale result: {error}"));
     assert!(result.items.is_empty());
     assert_eq!(result.validity, FederatedValidityV2::StaleGeneration);
+}
+
+#[test]
+fn preflight_revocation_blocks_transport_dispatch() {
+    let query = query();
+    let authority = FixtureAuthority {
+        state: FederationAuthorityStateV2::Revoked,
+        observed_unix_ms: 20,
+    };
+    let control = FixtureControl::Pending;
+    assert_eq!(
+        block_on(execute_once(
+            &PanicTransport,
+            &authority,
+            &control,
+            10,
+            query.clone(),
+            &lease(&query),
+        )),
+        Err(FederationV2Error::AuthorityNotCurrent(
+            FederationAuthorityStateV2::Revoked,
+        ))
+    );
 }
 
 #[test]
@@ -321,10 +402,13 @@ fn post_io_observation_cannot_outlive_lease() {
             &query,
         ))),
     };
-    let authority = FixtureAuthority {
-        state: FederationAuthorityStateV2::Current,
-        observed_unix_ms: 95,
-    };
+    let authority = SequencedAuthority::new(
+        current_authority(),
+        FixtureAuthority {
+            state: FederationAuthorityStateV2::Current,
+            observed_unix_ms: 95,
+        },
+    );
     let control = FixtureControl::Pending;
     assert_eq!(
         block_on(execute_once(
