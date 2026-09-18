@@ -5,7 +5,12 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-inferd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "docs/memory/**"
+      - "docs/modules/inference.control/**"
+      - "docs/readiness/LANE_B_NATIVE_HOST.md"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
@@ -19,7 +24,12 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-inferd/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "docs/memory/**"
+      - "docs/modules/inference.control/**"
+      - "docs/readiness/LANE_B_NATIVE_HOST.md"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
@@ -83,8 +93,10 @@ jobs:
           cargo test -p codex-hepta-supervisor --lib
           cargo test -p codex-hepta-agentd --lib
           cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
-          cargo test -p codex-hepta-infer-core --bin hepta-infer-control
-          cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+          cargo test -p codex-hepta-infer-core
+          cargo test -p codex-hepta-inferd
+          cargo test -p codex-hepta-infer-worker-host
+          cargo clippy -p codex-hepta-infer-core -p codex-hepta-inferd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
           cargo test -p codex-hepta-automation --lib
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
           cargo test -p codex-hepta-matrixd --lib
@@ -130,6 +142,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
+          cargo test -p codex-hepta-infer-core -p codex-hepta-inferd -p codex-hepta-infer-worker-host
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cd ..
           git diff --check
