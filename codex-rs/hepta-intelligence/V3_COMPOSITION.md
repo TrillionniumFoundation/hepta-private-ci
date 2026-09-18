@@ -68,8 +68,10 @@ legal candidates plus the intrinsic `abstain` candidate.
 
 ## 3. Native contracts
 
-`LegalActionCandidateSetV1` is a bounded, canonical set with at most 128
-candidates. It binds candidate-set identity, state digest, generator, grammar,
+`LegalActionCandidateSetV1` is a bounded, canonical set with at most 126
+caller-supplied action candidates. The durable Decision adds the reserved
+`abstain` and `slow-path` identities, so the complete ledger candidate set
+remains within its 128-entry bound. It binds candidate-set identity, state digest, generator, grammar,
 candidate support and support floor. Input order does not change its digest.
 
 `IntelligenceHostEnvelopeV1` is produced only after the selected path reaches
