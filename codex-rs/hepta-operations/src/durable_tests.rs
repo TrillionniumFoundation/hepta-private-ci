@@ -35,7 +35,10 @@ fn intent() -> PreparedIntent {
 }
 
 async fn prepare(store: &DurableOperationStore) -> DurableOperationRecord {
-    store.prepare_intent(intent(), b"payload".to_vec()).await.unwrap()
+    store
+        .prepare_intent(intent(), b"payload".to_vec())
+        .await
+        .unwrap()
 }
 
 #[tokio::test]
@@ -102,6 +105,23 @@ async fn prepare_commits_ledger_and_outbox_atomically_and_reopens_idempotently()
     assert_eq!(
         reopened.prepare_intent(drift, b"changed".to_vec()).await,
         Err(OperationError::Conflict(intent().operation_id))
+    );
+}
+
+#[tokio::test]
+async fn pending_payload_survives_reopen_and_claim_restores_exact_bytes() {
+    let temp = TempDir::new().unwrap();
+    let sqlite = config(temp.path());
+    let store = DurableOperationStore::open(&sqlite).await.unwrap();
+    prepare(&store).await;
+    store.pool.close().await;
+
+    let reopened = DurableOperationStore::open(&sqlite).await.unwrap();
+    let lease = claim(&reopened, 60_000).await;
+    assert_eq!(lease.payload(), b"payload");
+    assert_eq!(
+        Digest32::of_bytes(lease.payload()),
+        lease.envelope().payload_digest
     );
 }
 
