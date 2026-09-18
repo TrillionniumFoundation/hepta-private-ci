@@ -101,7 +101,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-implementation-maps.py verify
-          python3 scripts/hepta-lane-d-semantic-conformance.py
+          python3 scripts/hepta-lane-d-semantic-conformance.py verify
 
       - name: Compile focused owners
         working-directory: codex-rs
