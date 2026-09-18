@@ -517,14 +517,14 @@ mod tests {
             .expect("historical append succeeds while credential is live");
 
         let snapshot = journal.snapshot();
-        let reopened = ArtifactLifecycleJournalV2::from_snapshot(snapshot, 101)
+        let mut reopened = ArtifactLifecycleJournalV2::from_snapshot(snapshot, 101)
             .expect("historical snapshot remains recoverable after actor expiry");
         assert_eq!(reopened.head_digest(), journal.head_digest());
         assert_eq!(reopened.records(), journal.records());
 
         let next_artifact = id("artifact-after-expiry");
         assert_eq!(
-            reopened.clone().append(
+            reopened.append(
                 reopened.head_digest(),
                 &producer_id,
                 producer.clone(),
