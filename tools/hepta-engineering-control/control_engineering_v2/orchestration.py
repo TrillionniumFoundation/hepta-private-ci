@@ -191,7 +191,6 @@ def verify_canonical_source_receipt(
     now = time.time_ns() if now_ns is None else now_ns
     if type(now) is not int or now < 0:
         raise EngineeringError("invalid_time")
-    envelope = _validate_envelope(envelope)
     repository = Path(root).resolve()
     checked_sha256(source.document_set_digest, "document_set_digest")
     checked_sha256(expected_document_set_digest, "document_set_digest")
@@ -368,6 +367,7 @@ def schedule_engineering_work(
     now = time.time_ns() if now_ns is None else now_ns
     if type(now) is not int or now < 0:
         raise EngineeringError("invalid_time")
+    envelope = _validate_envelope(envelope)
     if type(ci_capacity_units) is not int or not 0 <= ci_capacity_units <= MAX_CI_UNITS:
         raise EngineeringError("invalid_ci_capacity")
     checked_id(generation_id, "generation_id")
