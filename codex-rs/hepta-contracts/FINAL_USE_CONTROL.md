@@ -81,10 +81,16 @@ new head before expiry.
 `FinalUseRevocationAck` is a separate node-signed receipt over the exact
 revocation-update digest, distributor identity, epoch/revision and local apply
 time. `FinalUseRevocationConvergenceVerifier` pins a closed set of at most 256
-enrolled nodes, each with its own bounded epoch key ring. It verifies every
-supplied acknowledgement and returns deterministic acknowledged/missing node
-sets for one still-fresh update.
+enrolled nodes, each with its own bounded epoch key ring. A convergence check
+also receives the pinned `FinalUseRevocationFeedVerifier` and the
+`SignedFinalUseRevocationUpdate`: distributor identity, freshness, active
+epoch key and signature are authenticated before any node acknowledgement is
+accepted. The report records the distributor trust-key id plus the selected
+trust-key id for every acknowledged node, then returns deterministic
+acknowledged/missing node sets for one still-fresh update.
 
+An unsigned or forged distributor update cannot produce a convergence report,
+even if otherwise valid node keys sign acknowledgements over its payload.
 A missing node is never silently counted as converged. Duplicate, unknown,
 forged, wrong-head, pre-issuance, post-expiry or future-dated-at-verification
 acknowledgements fail closed.
