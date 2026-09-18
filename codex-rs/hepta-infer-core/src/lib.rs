@@ -1,6 +1,9 @@
-//! Durable-style inference request and reservation state machine.
+//! Inference request and reservation primitives.
 //!
-//! No function in this crate dispatches a provider or executes a model.
+//! `InferenceLedger` below is a small non-durable reference/contract state
+//! machine. It does not dispatch a provider and is not the production hosted
+//! state owner. Provider-bound execution must use `durable_control::DurableInferenceControl`;
+//! the native App Server worker composes that owner before physical dispatch.
 
 #![forbid(unsafe_code)]
 
@@ -81,6 +84,7 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Non-durable reference state machine for contract-level request transitions.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InferenceLedger {
     records: BTreeMap<StableId, RequestRecord>,
