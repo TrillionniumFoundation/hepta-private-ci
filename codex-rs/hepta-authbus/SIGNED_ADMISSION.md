@@ -103,3 +103,25 @@ oracle. Native tests exercise real SQLite and an abrupt child-process exit
 between send and ack.
 Agentd provides a separately configured, restricted [signed text queue host](../hepta-agentd/AUTHBUS_TEXT.md)
 using this library and the existing App Server queue; it is not a general effect dispatcher.
+
+
+## Durable authorization, quota and replay rollback control
+
+The signed admission receipt remains `DENY_ALL`; effect authorization is performed by
+the evidence owner's separate durable control state. `authorize_and_reserve` commits
+the exact policy revision check, quota check and reservation atomically.
+`begin_reserved_effect` rechecks that policy revision immediately before the effect
+seam. In-flight or indeterminate effects retain their quota until terminal observed-cost
+settlement or reconciliation proves the effect was not applied.
+
+Replay high-water compaction requires an external checkpoint rather than raw deletion.
+`advance_authbus_replay_checkpoint` binds a monotonic generation to a deterministic
+digest of the entire durable replay registry. `retire_authbus_replay_epoch` requires
+the exact checkpoint, a superseded/revoked epoch and no active outbox deliveries; it
+writes a permanent retired-epoch marker before removing high-water rows. Durable
+admission rejects the retired epoch even after the rows are compacted.
+
+The checkpoint protects against restored SQLite state only when its expected generation
+and digest are retained outside the restored storage boundary. Agentd trust schema v2
+can carry that independently governed expected checkpoint and verifies it on every
+trust refresh.
