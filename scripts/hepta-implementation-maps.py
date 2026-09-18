@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 """Generate and verify one implementation map for every registered module.
 
-Maps are source-navigation evidence.  They deliberately distinguish a native
+Maps are source-navigation evidence. They deliberately distinguish a native
 entrypoint from a composed production caller; an entrypoint never grants
 runtime, effect, acceptance, promotion, or release authority.
+
+A shared ``sourceBase`` remains a repository-wide compatibility baseline. A map
+that claims product composition additionally carries ``sourceObjects``: exact
+Git object identities for its declared owner roots, native entrypoints and
+product callers. This avoids the self-reference problem of requiring a JSON file
+to contain the commit/tree hash of the commit that contains that same JSON file,
+while still making relevant source changes fail verification until the map is
+refreshed.
 """
 
 from __future__ import annotations
@@ -33,6 +41,37 @@ def git(*args: str) -> str:
         ["git", *args], cwd=ROOT, text=True, capture_output=True, check=True
     )
     return p.stdout.strip()
+
+
+def tracked_source_paths(row: dict) -> list[str]:
+    """Return source paths whose Git objects prove this map is still current.
+
+    The map itself is deliberately excluded, so the evidence is not recursive.
+    Directory paths are valid and bind the complete Git tree below that owner
+    root; file paths bind the exact blob consumed by an operation/caller.
+    """
+    paths: set[str] = set()
+    declared = row.get("declaredRoots", row.get("sourceRoot", []))
+    if isinstance(declared, str):
+        declared = [declared]
+    paths.update(path for path in declared if isinstance(path, str) and path)
+    for operation in row.get("operations", []):
+        path = operation.get("sourcePath") if isinstance(operation, dict) else None
+        if isinstance(path, str) and path:
+            paths.add(path)
+    for caller in row.get("productCallers", []):
+        path = caller.get("sourcePath") if isinstance(caller, dict) else None
+        if isinstance(path, str) and path:
+            paths.add(path)
+    return sorted(paths)
+
+
+def current_source_objects(row: dict) -> list[dict[str, str]]:
+    """Bind each relevant path to the tree/blob present at the tested HEAD."""
+    return [
+        {"path": path, "object": git("rev-parse", f"HEAD:{path}")}
+        for path in tracked_source_paths(row)
+    ]
 
 
 def lane_by_module():
@@ -75,7 +114,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     operations = parse_entrypoints(mid)
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
-        # entrypoint.  This is a handoff blocker, not a production claim.
+        # entrypoint. This is a handoff blocker, not a production claim.
         operations = [
             {
                 "operation": "native_mapping_pending",
@@ -231,9 +270,14 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "operator acceptance, canary, promotion and release",
         ],
     )
-    # ``sourceRoot`` is a v1 spelling.  Retain it as a compatibility alias so
+    # ``sourceRoot`` is a v1 spelling. Retain it as a compatibility alias so
     # downstream readers can migrate independently; v3 readers use roots.
     migrated["sourceRoot"] = declared
+    if "sourceObjects" in row:
+        # Only maps that opted into exact source-object receipts are refreshed.
+        # This keeps migration compatible while making composed maps fail closed
+        # once they publish this stronger evidence boundary.
+        migrated["sourceObjects"] = current_source_objects(migrated)
     return migrated
 
 
@@ -345,6 +389,37 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+
+        status = row.get("status")
+        if status is not None:
+            if not isinstance(status, dict) or any(
+                not isinstance(status.get(field), bool)
+                for field in ("implemented", "composed", "qualified")
+            ):
+                failures.append(f"{mid}: invalid implemented/composed/qualified status")
+            elif status["composed"] != (row.get("productCallerState") != "not_composed"):
+                failures.append(f"{mid}: composition status disagreement")
+
+        source_objects = row.get("sourceObjects")
+        if source_objects is not None:
+            if not isinstance(source_objects, list) or not source_objects:
+                failures.append(f"{mid}: source objects")
+            else:
+                try:
+                    expected_objects = current_source_objects(row)
+                except subprocess.CalledProcessError as exc:
+                    failures.append(f"{mid}: source object lookup failed ({exc})")
+                else:
+                    if source_objects != expected_objects:
+                        failures.append(f"{mid}: stale source objects")
+
+        if row.get("productCallerState") != "not_composed":
+            callers = row.get("productCallers")
+            if not isinstance(callers, list) or not callers:
+                failures.append(f"{mid}: composed map requires product callers")
+            if source_objects is None:
+                failures.append(f"{mid}: composed map requires exact source objects")
+
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:

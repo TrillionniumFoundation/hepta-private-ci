@@ -11,6 +11,7 @@ use codex_hepta_memory::MemoryVerification;
 use codex_hepta_memory::SourceDraft;
 use codex_hepta_paths::HeptaFleetRoot;
 
+use super::finalize;
 use super::read;
 
 #[path = "cognitive_context_budget_tests.rs"]
@@ -82,4 +83,88 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     assert_ne!(withdrawn.snapshot_digest, context.snapshot_digest);
     let other = AgentId::parse("00000000-0000-4000-8000-000000000120").unwrap();
     assert!(read(&store, &other, 1, "lemon", 4, None).await.is_err());
+}
+
+#[tokio::test]
+async fn finalization_rejects_context_tombstoned_after_agentd_read() {
+    let temp = tempfile::tempdir().unwrap();
+    let fleet = temp.path().join("fleet");
+    std::fs::create_dir_all(&fleet).unwrap();
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000121").unwrap();
+    let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope: scope.clone(),
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "finalize-race".to_string(),
+                content: b"verified stale-before-turn".to_vec(),
+                observed_at_unix_seconds: 100,
+            },
+        )
+        .await
+        .unwrap();
+    let memory = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "finalize-race".to_string(),
+                revision: MemoryRevisionDraft {
+                    scope: scope.clone(),
+                    content: "verified stale-before-turn".to_string(),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: 100,
+                    valid_to_unix_seconds: None,
+                    citations: vec![citation.clone()],
+                },
+            },
+        )
+        .await
+        .unwrap();
+
+    // This models the context response already returned to the infer worker.
+    let context = read(&store, &owner, 1, "stale-before-turn", 4, None)
+        .await
+        .unwrap();
+    assert_eq!(context.items.len(), 1);
+    finalize(
+        &store,
+        &owner,
+        &context.snapshot_digest,
+        &context.read_digest,
+    )
+    .await
+    .unwrap();
+
+    // The memory changes after the Agentd response but before model TurnStart.
+    store
+        .forget_memory(
+            &access,
+            &memory.id.memory_id,
+            1,
+            &ForgetMemoryDraft {
+                scope,
+                reason: "revoked-before-turn".to_string(),
+                valid_from_unix_seconds: 200,
+                citations: vec![citation],
+            },
+        )
+        .await
+        .unwrap();
+
+    assert!(
+        finalize(
+            &store,
+            &owner,
+            &context.snapshot_digest,
+            &context.read_digest,
+        )
+        .await
+        .is_err()
+    );
 }

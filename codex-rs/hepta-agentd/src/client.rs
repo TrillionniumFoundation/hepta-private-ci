@@ -135,6 +135,37 @@ impl AgentdClient {
         }
     }
 
+    /// Revalidate the exact snapshot/read receipt immediately before a caller
+    /// crosses its effect boundary. This is a final observation, not a lease.
+    pub async fn finalize_cognitive_context(
+        &self,
+        snapshot: &crate::CognitiveContextSnapshot,
+    ) -> Result<(), AgentdError> {
+        let expected_snapshot_digest = snapshot.snapshot_digest.clone();
+        let expected_read_digest = snapshot.read_digest.clone();
+        match self
+            .send(AgentdRequest::cognitive_context_finalize(
+                self.request_id(),
+                self.spawn_generation,
+                expected_snapshot_digest.clone(),
+                expected_read_digest.clone(),
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::CognitiveContextFinalized {
+                snapshot_digest,
+                read_digest,
+            } if snapshot_digest == expected_snapshot_digest && read_digest == expected_read_digest => {
+                Ok(())
+            }
+            AgentdPayload::CognitiveContextFinalized { .. } => Err(AgentdError::Protocol(
+                "agentd finalized a different cognitive context receipt".to_string(),
+            )),
+            payload => unexpected(payload),
+        }
+    }
+
     /// Submit text signed by a separately trusted owner-configured issuer.
     pub async fn submit_authbus_text(
         &self,
