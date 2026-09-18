@@ -335,8 +335,7 @@ fn validate_world_model(model: &TabularWorldModelV1) -> Result<(), WorldModelErr
         || model.estimates.is_empty()
         || model.estimates.len() > MAX_STATE_ACTIONS
         || model.estimates.windows(2).any(|pair| {
-            (&pair[0].state_id, &pair[0].action_id)
-                >= (&pair[1].state_id, &pair[1].action_id)
+            (&pair[0].state_id, &pair[0].action_id) >= (&pair[1].state_id, &pair[1].action_id)
         })
     {
         return Err(WorldModelError::InvalidModel);
@@ -346,7 +345,10 @@ fn validate_world_model(model: &TabularWorldModelV1) -> Result<(), WorldModelErr
         if estimate.sample_count == 0
             || estimate.branches.is_empty()
             || estimate.branches.len() > MAX_BRANCHES_PER_STATE_ACTION
-            || estimate.branches.windows(2).any(|pair| pair[0].next_state_id >= pair[1].next_state_id)
+            || estimate
+                .branches
+                .windows(2)
+                .any(|pair| pair[0].next_state_id >= pair[1].next_state_id)
         {
             return Err(WorldModelError::InvalidModel);
         }
