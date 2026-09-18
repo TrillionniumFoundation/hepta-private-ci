@@ -123,7 +123,7 @@ def execute_candidate_sandbox(
     limiter: HostSandboxLimiter | None = None,
     maximum_retries: int = MAX_INFRASTRUCTURE_RETRIES,
 ) -> tuple[Candidate, SandboxReceipt]:
-    check_values = tuple(tuple(item) for item in checks)
+    check_values = tuple(checks)
     return _execute_with_host_control(
         lambda: sandbox_candidate(repository, envelope, candidate, check_values),
         envelope,
@@ -141,7 +141,7 @@ def execute_candidate_bundle_sandbox(
     limiter: HostSandboxLimiter | None = None,
     maximum_retries: int = MAX_INFRASTRUCTURE_RETRIES,
 ) -> tuple[CandidateBundle, SandboxReceipt]:
-    check_values = tuple(tuple(item) for item in checks)
+    check_values = tuple(checks)
     return _execute_with_host_control(
         lambda: sandbox_candidate_bundle(repository, envelope, candidate, check_values),
         envelope,
