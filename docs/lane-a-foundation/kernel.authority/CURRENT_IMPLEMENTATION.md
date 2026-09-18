@@ -29,7 +29,12 @@ The current candidate contains two native authority families.
   `AuthorityFrontierStore<AuthorityLeaseFrontier>`.
 
 V1 general leases are registry-authoritative online references. Serialized
-lease values are not self-verifying portable bearer capabilities.
+lease values are not self-verifying portable bearer capabilities. The durable
+general-lease store is schema V2 in this candidate because pruning now persists
+retired revision lineage in the frontier-covered state. Earlier candidate store
+bytes are not silently upgraded; qualification must create or explicitly
+migrate a compatible generation rather than interpreting missing lineage as a
+fresh revision namespace.
 
 ### Signed FinalUse
 
@@ -90,7 +95,12 @@ reconciled.
   signed freshness deadline until another current head is ingested.
 
 The grant issuer, approver and revocation distributor remain independently
-pinned roles. Repository signer tools do not generate keys.
+pinned roles. Repository signer tools do not generate keys. Staged compromise
+recovery is repository-defined only when an independently custodied recovery key
+was pre-enrolled for a later authority epoch; the recovery transition retires
+the compromised key by epoch window and distributes a fresh revocation head.
+Introducing a previously unknown key requires a separately qualified trust-set
+generation rather than an in-place runtime trust mutation.
 
 ## Persistence, trusted time and rollback
 
