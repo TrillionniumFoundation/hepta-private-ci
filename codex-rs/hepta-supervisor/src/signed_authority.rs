@@ -1109,6 +1109,75 @@ mod tests {
     }
 
     #[test]
+    fn recovery_decision_binds_current_release_bytes_and_fences() {
+        let agent =
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
+        let signer =
+            H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32]).expect("signer");
+        let verifier = H7H89ProductionGrantVerifier::new_with_h7_verifier(
+            "operator",
+            4,
+            signer.verifying_key(),
+            h7_verifier(),
+        )
+        .expect("verifier");
+        let grant = Sha256Digest::for_bytes(b"grant");
+        let intent = Sha256Digest::for_bytes(b"intent");
+        let manifest = Sha256Digest::for_bytes(b"manifest");
+        let agentd = Sha256Digest::for_bytes(b"agentd");
+        let decision = signer
+            .sign_recovery(
+                &agent,
+                grant.clone(),
+                intent.clone(),
+                "release-v3",
+                manifest.clone(),
+                agentd.clone(),
+                None,
+                ProductionRecoveryOutcome::Committed,
+                5,
+                12,
+                3,
+                100,
+                200,
+            )
+            .expect("recovery decision");
+        verifier
+            .verify_recovery(
+                &decision,
+                &agent,
+                &grant,
+                &intent,
+                "release-v3",
+                &manifest,
+                &agentd,
+                None,
+                5,
+                12,
+                3,
+                150,
+            )
+            .expect("verify recovery");
+        assert_eq!(
+            verifier.verify_recovery(
+                &decision,
+                &agent,
+                &grant,
+                &intent,
+                "release-v3",
+                &manifest,
+                &Sha256Digest::for_bytes(b"different-agentd"),
+                None,
+                5,
+                12,
+                3,
+                150,
+            ),
+            Err(ProductionAuthorityError::RecoveryBinding)
+        );
+    }
+
+    #[test]
     fn tampering_or_stale_fence_is_rejected_before_signature_use() {
         let envelope = h7();
         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
