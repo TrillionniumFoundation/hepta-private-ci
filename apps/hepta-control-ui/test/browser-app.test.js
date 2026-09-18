@@ -198,3 +198,40 @@ test("browser request-construction failures are announced instead of escaping cl
   assert.match(alert.textContent, /Request construction failed/);
   assert.equal(submissions, 0);
 });
+
+test("browser exposes bounded read-only recovery for unresolved operations", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  let reconcileCalls = 0;
+  const client = {
+    readView: () => Object.freeze({ ...sampleView(), recoveryRequired: 1 }),
+    async submitRequest() { assert.fail("mutation should not run"); },
+    async requestStop() { assert.fail("stop should not run"); },
+    async reconcilePending(input) {
+      reconcileCalls += 1;
+      assert.deepEqual(input, { force: true });
+      return {
+        pending: 2,
+        indeterminate: 1,
+        recoveryRequired: 1,
+      };
+    },
+  };
+  const app = new ControlPlaneApp({ root, client });
+  app.render();
+  const reconcile = allElements(root).find(
+    (element) =>
+      element.tagName === "button" &&
+      element.textContent === "Reconcile unresolved operations",
+  );
+  assert.ok(reconcile);
+  reconcile.listeners.get("click")();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(reconcileCalls, 1);
+  const alert = allElements(root).find(
+    (element) => element.attributes.get("role") === "alert",
+  );
+  assert.ok(alert);
+  assert.match(alert.textContent, /manual recovery required 1/);
+});
+
