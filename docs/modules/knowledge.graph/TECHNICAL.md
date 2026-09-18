@@ -137,7 +137,9 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. The current composition candidate keeps SQLite ownership in `codex-hepta-memory`, adapts its immutable fact rows to `KnowledgeGenerationV2`, validates predecessor-bound publication through `codex-hepta-kg`, and only then appends the generation receipt, nodes, edges and current-pointer update inside the existing `BEGIN IMMEDIATE` product transaction. The adapter does not create a second durable graph store.
+
+Product GraphOneHop retrieval loads the selected durable generation through that adapter and delegates relation selection to the `codex-hepta-kg` V2 query kernel. SQL remains responsible for persistence, indexed seed discovery and transaction isolation; it is not an independent graph-policy implementation.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -171,6 +173,9 @@ Current operating and state-format references:
 
 - [codex-rs/hepta-kg/src/lib.rs](../../../codex-rs/hepta-kg/src/lib.rs).
 - [codex-rs/hepta-kg/src/generation.rs](../../../codex-rs/hepta-kg/src/generation.rs).
+- [codex-rs/hepta-memory/src/cognitive_kg_store/v2.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_store/v2.rs) for the SQLite-to-V2 adaptation boundary.
+- [codex-rs/hepta-memory/src/cognitive_kg_store.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_store.rs) for atomic durable publication.
+- [codex-rs/hepta-memory/src/cognitive_retrieval.rs](../../../codex-rs/hepta-memory/src/cognitive_retrieval.rs) for the current product GraphOneHop consumer.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -178,10 +183,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-kg/src/generation_tests.rs](../../../codex-rs/hepta-kg/src/generation_tests.rs); named case: `incremental_and_full_rebuilds_are_semantically_equal`.
+- [codex-rs/hepta-kg/src/generation_tests.rs](../../../codex-rs/hepta-kg/src/generation_tests.rs); named cases include `incremental_and_full_rebuilds_are_semantically_equal` and `named_predicates_preserve_semantics_and_occurrence_identity`.
 - [codex-rs/hepta-kg/src/lib_tests.rs](../../../codex-rs/hepta-kg/src/lib_tests.rs); named case: `rebuild_is_canonical_and_authority_free`.
+- [codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs); named case: `product_projection_is_scoped_cited_append_only_and_fts_backed`. The case exercises durable full materialization, V2 digest persistence, full/incremental equivalence across correction and tombstone generations, reopen and the product V2 GraphOneHop query path.
 
-In `codex-rs`, run `just test -p codex-hepta-kg`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-kg -p codex-hepta-memory`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. Exact-head and synthetic-merge evidence remain required before changing the production implementation claim. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

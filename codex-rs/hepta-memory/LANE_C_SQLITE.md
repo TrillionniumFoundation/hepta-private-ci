@@ -32,6 +32,22 @@ not only snapshot generation. Broken ancestry, a nonlatest head, invalid record
 metadata, and tombstone resurrection fail closed. All returned values retain
 `DENY_ALL` effect authority.
 
+The durable KG generation is now composed through the canonical
+`codex-hepta-kg` V2 semantics. `cognitive_kg_store/v2.rs` adapts immutable
+revision facts to V2 nodes, edge occurrences and source-support lineage.
+`refresh_scope_projection_tx` validates the complete candidate and its exact
+predecessor through the V2 publication kernel before it appends the SQLite
+generation receipt, nodes, edges and current pointer in the same immediate
+transaction. New receipts persist the canonical V2 generation digest in
+`output_sha256`; reopen verification still accepts historical pre-V2 output
+digests so the transition does not require rewriting durable history.
+
+GraphOneHop product retrieval uses the selected SQLite generation as the
+durability fence, reconstructs its V2 view, and delegates relation selection to
+`codex-hepta-kg::query_relations`. SQLite still owns persistence, transaction
+isolation and seed indexes; it is no longer a separate graph-relation policy
+implementation.
+
 `DurableCognitiveSnapshot::read(ReadRequestV2)` runs the new cognitive-read
 implementation against this owner-acquired cut. The caller supplies result and
 encoded-byte bounds. It can intersect these digest-only records with the

@@ -37,6 +37,33 @@ pub enum KnowledgeRelationKindV2 {
     PromptComplements,
     PromptSubstitutes,
     PromptConflicts,
+    /// A bounded domain predicate. `predicate_digest` carries semantic query
+    /// identity, while `identity_digest` distinguishes independently persisted
+    /// occurrences of the same predicate between the same endpoints.
+    Named {
+        predicate_digest: Digest32,
+        identity_digest: Digest32,
+    },
+}
+
+impl KnowledgeRelationKindV2 {
+    pub fn named(value: impl AsRef<[u8]>) -> Self {
+        let digest = Digest32::of_bytes(value.as_ref());
+        Self::Named {
+            predicate_digest: digest,
+            identity_digest: digest,
+        }
+    }
+
+    pub fn named_instance(
+        predicate: impl AsRef<[u8]>,
+        identity: impl AsRef<[u8]>,
+    ) -> Self {
+        Self::Named {
+            predicate_digest: Digest32::of_bytes(predicate.as_ref()),
+            identity_digest: Digest32::of_bytes(identity.as_ref()),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -340,7 +367,10 @@ pub fn query_relations(
         .filter(|edge| {
             (seeds.contains(&edge.identity.source_node_id)
                 || seeds.contains(&edge.identity.target_node_id))
-                && (relation_kinds.is_empty() || relation_kinds.contains(&edge.identity.relation))
+                && (relation_kinds.is_empty()
+                    || relation_kinds
+                        .iter()
+                        .any(|kind| relation_matches(*kind, edge.identity.relation)))
         })
         .cloned()
         .collect::<Vec<_>>();
@@ -395,6 +425,7 @@ fn canonicalize_generation(
     let node_ids = canonical_nodes.keys().cloned().collect::<BTreeSet<_>>();
     let mut canonical_edges = BTreeMap::<KnowledgeEdgeIdentityV2, KnowledgeEdgeV2>::new();
     for mut edge in edges {
+        validate_relation(edge.identity.relation)?;
         ensure_digest("edge_validity", edge.validity_digest)?;
         if !node_ids.contains(&edge.identity.source_node_id)
             || !node_ids.contains(&edge.identity.target_node_id)
@@ -455,6 +486,7 @@ fn validate_generation_fields(
     }
     let mut edge_ids = BTreeSet::new();
     for edge in edges {
+        validate_relation(edge.identity.relation)?;
         if !node_ids.contains(&edge.identity.source_node_id)
             || !node_ids.contains(&edge.identity.target_node_id)
         {
@@ -571,8 +603,47 @@ fn compute_query_result_digest(result: &KnowledgeRelationResultV2) -> Digest32 {
 
 fn push_edge_identity(bytes: &mut Vec<u8>, identity: &KnowledgeEdgeIdentityV2) {
     push_id(bytes, &identity.source_node_id);
-    bytes.push(relation_code(identity.relation));
+    push_relation(bytes, identity.relation);
     push_id(bytes, &identity.target_node_id);
+}
+
+fn push_relation(bytes: &mut Vec<u8>, value: KnowledgeRelationKindV2) {
+    match value {
+        KnowledgeRelationKindV2::Supports => bytes.push(0),
+        KnowledgeRelationKindV2::Contradicts => bytes.push(1),
+        KnowledgeRelationKindV2::TemporalBefore => bytes.push(2),
+        KnowledgeRelationKindV2::TemporalAfter => bytes.push(3),
+        KnowledgeRelationKindV2::Causes => bytes.push(4),
+        KnowledgeRelationKindV2::Enables => bytes.push(5),
+        KnowledgeRelationKindV2::ProcedureStep => bytes.push(6),
+        KnowledgeRelationKindV2::PromptComplements => bytes.push(7),
+        KnowledgeRelationKindV2::PromptSubstitutes => bytes.push(8),
+        KnowledgeRelationKindV2::PromptConflicts => bytes.push(9),
+        KnowledgeRelationKindV2::Named {
+            predicate_digest,
+            identity_digest,
+        } => {
+            bytes.push(10);
+            push_digest(bytes, predicate_digest);
+            push_digest(bytes, identity_digest);
+        }
+    }
+}
+
+fn relation_matches(filter: KnowledgeRelationKindV2, value: KnowledgeRelationKindV2) -> bool {
+    match (filter, value) {
+        (
+            KnowledgeRelationKindV2::Named {
+                predicate_digest: left,
+                ..
+            },
+            KnowledgeRelationKindV2::Named {
+                predicate_digest: right,
+                ..
+            },
+        ) => left == right,
+        _ => filter == value,
+    }
 }
 
 fn push_supports(bytes: &mut Vec<u8>, supports: &[KnowledgeSupportV2]) {
@@ -649,6 +720,18 @@ fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), KnowledgeGe
     Ok(())
 }
 
+fn validate_relation(value: KnowledgeRelationKindV2) -> Result<(), KnowledgeGenerationErrorV2> {
+    if let KnowledgeRelationKindV2::Named {
+        predicate_digest,
+        identity_digest,
+    } = value
+    {
+        ensure_digest("named_relation_predicate", predicate_digest)?;
+        ensure_digest("named_relation_identity", identity_digest)?;
+    }
+    Ok(())
+}
+
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     push_len(bytes, raw.len());
@@ -665,21 +748,6 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 
 fn push_u64(bytes: &mut Vec<u8>, value: u64) {
     bytes.extend_from_slice(&value.to_be_bytes());
-}
-
-const fn relation_code(value: KnowledgeRelationKindV2) -> u8 {
-    match value {
-        KnowledgeRelationKindV2::Supports => 0,
-        KnowledgeRelationKindV2::Contradicts => 1,
-        KnowledgeRelationKindV2::TemporalBefore => 2,
-        KnowledgeRelationKindV2::TemporalAfter => 3,
-        KnowledgeRelationKindV2::Causes => 4,
-        KnowledgeRelationKindV2::Enables => 5,
-        KnowledgeRelationKindV2::ProcedureStep => 6,
-        KnowledgeRelationKindV2::PromptComplements => 7,
-        KnowledgeRelationKindV2::PromptSubstitutes => 8,
-        KnowledgeRelationKindV2::PromptConflicts => 9,
-    }
 }
 
 #[cfg(test)]

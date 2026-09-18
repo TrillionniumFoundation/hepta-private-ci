@@ -225,3 +225,53 @@ fn supports_and_contradicts_remain_distinct_edges() {
     assert_eq!(generation.edges.len(), 2);
     assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
 }
+
+#[test]
+fn named_predicates_preserve_semantics_and_occurrence_identity() {
+    let collaborated = KnowledgeRelationKindV2::named("collaborated_with");
+    assert_eq!(collaborated, KnowledgeRelationKindV2::named("collaborated_with"));
+    assert_ne!(collaborated, KnowledgeRelationKindV2::named("references"));
+
+    let generation = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b")],
+            vec![
+                edge(
+                    "a",
+                    "b",
+                    KnowledgeRelationKindV2::named_instance("collaborated_with", "relation:1"),
+                    "collaboration-1",
+                ),
+                edge(
+                    "a",
+                    "b",
+                    KnowledgeRelationKindV2::named_instance("collaborated_with", "relation:2"),
+                    "collaboration-2",
+                ),
+                edge(
+                    "a",
+                    "b",
+                    KnowledgeRelationKindV2::named_instance("references", "relation:3"),
+                    "reference",
+                ),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("named predicates must build: {error}"));
+    assert_eq!(generation.edges.len(), 3);
+    assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
+
+    let result = query_relations(
+        &generation,
+        KnowledgeRelationQueryV2 {
+            query_id: id("query:named"),
+            generation_digest: generation.generation_digest,
+            seed_node_ids: vec![id("node:a")],
+            relation_kinds: vec![collaborated],
+            maximum_edges: 8,
+        },
+    )
+    .unwrap_or_else(|error| panic!("named predicate query must work: {error}"));
+    assert_eq!(result.edges.len(), 2);
+}

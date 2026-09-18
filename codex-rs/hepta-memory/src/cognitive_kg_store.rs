@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::publish_generation;
 use sha2::Digest;
 use sha2::Sha256;
 use sqlx::Row;
@@ -21,6 +22,8 @@ use crate::cognitive_intelligence_writer::occurrence_edge_id;
 use crate::cognitive_intelligence_writer::occurrence_node_id;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
+
+pub(crate) mod v2;
 
 pub(crate) const MAX_SCOPE_HEADS: usize = 10_000;
 pub(crate) const MAX_SCOPE_NODES: usize = 10_000;
@@ -70,6 +73,11 @@ impl CognitiveStore {
     /// Materializes a complete exact-scope projection inside the product
     /// mutation transaction. Only verified active current heads participate;
     /// every historical generation remains append-only.
+    ///
+    /// The SQLite owner is a persistence adapter for `codex-hepta-kg` V2, not a
+    /// second graph policy implementation. The canonical V2 generation and its
+    /// predecessor-bound publication receipt are validated before any generation
+    /// receipt, node, edge or current-pointer row is made visible.
     pub(crate) async fn refresh_scope_projection_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
@@ -308,7 +316,6 @@ impl CognitiveStore {
                 source_revision: row.try_get("source_revision").map_err(unavailable)?,
             });
         }
-        let output_sha256 = output_digest(&projection_scope, &nodes, &edges);
 
         sqlx::query(
             "INSERT INTO kg_projection (projection_scope, generation)
@@ -327,6 +334,34 @@ impl CognitiveStore {
         let next = current
             .checked_add(1)
             .ok_or_else(|| CognitiveStoreError::Corrupt("KG generation overflow".to_string()))?;
+        let next_u64 = u64::try_from(next)
+            .map_err(|_| CognitiveStoreError::Corrupt("negative KG generation".to_string()))?;
+
+        let candidate = v2::build_generation(
+            &projection_scope,
+            next_u64,
+            &input_heads_sha256,
+            &heads,
+            &nodes,
+            &edges,
+        )?;
+        let predecessor = if current == 0 {
+            None
+        } else {
+            Some(
+                v2::load_generation_tx(transaction, &projection_scope, current)
+                    .await?
+                    .generation,
+            )
+        };
+        publish_generation(predecessor.as_ref(), &candidate).map_err(|error| {
+            CognitiveStoreError::Conflict(format!(
+                "canonical KG V2 rejected generation publication: {error}"
+            ))
+        })?;
+        let output_sha256 = Sha256Digest::parse(candidate.generation_digest.to_string())
+            .map_err(CognitiveStoreError::Corrupt)?;
+
         sqlx::query(
             "INSERT INTO kg_projection_generation_receipts (
                 projection_scope, generation, trigger_memory_id,
@@ -443,11 +478,7 @@ impl CognitiveStore {
             ));
         }
         Ok(CognitiveProjectionReceipt {
-            generation: ProjectionGeneration(
-                u64::try_from(next).map_err(|_| {
-                    CognitiveStoreError::Corrupt("negative KG generation".to_string())
-                })?,
-            ),
+            generation: ProjectionGeneration(next_u64),
             fact_set_sha256: trigger_facts.digest.clone(),
             input_heads_sha256,
             output_sha256,
@@ -478,6 +509,9 @@ pub(crate) fn input_heads_digest(scope: &str, heads: &[ProjectionHead]) -> Sha25
     finish_digest(hasher)
 }
 
+/// Legacy G3 output digest retained only so older durable generations can be
+/// verified during reopen. New publications persist the canonical V2
+/// `KnowledgeGenerationV2::generation_digest` in the existing output column.
 pub(crate) fn output_digest(
     scope: &str,
     nodes: &[ProjectionNode],
