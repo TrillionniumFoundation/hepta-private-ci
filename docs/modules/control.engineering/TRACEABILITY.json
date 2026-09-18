@@ -15,7 +15,7 @@
         "StoreTests.test_envelope_and_generation_semantic_conflicts"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "immutable engineering envelope only"
+      "capabilityCeiling": "low-level owner primitive; product callers use issue_authenticated_work_envelope"
     },
     {
       "designOperation": "schedule_ready_packages",
@@ -27,7 +27,7 @@
         "StoreTests.test_cycle_and_out_of_scope_paths_reject"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "assignment proposal only"
+      "capabilityCeiling": "low-level durable scheduling primitive; product callers use authenticated schedule_engineering_work"
     },
     {
       "designOperation": "acquire_path_lease",
@@ -143,6 +143,98 @@
       ],
       "state": "source_implemented",
       "capabilityCeiling": "status projection only; no merge, deployment, promotion or release authority"
+    },
+    {
+      "designOperation": "issue_authenticated_work_envelope",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "issue_authenticated_work_envelope",
+      "ownerSymbol": "EngineeringStore.issue_work_envelope after CanonicalSourceReceipt verification",
+      "tests": [
+        "OrchestrationTests.test_authenticated_source_receipt_binds_envelope_before_persistence"
+      ],
+      "state": "source_implemented_product_path",
+      "capabilityCeiling": "authenticated work admission only; no write/merge authority"
+    },
+    {
+      "designOperation": "schedule_engineering_work",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "schedule_engineering_work",
+      "ownerSymbol": "EngineeringStore.schedule_ready_packages plus authenticated resource projection",
+      "tests": [
+        "OrchestrationTests.test_authenticated_predecessor_and_resource_model_drive_plan",
+        "OrchestrationTests.test_distributed_mode_requires_authenticated_leadership_epoch"
+      ],
+      "state": "source_implemented_product_path",
+      "capabilityCeiling": "bounded assignments, integration order and merge-queue proposals only"
+    },
+    {
+      "designOperation": "generate_composite_candidate",
+      "nativeModule": "control_engineering_v2.composite_candidate",
+      "nativeSymbol": "generate_composite_candidates",
+      "ownerSymbol": "generate_composite_candidates",
+      "tests": [
+        "CompositeCandidateTests.test_atomic_multi_file_candidate_is_one_identity_and_one_sandbox"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "atomic multi-file draft candidates only"
+    },
+    {
+      "designOperation": "sandbox_composite_candidate",
+      "nativeModule": "control_engineering_v2.composite_candidate",
+      "nativeSymbol": "sandbox_composite_candidate",
+      "ownerSymbol": "candidate exact-tree materializer plus sandbox_control",
+      "tests": [
+        "CompositeCandidateTests.test_atomic_multi_file_candidate_is_one_identity_and_one_sandbox"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "fixture_tested or sandbox_tested at most"
+    },
+    {
+      "designOperation": "run_mutation_testing",
+      "nativeModule": "control_engineering_v2.mutation_testing",
+      "nativeSymbol": "run_mutation_testing",
+      "ownerSymbol": "sandbox_candidate",
+      "tests": [
+        "MutationTestingTests.test_evaluator_checks_must_kill_every_source_mutant"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "test adequacy evidence only"
+    },
+    {
+      "designOperation": "verify_external_production_evidence",
+      "nativeModule": "control_engineering_v2.external",
+      "nativeSymbol": "verify_external_fact_receipts",
+      "ownerSymbol": "external signer/verifier port",
+      "tests": [
+        "ExternalEvidenceTests.test_external_audit_anchor_is_exact_and_authenticated",
+        "ExternalEvidenceTests.test_key_custody_requires_external_signature_and_roles",
+        "ExternalEvidenceTests.test_deployment_facts_cannot_be_fake_booleans"
+      ],
+      "state": "source_implemented_external_evidence_required",
+      "capabilityCeiling": "receipt verification only; cannot manufacture HSM, audit, deployment or reviewer authority"
+    },
+    {
+      "designOperation": "repository_product_caller",
+      "nativeModule": "control_engineering_v2.product_gate",
+      "nativeSymbol": "build_product_receipt",
+      "ownerSymbol": "schedule_engineering_work",
+      "tests": [
+        "ProductGateTests.test_named_product_caller_uses_v2_orchestration_without_authority"
+      ],
+      "state": "source_implemented_product_path_pending_current_ci_receipt",
+      "capabilityCeiling": "repository product composition receipt only"
+    },
+    {
+      "designOperation": "evaluate_authenticated_production_readiness",
+      "nativeModule": "control_engineering_v2.production",
+      "nativeSymbol": "evaluate_authenticated_production_readiness",
+      "ownerSymbol": "external receipt verifiers plus evaluate_production_readiness",
+      "tests": [
+        "ProductionReadinessTests.test_missing_external_audit_anchor_blocks_deployment",
+        "ProductionReadinessTests.test_distributed_mode_requires_fencing_receipt"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "fail-closed readiness projection only"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -163,6 +255,12 @@
     "tools/hepta-engineering-control/test_lane_g_closure.py",
     "tools/hepta-engineering-control/test_lane_g_seal.py",
     "tools/hepta-engineering-control/test_consolidated_engineering.py",
-    "tools/hepta-engineering-control/test_production_readiness.py"
+    "tools/hepta-engineering-control/test_production_readiness.py",
+    "tools/hepta-engineering-control/test_orchestration_v2.py",
+    "tools/hepta-engineering-control/test_composite_candidate.py",
+    "tools/hepta-engineering-control/test_mutation_testing.py",
+    "tools/hepta-engineering-control/test_external_evidence.py",
+    "tools/hepta-engineering-control/test_product_gate_v2.py",
+    "tools/hepta-engineering-control/test_no_legacy_product_path.py"
   ]
 }
