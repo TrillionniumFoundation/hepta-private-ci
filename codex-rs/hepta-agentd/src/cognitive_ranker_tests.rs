@@ -525,10 +525,11 @@ async fn lifecycle_revocation_during_context_read_fails_closed_before_control_de
     release_tx.send(()).unwrap();
 
     let result = read_task.await.unwrap();
-    assert!(
-        result.is_err(),
-        "lifecycle revocation during the authoritative read must fail closed before delivery"
-    );
+    assert!(matches!(
+        result,
+        Err(crate::AgentdError::Protocol(message))
+            if message.contains("unavailable until this Agent generation is ready")
+    ));
 }
 
 /// Exercises the actual control socket and lifecycle transition. This is not a
