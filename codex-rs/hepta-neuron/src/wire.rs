@@ -305,6 +305,9 @@ pub fn decode_neuron_tick_input_v1(bytes: &[u8]) -> Result<NeuronTickInputV1, Ne
                 .ok_or(NeuronWireError::InvalidType("featureVectorQ24 item"))
         })
         .collect::<Result<Vec<_>, _>>()?;
+    if features.is_empty() || features.len() > 512 {
+        return Err(NeuronWireError::InvalidValue("featureVectorQ24 length"));
+    }
     let body_generation = object
         .get("bodyGeneration")
         .map(|value| {
@@ -376,6 +379,88 @@ pub fn encode_neuron_tick_input_v1(input: &NeuronTickInputV1) -> Result<Vec<u8>,
     canonical_json(&Value::Object(object))
 }
 
+pub fn decode_neuron_tick_receipt_v1(
+    bytes: &[u8],
+) -> Result<NeuronTickReceiptV1, NeuronWireError> {
+    let value = parse_canonical(bytes)?;
+    let object = strict_object(
+        &value,
+        "NeuronTickReceiptV1",
+        &[
+            "tickId",
+            "checkpointBefore",
+            "checkpointAfter",
+            "activationDigest",
+            "activeIndices",
+            "sparsityPpm",
+            "thresholdDigest",
+            "eligibilityDigest",
+            "predictionErrorQ24",
+            "confidencePpm",
+            "oodPpm",
+            "abstain",
+            "resourceReceipt",
+        ],
+        &[],
+    )?;
+    let resources = strict_object(
+        field(object, "resourceReceipt")?,
+        "resourceReceipt",
+        &[
+            "executionMicros",
+            "transientAllocationBytes",
+            "checkpointBytes",
+            "saturationCount",
+            "queueAgeMicros",
+        ],
+        &[],
+    )?;
+    let indices = field(object, "activeIndices")?
+        .as_array()
+        .ok_or(NeuronWireError::InvalidType("activeIndices"))?;
+    if indices.len() > 512 {
+        return Err(NeuronWireError::InvalidValue("activeIndices length"));
+    }
+    let mut seen = BTreeSet::new();
+    let active_indices = indices
+        .iter()
+        .map(|value| {
+            let raw = value
+                .as_u64()
+                .ok_or(NeuronWireError::InvalidType("activeIndices item"))?;
+            let index = bounded_u32(raw, "activeIndices item")?;
+            if !seen.insert(index) {
+                return Err(NeuronWireError::InvalidValue("activeIndices unique"));
+            }
+            Ok(index)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(NeuronTickReceiptV1 {
+        tick_id: parse_id(string(object, "tickId")?)?,
+        checkpoint_before: parse_digest(string(object, "checkpointBefore")?)?,
+        checkpoint_after: parse_digest(string(object, "checkpointAfter")?)?,
+        activation_digest: parse_digest(string(object, "activationDigest")?)?,
+        active_indices,
+        sparsity_ppm: ppm_u32(unsigned(object, "sparsityPpm")?, "sparsityPpm")?,
+        threshold_digest: parse_digest(string(object, "thresholdDigest")?)?,
+        eligibility_digest: parse_digest(string(object, "eligibilityDigest")?)?,
+        prediction_error_q24: signed(object, "predictionErrorQ24")?,
+        confidence_ppm: ppm_u32(unsigned(object, "confidencePpm")?, "confidencePpm")?,
+        ood_ppm: ppm_u32(unsigned(object, "oodPpm")?, "oodPpm")?,
+        abstain: boolean(object, "abstain")?,
+        resource_receipt: crate::NeuronResourceReceiptV1 {
+            execution_micros: unsigned(resources, "executionMicros")?,
+            transient_allocation_bytes: unsigned(resources, "transientAllocationBytes")?,
+            checkpoint_bytes: unsigned(resources, "checkpointBytes")?,
+            saturation_count: bounded_u32(
+                unsigned(resources, "saturationCount")?,
+                "saturationCount",
+            )?,
+            queue_age_micros: unsigned(resources, "queueAgeMicros")?,
+        },
+    })
+}
+
 pub fn encode_neuron_tick_receipt_v1(
     receipt: &NeuronTickReceiptV1,
 ) -> Result<Vec<u8>, NeuronWireError> {
@@ -402,6 +487,52 @@ pub fn encode_neuron_tick_receipt_v1(
     }))
 }
 
+pub fn decode_neuron_signal_receipt_v1(
+    bytes: &[u8],
+) -> Result<NeuronSignalReceiptV1, NeuronWireError> {
+    let value = parse_canonical(bytes)?;
+    let object = strict_object(
+        &value,
+        "NeuronSignalReceiptV1",
+        &[
+            "signalSetId",
+            "modelRuntimeDigest",
+            "temporalStateDigest",
+            "signals",
+            "activationSparsityPpm",
+            "oodPpm",
+            "abstain",
+        ],
+        &[],
+    )?;
+    let raw_signals = field(object, "signals")?
+        .as_array()
+        .ok_or(NeuronWireError::InvalidType("signals"))?;
+    if raw_signals.len() > 4096 {
+        return Err(NeuronWireError::InvalidValue("signals length"));
+    }
+    let signals_q24 = raw_signals
+        .iter()
+        .map(|value| {
+            value
+                .as_i64()
+                .ok_or(NeuronWireError::InvalidType("signals item"))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(NeuronSignalReceiptV1 {
+        signal_set_id: parse_id(string(object, "signalSetId")?)?,
+        model_runtime_digest: parse_digest(string(object, "modelRuntimeDigest")?)?,
+        temporal_state_digest: parse_digest(string(object, "temporalStateDigest")?)?,
+        signals_q24,
+        activation_sparsity_ppm: ppm_u32(
+            unsigned(object, "activationSparsityPpm")?,
+            "activationSparsityPpm",
+        )?,
+        ood_ppm: ppm_u32(unsigned(object, "oodPpm")?, "oodPpm")?,
+        abstain: boolean(object, "abstain")?,
+    })
+}
+
 pub fn encode_neuron_signal_receipt_v1(
     receipt: &NeuronSignalReceiptV1,
 ) -> Result<Vec<u8>, NeuronWireError> {
@@ -414,6 +545,41 @@ pub fn encode_neuron_signal_receipt_v1(
         "oodPpm": receipt.ood_ppm,
         "abstain": receipt.abstain,
     }))
+}
+
+pub fn decode_local_model_runtime_receipt_v1(
+    bytes: &[u8],
+) -> Result<LocalModelRuntimeReceiptV1, NeuronWireError> {
+    let value = parse_canonical(bytes)?;
+    let object = strict_object(
+        &value,
+        "LocalModelRuntimeReceiptV1",
+        &[
+            "modelId",
+            "weightsDigest",
+            "tokenizerDigest",
+            "preprocessorDigest",
+            "quantizationId",
+            "backendId",
+            "deviceIdentityDigest",
+            "latencyMicros",
+            "residentBytes",
+        ],
+        &[],
+    )?;
+    let receipt = LocalModelRuntimeReceiptV1 {
+        model_id: parse_id(string(object, "modelId")?)?,
+        weights_digest: parse_digest(string(object, "weightsDigest")?)?,
+        tokenizer_digest: parse_digest(string(object, "tokenizerDigest")?)?,
+        preprocessor_digest: parse_digest(string(object, "preprocessorDigest")?)?,
+        quantization_id: parse_id(string(object, "quantizationId")?)?,
+        backend_id: parse_id(string(object, "backendId")?)?,
+        device_identity_digest: parse_digest(string(object, "deviceIdentityDigest")?)?,
+        latency_micros: unsigned(object, "latencyMicros")?,
+        resident_bytes: unsigned(object, "residentBytes")?,
+    };
+    receipt.validate()?;
+    Ok(receipt)
 }
 
 pub fn encode_local_model_runtime_receipt_v1(
@@ -548,6 +714,14 @@ fn parse_digest(value: &str) -> Result<Digest32, NeuronWireError> {
 
 fn bounded_u32(value: u64, name: &'static str) -> Result<u32, NeuronWireError> {
     u32::try_from(value).map_err(|_| NeuronWireError::InvalidValue(name))
+}
+
+fn ppm_u32(value: u64, name: &'static str) -> Result<u32, NeuronWireError> {
+    let value = bounded_u32(value, name)?;
+    if value > 1_000_000 {
+        return Err(NeuronWireError::InvalidValue(name));
+    }
+    Ok(value)
 }
 
 fn parse_timestamp_micros(value: &str) -> Result<u64, NeuronWireError> {
