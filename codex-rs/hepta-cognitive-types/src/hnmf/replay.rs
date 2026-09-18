@@ -176,31 +176,21 @@ impl ReplaySelectionReceiptV1 {
         selection_policy_digest: CanonicalDigestV1,
         resource_receipt: ResourceReceiptV1,
     ) -> Result<Self, ContractErrorV1> {
-        if selected_event_ids.len() > MAX_REPLAY_SELECTION || selected_event_ids.contains(&0) {
-            return Err(ContractErrorV1::BoundExceeded("replay selected events"));
-        }
-        let mut unique = BTreeSet::new();
-        if selected_event_ids.iter().any(|event_id| !unique.insert(*event_id)) {
-            return Err(ContractErrorV1::Conflict("duplicate replay selected event"));
-        }
-        let count_sum = source_bucket_counts.values().map(|value| *value as usize).sum::<usize>();
-        if count_sum != selected_event_ids.len() {
-            return Err(ContractErrorV1::Conflict(
-                "source bucket counts must equal selected event count",
-            ));
-        }
-        Ok(Self {
+        let value = Self {
             candidate_set_digest,
             selected_event_ids,
             source_bucket_counts,
             selection_policy_digest,
             resource_receipt,
-        })
+        };
+        value.validate()?;
+        Ok(value)
     }
-}
 
     pub fn validate(&self) -> Result<(), ContractErrorV1> {
-        if self.selected_event_ids.len() > MAX_REPLAY_SELECTION || self.selected_event_ids.contains(&0) {
+        if self.selected_event_ids.len() > MAX_REPLAY_SELECTION
+            || self.selected_event_ids.contains(&0)
+        {
             return Err(ContractErrorV1::BoundExceeded("replay selected events"));
         }
         let mut unique = BTreeSet::new();
