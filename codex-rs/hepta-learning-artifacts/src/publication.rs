@@ -183,14 +183,17 @@ impl ArtifactPublicationTransactionV1 {
 
 /// Deterministic V1 registry projection of an admitted V3 artifact.
 ///
-/// The stable V1 registry cannot encode the complete V2 manifest shape. Its
-/// support digest therefore carries the exact V3 admission digest, which in
-/// turn binds the normalized V2 manifest, withdrawal domain, withdrawal head
-/// and admission time. The stable V1 registry can enforce at most one artifact
-/// predecessor. Publication therefore accepts zero or one V2 predecessor and
-/// rejects multi-predecessor manifests instead of silently dropping eligibility
-/// edges. The admission digest commits complete V2 lineage but is not a substitute
-/// for durable runtime predecessor traversal.
+/// The stable V1 registry cannot encode the complete V2 manifest shape. To keep
+/// post-publication dataset revocation sound, a dataset-derived admission is
+/// projectable only when it names exactly one source dataset; that exact digest
+/// remains the V1 support digest. Dataset-independent admissions use the
+/// admission digest as their non-dataset support witness. The registry event ID
+/// is derived from the caller operation ID plus the V3 admission digest, so the
+/// persisted V1 event still commits the exact admission frontier.
+///
+/// The stable V1 registry can enforce at most one artifact predecessor.
+/// Publication therefore rejects multi-dataset and multi-predecessor V2
+/// manifests instead of silently dropping revocation or eligibility edges.
 pub fn artifact_registry_event_for_admission_v3(
     operation_id: StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
@@ -201,8 +204,22 @@ pub fn artifact_registry_event_for_admission_v3(
         [only] => Some(only.clone()),
         _ => return Err(ArtifactPublicationError::MultiPredecessorProjectionUnsupported),
     };
+    let support_digest = match (
+        manifest.provenance_mode,
+        manifest.source_dataset_digests.as_slice(),
+    ) {
+        (crate::ProvenanceModeV1::DatasetDerived, [only]) => *only,
+        (crate::ProvenanceModeV1::DatasetDerived, _) => {
+            return Err(ArtifactPublicationError::MultiDatasetProjectionUnsupported);
+        }
+        (crate::ProvenanceModeV1::DatasetIndependent, []) => admission.admission_digest,
+        (crate::ProvenanceModeV1::DatasetIndependent, _) => {
+            return Err(ArtifactPublicationError::InvalidBinding);
+        }
+    };
+    let event_id = publication_event_id(&operation_id, admission.admission_digest)?;
     Ok(ArtifactEvent::Register {
-        event_id: operation_id,
+        event_id,
         manifest: ArtifactManifest {
             artifact_id: manifest.artifact_id.clone(),
             kind: manifest.kind,
@@ -210,12 +227,30 @@ pub fn artifact_registry_event_for_admission_v3(
             predecessor_id,
             content_digest: manifest.bytes_digest,
             objective_digest: manifest.objective_class_digest,
-            support_digest: admission.admission_digest,
+            support_digest,
             producer_id: manifest.producer_id.clone(),
             compatibility_digest: manifest.compatibility_digest,
             encoded_size_bytes: manifest.encoded_size_bytes,
         },
     })
+}
+
+fn publication_event_id(
+    operation_id: &StableId,
+    admission_digest: Digest32,
+) -> Result<StableId, ArtifactPublicationError> {
+    if admission_digest.is_zero() {
+        return Err(ArtifactPublicationError::InvalidBinding);
+    }
+    let mut bytes = b"hepta.learning-artifacts.publication-event-id.v1".to_vec();
+    let operation = operation_id.as_str().as_bytes();
+    let operation_len =
+        u64::try_from(operation.len()).map_err(|_| ArtifactPublicationError::InvalidBinding)?;
+    bytes.extend_from_slice(&operation_len.to_be_bytes());
+    bytes.extend_from_slice(operation);
+    bytes.extend_from_slice(admission_digest.as_array());
+    StableId::new(format!("artifact-publish:{}", Digest32::of_bytes(&bytes)))
+        .map_err(|_| ArtifactPublicationError::InvalidBinding)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -305,6 +340,7 @@ pub enum ArtifactPublicationError {
     InvalidBinding,
     RegistryEventMismatch,
     RegistryChainMismatch,
+    MultiDatasetProjectionUnsupported,
     MultiPredecessorProjectionUnsupported,
     SnapshotReceiptMismatch,
     WitnessReceiptMismatch,
@@ -646,6 +682,87 @@ mod tests {
             ),
             Err(ArtifactPublicationError::RegistryChainMismatch)
         );
+    }
+
+    #[test]
+    fn dataset_derived_publication_preserves_v1_revocation_support() {
+        let withdrawal_registry = scoped_registry();
+        let dataset = digest("dataset");
+        let mut manifest = admission().validated_manifest.manifest;
+        manifest.provenance_mode = ProvenanceModeV1::DatasetDerived;
+        manifest.source_dataset_digests = vec![dataset];
+        let admitted = crate::admit_manifest_at_withdrawal_head_v3(
+            &withdrawal_registry,
+            withdrawal_registry.snapshot().head_digest,
+            manifest,
+            20,
+        )
+        .expect("dataset-bound admission");
+
+        let operation_id = id("publication-operation");
+        let event = artifact_registry_event_for_admission_v3(operation_id, &admitted)
+            .expect("single-dataset projection");
+        let ArtifactEvent::Register { manifest, .. } = &event else {
+            panic!("publication must register");
+        };
+        assert_eq!(manifest.support_digest, dataset);
+
+        let mut artifact_registry = crate::ArtifactRegistry::new();
+        artifact_registry.append(event).expect("registry append");
+        let prepared = crate::prepare_dataset_revocation(
+            &artifact_registry,
+            artifact_registry.snapshot().head_digest,
+            &crate::DatasetRevocationRequest {
+                operation_id: id("dataset-withdrawal-operation"),
+                dataset_digest: dataset,
+                source_revocation_digest: digest("source-withdrawal"),
+                evaluator_id: id("independent-evaluator"),
+            },
+        )
+        .expect("published dataset-derived artifact remains revocable");
+        assert_eq!(prepared.summary().direct_artifacts, vec![id("artifact")]);
+        assert_eq!(prepared.summary().appended, 1);
+    }
+
+    #[test]
+    fn dataset_derived_publication_rejects_multi_dataset_v1_downgrade() {
+        let mut multi = admission();
+        multi.validated_manifest.manifest.provenance_mode = ProvenanceModeV1::DatasetDerived;
+        multi.validated_manifest.manifest.source_dataset_digests =
+            vec![digest("dataset-a"), digest("dataset-b")];
+        assert_eq!(
+            artifact_registry_event_for_admission_v3(id("operation"), &multi),
+            Err(ArtifactPublicationError::MultiDatasetProjectionUnsupported)
+        );
+    }
+
+    #[test]
+    fn dataset_derived_registry_event_identity_commits_admission_frontier() {
+        let mut first = admission();
+        first.validated_manifest.manifest.provenance_mode = ProvenanceModeV1::DatasetDerived;
+        first.validated_manifest.manifest.source_dataset_digests = vec![digest("dataset")];
+        let mut second = first.clone();
+        second.admission_digest = digest("other-admission");
+        let first_event =
+            artifact_registry_event_for_admission_v3(id("operation"), &first).expect("projection");
+        let second_event =
+            artifact_registry_event_for_admission_v3(id("operation"), &second).expect("projection");
+        assert_ne!(digest_event(&first_event), digest_event(&second_event));
+        let ArtifactEvent::Register {
+            manifest: first_manifest,
+            ..
+        } = first_event
+        else {
+            panic!("publication must register");
+        };
+        let ArtifactEvent::Register {
+            manifest: second_manifest,
+            ..
+        } = second_event
+        else {
+            panic!("publication must register");
+        };
+        assert_eq!(first_manifest.support_digest, second_manifest.support_digest);
     }
 
     #[test]
