@@ -129,12 +129,13 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "namedGlobalControlHostSourceImplemented": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "named_global_control_host_source_composed_not_daemon_activated",
+  "productionWriterState": "planner_owner_store_composed_in_named_host_source_not_deployed",
   "owner": "runtime-control",
   "deputy": "fleet-runtime",
   "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",

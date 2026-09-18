@@ -53,7 +53,10 @@ The registered primary source is [codex-rs/hepta-supervisor/src/supervisor.rs](.
 Direct dependencies:
 
 - `kernel.authority`
+- `kernel.evidence`
 - `kernel.operations`
+- `runtime.fleet`
+- `control.runtime`
 
 Authoritative write domains:
 
@@ -171,6 +174,10 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 Build hepta-supervisord from codex-hepta-supervisor; its native CLI requires --fleet-root with an absolute path. Grant and H7 verifier options are complete trust tuples, not request-supplied switches. The signer binaries require the production-authority build feature; lifecycle startup alone never enrolls effect authority.
 
+`GlobalControlHostV1` is the named typed product host for the global `control.runtime` source composition. Construction requires a host-opened `HeptaEvidenceStore`, an owner-local `PlannerJournalStoreV1`, an independently configured `FinalUseAuthority`, and explicit pinned AuthBus issuer registrations. Non-fleet owner admission consumes the durable Evidence SQLite replay high-water before Control accepts the summary; fleet resources come from an existing `LeaseLedger` allocation; the resulting snapshot/decision/selection are synced to the planner store before the plan returns. Effect callbacks run only through `with_authorized_grant_request_v1` under the final live authority fence.
+
+This host is an in-process typed composition surface, not a new supervisord network method. The default daemon protocol is unchanged and does not activate global planning merely because the crate contains the host. A selected deployment must separately register and configure its global-planning ingress before activation can be claimed.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-supervisor/src/main.rs](../../../codex-rs/hepta-supervisor/src/main.rs).
@@ -185,6 +192,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-supervisor/src/daemon_platform_tests.rs](../../../codex-rs/hepta-supervisor/src/daemon_platform_tests.rs); named case: `unsupported_host_rejects_daemon_before_accessing_fleet_state`.
 - [codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs](../../../codex-rs/hepta-supervisor/src/signed_intent_publish_tests.rs); named case: `cross_directory_publish_rejects_without_changing_either_file`.
+- [codex-rs/hepta-supervisor/src/global_control_tests.rs](../../../codex-rs/hepta-supervisor/src/global_control_tests.rs); named cases: `named_host_persists_plan_and_durable_owner_replay_survives_restart` and `named_host_releases_effect_only_inside_final_use_fence`.
 
 In `codex-rs`, run `just test -p codex-hepta-supervisor`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) separately labels target acceptance designs.
 

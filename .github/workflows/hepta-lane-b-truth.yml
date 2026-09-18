@@ -93,6 +93,23 @@ jobs:
           cargo test -p codex-app-server --test all turn_start
           cargo test -p codex-core executed_tool_calls
 
+      - name: Measure runtime.supervisor global-control host
+        working-directory: codex-rs
+        shell: bash
+        env:
+          HEPTA_PROFILE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-supervisor --lib             named_host_profile_emits_exact_runner_measurements             -- --ignored --nocapture             | tee "$RUNNER_TEMP/supervisor-global-control-profile.log"
+          grep 'HEPTA_SUPERVISOR_GLOBAL_CONTROL_PROFILE '             "$RUNNER_TEMP/supervisor-global-control-profile.log"             | sed 's/^HEPTA_SUPERVISOR_GLOBAL_CONTROL_PROFILE //'             > "$RUNNER_TEMP/supervisor-global-control-profile.jsonl"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: supervisor-global-control-profile-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/supervisor-global-control-profile.jsonl
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Assert tracked tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=no)"
 

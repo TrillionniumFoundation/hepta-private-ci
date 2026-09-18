@@ -229,16 +229,19 @@
           ]
         },
         "productCaller": {
-          "state": "narrow_agentd_context_composed_global_product_host_not_established",
+          "state": "runtime_supervisor_named_typed_host_source_composed_daemon_activation_pending",
           "evidence": [
+            "codex-rs/hepta-supervisor/src/global_control.rs",
+            "GlobalControlHostV1",
             "codex-rs/hepta-agentd/src/cognitive_context.rs",
             "plan_observed_context"
           ]
         },
         "productionWriter": {
-          "state": "durable_owner_store_available_not_composed_by_named_product_host",
+          "state": "planner_owner_store_composed_in_named_supervisor_host_source_not_deployed",
           "evidence": [
-            "PlannerJournalStoreV1"
+            "PlannerJournalStoreV1",
+            "GlobalControlHostV1"
           ]
         },
         "independentAcceptance": {
@@ -269,19 +272,22 @@
           ]
         },
         "authenticatedOwnerAdmission": {
-          "state": "source_implemented",
+          "state": "source_implemented_with_durable_evidence_replay_host_composition",
           "evidence": [
             "authenticate_owner_summary_v1",
+            "admit_durable_owner_summary_v1",
+            "HeptaEvidenceStore::admit_authbus_message",
             "admit_fleet_allocation_owner_v1"
           ]
         },
         "globalSourceComposition": {
-          "state": "source_implemented_multi_owner_fleet_ndu_authority_bridge",
+          "state": "named_typed_supervisor_host_source_composed_not_network_activated",
           "evidence": [
             "compose_global_plan_with_fleet_v1",
-            "claim_final_use_for_grant_request_v1",
-            "authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request",
-            "independent_authority_claims_exact_planner_binding"
+            "GlobalControlHostV1",
+            "with_authorized_grant_request_v1",
+            "named_host_persists_plan_and_durable_owner_replay_survives_restart",
+            "named_host_releases_effect_only_inside_final_use_fence"
           ]
         },
         "namedHostPerformance": {
@@ -313,22 +319,22 @@
     }
   ],
   "repositoryControlledClosure": {
-    "state": "current_pr_pending_exact_head_and_merge_qualification",
+    "state": "control_pr_and_stacked_supervisor_integration_pending_exact_head_and_merge_qualification",
     "requiredChecks": [
-      "Lane D semantic conformance",
+      "Lane D semantic conformance for control.runtime",
       "cargo fmt",
-      "cargo check --locked for affected control-plane, agentd, contracts and fleet packages",
-      "package tests for affected packages",
+      "cargo check --locked for affected control-plane, supervisor, evidence, fleet and Agentd packages",
+      "package tests including supervisor global_control restart and authority fixtures",
       "strict Clippy",
       "repository integrity and development-doc workflows",
       "exact-head source qualification",
-      "deterministic synthetic merge qualification"
+      "deterministic synthetic merge qualification for both stacked layers"
     ]
   },
   "externalGates": [
+    "selected supervisord global-planning ingress/profile registration and activation",
     "independent non-author review",
-    "production caller and production writer composition",
-    "named-host resource and recovery measurements",
+    "named-host resource, latency and fault/recovery measurements",
     "operator acceptance",
     "deployment and activation",
     "future-window efficacy",

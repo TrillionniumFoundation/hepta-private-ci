@@ -423,12 +423,13 @@
     "realNduComposition": "source_implemented",
     "narrowProductCaller": "agentd_context_composed",
     "globalSourceComposition": "source_implemented",
-    "globalProductionCaller": "not_established",
+    "globalProductionCaller": "runtime.supervisor_named_host_source_composed_daemon_activation_pending",
     "canonicalExternalProtocolAdmission": "not_established_for_global_wire",
     "exactHeadQualification": "required_for_current_pr_head",
     "independentAcceptance": "not_established",
     "activation": "not_established",
-    "release": "not_established"
+    "release": "not_established",
+    "durableAuthBusProductHost": "source_composed_in_runtime.supervisor"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -450,15 +451,15 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "durableOwnerReplayReceiptBindingImplemented": true
+    "durableOwnerReplayReceiptBindingImplemented": true,
+    "globalNamedHostSourceImplemented": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Name and compose a production host for the global multi-owner planner path; the existing Agentd caller is request-local context planning only.",
-    "Compose durable AuthBus replay admission and the global planner through a named product host; cross-process global wire admission remains separate if needed.",
+    "Register and activate a selected supervisord global-planning ingress profile before treating the named host source as deployed product execution.",
     "Complete exact-head plus deterministic synthetic-merge qualification for the final PR head and record named-host resource/latency/recovery measurements."
   ],
   "externalEvidenceGates": [

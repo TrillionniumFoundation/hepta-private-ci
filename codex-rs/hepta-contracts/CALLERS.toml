@@ -86,7 +86,7 @@ product_callers = ["codex-rs/hepta-native-gateway/src/lib.rs"]
 
 [[surface]]
 crate = "codex-hepta-control-plane"
-role = "read_only_control_planning_and_compiled_in_organ_composition"
+role = "bounded_control_planning_and_compiled_in_organ_composition"
 public_items = [
   "OrganGraphsV1",
   "OrganHostV1",
@@ -94,10 +94,15 @@ public_items = [
   "ObservedContextV1",
   "ObservedContextPlanV1",
   "plan_observed_context",
+  "admit_durable_owner_summary_v1",
+  "compose_global_plan_with_fleet_v1",
+  "PlannerJournalStoreV1",
+  "with_authorized_grant_request_v1",
 ]
 product_callers = [
   "codex-rs/hepta-runtime/src/organs.rs",
   "codex-rs/hepta-agentd/src/cognitive_context.rs",
+  "codex-rs/hepta-supervisor/src/global_control.rs",
 ]
 
 [[surface]]
