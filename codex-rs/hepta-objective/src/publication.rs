@@ -111,7 +111,9 @@ impl fmt::Display for ObjectivePublicationError {
                 receipt.conflict_digest
             ),
             Self::InvalidBinding(field) => write!(formatter, "invalid run-start binding: {field}"),
-            Self::Encoding => formatter.write_str("objective run-start publication encoding failed"),
+            Self::Encoding => {
+                formatter.write_str("objective run-start publication encoding failed")
+            }
             Self::Decode => formatter.write_str("objective run-start publication decoding failed"),
             Self::NonCanonicalEncoding => {
                 formatter.write_str("objective run-start publication is not canonical")
@@ -288,9 +290,7 @@ fn validate_publication(
         }
     }
     if publication.run_start.objective_digest != publication.compile.objective.semantic_digest {
-        return Err(ObjectivePublicationError::InvalidBinding(
-            "objectiveDigest",
-        ));
+        return Err(ObjectivePublicationError::InvalidBinding("objectiveDigest"));
     }
     if publication.run_start.hard_constraint_digest
         != publication.compile.objective.hard_constraint_digest
@@ -429,7 +429,11 @@ fn dto_from_publication(publication: &ObjectiveRunStartPublicationV1) -> Publica
             revision: publication.compile.objective.revision.get(),
             source_digest: publication.compile.objective.source_digest.to_string(),
             schema_digest: publication.compile.objective.schema_digest.to_string(),
-            hard_constraint_digest: publication.compile.objective.hard_constraint_digest.to_string(),
+            hard_constraint_digest: publication
+                .compile
+                .objective
+                .hard_constraint_digest
+                .to_string(),
             semantic_digest: publication.compile.objective.semantic_digest.to_string(),
             constraints: publication
                 .compile
@@ -721,38 +725,39 @@ mod tests {
     }
 
     fn publication() -> ObjectiveRunStartPublicationV1 {
-        let compile = crate::compiler::compile_prevalidated_legacy_objective(ObjectiveSourceEnvelope {
-            request_id: id("request-publication"),
-            principal_scope: id("principal.alpha"),
-            revision: Revision::new(1).expect("revision"),
-            source_trust: SourceTrust::PrincipalStructured,
-            source_digest: digest("source"),
-            schema_digest: digest("schema"),
-            constraints: vec![Constraint {
-                id: id("constraint.one"),
-                class: ConstraintClass::Task,
-                axis: id("latency"),
-                relation: ConstraintRelation::AtMost,
-                bound: FixedQ32::ONE,
-                evidence_source: id("observer"),
-            }],
-            success_predicates: vec![SuccessPredicate {
-                id: id("success.one"),
-                axis: id("quality"),
-                relation: ConstraintRelation::AtLeast,
-                bound: FixedQ32::ONE,
-                evidence_source: id("observer"),
-                terminality: PredicateTerminality::Terminal,
-            }],
-            allowed_actions: vec![ActionClass {
-                id: id("action.read"),
-                confirmation: ConfirmationPolicy::NotRequired,
-            }],
-            forbidden_actions: Vec::new(),
-            soft_preferences: Vec::new(),
-        })
-        .expect("compile error")
-        .expect("conflict");
+        let compile =
+            crate::compiler::compile_prevalidated_legacy_objective(ObjectiveSourceEnvelope {
+                request_id: id("request-publication"),
+                principal_scope: id("principal.alpha"),
+                revision: Revision::new(1).expect("revision"),
+                source_trust: SourceTrust::PrincipalStructured,
+                source_digest: digest("source"),
+                schema_digest: digest("schema"),
+                constraints: vec![Constraint {
+                    id: id("constraint.one"),
+                    class: ConstraintClass::Task,
+                    axis: id("latency"),
+                    relation: ConstraintRelation::AtMost,
+                    bound: FixedQ32::ONE,
+                    evidence_source: id("observer"),
+                }],
+                success_predicates: vec![SuccessPredicate {
+                    id: id("success.one"),
+                    axis: id("quality"),
+                    relation: ConstraintRelation::AtLeast,
+                    bound: FixedQ32::ONE,
+                    evidence_source: id("observer"),
+                    terminality: PredicateTerminality::Terminal,
+                }],
+                allowed_actions: vec![ActionClass {
+                    id: id("action.read"),
+                    confirmation: ConfirmationPolicy::NotRequired,
+                }],
+                forbidden_actions: Vec::new(),
+                soft_preferences: Vec::new(),
+            })
+            .expect("compile error")
+            .expect("conflict");
         let mut value = ObjectiveRunStartPublicationV1 {
             admission: ObjectiveAdmissionReceiptV1 {
                 profile_id: id("profile.one"),

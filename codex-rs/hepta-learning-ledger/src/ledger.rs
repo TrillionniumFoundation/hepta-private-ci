@@ -1,10 +1,10 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
-use codex_hepta_types::Digest32;
-use codex_hepta_types::LogicalSequence;
 use codex_hepta_objective::MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES;
 use codex_hepta_objective::decode_objective_run_start_publication_v1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
 use crate::AppendDisposition;
@@ -201,10 +201,7 @@ impl LearningLedger {
         }
     }
 
-    fn validate_run_start(
-        &self,
-        record: &ObjectiveRunStartRecordV1,
-    ) -> Result<(), LedgerError> {
+    fn validate_run_start(&self, record: &ObjectiveRunStartRecordV1) -> Result<(), LedgerError> {
         if record.record_id != record.run_id
             || record.publication_bytes.is_empty()
             || record.publication_bytes.len() > MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES

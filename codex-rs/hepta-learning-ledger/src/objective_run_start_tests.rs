@@ -288,13 +288,8 @@ fn objective_and_run_start_commit_atomically_replay_after_reopen() {
         .write(true)
         .open(&path)
         .expect("reopen ledger");
-    let recovered = DurableLedger::recover(
-        file,
-        binding,
-        32,
-        LedgerRecovery::Acknowledged(anchor),
-    )
-    .expect("recover");
+    let recovered = DurableLedger::recover(file, binding, 32, LedgerRecovery::Acknowledged(anchor))
+        .expect("recover");
     let records = recovered.records().expect("records");
     let LedgerEvent::RunStart(record) = &records[0].event else {
         panic!("expected run-start record");

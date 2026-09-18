@@ -84,6 +84,7 @@ pub struct ObjectiveRunStartRecordV1 {
     pub publication_bytes: Vec<u8>,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Revocation {
     pub record_id: StableId,
     pub target_record_id: StableId,
