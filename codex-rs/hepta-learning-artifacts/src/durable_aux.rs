@@ -97,8 +97,8 @@ pub fn read_dataset_withdrawal_snapshot(
     {
         return Err(ArtifactStorageError::Corrupt);
     }
-    let registry =
-        DatasetWithdrawalRegistry::from_snapshot(snapshot).map_err(|_| ArtifactStorageError::Semantic)?;
+    let registry = DatasetWithdrawalRegistry::from_snapshot(snapshot)
+        .map_err(|_| ArtifactStorageError::Semantic)?;
     if encode_withdrawal_snapshot(&registry.snapshot(), expected.binding)? != bytes {
         return Err(ArtifactStorageError::Corrupt);
     }
@@ -455,11 +455,15 @@ fn parse_usize(value: Option<&str>) -> Result<usize, ArtifactStorageError> {
 }
 
 fn parse_u64_value(value: &str) -> Result<u64, ArtifactStorageError> {
-    value.parse::<u64>().map_err(|_| ArtifactStorageError::Corrupt)
+    value
+        .parse::<u64>()
+        .map_err(|_| ArtifactStorageError::Corrupt)
 }
 
 fn parse_u8_value(value: &str) -> Result<u8, ArtifactStorageError> {
-    value.parse::<u8>().map_err(|_| ArtifactStorageError::Corrupt)
+    value
+        .parse::<u8>()
+        .map_err(|_| ArtifactStorageError::Corrupt)
 }
 
 const fn role_tag(role: LifecycleActorRoleV2) -> u8 {
@@ -595,9 +599,8 @@ mod tests {
             .expect("withdrawal append");
         let file = TestFile::new("withdrawal");
         let store_binding = digest("store-binding");
-        let receipt =
-            write_dataset_withdrawal_snapshot(file.create(), &registry, store_binding)
-                .expect("write withdrawal snapshot");
+        let receipt = write_dataset_withdrawal_snapshot(file.create(), &registry, store_binding)
+            .expect("write withdrawal snapshot");
         let reopened = read_dataset_withdrawal_snapshot(file.open(), receipt)
             .expect("read withdrawal snapshot");
         assert_eq!(reopened.snapshot(), registry.snapshot());
