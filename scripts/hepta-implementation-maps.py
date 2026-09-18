@@ -345,6 +345,42 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+
+        attestation = row.get("sourceAttestation")
+        if attestation is not None:
+            if not isinstance(attestation, dict):
+                failures.append(f"{mid}: source attestation")
+            else:
+                commit = attestation.get("commit")
+                paths = attestation.get("attestedPaths")
+                if not isinstance(commit, str) or not re.fullmatch(r"[0-9a-f]{40}", commit):
+                    failures.append(f"{mid}: source attestation commit")
+                elif subprocess.run(
+                    ["git", "cat-file", "-e", f"{commit}^{{commit}}"],
+                    cwd=ROOT,
+                    capture_output=True,
+                ).returncode != 0:
+                    failures.append(f"{mid}: source attestation commit missing")
+                elif subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+                    cwd=ROOT,
+                    capture_output=True,
+                ).returncode != 0:
+                    failures.append(f"{mid}: source attestation is not an ancestor")
+                if not isinstance(paths, list) or not paths or not all(
+                    isinstance(item, str) and item for item in paths
+                ):
+                    failures.append(f"{mid}: source attestation paths")
+                elif isinstance(commit, str) and re.fullmatch(r"[0-9a-f]{40}", commit):
+                    changed = subprocess.run(
+                        ["git", "diff", "--quiet", commit, "HEAD", "--", *paths],
+                        cwd=ROOT,
+                        capture_output=True,
+                    ).returncode
+                    if changed != 0:
+                        failures.append(
+                            f"{mid}: attested source paths changed after {commit}"
+                        )
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
