@@ -1,7 +1,11 @@
 //! Source-aware context compiler.
 //!
-//! Trusted instructions and untrusted evidence remain separate sections. The
-//! compiler accepts digests, never raw secrets, and cannot call a model.
+//! The proof-closed V2.1 surface is the normative execution-context API. It
+//! verifies typed trusted-admission evidence, measures actual content and final
+//! serialized payloads with the selected tokenizer, revalidates revocation at
+//! attachment, and binds provider-attempt acknowledgement evidence. The V1
+//! entrypoints remain compatibility-only source APIs. No compiler path grants
+//! model, provider, tool, or effect authority.
 
 #![forbid(unsafe_code)]
 
@@ -14,35 +18,48 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 mod candidate_bound;
+mod proof_v2;
 mod requirements;
 mod v2;
 
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
 pub use candidate_bound::compile_candidate_bound_with_requirements;
+pub use proof_v2::CompiledContextV2;
+pub use proof_v2::ContextAdmissionRecordV2;
+pub use proof_v2::ContextAdmissionSnapshotV2;
+pub use proof_v2::ContextAttachmentV2;
+pub use proof_v2::ContextCandidateV2;
+pub use proof_v2::ContextCompilationReceiptV2;
+pub use proof_v2::ContextCompilationRequestV2;
+pub use proof_v2::ContextCompilerV2Error;
+pub use proof_v2::ContextDeliveryAdapterV2;
+pub use proof_v2::ContextDeliveryDispositionV2;
+pub use proof_v2::ContextDeliveryReceiptV2;
+pub use proof_v2::ContextModelProfileV2;
+pub use proof_v2::ContextPayloadItemV2;
+pub use proof_v2::ContextRoleV2;
+pub use proof_v2::ContextSerializationReceiptV2;
+pub use proof_v2::ContextSerializerV2;
+pub use proof_v2::ContextTransportEvidenceV2;
+pub use proof_v2::ExactContextTokenizerV2;
+pub use proof_v2::MAX_CONTEXT_CANDIDATES_V2;
+pub use proof_v2::MAX_CONTEXT_GROUPS_V2;
+pub use proof_v2::MAX_CONTEXT_TOKENS_V2;
+pub use proof_v2::MandatoryContextGroupV2;
+pub use proof_v2::SerializedContextV2;
+pub use proof_v2::TokenizationReceiptV2;
+pub use proof_v2::VerifiedContextAdmissionV2;
+pub use proof_v2::build_attachment;
+pub use proof_v2::compile_v2;
+pub use proof_v2::deliver_attachment;
+pub use proof_v2::serialize_context_v2;
 pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;
-pub use v2::CompiledContextV2;
-pub use v2::ContextAttachmentV2;
-pub use v2::ContextCandidateV2;
-pub use v2::ContextCompilationReceiptV2;
-pub use v2::ContextCompilationRequestV2;
-pub use v2::ContextCompilerV2Error;
-pub use v2::ContextDeliveryDispositionV2;
-pub use v2::ContextDeliveryObservationV2;
-pub use v2::ContextModelProfileV2;
-pub use v2::ContextRoleV2;
-pub use v2::ContextSerializationReceiptV2;
-pub use v2::MAX_CONTEXT_CANDIDATES_V2;
-pub use v2::MAX_CONTEXT_GROUPS_V2;
-pub use v2::MAX_CONTEXT_TOKENS_V2;
-pub use v2::MandatoryContextGroupV2;
-pub use v2::TokenizationReceiptV2;
-pub use v2::build_attachment;
-pub use v2::compile_v2;
-pub use v2::observe_delivery;
-pub use v2::record_serialization;
+
+/// Public API policy marker for hosts and qualification tooling.
+pub const NORMATIVE_CONTEXT_COMPILER_API: &str = "v2.1-proof-closed";
 
 const MAX_ITEMS: usize = 4_096;
 const MAX_TOKENS: u64 = 1_000_000;
