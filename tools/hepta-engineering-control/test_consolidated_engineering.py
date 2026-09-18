@@ -415,25 +415,34 @@ class EngineeringCliTests(unittest.TestCase):
             external_audit_anchor_receipt_digest="1" * 64,
         )
 
-    def test_production_readiness_cli_is_a_real_exit_gate(self):
+    def test_readiness_cli_cannot_certify_caller_supplied_facts(self):
         complete = self.write("readiness-complete.json", asdict(self.readiness_facts()))
-        passed = self.command(
+
+        rejected = self.command(
             "production-readiness", "--facts", complete, "--require", "deployment"
         )
-        self.assertEqual(passed.returncode, 0, passed.stderr)
-        decision = json.loads(passed.stdout)["decision"]
-        self.assertTrue(decision["production_implementation_ready"])
-        self.assertTrue(decision["deployment_readiness_ready"])
+        self.assertEqual(rejected.returncode, 1)
+        self.assertEqual(
+            json.loads(rejected.stderr)["error"],
+            "authenticated_readiness_composition_required",
+        )
+
+        projected = self.command("readiness-projection", "--facts", complete)
+        self.assertEqual(projected.returncode, 0, projected.stderr)
+        payload = json.loads(projected.stdout)
+        self.assertEqual(payload["qualificationClass"], "projection_only")
+        self.assertFalse(payload["authenticated"])
+        self.assertFalse(payload["authorityGranted"])
+        self.assertTrue(payload["decision"]["production_implementation_ready"])
+        self.assertTrue(payload["decision"]["deployment_readiness_ready"])
 
         blocked_facts = replace(self.readiness_facts(), external_key_custody=False)
         blocked = self.write("readiness-blocked.json", asdict(blocked_facts))
-        failed = self.command(
-            "production-readiness", "--facts", blocked, "--require", "deployment"
-        )
-        self.assertEqual(failed.returncode, 1, failed.stderr)
+        projected_blocked = self.command("readiness-projection", "--facts", blocked)
+        self.assertEqual(projected_blocked.returncode, 0, projected_blocked.stderr)
         self.assertIn(
             "external_key_custody_missing",
-            json.loads(failed.stdout)["decision"]["deployment_blockers"],
+            json.loads(projected_blocked.stdout)["decision"]["deployment_blockers"],
         )
 
     def test_schedule_persists_and_replays_an_identical_generation(self):
