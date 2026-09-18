@@ -89,7 +89,10 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Run exact-head and deterministic synthetic-merge execution for the named Agentd Browser product source path.",
+    "Retain B4 closed-world proof that the raw FinalUse claim/dispatch and authority-store open callers remain the declared Agentd files."
+  ],
   "externalEvidenceGates": [
     "reproducible Servo binary and patch digest",
     "OS sandbox/profile/credential/network enforcement",
@@ -112,7 +115,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "agentd_product_host_source_composed_unqualified",
   "productionWriterState": "not_established",
   "owner": "browser-platform",
   "deputy": "security-authority",
@@ -120,5 +123,39 @@
   "sourceRoot": [
     "apps/hepta-browser",
     "third_party/servo-patches"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "symbol": "BrowserServoPort::call",
+      "role": "agentd_owned_browser_module_port_and_final_use_dispatch_boundary"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "symbol": "main",
+      "role": "named_non_test_agentd_browser_product_process"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "apps/hepta-browser",
+      "object": "3a092ed87f1df79857153a936dab69e28c789900"
+    },
+    {
+      "path": "apps/hepta-browser/src/runtime.js",
+      "object": "fc532344cce5ef96afb2272fd320f42659b8ed1c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "object": "7f64a21f9912621eee828862cd81d237bfbcf2c6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "object": "32fa73918e35733908cccd8d000c4fbfe7a0297f"
+    },
+    {
+      "path": "third_party/servo-patches",
+      "object": "0d0554161a24ea4c16ce836d95ddbe3ce4e9d5e7"
+    }
   ]
 }
