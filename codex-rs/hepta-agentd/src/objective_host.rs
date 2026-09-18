@@ -6,12 +6,12 @@
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
-use codex_hepta_intelligence::ProductionObjectiveError;
 use crate::AgentRunCoordinator;
 use crate::AgentRunError;
 use crate::RunReceipt;
 use crate::RunSnapshot;
+use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
+use codex_hepta_intelligence::ProductionObjectiveError;
 
 #[derive(Debug)]
 pub enum ObjectiveHostError {
@@ -23,7 +23,9 @@ pub enum ObjectiveHostError {
 impl fmt::Display for ObjectiveHostError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Envelope(error) => write!(formatter, "invalid intelligence host envelope: {error}"),
+            Self::Envelope(error) => {
+                write!(formatter, "invalid intelligence host envelope: {error}")
+            }
             Self::DeadlineMissing => {
                 formatter.write_str("production objective run requires an admitted deadline")
             }

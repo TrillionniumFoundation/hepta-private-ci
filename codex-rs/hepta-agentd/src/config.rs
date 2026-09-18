@@ -173,7 +173,10 @@ impl AgentdConfig {
     /// Attach the owner-selected Objective admission profile. This never comes
     /// from an implicit environment default: deployment must explicitly compose
     /// it together with an AuthBus trust registry.
-    pub fn with_objective_admission_profile_file(mut self, path: PathBuf) -> Result<Self, AgentdError> {
+    pub fn with_objective_admission_profile_file(
+        mut self,
+        path: PathBuf,
+    ) -> Result<Self, AgentdError> {
         if self.objective_admission_profile_file.is_some() {
             return Err(AgentdError::Invalid(
                 "Objective admission profile already configured".to_string(),

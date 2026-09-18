@@ -18,12 +18,12 @@ mod control;
 mod error;
 mod event_buffer;
 mod lane_b_runtime;
-mod operations_host;
 mod objective_dispatch;
 mod objective_host;
 mod objective_ingress;
 #[cfg(any(test, feature = "qualification-objective-direct-store"))]
 mod objective_runtime;
+mod operations_host;
 mod production_writer_host;
 mod qualification_writer;
 mod runtime;
@@ -93,9 +93,6 @@ pub use lane_b_runtime::RunPhase;
 pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
-pub use operations_host::AgentdOperationsError;
-pub use operations_host::AgentdOperationsHost;
-pub use operations_host::AutomationGrantProvider;
 pub use objective_host::ObjectiveHostError;
 pub use objective_host::start_intelligence_run_v1;
 #[cfg(any(test, feature = "qualification-objective-direct-store"))]
@@ -105,6 +102,9 @@ pub use objective_runtime::{
     ObjectiveRunFileStore, StoredObjectiveRunPublicationV1, StoredRunStartSnapshotV1,
     admit_publish_and_start_objective_run_v1,
 };
+pub use operations_host::AgentdOperationsError;
+pub use operations_host::AgentdOperationsHost;
+pub use operations_host::AutomationGrantProvider;
 pub use production_writer_host::AgentdProductionWriterHost;
 pub use runtime::run;
 

@@ -13,12 +13,12 @@ use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
 use codex_hepta_bellman_operator::TabularPayloadError;
 use codex_hepta_bellman_operator::TabularPayloadPinV1;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
 use codex_hepta_learning_artifacts::load_pinned_candidate;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -100,7 +100,6 @@ impl PinnedCognitiveRanker {
         value.revalidate()?;
         Ok(value)
     }
-
 
     /// Load a candidate only after independent longitudinal evaluation and a
     /// separately authenticated selector have admitted the exact artifact.
