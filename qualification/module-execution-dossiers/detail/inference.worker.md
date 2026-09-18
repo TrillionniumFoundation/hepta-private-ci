@@ -37,7 +37,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 
 These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
 
-## 7. Integration, rollback and capability ceiling
+The production qualification matrix, exact evidence identity, rollback triggers and activation checklist are centralized in [docs/modules/inference.worker/PRODUCTION_READINESS.md](../../../docs/modules/inference.worker/PRODUCTION_READINESS.md). These remain requirements, not pass claims, until backed by exact-candidate receipts and target-host evidence.\n\n## 7. Integration, rollback and capability ceiling
 
 Attach Neuron's encoder only after the real-model qualification gate. The deterministic feature fixture remains available without claiming real-model use. Rollback cannot mix old checkpoints with new encoders; unload/drain precedes compatible reload.
 
