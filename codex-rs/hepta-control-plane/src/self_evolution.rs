@@ -149,7 +149,7 @@ impl SelfEvolutionRuntimeV1 {
         Ok(receipt)
     }
 
-    pub fn confirm_adoption(
+    pub fn confirm_self_evolution(
         &mut self,
         selection_digest: Digest32,
     ) -> Result<(), SelfEvolutionRuntimeError> {
@@ -164,7 +164,7 @@ impl SelfEvolutionRuntimeV1 {
         Ok(())
     }
 
-    pub fn rollback(
+    pub fn rollback_self_evolution(
         &mut self,
         selection: &SelfEvolutionSelectionWitnessV1,
         regression_evidence_digest: Digest32,
@@ -288,7 +288,7 @@ mod tests {
         assert!(runtime.adoption_pending_confirmation());
 
         let rollback = runtime
-            .rollback(&selection, Digest32::of_bytes(b"observed-regression"))
+            .rollback_self_evolution(&selection, Digest32::of_bytes(b"observed-regression"))
             .unwrap();
         assert_eq!(rollback.restored_candidate_id, id("baseline"));
         assert_eq!(rollback.restored_generation, generation(6));
@@ -329,10 +329,10 @@ mod tests {
         let selection = witness();
         let receipt = runtime.adopt_self_evolution(&selection).unwrap();
         assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
-        runtime.confirm_adoption(selection.selection_digest).unwrap();
+        runtime.confirm_self_evolution(selection.selection_digest).unwrap();
         assert!(!runtime.adoption_pending_confirmation());
         assert_eq!(
-            runtime.rollback(&selection, Digest32::of_bytes(b"late-regression")),
+            runtime.rollback_self_evolution(&selection, Digest32::of_bytes(b"late-regression")),
             Err(SelfEvolutionRuntimeError::NoRollbackCheckpoint)
         );
     }
