@@ -49,6 +49,12 @@ pub(crate) struct ReleaseSelectionRecord {
     pub schema_version: u32,
     pub agent_id: String,
     pub grant_sha256: Sha256Digest,
+    pub h7_envelope_sha256: Sha256Digest,
+    pub artifact_sha256: Sha256Digest,
+    pub selector_id: String,
+    pub selector_epoch: u64,
+    pub operator_acceptance: bool,
+    pub promotion: bool,
     pub source_release: String,
     pub target_release: String,
     pub binding: ReleaseSelectionBinding,
@@ -68,6 +74,12 @@ impl ReleaseSelectionRecord {
             schema_version: RELEASE_SELECTION_SCHEMA_VERSION,
             agent_id: grant.agent_id.clone(),
             grant_sha256: grant.grant_sha256.clone(),
+            h7_envelope_sha256: grant.h7_envelope_sha256.clone(),
+            artifact_sha256: grant.artifact_sha256.clone(),
+            selector_id: grant.signer_id.clone(),
+            selector_epoch: grant.signer_epoch,
+            operator_acceptance: grant.operator_acceptance,
+            promotion: grant.promotion,
             source_release: grant.source_release.clone(),
             target_release: grant.target_release.clone(),
             binding: grant.release_selection.clone(),
@@ -98,6 +110,11 @@ impl ReleaseSelectionRecord {
         if self.schema_version != RELEASE_SELECTION_SCHEMA_VERSION
             || self.agent_id.trim().is_empty()
             || self.agent_id.len() > 256
+            || self.selector_id.trim().is_empty()
+            || self.selector_id.len() > 256
+            || self.selector_epoch == 0
+            || !self.operator_acceptance
+            || !self.promotion
             || self.source_release.trim().is_empty()
             || self.target_release.trim().is_empty()
             || self.source_release == self.target_release
@@ -110,8 +127,15 @@ impl ReleaseSelectionRecord {
         self.binding
             .validate()
             .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
-        Sha256Digest::parse(self.grant_sha256.as_str().to_string())
-            .map_err(|_| SupervisorError::Invalid("release selection grant digest is malformed".to_string()))?;
+        for (digest, label) in [
+            (&self.grant_sha256, "grant"),
+            (&self.h7_envelope_sha256, "H7 envelope"),
+            (&self.artifact_sha256, "artifact"),
+        ] {
+            Sha256Digest::parse(digest.as_str().to_string()).map_err(|_| {
+                SupervisorError::Invalid(format!("release selection {label} digest is malformed"))
+            })?;
+        }
         Sha256Digest::parse(self.selection_sha256.as_str().to_string())
             .map_err(|_| SupervisorError::Invalid("release selection digest is malformed".to_string()))?;
         if self.selection_sha256 != self.compute_digest()? {
@@ -127,6 +151,12 @@ impl ReleaseSelectionRecord {
             self.schema_version,
             &self.agent_id,
             &self.grant_sha256,
+            &self.h7_envelope_sha256,
+            &self.artifact_sha256,
+            &self.selector_id,
+            self.selector_epoch,
+            self.operator_acceptance,
+            self.promotion,
             &self.source_release,
             &self.target_release,
             &self.binding,
