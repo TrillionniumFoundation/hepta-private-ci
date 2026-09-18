@@ -115,6 +115,8 @@ def verify_distributed_write_grant(
     checked_id(grant.coordinator_id, "coordinator_id")
     if grant.worker_id != worker_id:
         raise EngineeringError("distributed_worker_mismatch")
+    if grant.issuer != "external_coordinator" or not grant.signing_identity:
+        raise EngineeringError("distributed_coordinator_issuer")
     if not _git_sha(source_commit) or not _git_sha(source_tree):
         raise EngineeringError("invalid_git_identity")
     if grant.source_commit != source_commit or grant.source_tree != source_tree:
