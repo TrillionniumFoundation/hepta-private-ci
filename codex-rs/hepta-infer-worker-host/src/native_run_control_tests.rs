@@ -50,6 +50,35 @@ fn admission() -> NativeAdmission {
     }
 }
 
+#[test]
+fn transient_control_does_not_hold_the_writer_lock_between_transitions() {
+    let (_driver, path) = fixture("transient-lock");
+    let mut transient = TransientNativeControl::new(&path, 8).unwrap();
+
+    // Merely keeping the production port alive does not retain either the
+    // sidecar or journal inode lock. A separate owner can therefore enter one
+    // short transaction between model/provider awaits.
+    let owner = DurableInferenceControl::open(&path, 8).unwrap();
+    drop(owner);
+
+    let req = NativeRequest {
+        request_id: "r1".to_string(),
+        principal_id: "agent-1".to_string(),
+        worker_generation: 1,
+        model: "model".to_string(),
+        payload_digest: "a".repeat(64),
+    };
+    transient.reserve_native(req, 2).unwrap();
+    let second_owner = DurableInferenceControl::open(&path, 8).unwrap();
+    assert!(second_owner.native_record("r1").is_some());
+    drop(second_owner);
+
+    std::fs::remove_file(&path).unwrap();
+    let mut lock = path.as_os_str().to_os_string();
+    lock.push(".lock");
+    std::fs::remove_file(PathBuf::from(lock)).unwrap();
+}
+
 #[tokio::test]
 async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
     let (driver, path) = fixture("reopen");
