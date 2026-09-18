@@ -178,6 +178,12 @@ fn frozen_model_metrics_authenticate_and_drive_policy_decision() {
         &score_evidence,
     )
     .unwrap_or_else(|error| panic!("scorer output digest: {error:?}"));
+    let assignment_digest = canonical_assignment_digest_v1(
+        &request,
+        profile.profile_digest,
+        scorer_output_digest,
+    )
+    .unwrap_or_else(|error| panic!("assignment digest: {error:?}"));
 
     let artifact_key = QualificationMacKeyV1::from_trusted_bytes(
         id("qualification:key:frozen-artifacts"),
@@ -189,6 +195,12 @@ fn frozen_model_metrics_authenticate_and_drive_policy_decision() {
         id("qualification:key:frozen-scorer"),
         1,
         [0x52; 32],
+        false,
+    );
+    let assignment_key = QualificationMacKeyV1::from_trusted_bytes(
+        id("qualification:key:frozen-assignment"),
+        1,
+        [0x73; 32],
         false,
     );
     let subject_id = id("intuition:policy:frozen-v1");
@@ -242,6 +254,16 @@ fn frozen_model_metrics_authenticate_and_drive_policy_decision() {
         sequence,
     )
     .unwrap_or_else(|error| panic!("scorer auth: {error:?}"));
+    let assignment_mac = issue_qualification_mac_v1(
+        &assignment_key,
+        subject_id.clone(),
+        assignment_scope_digest_v1(),
+        assignment_digest,
+        model.generation,
+        sequence,
+        sequence,
+    )
+    .unwrap_or_else(|error| panic!("assignment auth: {error:?}"));
 
     let receipt = decide_qualified_v1(
         QualifiedDecisionRequestV1 {
@@ -255,11 +277,13 @@ fn frozen_model_metrics_authenticate_and_drive_policy_decision() {
                 ood: &ood_mac,
                 completeness: &completeness_mac,
                 scorer_output: &scorer_mac,
+                assignment: &assignment_mac,
             },
         },
         QualificationTrustV1 {
             artifact_key: &artifact_key,
             scorer_key: &scorer_key,
+            assignment_key: &assignment_key,
             subject_id: &subject_id,
             expected_generation: model.generation,
         },

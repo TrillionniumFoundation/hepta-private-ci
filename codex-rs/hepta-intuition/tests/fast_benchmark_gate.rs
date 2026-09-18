@@ -59,6 +59,7 @@ static GLOBAL: CountingAllocator = CountingAllocator;
 struct BenchmarkFixture {
     artifact_key: QualificationMacKeyV1,
     scorer_key: QualificationMacKeyV1,
+    assignment_key: QualificationMacKeyV1,
     subject_id: StableId,
     request: CalibratedDecisionRequestV1,
     profile: CanonicalPolicyProfileV1,
@@ -69,6 +70,7 @@ struct BenchmarkFixture {
     ood_mac: QualificationMacV1,
     completeness_mac: QualificationMacV1,
     scorer_mac: QualificationMacV1,
+    assignment_mac: QualificationMacV1,
 }
 
 #[derive(Clone, Copy)]
@@ -328,6 +330,12 @@ impl BenchmarkFixture {
             &evidence,
         )
         .unwrap_or_else(|error| panic!("scorer output digest: {error:?}"));
+        let assignment_digest = canonical_assignment_digest_v1(
+            &request,
+            profile.profile_digest,
+            scorer_output_digest,
+        )
+        .unwrap_or_else(|error| panic!("assignment digest: {error:?}"));
 
         let artifact_key = QualificationMacKeyV1::from_trusted_bytes(
             id("qualification:key:benchmark-artifacts"),
@@ -339,6 +347,12 @@ impl BenchmarkFixture {
             id("qualification:key:benchmark-scorer"),
             1,
             [0x72; 32],
+            false,
+        );
+        let assignment_key = QualificationMacKeyV1::from_trusted_bytes(
+            id("qualification:key:benchmark-assignment"),
+            1,
+            [0x83; 32],
             false,
         );
         let subject_id = id("intuition:policy:benchmark");
@@ -392,10 +406,21 @@ impl BenchmarkFixture {
             sequence,
         )
         .unwrap_or_else(|error| panic!("scorer mac: {error:?}"));
+        let assignment_mac = issue_qualification_mac_v1(
+            &assignment_key,
+            subject_id.clone(),
+            assignment_scope_digest_v1(),
+            assignment_digest,
+            generation,
+            sequence,
+            sequence,
+        )
+        .unwrap_or_else(|error| panic!("assignment mac: {error:?}"));
 
         Self {
             artifact_key,
             scorer_key,
+            assignment_key,
             subject_id,
             request,
             profile,
@@ -406,6 +431,7 @@ impl BenchmarkFixture {
             ood_mac,
             completeness_mac,
             scorer_mac,
+            assignment_mac,
         }
     }
 
@@ -437,11 +463,13 @@ impl BenchmarkFixture {
                     ood: &self.ood_mac,
                     completeness: &self.completeness_mac,
                     scorer_output: &self.scorer_mac,
+                    assignment: &self.assignment_mac,
                 },
             },
             QualificationTrustV1 {
                 artifact_key: &self.artifact_key,
                 scorer_key: &self.scorer_key,
+                assignment_key: &self.assignment_key,
                 subject_id: &self.subject_id,
                 expected_generation: self.request.policy_generation,
             },
