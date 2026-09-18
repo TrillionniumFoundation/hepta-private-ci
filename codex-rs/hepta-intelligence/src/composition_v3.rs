@@ -361,14 +361,10 @@ pub struct IntelligenceHostEnvelopeV1 {
     pub authority_epoch: u64,
     pub deadline_micros: u64,
     pub envelope_digest: Digest32,
-    pub authority: AuthorityPosture,
 }
 
 impl IntelligenceHostEnvelopeV1 {
     pub fn validate(&self) -> Result<(), CompositionErrorV3> {
-        if self.authority.grants_any() {
-            return Err(CompositionErrorV3::AuthorityWidening);
-        }
         if self.authority_epoch == 0 || self.deadline_micros == 0 {
             return Err(CompositionErrorV3::InvalidDeadline);
         }
@@ -1294,7 +1290,6 @@ fn build_host_envelope(
         authority_epoch: request.snapshot.authority_epoch(),
         deadline_micros: request.deadline_micros,
         envelope_digest: Digest32::ZERO,
-        authority: AuthorityPosture::DENY_ALL,
     };
     envelope.envelope_digest = digest_host_envelope(&envelope)?;
     envelope.validate()?;
