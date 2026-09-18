@@ -1,4 +1,13 @@
-"""Legacy compatibility scheduler for pre-v2 Lane G callers.\n\nCanonical production-facing composition lives in control_engineering_v2.\nThis module is retained only for historical fixtures and source compatibility;\nits caller-supplied boolean integration evidence is not an authenticated product\nboundary and must not be used by new callers. It exposes no merge, runtime,\ndeployment, promotion or release authority.\n"""\n\nLEGACY_COMPATIBILITY_ONLY = True
+"""Legacy compatibility scheduler for pre-v2 Lane G callers.
+
+Canonical production-facing composition lives in control_engineering_v2.
+This module is retained only for historical fixtures and source compatibility;
+its caller-supplied boolean integration evidence is not an authenticated product
+boundary and must not be used by new callers. It exposes no merge, runtime,
+deployment, promotion or release authority.
+"""
+
+LEGACY_COMPATIBILITY_ONLY = True
 
 from __future__ import annotations
 
