@@ -36,12 +36,21 @@ impl fmt::Display for ObjectiveAdmissionProfileJsonError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::InputTooLarge { actual, maximum } => {
-                write!(formatter, "objective admission profile has {actual} bytes; maximum is {maximum}")
+                write!(
+                    formatter,
+                    "objective admission profile has {actual} bytes; maximum is {maximum}"
+                )
             }
             Self::InvalidJson { line, column } => {
-                write!(formatter, "invalid objective admission profile JSON at line {line}, column {column}")
+                write!(
+                    formatter,
+                    "invalid objective admission profile JSON at line {line}, column {column}"
+                )
             }
-            Self::InvalidField(field) => write!(formatter, "invalid objective admission profile field: {field}"),
+            Self::InvalidField(field) => write!(
+                formatter,
+                "invalid objective admission profile field: {field}"
+            ),
             Self::Admission(error) => error.fmt(formatter),
         }
     }
@@ -102,12 +111,17 @@ struct ProfileWire {
 }
 
 impl ProfileWire {
-    fn try_into_profile(self) -> Result<ObjectiveAdmissionProfileV1, ObjectiveAdmissionProfileJsonError> {
+    fn try_into_profile(
+        self,
+    ) -> Result<ObjectiveAdmissionProfileV1, ObjectiveAdmissionProfileJsonError> {
         Ok(ObjectiveAdmissionProfileV1 {
             profile_id: stable_id(self.profile_id, "profileId")?,
             profile_revision: Revision::new(self.profile_revision)
                 .map_err(|_| ObjectiveAdmissionProfileJsonError::InvalidField("profileRevision"))?,
-            expected_input_schema_digest: digest(self.expected_input_schema_digest, "expectedInputSchemaDigest")?,
+            expected_input_schema_digest: digest(
+                self.expected_input_schema_digest,
+                "expectedInputSchemaDigest",
+            )?,
             expected_normalization_profile_digest: digest(
                 self.expected_normalization_profile_digest,
                 "expectedNormalizationProfileDigest",
@@ -164,7 +178,9 @@ struct ConstraintWire {
 }
 
 impl ConstraintWire {
-    fn try_into_mapping(self) -> Result<ObjectiveConstraintProfileV1, ObjectiveAdmissionProfileJsonError> {
+    fn try_into_mapping(
+        self,
+    ) -> Result<ObjectiveConstraintProfileV1, ObjectiveAdmissionProfileJsonError> {
         Ok(ObjectiveConstraintProfileV1 {
             source_constraint_id: self.source_constraint_id,
             expected_unit: self.expected_unit,
@@ -183,7 +199,9 @@ struct PredicateWire {
 }
 
 impl PredicateWire {
-    fn try_into_mapping(self) -> Result<ObjectivePredicateProfileV1, ObjectiveAdmissionProfileJsonError> {
+    fn try_into_mapping(
+        self,
+    ) -> Result<ObjectivePredicateProfileV1, ObjectiveAdmissionProfileJsonError> {
         Ok(ObjectivePredicateProfileV1 {
             source_predicate_id: self.source_predicate_id,
             expected_unit: self.expected_unit,
@@ -200,7 +218,9 @@ struct ActionWire {
 }
 
 impl ActionWire {
-    fn try_into_mapping(self) -> Result<ObjectiveActionProfileV1, ObjectiveAdmissionProfileJsonError> {
+    fn try_into_mapping(
+        self,
+    ) -> Result<ObjectiveActionProfileV1, ObjectiveAdmissionProfileJsonError> {
         Ok(ObjectiveActionProfileV1 {
             source_action_class: self.source_action_class,
             action_id: stable_id(self.action_id, "action.actionId")?,
@@ -219,11 +239,17 @@ struct SoftDimensionWire {
 }
 
 impl SoftDimensionWire {
-    fn try_into_mapping(self) -> Result<ObjectiveSoftDimensionProfileV1, ObjectiveAdmissionProfileJsonError> {
+    fn try_into_mapping(
+        self,
+    ) -> Result<ObjectiveSoftDimensionProfileV1, ObjectiveAdmissionProfileJsonError> {
         let expected_direction = match self.expected_direction.as_str() {
             "maximize" => ObjectiveSoftDirectionV1::Maximize,
             "minimize" => ObjectiveSoftDirectionV1::Minimize,
-            _ => return Err(ObjectiveAdmissionProfileJsonError::InvalidField("softDimensions.expectedDirection")),
+            _ => {
+                return Err(ObjectiveAdmissionProfileJsonError::InvalidField(
+                    "softDimensions.expectedDirection",
+                ));
+            }
         };
         Ok(ObjectiveSoftDimensionProfileV1 {
             source_dimension_id: self.source_dimension_id,
@@ -243,7 +269,9 @@ struct EvidenceWire {
 }
 
 impl EvidenceWire {
-    fn try_into_mapping(self) -> Result<ObjectiveEvidenceProfileV1, ObjectiveAdmissionProfileJsonError> {
+    fn try_into_mapping(
+        self,
+    ) -> Result<ObjectiveEvidenceProfileV1, ObjectiveAdmissionProfileJsonError> {
         Ok(ObjectiveEvidenceProfileV1 {
             source_requirement_id: self.source_requirement_id,
             axis: stable_id(self.axis, "evidence.axis")?,
@@ -262,7 +290,10 @@ struct ResourceAxisWire {
 }
 
 impl ResourceAxisWire {
-    fn try_into_mapping(self, field: &'static str) -> Result<ObjectiveResourceAxisProfileV1, ObjectiveAdmissionProfileJsonError> {
+    fn try_into_mapping(
+        self,
+        field: &'static str,
+    ) -> Result<ObjectiveResourceAxisProfileV1, ObjectiveAdmissionProfileJsonError> {
         Ok(ObjectiveResourceAxisProfileV1 {
             constraint_id: stable_id(self.constraint_id, field)?,
             axis: stable_id(self.axis, field)?,
@@ -285,14 +316,24 @@ struct ResourcesWire {
 }
 
 impl ResourcesWire {
-    fn try_into_profile(self) -> Result<ObjectiveResourceProfileV1, ObjectiveAdmissionProfileJsonError> {
+    fn try_into_profile(
+        self,
+    ) -> Result<ObjectiveResourceProfileV1, ObjectiveAdmissionProfileJsonError> {
         Ok(ObjectiveResourceProfileV1 {
             time_micros: self.time_micros.try_into_mapping("resources.timeMicros")?,
             token_count: self.token_count.try_into_mapping("resources.tokenCount")?,
-            compute_micros: self.compute_micros.try_into_mapping("resources.computeMicros")?,
-            memory_bytes: self.memory_bytes.try_into_mapping("resources.memoryBytes")?,
-            network_bytes: self.network_bytes.try_into_mapping("resources.networkBytes")?,
-            external_effect_count: self.external_effect_count.try_into_mapping("resources.externalEffectCount")?,
+            compute_micros: self
+                .compute_micros
+                .try_into_mapping("resources.computeMicros")?,
+            memory_bytes: self
+                .memory_bytes
+                .try_into_mapping("resources.memoryBytes")?,
+            network_bytes: self
+                .network_bytes
+                .try_into_mapping("resources.networkBytes")?,
+            external_effect_count: self
+                .external_effect_count
+                .try_into_mapping("resources.externalEffectCount")?,
         })
     }
 }
@@ -331,7 +372,9 @@ struct RiskWire {
 }
 
 impl RiskWire {
-    fn try_into_profile(self) -> Result<ObjectiveRiskProfileV1, ObjectiveAdmissionProfileJsonError> {
+    fn try_into_profile(
+        self,
+    ) -> Result<ObjectiveRiskProfileV1, ObjectiveAdmissionProfileJsonError> {
         Ok(ObjectiveRiskProfileV1 {
             evidence_source: stable_id(self.evidence_source, "risk.evidenceSource")?,
             class: constraint_class(&self.class)?,
@@ -341,17 +384,26 @@ impl RiskWire {
             medium_value: FixedQ32::from_raw(self.medium_value_q32),
             high_value: FixedQ32::from_raw(self.high_value_q32),
             critical_value: FixedQ32::from_raw(self.critical_value_q32),
-            rollback_constraint_id: stable_id(self.rollback_constraint_id, "risk.rollbackConstraintId")?,
+            rollback_constraint_id: stable_id(
+                self.rollback_constraint_id,
+                "risk.rollbackConstraintId",
+            )?,
             rollback_axis: stable_id(self.rollback_axis, "risk.rollbackAxis")?,
             rollback_none_value: FixedQ32::from_raw(self.rollback_none_value_q32),
             rollback_reversible_value: FixedQ32::from_raw(self.rollback_reversible_value_q32),
             rollback_compensatable_value: FixedQ32::from_raw(self.rollback_compensatable_value_q32),
             rollback_irreversible_value: FixedQ32::from_raw(self.rollback_irreversible_value_q32),
-            compensation_constraint_id: stable_id(self.compensation_constraint_id, "risk.compensationConstraintId")?,
+            compensation_constraint_id: stable_id(
+                self.compensation_constraint_id,
+                "risk.compensationConstraintId",
+            )?,
             compensation_axis: stable_id(self.compensation_axis, "risk.compensationAxis")?,
             compensation_false_value: FixedQ32::from_raw(self.compensation_false_value_q32),
             compensation_true_value: FixedQ32::from_raw(self.compensation_true_value_q32),
-            abstention_constraint_id: stable_id(self.abstention_constraint_id, "risk.abstentionConstraintId")?,
+            abstention_constraint_id: stable_id(
+                self.abstention_constraint_id,
+                "risk.abstentionConstraintId",
+            )?,
             abstention_axis: stable_id(self.abstention_axis, "risk.abstentionAxis")?,
             abstention_rules: self
                 .abstention_rules
@@ -365,11 +417,17 @@ impl RiskWire {
     }
 }
 
-fn stable_id(value: String, field: &'static str) -> Result<StableId, ObjectiveAdmissionProfileJsonError> {
+fn stable_id(
+    value: String,
+    field: &'static str,
+) -> Result<StableId, ObjectiveAdmissionProfileJsonError> {
     StableId::new(value).map_err(|_| ObjectiveAdmissionProfileJsonError::InvalidField(field))
 }
 
-fn digest(value: String, field: &'static str) -> Result<Digest32, ObjectiveAdmissionProfileJsonError> {
+fn digest(
+    value: String,
+    field: &'static str,
+) -> Result<Digest32, ObjectiveAdmissionProfileJsonError> {
     let digest = Digest32::from_str(&value)
         .map_err(|_| ObjectiveAdmissionProfileJsonError::InvalidField(field))?;
     if digest.is_zero() {
@@ -384,7 +442,9 @@ fn constraint_class(value: &str) -> Result<ConstraintClass, ObjectiveAdmissionPr
         "principal" => Ok(ConstraintClass::Principal),
         "environment" => Ok(ConstraintClass::Environment),
         "task" => Ok(ConstraintClass::Task),
-        _ => Err(ObjectiveAdmissionProfileJsonError::InvalidField("constraint class")),
+        _ => Err(ObjectiveAdmissionProfileJsonError::InvalidField(
+            "constraint class",
+        )),
     }
 }
 
