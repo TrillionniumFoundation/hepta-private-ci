@@ -15,8 +15,17 @@ product_callers = [
 [[surface]]
 crate = "codex-hepta-evidence"
 role = "durable_product_evidence"
-public_items = ["HeptaEvidenceStore", "EvidenceError"]
-product_callers = ["codex-rs/ext/hepta-governance/src/install.rs"]
+public_items = [
+  "HeptaEvidenceStore",
+  "EvidenceError",
+  "QualificationEvidenceEnvelopeV1",
+  "EvidenceDispositionV1",
+  "EvidenceExternalCheckpointV1",
+]
+product_callers = [
+  "codex-rs/ext/hepta-governance/src/install.rs",
+  "codex-rs/ext/hepta-governance/src/state.rs",
+]
 
 [[surface]]
 crate = "codex-hepta-contracts"
