@@ -85,6 +85,94 @@ impl AutomationSchedule {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum AutomationMissedRunPolicy {
+    Skip,
+    Coalesce,
+    BoundedCatchUp { max_occurrences: u16 },
+}
+
+impl Default for AutomationMissedRunPolicy {
+    fn default() -> Self {
+        Self::Skip
+    }
+}
+
+impl AutomationMissedRunPolicy {
+    pub(crate) fn validate(self) -> Result<(), AutomationError> {
+        match self {
+            Self::Skip | Self::Coalesce => Ok(()),
+            Self::BoundedCatchUp { max_occurrences } if (1..=1024).contains(&max_occurrences) => {
+                Ok(())
+            }
+            Self::BoundedCatchUp { .. } => Err(AutomationError::Invalid),
+        }
+    }
+
+    pub(crate) fn columns(self) -> (&'static str, u16) {
+        match self {
+            Self::Skip => ("skip", 0),
+            Self::Coalesce => ("coalesce", 0),
+            Self::BoundedCatchUp { max_occurrences } => ("bounded_catch_up", max_occurrences),
+        }
+    }
+
+    pub(crate) fn parse(kind: &str, catch_up_limit: u16) -> Result<Self, AutomationError> {
+        let policy = match (kind, catch_up_limit) {
+            ("skip", 0) => Self::Skip,
+            ("coalesce", 0) => Self::Coalesce,
+            ("bounded_catch_up", limit) if (1..=1024).contains(&limit) => {
+                Self::BoundedCatchUp {
+                    max_occurrences: limit,
+                }
+            }
+            _ => return Err(AutomationError::Corrupt),
+        };
+        Ok(policy)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationOverlapPolicy {
+    #[default]
+    Forbid,
+}
+
+impl AutomationOverlapPolicy {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::Forbid => "forbid",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
+        match value {
+            "forbid" => Ok(Self::Forbid),
+            _ => Err(AutomationError::Corrupt),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationOccurrenceTerminal {
+    Succeeded,
+    Failed,
+    Cancelled,
+}
+
+impl AutomationOccurrenceTerminal {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::Succeeded => "succeeded",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AutomationTaskState {
     Enabled,
@@ -121,6 +209,10 @@ pub struct AutomationTaskDraft {
     pub thread_id: String,
     pub prompt: String,
     pub schedule: AutomationSchedule,
+    #[serde(default)]
+    pub missed_run_policy: AutomationMissedRunPolicy,
+    #[serde(default)]
+    pub overlap_policy: AutomationOverlapPolicy,
     pub first_run_at_ms: u64,
     pub created_at_ms: u64,
 }
@@ -138,13 +230,26 @@ impl AutomationTaskDraft {
             thread_id: thread_id.into(),
             prompt: prompt.into(),
             schedule,
+            missed_run_policy: AutomationMissedRunPolicy::default(),
+            overlap_policy: AutomationOverlapPolicy::default(),
             first_run_at_ms,
             created_at_ms,
         }
     }
 
+    pub fn with_missed_run_policy(mut self, policy: AutomationMissedRunPolicy) -> Self {
+        self.missed_run_policy = policy;
+        self
+    }
+
+    pub fn with_overlap_policy(mut self, policy: AutomationOverlapPolicy) -> Self {
+        self.overlap_policy = policy;
+        self
+    }
+
     pub(crate) fn validate(&self) -> Result<(), AutomationError> {
         self.schedule.validate()?;
+        self.missed_run_policy.validate()?;
         let prompt_len = self.prompt.len();
         if prompt_len == 0 || prompt_len > MAX_PROMPT_BYTES || self.prompt.contains('\0') {
             return Err(AutomationError::Invalid);
@@ -165,6 +270,9 @@ pub struct AutomationTask {
     pub thread_id: String,
     pub prompt: String,
     pub schedule: AutomationSchedule,
+    pub schedule_revision: u64,
+    pub missed_run_policy: AutomationMissedRunPolicy,
+    pub overlap_policy: AutomationOverlapPolicy,
     pub state: AutomationTaskState,
     pub next_run_at_ms: Option<u64>,
     pub next_occurrence: u64,
