@@ -12,7 +12,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`verify_admission(signed_grant, factor, reviewed_scope, now) -> VerifiedAdmission`; `verify_final_use_admission(final_use_grant, factor, reviewed_scope, evidence) -> VerifiedAdmission`; `admit_factor_verified(verified, now) -> FactorRevision`; `register_realization_payload_v2(binding, payload, supersedes) -> RealizationRevision`; `revoke_factor(id, actor, reason, cutoff) -> LifecycleReceipt`; `read_compatible(snapshot, model_tuple, required_factors) -> FactorSet`; `dereference_realization(snapshot, realization, model_tuple, now) -> RealizationDelivery`. Factor semantics and model-specific realization bytes are separate identities. External content must undergo governed admission before becoming an instruction factor.
+`verify_admission(signed_grant, factor, reviewed_scope, now) -> VerifiedAdmission`; `admit_factor_final_use(final_use_grant, factor, reviewed_scope, evidence) -> FactorRevision`; `register_realization_payload_v2(binding, payload, supersedes) -> RealizationRevision`; `retire_factor_final_use(final_use_grant, id, actor, scope, reason) -> LifecycleReceipt`; `revoke_factor_final_use(final_use_grant, id, actor, scope, reason, cutoff) -> LifecycleReceipt`; `read_compatible(snapshot, model_tuple, required_factors) -> FactorSet`; `dereference_realization(snapshot, realization, model_tuple, now) -> RealizationDelivery`. Factor semantics and model-specific realization bytes are separate identities. External content must undergo governed admission before becoming an instruction factor.
 
 ## 3. State records and transaction design
 
