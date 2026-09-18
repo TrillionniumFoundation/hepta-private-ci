@@ -60,6 +60,7 @@ EXPECTED_OPERATIONS = {
         "world_model_payload_digest_v1",
         "LoadedTabularWorldModelV1::from_pinned_model",
         "LoadedTabularWorldModelV1::predict",
+        "admit_world_model_qualification",
     },
     "learning.eval": {
         "estimate_ope",
@@ -454,6 +455,7 @@ def verify_authority_posture(findings: Findings) -> None:
         ROOT / "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/reference.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/world_model.rs",
+        ROOT / "codex-rs/hepta-bellman-operator/src/world_model_qualification.rs",
         ROOT / "codex-rs/hepta-intelligence-eval/src/closure.rs",
     ]
     for path in sources:
