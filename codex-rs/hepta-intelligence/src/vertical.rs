@@ -181,8 +181,23 @@ impl ReadOnlyVerticalRequest {
         ),
         ReadOnlyVerticalError,
     > {
-        if optimization.objective_digest != self.context.objective_digest
-            || compilation.objective_digest != self.context.objective_digest
+        let objective_outcome = admit_and_compile_objective_v1(
+            &self.objective_envelope,
+            &self.objective_profile,
+            &self.objective_context,
+        )
+        .map_err(ReadOnlyVerticalError::ObjectiveAdmission)?;
+        ensure_no_authority("prompt objective admission", objective_outcome.receipt.authority)?;
+        let objective = objective_outcome
+            .compile_result
+            .map_err(|conflict| ReadOnlyVerticalError::ObjectiveConflict(conflict.conflict_digest))?;
+        if objective.disposition != CompileDisposition::Compiled {
+            return Err(ReadOnlyVerticalError::ObjectiveExplicitAbstain);
+        }
+        let objective_digest = objective.objective.semantic_digest;
+        ensure_digest("prompt compiled objective", objective_digest)?;
+        if optimization.objective_digest != objective_digest
+            || compilation.objective_digest != objective_digest
         {
             return Err(ReadOnlyVerticalError::DigestMismatch(
                 "prompt registry objective",

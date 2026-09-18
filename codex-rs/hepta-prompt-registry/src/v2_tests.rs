@@ -364,6 +364,18 @@ fn active_realization_replacement_requires_exact_predecessor() {
     registry
         .register_realization_v2(first.clone(), payload("payload-one"))
         .expect("first realization");
+    let role_drift = binding_for(
+        "realization:role-drift",
+        "factor:1",
+        PromptRoleV2::ToolSchemaFragment,
+        "payload-role-drift",
+    );
+    assert_eq!(
+        registry.register_realization_v2(role_drift, payload("payload-role-drift")),
+        Err(crate::Error::ActiveRealizationConflict(
+            "realization:1".to_string()
+        ))
+    );
     let second = binding_for(
         "realization:2",
         "factor:1",

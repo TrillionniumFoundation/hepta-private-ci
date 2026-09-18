@@ -117,7 +117,6 @@ impl PromptRealizationBindingV2 {
             && self.tool_schema_digest == other.tool_schema_digest
             && self.context_profile_digest == other.context_profile_digest
             && self.locale_id == other.locale_id
-            && self.role == other.role
     }
 
     pub(crate) fn compatible_with(&self, model_tuple: &PromptModelTupleV2) -> bool {

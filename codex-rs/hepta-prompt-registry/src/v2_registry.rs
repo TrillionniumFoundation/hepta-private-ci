@@ -359,7 +359,6 @@ fn active_key_bytes(binding: &PromptRealizationBindingV2) -> Vec<u8> {
         bytes.extend_from_slice(digest.as_array());
     }
     push_id(&mut bytes, &binding.locale_id);
-    bytes.push(role_code(binding.role));
     bytes
 }
 
