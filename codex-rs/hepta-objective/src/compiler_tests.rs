@@ -307,7 +307,6 @@ fn maximum_scalar_conflict_is_deterministic_at_numeric_extremes() {
     );
 }
 
-
 #[test]
 fn compiled_objective_revalidates_before_publication() {
     let receipt = must(must(compile(envelope())));
