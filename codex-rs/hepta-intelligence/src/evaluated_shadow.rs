@@ -495,7 +495,6 @@ impl<P: LaneFShadowPortsV1> LaneFShadowPortsV1 for DurableDecisionPorts<'_, P> {
         }
     }
 }
-}
 
 #[cfg(test)]
 #[path = "evaluated_shadow_tests.rs"]
