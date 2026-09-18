@@ -18,6 +18,7 @@ mod error;
 mod event_buffer;
 mod lane_b_runtime;
 mod production_writer_host;
+mod operations_writer_bridge;
 mod qualification_writer;
 mod runtime;
 mod state;
@@ -75,6 +76,10 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use production_writer_host::AgentdProductionWriterHost;
+pub use operations_writer_bridge::AGENTD_COGNITIVE_DESTINATION;
+pub use operations_writer_bridge::AGENTD_OPERATION_SOURCE_OWNER;
+pub use operations_writer_bridge::AgentdOperationCoordinator;
+pub use operations_writer_bridge::AgentdOperationCoordinatorError;
 pub use runtime::run;
 
 use control::AgentdControlServer;
