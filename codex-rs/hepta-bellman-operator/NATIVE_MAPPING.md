@@ -56,7 +56,7 @@ canonical action ID. This reference is the oracle for any later learned model.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
 requires a configurable positive minimum sample count for every grid cell. The
 artifact stores each cell's mean, minimum, maximum, sample count and evidence
-digest. Caller order cannot change the result. `predict_tabular_operator` requires an independently supplied artifact pin and
+digest. Caller order cannot change the result. `predict_tabular_operator` requires an independently supplied canonical-payload/artifact pin and
 returns only an explicitly fitted cell; an unknown sensor or action is OOD. Its
 output is marked both learned and synthetic and retains `DENY_ALL` authority.
 
@@ -86,7 +86,7 @@ profile.
 `fit_transition_model` builds a deterministic action-conditioned tabular model
 from an immutable dataset. For every supported `(state, action)` it records the
 mean bounded outcome and a branch distribution whose Q32 probabilities sum
-exactly to one. `predict_transition` requires an independently supplied model/dataset pin, rejects unsupported pairs rather than
+exactly to one. `predict_transition` requires an independently supplied canonical-payload/model/dataset pin, rejects unsupported pairs rather than
 extrapolating and marks every prediction synthetic with deny-all authority. `LoadedTabularWorldModelV1` validates the pinned model once before repeated lookup.
 Synthetic predictions cannot become independent factual outcomes.
 
