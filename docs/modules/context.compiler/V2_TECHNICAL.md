@@ -238,9 +238,15 @@ final provider token count.
 1. matches supplied payload items exactly to the selected item IDs;
 2. recomputes every item content digest from actual bytes;
 3. invokes the selected serializer over ordered selected items;
-4. hashes the actual serialized payload;
-5. invokes the selected exact tokenizer over those final bytes; and
-6. rejects if the actual final token count exceeds the compilation budget or
+4. requires the serializer to return the final payload plus one
+   `ContextPayloadPlacementV2` for every selected item;
+5. verifies every placement is in-bounds, ordered/non-overlapping, has the exact
+   selected item ID, and that `payload[start..end]` is byte-for-byte equal to
+   the selected item bytes;
+6. binds the canonical placement digest into the realization receipt;
+7. hashes the actual serialized payload;
+8. invokes the selected exact tokenizer over those final bytes; and
+9. rejects if the actual final token count exceeds the compilation budget or
    model maximum.
 
 Serializer framing, separators, roles, templates, and tokenizer boundary effects
@@ -273,7 +279,10 @@ trusted-admission proof when applicable.
 
 `ContextSerializationReceiptV2` is created only by
 `serialize_context_v2`; there is no public operation that accepts a naked
-payload digest and declares serialization complete.
+payload digest and declares serialization complete. A serializer cannot prove
+realization merely by receiving the selected items: the compiler verifies the
+returned byte placements against the actual final payload before issuing the
+receipt.
 
 It binds:
 
@@ -282,7 +291,8 @@ It binds:
 - model profile;
 - serializer identity;
 - selected item order;
-- realization digest;
+- verified placement digest;
+- realization digest binding selected content/admission proofs to those placements;
 - actual final payload digest;
 - actual final token count.
 
@@ -411,6 +421,7 @@ rather than reinterpreted.
 - revocation/tombstone introduced for selected untrusted evidence;
 - final serialized payload retokenization including serializer overhead;
 - selected content-byte substitution;
+- serializer omission/drop of a selected item via missing placement;
 - mandatory-group provenance changing the receipt even when selected IDs do not;
 - exact payload -> attachment -> provider-ack digest chain;
 - refusal to call an attempt delivered without provider acknowledgement;
