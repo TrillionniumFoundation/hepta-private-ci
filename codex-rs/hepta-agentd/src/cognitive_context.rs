@@ -123,12 +123,7 @@ pub(crate) async fn read(
 
     let bindings_by_identity = admitted
         .iter()
-        .map(|(_, item, binding)| {
-            (
-                (item.memory_id.clone(), item.revision),
-                binding.clone(),
-            )
-        })
+        .map(|(_, item, binding)| ((item.memory_id.clone(), item.revision), binding.clone()))
         .collect::<BTreeMap<_, _>>();
     let mut admitted_items = admitted
         .into_iter()
