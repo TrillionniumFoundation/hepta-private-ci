@@ -185,9 +185,11 @@ impl ArtifactPublicationTransactionV1 {
 /// The stable V1 registry cannot encode the complete V2 manifest shape. Its
 /// support digest therefore carries the exact V3 admission digest, which in
 /// turn binds the normalized V2 manifest, withdrawal domain, withdrawal head
-/// and admission time. The V1 predecessor is the explicit rollback predecessor
-/// when present, otherwise the sole predecessor when there is exactly one.
-/// Complete multi-predecessor lineage remains committed by the admission digest.
+/// and admission time. The stable V1 registry can enforce at most one artifact
+/// predecessor. Publication therefore accepts zero or one V2 predecessor and
+/// rejects multi-predecessor manifests instead of silently dropping eligibility
+/// edges. The admission digest commits complete V2 lineage but is not a substitute
+/// for durable runtime predecessor traversal.
 pub fn artifact_registry_event_for_admission_v3(
     operation_id: StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
