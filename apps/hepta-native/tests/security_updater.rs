@@ -151,3 +151,72 @@ fn update_rejects_self_selection_before_activation() {
     let error = manager.verify_and_stage(manifest, &package, 1).unwrap_err();
     assert!(error.to_string().contains("selected by its generator"));
 }
+
+#[test]
+fn unsigned_update_is_rejected_before_staging() {
+    let temp = TempDir::new().unwrap();
+    let (_signing, keys, _) = key_fixture(temp.path());
+    let package = temp.path().join("unsigned.bin");
+    std::fs::write(&package, b"unsigned native binary").unwrap();
+    let now = now_unix_ms().unwrap();
+    let manifest = SignedUpdateManifestV1 {
+        schema: "hepta.native-update.v1".to_owned(),
+        package_digest: digest_file(&package).unwrap(),
+        predecessor_digest: sha256_hex(b"old"),
+        evidence_digest: sha256_hex(b"evidence"),
+        platform: std::env::consts::OS.to_owned(),
+        architecture: std::env::consts::ARCH.to_owned(),
+        backend_protocol_version: 1,
+        channel: "stable".to_owned(),
+        selected_by: "release.reviewer".to_owned(),
+        generator_principal: "release.builder".to_owned(),
+        issued_unix_ms: now,
+        expires_unix_ms: now + 60_000,
+        key_id: "release.key".to_owned(),
+        signature_base64: STANDARD.encode([0_u8; 64]),
+    };
+    let manager = UpdateManager::new(keys, temp.path().join("updates")).unwrap();
+    let error = manager.verify_and_stage(manifest, &package, 1).unwrap_err();
+    assert!(error.to_string().contains("security verification failed"));
+    assert!(!manager.pending_path().exists());
+}
+
+#[test]
+fn unconfirmed_activation_rolls_back_to_predecessor() {
+    let temp = TempDir::new().unwrap();
+    let (signing, keys, key_path) = key_fixture(temp.path());
+    let package = temp.path().join("next.bin");
+    let target = temp.path().join("hepta-native.bin");
+    std::fs::write(&package, b"next native binary").unwrap();
+    std::fs::write(&target, b"predecessor native binary").unwrap();
+    let predecessor_digest = digest_file(&target).unwrap();
+    let now = now_unix_ms().unwrap();
+    let mut manifest = SignedUpdateManifestV1 {
+        schema: "hepta.native-update.v1".to_owned(),
+        package_digest: digest_file(&package).unwrap(),
+        predecessor_digest: predecessor_digest.clone(),
+        evidence_digest: sha256_hex(b"qualification-evidence"),
+        platform: std::env::consts::OS.to_owned(),
+        architecture: std::env::consts::ARCH.to_owned(),
+        backend_protocol_version: 1,
+        channel: "stable".to_owned(),
+        selected_by: "release.reviewer".to_owned(),
+        generator_principal: "release.builder".to_owned(),
+        issued_unix_ms: now.saturating_sub(1000),
+        expires_unix_ms: now + 60_000,
+        key_id: "release.key".to_owned(),
+        signature_base64: String::new(),
+    };
+    manifest.signature_base64 = STANDARD.encode(
+        signing
+            .sign(manifest.signing_message().as_bytes())
+            .to_bytes(),
+    );
+    let manager = UpdateManager::new(keys, temp.path().join("updates")).unwrap();
+    manager.verify_and_stage(manifest, &package, 1).unwrap();
+    let keys = TrustedKeySet::from_path(&key_path).unwrap();
+    activate_staged_update(&manager.pending_path(), &keys, &target, 1).unwrap();
+    assert!(manager.rollback_unconfirmed().unwrap());
+    assert_eq!(digest_file(&target).unwrap(), predecessor_digest);
+    assert!(!manager.pending_path().exists());
+}
