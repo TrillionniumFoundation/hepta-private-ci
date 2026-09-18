@@ -1,4 +1,6 @@
 from pathlib import Path
+import hashlib
+import json
 import tempfile
 import unittest
 from unittest import mock
@@ -57,6 +59,70 @@ class ProductGateTests(unittest.TestCase):
             "lane": lane,
             "pull_request_number": pull_request_number,
         }
+
+    def product_receipt(self, lane: str) -> dict[str, object]:
+        source = "a" * 40
+        base = "b" * 40
+        merge = "c" * 40
+        source_tree = "e" * 40
+        merge_tree = "d" * 40
+        receipt = {
+            "schema": "hepta.control-engineering-product-execution.v2",
+            "mode": lane,
+            "ciIdentity": {
+                "repository": product_gate.EXPECTED_REPOSITORY,
+                "repositoryId": product_gate.EXPECTED_REPOSITORY_ID,
+                "workflowRef": (
+                    product_gate.EXPECTED_REPOSITORY
+                    + "/.github/workflows/hepta-consolidated-source.yml@refs/pull/780/merge"
+                ),
+                "job": product_gate.EXPECTED_JOB,
+                "runId": 42,
+                "runAttempt": 3,
+                "eventName": "pull_request",
+                "executionLane": lane,
+                "pullRequestNumber": 780,
+            },
+            "sourceSha": source,
+            "sourceTree": source_tree,
+            "testedSha": source if lane == "source-head" else merge,
+            "testedTree": source_tree if lane == "source-head" else merge_tree,
+            "orderedParents": ["f" * 40] if lane == "source-head" else [base, source],
+            "canonicalWorkPackage": {
+                "path": CANONICAL_PATH,
+                "schema": "hepta.work-package-registry.v4",
+                "schemaVersion": 4,
+                "packageId": product_gate.CANONICAL_ENGINEERING_PACKAGE,
+                "blobOid": CANONICAL_BLOB,
+                "registryDigest": "1" * 64,
+                "packageDigest": "2" * 64,
+                "state": "source_implemented",
+                "authorityDelta": "none",
+                "developmentAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
+                "activationAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
+            },
+            "plan": {
+                "assignments": [
+                    {"package_id": "control.engineering.repository-product-gate"}
+                ],
+                "runtime_authority": False,
+                "merge_authority": False,
+                "release_authority": False,
+            },
+            "auditAnchor": {"sequence": 1, "eventDigest": "3" * 64},
+            "productCallerComposed": True,
+            "productTestsUpstreamRequired": True,
+            "runtimeAuthority": False,
+            "mergeAuthority": False,
+            "activationAuthority": False,
+            "promotionAuthority": False,
+            "releaseAuthority": False,
+            "externalEffectAuthority": False,
+        }
+        receipt["receiptDigest"] = hashlib.sha256(
+            json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest()
+        return receipt
 
     def test_pull_request_product_caller_composes_v2_orchestrator(self):
         source = "a" * 40
@@ -257,6 +323,84 @@ class ProductGateTests(unittest.TestCase):
                         base_sha="b" * 40,
                         **self.identity(lane="source-head"),
                     )
+
+    def test_product_receipt_pair_binds_both_exact_lanes(self):
+        source = self.product_receipt("source-head")
+        merge = self.product_receipt("base-merge")
+        pair = product_gate.verify_product_receipt_pair(
+            source,
+            merge,
+            expected_repository=product_gate.EXPECTED_REPOSITORY,
+            expected_repository_id=product_gate.EXPECTED_REPOSITORY_ID,
+            expected_run_id=42,
+            expected_run_attempt=3,
+            expected_source_sha="a" * 40,
+            expected_base_sha="b" * 40,
+            expected_pull_request_number=780,
+        )
+        self.assertEqual(
+            pair["sourceProductReceiptDigest"], source["receiptDigest"]
+        )
+        self.assertEqual(
+            pair["mergeProductReceiptDigest"], merge["receiptDigest"]
+        )
+        self.assertEqual(
+            pair["canonicalWorkPackageBlobOid"], CANONICAL_BLOB
+        )
+        self.assertFalse(pair["mergeAuthority"])
+        self.assertEqual(
+            pair["readinessReceiptSetDigest"],
+            hashlib.sha256(
+                json.dumps(
+                    {
+                        "baseMerge": merge["receiptDigest"],
+                        "sourceHead": source["receiptDigest"],
+                    },
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode("utf-8")
+            ).hexdigest(),
+        )
+
+    def test_product_receipt_pair_rejects_tamper_and_lane_drift(self):
+        source = self.product_receipt("source-head")
+        merge = self.product_receipt("base-merge")
+        source["testedTree"] = "0" * 40
+        with self.assertRaisesRegex(ValueError, "product_receipt_digest_mismatch"):
+            product_gate.verify_product_receipt_pair(
+                source,
+                merge,
+                expected_repository=product_gate.EXPECTED_REPOSITORY,
+                expected_repository_id=product_gate.EXPECTED_REPOSITORY_ID,
+                expected_run_id=42,
+                expected_run_attempt=3,
+                expected_source_sha="a" * 40,
+                expected_base_sha="b" * 40,
+                expected_pull_request_number=780,
+            )
+
+        source = self.product_receipt("source-head")
+        merge = self.product_receipt("base-merge")
+        merge["canonicalWorkPackage"]["blobOid"] = "8" * 40
+        merge["receiptDigest"] = hashlib.sha256(
+            json.dumps(
+                {key: value for key, value in merge.items() if key != "receiptDigest"},
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        with self.assertRaisesRegex(ValueError, "product_receipt_pair_canonical_drift"):
+            product_gate.verify_product_receipt_pair(
+                source,
+                merge,
+                expected_repository=product_gate.EXPECTED_REPOSITORY,
+                expected_repository_id=product_gate.EXPECTED_REPOSITORY_ID,
+                expected_run_id=42,
+                expected_run_attempt=3,
+                expected_source_sha="a" * 40,
+                expected_base_sha="b" * 40,
+                expected_pull_request_number=780,
+            )
 
     def test_ci_identity_mismatch_fails_closed(self):
         identity = self.identity()
