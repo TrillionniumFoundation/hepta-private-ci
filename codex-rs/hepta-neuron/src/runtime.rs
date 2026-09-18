@@ -40,6 +40,7 @@ use crate::SparseJournal;
 use crate::SparseSignalReceipt;
 use crate::WitnessError;
 use crate::active_indices;
+use crate::runtime_profile_digest;
 use crate::apply_calibration;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -171,7 +172,7 @@ where
         calibration_artifact: Option<NeuronCalibrationArtifactV1>,
         now_unix_micros: u64,
     ) -> Result<Self, RuntimeError> {
-        let config_digest = config.digest()?;
+        let config_digest = runtime_profile_digest(&config, &native)?;
         if now_unix_micros >= config.expires_at_unix_micros {
             return Err(RuntimeError::ConfigExpired);
         }
@@ -248,7 +249,7 @@ where
         genesis: SparseCheckpoint,
         now_unix_micros: u64,
     ) -> Result<Self, RuntimeError> {
-        let config_digest = config.digest()?;
+        let config_digest = runtime_profile_digest(&config, &native)?;
         if now_unix_micros >= config.expires_at_unix_micros {
             return Err(RuntimeError::ConfigExpired);
         }
