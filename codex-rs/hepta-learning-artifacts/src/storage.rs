@@ -200,6 +200,10 @@ pub fn remove_zero_length_orphan_in(
     if !locked.is_file() || locked.len() != 0 {
         return Err(ArtifactStorageError::NotOrphan);
     }
+    // Windows cannot unlink an ordinary file while this handle is open.
+    // The host is required to serialize reconciliation under its writer fence;
+    // release the cooperative lock/handle only after the final zero-length check.
+    drop(guard);
     fs::remove_file(&path).map_err(ArtifactStorageError::from)
 }
 
