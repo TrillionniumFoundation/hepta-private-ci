@@ -9,7 +9,6 @@ use base64::Engine as _;
 use codex_keyring_store::DefaultKeyringStore;
 use codex_keyring_store::KeyringStore as _;
 use ed25519_dalek::Signature;
-use ed25519_dalek::Verifier as _;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;

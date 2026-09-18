@@ -1,6 +1,5 @@
 use crate::PROTOCOL_VERSION;
 use crate::now_unix_ms;
-use crate::sha256_hex;
 use crate::types::SignedUpdateManifest;
 use crate::types::StagedUpdate;
 use crate::types::UpdateManifest;
