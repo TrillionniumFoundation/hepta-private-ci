@@ -16,7 +16,7 @@
     "apps/hepta-browser",
     "third_party/servo-patches"
   ],
-  "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict durable operation journal; a fresh principal-bound private profile directory is created for each worker generation and raw credentials remain external references.",
+  "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict persistent operation journal; durable history fences profile-generation resurrection, unresolved older effects block advancement, a fresh principal-bound private profile directory is created for each worker generation, and raw credentials remain external references.",
   "terminalObserverDisposition": "The current-pin Servo worker source supplies bounded semantic page observations and local action observations; durable reconciliation owns unknown dispatches, while remote business terminality and target-host enforcement still require independent evidence.",
   "operations": [
     {
@@ -41,7 +41,7 @@
           "command": "node --test apps/hepta-browser/test/worker-driver.test.js"
         }
       ],
-      "sourceSemantics": "Admits a profile/principal/generation, verifies the exact worker artifact, creates a fresh private principal-bound profile directory and starts one private worker process.",
+      "sourceSemantics": "Admits a profile/principal/generation only after retirement/history fences pass, verifies the exact worker plus Bubblewrap/prlimit host executables, creates a fresh private principal-bound profile directory and starts one resource-bounded private worker process.",
       "operation": "open_profile",
       "nativeSymbol": "async openProfile(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -69,7 +69,7 @@
           "command": "cargo test --manifest-path apps/hepta-browser/servo-worker/Cargo.toml --locked"
         }
       ],
-      "sourceSemantics": "Publishes page-generation-fenced origin plus digest-bound bounded semantic observations from the current-pin Servo WebView; worker admission later revalidates page/document/navigation epoch and the actionable-surface digest.",
+      "sourceSemantics": "Publishes page-generation-fenced origin plus digest-bound bounded semantic observations from the current-pin Servo WebView; worker admission later revalidates page/document/navigation epoch and a unique visible actionable surface.",
       "operation": "observe_page",
       "nativeSymbol": "async observePage(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -110,7 +110,7 @@
           "command": "cd codex-rs && cargo test --locked -p codex-hepta-agentd browser_servo --lib"
         }
       ],
-      "sourceSemantics": "Binds proposal provenance, typed payload, page/document generation, grant and live VerifiedUse authority; holds the revocation fence through durable intent fsync and worker queueing until the Servo worker revalidates current state, reserves the operation and emits dispatch_boundary immediately before effect execution. Proven worker pre-dispatch rejection is terminal no-dispatch; uncertain loss remains indeterminate.",
+      "sourceSemantics": "Binds proposal provenance, typed payload, page/document generation, grant and live VerifiedUse authority; holds the revocation fence through durable intent fsync and worker queueing until the Servo worker revalidates current state and the exact observed action target, reserves the operation and emits dispatch_boundary immediately before effect execution. The current one-WebView driver permits one outstanding effect and crossed effects invalidate the host observation. Proven worker pre-dispatch rejection is terminal no-dispatch; uncertain loss remains indeterminate.",
       "operation": "navigate_or_act",
       "nativeSymbol": "async navigateOrAct(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
