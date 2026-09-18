@@ -180,6 +180,8 @@ The bootstrap package is `OBJ-0-OBJECTIVE-CONTRACTS`. Development, activation an
 
 Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
 
+`IMPLEMENTATION_MAP.json.sourceBase` is the repository-wide closed-world mapping baseline shared by all module maps; it is not an assertion that that commit is the currently qualified source head. Current source identity is event-bound by the exact-head and synthetic-merge workflows named in the implementation map's `qualificationTarget`.
+
 ## 14. Activation, compatibility and retirement
 
 A named product-caller **candidate** now exists through the registered objective -> intelligence -> learning-ledger -> Agentd boundaries. It remains a candidate until exact-head and merge-candidate workflows pass; composition evidence is not activation. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and external evidence gates pass.
