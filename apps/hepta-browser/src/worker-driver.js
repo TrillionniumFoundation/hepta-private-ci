@@ -14,6 +14,11 @@ const DIGEST = /^[0-9a-f]{64}$/;
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const MAX_WORKER_ARTIFACT_BYTES = 512 * 1024 * 1024;
 const MAX_ABANDONED_RESPONSES = 1024;
+const DEFAULT_MAX_WORKER_PROFILES = 16;
+const DEFAULT_MAX_ADDRESS_SPACE_BYTES = 8 * 1024 * 1024 * 1024;
+const DEFAULT_MAX_CPU_SECONDS = 300;
+const DEFAULT_MAX_OPEN_FILES = 4096;
+const DEFAULT_MAX_PROCESSES = 256;
 
 function requireRecord(value, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
@@ -61,12 +66,35 @@ function abortError(message = "browser worker request aborted") {
 }
 
 export class LinuxBubblewrapLauncher {
-  constructor({ bwrapPath = "/usr/bin/bwrap" } = {}) {
+  constructor({
+    bwrapPath = "/usr/bin/bwrap",
+    prlimitPath = "/usr/bin/prlimit",
+    maxAddressSpaceBytes = DEFAULT_MAX_ADDRESS_SPACE_BYTES,
+    maxCpuSeconds = DEFAULT_MAX_CPU_SECONDS,
+    maxOpenFiles = DEFAULT_MAX_OPEN_FILES,
+    maxProcesses = DEFAULT_MAX_PROCESSES,
+  } = {}) {
     if (process.platform !== "linux") {
       throw new TypeError("LinuxBubblewrapLauncher requires Linux");
     }
     if (!isAbsolute(bwrapPath)) throw new TypeError("bwrapPath must be absolute");
+    if (!isAbsolute(prlimitPath)) throw new TypeError("prlimitPath must be absolute");
+    for (const [value, name] of [
+      [maxAddressSpaceBytes, "maxAddressSpaceBytes"],
+      [maxCpuSeconds, "maxCpuSeconds"],
+      [maxOpenFiles, "maxOpenFiles"],
+      [maxProcesses, "maxProcesses"],
+    ]) {
+      positiveInteger(value, name);
+    }
     this.bwrapPath = bwrapPath;
+    this.prlimitPath = prlimitPath;
+    this.resourceLimits = Object.freeze({
+      maxAddressSpaceBytes,
+      maxCpuSeconds,
+      maxOpenFiles,
+      maxProcesses,
+    });
     this.posture = Object.freeze({
       sourceContractOnly: true,
       inheritedPrivateChannel: true,
@@ -75,6 +103,7 @@ export class LinuxBubblewrapLauncher {
       userHomeHidden: true,
       hostFilesystemRestricted: true,
       parentDeathCleanup: true,
+      resourceLimitsConfigured: true,
     });
   }
 
@@ -163,12 +192,25 @@ export class LinuxBubblewrapLauncher {
   }
 
   spawn({ workerPath, profileDir }) {
-    return spawn(this.bwrapPath, this.argv({ workerPath, profileDir }), {
-      stdio: ["pipe", "pipe", "pipe"],
-      env: {},
-      shell: false,
-      windowsHide: true,
-    });
+    const limits = this.resourceLimits;
+    return spawn(
+      this.prlimitPath,
+      [
+        `--as=${limits.maxAddressSpaceBytes}`,
+        `--cpu=${limits.maxCpuSeconds}`,
+        `--nofile=${limits.maxOpenFiles}`,
+        `--nproc=${limits.maxProcesses}`,
+        "--",
+        this.bwrapPath,
+        ...this.argv({ workerPath, profileDir }),
+      ],
+      {
+        stdio: ["pipe", "pipe", "pipe"],
+        env: {},
+        shell: false,
+        windowsHide: true,
+      },
+    );
   }
 }
 
@@ -401,6 +443,7 @@ export class SubprocessBrowserDriver {
       "userHomeHidden",
       "hostFilesystemRestricted",
       "parentDeathCleanup",
+      "resourceLimitsConfigured",
     ]) {
       if (posture[key] !== true) {
         throw new TypeError(`launcher source contract does not declare ${key}`);
@@ -682,5 +725,115 @@ export class SubprocessBrowserDriver {
     this.#profileOwnerPath = null;
     this.#verifiedWorkerPath = null;
     await rm(profileDir, { recursive: true, force: true });
+  }
+}
+
+
+export class PooledSubprocessBrowserDriver {
+  supportsAbort = true;
+
+  #config;
+  #maxProfiles;
+  #sessions = new Map();
+  #starting = new Set();
+
+  constructor({
+    workerPath,
+    workerDigest,
+    profileRoot,
+    launcher,
+    maxProfiles = DEFAULT_MAX_WORKER_PROFILES,
+  }) {
+    positiveInteger(maxProfiles, "maxProfiles");
+    if (maxProfiles > 1024) {
+      throw new TypeError("maxProfiles exceeds the browser worker pool ceiling");
+    }
+    this.#config = { workerPath, workerDigest, profileRoot, launcher };
+    this.#maxProfiles = maxProfiles;
+  }
+
+  async start(input, options = {}) {
+    requireRecord(input, "browser worker start input");
+    const profileId = stableId(input.profileId, "profileId");
+    const generation = positiveInteger(input.generation, "generation");
+    if (this.#sessions.has(profileId) || this.#starting.has(profileId)) {
+      throw new TypeError("browser worker profile is already started or starting");
+    }
+    if (this.#sessions.size + this.#starting.size >= this.#maxProfiles) {
+      const error = new Error("browser worker pool capacity is exhausted");
+      error.name = "BrowserBackpressureError";
+      error.code = "BROWSER_PROFILE_CAPACITY";
+      throw error;
+    }
+    this.#starting.add(profileId);
+    const driver = new SubprocessBrowserDriver(this.#config);
+    try {
+      const observed = await driver.start(input, options);
+      this.#sessions.set(profileId, {
+        driver,
+        generation,
+        processId: observed.processId,
+      });
+      return observed;
+    } finally {
+      this.#starting.delete(profileId);
+    }
+  }
+
+  observe(input, options = {}) {
+    return this.#session(input).driver.observe(input, options);
+  }
+
+  dispatch(input, options = {}) {
+    return this.#session(input).driver.dispatch(input, options);
+  }
+
+  reconcile(input, options = {}) {
+    return this.#session(input).driver.reconcile(input, options);
+  }
+
+  async contain(input) {
+    requireRecord(input, "browser worker containment input");
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId);
+    if (!session) return { contained: true };
+    this.#validateSessionIdentity(input, session);
+    try {
+      return await session.driver.contain(input);
+    } finally {
+      this.#sessions.delete(profileId);
+    }
+  }
+
+  async stop(input, options = {}) {
+    requireRecord(input, "browser worker stop input");
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId);
+    if (!session) return { stopped: true };
+    this.#validateSessionIdentity(input, session);
+    try {
+      return await session.driver.stop(input, options);
+    } finally {
+      this.#sessions.delete(profileId);
+    }
+  }
+
+  #session(input) {
+    requireRecord(input, "browser worker request");
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId);
+    if (!session) throw new TypeError("browser worker profile is not started");
+    this.#validateSessionIdentity(input, session);
+    return session;
+  }
+
+  #validateSessionIdentity(input, session) {
+    const generation = input.generation ?? input.profileGeneration;
+    if (generation !== session.generation) {
+      throw new TypeError("browser worker profile generation mismatch");
+    }
+    if (input.processId !== undefined && input.processId !== session.processId) {
+      throw new TypeError("browser worker process identity mismatch");
+    }
   }
 }
