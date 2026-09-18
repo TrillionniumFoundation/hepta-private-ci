@@ -292,7 +292,10 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     )
     .await
     .unwrap();
-    assert!(!output.succeeded(), "owner health alone is not final-use authority");
+    assert!(
+        !output.succeeded(),
+        "owner health alone is not final-use authority"
+    );
     output.final_use_authority = NativeFinalUseAuthority::VerifiedAtTerminal {
         grant_id: "grant-1".to_string(),
         authority_epoch: 1,
