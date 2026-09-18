@@ -181,6 +181,7 @@ pub struct PromptRegistry {
     realizations: BTreeMap<StableId, PromptRealization>,
     realization_bindings: BTreeMap<StableId, PromptRealizationBindingV2>,
     realization_payloads: BTreeMap<StableId, Vec<u8>>,
+    realization_supersessions: BTreeMap<StableId, StableId>,
     lifecycle_events: Vec<LifecycleEvent>,
     revision: Revision,
     lifecycle_frontier: u64,
@@ -201,6 +202,7 @@ impl PromptRegistry {
             realizations: BTreeMap::new(),
             realization_bindings: BTreeMap::new(),
             realization_payloads: BTreeMap::new(),
+            realization_supersessions: BTreeMap::new(),
             lifecycle_events: Vec::new(),
             revision,
             lifecycle_frontier: 0,
@@ -595,6 +597,10 @@ impl PromptRegistry {
         for (realization_id, payload) in &self.realization_payloads {
             push_id(&mut bytes, realization_id);
             bytes.extend_from_slice(Digest32::of_bytes(payload).as_array());
+        }
+        for (successor, predecessor) in &self.realization_supersessions {
+            push_id(&mut bytes, successor);
+            push_id(&mut bytes, predecessor);
         }
         for event in &self.lifecycle_events {
             bytes.extend_from_slice(event.event_digest.as_array());
