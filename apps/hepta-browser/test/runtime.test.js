@@ -580,3 +580,25 @@ test("effect grants can be admitted after profile open without widening final-us
   const result = await host.navigateOrAct(operation());
   assert.equal(result.status, "indeterminate");
 });
+
+
+test("browser host enforces the global open-profile ceiling before driver admission", async () => {
+  const fakeDriver = driver();
+  const host = new BrowserProfileHost({
+    driver: fakeDriver,
+    authority: authority(),
+    journal: new MemoryBrowserOperationJournal(),
+    clock: () => 1_000,
+    driverCallTimeoutMs: 50,
+    maxOpenProfiles: 1,
+  });
+  await host.openProfile(input());
+  await assert.rejects(
+    host.openProfile(input({
+      profileId: "profile.2",
+      principalId: "principal.2",
+      generation: 2,
+    })),
+    /profile capacity is exhausted/,
+  );
+});
