@@ -107,7 +107,7 @@ impl MatrixDurableStore {
         if now_ms < record.updated_at_ms {
             return Err(MatrixDurableError::Invalid);
         }
-        let payload_digest = Sha256Digest::for_bytes(&record.payload).to_string();
+        let payload_digest = Sha256Digest::for_bytes(&record.payload).as_str().to_string();
         if let Some(authority) = authority {
             validate_authority(authority, &payload_digest)?;
         }
@@ -971,7 +971,7 @@ fn transport_observation_digest(
     let encoded = serde_json::to_vec(&identity).map_err(|_| MatrixDurableError::Invalid)?;
     let mut bytes = b"hepta.matrix.dispatch-observation.v1\0".to_vec();
     bytes.extend_from_slice(&encoded);
-    Ok(Sha256Digest::for_bytes(&bytes).to_string())
+    Ok(Sha256Digest::for_bytes(&bytes).as_str().to_string())
 }
 
 fn operation_id(txn_id: &MatrixTransactionId) -> String {
