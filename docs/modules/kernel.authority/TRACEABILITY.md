@@ -12,7 +12,7 @@ equivalent kernel.authority product consumer is currently proved.
 | `VerifiedUseTokenWitnessV1` | opaque `VerifiedUseToken` and `LeaseVerifiedUseToken`; `deliver_final_use` / verifier final check | Bao adapter uses FinalUse path | FinalUse tests; Bao TLS/host tests | executable native analogue; no serialized bearer witness |
 | `ModulePort::kernel.authority::secrets.heptabao` | `BaoFinalUseHost` + `BaoClient` | registered host exists; no deployed process selected | Bao host tests, OpenBao compatibility lane, B4 | source composition implemented; activation pending |
 | `ModulePort::kernel.authority::auth.authbus` | no generic lease consumer; AuthBus retains its own signed admission/evidence owner | none | AuthBus qualification is separate | target-only for generic authority port |
-| `ModulePort::kernel.authority::browser.servo` | none | none | browser authority-free proposal tests are separate | target-only |
+| `ModulePort::kernel.authority::browser.servo` | `BrowserServoPort` with `FinalUseAuthority::claim` + `with_dispatch_boundary` | `hepta-agentd-browser` / `BrowserServoPort::call` | Agentd Browser tests; B4 closed caller inventory; implementation-map source objects | named non-test product source path composed; exact-candidate execution/activation pending |
 | `ModulePort::kernel.authority::channel.matrix` | none | none | Matrix owner tests are separate | target-only |
 | `ModulePort::kernel.authority::inference.control` | no generic lease consumer; durable inference control has its own journal/fences | none | inference-control tests are separate | target-only |
 | `ModulePort::kernel.authority::inference.worker` | none | none | worker-host tests are separate | target-only |
@@ -25,13 +25,12 @@ equivalent kernel.authority product consumer is currently proved.
 | revocation freshness / convergence | signed FinalUse feed V2 + Bao freshness gate + node-signed `FinalUseRevocationAck` convergence verifier | Bao source host; external fanout supplies envelopes/acks | control/host tests | fail-closed partition/catch-up and cryptographic missing-node proof implemented; transport/latency SLA external |
 | key rotation | bounded epoch-window `FinalUseIssuerTrustKey` ring for grants plus `FinalUseTrustKey` rings for approval/feed; issuer trust-set digest pinned in FinalUse store V2 | host configuration | overlap/retirement tests | protocol implemented; HSM/KMS ceremony external |
 | capacity / GC | bounded stores; lease `prune_expired_leases`; explicit epoch rollover | authority owner | capacity/prune tests | lease online GC implemented; FinalUse nonce history still epoch-bounded |
-| no-bypass proof | `CALLERS.toml` + `KERNEL_AUTHORITY_BOUNDARIES.json` | repository scanner | B4 closed-world test | repository-controlled |
+| no-bypass proof | `CALLERS.toml` + `KERNEL_AUTHORITY_BOUNDARIES.json` | repository scanner names Browser raw claim/dispatch/open-state callers and Bao lower-level callers | B4 closed-world test | repository-controlled; unexpected raw callers fail |
 | activation / release | none | none | implementation map / external acceptance | false until separate gates pass |
 
 ## Reading rule
 
-A row is production-composed only when it names a non-test product caller and
-that exact candidate has current execution evidence. Native types, examples,
+A row is **source-composed** when it names a non-test product caller and exact source objects. It becomes **execution-proved** only when that exact candidate has current execution evidence. Native types, examples,
 fixtures, documentation, B4 “no caller” results, or successful unit tests do not
 upgrade a target-only row into product authority.
 

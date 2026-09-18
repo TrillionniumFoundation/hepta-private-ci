@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "registered_bao_host_source_composed_no_selected_process",
+  "productCallerState": "browser_agentd_product_source_composed_bao_registered_host_source_composed_unqualified",
   "productionWriterState": "authority_owner_source_implemented_not_activated",
   "operations": [
     {
@@ -123,9 +123,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Select and qualify a named product-process caller for the registered Bao final-use host before activation.",
-    "Compose each remaining target kernel.authority ModulePort only at its real owner boundary; target-only ports are enumerated in TRACEABILITY.md and must not be inferred from the generic lease type.",
-    "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes."
+    "Run exact-head and deterministic synthetic-merge qualification for the named Agentd Browser product source path before any productExecutionProved claim.",
+    "Select and qualify a named product-process caller for the registered Bao final-use host before Bao activation.",
+    "Migrate each remaining target kernel.authority ModulePort only at its real owner boundary; target-only ports remain explicit in TRACEABILITY.md and must not be inferred from the generic lease type."
   ],
   "externalEvidenceGates": [
     "fleet revocation transport and measured convergence/freshness latency qualification; signed per-node convergence protocol is repository-implemented",
@@ -149,5 +149,60 @@
   ],
   "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
-  "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md"
+  "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md",
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "symbol": "BrowserServoPort::call",
+      "role": "agentd_owned_final_use_claim_and_local_dispatch_boundary"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "symbol": "main",
+      "role": "named_non_test_agentd_browser_product_process"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "symbol": "BaoFinalUseHost::consume_kv_v2",
+      "role": "registered_bao_source_host_without_selected_product_process"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "object": "7f64a21f9912621eee828862cd81d237bfbcf2c6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "object": "32fa73918e35733908cccd8d000c4fbfe7a0297f"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "object": "56586e2a3958949f18c0372a58e895a51abd5c05"
+    },
+    {
+      "path": "codex-rs/hepta-contracts",
+      "object": "e632640f8e239c89ccf916209929f80efbe06e69"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "object": "4c35bfc4ec72ca95bec49d3c518d47907eaf043e"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "object": "043ffd75a20c42935959a98d37f40e3d7229c407"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "object": "3f17652e013689415907ccd943c40f74436584dd"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "object": "460b0ee8aa42d134db4adf28ef7d7637383cfaea"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "object": "9425c4410e655c76980b96bd504566b53b64d711"
+    }
+  ]
 }
