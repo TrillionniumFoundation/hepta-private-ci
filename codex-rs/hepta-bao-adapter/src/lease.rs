@@ -447,7 +447,7 @@ impl BaoClient {
         };
         let mut network_request = self
             .client
-            .request(Method::PUT, url)
+            .request(Method::POST, url)
             .header("X-Vault-Token", self.sensitive_token_header()?)
             .header("Accept", "application/json")
             .json(&payload);
@@ -617,12 +617,12 @@ impl BaoClient {
             .claim(grant, &binding)
             .map_err(BaoClientError::Authority)?;
         let url = self.system_lease_url("lookup")?;
-        let payload = LeaseRevokePayload {
+        let payload = LeaseLookupPayload {
             lease_id: &handle.0,
         };
         let mut network_request = self
             .client
-            .request(Method::PUT, url)
+            .request(Method::POST, url)
             .header("X-Vault-Token", self.sensitive_token_header()?)
             .header("Accept", "application/json")
             .json(&payload);
@@ -736,10 +736,11 @@ impl BaoClient {
         let url = self.system_lease_url("revoke")?;
         let payload = LeaseRevokePayload {
             lease_id: &handle.0,
+            sync: true,
         };
         let mut network_request = self
             .client
-            .request(Method::PUT, url)
+            .request(Method::POST, url)
             .header("X-Vault-Token", self.sensitive_token_header()?)
             .header("Accept", "application/json")
             .json(&payload);
@@ -988,8 +989,14 @@ struct LeaseRenewResponse {
 }
 
 #[derive(Serialize)]
+struct LeaseLookupPayload<'a> {
+    lease_id: &'a str,
+}
+
+#[derive(Serialize)]
 struct LeaseRevokePayload<'a> {
     lease_id: &'a str,
+    sync: bool,
 }
 
 #[derive(Deserialize)]
