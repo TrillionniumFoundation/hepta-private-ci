@@ -25,6 +25,9 @@ url = { workspace = true }
 zeroize = { workspace = true, features = ["serde"] }
 
 [dev-dependencies]
+codex-hepta-authbus = { path = "../hepta-authbus" }
+codex-state = { workspace = true }
+codex-utils-absolute-path = { workspace = true }
 ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
