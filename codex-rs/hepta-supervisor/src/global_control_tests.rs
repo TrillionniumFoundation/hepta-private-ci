@@ -1,4 +1,6 @@
 use std::collections::BTreeSet;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
@@ -386,6 +388,13 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
     let binding =
         final_use_binding_for_grant_request_v1(&request, &subject, &destination, scope)
             .expect("binding");
+    let now_ms = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("wall clock")
+            .as_millis(),
+    )
+    .expect("wall millis");
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "planner-grant-issuer".to_string(),
@@ -393,8 +402,8 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
         grant_id: "grant-1".to_string(),
         nonce: [51; 32],
         binding,
-        not_before_unix_ms: 0,
-        expires_at_unix_ms: u64::MAX,
+        not_before_unix_ms: now_ms.saturating_sub(1_000),
+        expires_at_unix_ms: now_ms + 60_000,
     };
     let signed = SignedFinalUseGrant {
         signature: authority_signing
