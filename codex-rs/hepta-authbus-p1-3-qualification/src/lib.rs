@@ -6,10 +6,20 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_hepta_authbus::Error as AuthBusError;
+use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::PreverifiedAuthEnvelope;
+use codex_hepta_authbus::ReplayWindow;
+use codex_hepta_authbus::SignedMessage;
+use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_authbus::TrustedReplayContext;
 use codex_hepta_authbus::VerificationReceipt;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 const MAX_CASES: usize = 32;
 
@@ -64,6 +74,7 @@ pub enum Error {
     InvalidExecutionProvenance,
     MixedExecutionProvenance,
     ExecutionFailed(i32),
+    NativeCaseUnexpected(String),
     PositiveReceiptGrantedAuthority,
 }
 
@@ -147,6 +158,131 @@ pub fn qualify(mut cases: Vec<CaseEvidence>) -> Result<QualificationReceipt, Err
         runner_id: execution.runner_id,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+pub fn execute_native_negative_qualification(
+    execution: ExecutionProvenance,
+) -> Result<QualificationReceipt, Error> {
+    validate_execution(&execution)?;
+    let key = SigningKey::from_bytes(&[93; 32]);
+    let issuer_id = stable("issuer:p1-3-native")?;
+    let subject_id = stable("subject:p1-3-native")?;
+    let scope = Digest32::of_bytes(b"p1-3-native-scope");
+    let payload = Digest32::of_bytes(b"p1-3-native-payload");
+    let claims = SignedMessageClaims {
+        issuer_id: issuer_id.clone(),
+        key_epoch: Generation::new(1).map_err(|_| Error::InvalidExecutionProvenance)?,
+        message_id: stable("message:p1-3-native")?,
+        subject_id: subject_id.clone(),
+        scope_digest: scope,
+        payload_digest: payload,
+        sequence: 1,
+        expires_at_ms: 2_000,
+    };
+    let signed = SignedMessage {
+        signature: key.sign(&claims.signing_bytes()).to_bytes(),
+        claims: claims.clone(),
+    };
+    let registration = IssuerRegistration {
+        issuer_id: issuer_id.clone(),
+        key_epoch: claims.key_epoch,
+        verifying_key: key.verifying_key(),
+        revoked: false,
+    };
+
+    let expired = signed.authenticate(&registration, scope, payload, 2_000);
+    require_auth_error(NegativeCase::Expired, expired.err(), AuthBusError::Expired)?;
+
+    let revoked_registration = IssuerRegistration {
+        issuer_id: issuer_id.clone(),
+        key_epoch: claims.key_epoch,
+        verifying_key: key.verifying_key(),
+        revoked: true,
+    };
+    let revoked = signed.authenticate(&revoked_registration, scope, payload, 1_000);
+    require_auth_error(NegativeCase::Revoked, revoked.err(), AuthBusError::Revoked)?;
+
+    let drift = signed.authenticate(
+        &registration,
+        scope,
+        Digest32::of_bytes(b"p1-3-native-other-payload"),
+        1_000,
+    );
+    require_auth_error(
+        NegativeCase::PayloadDrift,
+        drift.err(),
+        AuthBusError::PayloadMismatch,
+    )?;
+
+    let envelope = PreverifiedAuthEnvelope {
+        message_id: claims.message_id.clone(),
+        subject_id,
+        scope_digest: scope,
+        payload_digest: payload,
+        signature_digest: Digest32::of_bytes(&signed.signature),
+        sequence: 1,
+        expires_at_ms: 2_000,
+    };
+    let context = TrustedReplayContext {
+        issuer_id,
+        key_epoch: claims.key_epoch,
+        now_ms: 1_000,
+        revoked: false,
+    };
+    let mut replay = ReplayWindow::new(1);
+    replay
+        .verify(
+            context.clone(),
+            envelope.clone(),
+            scope,
+            payload,
+        )
+        .map_err(|error| Error::NativeCaseUnexpected(format!("replay setup: {error:?}")))?;
+    let replay_error = replay
+        .verify(context, envelope, scope, payload)
+        .err();
+    require_auth_error(NegativeCase::Replay, replay_error, AuthBusError::Replay)?;
+
+    let cases = [
+        (NegativeCase::Expired, "case:expired", AuthBusError::Expired),
+        (NegativeCase::Revoked, "case:revoked", AuthBusError::Revoked),
+        (NegativeCase::Replay, "case:replay", AuthBusError::Replay),
+        (
+            NegativeCase::PayloadDrift,
+            "case:payload-drift",
+            AuthBusError::PayloadMismatch,
+        ),
+    ]
+    .into_iter()
+    .map(|(case, id, observed)| {
+        Ok(CaseEvidence {
+            case,
+            case_id: stable(id)?,
+            rejected: true,
+            evidence_digest: Digest32::of_bytes(format!("{case:?}:{observed:?}").as_bytes()),
+            execution: execution.clone(),
+        })
+    })
+    .collect::<Result<Vec<_>, Error>>()?;
+    qualify(cases)
+}
+
+fn require_auth_error(
+    case: NegativeCase,
+    observed: Option<AuthBusError>,
+    expected: AuthBusError,
+) -> Result<(), Error> {
+    if observed.as_ref() == Some(&expected) {
+        Ok(())
+    } else {
+        Err(Error::NativeCaseUnexpected(format!(
+            "{case:?}: expected {expected:?}, observed {observed:?}"
+        )))
+    }
+}
+
+fn stable(value: &str) -> Result<StableId, Error> {
+    StableId::new(value).map_err(|_| Error::InvalidExecutionProvenance)
 }
 
 fn validate_execution(execution: &ExecutionProvenance) -> Result<(), Error> {
