@@ -134,10 +134,7 @@ impl Drop for Fixture {
     }
 }
 
-fn append(
-    ledger: &mut LongHorizonSegmentedLedgerV1,
-    event: LedgerEvent,
-) -> AppendReceipt {
+fn append(ledger: &mut LongHorizonSegmentedLedgerV1, event: LedgerEvent) -> AppendReceipt {
     let predecessor = ledger.head_anchor().chain_digest;
     must(ledger.append(predecessor, event))
 }
@@ -158,11 +155,7 @@ fn total_history_growth_does_not_expand_hot_writer_or_restart_replay() {
         assert!(metrics.historical_cache_entries <= 4);
         if (number + 1) % limits().records as u64 == 0 {
             let head = ledger.head_anchor();
-            let next = ledger
-                .checkpoint()
-                .expect("checkpoint")
-                .active_segment
-                + 1;
+            let next = ledger.checkpoint().expect("checkpoint").active_segment + 1;
             let checkpoint = must(ledger.rotate(f.new_segment(next), head));
             assert_eq!(checkpoint.active_segment, next);
             let metrics = must(ledger.metrics());
