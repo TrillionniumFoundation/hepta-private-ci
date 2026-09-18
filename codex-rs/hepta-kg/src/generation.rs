@@ -37,6 +37,10 @@ pub enum KnowledgeRelationKindV2 {
     PromptComplements,
     PromptSubstitutes,
     PromptConflicts,
+    /// Caller-defined domain relation whose exact predicate is bound by
+    /// `relation_id`. This keeps the deterministic kernel lossless for durable
+    /// stores that admit predicates beyond the built-in semantic classes.
+    Domain,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -66,6 +70,10 @@ pub struct KnowledgeNodeV2 {
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct KnowledgeEdgeIdentityV2 {
     pub source_node_id: StableId,
+    /// Stable identity of the concrete relation occurrence. Built-in relation
+    /// classes remain useful for filtering, but are not sufficient to preserve
+    /// multiple source relations with identical endpoints.
+    pub relation_id: StableId,
     pub relation: KnowledgeRelationKindV2,
     pub target_node_id: StableId,
 }
@@ -571,6 +579,7 @@ fn compute_query_result_digest(result: &KnowledgeRelationResultV2) -> Digest32 {
 
 fn push_edge_identity(bytes: &mut Vec<u8>, identity: &KnowledgeEdgeIdentityV2) {
     push_id(bytes, &identity.source_node_id);
+    push_id(bytes, &identity.relation_id);
     bytes.push(relation_code(identity.relation));
     push_id(bytes, &identity.target_node_id);
 }
@@ -679,6 +688,7 @@ const fn relation_code(value: KnowledgeRelationKindV2) -> u8 {
         KnowledgeRelationKindV2::PromptComplements => 7,
         KnowledgeRelationKindV2::PromptSubstitutes => 8,
         KnowledgeRelationKindV2::PromptConflicts => 9,
+        KnowledgeRelationKindV2::Domain => 10,
     }
 }
 
