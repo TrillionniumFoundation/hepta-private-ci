@@ -4,34 +4,79 @@ Status: current-generation source contract. This document does not activate a mo
 
 ## Ownership boundary
 
-`codex-hepta-intuition` does **not** execute or train a learned model. Its native responsibility is the bounded, deterministic policy kernel: validate a complete legal candidate set, enforce the authenticated canonical policy profile, apply calibration/OOD/confidence/risk gates, produce propensities, and select/abstain/route to slow path.
+`codex-hepta-intuition` does **not** train, load, execute, mutate, select or promote a learned model. It is the bounded deterministic policy kernel over an already scored, complete legal candidate set. Immutable model bytes and lineage belong to `learning.artifacts` / the registered scorer owner; current trust admission is composed by `codex-hepta-intelligence`.
 
-Immutable learned model bytes and lineage belong to `learning.artifacts` / the `learning_artifact_registry`. A composition host supplies scored candidates only after selecting an immutable model artifact and executing the registered scorer contract. The Lane-F consumer in `codex-hepta-intelligence` owns current-generation qualification admission; it verifies signed completeness and qualification evidence before V3 is usable. No scorer, artifact registry, or consumer may mint effect authority through this contract.
+The identities are deliberately independent:
 
-## `LearnedScorerContractV1`
+- `policy_digest`: semantics of the fast-policy generation and its decision rules.
+- `model_digest`: exact immutable learned model bytes used by the upstream scorer.
+- `scorer_contract_digest`: versioned preprocessing, forward-scoring and postprocessing contract.
 
-A canonical policy profile binds all scorer identity fields:
+None of these digests is required to equal another. The canonical profile binds them together explicitly. This permits a model rollback without relabeling policy semantics, a policy/profile change without rewriting model identity, and a scorer-contract revision without pretending the model bytes changed.
 
-- `model_digest`: `Digest32` identity of the exact immutable learned model bytes used to score this generation.
+## LearnedScorerContractV1
+
+The scorer contract binds:
+
+- `model_digest`: exact immutable learned model artifact.
 - `feature_schema_digest`: canonical feature ordering, units, fixed-point scaling, bounds and missing-value behavior.
-- `output_schema_digest`: canonical ordering and representation of `utility`, `calibrated_confidence`, and `ood_score` outputs.
-- `score_semantics_digest`: semantic contract for what each score means. Utility is an ordering signal under the frozen objective; confidence is the calibrated probability/coverage signal used by policy admission; OOD score is monotone with distance from the qualified support and is rejected above the profile ceiling.
-- `scorer_contract_digest`: versioned preprocessing, pure forward-scoring, and postprocessing contract. Changing feature construction, normalization, model format, output transformation, or tie semantics creates a new digest/generation.
+- `output_schema_digest`: canonical ordering/representation of `utility`, `calibrated_confidence` and `ood_score`.
+- `score_semantics_digest`: meaning of those outputs.
+- `scorer_contract_digest`: versioned pure scoring interface including preprocessing and postprocessing.
 
-`CalibratedActionCandidateV1` remains the policy-kernel input. The upstream scorer must emit one entry for every candidate in the authenticated complete legal set. Candidate identity/order are canonical and cannot be added, removed, reordered or rescored after completeness and qualification evidence are signed.
+Changing feature construction, normalization, model format, output transformation, score meaning or tie semantics creates a new digest/generation.
 
-## Model/calibration linkage
+## ScoringCommitmentV1
 
-`CanonicalPolicyProfileV1` binds `scorer.model_digest == policy_digest`, one `objective_class_digest`, one generation, the frozen calibration/OOD dataset digests, and the only accepted calibration/OOD artifact digests. V3 rejects policy/model mismatch, objective-class mismatch, generation mismatch, expired profile windows, artifact substitution, or request thresholds that differ from the profile.
+A contract alone proves what scorer *should* run; it does not prove which scorer produced one decision's values. Every current authenticated decision therefore carries `ScoringCommitmentV1`, which binds:
 
-The policy kernel does not trust a nonzero artifact digest by itself. Current-generation admission requires a trusted consumer to verify the canonical evidence payloads against a host-owned trust snapshot. The current Lane-F consumer uses independent `Generator` and `Evaluator` roles with Ed25519 verification, validity windows, authority epoch, revocation and controller/principal separation.
+- `decision_id`;
+- `model_artifact_digest`;
+- `feature_schema_digest`;
+- `feature_snapshot_digest`;
+- `scorer_contract_digest`;
+- exact `candidate_set_digest`;
+- `scored_candidates_digest` over candidate ID, utility, calibrated confidence, OOD score and support;
+- `policy_digest`, generation and sequence.
+
+`canonical_scoring_commitment_digest_v1` fails if the commitment is inconsistent with either the canonical profile or the actual calibrated request. A score vector cannot therefore be swapped under an otherwise valid model/profile identity.
+
+## Canonical model/calibration linkage
+
+`CanonicalPolicyProfileV1` is the source of truth for policy generation and qualification limits. It binds the independent policy/model/scorer identities plus:
+
+- objective class and validity window;
+- minimum confidence;
+- maximum ECE;
+- maximum OOD false-acceptance rate;
+- maximum in-domain OOD score;
+- risk-routing rule;
+- frozen calibration/OOD dataset digests;
+- accepted calibration artifact, measured ECE and subgroup-audit digest;
+- accepted OOD artifact, measured false-acceptance rate, detector digest and support digest.
+
+V3 rejects request-local threshold or artifact-metadata drift. Request fields remain only for compatibility with the historical wire shape; they cannot loosen the canonical profile.
+
+## Per-decision authentication
+
+Current consumer admission separates long-lived qualification from request-local facts:
+
+1. an independent Evaluator signs the canonical policy profile qualification;
+2. a legal-set Generator signs exact completeness;
+3. an Evaluator signs the exact decision request plus profile/scoring commitment;
+4. the runtime scorer signs the `ScoringCommitmentV1` payload;
+5. for `CounterBased` assignment, an independent random-stream owner signs the exact stream-manifest digest, generation/sequence counter, draw and abstain probability.
+
+The scorer and randomizer use the existing authenticated `Observer` evidence role but must be different principals, credential chains, signing keys and controllers. Payload domains distinguish their semantics. The Generator, Evaluator, scorer and randomizer cannot collapse into one trust identity.
 
 ## Feature and output invariants
 
-A registered feature schema must be closed-world and bounded. It must define field order, units, numeric profile, missingness, maximum dimensionality and source snapshot binding. Unknown critical fields, NaN/floating non-determinism, implicit feature reordering and process-global mutable preprocessing are prohibited.
+A registered feature schema is closed-world and bounded. It defines field order, units, numeric profile, missingness, maximum dimensionality and source-snapshot binding. Unknown critical fields, NaN/floating nondeterminism, implicit feature reordering and process-global mutable preprocessing are prohibited.
 
-Scorer outputs consumed by `intuition.policy` are fixed-point values already tied to the same `model_digest`, objective class and generation as the profile. The scorer cannot mark an illegal candidate legal, clear a hard veto, create omitted candidates, change a support digest, choose the assignment draw, or grant action authority.
+`CalibratedActionCandidateV1` is still the policy-kernel input. Upstream scoring must cover the authenticated complete set. The scorer cannot add/remove candidates, clear a hard veto, change legality, choose the random draw or grant effect authority.
 
-## Compatibility
+## Compatibility and claim boundary
 
-V1/V2 calibrated decisions remain interpretable for historical replay. New qualification and composition must use V3 plus authenticated evidence. Any learned-scorer schema change is additive only where explicitly registered; a semantic change to an existing digest is forbidden.
+V1 remains historical replay. V2 remains complete-request binding and now fails closed on nonzero omission. V3 is the canonical-profile kernel. New current-generation admission should use `decide_authenticated_intuition_v2`.
+
+Source qualification does not advance the capability ladder by itself. In particular, `docs/CURRENT.json` and generated status remain at the evidence-governed baseline until the registered product/causal requirements are independently satisfied.
