@@ -68,6 +68,7 @@ pub enum QualifiedCompactStoreError {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 struct SnapshotImageV1 {
     scope_id: String,
     purpose_id: String,
@@ -155,6 +156,7 @@ impl SnapshotImageV1 {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 struct CheckpointImageV1 {
     checkpoint_id: String,
     generation: u64,
@@ -219,6 +221,7 @@ impl CheckpointImageV1 {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 struct ProofImageV2 {
     checkpoint_digest: String,
     candidate_digest: String,
