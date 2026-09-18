@@ -114,11 +114,13 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 The repository now contains the protocol mechanisms that were previously
 target-only: explicit negotiation, multi-version dispatch, schema admission and
-header-first streaming. The remaining claim boundary is intentionally narrower:
+header-first streaming. Both registered output contracts also have concrete
+source consumers: `runtime.codex::adapt_wire` and
+`context.compiler::compile_wire`. The remaining claim boundary is therefore
+narrower:
 
-1. no named authenticated **production** consumer is composed by
-   `platform.wire`; that requires an owning integration package and target
-   host;
+1. those source-composed consumers are not yet evidence of an authenticated
+   deployed transport or target-host production activation;
 2. the V2 digest is unkeyed and therefore not a substitute for a MAC, signature
    or authenticated transport;
 3. exact-head/merge-candidate CI, independent semantic acceptance, target-host
