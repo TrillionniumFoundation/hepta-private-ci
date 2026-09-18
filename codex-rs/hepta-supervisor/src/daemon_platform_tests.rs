@@ -39,6 +39,7 @@ async fn pinned_verifier_cannot_enable_daemon_on_unsupported_host() -> Result<()
         HeptaFleetRoot::parse(root.clone())?,
         cancellation.clone(),
         verifier,
+        /*revocation_frontier*/ 1,
     )
     .await;
     assert!(matches!(
