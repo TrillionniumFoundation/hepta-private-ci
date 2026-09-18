@@ -95,14 +95,13 @@ proposal crate, and that distinction is intentional and now explicit:
 | --- | --- |
 | `codex-rs/hepta-plasticity` native crate | `codex-hepta-types` only; deterministic proposal/generator/topology/registry mechanics stay authority-free |
 | product-workspace adapter | `codex-hepta-intelligence-eval` and `codex-hepta-learning-ledger` authenticate generator/evaluator evidence and independent decisions |
-| selected host | MUST call the product adapter, read the current `learning.artifacts` and qualification/evidence frontiers, resolve every dataset/update/modulator/eligibility/per-parameter evidence digest through `PlasticityOwnerEvidenceResolverV1`, then issue the short-lived trusted Observer attestation bound by `PlasticityAdmissionEvidenceV1` |
+| selected host | MUST call the product adapter, read the current `learning.artifacts` and qualification/evidence frontiers, resolve every dataset/update/modulator/eligibility/mutation-policy/per-parameter evidence digest through `PlasticityOwnerEvidenceResolverV1`, then issue the short-lived trusted Observer attestation bound by `PlasticityAdmissionEvidenceV1` |
 | selected host rollback domain | MUST implement `PlasticityAnchorCommitterV1` and monotonic writer-fence issuance outside the registry rollback domain |
 
 `codex-hepta-plasticity` itself still does not query owner stores. The source-selected
 host seam is now `codex-hepta-agentd`: it recomputes the current `ArtifactRegistry`
 and durable learning-ledger frontiers immediately before calling the authenticated
-product adapters, requires context-bound owner evidence for every opaque learning
-digest, and owns separate parameter/topology anchor-fence stores. The resolver trait
+product adapters, requires context-bound owner evidence for every opaque learning digest and the typed mutation-policy digest, and owns separate parameter/topology anchor-fence stores. The resolver trait
 has no permissive default; a selected deployment must bind it to the actual owner
 stores rather than echoing caller inputs. This is a source-selected host adapter entrypoint that calls the product adapter; it is not proof that the Agentd runtime or a deployed target host has actually executed or accepted it. `productionImplementation` and `productExecutionProved` therefore remain false
 until exact target-host evidence exists.
