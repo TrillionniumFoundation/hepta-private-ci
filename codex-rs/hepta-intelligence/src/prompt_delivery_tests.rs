@@ -14,6 +14,7 @@ use codex_hepta_prompt_registry::PromptFactor;
 use codex_hepta_prompt_registry::PromptRealizationBindingV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_prompt_registry::final_use_admission_binding;
+use codex_hepta_prompt_registry::final_use_realization_binding;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -111,9 +112,48 @@ fn admitted_registry(
         token_cost: 4,
         expires_unix_ms: None,
     };
+    let realization_actor = id("publisher:prompt");
+    let realization_scope = digest("scope:realization:prompt");
+    let realization_authority_binding = final_use_realization_binding(
+        &factor,
+        &realization_actor,
+        realization_scope,
+        &binding,
+        None,
+    )
+    .expect("realization authority binding");
+    let realization_grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "realization:prompt:1".to_owned(),
+        nonce: [24; 32],
+        binding: realization_authority_binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
+    };
+    let realization_signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(
+                &realization_grant
+                    .signing_bytes()
+                    .expect("realization signing bytes"),
+            )
+            .to_bytes()
+            .to_vec(),
+        grant: realization_grant,
+    };
     registry
-        .register_realization_payload_v2(binding, payload.to_vec(), None)
-        .expect("register actual payload");
+        .register_realization_payload_final_use_v2(
+            &authority,
+            &realization_signed,
+            &realization_actor,
+            realization_scope,
+            binding,
+            payload.to_vec(),
+            None,
+        )
+        .expect("register actual payload through final-use authority");
     (registry, tuple)
 }
 
