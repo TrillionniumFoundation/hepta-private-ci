@@ -22,7 +22,7 @@ The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-cont
 
 1. Obtain a read transaction cut through `CognitiveStore::lane_c_snapshot`.
 2. Execute the bounded `ReadRequestV2` port on that cut.
-3. Ask the same SQLite owner for `observe_memory_retrieval`, intersect every observed candidate with the exact record ID/revision/content digest admitted by the cut, and pass that bounded observation through `memory.retrieval::rank_owner_candidates`. The adapter binds the owner's aggregate RRF score and observation digest without relabelling it as a lexical/vector/graph score.
+3. Ask the same SQLite owner for `observe_memory_retrieval`, intersect every observed candidate with the exact record ID/revision/content digest admitted by the cut, and pass that bounded observation through `memory.retrieval::rank_owner_candidates`. The adapter binds the owner's aggregate RRF score and observation digest without relabelling it as a lexical/vector/graph score. GraphOneHop also preserves canonical persisted KG temporal/causal/procedural/contradiction relation tags as evidence channels in the receipt; these tags are not fabricated per-channel scores, OOD calibration or HNMF activation.
 4. Optionally let the externally selected `PinnedCognitiveRanker` permute only those memory.retrieval-admitted candidates; it cannot add a record.
 5. Apply the response result/byte budget, batch-revalidate the exact selected memory/source/citation/KG bindings, then revalidate the owner cut and runtime generation before response publication.
 

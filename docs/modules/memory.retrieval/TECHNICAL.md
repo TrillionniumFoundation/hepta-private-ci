@@ -151,7 +151,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed retrieval against an authorized coherent read cut. The current Agentd host obtains the SQLite owner's bounded `RetrievalObservation`, intersects it with the exact Lane C read cut, passes the admitted records and aggregate owner score through `rank_owner_candidates`, optionally applies the pinned learned ranker only to those results, applies the response byte/result budget, then revalidates the exact selected memory/source/citation/KG bindings before publication. `omitted_records` still reports Lane C read truncation; neither the owner observation nor this product composition promises complete recall outside its bounded generator limits.
+Embed retrieval against an authorized coherent read cut. The current Agentd host obtains the SQLite owner's bounded `RetrievalObservation`, intersects it with the exact Lane C read cut, passes the admitted records and aggregate owner score through `rank_owner_candidates`, optionally applies the pinned learned ranker only to those results, applies the response byte/result budget, then revalidates the exact selected memory/source/citation/KG bindings before publication. The GraphOneHop observation additionally preserves canonical persisted KG temporal/causal/procedural/contradiction relation tags, and the owner-rank receipt binds their mapped evidence channels without reinterpreting aggregate RRF as normalized channel scores or calibrated OOD. `omitted_records` still reports Lane C read truncation; neither the owner observation nor this product composition promises complete recall outside its bounded generator limits.
 
 Current operating and state-format references:
 
@@ -164,8 +164,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named case: `channel_completion_order_cannot_change_union_or_recall`.
-- [codex-rs/hepta-memory-retrieval/src/lib_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/lib_tests.rs); named case: `ranking_is_deterministic_and_explainable`.
+- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named cases include `channel_completion_order_cannot_change_union_or_recall`, `below_floor_top_k_candidate_is_omitted_and_cannot_poison_recall` and `lexical_only_ablation_has_distinct_policy_union_and_packet_identity`.
+- [codex-rs/hepta-memory-retrieval/src/owner_rank_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/owner_rank_tests.rs); covers full owner-observation binding, semantic evidence-channel binding and product capacity.
+- [codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs); named case: `graph_observation_preserves_canonical_relation_semantics`.
+- [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `post_ranking_withdrawal_fails_closed_before_context_delivery`.
+- [codex-rs/hepta-memory-retrieval/src/lib_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/lib_tests.rs); legacy V1-only compatibility tests remain test-scoped.
 
 In `codex-rs`, run `just test -p codex-hepta-memory-retrieval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) separately labels target acceptance designs.
 
