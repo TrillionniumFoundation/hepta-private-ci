@@ -17,6 +17,7 @@ pub use evaluated_shadow::run_evaluated_shadow_v1;
 pub use production_objective::IntelligenceHostEnvelopeV1;
 pub use production_objective::ProductionObjectiveDispositionV1;
 pub use production_objective::ProductionObjectiveError;
+pub use production_objective::ProductionObjectiveStartReceiptV1;
 pub use production_objective::ProductionRunBindingsV1;
 pub use production_objective::prepare_intelligence_run_v1;
 
