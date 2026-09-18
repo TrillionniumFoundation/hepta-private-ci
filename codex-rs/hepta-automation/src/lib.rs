@@ -11,6 +11,7 @@ pub mod effect_executor;
 
 mod model;
 mod occurrence;
+mod occurrence_taskflow;
 mod scheduler;
 mod store;
 mod taskflow;
@@ -37,6 +38,8 @@ pub use occurrence::AutomationOccurrenceState;
 pub use occurrence::AutomationOverlapPolicy;
 pub use occurrence::AutomationScheduleRevision;
 pub use occurrence::AutomationTerminalOutcome;
+pub use occurrence_taskflow::AutomationTaskFlowLease;
+pub use occurrence_taskflow::AutomationTaskFlowObservation;
 pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
