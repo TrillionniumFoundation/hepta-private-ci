@@ -131,7 +131,7 @@ impl AnchoredTopologyPlasticityWriterV1 {
         maximum_records: usize,
     ) -> Result<Self, DurableTopologyProposalRegistryError> {
         Ok(Self {
-            registry: DurableTopologyProposalRegistryV2::open(
+            registry: DurableTopologyProposalRegistryV2::open_bootstrap_empty(
                 file,
                 registry_scope_digest,
                 writer_fence,
