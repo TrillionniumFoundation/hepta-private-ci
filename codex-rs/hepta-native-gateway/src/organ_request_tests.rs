@@ -40,7 +40,7 @@ async fn loopback_http_request_reaches_the_read_only_status_organ() -> Result<()
     let address = listener.local_addr()?;
     let server = tokio::spawn(async move {
         let (stream, _) = listener.accept().await?;
-        serve_connection(stream, runtime).await
+        serve_connection(stream, runtime, None).await
     });
     let mut client = TcpStream::connect(address).await?;
     client
