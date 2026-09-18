@@ -135,10 +135,7 @@ impl FixtureAuthority {
     }
 
     fn set_expiry(&self, expires_unix_ms: u64) {
-        self.state
-            .lock()
-            .expect("authority lock")
-            .expires_unix_ms = expires_unix_ms;
+        self.state.lock().expect("authority lock").expires_unix_ms = expires_unix_ms;
     }
 }
 
@@ -267,8 +264,7 @@ async fn empty_remote_store_may_report_zero_frontier() {
     response.observed_frontier = 0;
     response.completeness = FederatedCompletenessV2::Empty;
     response.response_digest = response.compute_response_digest();
-    let transport =
-        FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
+    let transport = FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
     let result = run(
         &transport,
         query.clone(),
@@ -289,9 +285,14 @@ async fn nonterminal_attempt_is_explicitly_indeterminate_without_retry() {
     let transport = FixtureTransport::immediate(FederationTransportResultV2::NonTerminal(
         FederationTransportOutcomeV2::Unavailable,
     ));
-    let result = run(&transport, query.clone(), &lease(&query), &FixtureAuthority::current(&query))
-        .await
-        .unwrap_or_else(|error| panic!("indeterminate result: {error}"));
+    let result = run(
+        &transport,
+        query.clone(),
+        &lease(&query),
+        &FixtureAuthority::current(&query),
+    )
+    .await
+    .unwrap_or_else(|error| panic!("indeterminate result: {error}"));
     assert!(result.items.is_empty());
     assert_eq!(result.completeness, FederatedCompletenessV2::Indeterminate);
     assert_eq!(result.validity, FederatedValidityV2::Indeterminate);
@@ -304,11 +305,15 @@ async fn stale_generation_never_exposes_remote_items() {
     let mut response = terminal_response(&query);
     response.generation_vector_digest = digest("stale-generation");
     response.response_digest = response.compute_response_digest();
-    let transport =
-        FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
-    let result = run(&transport, query.clone(), &lease(&query), &FixtureAuthority::current(&query))
-        .await
-        .unwrap_or_else(|error| panic!("stale result: {error}"));
+    let transport = FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
+    let result = run(
+        &transport,
+        query.clone(),
+        &lease(&query),
+        &FixtureAuthority::current(&query),
+    )
+    .await
+    .unwrap_or_else(|error| panic!("stale result: {error}"));
     assert!(result.items.is_empty());
     assert_eq!(result.validity, FederatedValidityV2::StaleGeneration);
 }
@@ -319,10 +324,15 @@ async fn peer_scope_and_lease_drift_fail_closed() {
     let mut response = terminal_response(&query);
     response.peer_id = id("peer:other");
     response.response_digest = response.compute_response_digest();
-    let transport =
-        FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
+    let transport = FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
     assert_eq!(
-        run(&transport, query.clone(), &lease(&query), &FixtureAuthority::current(&query)).await,
+        run(
+            &transport,
+            query.clone(),
+            &lease(&query),
+            &FixtureAuthority::current(&query)
+        )
+        .await,
         Err(FederationV2Error::IdentityMismatch("response_peer"))
     );
 
@@ -332,7 +342,13 @@ async fn peer_scope_and_lease_drift_fail_closed() {
         FederationTransportOutcomeV2::Unavailable,
     ));
     assert_eq!(
-        run(&transport, query.clone(), &stale_lease, &FixtureAuthority::current(&query)).await,
+        run(
+            &transport,
+            query.clone(),
+            &stale_lease,
+            &FixtureAuthority::current(&query)
+        )
+        .await,
         Err(FederationV2Error::LeaseEpochMismatch)
     );
 }
@@ -343,10 +359,15 @@ async fn duplicate_remote_identity_is_rejected() {
     let mut response = terminal_response(&query);
     response.items = vec![item(1), item(1)];
     response.response_digest = response.compute_response_digest();
-    let transport =
-        FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
+    let transport = FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
     assert_eq!(
-        run(&transport, query.clone(), &lease(&query), &FixtureAuthority::current(&query)).await,
+        run(
+            &transport,
+            query.clone(),
+            &lease(&query),
+            &FixtureAuthority::current(&query)
+        )
+        .await,
         Err(FederationV2Error::DuplicateResultIdentity)
     );
 }
@@ -356,10 +377,15 @@ async fn response_digest_rejects_field_tampering() {
     let query = query();
     let mut response = terminal_response(&query);
     response.observed_frontier += 1;
-    let transport =
-        FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
+    let transport = FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
     assert_eq!(
-        run(&transport, query.clone(), &lease(&query), &FixtureAuthority::current(&query)).await,
+        run(
+            &transport,
+            query.clone(),
+            &lease(&query),
+            &FixtureAuthority::current(&query)
+        )
+        .await,
         Err(FederationV2Error::DigestMismatch("response"))
     );
 }
@@ -372,8 +398,7 @@ async fn response_query_binding_rejects_cross_query_replay() {
     replay_query.query_id = id("query:replay");
     replay_query.nonce_digest = digest("nonce:replay");
     let replay_lease = lease(&replay_query);
-    let transport =
-        FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
+    let transport = FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
     assert_eq!(
         run(
             &transport,
@@ -382,9 +407,7 @@ async fn response_query_binding_rejects_cross_query_replay() {
             &FixtureAuthority::current(&replay_query),
         )
         .await,
-        Err(FederationV2Error::DigestMismatch(
-            "response_query_binding"
-        ))
+        Err(FederationV2Error::DigestMismatch("response_query_binding"))
     );
 }
 
@@ -396,8 +419,7 @@ async fn result_expiry_is_clamped_to_live_authority_ceiling() {
     response.response_digest = response.compute_response_digest();
     let authority = FixtureAuthority::current(&query);
     authority.set_expiry(70);
-    let transport =
-        FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
+    let transport = FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
     let result = run(&transport, query.clone(), &lease(&query), &authority)
         .await
         .expect("valid clamped result");
@@ -410,7 +432,9 @@ async fn revocation_after_transport_strips_remote_items() {
     let authority = FixtureAuthority::current(&query);
     let mutation = authority.clone();
     let transport = FixtureTransport {
-        result: Ok(FederationTransportResultV2::Terminal(terminal_response(&query))),
+        result: Ok(FederationTransportResultV2::Terminal(terminal_response(
+            &query,
+        ))),
         delay: Duration::ZERO,
         on_complete: Some(Arc::new(move || mutation.set_revoked(true))),
     };
@@ -428,7 +452,9 @@ async fn generation_drift_after_transport_strips_remote_items() {
     let authority = FixtureAuthority::current(&query);
     let mutation = authority.clone();
     let transport = FixtureTransport {
-        result: Ok(FederationTransportResultV2::Terminal(terminal_response(&query))),
+        result: Ok(FederationTransportResultV2::Terminal(terminal_response(
+            &query,
+        ))),
         delay: Duration::ZERO,
         on_complete: Some(Arc::new(move || {
             mutation.set_generation(digest("generation:next"));
@@ -472,7 +498,9 @@ async fn engine_deadline_cancels_inflight_transport_future() {
     let completed = Arc::new(AtomicBool::new(false));
     let observed = Arc::clone(&completed);
     let transport = FixtureTransport {
-        result: Ok(FederationTransportResultV2::Terminal(terminal_response(&query))),
+        result: Ok(FederationTransportResultV2::Terminal(terminal_response(
+            &query,
+        ))),
         delay: Duration::from_millis(50),
         on_complete: Some(Arc::new(move || {
             observed.store(true, Ordering::SeqCst);
@@ -500,7 +528,9 @@ async fn cancellation_interrupts_inflight_transport_future() {
     let completed = Arc::new(AtomicBool::new(false));
     let observed = Arc::clone(&completed);
     let transport = FixtureTransport {
-        result: Ok(FederationTransportResultV2::Terminal(terminal_response(&query))),
+        result: Ok(FederationTransportResultV2::Terminal(terminal_response(
+            &query,
+        ))),
         delay: Duration::from_millis(100),
         on_complete: Some(Arc::new(move || {
             observed.store(true, Ordering::SeqCst);
