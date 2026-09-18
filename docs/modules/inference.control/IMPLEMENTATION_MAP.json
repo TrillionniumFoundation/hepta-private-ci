@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.control",
-  "sourceMaturity": "native_hosted_reservation_and_observed_settlement",
+  "sourceMaturity": "native_hosted_policy_bound_dispatch_reconciliation_and_compaction",
   "declaredRoots": [
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
@@ -16,8 +16,8 @@
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
   ],
-  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.",
-  "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.",
+  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, quota/resource/economic-budget holds, dispatch/final-use bindings, terminal observations and bounded native compaction archives.",
+  "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Live dispatch consumes a signed final-use grant bound to the exact serialized turn. Post-crash recovery is read-only: a persisted matching Completed/Failed turn can establish terminality and release local capacity, but cannot recreate the non-serializable final-use token or retroactively report authorized success.",
   "operations": [
     {
       "designOperation": "reserve_request",
@@ -32,11 +32,16 @@
       "tests": [
         {
           "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
-          "kind": "native_journal_recovery_and_observation",
+          "kind": "native_journal_quota_budget_recovery_and_compaction",
           "command": "just test -p codex-hepta-infer-core --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_policy_tests.rs",
+          "kind": "quota_resource_cross_binding",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Pins explicit local slot capacity and exact request identity before provider contact.",
+      "sourceSemantics": "Pins exact request identity plus cross-bound AuthBus quota/resource evidence before provider contact; enforces request, token, concurrency and conservative owner-defined economic-budget holds under one reservation.",
       "operation": "reserve_request",
       "nativeSymbol": "pub fn reserve_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
@@ -55,11 +60,16 @@
       "tests": [
         {
           "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
-          "kind": "native_journal_recovery_and_observation",
+          "kind": "dispatch_final_use_fencing",
           "command": "just test -p codex-hepta-infer-core --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "kind": "physical_dispatch_no_replay",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Syncs exact thread/provider/context dispatch intent before the actual turn/start RPC; a duplicate cannot issue a new turn.",
+      "sourceSemantics": "Consumes a kernel-owned signed final-use grant bound to the exact provider/model/request/scope/payload and authority epoch, then syncs thread/provider/context/grant dispatch intent before the actual turn/start RPC; a duplicate cannot issue a new turn.",
       "operation": "schedule",
       "nativeSymbol": "pub fn dispatch_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
@@ -82,7 +92,7 @@
           "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Persists interrupt intent without releasing an in-flight slot; acknowledgement is not terminality.",
+      "sourceSemantics": "Persists interrupt intent without releasing an in-flight quota/resource/budget hold; acknowledgement is not terminality and unknown execution remains held.",
       "operation": "cancel",
       "nativeSymbol": "pub fn cancel_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
@@ -101,11 +111,16 @@
       "tests": [
         {
           "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
-          "kind": "native_journal_recovery_and_observation",
+          "kind": "settlement_usage_budget_and_compaction",
           "command": "just test -p codex-hepta-infer-core --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "kind": "read_only_post_crash_reconciliation",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Persists actual matching terminal and optional observed u64 usage; terminality releases a local slot, unknown execution remains held. Late usage can refine an observation without changing its terminal outcome.",
+      "sourceSemantics": "Persists matching live or read-only reconciled terminal observations and optional observed usage. Terminality can release local concurrency; observed tokens refine token holds, while economic budget remains conservatively consumed without authenticated billing reconciliation. Post-crash reconciliation never replays the provider turn or reconstructs final-use authority.",
       "operation": "settle",
       "nativeSymbol": "pub fn settle_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
@@ -113,13 +128,13 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.",
-    "Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.",
-    "Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history."
+    "Compose a named non-CLI production caller that obtains current quota/resource evidence and signed final-use grants from their owners; the explicit native worker CLI is a source/qualification host and does not activate the product.",
+    "Implement the full target multi-worker schedule(reservation, eligible_worker_snapshot) deterministic feasible ranking when a product actually supplies multiple enrolled workers; the native App Server route currently binds one exact provider/resource and hepta-inferd remains an authority-free exact-binding planner."
   ],
   "externalEvidenceGates": [
-    "real provider deployment and crash/cancellation acceptance",
-    "real economic quota/capacity authority integration",
+    "real provider deployment, crash/cancellation/reconciliation acceptance and provider-side retention behavior",
+    "real economic billing reconciliation and measured device-capacity authority/qualification; source budget units and ResourceAdvertisement bindings do not prove provider charges or hardware availability",
+    "independently operated final-use signer/revocation service and product activation",
     "authenticated remote-worker transport if a separate process is introduced"
   ],
   "claimBoundary": {
