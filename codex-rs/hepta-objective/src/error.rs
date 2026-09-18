@@ -11,6 +11,7 @@ pub enum ObjectiveError {
         actual: usize,
     },
     DuplicateSemanticId(String),
+    NonCanonicalOutput(&'static str),
     EmptyPrincipalScope,
     EmptyDigest(&'static str),
     InvalidSoftWeight(String),
@@ -27,6 +28,7 @@ impl ObjectiveError {
         match self {
             Self::InvalidBound { .. }
             | Self::DuplicateSemanticId(_)
+            | Self::NonCanonicalOutput(_)
             | Self::InvalidSoftWeight(_)
             | Self::Arithmetic => "OBJ-E001",
             Self::UnsupportedConstraintLanguage => "OBJ-E002",
@@ -48,6 +50,9 @@ impl fmt::Display for ObjectiveError {
                 actual,
             } => write!(formatter, "{kind} count {actual} exceeds maximum {maximum}"),
             Self::DuplicateSemanticId(id) => write!(formatter, "duplicate semantic id: {id}"),
+            Self::NonCanonicalOutput(field) => {
+                write!(formatter, "compiled objective is not canonical: {field}")
+            }
             Self::EmptyPrincipalScope => formatter.write_str("principal scope must not be empty"),
             Self::EmptyDigest(kind) => write!(formatter, "{kind} digest must not be zero"),
             Self::InvalidSoftWeight(dimension) => write!(
