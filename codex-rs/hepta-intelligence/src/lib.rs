@@ -27,6 +27,7 @@ mod pipeline_v2;
 
 mod prompt_context_v1;
 mod prompt_exposure_v1;
+mod prompt_registry_adapter_v1;
 
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
@@ -47,6 +48,8 @@ pub use prompt_exposure_v1::PromptExposureRecordingDispositionV1;
 pub use prompt_exposure_v1::PromptExposureRecordingV1;
 pub use prompt_exposure_v1::PromptExposureSinkV1;
 pub use prompt_exposure_v1::record_prompt_delivery_exposure_v1;
+pub use prompt_registry_adapter_v1::PromptRegistryAdapterErrorV1;
+pub use prompt_registry_adapter_v1::PromptRegistryCandidateAdapterV1;
 
 mod pipeline;
 
