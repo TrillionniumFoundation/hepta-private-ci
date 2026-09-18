@@ -217,22 +217,22 @@ async fn stored_candidates(
             .await
             .unwrap();
     }
-    let batch = store
-        .retrieve_memory_candidates(
+    let observation = store
+        .observe_memory_retrieval(
             &access,
             &RetrievalRequest::new("lemon", /*now_unix_seconds*/ 100),
         )
         .await
         .unwrap();
-    let items: Vec<_> = batch
-        .candidates
-        .into_iter()
+    let items: Vec<_> = observation
+        .materialized_candidates()
+        .iter()
         .map(|candidate| {
-            let memory = candidate.memory;
+            let memory = &candidate.memory;
             CognitiveContextItem {
                 memory_id: memory.id.memory_id.as_str().to_string(),
                 revision: memory.id.revision,
-                content: memory.content,
+                content: memory.content.clone(),
                 content_sha256: memory.content_sha256.as_str().to_string(),
             }
         })
@@ -245,6 +245,36 @@ fn escaping_contents() -> Vec<String> {
     (0..4)
         .map(|index| format!("lemon {index} {}", "\\\"".repeat(/*n*/ 1700)))
         .collect()
+}
+
+
+#[tokio::test]
+async fn learned_winner_can_come_from_beyond_legacy_top_four() {
+    let contents = (0..6)
+        .map(|index| format!("lemon candidate {index}"))
+        .collect();
+    let (_directory, store, owner, items) = stored_candidates(contents).await;
+    assert_eq!(items.len(), 6);
+    let baseline = read(
+        &store, &owner, /*body_generation*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
+    )
+    .await
+    .unwrap();
+    assert_eq!(baseline.items.len(), 4);
+    let winner = items[5].clone();
+    assert!(!baseline.items.contains(&winner));
+    let fixture = fitted_ranker(owner.clone(), &items, &[0, 0, 0, 0, 0, 100]);
+    let selected = read(
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 1,
+        Some(&fixture.ranker),
+    )
+    .await
+    .unwrap();
+    assert_eq!(selected.items, vec![winner]);
 }
 
 #[tokio::test]
