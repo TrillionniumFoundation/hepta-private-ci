@@ -646,7 +646,7 @@ impl BaoClient {
         path: &str,
         namespace: &str,
         body: &serde_json::Value,
-    ) -> Result<codex_http_client::Response, BaoClientError> {
+    ) -> Result<codex_http_client::HttpResponse, BaoClientError> {
         let mut url = self.origin.clone();
         {
             let mut parts = url
@@ -699,7 +699,7 @@ fn lease_indeterminate<T>(
 }
 
 async fn read_bounded_response(
-    response: &mut codex_http_client::Response,
+    response: &mut codex_http_client::HttpResponse,
 ) -> Result<Zeroizing<Vec<u8>>, BaoClientError> {
     if response
         .content_length()
