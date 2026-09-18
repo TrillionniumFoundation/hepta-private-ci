@@ -305,6 +305,7 @@ pub struct AgentSupervisorSnapshot {
     pub(crate) runtime_release: Option<String>,
     pub(crate) runtime_incarnation: Option<String>,
     pub(crate) runtime_fenced: bool,
+    pub(crate) runtime_lease_persisted: bool,
     pub(crate) release_change: Option<ControlReleaseChange>,
     pub(crate) has_last_command: bool,
 }
