@@ -1,8 +1,11 @@
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
+#[cfg(unix)]
 use std::fs::OpenOptions;
+#[cfg(unix)]
 use std::io::Read;
+#[cfg(unix)]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -14,6 +17,7 @@ use crate::NduProjectionJournalError;
 use crate::NduProjectionJournalV1;
 use crate::NduProjectionKindV1;
 
+#[cfg(unix)]
 const MAX_STORE_BYTES: usize = 12 + 4096 * (8 + 1 + 32 * 6);
 
 /// Single-writer, crash-consistent file persistence for the owner-local NDU
@@ -23,8 +27,8 @@ const MAX_STORE_BYTES: usize = 12 + 4096 * (8 + 1 + 32 * 6);
 #[derive(Debug)]
 pub struct NduProjectionFileStoreV1 {
     path: PathBuf,
-    lock_path: PathBuf,
-    lock_file: File,
+    _lock_path: PathBuf,
+    _lock_file: File,
     journal: NduProjectionJournalV1,
 }
 
@@ -145,16 +149,6 @@ impl NduProjectionFileStoreV1 {
     }
 }
 
-impl Drop for NduProjectionFileStoreV1 {
-    fn drop(&mut self) {
-        let _ = self.lock_file.unlock();
-        // The lock file is only a rendezvous inode. The OS lock is the writer
-        // fence; deleting it while another process could have opened it would
-        // create two lock domains, so the file deliberately remains.
-        let _ = &self.lock_path;
-    }
-}
-
 #[cfg(unix)]
 fn open_store(path: &Path) -> Result<NduProjectionFileStoreV1, NduProjectionStoreError> {
     use std::os::unix::fs::OpenOptionsExt;
@@ -205,46 +199,48 @@ fn open_store(path: &Path) -> Result<NduProjectionFileStoreV1, NduProjectionStor
         std::fs::remove_file(&temp_path).map_err(|_| NduProjectionStoreError::Io)?;
     }
 
-    let journal = if path.exists() {
-        let metadata =
-            std::fs::symlink_metadata(path).map_err(|_| NduProjectionStoreError::Io)?;
-        if metadata.file_type().is_symlink() {
-            return Err(NduProjectionStoreError::Symlink);
+    let journal = match std::fs::symlink_metadata(path) {
+        Ok(metadata) => {
+            if metadata.file_type().is_symlink() {
+                return Err(NduProjectionStoreError::Symlink);
+            }
+            if !metadata.is_file() {
+                return Err(NduProjectionStoreError::NotRegular);
+            }
+            if metadata.permissions().mode() & 0o077 != 0 {
+                return Err(NduProjectionStoreError::InsecurePermissions);
+            }
+            if usize::try_from(metadata.len()).map_err(|_| NduProjectionStoreError::Oversize)?
+                > MAX_STORE_BYTES
+            {
+                return Err(NduProjectionStoreError::Oversize);
+            }
+            let mut options = OpenOptions::new();
+            options
+                .read(true)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+            let file = options
+                .open(path)
+                .map_err(|_| NduProjectionStoreError::Io)?;
+            let mut bytes = Vec::new();
+            file.take((MAX_STORE_BYTES + 1) as u64)
+                .read_to_end(&mut bytes)
+                .map_err(|_| NduProjectionStoreError::Io)?;
+            if bytes.len() > MAX_STORE_BYTES {
+                return Err(NduProjectionStoreError::Oversize);
+            }
+            NduProjectionJournalV1::reopen(&bytes)?
         }
-        if !metadata.is_file() {
-            return Err(NduProjectionStoreError::NotRegular);
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            NduProjectionJournalV1::new()
         }
-        if metadata.permissions().mode() & 0o077 != 0 {
-            return Err(NduProjectionStoreError::InsecurePermissions);
-        }
-        if usize::try_from(metadata.len()).map_err(|_| NduProjectionStoreError::Oversize)?
-            > MAX_STORE_BYTES
-        {
-            return Err(NduProjectionStoreError::Oversize);
-        }
-        let mut options = OpenOptions::new();
-        options
-            .read(true)
-            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
-        let mut file = options
-            .open(path)
-            .map_err(|_| NduProjectionStoreError::Io)?;
-        let mut bytes = Vec::new();
-        file.take((MAX_STORE_BYTES + 1) as u64)
-            .read_to_end(&mut bytes)
-            .map_err(|_| NduProjectionStoreError::Io)?;
-        if bytes.len() > MAX_STORE_BYTES {
-            return Err(NduProjectionStoreError::Oversize);
-        }
-        NduProjectionJournalV1::reopen(&bytes)?
-    } else {
-        NduProjectionJournalV1::new()
+        Err(_) => return Err(NduProjectionStoreError::Io),
     };
 
     Ok(NduProjectionFileStoreV1 {
         path: path.to_path_buf(),
-        lock_path,
-        lock_file,
+        _lock_path: lock_path,
+        _lock_file: lock_file,
         journal,
     })
 }

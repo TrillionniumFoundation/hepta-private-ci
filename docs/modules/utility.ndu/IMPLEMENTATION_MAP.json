@@ -13,8 +13,8 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "source_composed_read_only_control_and_intelligence_callers",
+  "productionWriterState": "native_unix_durable_store_primitive_not_product_selected",
   "operations": [
     {
       "operation": "evaluate_candidates",
@@ -28,7 +28,7 @@
       "outputs": [
         "NduEvaluationReceipt"
       ],
-      "state": "source_implemented_compatibility_entry",
+      "state": "source_implemented_deprecated_compatibility_entry",
       "authority": "none",
       "semanticProfile": "legacy-sum-max-zero-tolerance-v1",
       "tests": [
@@ -44,7 +44,8 @@
       "designOperation": "evaluate_candidates",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "nonClaim": "new external callers are rejected by Lane-D CI"
     },
     {
       "operation": "evaluate_candidates_with_policy",
@@ -126,7 +127,7 @@
         "NduSolverTerminationReceipt",
         "NduSolverIterationReceipt list"
       ],
-      "state": "source_implemented_local_solver",
+      "state": "source_implemented_bounded_fail_closed_local_solver",
       "authority": "none",
       "nonClaim": "local termination is not NduConvergenceCertificateV1",
       "tests": [
@@ -137,6 +138,22 @@
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
           "symbol": "parent_and_child_updates_cannot_share_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "already_converged_solve_is_revision_stable"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "preference_dimension_and_value_bounds_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "iteration_bound_is_unavailable_not_successful_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "unrelated_hierarchy_updates_may_share_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -155,7 +172,7 @@
       "outputs": [
         "owner-local NduIterationReceiptV1"
       ],
-      "state": "source_implemented_protocol_adapter",
+      "state": "source_implemented_context_and_predecessor_bound_protocol_adapter",
       "authority": "deny_all",
       "tests": [
         {
@@ -165,6 +182,18 @@
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "unbound_local_receipt_cannot_be_published"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "receipt_cannot_be_rebound_to_another_context"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "solve_context_must_match_subject"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -209,7 +238,7 @@
       ],
       "state": "source_implemented_owner_local_durability_reference",
       "authority": "none",
-      "nonClaim": "not an activated production writer or fsync profile",
+      "nonClaim": "hash-chain reference only; revocation is scoped by objective+subject+payload",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -222,9 +251,81 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "truncation_and_tampering_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "revocation_is_scoped_by_objective_and_subject"
         }
       ],
       "designOperation": "NduProjectionJournalV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "NduProjectionFileStoreV1",
+      "nativeSymbol": "codex_hepta_ndu::NduProjectionFileStoreV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_store.rs",
+      "inputs": [
+        "owner-controlled Unix journal path",
+        "projection/selection/revocation mutations"
+      ],
+      "outputs": [
+        "single-writer fsync-published journal",
+        "reopened selected projection view"
+      ],
+      "state": "source_implemented_unix_durable_store_primitive",
+      "authority": "none",
+      "nonClaim": "not product-selected storage; retention, backup/restore qualification and activation remain separate",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "durable_store_reopens_selected_projection_after_synced_publication"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "durable_store_has_one_os_backed_writer"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "durable_store_preserves_scoped_revocation_after_reopen"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "symlink_destination_fails_closed"
+        }
+      ],
+      "designOperation": "NduProjectionFileStoreV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "solve_preference_target_for_context",
+      "nativeSymbol": "codex_hepta_ndu::solve_preference_target_for_context",
+      "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
+      "inputs": [
+        "NduIterationContextV1",
+        "PreferenceState",
+        "target AxisValue set",
+        "eta"
+      ],
+      "outputs": [
+        "context-bound local solver receipts"
+      ],
+      "state": "source_implemented_context_bound_solver_entry",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "local_step_requires_complete_context_before_protocol_publication"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "receipt_cannot_be_rebound_to_another_context"
+        }
+      ],
+      "designOperation": "solve_preference_target_for_context",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
@@ -242,13 +343,14 @@
   "completion": {
     "specification": "complete",
     "deterministicKernel": "candidate_implemented",
-    "ownerLocalDurabilityReference": "candidate_implemented",
+    "ownerLocalDurabilityReference": "candidate_implemented_with_unix_fsync_store_primitive",
     "canonicalExternalV2Admission": "not_established",
-    "productionWriter": "not_established",
+    "productionWriter": "not_selected_or_activated",
     "exactHeadQualification": "required",
     "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
     "activation": "not_established",
-    "release": "not_established"
+    "release": "not_established",
+    "sourceProductComposition": "implemented_read_only_callers"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -273,12 +375,33 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests on this candidate.",
+    "Select and compose the durable owner store in a named product host with retention and backup/restore qualification.",
+    "Register/admit the external V2 utility/profile protocol and stochastic coefficient/conditioning profiles."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "consumerCallsites": [
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "symbol": "evaluate_prepared_plan_with_ndu",
+      "role": "typed read-only planning composition",
+      "tests": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "symbol": "plan_observed_context",
+      "role": "measured context planning composition",
+      "tests": "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/vertical.rs",
+      "symbol": "run_read_only_vertical",
+      "role": "authority-free vertical composition",
+      "tests": "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+    }
   ]
 }

@@ -1,8 +1,9 @@
 # Native shadow covariance regression V1
 
 `admit_covariance_profile` validates an immutable numerical profile and binds its
-units, coordinate order, dimensions, covariance convention and bounds into a
-digest. This local admission does not approve an artifact, register a production
+units, coefficient-manifest identity, conditioning-profile identity, coordinate
+system, numeric-conversion profile, dimensions, covariance convention and bounds
+into a digest. This local admission does not approve an artifact, register a production
 protocol or change any selected coefficient. Existing deterministic Q32 APIs are
 unchanged. The new structures are native Rust f64 values with their own V1 digest
 namespace; they are not a reinterpretation of `NduCoefficientManifestV1` bytes.
@@ -41,8 +42,9 @@ means, rate/duration conversion, identity covariance, singular/indefinite and
 poorly conditioned matrices, covariance collapse, invalid samples/profiles,
 zero sensitivity, deterministic replay and the full 32-driver/8-utility envelope.
 
-Remaining gates include production coefficient-profile registration and consumer
-integration, original/whitened coordinate conversion, Q24 conversion/error
-receipts, independent mathematical review, conditional identification,
+The native manifest digests prevent silent semantic drift but do not authenticate
+or approve the referenced artifacts. Remaining gates include production profile
+registration/consumer admission, measured original/whitened coordinate and Q24
+conversion/error receipts, independent mathematical review, conditional identification,
 well-posedness/stochastic FBSDE qualification and named-host resource/latency
 measurements. Algebraic regression tests do not establish those capabilities.
