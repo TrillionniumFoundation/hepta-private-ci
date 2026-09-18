@@ -135,8 +135,9 @@ impl CognitiveRuntime {
     pub fn available_store(&self) -> Option<&Arc<CognitiveStore>> {
         match self {
             Self::Available(store) => Some(store),
-            Self::AvailableFederated { store, .. }
-            | Self::AvailableFederatedV2 { store, .. } => Some(store),
+            Self::AvailableFederated { store, .. } | Self::AvailableFederatedV2 { store, .. } => {
+                Some(store)
+            }
             Self::Absent | Self::Unavailable(_) => None,
         }
     }
@@ -152,11 +153,12 @@ impl CognitiveRuntime {
                 store,
                 federation: Arc::new(federation),
             },
-            Self::AvailableFederated { store, .. }
-            | Self::AvailableFederatedV2 { store, .. } => Self::AvailableFederated {
-                store,
-                federation: Arc::new(federation),
-            },
+            Self::AvailableFederated { store, .. } | Self::AvailableFederatedV2 { store, .. } => {
+                Self::AvailableFederated {
+                    store,
+                    federation: Arc::new(federation),
+                }
+            }
             Self::Absent | Self::Unavailable(_) => self,
         }
     }
@@ -270,7 +272,9 @@ impl CognitiveRuntime {
     ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
         match self {
             Self::AvailableFederated { federation, .. } => {
-                federation.revalidate(access, binding, now_unix_seconds).await
+                federation
+                    .revalidate(access, binding, now_unix_seconds)
+                    .await
             }
             Self::AvailableFederatedV2 {
                 consumer_agent_id,
@@ -368,9 +372,7 @@ async fn retrieve_federated_product(
     let logical_start_ms = seconds_to_ms(request.now_unix_seconds())?;
     let started_at = Instant::now();
     let global_deadline_ms = logical_start_ms
-        .checked_add(
-            u64::try_from(PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()).unwrap_or(u64::MAX),
-        )
+        .checked_add(u64::try_from(PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()).unwrap_or(u64::MAX))
         .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
 
     let discovery = async {
@@ -561,8 +563,8 @@ async fn revalidate_federated_product(
             FederationRevalidationDrift::CapabilityMissing,
         ));
     };
-    let readers = FederatedMemoryReader::discover(owner_layout, consumer_agent_id, now_unix_seconds)
-        .await?;
+    let readers =
+        FederatedMemoryReader::discover(owner_layout, consumer_agent_id, now_unix_seconds).await?;
     let Some(reader) = readers
         .into_iter()
         .find(|reader| reader.capability().id() == binding.capability.id())
@@ -703,7 +705,8 @@ fn build_product_query_and_lease(
     let mut scope_bytes = serde_json::to_vec(capability.scope())
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
     scope_bytes.extend_from_slice(access.workspace_sha256().as_str().as_bytes());
-    let scope_digest = domain_digest32(b"hepta.memory-federation.product-scope.v2", &[&scope_bytes]);
+    let scope_digest =
+        domain_digest32(b"hepta.memory-federation.product-scope.v2", &[&scope_bytes]);
     let purpose_digest = Digest32::of_bytes(PRODUCT_FEDERATION_PURPOSE);
     let generation_vector_digest = domain_digest32(
         b"hepta.memory-federation.product-generation.v2",
@@ -714,11 +717,8 @@ fn build_product_query_and_lease(
         ],
     );
     let query_digest = Digest32::of_bytes(request.query().as_bytes());
-    let nonce_digest = product_attempt_nonce_digest(
-        query_digest,
-        capability.id().as_str(),
-        logical_start_ms,
-    )?;
+    let nonce_digest =
+        product_attempt_nonce_digest(query_digest, capability.id().as_str(), logical_start_ms)?;
     let query_id_digest = domain_digest32(
         b"hepta.memory-federation.product-query-id.v2",
         &[nonce_digest.as_array(), peer_id.as_str().as_bytes()],
@@ -774,10 +774,7 @@ fn product_evidence_item(
         record_id,
         record_revision,
         record_digest,
-        support_digest: domain_digest32(
-            b"hepta.memory-federation.product-support.v2",
-            &[&binding],
-        ),
+        support_digest: domain_digest32(b"hepta.memory-federation.product-support.v2", &[&binding]),
         validity_digest: domain_digest32(
             b"hepta.memory-federation.product-validity.v2",
             &[&binding],
@@ -791,7 +788,9 @@ fn product_attempt_nonce_digest(
     logical_start_ms: u64,
 ) -> Result<Digest32, CognitiveStoreError> {
     let attempt_sequence = PRODUCT_FEDERATION_ATTEMPT_SEQUENCE
-        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| value.checked_add(1))
+        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+            value.checked_add(1)
+        })
         .map_err(|_| {
             CognitiveStoreError::Unavailable(
                 "memory federation attempt sequence exhausted".to_string(),
@@ -823,15 +822,14 @@ fn seconds_to_ms(value: i64) -> Result<u64, CognitiveStoreError> {
     let value = u64::try_from(value).map_err(|_| {
         CognitiveStoreError::Invalid("memory federation time must be non-negative".to_string())
     })?;
-    value.checked_mul(1_000).ok_or_else(|| {
-        CognitiveStoreError::Invalid("memory federation time overflow".to_string())
-    })
+    value
+        .checked_mul(1_000)
+        .ok_or_else(|| CognitiveStoreError::Invalid("memory federation time overflow".to_string()))
 }
 
 fn elapsed_logical_ms(logical_start_ms: u64, started_at: Instant) -> u64 {
-    logical_start_ms.saturating_add(
-        u64::try_from(started_at.elapsed().as_millis()).unwrap_or(u64::MAX),
-    )
+    logical_start_ms
+        .saturating_add(u64::try_from(started_at.elapsed().as_millis()).unwrap_or(u64::MAX))
 }
 
 fn domain_digest32(domain: &[u8], parts: &[&[u8]]) -> Digest32 {
