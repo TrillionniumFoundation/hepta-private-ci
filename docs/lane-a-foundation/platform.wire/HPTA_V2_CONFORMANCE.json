@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "protocol": "HPTA",
+  "version": 2,
+  "digestSemantics": "domain-separated metadata-and-payload frame digest; not authentication",
+  "description": "schema=s, producer=p, generation=1, payload=010203",
+  "frameLength": 59,
+  "frameHex": "485054410002000100010000000000000001420cbaa9b4717b3099a3ac45a1545b41363a3511eb582afa20f6107e916c4d2d000000037370010203",
+  "frameSha256": "47c45481215d23032b6e579c22adace592e745881a0ca6bb2ab6b49363ec4ad8",
+  "fields": {
+    "schema": "s",
+    "producer": "p",
+    "generation": 1,
+    "payloadHex": "010203",
+    "frameDigest": "420cbaa9b4717b3099a3ac45a1545b41363a3511eb582afa20f6107e916c4d2d"
+  }
+}
