@@ -167,4 +167,3 @@ fn percentile(values: &[u64], percentile: usize) -> u64 {
 fn escape(value: &str) -> String {
     value.replace('\\', "\\\\").replace('"', "\\\"")
 }
-
