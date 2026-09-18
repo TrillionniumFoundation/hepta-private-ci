@@ -21,7 +21,7 @@
     "codex-rs/hepta-bellman-operator",
     "codex-rs/hepta-operator-acceptance"
   ],
-  "sourceFreshnessPolicy": "bound_roots_unchanged_since_source_base",
+  "sourceFreshnessPolicy": "bound_root_tree_pins_match_current_head",
   "resolvedRoots": [
     "codex-rs/hepta-bellman-operator"
   ],
@@ -334,5 +334,9 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-bellman-operator"
-  ]
+  ],
+  "sourceRootTrees": {
+    "codex-rs/hepta-bellman-operator": "750025bc910197f865c945d8fb1d8d78836315af",
+    "codex-rs/hepta-operator-acceptance": "a58da2ee6ead76d650a2d7dbed681680e511528c"
+  }
 }
