@@ -16,6 +16,18 @@
 
 This stable document is the implementation guide for `auth.authbus`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+### Capability status at this source candidate
+
+| Capability | Target | Source implementation | Product composition |
+| --- | --- | --- | --- |
+| Authentication / signed admission | yes | yes | partial: Agentd signed-text path |
+| Authorization policy | yes | yes, durable candidate | no production effect caller |
+| Quota ledger | yes | yes, durable candidate | no production effect caller |
+| Reservation / settlement | yes | yes, durable candidate | qualification-only guarded provider seam |
+
+"Source implementation" in this table means the code and migrations are present in the candidate tree; it does **not** mean exact-head tests, independent review, activation or release have passed. The canonical landing page is [`README.md`](README.md), and [`IMPLEMENTATION_MAP.json`](IMPLEMENTATION_MAP.json) records the cross-owner composition boundary.
+
+
 ## 1. Identity, mission and ownership
 
 Own policy, quota and reservation facts while separating authorization from external secret effects.
@@ -48,7 +60,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-authbus/src/lib.rs](../../../codex-rs/hepta-authbus/src/lib.rs); observed identifiers include `PreverifiedAuthEnvelope`, `TrustedReplayContext`, `VerificationReceipt`, `ReplayWindow`, `verify`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/auth.authbus.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) for the implemented subset and remaining product work.
+The registered protocol/domain source is [codex-rs/hepta-authbus/src/lib.rs](../../../codex-rs/hepta-authbus/src/lib.rs); signed admission remains there, while the durable policy/quota/reservation owner is [codex-rs/hepta-evidence/src/authbus_control.rs](../../../codex-rs/hepta-evidence/src/authbus_control.rs). Observed identifiers include `PreverifiedAuthEnvelope`, `SignedMessage`, `AuthPolicyRule`, `EffectAdmissionRequest`, `Reservation`, and `AuthBusReplayCheckpoint`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/auth.authbus.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -123,6 +135,8 @@ Owned authoritative or rebuildable domains:
 - `quota_registry`
 - `quota_reservation`
 
+At this candidate, migration `0011_authbus_control.sql` materializes immutable policy/quota revision history, current policy/quota heads, reservation rows, monotonic host-trust heads, permanent retired replay epochs and the local replay-checkpoint projection. `HeptaEvidenceStore::open` verifies quota conservation against held reservations and fails closed on drift.
+
 Read-only data dependencies:
 
 - `authority_lease`
@@ -138,7 +152,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/auth.authbus.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/auth.authbus.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Policy changes, quota changes, authorize+reserve, reservation transitions, replay retirement and checkpoint changes serialize through `BEGIN IMMEDIATE`. `begin_reserved_effect` rechecks the exact policy revision immediately before an effect seam; stale or denied policy releases a still-unstarted reservation rather than allowing dispatch. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -166,7 +180,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native signed-admission verifier is embedded into the host; deliver issuer/replay trust through protected host configuration. Its signed text boundary is distinct from the broader policy/quota/settlement target below. Real economic quota ownership and provider settlement must be connected explicitly before those capabilities are claimed.
+The native signed-admission verifier is embedded into the host; deliver issuer/replay trust through protected host configuration. Agentd trust schema v2 adds a monotonic trust revision and a digest over the complete issuer/key/revocation/allowlist/checkpoint projection. The evidence owner rejects trust rollback, same-revision drift and retired epochs. An optional externally retained replay checkpoint can be verified on every host trust refresh; without an independently governed checkpoint, filesystem snapshot rollback remains outside the protection boundary. The guarded provider-effect facade enforces authorize+reserve before the provider seam, but it remains qualification-only until a named production adapter is activated.
 
 Current operating and state-format references:
 
@@ -181,8 +195,10 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-authbus/src/lib_tests.rs](../../../codex-rs/hepta-authbus/src/lib_tests.rs); named case: `exact_envelope_is_replay_checked_without_authority_grant`.
 - [codex-rs/hepta-authbus/src/signed_tests.rs](../../../codex-rs/hepta-authbus/src/signed_tests.rs); named case: `signed_admission_rejects_payload_and_replay_identity_substitution`.
+- [codex-rs/hepta-evidence/src/authbus_control_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_control_tests.rs); executes BUS-01 through BUS-04 against real SQLite handles and adds crash/reopen, replay-checkpoint and retired-epoch cases.
+- [codex-rs/hepta-agentd/tests/authbus_text_product.rs](../../../codex-rs/hepta-agentd/tests/authbus_text_product.rs); Lane A CI runs this test explicitly and retains a command receipt for exact-head and synthetic-merge candidates.
 
-In `codex-rs`, run `just test -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-authbus -p codex-hepta-authbus-p1-3-qualification -p codex-hepta-evidence`, then `cargo test --locked -p codex-hepta-agentd --test authbus_text_product`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
