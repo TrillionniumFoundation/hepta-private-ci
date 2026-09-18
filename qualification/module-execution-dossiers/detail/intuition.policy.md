@@ -32,8 +32,8 @@ The source separates:
 - exact feature snapshot/schema;
 - calibration/OOD artifact and dataset identities;
 - candidate completeness;
-- learned outputs;
-- random assignment.
+- learned outputs and randomized assignment probabilities;
+- random-stream/counter/draw ownership.
 
 No model digest is used as the policy digest by construction.
 
