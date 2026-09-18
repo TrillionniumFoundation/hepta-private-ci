@@ -121,6 +121,7 @@ fn context<'a>(
     cwd: Option<PathBuf>,
 ) -> ModelProviderPolicyContext<'a> {
     ModelProviderPolicyContext {
+        require_active_policy: false,
         registry,
         session_store: stores.0,
         thread_store: stores.1,
