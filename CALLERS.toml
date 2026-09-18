@@ -186,8 +186,8 @@ symbol = "BaoClient::consume_kv_v2"
 call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
 definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
 definition_markers = ["pub async fn consume_kv_v2", "claim_final_use", "deliver_final_use"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
-caller_markers = ["client", ".consume_kv_v2(&self.authority", "UnregisteredConsumer"]
+product_callers = []
+caller_markers = []
 
 [[boundary]]
 id = "bao_registered_consumer_new"
@@ -210,7 +210,7 @@ id = "bao_registered_revocation_update"
 symbol = "BaoFinalUseHost::apply_revocation_update"
 call_pattern = "\\.\\s*apply_revocation_update\\s*\\("
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
-definition_markers = ["pub fn apply_revocation_update", "revocation_verifier", ".apply(&self.authority, update)"]
+definition_markers = ["pub fn apply_revocation_update", "revocation_verifier", ".apply(&self.authority, update, now_unix_ms)"]
 product_callers = []
 caller_markers = []
 
