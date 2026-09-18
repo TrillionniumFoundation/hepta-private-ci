@@ -56,9 +56,19 @@ selection or activation authority.
 
 Candidate payload functions verify current registry eligibility, byte length and
 content digest. A revoked ancestor blocks loading descendants. Stored code or
-model bytes are never executed. Snapshot limits are 4096 events and 8 MiB;
-payloads are bounded by 64 MiB. Snapshot creation is O(history), bounded by the
-pilot cap; this is not a high-frequency journal or hard-real-time controller.
+model bytes are never executed. The shared durable-history limit is 4096 records; the stable registry snapshot
+is additionally bounded to 8 MiB and payloads to 64 MiB. Registry, withdrawal
+and lifecycle owners reject an append before crossing that shared record ceiling,
+so a legal in-memory history does not become impossible to persist. Snapshot
+creation is O(history), bounded by the pilot cap; this is not a high-frequency
+journal or hard-real-time controller.
+
+`HEPTAW01` and `HEPTAL02` are additive create-only sidecar formats for the scoped
+dataset-withdrawal registry and lifecycle journal. Their receipts bind storage
+scope, full file digest, record count and chain head; the withdrawal receipt also
+binds the registry/scope identity. Reload performs semantic replay and requires
+canonical byte-for-byte re-encoding. Lifecycle replay evaluates historical actor
+evidence at the event occurrence time, not the process reopen time.
 
 ## Failure and retry semantics
 
@@ -73,8 +83,11 @@ write indicates interference and returns `Indeterminate`. Lock contention
 returns `Busy` without this writer writing bytes. A write or synchronization
 failure is `Indeterminate`; the caller must reconcile the exact target and
 expected digest. It must never truncate, overwrite, silently adopt or retry
-through the same path. Removal of a proven orphan is a separately authorized
-host operation.
+through the same path. Removal of a proven orphan is a separately authorized host operation. The host
+must reconcile by exact path/identity, expected digest or zero-length state,
+current and retained historical receipts, and publication transaction identity
+before deletion. A name that is referenced by any retained receipt is not an
+orphan even if it is not current.
 
 ## Host transaction and trust boundary
 
@@ -85,12 +98,14 @@ any runtime use: a valid old snapshot plus its old receipt can still predate a
 deletion. This module cannot infer the latest state from the suspect file. Never
 use an older snapshot to make a revoked predecessor appear eligible for rollback.
 
-Create payload -> sync -> create canonical registry snapshot -> sync -> durably
-publish the receipt/witness -> independent evaluation/decision -> separately
-owned next-run selection. Cross-store atomicity requires a host transaction or
-outbox reconciliation; two synced files are not an atomic multi-store transaction.
-A crash before witness publication may leave an orphan candidate, not a selected
-artifact.
+Create payload -> sync -> validate scoped withdrawal frontier -> prepare a V3
+publication transaction -> revalidate the registry and withdrawal heads under the
+writer fence -> create the canonical registry snapshot with that transaction
+digest as its binding -> sync -> durably publish the receipt/current-head witness
+-> independent evaluation/decision -> separately owned next-run selection.
+Cross-store atomicity is a bounded saga; two synced files are not an atomic
+multi-store transaction. A crash before witness publication may leave an orphan
+candidate, never selected state.
 
 `create_new` protects the final path component from an existence-check race; it
 does not authenticate ancestor traversal, retain a path-to-inode binding after
