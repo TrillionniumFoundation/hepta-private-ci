@@ -7,12 +7,17 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::FleetResourceVectorV1;
+use codex_hepta_fleet::lease_ledger::AllocationGrant;
+use codex_hepta_fleet::lease_ledger::HostObservation;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
@@ -1323,4 +1328,94 @@ fn finish_release_drain(
     assert_eq!(supervisor.tick(now), TickReport::default());
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
+}
+
+
+#[test]
+fn configured_fleet_host_denies_start_without_matching_allocation() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, recovered) = Supervisor::recover_with_fleet_host_id(
+        fleet.registry.clone(),
+        control.driver(),
+        config(),
+        Some("host-a".to_string()),
+        now,
+    )?;
+    assert_eq!(recovered, TickReport::default());
+    assert!(matches!(
+        supervisor.start(&fleet.first, command()?, now),
+        Err(SupervisorError::FleetAllocation(_))
+    ));
+    Ok(())
+}
+
+#[test]
+fn configured_fleet_host_admits_matching_agent_budget() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let store = fleet
+        .registry
+        .allocation_store()
+        .map_err(|error| SupervisorError::FleetAllocation(error.to_string()))?;
+    let budget = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .ok_or_else(|| SupervisorError::UnknownAgent(fleet.first.clone()))?
+        .manifest
+        .resources
+        .clone();
+    let resources = FleetResourceVectorV1::from_agent_budget(&budget);
+    let now_ms = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        .as_millis() as u64;
+    let generation = store
+        .admit_host(
+            0,
+            now_ms,
+            HostObservation {
+                host_id: "host-a".to_string(),
+                failure_domain_id: "rack-a".to_string(),
+                generation: 1,
+                observed_at_ms: now_ms.saturating_sub(1),
+                valid_until_ms: now_ms + 60_000,
+                capacity: resources,
+            },
+        )
+        .map_err(|error| SupervisorError::FleetAllocation(error.to_string()))?;
+    let _ = store
+        .issue(
+            generation,
+            now_ms,
+            AllocationGrant {
+                allocation_id: "allocation-a".to_string(),
+                request_id: "request-a".to_string(),
+                principal_id: fleet.first.as_str().to_string(),
+                host_id: "host-a".to_string(),
+                failure_domain_id: "rack-a".to_string(),
+                host_generation: 1,
+                authority_epoch: 1,
+                lease_generation: 1,
+                expires_at_ms: now_ms + 30_000,
+                resources,
+                semantic_digest: "a".repeat(64),
+                revoked: false,
+            },
+        )
+        .map_err(|error| SupervisorError::FleetAllocation(error.to_string()))?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, recovered) = Supervisor::recover_with_fleet_host_id(
+        fleet.registry.clone(),
+        control.driver(),
+        config(),
+        Some("host-a".to_string()),
+        now,
+    )?;
+    assert_eq!(recovered, TickReport::default());
+    supervisor.start(&fleet.first, command()?, now)?;
+    assert!(supervisor.snapshot(&fleet.first).is_some_and(|snapshot| snapshot.active));
+    Ok(())
 }

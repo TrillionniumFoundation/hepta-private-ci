@@ -194,10 +194,20 @@ async fn run_supervisord_inner(
     let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let (supervisor, recovery) = Supervisor::recover(
+    let fleet_host_id = match std::env::var("HEPTA_FLEET_HOST_ID") {
+        Ok(value) => Some(value),
+        Err(std::env::VarError::NotPresent) => None,
+        Err(std::env::VarError::NotUnicode(_)) => {
+            return Err(SupervisorError::FleetAllocation(
+                "HEPTA_FLEET_HOST_ID is not valid Unicode".to_string(),
+            ));
+        }
+    };
+    let (supervisor, recovery) = Supervisor::recover_with_fleet_host_id(
         registry.clone(),
         driver,
         SupervisorConfig::local_default(),
+        fleet_host_id,
         Instant::now(),
     )?;
     let state = Arc::new(DaemonState {

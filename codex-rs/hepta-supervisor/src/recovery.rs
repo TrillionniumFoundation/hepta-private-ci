@@ -92,6 +92,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle
             )));
         }
+        self.verify_fleet_allocation(agent_id)?;
         let starting = self.registry.compare_and_transition(
             agent_id,
             record.lifecycle.generation,
@@ -185,6 +186,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             record.lifecycle.generation,
             record.lifecycle.lifecycle,
         )?;
+        self.verify_fleet_allocation(agent_id)?;
         if lease.release_id.as_str() != "unversioned" {
             let needs_resolution = slot
                 .active_release
