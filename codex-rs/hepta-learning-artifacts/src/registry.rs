@@ -136,13 +136,17 @@ impl ArtifactRegistry {
     }
 
     #[must_use]
+    pub fn head_digest(&self) -> Digest32 {
+        self.records
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest)
+    }
+
+    #[must_use]
     pub fn snapshot(&self) -> ArtifactRegistrySnapshot {
         ArtifactRegistrySnapshot {
             records: self.records.clone(),
-            head_digest: self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |record| record.chain_digest),
+            head_digest: self.head_digest(),
         }
     }
 
