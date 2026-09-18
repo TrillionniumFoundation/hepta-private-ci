@@ -158,6 +158,20 @@
       "designOperation": "pending_secret_lease_operation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "lookup_secret_lease_by_operation",
+      "nativeSymbol": "lookup_secret_lease_by_operation",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lookup_secret_lease_by_operation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
