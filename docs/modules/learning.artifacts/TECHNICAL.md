@@ -481,9 +481,11 @@ The crate does not claim that two independent files are a single filesystem tran
 
 1. the V3 admission digest and validated manifest digest;
 2. the withdrawal domain and exact withdrawal head;
-3. the exact artifact-registry append event and predecessor/successor heads;
+3. the exact artifact-registry append event, sequence and predecessor/successor heads;
 4. the snapshot binding and durable snapshot receipt;
 5. the independently validated current-head witness.
+
+`artifact_registry_event_for_admission_v3` is the only crate-defined V3-to-V1 publication projection. The publication operation ID becomes the V1 `Register` event ID; payload, objective, producer, compatibility, generation and operational predecessor are projected from the normalized V2 manifest; and the V1 `support_digest` is the exact V3 admission digest. That admission digest commits the full normalized V2 manifest plus withdrawal domain, withdrawal head and admission time. `prepare_artifact_publication_v1` recomputes the projected event digest and the predecessor/sequence/event chain digest and rejects a receipt from any different registry event or chain. This prevents a host from pairing a valid V3 admission with an unrelated V1 append receipt.
 
 The host may acknowledge the producer/source only after the current-head witness is durable. Restart recovery reconstructs phase from durable receipts; a snapshot without its current witness is not published state, and a witness without its bound snapshot is rejected. Product composition must execute these transitions under one authenticated writer fence and must synchronize containing directories according to the selected filesystem contract.
 
