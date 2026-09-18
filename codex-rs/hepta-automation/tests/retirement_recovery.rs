@@ -312,7 +312,6 @@ async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
     Ok(())
 }
 
-
 #[tokio::test]
 async fn timer_quiescence_is_durable_and_unknown_work_blocks_handoff() -> TestResult {
     let (_temp, layout, store, lease) = leased_store().await?;
