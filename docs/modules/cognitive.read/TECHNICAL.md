@@ -111,12 +111,13 @@ Critical protocol schemas:
 
 None.
 
-The public Rust surface has two deliberately different correctness envelopes:
+The public Rust surface has three deliberately classified correctness envelopes:
 
-- `read_v2(snapshot, request)` is a lower-level projection over caller-supplied immutable bytes. It remains available for owner-local compatibility and tests.
+- legacy `read(snapshot, request)` is a V1 caller-supplied projection retained for source/shadow compatibility. The non-product-composed `hepta-intelligence::run_read_only_vertical` facade is one such compatibility consumer; its read receipt is evidence composition, not proof of host-current source authority.
+- `read_v2(snapshot, request)` is the typed lower-level projection over caller-supplied immutable bytes. It remains available for owner-local compatibility and focused tests.
 - `read_authoritative(provider, now, acquisition, request)` is the product-level source-authority contract. It chooses the read snapshot from the provider, so the caller cannot substitute an unrelated snapshot digest, and returns a guard requiring current-provider revalidation before delivery.
 
-Product callers must not advertise `read_v2` semantics as the authoritative contract. Every producer validates output before publication and binds semantic fields into the declared digest scope. Contract identifiers, meaning and authority interpretation cannot change in place.
+Product callers must not advertise legacy `read` or `read_v2` semantics as the authoritative contract. Every producer validates output before publication and binds semantic fields into the declared digest scope. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 ## 6. Data authority, persistence and migrations
 
@@ -218,7 +219,7 @@ Source implementation completes only when the declared target root exists, publi
 
 A named product caller now exists in `hepta-agentd` source. This is product source composition, not proof of deployment/target-host execution or operator acceptance. The product caller uses the authoritative path; shadow and qualification callers are not substitutes for that source fact.
 
-Compatibility retains `read_v2` as a lower-level primitive. New product callers should compose `read_authoritative` and a current-provider final-use fence rather than directly calling `read_v2`. Retirement of the lower-level public surface requires all owner/test compatibility consumers migrated and a separate compatibility decision.
+Compatibility retains legacy `read` and `read_v2` as lower-level primitives. New product callers should compose `read_authoritative` and a current-provider final-use fence rather than directly calling either caller-supplied projection. Retirement of the lower-level public surfaces requires all shadow/owner/test compatibility consumers migrated and a separate compatibility decision.
 
 ## 15. Definition of module completion
 
