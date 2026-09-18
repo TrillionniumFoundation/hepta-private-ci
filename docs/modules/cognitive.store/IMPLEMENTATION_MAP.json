@@ -17,15 +17,15 @@
     "codex-rs/hepta-cognitive-store"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed_unqualified",
+  "productionWriterState": "composed_unqualified",
   "operations": [
     {
       "operation": "cognitivestore",
       "nativeSymbol": "CognitiveStore",
       "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
       "tests": [],
       "sourcePathExists": true,
@@ -37,7 +37,7 @@
       "operation": "cognitivestore",
       "nativeSymbol": "CognitiveStore",
       "sourcePath": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
       "tests": [],
       "sourcePathExists": true,
@@ -49,18 +49,71 @@
       "operation": "lane_c_snapshot",
       "nativeSymbol": "lane_c_snapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
       "tests": [],
       "sourcePathExists": true,
       "designOperation": "lane_c_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "production_cognitive_store_open",
+      "nativeSymbol": "codex_hepta_cognitive_store::ProductionCognitiveStore::open",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/production.rs",
+      "inputs": [
+        "HeptaAgentLayout"
+      ],
+      "outputs": [
+        "authoritative ProductionCognitiveStore"
+      ],
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-cognitive-store/src/production_tests.rs",
+          "symbol": "owner_facade_reopens_the_same_durable_sqlite_cut"
+        }
+      ],
+      "designOperation": "production_cognitive_store_open",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_memory::CognitiveStore::open"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "production_cognitive_store_open_writer",
+      "nativeSymbol": "codex_hepta_cognitive_store::ProductionCognitiveStore::open_writer",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/production.rs",
+      "inputs": [
+        "ProductionAuthorityLease",
+        "ProductionAuthorityVerifier",
+        "lease identity/generation"
+      ],
+      "outputs": [
+        "fenced ProductionDurableWriter"
+      ],
+      "state": "source_implemented_product_composed",
+      "authority": "externally_verified_writer_lease",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "symbol": "production writer lock/restart/concurrent dispatch tests"
+        }
+      ],
+      "designOperation": "production_cognitive_store_open_writer",
+      "mappingClass": "owner_native_gate",
+      "delegatedCallees": [
+        "codex_hepta_memory::ProductionDurableWriter::open"
+      ],
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Qualify the composed cognitive.store owner façade and Agentd caller on the exact source head and deterministic synthetic merge.",
+    "Implement descriptor-bound SQLite writer recovery in codex-state before claiming rollback-sensitive writer recovery; ordinary durable reopen is not that capability.",
+    "Retain bounded hot/cold history and deletion-frontier tests as store history grows."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -70,13 +123,53 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "durableOwnerComposed": true,
+    "descriptorBoundWriterRecovery": false
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-store"
+  ],
+  "status": {
+    "implemented": true,
+    "composed": true,
+    "qualified": false
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "symbol": "AgentdProductionWriterHost::open",
+      "role": "canonical_product_writer_host"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "object": "8a123e8bfe2d6bd387c9c7fe61a7bed34368a4f3"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-store",
+      "object": "cc65449bdad195a9582532defa36cf2ccce172e1"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-store/src/lib.rs",
+      "object": "167f04470f4a3965a2f78a74de7569e8d175a401"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-store/src/production.rs",
+      "object": "b682ad0cc05f3194b98974a9b1de7aa3cf20449f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+      "object": "3a3272c8d2e57fbda2e5676530abd9ceaac8937c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "object": "290ebf4d7642f268bd689ebfbd1ee26dd4a32c1d"
+    }
   ]
 }
