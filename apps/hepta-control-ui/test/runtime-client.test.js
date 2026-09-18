@@ -505,3 +505,38 @@ test("snapshot module array must be dense indexed data", async () => {
     (error) => error instanceof UiControlError && error.code === ERROR_CODES.INVALID_INPUT,
   );
 });
+
+test("old displayed view cannot cross a reconnect even when revision and digest are reused", async () => {
+  const { client, io } = await connectedClient();
+  const oldView = displayedViewBinding();
+  await client.close();
+  await client.connect({
+    endpointId: "runtime.1",
+    protocolVersion: 1,
+    manifestDigest: D1,
+  });
+  client.applySnapshot({
+    sessionId: "session.2",
+    connectionGeneration: 2,
+    generation: 7,
+    revision: 9,
+    digest: D2,
+    modules: [moduleObservation(1)],
+  });
+
+  await assert.rejects(
+    client.submitRequest({
+      operationId: "operation.old-confirmation",
+      subjectId: "runtime.agentd",
+      action: "request_retry",
+      expectedRevision: 1,
+      displayedView: oldView,
+    }),
+    (error) => error.code === ERROR_CODES.STALE_SNAPSHOT,
+  );
+  assert.equal(
+    io.calls.filter(([method]) => method === "operation/request").length,
+    0,
+  );
+});
+
