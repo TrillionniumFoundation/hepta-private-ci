@@ -12,12 +12,12 @@ use crate::ArtifactRecord;
 use crate::ArtifactRegistryError;
 use crate::ArtifactRegistrySnapshot;
 use crate::ArtifactState;
+use crate::limits::MAX_REGISTRY_RECORDS;
 use crate::RegistryAppendDisposition;
 use crate::RegistryAppendReceipt;
 use crate::StateChange;
 
 const MAX_ARTIFACT_BYTES: u64 = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 1_000_000;
 const EVENT_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.event.v1";
 const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.chain.v1";
 
@@ -65,7 +65,7 @@ impl ArtifactRegistry {
             ));
         }
 
-        if self.records.len() >= MAX_RECORDS {
+        if self.records.len() >= MAX_REGISTRY_RECORDS {
             return Err(ArtifactRegistryError::RecordLimitExceeded);
         }
         self.validate_event(&event)?;
