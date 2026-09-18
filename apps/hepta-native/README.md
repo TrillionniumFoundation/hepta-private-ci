@@ -9,7 +9,8 @@
 - final-payload digesting inside the Rust shell rather than trusting a caller-supplied digest;
 - Ed25519-signed, short-lived platform grants bound to session, operation, action and final payload;
 - explicit local platform policy plus narrow open/reveal/clipboard/notification adapters;
-- OS keyring storage for opaque session references through `codex-keyring-store`;
+- OS keyring storage for opaque session references and loopback gateway bearer capabilities through `codex-keyring-store`;
+- signed endpoint manifests plus authenticated `keyring_bearer_v1` gateway requests; the product shell refuses the legacy unauthenticated gateway mode;
 - signed update manifest verification, package digest verification, staging, predecessor backup, separate updater activation and rollback;
 - eframe/egui native window with runtime, operation, update and accessibility views;
 - AccessKit, native DPI scaling, keyboard focus order and English/Chinese shell strings;
@@ -29,6 +30,20 @@ cargo build --release --bins
 On Linux, eframe's native dependencies are required. The repository CI installs the X11/Wayland/XKB/GL development packages before building.
 
 ## Run
+
+Provision a random loopback gateway capability into the OS keyring without printing the bearer value:
+
+```sh
+cargo run --bin hepta-native-credential -- provision gateway.local
+```
+
+Launch the existing Hepta gateway with the same keyring account:
+
+```sh
+hepta --serve-ui --listen 127.0.0.1:7373 --auth-keyring-account gateway.local
+```
+
+The endpoint JSON passed to the GUI is a **signed** `hepta.endpoint-manifest.v1` that binds the loopback address, protocol version and `gateway.local` account. The signing private key remains external to this module.
 
 The application fails closed unless all security-sensitive paths are explicit and absolute:
 
