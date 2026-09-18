@@ -659,7 +659,7 @@ fn canonical_policy_digest(policy: &PolicyRevision) -> Result<Digest32, AuthBusC
         let key = (
             rule.principal_id.as_str().to_owned(),
             rule.action_id.as_str().to_owned(),
-            rule.scope_digest,
+            *rule.scope_digest.as_array(),
             rule.allow,
         );
         if !rows.insert(key) {
@@ -672,7 +672,7 @@ fn canonical_policy_digest(policy: &PolicyRevision) -> Result<Digest32, AuthBusC
     for (principal, action, scope, allow) in rows {
         push(&mut bytes, &principal);
         push(&mut bytes, &action);
-        bytes.extend_from_slice(scope.as_array());
+        bytes.extend_from_slice(&scope);
         bytes.push(u8::from(allow));
     }
     Ok(Digest32::of_bytes(&bytes))
