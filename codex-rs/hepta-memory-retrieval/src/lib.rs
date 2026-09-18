@@ -17,8 +17,8 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 pub use generation_bound::CandidateUnionEntryV1;
-pub use generation_bound::CompileCueRequestV1;
 pub use generation_bound::CandidateUnionV1;
+pub use generation_bound::CompileCueRequestV1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
 pub use generation_bound::MAX_GENERATION_BOUND_RESULTS;
 pub use generation_bound::MemoryCueV1;
@@ -98,7 +98,9 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-#[deprecated(note = "use retrieve_v2 for complete input binding; production callers must not treat the V1 receipt as provenance")]
+#[deprecated(
+    note = "use retrieve_v2 for complete input binding; production callers must not treat the V1 receipt as provenance"
+)]
 pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
     retrieve_request(&request)
 }
