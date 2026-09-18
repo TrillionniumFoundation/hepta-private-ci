@@ -1,7 +1,10 @@
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::calibrated::AssignmentModeV1;
+use crate::calibrated::CalibratedDecisionRequestV1;
 use crate::calibrated::CalibrationArtifactV1;
+use crate::calibrated::RiskClass;
 use crate::calibrated::CandidateSetCompletenessBindingV1;
 use crate::calibrated::OodArtifactV1;
 
@@ -10,6 +13,56 @@ use super::LearnedScoreEvidenceV1;
 use super::LearnedScorerContractV1;
 use super::QualifiedError;
 use super::RiskPolicyV1;
+
+pub fn canonical_assignment_digest_v1(
+    request: &CalibratedDecisionRequestV1,
+    policy_profile_digest: Digest32,
+    scorer_output_digest: Digest32,
+) -> Result<Digest32, QualifiedError> {
+    if policy_profile_digest.is_zero() {
+        return Err(QualifiedError::EmptyDigest("policy profile"));
+    }
+    if scorer_output_digest.is_zero() {
+        return Err(QualifiedError::EmptyDigest("scorer output"));
+    }
+
+    let mut bytes = b"hepta.intuition.policy-assignment.v1\0".to_vec();
+    push_id(&mut bytes, &request.decision_id)?;
+    for digest in [
+        request.objective_digest,
+        request.objective_class_digest,
+        request.state_digest,
+        request.policy_digest,
+        request.completeness.receipt_digest,
+        request.completeness.candidate_set_digest,
+        policy_profile_digest,
+        scorer_output_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.extend_from_slice(&request.policy_generation.to_be_bytes());
+    bytes.extend_from_slice(&request.sequence.to_be_bytes());
+    bytes.push(risk_class_code(request.risk_class));
+    push_len(&mut bytes, request.candidates.len())?;
+    for candidate in &request.candidates {
+        push_id(&mut bytes, &candidate.candidate_id)?;
+        bytes.extend_from_slice(&candidate.assignment_probability.raw().to_be_bytes());
+    }
+    match &request.assignment {
+        AssignmentModeV1::Deterministic => bytes.push(0),
+        AssignmentModeV1::CounterBased {
+            random_stream_digest,
+            draw,
+            abstain_probability,
+        } => {
+            bytes.push(1);
+            bytes.extend_from_slice(random_stream_digest.as_array());
+            bytes.extend_from_slice(&draw.raw().to_be_bytes());
+            bytes.extend_from_slice(&abstain_probability.raw().to_be_bytes());
+        }
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
 
 pub fn canonical_policy_profile_digest_v1(
     profile: &CanonicalPolicyProfileV1,
@@ -157,6 +210,14 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) -> Result<(), QualifiedError> {
     let value = u32::try_from(value).map_err(|_| QualifiedError::Arithmetic)?;
     bytes.extend_from_slice(&value.to_be_bytes());
     Ok(())
+}
+
+const fn risk_class_code(value: RiskClass) -> u8 {
+    match value {
+        RiskClass::Low => 0,
+        RiskClass::Elevated => 1,
+        RiskClass::High => 2,
+    }
 }
 
 const fn risk_policy_code(value: RiskPolicyV1) -> u8 {

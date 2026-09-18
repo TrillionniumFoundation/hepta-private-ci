@@ -10,12 +10,14 @@ use super::QualifiedDecisionRequestV1;
 use super::QualifiedError;
 use super::QualifiedIntuitionReceiptV1;
 use super::RiskPolicyV1;
+use super::auth::assignment_scope_digest_v1;
 use super::auth::authenticate_mac;
 use super::auth::calibration_scope_digest_v1;
 use super::auth::completeness_scope_digest_v1;
 use super::auth::ood_scope_digest_v1;
 use super::auth::policy_profile_scope_digest_v1;
 use super::auth::scorer_output_scope_digest_v1;
+use super::digest::canonical_assignment_digest_v1;
 use super::digest::canonical_calibration_artifact_digest_v1;
 use super::digest::canonical_completeness_receipt_digest_v1;
 use super::digest::canonical_ood_artifact_digest_v1;
@@ -30,6 +32,7 @@ pub fn decide_qualified_v1(
     qualified: QualifiedDecisionRequestV1<'_>,
     trust: QualificationTrustV1<'_>,
 ) -> Result<QualifiedIntuitionReceiptV1, QualifiedError> {
+    validate_trust_roles(&trust)?;
     validate_profile(&qualified, &trust)?;
     validate_artifact_digests(&qualified)?;
     validate_scorer_contract(&qualified, &trust)?;
@@ -42,6 +45,11 @@ pub fn decide_qualified_v1(
         qualified.scorer_contract.contract_digest,
         qualified.scorer_contract.model_artifact_digest,
         &qualified.score_evidence,
+    )?;
+    let assignment_digest = canonical_assignment_digest_v1(
+        request,
+        qualified.profile.profile_digest,
+        scorer_output_digest,
     )?;
 
     let profile_auth = authenticate_mac(
@@ -89,6 +97,15 @@ pub fn decide_qualified_v1(
         trust.expected_generation,
         request.sequence,
     )?;
+    let assignment_auth = authenticate_mac(
+        trust.assignment_key,
+        qualified.artifacts.assignment,
+        trust.subject_id,
+        assignment_scope_digest_v1(),
+        assignment_digest,
+        trust.expected_generation,
+        request.sequence,
+    )?;
 
     if qualified.artifacts.completeness.valid_from_sequence != request.sequence
         || qualified.artifacts.completeness.expires_after_sequence != request.sequence
@@ -104,6 +121,11 @@ pub fn decide_qualified_v1(
             "scorer output",
         ));
     }
+    if qualified.artifacts.assignment.valid_from_sequence != request.sequence
+        || qualified.artifacts.assignment.expires_after_sequence != request.sequence
+    {
+        return Err(QualifiedError::DecisionSpecificSequenceMismatch("assignment"));
+    }
 
     let decision = decide_calibrated_v2(qualified.request)?;
     let receipt_digest = qualified_receipt_digest(
@@ -111,11 +133,13 @@ pub fn decide_qualified_v1(
         qualified.profile.profile_digest,
         qualified.scorer_contract.contract_digest,
         scorer_output_digest,
+        assignment_digest,
         profile_auth,
         calibration_auth,
         ood_auth,
         completeness_auth,
         scorer_auth,
+        assignment_auth,
     );
 
     Ok(QualifiedIntuitionReceiptV1 {
@@ -123,14 +147,26 @@ pub fn decide_qualified_v1(
         policy_profile_digest: qualified.profile.profile_digest,
         scorer_contract_digest: qualified.scorer_contract.contract_digest,
         scorer_output_digest,
+        assignment_digest,
         profile_authentication_digest: profile_auth,
         calibration_authentication_digest: calibration_auth,
         ood_authentication_digest: ood_auth,
         completeness_authentication_digest: completeness_auth,
         scorer_authentication_digest: scorer_auth,
+        assignment_authentication_digest: assignment_auth,
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+fn validate_trust_roles(trust: &QualificationTrustV1<'_>) -> Result<(), QualifiedError> {
+    let artifact = trust.artifact_key.key_id();
+    let scorer = trust.scorer_key.key_id();
+    let assignment = trust.assignment_key.key_id();
+    if artifact == scorer || artifact == assignment || scorer == assignment {
+        return Err(QualifiedError::AuthenticationKeyRoleConflict);
+    }
+    Ok(())
 }
 
 fn validate_profile(
@@ -281,11 +317,13 @@ fn qualified_receipt_digest(
     profile: Digest32,
     scorer_contract: Digest32,
     scorer_output: Digest32,
+    assignment: Digest32,
     profile_auth: Digest32,
     calibration_auth: Digest32,
     ood_auth: Digest32,
     completeness_auth: Digest32,
     scorer_auth: Digest32,
+    assignment_auth: Digest32,
 ) -> Digest32 {
     let mut bytes = b"hepta.intuition.qualified-decision.v1\0".to_vec();
     for digest in [
@@ -293,11 +331,13 @@ fn qualified_receipt_digest(
         profile,
         scorer_contract,
         scorer_output,
+        assignment,
         profile_auth,
         calibration_auth,
         ood_auth,
         completeness_auth,
         scorer_auth,
+        assignment_auth,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
