@@ -150,6 +150,7 @@ pub fn apply_calibration(
     artifact: Option<&NeuronCalibrationArtifactV1>,
     config_digest: Digest32,
     model_identity_digest: Digest32,
+    ood_detector_digest: Digest32,
     generation: Generation,
     sequence: u64,
     prediction_error_q24: i64,
@@ -190,6 +191,7 @@ pub fn apply_calibration(
     if artifact.config_digest != config_digest
         || artifact.policy_digest != policy.digest()?
         || artifact.model_identity_digest != model_identity_digest
+        || artifact.detector_digest != ood_detector_digest
         || artifact.generation != generation
     {
         return Ok(fallback(
