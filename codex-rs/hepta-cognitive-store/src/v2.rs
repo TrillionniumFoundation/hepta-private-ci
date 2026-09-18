@@ -39,6 +39,7 @@ pub const MAX_V2_RECORD_REVISIONS: usize = 65_536;
 pub const MAX_V2_ORDINARY_RECORD_REVISIONS: usize = MAX_V2_RECORD_REVISIONS / 2;
 pub const MAX_V2_INTENT_JOURNAL_ENTRIES: usize = 65_536;
 pub const MAX_V2_SNAPSHOT_LEASE_MS: u64 = 300_000;
+pub const MAX_V2_SNAPSHOT_PAGE_RECORDS: usize = 512;
 const FORGET_DOMAIN: &[u8] = b"hepta.cognitive-store.forget-intent.v2";
 const STORE_SNAPSHOT_DOMAIN: &[u8] = b"hepta.cognitive-store.snapshot.v2";
 const STORE_IMAGE_DOMAIN: &[u8] = b"hepta.cognitive-store.image.v2";
@@ -335,6 +336,89 @@ impl AdmittedCognitiveStoreV2 {
         Ok(envelope)
     }
 
+    pub fn open_snapshot_page(
+        &self,
+        now_unix_ms: u64,
+        request: SnapshotPageOpenRequestV2,
+    ) -> Result<StoreSnapshotPageV2, CognitiveStoreV2Error> {
+        request.validate(now_unix_ms)?;
+        if request.scope_id != self.snapshot_key.vector.scope_id {
+            return Err(CognitiveStoreV2Error::ScopeMismatch);
+        }
+        if request.purpose_id != self.snapshot_key.vector.purpose_id {
+            return Err(CognitiveStoreV2Error::PurposeMismatch);
+        }
+        if request.authority_epoch != self.snapshot_key.vector.authority_epoch {
+            return Err(CognitiveStoreV2Error::AuthorityEpochMismatch);
+        }
+        if self.snapshot_key.vector.memory_ledger_frontier < request.minimum_memory_frontier {
+            return Err(CognitiveStoreV2Error::StaleMemoryFrontier);
+        }
+        if self.snapshot_key.vector.tombstone_frontier < request.minimum_tombstone_frontier {
+            return Err(CognitiveStoreV2Error::StaleTombstoneFrontier);
+        }
+        if let Some(after) = &request.after {
+            let Some(record) = self
+                .histories
+                .get(&after.record_id)
+                .and_then(|history| history.iter().find(|record| record.revision == after.revision))
+            else {
+                return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
+            };
+            if record.record_digest() != after.record_digest {
+                return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
+            }
+        }
+
+        let maximum_records = usize::try_from(request.maximum_records)
+            .map_err(|_| CognitiveStoreV2Error::InvalidPageSize)?;
+        let mut records = Vec::with_capacity(maximum_records);
+        let mut has_more = false;
+        'records: for history in self.histories.values() {
+            for record in history {
+                if let Some(after) = &request.after {
+                    if record.record_id < after.record_id
+                        || (record.record_id == after.record_id
+                            && record.revision <= after.revision)
+                    {
+                        continue;
+                    }
+                }
+                if records.len() >= maximum_records {
+                    has_more = true;
+                    break 'records;
+                }
+                records.push(record.clone());
+            }
+        }
+
+        let complete = !has_more;
+        let next = if complete {
+            None
+        } else {
+            records.last().map(snapshot_cursor)
+        };
+        let lease_expires_unix_ms = now_unix_ms
+            .checked_add(request.lease_duration_ms)
+            .ok_or(CognitiveStoreV2Error::LeaseOverflow)?;
+        let mut page = StoreSnapshotPageV2 {
+            request_id: request.request_id,
+            snapshot_key: self.snapshot_key.clone(),
+            sequence: self.sequence,
+            after: request.after,
+            records,
+            next,
+            complete,
+            opened_at_unix_ms: now_unix_ms,
+            lease_expires_unix_ms,
+            page_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        page.page_digest = page.compute_page_digest();
+        page.validate(now_unix_ms)?;
+        Ok(page)
+    }
+
     pub fn export_image(&self) -> Result<CognitiveStoreImageV2, CognitiveStoreV2Error> {
         let records = self
             .histories
@@ -590,6 +674,157 @@ impl SnapshotOpenRequestV2 {
             return Err(CognitiveStoreV2Error::InvalidLeaseDuration);
         }
         Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SnapshotCursorV2 {
+    pub record_id: StableId,
+    pub revision: Revision,
+    pub record_digest: Digest32,
+}
+
+impl SnapshotCursorV2 {
+    pub fn validate(&self) -> Result<(), CognitiveStoreV2Error> {
+        ensure_digest("snapshot_cursor_record", self.record_digest)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SnapshotPageOpenRequestV2 {
+    pub request_id: StableId,
+    pub scope_id: StableId,
+    pub purpose_id: StableId,
+    pub minimum_memory_frontier: u64,
+    pub minimum_tombstone_frontier: u64,
+    pub authority_epoch: u64,
+    pub deadline_unix_ms: u64,
+    pub lease_duration_ms: u64,
+    pub maximum_records: u32,
+    pub after: Option<SnapshotCursorV2>,
+}
+
+impl SnapshotPageOpenRequestV2 {
+    pub fn validate(&self, now_unix_ms: u64) -> Result<(), CognitiveStoreV2Error> {
+        if self.authority_epoch == 0 {
+            return Err(CognitiveStoreV2Error::AuthorityEpochMismatch);
+        }
+        if now_unix_ms >= self.deadline_unix_ms {
+            return Err(CognitiveStoreV2Error::DeadlineExpired);
+        }
+        if self.lease_duration_ms == 0 || self.lease_duration_ms > MAX_V2_SNAPSHOT_LEASE_MS {
+            return Err(CognitiveStoreV2Error::InvalidLeaseDuration);
+        }
+        let maximum_records = usize::try_from(self.maximum_records)
+            .map_err(|_| CognitiveStoreV2Error::InvalidPageSize)?;
+        if maximum_records == 0 || maximum_records > MAX_V2_SNAPSHOT_PAGE_RECORDS {
+            return Err(CognitiveStoreV2Error::InvalidPageSize);
+        }
+        if let Some(after) = &self.after {
+            after.validate()?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct StoreSnapshotPageV2 {
+    pub request_id: StableId,
+    pub snapshot_key: CognitiveSnapshotKeyV1,
+    pub sequence: LogicalSequence,
+    pub after: Option<SnapshotCursorV2>,
+    pub records: Vec<MemoryRecord>,
+    pub next: Option<SnapshotCursorV2>,
+    pub complete: bool,
+    pub opened_at_unix_ms: u64,
+    pub lease_expires_unix_ms: u64,
+    pub page_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl StoreSnapshotPageV2 {
+    pub fn validate(&self, now_unix_ms: u64) -> Result<(), CognitiveStoreV2Error> {
+        self.snapshot_key
+            .validate()
+            .map_err(CognitiveStoreV2Error::Contract)?;
+        if self.records.len() > MAX_V2_SNAPSHOT_PAGE_RECORDS {
+            return Err(CognitiveStoreV2Error::InvalidPageSize);
+        }
+        if self.opened_at_unix_ms == 0
+            || self.lease_expires_unix_ms <= self.opened_at_unix_ms
+            || now_unix_ms >= self.lease_expires_unix_ms
+        {
+            return Err(CognitiveStoreV2Error::SnapshotLeaseExpired);
+        }
+        if self.authority.grants_any() {
+            return Err(CognitiveStoreV2Error::AuthorityGranted);
+        }
+        if let Some(after) = &self.after {
+            after.validate()?;
+        }
+
+        let mut previous = self.after.as_ref();
+        for record in &self.records {
+            record
+                .validate()
+                .map_err(|error| CognitiveStoreV2Error::InvalidRecord(error.to_string()))?;
+            if let Some(previous) = previous {
+                if record.record_id < previous.record_id
+                    || (record.record_id == previous.record_id
+                        && record.revision <= previous.revision)
+                {
+                    return Err(CognitiveStoreV2Error::SnapshotPageOrderMismatch);
+                }
+                if record.record_id == previous.record_id {
+                    if record.revision.get() != previous.revision.get().saturating_add(1)
+                        || record.predecessor_digest != Some(previous.record_digest)
+                    {
+                        return Err(CognitiveStoreV2Error::SnapshotPageAncestryMismatch);
+                    }
+                } else if record.revision.get() != 1 || record.predecessor_digest.is_some() {
+                    return Err(CognitiveStoreV2Error::SnapshotPageAncestryMismatch);
+                }
+            } else if record.revision.get() != 1 || record.predecessor_digest.is_some() {
+                return Err(CognitiveStoreV2Error::SnapshotPageAncestryMismatch);
+            }
+            let cursor = snapshot_cursor(record);
+            previous = Some(&cursor);
+        }
+
+        if self.complete {
+            if self.next.is_some() {
+                return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
+            }
+        } else {
+            let Some(last) = self.records.last() else {
+                return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
+            };
+            if self.next.as_ref() != Some(&snapshot_cursor(last)) {
+                return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
+            }
+        }
+        if self.page_digest != self.compute_page_digest() {
+            return Err(CognitiveStoreV2Error::DigestMismatch("snapshot_page"));
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn compute_page_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.cognitive-store.snapshot-page.v2".to_vec();
+        push_id(&mut bytes, &self.request_id);
+        push_digest(&mut bytes, self.snapshot_key.vector_digest);
+        push_u64(&mut bytes, self.sequence.get());
+        push_optional_cursor(&mut bytes, self.after.as_ref());
+        push_len(&mut bytes, self.records.len());
+        for record in &self.records {
+            push_digest(&mut bytes, record.record_digest());
+        }
+        push_optional_cursor(&mut bytes, self.next.as_ref());
+        bytes.push(u8::from(self.complete));
+        push_u64(&mut bytes, self.opened_at_unix_ms);
+        push_u64(&mut bytes, self.lease_expires_unix_ms);
+        Digest32::of_bytes(&bytes)
     }
 }
 
@@ -907,6 +1142,7 @@ pub enum CognitiveStoreV2Error {
     FrontierOverflow,
     LeaseOverflow,
     InvalidLeaseDuration,
+    InvalidPageSize,
     DeadlineExpired,
     SnapshotLeaseExpired,
     SnapshotConflict,
@@ -916,6 +1152,9 @@ pub enum CognitiveStoreV2Error {
     PurposeMismatch,
     StaleMemoryFrontier,
     StaleTombstoneFrontier,
+    SnapshotCursorMismatch,
+    SnapshotPageOrderMismatch,
+    SnapshotPageAncestryMismatch,
     AuthorizationRejected,
     UnverifiedCandidate,
     ContradictedCandidate,
@@ -985,6 +1224,26 @@ const fn memory_write_disposition_code(value: MemoryWriteDisposition) -> u8 {
         MemoryWriteDisposition::Inserted => 0,
         MemoryWriteDisposition::Unchanged => 1,
         MemoryWriteDisposition::Rejected => 2,
+    }
+}
+
+fn snapshot_cursor(record: &MemoryRecord) -> SnapshotCursorV2 {
+    SnapshotCursorV2 {
+        record_id: record.record_id.clone(),
+        revision: record.revision,
+        record_digest: record.record_digest(),
+    }
+}
+
+fn push_optional_cursor(bytes: &mut Vec<u8>, cursor: Option<&SnapshotCursorV2>) {
+    match cursor {
+        Some(cursor) => {
+            bytes.push(1);
+            push_id(bytes, &cursor.record_id);
+            push_u64(bytes, cursor.revision.get());
+            push_digest(bytes, cursor.record_digest);
+        }
+        None => bytes.push(0),
     }
 }
 
