@@ -3636,9 +3636,14 @@ dependencies = [
 name = "codex-hepta-control-plane"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-ndu",
+ "codex-hepta-operations",
  "codex-hepta-types",
+ "ed25519-dalek",
  "pretty_assertions",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]

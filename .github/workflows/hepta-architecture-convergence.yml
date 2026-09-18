@@ -46,6 +46,28 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Verify GitHub prospective merge ref matches this exact candidate
+        if: matrix.lane == 'base-merge'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PR_NUMBER"
+          ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
+          actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
+          commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
+          mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
+          test "${#parents[@]}" -eq 2
+          test "${parents[0]}" = "$BASE_SHA"
+          test "${parents[1]}" = "$SOURCE_SHA"
+          actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
+          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          test "$actual_tree" = "$expected_tree"
+          printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
+          printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
       - name: Construct the canonical prospective merge
         id: synthetic
         if: matrix.lane == 'base-merge'
