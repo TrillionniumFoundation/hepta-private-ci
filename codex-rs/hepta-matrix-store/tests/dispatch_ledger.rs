@@ -84,10 +84,7 @@ async fn enqueue_final(
     })
 }
 
-fn intent(
-    record: &codex_hepta_matrix_store::OutboxRecord,
-    payload: &[u8],
-) -> MatrixDispatchIntent {
+fn intent(record: &codex_hepta_matrix_store::OutboxRecord, payload: &[u8]) -> MatrixDispatchIntent {
     let payload_digest = Sha256Digest::for_bytes(payload).as_str().to_string();
     MatrixDispatchIntent {
         operation_id: matrix_dispatch_operation_id(&record.stable_txn_id),
@@ -108,7 +105,8 @@ fn intent(
 }
 
 #[tokio::test]
-async fn accepted_send_stays_indeterminate_until_server_observation_and_survives_reopen() -> TestResult {
+async fn accepted_send_stays_indeterminate_until_server_observation_and_survives_reopen()
+-> TestResult {
     let temp = TempDir::new()?;
     let (store, agent_id, room_id) = prepared_store(&temp).await?;
     let payload = b"durable terminal observation";
@@ -118,7 +116,9 @@ async fn accepted_send_stays_indeterminate_until_server_observation_and_survives
     let claimed = &claimed[0];
     assert_eq!(claimed.stable_txn_id, outbox.stable_txn_id);
 
-    store.prepare_matrix_dispatch(10, &intent(claimed, payload)).await?;
+    store
+        .prepare_matrix_dispatch(10, &intent(claimed, payload))
+        .await?;
     store
         .record_matrix_dispatch_attempt(&claimed.stable_txn_id, claimed.attempts, 10)
         .await?;
@@ -178,7 +178,9 @@ async fn ack_loss_retries_same_transaction_after_reopen() -> TestResult {
     let payload = b"ack loss";
     let outbox = enqueue_final(&store, &agent_id, &room_id, payload).await?;
     let claimed = store.claim_outbox(10, 5, 1).await?.remove(0);
-    store.prepare_matrix_dispatch(10, &intent(&claimed, payload)).await?;
+    store
+        .prepare_matrix_dispatch(10, &intent(&claimed, payload))
+        .await?;
     store
         .record_matrix_dispatch_attempt(&claimed.stable_txn_id, claimed.attempts, 10)
         .await?;
@@ -207,24 +209,19 @@ async fn ack_loss_retries_same_transaction_after_reopen() -> TestResult {
 }
 
 #[tokio::test]
-async fn redaction_preserves_original_send_evidence_and_terminal_rows_leave_active_capacity() -> TestResult {
+async fn redaction_preserves_original_send_evidence_and_terminal_rows_leave_active_capacity()
+-> TestResult {
     let temp = TempDir::new()?;
     let (store, agent_id, room_id) = prepared_store(&temp).await?;
     let payload = b"redact me";
     let outbox = enqueue_final(&store, &agent_id, &room_id, payload).await?;
     let claimed = store.claim_outbox(10, 20, 1).await?.remove(0);
-    store.prepare_matrix_dispatch(10, &intent(&claimed, payload)).await?;
     store
         .record_matrix_dispatch_attempt(&claimed.stable_txn_id, claimed.attempts, 10)
         .await?;
     let event_id = MatrixEventId::parse("$sent:example.test")?;
     store
-        .record_matrix_transport_acceptance(
-            &claimed.stable_txn_id,
-            claimed.attempts,
-            &event_id,
-            11,
-        )
+        .record_matrix_transport_acceptance(&claimed.stable_txn_id, claimed.attempts, &event_id, 11)
         .await?;
     let succeeded = store
         .observe_matrix_server_event(
@@ -248,10 +245,7 @@ async fn redaction_preserves_original_send_evidence_and_terminal_rows_leave_acti
         .expect("redaction observation");
     assert_eq!(redacted.state, MatrixDispatchState::Redacted);
     assert_eq!(redacted.send_observation_digest, Some("b".repeat(64)));
-    assert_eq!(
-        redacted.redaction_observation_digest,
-        Some("c".repeat(64))
-    );
+    assert_eq!(redacted.redaction_observation_digest, Some("c".repeat(64)));
     let replay = store
         .observe_matrix_redaction(&event_id, &redaction_event, &"c".repeat(64), 14)
         .await?
