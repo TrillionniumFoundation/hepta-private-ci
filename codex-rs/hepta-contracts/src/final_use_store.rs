@@ -86,6 +86,7 @@ impl Store {
                 head: initial.clone(),
                 used_nonces: Default::default(),
                 failed: false,
+                claim_log_bytes: 0,
             };
             store.persist_head(&state.head)?;
             state
@@ -124,10 +125,21 @@ impl Store {
         Ok(file)
     }
 
-    /// Reload the current authoritative head and replay set. Callers hold the
-    /// mutation lock while using this snapshot.
-    pub(super) fn load(&self) -> Result<State, FinalUseError> {
-        self.load_or_migrate()
+    /// Incrementally refresh the small head plus only journal records appended
+    /// since this owner last synchronized. Callers hold the mutation lock.
+    pub(super) fn refresh(&self, cached: &State) -> Result<State, FinalUseError> {
+        let head = self.load_head_v2()?;
+        let mut next = cached.clone();
+        if next.head.authority_epoch != head.authority_epoch {
+            next.used_nonces.clear();
+        }
+        next.head = head;
+        let (claims, end) =
+            self.load_claims_from(next.claim_log_bytes, next.head.authority_epoch)?;
+        next.used_nonces.extend(claims);
+        next.claim_log_bytes = end;
+        next.failed = false;
+        Ok(next)
     }
 
     /// Persist only the small authority/revocation head.
@@ -154,13 +166,21 @@ impl Store {
         &self,
         authority_epoch: u64,
         nonce: [u8; 32],
-    ) -> Result<(), FinalUseError> {
+        expected_offset: u64,
+    ) -> Result<u64, FinalUseError> {
         let record = claim_record(authority_epoch, nonce);
         let mut file = open_private(&self.root, "claims.log", Access::Create)?;
-        file.seek(SeekFrom::End(0))
-            .and_then(|_| file.write_all(&record))
+        let end = file
+            .seek(SeekFrom::End(0))
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if end != expected_offset {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        file.write_all(&record)
             .and_then(|()| file.sync_data())
-            .map_err(|_| FinalUseError::Unavailable)
+            .map_err(|_| FinalUseError::Unavailable)?;
+        end.checked_add(CLAIM_RECORD_BYTES as u64)
+            .ok_or(FinalUseError::Unavailable)
     }
 
     fn load_or_migrate(&self) -> Result<State, FinalUseError> {
@@ -181,14 +201,15 @@ impl Store {
                 // Migration is deliberately ordered journal-first, snapshot
                 // second. A crash between them merely repeats an idempotent
                 // union on the next open; it never drops an old claim.
-                let mut claims = self.load_claims(stored.state.head.authority_epoch)?;
+                let (mut claims, _) = self.load_claims_from(0, stored.state.head.authority_epoch)?;
                 claims.extend(stored.state.used_nonces.iter().copied());
-                self.replace_claims(stored.state.head.authority_epoch, &claims)?;
+                let end = self.replace_claims(stored.state.head.authority_epoch, &claims)?;
                 self.persist_head(&stored.state.head)?;
                 Ok(State {
                     head: stored.state.head,
                     used_nonces: claims,
                     failed: false,
+                    claim_log_bytes: end,
                 })
             }
             2 => {
@@ -201,50 +222,79 @@ impl Store {
                 {
                     return Err(FinalUseError::InvalidTrust);
                 }
-                let claims = self.load_claims(stored.head.authority_epoch)?;
+                let (claims, end) = self.load_claims_from(0, stored.head.authority_epoch)?;
                 Ok(State {
                     head: stored.head,
                     used_nonces: claims,
                     failed: false,
+                    claim_log_bytes: end,
                 })
             }
             _ => Err(FinalUseError::InvalidTrust),
         }
     }
 
-    fn load_claims(&self, current_epoch: u64) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
+    fn load_head_v2(&self) -> Result<FinalUseRevocations, FinalUseError> {
+        let bytes = read_bounded(&self.root, "authority.json")?;
+        let stored: StoredV2 =
+            serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
+        if stored.schema != 2
+            || stored.signer_id != self.signer_id
+            || stored.verifying_key != self.verifying_key
+            || !valid_head(&stored.head)
+        {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        Ok(stored.head)
+    }
+
+    fn load_claims_from(
+        &self,
+        start: u64,
+        current_epoch: u64,
+    ) -> Result<(BTreeSet<[u8; 32]>, u64), FinalUseError> {
+        if start % CLAIM_RECORD_BYTES as u64 != 0 {
+            return Err(FinalUseError::InvalidTrust);
+        }
         if !entry_exists(&self.root, "claims.log")? {
-            return Ok(BTreeSet::new());
+            return if start == 0 {
+                Ok((BTreeSet::new(), 0))
+            } else {
+                Err(FinalUseError::InvalidTrust)
+            };
         }
         let mut file = open_private(&self.root, "claims.log", Access::Read)?;
+        let length = file
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?
+            .len();
+        if start > length || length % CLAIM_RECORD_BYTES as u64 != 0 {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        file.seek(SeekFrom::Start(start))
+            .map_err(|_| FinalUseError::Unavailable)?;
         let mut claims = BTreeSet::new();
-        loop {
+        let mut offset = start;
+        while offset < length {
             let mut record = [0u8; CLAIM_RECORD_BYTES];
-            let mut filled = 0usize;
-            while filled < record.len() {
-                let count = file
-                    .read(&mut record[filled..])
-                    .map_err(|_| FinalUseError::Unavailable)?;
-                if count == 0 {
-                    if filled == 0 {
-                        return Ok(claims);
-                    }
-                    return Err(FinalUseError::InvalidTrust);
-                }
-                filled += count;
-            }
+            file.read_exact(&mut record)
+                .map_err(|_| FinalUseError::InvalidTrust)?;
             let (epoch, nonce) = parse_claim_record(&record)?;
             if epoch == current_epoch {
                 claims.insert(nonce);
             }
+            offset = offset
+                .checked_add(CLAIM_RECORD_BYTES as u64)
+                .ok_or(FinalUseError::InvalidTrust)?;
         }
+        Ok((claims, offset))
     }
 
     fn replace_claims(
         &self,
         authority_epoch: u64,
         claims: &BTreeSet<[u8; 32]>,
-    ) -> Result<(), FinalUseError> {
+    ) -> Result<u64, FinalUseError> {
         let mut file = open_private(&self.root, "claims.next", Access::Create)?;
         file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
         for nonce in claims {
@@ -252,8 +302,13 @@ impl Store {
                 .map_err(|_| FinalUseError::Unavailable)?;
         }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        let length = file
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?
+            .len();
         replace_entry(&self.root, "claims.next", "claims.log")?;
-        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
+        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        Ok(length)
     }
 }
 
