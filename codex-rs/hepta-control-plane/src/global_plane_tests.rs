@@ -199,14 +199,9 @@ fn authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request
     let raw_evidence = evidence_owner(objective, generation, configuration);
     let (signed, issuer) = sign_owner(&raw_evidence);
     let mut replay = ReplayWindow::new(16);
-    let evidence = authenticate_owner_summary_v1(
-        raw_evidence,
-        &signed,
-        &issuer,
-        &mut replay,
-        1_100,
-    )
-    .expect("signed evidence owner admission");
+    let evidence =
+        authenticate_owner_summary_v1(raw_evidence, &signed, &issuer, &mut replay, 1_100)
+            .expect("signed evidence owner admission");
 
     let owners = vec![id("kernel.evidence"), id("runtime.fleet")];
     let candidates = vec![
@@ -297,7 +292,10 @@ fn authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request
     );
     let requests = result.grant_requests.expect("unique plan emits requests");
     assert_eq!(requests.requests().len(), 1);
-    assert_eq!(requests.requests()[0].final_payload_digest, digest("effect-payload"));
+    assert_eq!(
+        requests.requests()[0].final_payload_digest,
+        digest("effect-payload")
+    );
     assert!(!requests.authority().grants_any());
 }
 
@@ -310,14 +308,8 @@ fn owner_admission_consumes_replay_sequence() {
     let (signed, issuer) = sign_owner(&summary);
     let mut replay = ReplayWindow::new(16);
 
-    authenticate_owner_summary_v1(
-        summary.clone(),
-        &signed,
-        &issuer,
-        &mut replay,
-        1_100,
-    )
-    .expect("first signed owner admission");
+    authenticate_owner_summary_v1(summary.clone(), &signed, &issuer, &mut replay, 1_100)
+        .expect("first signed owner admission");
     assert!(matches!(
         authenticate_owner_summary_v1(summary, &signed, &issuer, &mut replay, 1_100),
         Err(GlobalPlaneError::Authentication(
