@@ -173,6 +173,20 @@ jobs:
           set -euo pipefail
           node apps/hepta-browser/scripts/real-worker-smoke.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-worker-smoke.json
 
+      - name: Run real Servo Browser lifecycle and egress E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/real-browser-e2e.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-browser-e2e.json
+          python3 - <<'PY'
+          import json, pathlib
+          result = json.loads(pathlib.Path("worker-evidence/real-browser-e2e.json").read_text())
+          assert result["openNavigateObserveTypeClickClose"] is True
+          assert result["exactOriginEgressObserved"] is True
+          assert result["crossOriginSubresourceDenied"] is True
+          assert result["persistedCrashReconciliation"] is True
+          PY
+
       - name: Generate deterministic SPDX 2.3 SBOM and build receipt
         shell: bash
         run: |
@@ -203,6 +217,7 @@ jobs:
               'reproducibleIndependentBuilds': True,
               'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
               'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
+              'realBrowserE2E': json.loads((root / 'real-browser-e2e.json').read_text()),
           }
           (root / 'build-receipt.json').write_text(json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
           PY
