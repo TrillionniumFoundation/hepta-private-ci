@@ -16,12 +16,12 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactKind;
+use crate::MAX_DURABLE_ARTIFACT_RECORDS;
 
 const MAX_ARTIFACT_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_DATASET_INPUTS: usize = 64;
 const MAX_LINEAGE_DIGESTS: usize = 1_024;
 const MAX_PREDECESSORS: usize = 64;
-const MAX_WITHDRAWALS: usize = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ProvenanceModeV1 {
@@ -193,6 +193,16 @@ impl DatasetWithdrawalRegistrySnapshotV1 {
     pub fn records(&self) -> &[DatasetWithdrawalRecordV1] {
         &self.records
     }
+
+    pub(crate) fn from_records(
+        records: Vec<DatasetWithdrawalRecordV1>,
+        head_digest: Digest32,
+    ) -> Self {
+        Self {
+            records,
+            head_digest,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default)]
@@ -230,7 +240,7 @@ impl DatasetWithdrawalRegistry {
                 WithdrawalAppendDispositionV1::IdempotentReplay,
             ));
         }
-        if self.records.len() >= MAX_WITHDRAWALS {
+        if self.records.len() >= MAX_DURABLE_ARTIFACT_RECORDS {
             return Err(ArtifactClosureError::WithdrawalLimit);
         }
         let sequence_value = u64::try_from(self.records.len())
@@ -268,6 +278,18 @@ impl DatasetWithdrawalRegistry {
         self.withdrawn_datasets.contains_key(&dataset_digest)
     }
 
+    #[must_use]
+    pub fn head_digest(&self) -> Digest32 {
+        self.records
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest)
+    }
+
+    #[must_use]
+    pub fn record_count(&self) -> usize {
+        self.records.len()
+    }
+
     pub fn admit_manifest(
         &self,
         manifest: LearningArtifactManifestV2,
@@ -289,10 +311,7 @@ impl DatasetWithdrawalRegistry {
     pub fn snapshot(&self) -> DatasetWithdrawalRegistrySnapshotV1 {
         DatasetWithdrawalRegistrySnapshotV1 {
             records: self.records.clone(),
-            head_digest: self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |record| record.chain_digest),
+            head_digest: self.head_digest(),
         }
     }
 

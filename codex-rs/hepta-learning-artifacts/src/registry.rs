@@ -15,9 +15,9 @@ use crate::ArtifactState;
 use crate::RegistryAppendDisposition;
 use crate::RegistryAppendReceipt;
 use crate::StateChange;
+use crate::MAX_DURABLE_ARTIFACT_RECORDS;
 
 const MAX_ARTIFACT_BYTES: u64 = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 1_000_000;
 const EVENT_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.event.v1";
 const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.chain.v1";
 
@@ -65,7 +65,7 @@ impl ArtifactRegistry {
             ));
         }
 
-        if self.records.len() >= MAX_RECORDS {
+        if self.records.len() >= MAX_DURABLE_ARTIFACT_RECORDS {
             return Err(ArtifactRegistryError::RecordLimitExceeded);
         }
         self.validate_event(&event)?;
@@ -136,13 +136,17 @@ impl ArtifactRegistry {
     }
 
     #[must_use]
+    pub fn head_digest(&self) -> Digest32 {
+        self.records
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest)
+    }
+
+    #[must_use]
     pub fn snapshot(&self) -> ArtifactRegistrySnapshot {
         ArtifactRegistrySnapshot {
             records: self.records.clone(),
-            head_digest: self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |record| record.chain_digest),
+            head_digest: self.head_digest(),
         }
     }
 

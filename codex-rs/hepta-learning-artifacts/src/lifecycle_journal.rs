@@ -17,8 +17,7 @@ use crate::ArtifactClosureError;
 use crate::ArtifactLifecycleEventV1;
 use crate::ArtifactLifecycleStateV1;
 use crate::validate_artifact_lifecycle_transition;
-
-const MAX_LIFECYCLE_RECORDS: usize = 1_000_000;
+use crate::MAX_DURABLE_ARTIFACT_RECORDS;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LifecycleActorRoleV2 {
@@ -150,7 +149,7 @@ impl ArtifactLifecycleJournalV2 {
                 authority: AuthorityPosture::DENY_ALL,
             });
         }
-        if self.records.len() >= MAX_LIFECYCLE_RECORDS {
+        if self.records.len() >= MAX_DURABLE_ARTIFACT_RECORDS {
             return Err(ArtifactLifecycleJournalError::RecordLimit);
         }
         let current = self
@@ -206,7 +205,7 @@ impl ArtifactLifecycleJournalV2 {
 
     pub fn from_snapshot(
         snapshot: ArtifactLifecycleJournalSnapshotV2,
-        now: u64,
+        _now: u64,
     ) -> Result<Self, ArtifactLifecycleJournalError> {
         let expected_head = snapshot.head_digest;
         let mut journal = Self::new();
@@ -214,12 +213,17 @@ impl ArtifactLifecycleJournalV2 {
             if expected.predecessor_head_digest != journal.head_digest {
                 return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
             }
+            // Snapshot replay validates the actor at the immutable event time, not
+            // at process-restart time. Current credential freshness is an append
+            // authorization concern; re-applying it here would make a valid
+            // historical snapshot unreadable after the credential expires.
+            let replay_validation_time = expected.event.occurred_at;
             let receipt = journal.append(
                 journal.head_digest,
                 &expected.producer_id,
                 expected.actor.clone(),
                 expected.event.clone(),
-                now,
+                replay_validation_time,
             )?;
             let actual = journal
                 .records
@@ -471,6 +475,54 @@ mod tests {
             Err(ArtifactLifecycleJournalError::Transition(
                 ArtifactClosureError::InvalidLifecycleTransition
             ))
+        );
+    }
+
+    #[test]
+    fn art_06_lifecycle_journal_reopens_after_actor_expiry_but_rejects_new_write() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let evaluator = actor("evaluator", LifecycleActorRoleV2::Evaluator);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        journal
+            .append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    20,
+                ),
+                20,
+            )
+            .expect("historical append succeeds while credential is fresh");
+
+        let mut reopened = ArtifactLifecycleJournalV2::from_snapshot(journal.snapshot(), 101)
+            .expect("historical snapshot remains recoverable after actor expiry");
+        assert_eq!(reopened.head_digest(), journal.head_digest());
+        assert_eq!(reopened.records(), journal.records());
+
+        assert_eq!(
+            reopened.append(
+                reopened.head_digest(),
+                &producer_id,
+                evaluator.clone(),
+                event(
+                    "evaluated-after-expiry",
+                    &artifact_id,
+                    &evaluator,
+                    ArtifactLifecycleStateV1::Trained,
+                    ArtifactLifecycleStateV1::Evaluated,
+                    100,
+                ),
+                101,
+            ),
+            Err(ArtifactLifecycleJournalError::InvalidActorEvidence)
         );
     }
 

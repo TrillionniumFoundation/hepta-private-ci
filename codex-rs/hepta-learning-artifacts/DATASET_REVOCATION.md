@@ -69,3 +69,23 @@ revocation/quarantine, quota and real-file persist/reopen/current-witness rollba
 The original registry and storage suites are retained. The new functions are test
 source, not executed evidence; source-head, actual-base merge, strict lint,
 formatting, full product matrix and independent review remain mandatory.
+
+## Persistent withdrawal frontier and scoped admission
+
+The persistent `DatasetWithdrawalRegistry` is the source-owned future-admission
+frontier that complements this V1 snapshot-local revocation preparation.
+`control_storage.rs` persists/reopens that frontier using canonical `HEPTAW01`
+bytes plus an independently retained receipt. The domain-aware helpers derive
+the receipt binding from the exact withdrawal authority domain instead of accepting
+an unrelated host-chosen binding.
+
+V3 artifact admission additionally requires a `WithdrawalAuthorityDomainV1`
+binding `registry_id`, a host-authenticated `scope_digest`, `authority_id`, and a
+nonzero `authority_epoch`.
+The admitted head is a domain-separated digest of that domain and the raw
+withdrawal chain head. Two scopes or authority epochs with identical raw withdrawal
+history, including two empty registries, are therefore not interchangeable.
+
+The publication host revalidates the same domain/frontier while holding its
+writer fence and binds it into `ArtifactPublicationTransactionV1` before
+publishing the successor artifact-registry head.

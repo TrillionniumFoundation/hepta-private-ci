@@ -75,8 +75,11 @@ host reserves a create-only artifact identity
   -> LearningArtifactManifestV2 binds bytes, datasets, complete lineage,
      predecessors, training code, runtime, device, objective, schema,
      normalization, compatibility, expiry and rollback predecessor
-  -> DatasetWithdrawalRegistry is checked before admission
-  -> registry event is staged against the exact predecessor head
+  -> DatasetWithdrawalRegistry is checked through an explicit registry/scope/authority/epoch domain
+  -> V3 admission binds the domain-separated withdrawal head
+  -> V1 successor registry event is staged against the exact predecessor head
+  -> ArtifactPublicationTransactionV1 binds admission + withdrawal domain/head
+     + predecessor/candidate registry heads + next authenticated head witness
   -> registry snapshot is durably published
   -> independent RegistryHeadWitnessV1 binds generation, predecessor head and
      authority epoch

@@ -20,47 +20,300 @@
   "productionImplementation": false,
   "productCallerState": "not_composed",
   "productionWriterState": "not_established",
+  "implementationReceipt": {
+    "branch": "fix/learning-artifacts-qualification-closure",
+    "pullRequest": 690,
+    "codeCommit": "5ce1864e32e54fa494365c7d3b9d4c7d03b185c2",
+    "status": "source_candidate_pending_exact_head_and_merge_qualification"
+  },
   "operations": [
+    {
+      "operation": "artifact_registry_append",
+      "nativeSymbol": "ArtifactRegistry::append",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "artifact_registry_append",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepare_registry_snapshot",
+      "nativeSymbol": "prepare_registry_snapshot_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "storage_tests.rs",
+        "storage_budget_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_registry_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "write_prepared_registry_snapshot",
+      "nativeSymbol": "write_prepared_registry_snapshot_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "storage_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "write_prepared_registry_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "create_rooted_artifact_file",
+      "nativeSymbol": "CreateOnlyArtifactFile::create_in",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "storage_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "create_rooted_artifact_file",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "write_and_read_registry_head_witness",
+      "nativeSymbol": "write_registry_head_witness / read_registry_head_witness",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "storage_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "write_and_read_registry_head_witness",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
     {
       "operation": "load_pinned_candidate",
       "nativeSymbol": "load_pinned_candidate",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "pinned_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "load_pinned_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "write_candidate_payload",
-      "nativeSymbol": "write_candidate_payload",
-      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "operation": "prepare_dataset_revocation",
+      "nativeSymbol": "prepare_dataset_revocation",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/dataset_revocation.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "dataset_revocation_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "write_candidate_payload",
+      "designOperation": "prepare_dataset_revocation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "admit_manifest_at_withdrawal_head_v3",
+      "operation": "validate_manifest_v2",
+      "nativeSymbol": "validate_artifact_manifest_v2",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "closure_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_manifest_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "append_dataset_withdrawal",
+      "nativeSymbol": "DatasetWithdrawalRegistry::append",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "closure_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_dataset_withdrawal",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_manifest_v3",
       "nativeSymbol": "admit_manifest_at_withdrawal_head_v3",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "admission_v3.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "admit_manifest_at_withdrawal_head_v3",
+      "designOperation": "admit_manifest_v3",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "bind_withdrawal_domain",
+      "nativeSymbol": "withdrawal_authority_domain_digest_v1 / withdrawal_head_digest_v3",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "admission_v3.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "bind_withdrawal_domain",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "append_and_replay_lifecycle_v2",
+      "nativeSymbol": "ArtifactLifecycleJournalV2::append / from_snapshot",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "lifecycle_journal.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_and_replay_lifecycle_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepare_publication_transaction",
+      "nativeSymbol": "prepare_artifact_publication_transaction_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "publication.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_publication_transaction",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "classify_publication_recovery",
+      "nativeSymbol": "classify_artifact_publication_recovery_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "publication.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "classify_publication_recovery",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "persist_withdrawal_snapshot",
+      "nativeSymbol": "write_dataset_withdrawal_snapshot_for_domain_v1 / read_dataset_withdrawal_snapshot_for_domain_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/control_storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "control_storage.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "persist_withdrawal_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "persist_lifecycle_snapshot",
+      "nativeSymbol": "write_artifact_lifecycle_snapshot_v2 / read_artifact_lifecycle_snapshot_v2",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/control_storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "control_storage.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "persist_lifecycle_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "govern_iteration_candidate",
+      "nativeSymbol": "IterationCandidateV1::transition",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/iteration.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "iteration.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "govern_iteration_candidate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "record_iteration_evidence",
+      "nativeSymbol": "IterationLedgerV1::transition / from_snapshot",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "iteration_ledger.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "record_iteration_evidence",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "inspect_owner_service_status",
+      "nativeSymbol": "inspect_artifact_owner_status_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/service.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "service.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "inspect_owner_service_status",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "cleanup_zero_length_storage_orphan",
+      "nativeSymbol": "ArtifactStorageAdminV1::cleanup_zero_length_orphan",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage_hygiene.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "storage_hygiene.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "cleanup_zero_length_storage_orphan",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose the source-complete owner API into an authenticated product caller and owner store.",
+    "Keep exact-head and actual-base synthetic-merge Lane E qualification green before changing the claim boundary.",
+    "Qualify target-host directory durability, rename/symlink races, advisory-lock and power-loss behavior; safe-Rust path containment is cooperative, not a hostile-filesystem proof.",
+    "Add product/admin orchestration only at the host boundary; this crate intentionally grants no selection, activation, promotion or release authority."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

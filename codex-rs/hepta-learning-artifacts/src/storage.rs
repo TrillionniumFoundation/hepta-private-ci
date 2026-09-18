@@ -13,7 +13,7 @@ use std::io::SeekFrom;
 use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
-use std::path::Path;
+use std::path::{Component, Path};
 use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
@@ -28,10 +28,10 @@ use crate::RegistryAppendDisposition;
 use crate::RegistryHeadRequirementV1;
 use crate::RegistryHeadWitnessV1;
 use crate::StateChange;
+use crate::MAX_DURABLE_ARTIFACT_RECORDS;
+use crate::MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES;
 
-const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
 const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 4096;
 const MAX_HEAD: usize = 4096;
 const MAGIC: &str = "HEPTAR01";
 const HEAD_MAGIC: &str = "HEPTAH01";
@@ -64,6 +64,40 @@ impl CreateOnlyArtifactFile {
             Err(error) => Err(error.into()),
         }
     }
+
+    /// Create below a host-selected root after rejecting absolute paths,
+    /// parent traversal and symlinked ancestor escapes. This is a cooperative
+    /// containment check; hostile rename races still require target-host
+    /// openat-style qualification outside this safe-Rust crate.
+    pub fn create_in(
+        root: impl AsRef<Path>,
+        relative: impl AsRef<Path>,
+    ) -> Result<Self, ArtifactStorageError> {
+        let relative = relative.as_ref();
+        if relative.as_os_str().is_empty()
+            || relative.is_absolute()
+            || relative
+                .components()
+                .any(|component| !matches!(component, Component::Normal(_)))
+        {
+            return Err(ArtifactStorageError::InvalidPath);
+        }
+
+        let canonical_root = root.as_ref().canonicalize()?;
+        if !canonical_root.is_dir() {
+            return Err(ArtifactStorageError::InvalidPath);
+        }
+        let target = canonical_root.join(relative);
+        let file_name = target
+            .file_name()
+            .ok_or(ArtifactStorageError::InvalidPath)?;
+        let parent = target.parent().ok_or(ArtifactStorageError::InvalidPath)?;
+        let canonical_parent = parent.canonicalize()?;
+        if !canonical_parent.starts_with(&canonical_root) {
+            return Err(ArtifactStorageError::PathEscape);
+        }
+        Self::create(canonical_parent.join(file_name))
+    }
 }
 
 /// Exact bytes and history witness. This is not a signature or acceptance.
@@ -90,12 +124,85 @@ pub struct RegistryHeadWitnessReceipt {
     pub encoded_bytes: usize,
 }
 
+pub struct PreparedRegistrySnapshotV1 {
+    bytes: Vec<u8>,
+    receipt: RegistrySnapshotReceipt,
+}
+
+impl fmt::Debug for PreparedRegistrySnapshotV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("PreparedRegistrySnapshotV1")
+            .field("receipt", &self.receipt)
+            .field("bytes", &format_args!("<{} bytes>", self.bytes.len()))
+            .finish()
+    }
+}
+
+impl PreparedRegistrySnapshotV1 {
+    #[must_use]
+    pub const fn receipt(&self) -> RegistrySnapshotReceipt {
+        self.receipt
+    }
+}
+
+pub struct PreparedRegistryHeadWitnessV1 {
+    bytes: Vec<u8>,
+    receipt: RegistryHeadWitnessReceipt,
+}
+
+impl fmt::Debug for PreparedRegistryHeadWitnessV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("PreparedRegistryHeadWitnessV1")
+            .field("receipt", &self.receipt)
+            .field("bytes", &format_args!("<{} bytes>", self.bytes.len()))
+            .finish()
+    }
+}
+
+impl PreparedRegistryHeadWitnessV1 {
+    #[must_use]
+    pub const fn receipt(&self) -> RegistryHeadWitnessReceipt {
+        self.receipt
+    }
+}
+
+pub struct PreparedCandidatePayloadV1 {
+    bytes: Vec<u8>,
+    content_digest: Digest32,
+}
+
+impl fmt::Debug for PreparedCandidatePayloadV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("PreparedCandidatePayloadV1")
+            .field("content_digest", &self.content_digest)
+            .field("bytes", &format_args!("<{} bytes>", self.bytes.len()))
+            .finish()
+    }
+}
+
+impl PreparedCandidatePayloadV1 {
+    #[must_use]
+    pub const fn content_digest(&self) -> Digest32 {
+        self.content_digest
+    }
+
+    #[must_use]
+    pub fn encoded_bytes(&self) -> usize {
+        self.bytes.len()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactStorageError {
     InvalidBinding,
     InvalidReceipt,
     InvalidHeadWitness,
     HeadWitnessMismatch,
+    InvalidPath,
+    PathEscape,
     Busy,
     NotRegular,
     AlreadyExists,
@@ -120,13 +227,13 @@ impl From<io::Error> for ArtifactStorageError {
     }
 }
 
-/// Write a new immutable snapshot; an existing file is never overwritten.
-/// Directory durability, witness publication, retention and selection are host work.
-pub fn write_registry_snapshot(
-    file: CreateOnlyArtifactFile,
+/// Validate and encode a registry snapshot before the host creates its final
+/// create-only path. This avoids predictable zero-length orphans on semantic
+/// rejection; I/O failures after creation remain indeterminate host work.
+pub fn prepare_registry_snapshot_v1(
     registry: &ArtifactRegistry,
     binding: Digest32,
-) -> Result<RegistrySnapshotReceipt, ArtifactStorageError> {
+) -> Result<PreparedRegistrySnapshotV1, ArtifactStorageError> {
     if binding.is_zero() {
         return Err(ArtifactStorageError::InvalidBinding);
     }
@@ -138,19 +245,32 @@ pub fn write_registry_snapshot(
         records: registry.records().len(),
         encoded_bytes: bytes.len(),
     };
-    write_new(file, &bytes)?;
-    Ok(receipt)
+    Ok(PreparedRegistrySnapshotV1 { bytes, receipt })
 }
 
-/// Publish one validated current-head witness through a create-only file.
-/// Validation happens before bytes are written; a stale or malformed witness
-/// therefore cannot become a current-head distribution record by accident.
-pub fn write_registry_head_witness(
+pub fn write_prepared_registry_snapshot_v1(
     file: CreateOnlyArtifactFile,
+    prepared: PreparedRegistrySnapshotV1,
+) -> Result<RegistrySnapshotReceipt, ArtifactStorageError> {
+    write_new(file, &prepared.bytes)?;
+    Ok(prepared.receipt)
+}
+
+/// Backward-compatible one-shot writer. New hosts should call
+/// prepare_registry_snapshot_v1 before creating the final path.
+pub fn write_registry_snapshot(
+    file: CreateOnlyArtifactFile,
+    registry: &ArtifactRegistry,
+    binding: Digest32,
+) -> Result<RegistrySnapshotReceipt, ArtifactStorageError> {
+    write_prepared_registry_snapshot_v1(file, prepare_registry_snapshot_v1(registry, binding)?)
+}
+
+pub fn prepare_registry_head_witness_v1(
     witness: &RegistryHeadWitnessV1,
     requirement: &RegistryHeadRequirementV1,
     binding: Digest32,
-) -> Result<RegistryHeadWitnessReceipt, ArtifactStorageError> {
+) -> Result<PreparedRegistryHeadWitnessV1, ArtifactStorageError> {
     if binding.is_zero() {
         return Err(ArtifactStorageError::InvalidBinding);
     }
@@ -163,8 +283,29 @@ pub fn write_registry_head_witness(
         file_digest: Digest32::of_bytes(&bytes),
         encoded_bytes: bytes.len(),
     };
-    write_new(file, &bytes)?;
-    Ok(receipt)
+    Ok(PreparedRegistryHeadWitnessV1 { bytes, receipt })
+}
+
+pub fn write_prepared_registry_head_witness_v1(
+    file: CreateOnlyArtifactFile,
+    prepared: PreparedRegistryHeadWitnessV1,
+) -> Result<RegistryHeadWitnessReceipt, ArtifactStorageError> {
+    write_new(file, &prepared.bytes)?;
+    Ok(prepared.receipt)
+}
+
+/// Backward-compatible one-shot witness writer. New hosts should prepare before
+/// creating the final path.
+pub fn write_registry_head_witness(
+    file: CreateOnlyArtifactFile,
+    witness: &RegistryHeadWitnessV1,
+    requirement: &RegistryHeadRequirementV1,
+    binding: Digest32,
+) -> Result<RegistryHeadWitnessReceipt, ArtifactStorageError> {
+    write_prepared_registry_head_witness_v1(
+        file,
+        prepare_registry_head_witness_v1(witness, requirement, binding)?,
+    )
 }
 
 /// Read and revalidate a distributed current-head witness.  The caller must
@@ -212,8 +353,8 @@ pub fn read_registry_snapshot(
 ) -> Result<ArtifactRegistry, ArtifactStorageError> {
     if expected.binding.is_zero()
         || expected.file_digest.is_zero()
-        || expected.records > MAX_RECORDS
-        || expected.encoded_bytes > MAX_SNAPSHOT
+        || expected.records > MAX_DURABLE_ARTIFACT_RECORDS
+        || expected.encoded_bytes > MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES
         || expected.encoded_bytes == 0
         || (expected.records == 0) != expected.head_digest.is_zero()
     {
@@ -221,7 +362,7 @@ pub fn read_registry_snapshot(
     }
     let bytes = read_bounded(
         file,
-        MAX_SNAPSHOT,
+        MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES,
         expected.encoded_bytes as u64,
         ArtifactStorageError::Corrupt,
     )?;
@@ -257,17 +398,39 @@ pub fn read_registry_snapshot(
     Ok(registry)
 }
 
-/// Persist exactly the bytes of a currently eligible candidate, never select it.
+pub fn prepare_candidate_payload_v1(
+    registry: &ArtifactRegistry,
+    artifact: &StableId,
+    bytes: &[u8],
+) -> Result<PreparedCandidatePayloadV1, ArtifactStorageError> {
+    let manifest = eligible_manifest(registry, artifact)?;
+    validate_payload(manifest, bytes)?;
+    Ok(PreparedCandidatePayloadV1 {
+        bytes: bytes.to_vec(),
+        content_digest: manifest.content_digest,
+    })
+}
+
+pub fn write_prepared_candidate_payload_v1(
+    file: CreateOnlyArtifactFile,
+    prepared: PreparedCandidatePayloadV1,
+) -> Result<Digest32, ArtifactStorageError> {
+    write_new(file, &prepared.bytes)?;
+    Ok(prepared.content_digest)
+}
+
+/// Backward-compatible one-shot payload writer. New hosts should prepare before
+/// creating the final path so predictable validation failures create no orphan.
 pub fn write_candidate_payload(
     file: CreateOnlyArtifactFile,
     registry: &ArtifactRegistry,
     artifact: &StableId,
     bytes: &[u8],
 ) -> Result<Digest32, ArtifactStorageError> {
-    let manifest = eligible_manifest(registry, artifact)?;
-    validate_payload(manifest, bytes)?;
-    write_new(file, bytes)?;
-    Ok(manifest.content_digest)
+    write_prepared_candidate_payload_v1(
+        file,
+        prepare_candidate_payload_v1(registry, artifact, bytes)?,
+    )
 }
 
 /// Load candidate bytes using a CURRENT host-authenticated registry snapshot.
@@ -344,7 +507,10 @@ fn lock(file: File, kind: LockKind) -> Result<LockedFile, ArtifactStorageError> 
     }
 }
 
-fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
+pub(crate) fn write_new(
+    file: CreateOnlyArtifactFile,
+    bytes: &[u8],
+) -> Result<(), ArtifactStorageError> {
     let mut guard = lock(file.0, LockKind::Exclusive)?;
     if guard.0.metadata()?.len() != 0 {
         // Atomic creation already proved the target did not exist. Bytes appearing
@@ -359,7 +525,7 @@ fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactS
         .map_err(|_| ArtifactStorageError::Indeterminate)
 }
 
-fn read_bounded(
+pub(crate) fn read_bounded(
     file: File,
     limit: usize,
     expected_bytes: u64,
@@ -470,7 +636,7 @@ fn encode_snapshot(
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     let count = registry.records().len();
-    if count > MAX_RECORDS {
+    if count > MAX_DURABLE_ARTIFACT_RECORDS {
         return Err(ArtifactStorageError::Capacity);
     }
     let mut text = format!("{MAGIC}\n{binding}\n{count}\n");
@@ -507,7 +673,7 @@ fn encode_snapshot(
             }
         }
     }
-    if text.len() > MAX_SNAPSHOT {
+    if text.len() > MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES {
         return Err(ArtifactStorageError::Capacity);
     }
     Ok(text.into_bytes())

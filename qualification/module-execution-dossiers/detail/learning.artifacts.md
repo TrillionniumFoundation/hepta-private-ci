@@ -1,7 +1,7 @@
 # learning.artifacts: implementation design
 
 Parent: `docs/modules/learning.artifacts/TECHNICAL.md`. Lane: `LANE-E-LEARNING`.
-Status: create-only storage, complete V2 manifest, persistent dataset withdrawal, head anti-rollback and lifecycle source candidate implemented; current exact-head and synthetic-merge CI determine source qualification, while product loading and independent selection remain separate. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: create-only storage, complete V2 manifest, domain-bound V3 admission, persistent dataset withdrawal, durable lifecycle/withdrawal replay, publication crash classification and governed iteration source candidate implemented; current exact-head and synthetic-merge CI determine source qualification, while product loading and independent selection remain separate. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,40 +12,50 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-learning-artif
 
 ## 2. Public operations and contract details
 
-`write_candidate_payload(file, registry, artifact, bytes) -> Digest32`; `write_registry_snapshot(file, registry, binding) -> RegistrySnapshotReceipt`; `write_registry_head_witness(file, witness, requirement, binding) -> RegistryHeadWitnessReceipt`; `read_registry_head_witness(file, receipt, requirement) -> RegistryHeadWitnessV1`; `load_pinned_candidate(snapshot, payload, pin) -> LoadedPinnedCandidate`; `validate_artifact_manifest_v2(manifest, now) -> ValidatedArtifactManifestV2`; `DatasetWithdrawalRegistry::append(notice) -> DatasetWithdrawalReceiptV1`; `DatasetWithdrawalRegistry::admit_manifest(manifest, now) -> ValidatedArtifactManifestV2`; `validate_registry_head_witness(witness, requirement) -> RegistryHeadReceiptV1`; `validate_artifact_lifecycle_transition(producer, event) -> Digest32`.
+Stable compatibility operations remain `write_candidate_payload`, `write_registry_snapshot`, `write_registry_head_witness`, `read_registry_head_witness` and `load_pinned_candidate`. New hosts should prefer `prepare_candidate_payload_v1`, `prepare_registry_snapshot_v1` and `prepare_registry_head_witness_v1` before creating final paths, followed by the corresponding `write_prepared_*` operation.
 
-Candidate registration is not selection. A successful read is not execution or activation. The supervisor or separately authorized selector consumes independent selection evidence; the artifact owner never installs itself.
+Closure operations include `validate_artifact_manifest_v2`, `DatasetWithdrawalRegistry::append`, `withdrawal_head_digest_v3`, `admit_manifest_at_withdrawal_head_v3`, `ArtifactLifecycleJournalV2::append/from_snapshot`, `prepare_artifact_publication_transaction_v1`, `classify_artifact_publication_recovery_v1`, and create-only read/write adapters for withdrawal/lifecycle snapshots. `IterationCandidateV1` and `IterationLedgerV1` provide bounded authority-free iteration state/evidence.
+
+Candidate registration is not selection. A successful read, admission, lifecycle transition, publication receipt or iteration transition is not execution/activation authority. The supervisor or separately authorized selector consumes independent selection evidence; the artifact owner never installs itself.
 
 ## 3. State records and transaction design
 
-Own create-only `learning_artifact_registry` and `operator_sensor_core_registry`. The stable V1 registry and payload encoding remain readable. `LearningArtifactManifestV2` explicitly binds payload digest/length, every source dataset, complete lineage, multiple predecessors, rollback predecessor, training code, runtime, device, objective class, schema, normalization, compatibility, producer, creation time and expiry.
+Own create-only `learning_artifact_registry` and `operator_sensor_core_registry`. The stable V1 registry/payload encoding remain readable. `LearningArtifactManifestV2` binds payload digest/length, all source datasets, complete lineage, multiple predecessors, rollback predecessor, training code, runtime, device, objective, schema, normalization, compatibility, producer, creation time and expiry.
 
-`DatasetWithdrawalRegistry` is a separate append-only digest chain. It persists dataset tombstones and blocks every future manifest that references a withdrawn dataset, closing the gap left by a snapshot-local invalidation batch. Exact notice retries are idempotent; changed semantics under a reused notice ID conflict.
+`DatasetWithdrawalRegistry` is an append-only digest chain that persists tombstones and blocks future manifests referencing withdrawn datasets. V3 admission additionally binds `WithdrawalAuthorityDomainV1 { registry_id, scope_digest, authority_id, authority_epoch }`; the admitted frontier is a domain-separated digest of that domain and the raw withdrawal head. Identical raw heads in distinct scopes or authority epochs are not interchangeable.
 
-`RegistryHeadWitnessV1` binds registry identity, generation, predecessor head, authority epoch, signer, signing key and validity window. Generation rollback, authority-epoch rollback, predecessor mismatch and expiry fail. A product host must authenticate the witness signature before constructing the typed value.
+`ArtifactLifecycleJournalV2` is predecessor-bound and role-aware. Historical replay validates actor evidence at immutable event time rather than restart time, so credential expiry cannot make valid stored history unrecoverable. New mutation still requires currently valid actor evidence.
+
+`HEPTAW01` withdrawal and `HEPTAL02` lifecycle snapshots are create-only, bounded and independently receipted. The V1 artifact registry remains `HEPTAR01`, with `HEPTAH01` for independently validated current-head distribution.
+
+`ArtifactPublicationTransactionV1` is the hard host commit tuple, not a claim of cross-file atomicity. It binds exact V2 admission, withdrawal domain/head, V1 predecessor/candidate registry heads, the V1/V2 common-field bridge and next authenticated head witness. Crash classification accepts only exact predecessor as `NotCommitted` or exact candidate generation as `Committed`; any unrelated head conflicts.
 
 ## 4. Deterministic algorithm and scheduling
 
-Validate scope, size and complete lineage; check the persistent withdrawal frontier; create immutable bytes with conflict-on-different-content identity; synchronize; append a canonical registry event against an exact predecessor; publish the registry snapshot; obtain an independently authenticated head witness; and acknowledge only after the witness is durable.
+Under one authenticated host writer fence: validate V2 manifest and scoped withdrawal frontier; prepare bytes before final-path creation; construct an exact V1 successor registry with a currently eligible V1 bridge for the V2 artifact; validate the next head witness; prepare `ArtifactPublicationTransactionV1`; sync payload/snapshot; durably publish the authenticated current-head witness; acknowledge only after the witness is durable.
 
-New runs load an exact selected tuple against the current head and withdrawal frontier; the old run retains its snapshot. Restore and rollback always overlay current revocations and withdrawals before exposing artifacts. Payload and registry publication form a bounded saga: bytes synchronized without a registry event are an orphan candidate, never selected state.
+The compatibility one-shot storage APIs remain available, but deterministic validation can occur after a capability has created its final path and may therefore leave a zero-length orphan. Prepare-before-create avoids those predictable orphans. I/O failure after creation remains indeterminate and host-reconciled.
 
-The lifecycle evidence state machine is `proposed -> trained -> evaluated -> shadow -> canary -> operator_accepted -> selected -> retired`, with bounded quarantine and revocation edges. A producer cannot issue its own evaluation, acceptance, selection, quarantine or revocation decision, and mandatory states cannot be skipped.
+New runs load an exact selected tuple against the current head and withdrawal frontier; old runs retain frozen snapshots. Restore/rollback overlays current revocations and withdrawals before exposure. The lifecycle evidence machine remains `proposed -> trained -> evaluated -> shadow -> canary -> operator_accepted -> selected -> retired`, with bounded quarantine/revocation edges and role separation.
 
 ## 5. Capacity and performance profile
 
-Payload bytes remain bounded by the native create-only storage profile. V2 source datasets are bounded to 64, lineage digests to 1024 and predecessor IDs to 64 per manifest. Persistent withdrawal and registry record counts are bounded. Large lineage graphs use indexed traversal and reject incomplete eligibility proofs.
+Artifact, withdrawal and lifecycle owner histories share the code-enforced durable-record cap `4096`. Canonical artifact/control snapshots are bounded by `8 MiB`; candidate payloads by `64 MiB`. V2 source datasets are bounded to 64, lineage digests to 1024 and predecessor IDs to 64. Iteration candidate/file/diff/parallel-sandbox and ledger-event bounds are encoded in `iteration.rs` and `iteration_ledger.rs`.
 
-Measure put/fsync, containing-directory synchronization, witness publication, cold read/hash, registry reopen, withdrawal lookup, revoke propagation, backup replay and orphan reconciliation. Source limits are not target-host measurements.
+The owner rejects mutation before accepting state its canonical durable format cannot represent. Measure put/fsync, containing-directory synchronization, witness publication, cold read/hash, registry/control reopen, withdrawal lookup, revoke propagation, backup replay, recovery conflict and orphan reconciliation. Source limits are not target-host measurements.
 
 ## 6. Concrete verification cases
 
-- ART-01: create-only ID reuse with different bytes conflicts; identical retry is idempotent.
-- ART-02: crash after bytes sync but before registry publication yields an orphan candidate, not a selected artifact.
-- ART-03: corrupt/incomplete/mixed-generation payload is refused by a new loading process.
-- ART-04: rollback to a revoked or incompatible predecessor fails safely even if an old backup once marked it selected.
+- ART-01: create-only ID reuse with different bytes conflicts; identical semantic retry is idempotent.
+- ART-02: crash before authenticated current-head publication classifies `NotCommitted`; crash after exact candidate-head publication classifies `Committed`.
+- ART-03: corrupt/incomplete/mixed-generation payload or control snapshot is refused on reopen.
+- ART-04: rollback to a revoked/incompatible predecessor fails even if an old backup once marked it selected.
+- ART-05: equal raw withdrawal heads from different registry/scope/authority/epoch domains are not interchangeable.
+- ART-06: lifecycle history written while actor evidence was valid reopens after that credential expires, while a new write with the expired credential is rejected.
+- ART-07: a publication candidate that registers and then revokes/quarantines the admitted artifact is not a valid publication bridge.
+- ART-08: rooted create-only placement rejects lexical parent escape and symlinked-parent escape; prepare-before-create creates no final path on deterministic validation failure.
 
-Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. Additional V2 tests cover complete manifest normalization, persistent withdrawal replay, anti-rollback witnesses and lifecycle self-decision/state-skip rejection.
+Cross-crate mappings remain in `../../lane-e/TEST_TRACEABILITY.json`; inline native tests additionally cover V3 admission, lifecycle journal, control storage, publication recovery and iteration bookkeeping. Test identities are not execution receipts.
 
 ## 7. Integration, rollback and capability ceiling
 
@@ -55,16 +65,22 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 
 ## 8. Current native implementation
 
-`RevalidatingCandidate::with_current` guards cached consumption with a monotonic current registry prefix and exact lineage eligibility. Any failed refresh closes the consumer. Tests cover revocation, old-backup resurrection, longer forks, changed scope and corrupted views; authenticated current-view discovery remains a host responsibility.
+The current source mapping is enumerated in `../../../docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json` and `../../../codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md`.
 
-- **Implemented entrypoints:** `load_pinned_candidate` in [codex-rs/hepta-learning-artifacts/src/pinned.rs](../../../codex-rs/hepta-learning-artifacts/src/pinned.rs); `write_candidate_payload`, `write_registry_head_witness` and `read_registry_head_witness` in [codex-rs/hepta-learning-artifacts/src/storage.rs](../../../codex-rs/hepta-learning-artifacts/src/storage.rs); `admit_manifest_at_withdrawal_head_v3` in [codex-rs/hepta-learning-artifacts/src/admission_v3.rs](../../../codex-rs/hepta-learning-artifacts/src/admission_v3.rs). Create-only payload storage, bounded current-head witness distribution, pinned loading and withdrawal-aware admission implemented.
-- **State and recovery:** Create-only file payloads and registry snapshots preserve exact manifest/digest identity. Pinned loading checks the full supplied manifest before bytes return; withdrawal/lifecycle journals retain their own bounded lineage and cannot make an old supplied head current.
-- **Source tests:** [codex-rs/hepta-learning-artifacts/src/pinned_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/pinned_tests.rs), [codex-rs/hepta-learning-artifacts/src/storage_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/storage_tests.rs), [codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-learning-artifacts/STORAGE.md](../../../codex-rs/hepta-learning-artifacts/STORAGE.md), [codex-rs/hepta-learning-artifacts/PINNED_LOAD.md](../../../codex-rs/hepta-learning-artifacts/PINNED_LOAD.md).
-- **Remaining work:** Supply trusted latest-head discovery, withdrawal-frontier distribution, namespace/containing-directory durability and independently selected product loading. The native channel validates an independently authenticated witness and current requirement but does not discover the newest file or grant selection/activation.
+- **Registry/payload:** V1 append-only registry, prepare-before-create payload/snapshot/witness APIs, create-only final writes, current-head witness readback and exact pinned loading.
+- **Withdrawal/admission:** persistent withdrawal chain plus V3 registry/scope/authority/epoch domain separation and exact-frontier admission; domain-aware durable reopen rejects cross-epoch receipts.
+- **Lifecycle:** predecessor-bound role-aware journal; replay uses historical event time while current append uses current credential validity.
+- **Durable control state:** create-only `HEPTAW01` withdrawal and `HEPTAL02` lifecycle snapshots round-trip through real files with independent receipts.
+- **Publication:** `ArtifactPublicationTransactionV1` validates the exact successor prefix/bridge/current eligibility and next witness; recovery is explicit `NotCommitted` / `Committed` / conflict.
+- **Iteration:** bounded `IterationCandidateV1` transition model and `IterationLedgerV1` external-evidence ledger remain deny-all.
+- **Capacity/path hardening:** owner histories share the 4096 durable cap; `CreateOnlyArtifactFile::create_in` rejects absolute/parent/symlink-parent escape while documenting the remaining hostile-rename host boundary.
+- **Admin/service:** `inspect_artifact_owner_status_v1` exposes read-only heads, bounded counts and remaining durable capacity with `AuthorityPosture::DENY_ALL`; it cannot discover newest files, mutate state, delete orphans, select, activate, promote or release.
+- **Source tests:** registry, storage/budget/lock, pinned, revocation, closure V2 plus inline admission V3, lifecycle, control-storage, publication and iteration tests.
+
+**Remaining boundary:** product caller and production writer are still not composed. The host owns trusted newest-head discovery, external signature/authentication, target-filesystem directory durability/openat-style hostile-race protection, backup non-resurrection, independently selected process loading, admin orchestration and release gates.
 
 ## 9. Native closure and remaining evidence
 
-Repository-controlled source coverage is checked by `../../../scripts/hepta-lane-e-closure.py`; exact-head and ordered-parent synthetic-merge execution are defined in `.github/workflows/hepta-lane-e-gap-closure.yml`. The workflow compiles all targets, runs owner and cross-crate tests, strict Clippy and rustfmt.
+Repository-controlled source coverage is checked by `../../../scripts/hepta-lane-e-closure.py`; exact-head and actual-base synthetic-merge execution are defined in `.github/workflows/hepta-lane-e-gap-closure.yml`. The workflow compiles all targets, runs owner/cross-crate tests, strict Clippy and rustfmt. Push events use `github.event.before` as their synthetic-merge base with a zero-SHA initial-push fallback; pull requests use the PR base SHA.
 
-The repository cannot self-provision a trusted filesystem namespace, signing key or newest-head distribution service; cannot prove containing-directory durability on every target; cannot produce external-cache or physical-erasure evidence; and cannot issue independent selection, product process loading, canary, operator acceptance, promotion or release. Those exact-candidate gates remain external.
+The repository can prove source-owned persistence/replay and deterministic publication recovery, but it cannot self-provision a trusted filesystem namespace/signing key/newest-head distribution service, prove target-filesystem directory durability or hostile rename races on every target, produce physical-erasure evidence, or issue independent selection, product process loading, canary, operator acceptance, promotion or release. Those exact-candidate and external gates remain separate.

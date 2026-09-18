@@ -33,7 +33,7 @@ impl Drop for Fixture {
 #[test]
 fn wrong_exact_length_is_rejected_before_any_seek_or_read() -> Result<(), Box<dyn Error>> {
     for (limit, mismatch) in [
-        (MAX_SNAPSHOT, ArtifactStorageError::Corrupt),
+        (MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES, ArtifactStorageError::Corrupt),
         (MAX_PAYLOAD, ArtifactStorageError::PayloadMismatch),
     ] {
         let (_fixture, mut file) = Fixture::new()?;
@@ -121,7 +121,7 @@ fn empty_snapshot_keeps_corrupt_semantics() -> Result<(), Box<dyn Error>> {
     assert_eq!(
         read_bounded(
             file,
-            MAX_SNAPSHOT,
+            MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES,
             /*expected_bytes*/ 1,
             ArtifactStorageError::Corrupt
         ),
@@ -135,7 +135,7 @@ fn pre_read_and_post_read_metadata_use_the_same_error_priority() {
     // Both metadata observations use this helper. This is a deterministic
     // classification test, not a claim of an executed concurrent-write race.
     for (limit, mismatch) in [
-        (MAX_SNAPSHOT, ArtifactStorageError::Corrupt),
+        (MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES, ArtifactStorageError::Corrupt),
         (MAX_PAYLOAD, ArtifactStorageError::PayloadMismatch),
     ] {
         assert_eq!(
@@ -150,7 +150,12 @@ fn pre_read_and_post_read_metadata_use_the_same_error_priority() {
         Err(ArtifactStorageError::Capacity),
     );
     assert_eq!(
-        validate_read_length(0, 1, MAX_SNAPSHOT, ArtifactStorageError::Corrupt),
+        validate_read_length(
+            0,
+            1,
+            MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES,
+            ArtifactStorageError::Corrupt,
+        ),
         Err(ArtifactStorageError::Corrupt),
     );
 }

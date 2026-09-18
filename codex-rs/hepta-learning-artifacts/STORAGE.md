@@ -21,14 +21,23 @@ and each writer consumes it. These restrictions make it impossible for safe
 callers to relabel an existing empty inode as new. Reader APIs remain
 file-capability based and accept independently opened read-only `File` values.
 
-The required public writer signatures are:
+Preferred new-host flow validates before creating the final path:
 
 ```text
-write_registry_snapshot(CreateOnlyArtifactFile, &ArtifactRegistry, Digest32)
-write_candidate_payload(CreateOnlyArtifactFile, &ArtifactRegistry, &StableId, &[u8])
-write_registry_head_witness(CreateOnlyArtifactFile, &RegistryHeadWitnessV1, &RegistryHeadRequirementV1, Digest32)
-read_registry_head_witness(File, RegistryHeadWitnessReceipt, &RegistryHeadRequirementV1)
+prepare_registry_snapshot_v1(&ArtifactRegistry, Digest32)
+write_prepared_registry_snapshot_v1(CreateOnlyArtifactFile, PreparedRegistrySnapshotV1)
+prepare_candidate_payload_v1(&ArtifactRegistry, &StableId, &[u8])
+write_prepared_candidate_payload_v1(CreateOnlyArtifactFile, PreparedCandidatePayloadV1)
+prepare_registry_head_witness_v1(&RegistryHeadWitnessV1, &RegistryHeadRequirementV1, Digest32)
+write_prepared_registry_head_witness_v1(CreateOnlyArtifactFile, PreparedRegistryHeadWitnessV1)
 ```
+
+The original one-shot `write_registry_snapshot`, `write_candidate_payload` and
+`write_registry_head_witness` APIs remain compatibility wrappers. Hosts that
+control a root directory may use `CreateOnlyArtifactFile::create_in(root, relative)`
+to reject absolute paths, parent traversal and symlinked ancestor escapes before
+final-component creation. `ArtifactStorageAdminV1::enroll` exposes the same
+canonical-root discipline for inspection and deliberately narrow orphan cleanup.
 
 `write_registry_snapshot` writes one new empty target and syncs it before
 returning a `RegistrySnapshotReceipt`. `read_registry_snapshot` requires that
@@ -56,25 +65,33 @@ selection or activation authority.
 
 Candidate payload functions verify current registry eligibility, byte length and
 content digest. A revoked ancestor blocks loading descendants. Stored code or
-model bytes are never executed. Snapshot limits are 4096 events and 8 MiB;
-payloads are bounded by 64 MiB. Snapshot creation is O(history), bounded by the
-pilot cap; this is not a high-frequency journal or hard-real-time controller.
+model bytes are never executed. The in-memory artifact registry, withdrawal
+registry and lifecycle journal share the same 4096 durable-record cap, so an
+owner mutation cannot exceed what canonical persistence can represent. Artifact
+and control snapshots are bounded by 8 MiB; payloads are bounded by 64 MiB.
+Snapshot creation is O(history) within the pilot cap; this is not a high-frequency
+journal or hard-real-time controller.
 
 ## Failure and retry semantics
 
-Validation occurs after the caller creates the opaque capability but before any
-artifact bytes are written. Invalid binding, ineligible artifact or payload
-mismatch therefore leaves a zero-length orphan for host reconciliation. It does
-not authorize reusing that path: a second `create` must return
-`AlreadyExists`.
+The compatibility one-shot writers receive an already-created capability, so a
+semantic rejection can still leave a zero-length orphan. New hosts should call
+the prepare API first and create the final path only after prepare succeeds;
+invalid binding, ineligible artifact, payload mismatch or stale witness then
+creates no final-path orphan. Once creation/write begins, failure can still leave
+a zero-length or partial orphan for host reconciliation. No failure authorizes
+reusing that path: a second `create` must return `AlreadyExists`.
 
 After successful atomic creation, a nonzero length observed before the guarded
 write indicates interference and returns `Indeterminate`. Lock contention
 returns `Busy` without this writer writing bytes. A write or synchronization
 failure is `Indeterminate`; the caller must reconcile the exact target and
 expected digest. It must never truncate, overwrite, silently adopt or retry
-through the same path. Removal of a proven orphan is a separately authorized
-host operation.
+through the same path. Removal of a proven orphan remains separately authorized by the host.
+`ArtifactStorageAdminV1::cleanup_zero_length_orphan` is the crate-owned safe
+mechanism for that operation: it removes only a zero-length regular file below
+an enrolled canonical root, refuses symlinks/non-empty/special entries, and
+syncs the containing directory after deletion.
 
 ## Host transaction and trust boundary
 
@@ -92,10 +109,14 @@ outbox reconciliation; two synced files are not an atomic multi-store transactio
 A crash before witness publication may leave an orphan candidate, not a selected
 artifact.
 
-`create_new` protects the final path component from an existence-check race; it
-does not authenticate ancestor traversal, retain a path-to-inode binding after
-return, synchronize the parent directory or isolate hostile writers. The host
-owns trusted parent traversal, containing-directory sync, encryption,
+`create_new` protects the final path component from an existence-check race.
+`create_in` additionally canonicalizes a host-selected root and target parent and
+rejects lexical traversal or symlink-parent escape. It still cannot retain a
+path-to-inode binding against a hostile rename race, synchronize the parent
+directory for ordinary writes or isolate hostile writers. Orphan cleanup does
+sync its containing directory after a successful removal, but that does not
+upgrade ordinary publication into a hostile-filesystem proof. The host owns target-host openat-style
+containment where required, containing-directory sync, encryption,
 quota/retention, revocation freshness, physical erasure, backup deletion,
 independent witness storage and selection/rollback. File locks fence cooperative
 independently opened handles, not hostile writers or cloned/inherited handles.
@@ -108,7 +129,8 @@ Regression coverage must include real-file reopen, every snapshot truncation
 point, independent witness mismatch, canonical form, existing nonempty, empty and
 truncate-to-zero rejection, regular and dangling symlink rejection where
 supported, exactly one concurrent creator, lock contention, post-create
-interference, payload integrity, revocation descendants and invalid binding.
+interference, payload integrity, revocation descendants, invalid binding, parent-escape
+rejection and zero-length-only orphan cleanup.
 Exact source and actual-base synthetic-merge compilation, tests, lint and format
 remain mandatory.
 
