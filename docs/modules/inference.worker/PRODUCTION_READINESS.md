@@ -119,18 +119,70 @@ The exact selected model/runtime/device combination must execute the following o
 
 Measurements and tolerances belong to the selected deployment profile; they must be retained as exact-candidate evidence, not copied into this document as synthetic pass claims.
 
+### Machine-verifiable target-host evidence
+
+The hardware matrix is paired with a fail-closed machine contract in
+`scripts/hepta-inference-worker-readiness.py`. `--emit-hardware-template`
+creates a deliberately non-passing `hepta.inference-worker-hardware-qualification.v1`
+template; `--verify-hardware-evidence` accepts only an exact candidate-bound
+record with all required model/device identities, isolation controls, target-host
+scenarios and independent-observer fields complete.
+
+The contract requires the candidate commit/tree/worker subtree, the digest of
+the exact-candidate readiness receipt, host attestation identity, model/weights/
+tokenizer/preprocessor/quantization/runtime/device digests, six named isolation
+controls and all thirteen scenarios in the matrix above. Missing, duplicate,
+`pending`, skipped or candidate-mismatched evidence fails verification.
+
+Repository/unit CI validates the contract and its negative cases only. It must
+not convert fixtures, mocks or a structurally valid JSON object into a claim
+that real hardware ran. Physical attestation, raw measurements and observer
+authenticity remain evidence-system responsibilities outside this module.
+
+Generate a fail-closed template on the target candidate:
+
+```sh
+python3 scripts/hepta-inference-worker-readiness.py \
+  --expected-sha "$(git rev-parse HEAD)" \
+  --emit-hardware-template /secure/qualification/inference-worker-hardware.json
+```
+
+After the designated target-host owner fills it from real execution, validate:
+
+```sh
+python3 scripts/hepta-inference-worker-readiness.py \
+  --expected-sha "$(git rev-parse HEAD)" \
+  --verify-hardware-evidence /secure/qualification/inference-worker-hardware.json
+```
+
 ## 8. Exact-candidate evidence binding
 
 For every release candidate, retain a machine-readable receipt that includes:
 
-- candidate commit and tree;
-- implementation-map source provenance;
-- hash of `TECHNICAL.md`, this runbook and the implementation map;
-- worker source-tree hash;
+- candidate commit, repository tree and exact worker subtree;
+- the current implementation-map blob plus its historical `sourceBase`;
+- the worker paths changed since that historical map source base;
+- hash of `TECHNICAL.md`, this runbook, the implementation map and Lane B workflow;
+- the exact evidence class and named checks executed for that candidate;
 - current claim-boundary flags;
 - repository-controlled gaps and external evidence gates.
 
-The repository script `scripts/hepta-inference-worker-readiness.py` emits this receipt. CI must create it independently for source head and merge candidate. A receipt identifies what was tested; it does not itself prove hardware/runtime gates.
+The repository script `scripts/hepta-inference-worker-readiness.py` emits
+schema `hepta.inference-worker-candidate-receipt.v2`. `sourceBase` remains
+historical map provenance; `candidate.workerTree` is the current executable
+source anchor. A non-empty source delta is therefore visible in the receipt
+instead of being silently hidden by an older documentation snapshot.
+
+The Lane B source-head and deterministic merge-candidate jobs emit a
+`source-head-tested` or `merge-candidate-tested` receipt only after the
+`codex-hepta-infer-core --lib` and `codex-hepta-infer-worker-host --lib`
+suites succeed at that exact checkout. The documentation workflow may emit
+the weaker `identity` class. No class is hardware, provider-reconciliation,
+deployment or independent-acceptance evidence.
+
+Target-host hardware evidence is separate and must validate against the same
+candidate identity using the machine contract in Section 7. Do not merge
+source/test identity and physical qualification into one self-issued claim.
 
 ## 9. Rollback and stop conditions
 
