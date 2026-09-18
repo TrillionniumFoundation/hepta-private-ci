@@ -471,6 +471,12 @@ impl FederatedResultV2 {
             }
         }
         validate_unique_items(&self.items)?;
+        if let Some(digest) = self.remote_response_digest {
+            ensure_digest("remote_response", digest)?;
+        }
+        if let Some(digest) = self.authority_observation_digest {
+            ensure_digest("authority_observation", digest)?;
+        }
         if self.authority.grants_any() {
             return Err(FederationV2Error::AuthorityGranted);
         }
