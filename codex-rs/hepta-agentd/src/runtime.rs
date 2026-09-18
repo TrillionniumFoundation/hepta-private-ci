@@ -222,10 +222,7 @@ async fn attach_federation_after_generation_fence(
         return Ok(runtime);
     }
     state.refresh_generation()?;
-    let runtime = runtime.with_federation_sources(
-        state.identity().agent_id.clone(),
-        owner_layouts,
-    );
+    let runtime = runtime.with_federation_sources(state.identity().agent_id.clone(), owner_layouts);
     // Physical federation reads rediscover current grants. Fence the fleet
     // generation on both sides of composition without freezing a reader set.
     state.refresh_generation()?;
