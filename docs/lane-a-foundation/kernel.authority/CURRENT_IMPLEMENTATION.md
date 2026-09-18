@@ -56,8 +56,8 @@ A completed revocation before the relevant linearization point denies entry. A c
 - the grant issuer, approval verifier and feed verifier support bounded epoch-window key rings for staged overlap and deterministic retirement;
 - verification identifies the exact trust key used for audit;
 - revocation feed schema V2 signs issued/expiry times and rejects not-yet-valid or stale updates;
-- enrolled nodes can sign exact-update apply acknowledgements, and the convergence verifier returns deterministic acknowledged/missing node sets while the update is still fresh;
-- the registered Bao host begins without fresh revocation knowledge, requires a current signed head before secret use, and denies new secret use after the signed freshness deadline until another current head is ingested.
+- enrolled nodes can sign exact-update apply acknowledgements, and the convergence verifier returns deterministic acknowledged/missing node sets while the update is still fresh; future-dated acknowledgements are rejected;
+- the registered Bao host begins without fresh revocation knowledge, checks freshness before provider dispatch and again at final registered-consumer entry, and denies secret release if the feed expires while provider I/O is in flight.
 
 The grant issuer, approver and revocation distributor remain independently pinned roles. Repository signer tools do not generate keys.
 
@@ -77,7 +77,7 @@ FinalUse nonce/revocation history remains explicitly bounded and is cleared only
 
 ### Source composition
 
-The strongest source-composed boundary is the registered Bao host. B4 restricts the lower `BaoClient::consume_kv_v2` caller set to that host and independently inventories raw authority APIs.
+The strongest source-composed boundary is the registered Bao host. It uses a crate-private typed final-delivery gate. B4 requires zero non-test product callers of the public raw `BaoClient::consume_kv_v2` closure path and independently inventories the public authority APIs.
 
 There is still no selected deployed product process for that host in this candidate. Source composition is therefore not activation and does not prove product execution.
 
@@ -104,15 +104,15 @@ These facts require named hosts, deployment configuration and exact-candidate ev
 Current source tests cover, among other cases:
 
 - stale-token denial after lease replacement;
-- exact revocation retry semantics with an authority-generated timestamp;
+- exact-predecessor identical put retries and exact revocation retry semantics with an authority-generated timestamp;
 - bound-clock lease verification;
 - bounded expired-lease pruning;
 - external general-lease snapshot rollback detection;
 - injected FinalUse clock;
 - external FinalUse claim-snapshot rollback detection;
 - approval/feed key overlap by authority epoch;
-- signed revocation freshness and convergence acknowledgement validation;
-- registered consumer and forged independent approval denial;
+- signed revocation freshness, future-ack rejection and convergence acknowledgement validation;
+- registered consumer, forged independent approval and in-flight feed-expiry denial;
 - the documented VerifiedUse and dispatch linearization races.
 
 `CALLERS.toml` and `qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json` classify the public privileged surfaces, including production trust constructors, raw verification/delivery methods, the bounded dispatch fence and lease pruning.
