@@ -1,12 +1,32 @@
 use std::path::Path;
+use std::str::FromStr;
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_memory_federation::FederatedCompletenessV2 as CanonicalCompletenessV2;
+use codex_hepta_memory_federation::FederatedEvidenceItemV2 as CanonicalEvidenceItemV2;
+use codex_hepta_memory_federation::FederatedLeaseV2 as CanonicalLeaseV2;
+use codex_hepta_memory_federation::FederatedQueryV2 as CanonicalQueryV2;
+use codex_hepta_memory_federation::FederatedValidityV2 as CanonicalValidityV2;
+use codex_hepta_memory_federation::FederationAuthorityObservationV2 as CanonicalAuthorityObservationV2;
+use codex_hepta_memory_federation::FederationAuthorityV2 as CanonicalAuthorityV2;
+use codex_hepta_memory_federation::FederationCancellationV2 as CanonicalCancellationV2;
+use codex_hepta_memory_federation::FederationTransportOutcomeV2 as CanonicalTransportOutcomeV2;
+use codex_hepta_memory_federation::FederationTransportResultV2 as CanonicalTransportResultV2;
+use codex_hepta_memory_federation::FederationTransportV2 as CanonicalTransportV2;
+use codex_hepta_memory_federation::FederationV2Error as CanonicalFederationError;
+use codex_hepta_memory_federation::FederationV2Future as CanonicalFutureV2;
+use codex_hepta_memory_federation::RemoteFederatedResponseV2 as CanonicalResponseV2;
+use codex_hepta_memory_federation::execute_once as execute_canonical_federation_v2;
 use codex_hepta_paths::HeptaAgentLayout;
+use codex_hepta_types::Digest32 as CanonicalDigest32;
+use codex_hepta_types::Revision as CanonicalRevision;
+use codex_hepta_types::StableId as CanonicalStableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use serde::Serialize;
@@ -14,6 +34,7 @@ use sha2::Digest;
 use sha2::Sha256;
 use sqlx::Row;
 use sqlx::SqlitePool;
+use tokio::sync::Mutex;
 
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
@@ -34,6 +55,7 @@ pub const MAX_FEDERATION_GRANT_LIFETIME_SECONDS: i64 = 31 * 24 * 60 * 60;
 pub const MAX_FEDERATION_SOURCES_PER_AGENT: usize = 16;
 const MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT: usize = 128;
 const FEDERATION_REFRESH_TIMEOUT: Duration = Duration::from_secs(2);
+const FEDERATION_READ_TIMEOUT_MS: u64 = 2_000;
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const CAPABILITY_ID_PREFIX: &str = "federation:v1:";
@@ -225,9 +247,24 @@ pub struct FederatedRetrievalCandidate {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct FederatedRetrievalCoverage {
+    pub requested_sources: u32,
+    pub completed_sources: u32,
+    pub failed_sources: u32,
+}
+
+impl FederatedRetrievalCoverage {
+    pub fn is_partial(&self) -> bool {
+        self.failed_sources > 0
+            || self.completed_sources.saturating_add(self.failed_sources) < self.requested_sources
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FederatedRetrievalBatch {
     pub query_sha256: Sha256Digest,
     pub candidates: Vec<FederatedRetrievalCandidate>,
+    pub coverage: FederatedRetrievalCoverage,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -658,6 +695,11 @@ impl FederatedMemoryReader {
         Ok(FederatedRetrievalBatch {
             query_sha256: batch.query_sha256,
             candidates,
+            coverage: FederatedRetrievalCoverage {
+                requested_sources: 1,
+                completed_sources: 1,
+                failed_sources: 0,
+            },
         })
     }
 
@@ -766,6 +808,7 @@ pub struct FederatedRecallSet {
     consumer_agent_id: AgentId,
     readers: Vec<FederatedMemoryReader>,
     owner_layouts: Vec<HeptaAgentLayout>,
+    attempt_counter: Arc<AtomicU64>,
 }
 
 impl FederatedRecallSet {
@@ -793,6 +836,7 @@ impl FederatedRecallSet {
             consumer_agent_id,
             readers,
             owner_layouts: Vec::new(),
+            attempt_counter: Arc::new(AtomicU64::new(1)),
         })
     }
 
@@ -810,6 +854,7 @@ impl FederatedRecallSet {
             consumer_agent_id,
             readers: Vec::new(),
             owner_layouts,
+            attempt_counter: Arc::new(AtomicU64::new(1)),
         }
     }
 
@@ -832,12 +877,21 @@ impl FederatedRecallSet {
             ));
         }
         let readers = self.current_readers(request.now_unix_seconds()).await;
+        let requested_sources = u32::try_from(readers.len()).unwrap_or(u32::MAX);
+        let mut completed_sources = 0u32;
+        let mut failed_sources = 0u32;
         let mut candidates = Vec::new();
         for reader in &readers {
-            let Ok(batch) = reader.retrieve(access, request).await else {
-                continue;
-            };
-            candidates.extend(batch.candidates);
+            let attempt = self.attempt_counter.fetch_add(1, Ordering::Relaxed);
+            match retrieve_reader_through_canonical_v2(reader, access, request, attempt).await {
+                Ok(batch) => {
+                    completed_sources = completed_sources.saturating_add(1);
+                    candidates.extend(batch.candidates);
+                }
+                Err(_) => {
+                    failed_sources = failed_sources.saturating_add(1);
+                }
+            }
         }
         candidates.sort_by(|left, right| {
             right
@@ -864,6 +918,11 @@ impl FederatedRecallSet {
         Ok(FederatedRetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query().as_bytes()),
             candidates,
+            coverage: FederatedRetrievalCoverage {
+                requested_sources,
+                completed_sources,
+                failed_sources,
+            },
         })
     }
 
@@ -928,6 +987,284 @@ impl FederatedRecallSet {
         }
         readers
     }
+}
+
+
+struct CanonicalReaderTransport<'a> {
+    reader: &'a FederatedMemoryReader,
+    access: &'a FederationConsumerAccess,
+    request: &'a RetrievalRequest,
+    batch: Arc<Mutex<Option<FederatedRetrievalBatch>>>,
+}
+
+impl CanonicalTransportV2 for CanonicalReaderTransport<'_> {
+    fn send_once<'a>(
+        &'a self,
+        query: &'a CanonicalQueryV2,
+    ) -> CanonicalFutureV2<'a, Result<CanonicalTransportResultV2, CanonicalFederationError>> {
+        Box::pin(async move {
+            let expected_query =
+                CanonicalDigest32::from_str(Sha256Digest::for_bytes(self.request.query().as_bytes()).as_str())
+                    .map_err(|_| CanonicalFederationError::TransportRejected)?;
+            if query.query_digest != expected_query {
+                return Err(CanonicalFederationError::TransportRejected);
+            }
+            let batch = match self.reader.retrieve(self.access, self.request).await {
+                Ok(batch) => batch,
+                Err(CognitiveStoreError::Unavailable(_)) => {
+                    return Ok(CanonicalTransportResultV2::NonTerminal(
+                        CanonicalTransportOutcomeV2::Unavailable,
+                    ));
+                }
+                Err(_) => return Err(CanonicalFederationError::TransportRejected),
+            };
+            let response = canonical_response_from_batch(query, self.reader, &batch)?;
+            *self.batch.lock().await = Some(batch);
+            Ok(CanonicalTransportResultV2::Terminal(response))
+        })
+    }
+}
+
+struct CanonicalReaderAuthority<'a> {
+    reader: &'a FederatedMemoryReader,
+    access: &'a FederationConsumerAccess,
+    now_unix_seconds: i64,
+}
+
+impl CanonicalAuthorityV2 for CanonicalReaderAuthority<'_> {
+    fn observe<'a>(
+        &'a self,
+        query: &'a CanonicalQueryV2,
+        lease: &'a CanonicalLeaseV2,
+    ) -> CanonicalFutureV2<'a, Result<CanonicalAuthorityObservationV2, CanonicalFederationError>> {
+        Box::pin(async move {
+            if let Some(drift) = self
+                .reader
+                .validate_capability(self.access, self.now_unix_seconds)
+                .await
+                .map_err(|_| CanonicalFederationError::TransportRejected)?
+            {
+                return Err(match drift {
+                    FederationRevalidationDrift::Revoked => CanonicalFederationError::LeaseRevoked,
+                    FederationRevalidationDrift::Expired => CanonicalFederationError::LeaseExpired,
+                    FederationRevalidationDrift::CapabilityGeneration
+                    | FederationRevalidationDrift::CapabilityRevision => {
+                        CanonicalFederationError::DigestMismatch("authority_generation_vector")
+                    }
+                    FederationRevalidationDrift::Consumer => {
+                        CanonicalFederationError::IdentityMismatch("authority_consumer")
+                    }
+                    FederationRevalidationDrift::Scope => {
+                        CanonicalFederationError::DigestMismatch("authority_scope")
+                    }
+                    FederationRevalidationDrift::CapabilityMissing
+                    | FederationRevalidationDrift::NotYetEffective
+                    | FederationRevalidationDrift::Memory => {
+                        CanonicalFederationError::TransportRejected
+                    }
+                });
+            }
+            Ok(CanonicalAuthorityObservationV2 {
+                lease_id: lease.lease_id.clone(),
+                query_binding_digest: query.binding_digest(),
+                generation_vector_digest: query.generation_vector_digest,
+                lease_epoch: query.lease_epoch,
+                expires_unix_ms: lease.expires_unix_ms,
+                revoked: false,
+            })
+        })
+    }
+}
+
+struct CanonicalNeverCancelled;
+
+impl CanonicalCancellationV2 for CanonicalNeverCancelled {
+    fn cancelled<'a>(&'a self) -> CanonicalFutureV2<'a, ()> {
+        Box::pin(std::future::pending())
+    }
+}
+
+async fn retrieve_reader_through_canonical_v2(
+    reader: &FederatedMemoryReader,
+    access: &FederationConsumerAccess,
+    request: &RetrievalRequest,
+    attempt: u64,
+) -> Result<FederatedRetrievalBatch, CanonicalFederationError> {
+    let (query, lease, now_unix_ms) = canonical_query_and_lease(reader, access, request, attempt)?;
+    let batch = Arc::new(Mutex::new(None));
+    let transport = CanonicalReaderTransport {
+        reader,
+        access,
+        request,
+        batch: Arc::clone(&batch),
+    };
+    let authority = CanonicalReaderAuthority {
+        reader,
+        access,
+        now_unix_seconds: request.now_unix_seconds(),
+    };
+    let result = execute_canonical_federation_v2(
+        &transport,
+        &authority,
+        &CanonicalNeverCancelled,
+        now_unix_ms,
+        query,
+        &lease,
+    )
+    .await?;
+    if result.validity != CanonicalValidityV2::Valid {
+        return Err(CanonicalFederationError::TransportRejected);
+    }
+    batch
+        .lock()
+        .await
+        .take()
+        .ok_or(CanonicalFederationError::TransportRejected)
+}
+
+fn canonical_query_and_lease(
+    reader: &FederatedMemoryReader,
+    access: &FederationConsumerAccess,
+    request: &RetrievalRequest,
+    attempt: u64,
+) -> Result<(CanonicalQueryV2, CanonicalLeaseV2, u64), CanonicalFederationError> {
+    let now_unix_ms = unix_seconds_to_millis(request.now_unix_seconds())?;
+    let capability_expiry =
+        unix_seconds_to_millis(reader.capability.expires_at_unix_seconds)?;
+    let deadline_unix_ms = now_unix_ms
+        .checked_add(FEDERATION_READ_TIMEOUT_MS)
+        .ok_or(CanonicalFederationError::TransportRejected)?
+        .min(capability_expiry);
+    if deadline_unix_ms <= now_unix_ms {
+        return Err(CanonicalFederationError::LeaseExpired);
+    }
+
+    let peer_id = canonical_id("peer", reader.capability.owner_agent_id.as_str())?;
+    let principal_id = canonical_id("principal", access.agent_id.as_str())?;
+    let scope_bytes = serde_json::to_vec(&reader.capability.scope)
+        .map_err(|_| CanonicalFederationError::TransportRejected)?;
+    let scope_digest = CanonicalDigest32::of_bytes(&scope_bytes);
+    let purpose_digest = CanonicalDigest32::of_bytes(b"hepta.memory.federation.recall.v2");
+    let generation_vector_digest = CanonicalDigest32::of_bytes(
+        format!(
+            "{}:{}:{}",
+            reader.capability.id.as_str(),
+            reader.capability.generation,
+            reader.capability.revision
+        )
+        .as_bytes(),
+    );
+    let query_sha256 = Sha256Digest::for_bytes(request.query().as_bytes());
+    let query_digest = CanonicalDigest32::from_str(query_sha256.as_str())
+        .map_err(|_| CanonicalFederationError::TransportRejected)?;
+    let nonce_digest = CanonicalDigest32::of_bytes(
+        format!(
+            "{}:{}:{}:{}",
+            reader.capability.id.as_str(),
+            query_sha256.as_str(),
+            request.now_unix_seconds(),
+            attempt
+        )
+        .as_bytes(),
+    );
+    let query_id = CanonicalStableId::new(format!("query:{nonce_digest}"))
+        .map_err(|_| CanonicalFederationError::TransportRejected)?;
+    let query = CanonicalQueryV2 {
+        query_id: query_id.clone(),
+        peer_id: peer_id.clone(),
+        principal_id: principal_id.clone(),
+        scope_digest,
+        purpose_digest,
+        generation_vector_digest,
+        query_digest,
+        maximum_results: u32::try_from(crate::MAX_RETRIEVAL_RESULTS)
+            .map_err(|_| CanonicalFederationError::TransportRejected)?,
+        deadline_unix_ms,
+        lease_epoch: reader.capability.generation,
+        nonce_digest,
+    };
+    let lease_id = canonical_id("lease", reader.capability.id.as_str())?;
+    let lease = CanonicalLeaseV2 {
+        lease_id,
+        query_id,
+        peer_id,
+        principal_id,
+        scope_digest,
+        purpose_digest,
+        generation_vector_digest,
+        query_binding_digest: query.binding_digest(),
+        lease_epoch: reader.capability.generation,
+        expires_unix_ms: capability_expiry,
+        revoked: false,
+    };
+    Ok((query, lease, now_unix_ms))
+}
+
+fn canonical_response_from_batch(
+    query: &CanonicalQueryV2,
+    reader: &FederatedMemoryReader,
+    batch: &FederatedRetrievalBatch,
+) -> Result<CanonicalResponseV2, CanonicalFederationError> {
+    let mut items = Vec::with_capacity(batch.candidates.len());
+    for candidate in &batch.candidates {
+        let record_revision = CanonicalRevision::new(candidate.candidate.memory.id.revision)
+            .map_err(|_| CanonicalFederationError::TransportRejected)?;
+        let record_digest = CanonicalDigest32::from_str(
+            candidate.candidate.revalidation.content_sha256.as_str(),
+        )
+        .map_err(|_| CanonicalFederationError::TransportRejected)?;
+        let support_bytes = serde_json::to_vec(&candidate.candidate.revalidation.citations)
+            .map_err(|_| CanonicalFederationError::TransportRejected)?;
+        let validity_bytes = serde_json::to_vec(&candidate.candidate.revalidation)
+            .map_err(|_| CanonicalFederationError::TransportRejected)?;
+        items.push(CanonicalEvidenceItemV2 {
+            source_owner_id: canonical_id("owner", candidate.source_agent_id.as_str())?,
+            record_id: canonical_id(
+                "memory",
+                candidate.candidate.memory.id.memory_id.as_str(),
+            )?,
+            record_revision,
+            record_digest,
+            support_digest: CanonicalDigest32::of_bytes(&support_bytes),
+            validity_digest: CanonicalDigest32::of_bytes(&validity_bytes),
+        });
+    }
+    let completeness = if items.is_empty() {
+        CanonicalCompletenessV2::Empty
+    } else if items.len() >= crate::MAX_RETRIEVAL_RESULTS || batch.coverage.is_partial() {
+        CanonicalCompletenessV2::Partial
+    } else {
+        CanonicalCompletenessV2::Complete
+    };
+    Ok(CanonicalResponseV2 {
+        peer_id: query.peer_id.clone(),
+        query_binding_digest: query.binding_digest(),
+        scope_digest: query.scope_digest,
+        purpose_digest: query.purpose_digest,
+        generation_vector_digest: query.generation_vector_digest,
+        response_digest: CanonicalDigest32::ZERO,
+        observed_frontier: reader.capability.revision,
+        expires_unix_ms: unix_seconds_to_millis(reader.capability.expires_at_unix_seconds)?
+            .min(query.deadline_unix_ms),
+        items,
+        completeness,
+        terminal_observed: true,
+    }
+    .sealed())
+}
+
+fn canonical_id(prefix: &str, value: &str) -> Result<CanonicalStableId, CanonicalFederationError> {
+    let digest = CanonicalDigest32::of_bytes(value.as_bytes());
+    CanonicalStableId::new(format!("{prefix}:{digest}"))
+        .map_err(|_| CanonicalFederationError::TransportRejected)
+}
+
+fn unix_seconds_to_millis(value: i64) -> Result<u64, CanonicalFederationError> {
+    let seconds =
+        u64::try_from(value).map_err(|_| CanonicalFederationError::TransportRejected)?;
+    seconds
+        .checked_mul(1_000)
+        .ok_or(CanonicalFederationError::TransportRejected)
 }
 
 async fn insert_event(
