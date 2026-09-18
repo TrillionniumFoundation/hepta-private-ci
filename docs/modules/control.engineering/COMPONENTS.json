@@ -347,6 +347,124 @@
         "input_byte_limit_exceeded"
       ],
       "rollback": "retry with corrected input; scheduling retains immutable committed generations"
+    },
+    {
+      "id": "authenticated-engineering-orchestrator",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/orchestration.py",
+      "symbols": [
+        "issue_verified_work_envelope",
+        "plan_engineering_work",
+        "persist_orchestration_generation"
+      ],
+      "state": "source_implemented",
+      "failureModel": [
+        "source_receipt_signature",
+        "completion_receipt_signature",
+        "worker_skill_or_capacity",
+        "review_capacity",
+        "ci_capacity",
+        "orchestration_persistence_mismatch"
+      ],
+      "resourceBounds": {
+        "maximumWorkers": 256,
+        "maximumReviewRoles": 32,
+        "maximumCiUnits": 64,
+        "maximumPackages": 4096
+      },
+      "rollback": "discard the plan or publish a new immutable generation; proposals grant no worker-write or merge authority"
+    },
+    {
+      "id": "atomic-candidate-bundle",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/candidate_bundle.py",
+      "symbols": [
+        "PatchOperation",
+        "CandidateBundle",
+        "generate_candidate_bundle",
+        "sandbox_candidate_bundle"
+      ],
+      "state": "source_implemented",
+      "failureModel": [
+        "protected_oracle_path",
+        "candidate_changed_paths_mismatch",
+        "rename_precondition_failed",
+        "changed_file_limit"
+      ],
+      "resourceBounds": {
+        "maximumOperations": 100,
+        "maximumChangedFiles": 100,
+        "maximumDiffBytes": 1048576
+      },
+      "rollback": "discard the metadata-free bundle workspace; exact base remains unchanged"
+    },
+    {
+      "id": "sandbox-capacity-and-mutation-controller",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/execution_control.py",
+      "symbols": [
+        "HostSandboxLimiter",
+        "execute_with_infrastructure_retries",
+        "evaluate_mutation_probes"
+      ],
+      "state": "source_implemented",
+      "failureModel": [
+        "sandbox_capacity_exhausted",
+        "invalid_infrastructure_retry_limit",
+        "mutation_probe_required",
+        "mutation_probe_limit_exceeded"
+      ],
+      "resourceBounds": {
+        "maximumParallelSandboxesPerHost": 8,
+        "maximumInfrastructureRetries": 2,
+        "maximumMutationProbes": 256
+      },
+      "rollback": "release the host slot and retry only enumerated infrastructure failures"
+    },
+    {
+      "id": "external-coordination-audit-key-boundary",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/external_control.py",
+      "symbols": [
+        "DistributedWriteGrant",
+        "verify_distributed_write_grant",
+        "AuditAnchorReceipt",
+        "export_audit_anchor",
+        "verify_audit_anchor_receipt",
+        "KeyCustodyReceipt",
+        "verify_key_custody_receipt"
+      ],
+      "state": "source_implemented_external_provider_required",
+      "failureModel": [
+        "distributed_fence_stale",
+        "distributed_write_grant_signature",
+        "audit_anchor_signature",
+        "audit_anchor_stale_sequence",
+        "key_custody_boundary",
+        "key_custody_signature"
+      ],
+      "resourceBounds": {
+        "ambientAuthority": 0
+      },
+      "rollback": "deny multi-host writes or deployment until fresh external receipts are available"
+    },
+    {
+      "id": "repository-v2-product-caller",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/product_caller.py",
+      "symbols": [
+        "PRODUCT_CALLER_ID",
+        "build_product_receipt",
+        "main"
+      ],
+      "state": "source_implemented_execution_pending",
+      "failureModel": [
+        "repository_identity_mismatch",
+        "source_head_mismatch",
+        "ordered_merge_parent_mismatch",
+        "product_assignment_not_persisted",
+        "integration_evidence_rejected"
+      ],
+      "resourceBounds": {
+        "ambientAuthority": 0,
+        "maximumAssignments": 1
+      },
+      "rollback": "leave productExecutionProved false; the caller never merges, deploys, promotes or releases"
     }
   ],
   "externalGates": {
