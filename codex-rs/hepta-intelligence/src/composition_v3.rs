@@ -95,8 +95,7 @@ impl LegalActionCandidateSetV1 {
                     "candidate support",
                 ));
             }
-            if candidate.support_ppm < support_floor_ppm
-                || candidate.support_ppm > MAX_SUPPORT_PPM
+            if candidate.support_ppm < support_floor_ppm || candidate.support_ppm > MAX_SUPPORT_PPM
             {
                 return Err(LegalActionCandidateSetErrorV1::SupportBelowFloor(
                     candidate.candidate_id.to_string(),
@@ -612,13 +611,7 @@ pub fn prepare_intelligence_run_v3<P: CompositionPortsV3, C: CompositionControlV
             )? {
                 StageAdvanceV3::Continue(output) => predecessor = output,
                 StageAdvanceV3::Terminal(disposition) => {
-                    return finish_v3(
-                        &request,
-                        snapshot_digest,
-                        disposition,
-                        stages,
-                        None,
-                    );
+                    return finish_v3(&request, snapshot_digest, disposition, stages, None);
                 }
             }
         }};
@@ -633,7 +626,12 @@ pub fn prepare_intelligence_run_v3<P: CompositionPortsV3, C: CompositionControlV
         return Err(CompositionErrorV3::ObjectiveSnapshotMismatch);
     }
 
-    match guard_stage(&request, control, CompositionStageV3::LegalSetBuilt, predecessor)? {
+    match guard_stage(
+        &request,
+        control,
+        CompositionStageV3::LegalSetBuilt,
+        predecessor,
+    )? {
         GuardV3::Proceed(input, started) => {
             let finished = control.now_micros();
             if finished < started {
@@ -1227,9 +1225,9 @@ where
                 finished_at_micros: finished,
                 stage_deadline_micros: input.stage_deadline_micros,
             });
-            Ok(DecisionAdvanceV3::Terminal(CompositionDispositionV3::Failed(
-                failure.class,
-            )))
+            Ok(DecisionAdvanceV3::Terminal(
+                CompositionDispositionV3::Failed(failure.class),
+            ))
         }
     }
 }
@@ -1359,7 +1357,9 @@ fn digest_candidate_set(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn digest_host_envelope(value: &IntelligenceHostEnvelopeV1) -> Result<Digest32, CompositionErrorV3> {
+fn digest_host_envelope(
+    value: &IntelligenceHostEnvelopeV1,
+) -> Result<Digest32, CompositionErrorV3> {
     let mut bytes = b"hepta.intelligence-host-envelope.v1\0".to_vec();
     push_id(&mut bytes, &value.run_id)?;
     for digest in [
