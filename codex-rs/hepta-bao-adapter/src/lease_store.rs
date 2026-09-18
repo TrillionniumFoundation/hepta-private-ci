@@ -280,7 +280,7 @@ impl BaoLeaseStore {
             .ok_or(LeaseStoreError::InvalidState)?;
         if record.request_sha256 != request_sha256 || record.state != required {
             stored.operations.insert(operation_id.to_owned(), record);
-            return Err(LeaseStoreError::InvalidState);
+            return Err(LeaseStoreError::Conflict);
         }
         update(&mut record, &mut stored)?;
         stored.operations.insert(operation_id.to_owned(), record);
