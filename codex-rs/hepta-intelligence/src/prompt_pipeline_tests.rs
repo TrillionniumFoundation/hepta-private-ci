@@ -2,13 +2,19 @@ use std::fmt::Debug;
 
 use super::*;
 use codex_hepta_context_compiler::{ContextDeliveryDispositionV2, observe_delivery};
+use codex_hepta_learning_ledger::{
+    AuthenticatedPrincipalV1, LearningEvidenceRoleV1, LearningEvidenceTrustV1,
+    LearningEvidenceVerifierV1, SignedLearningEvidenceV1, TrustedLearningSignerV1,
+};
 use codex_hepta_prompt_optimizer::canonical::{
-    CandidateEvidenceV1, PortfolioBudgetV1,
+    CandidateEvidenceV1, PortfolioBudgetV1, candidate_evidence_signing_bytes,
 };
 use codex_hepta_prompt_registry::{
     FactorSource, Lifecycle, PromptFactor, PromptRealizationBindingV2, PromptRoleV2,
 };
 use codex_hepta_types::FixedQ32;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
     match result {
@@ -78,23 +84,64 @@ fn canonical_caller_compiles_exercised_prompt_portfolio() {
         Vec::new(),
         128,
     ));
+    let signing_key = SigningKey::from_bytes(&[9; 32]);
+    let verifying_key = signing_key.verifying_key().to_bytes();
+    let verifier = must(LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: digest(b"pricing-scope"),
+        objective_digest: digest(b"objective"),
+        authority_epoch: 1,
+        signers: vec![TrustedLearningSignerV1 {
+            principal: AuthenticatedPrincipalV1 {
+                principal_id: id("pricing-evaluator"),
+                credential_chain_digest: digest(b"pricing-evaluator-credential"),
+                signing_key_digest: Digest32::of_bytes(&verifying_key),
+                scope_digest: digest(b"pricing-scope"),
+                authority_epoch: 1,
+                authenticated_at: 1,
+                expires_at: 100,
+            },
+            controller_id: id("pricing-controller"),
+            verifying_key,
+            roles: vec![LearningEvidenceRoleV1::Evaluator],
+            revoked_at: None,
+        }],
+    }));
     let evidence = compatible
         .bindings
         .iter()
-        .map(|binding| CandidateEvidenceV1 {
-            candidate_id: binding.realization_id.clone(),
-            causal_utility: FixedQ32::from_raw(10),
-            token_shadow_cost: FixedQ32::ZERO,
-            latency_cost: FixedQ32::ZERO,
-            crowding_cost: FixedQ32::ZERO,
-            interference_cost: FixedQ32::ZERO,
-            privacy_cost: FixedQ32::ZERO,
-            instability_cost: FixedQ32::ZERO,
-            future_option_cost: FixedQ32::ZERO,
-            resource_cost: FixedQ32::ZERO,
-            support_digest: digest(binding.realization_id.as_str().as_bytes()),
-            confidence_digest: digest(b"confidence"),
-            applicability_digest: digest(b"applicability"),
+        .enumerate()
+        .map(|(index, binding)| {
+            let pricing = CandidateEvidenceV1 {
+                candidate_id: binding.realization_id.clone(),
+                causal_utility: FixedQ32::from_raw(10),
+                token_shadow_cost: FixedQ32::ZERO,
+                latency_cost: FixedQ32::ZERO,
+                crowding_cost: FixedQ32::ZERO,
+                interference_cost: FixedQ32::ZERO,
+                privacy_cost: FixedQ32::ZERO,
+                instability_cost: FixedQ32::ZERO,
+                future_option_cost: FixedQ32::ZERO,
+                resource_cost: FixedQ32::ZERO,
+                support_digest: digest(binding.realization_id.as_str().as_bytes()),
+                confidence_digest: digest(b"confidence"),
+                applicability_digest: digest(b"applicability"),
+            };
+            let payload = candidate_evidence_signing_bytes(&pricing);
+            let mut signed = SignedLearningEvidenceV1 {
+                evidence_id: id(&format!("pricing-evidence:{index}")),
+                principal_id: id("pricing-evaluator"),
+                role: LearningEvidenceRoleV1::Evaluator,
+                trust_digest: verifier.trust_digest(),
+                scope_digest: digest(b"pricing-scope"),
+                objective_digest: digest(b"objective"),
+                authority_epoch: 1,
+                issued_at: 2,
+                expires_at: 90,
+                payload_digest: Digest32::of_bytes(&payload),
+                signature: [0; 64],
+            };
+            signed.signature = signing_key.sign(&signed.signing_bytes()).to_bytes();
+            SignedCandidatePricingEvidenceV1 { pricing, signed }
         })
         .collect();
 
@@ -119,6 +166,7 @@ fn canonical_caller_compiles_exercised_prompt_portfolio() {
             prompt_truncation_digest: digest(b"prompt-truncation"),
             context_truncation_digest: digest(b"context-truncation"),
             now_unix_ms: 10,
+            evidence_verifier: &verifier,
             evidence,
             relations: Vec::new(),
             portfolio_budget: PortfolioBudgetV1 {
