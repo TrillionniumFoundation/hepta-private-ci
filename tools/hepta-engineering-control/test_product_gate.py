@@ -18,7 +18,10 @@ CANONICAL_REGISTRY = """{
       "module": "control.engineering",
       "state": "source_implemented",
       "authorityDelta": "none",
-      "developmentAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
+      "developmentAfter": [
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+      ],
       "activationAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
       "owner": "developer-productivity",
       "deputy": "architecture",
@@ -102,7 +105,10 @@ class ProductGateTests(unittest.TestCase):
                 "deputy": "architecture",
                 "sourceMutationAllowed": True,
                 "allowedWritePaths": ["tools/hepta-engineering-control/**"],
-                "developmentAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
+                "developmentAfter": [
+                    "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+                    "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+                ],
                 "activationAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
             },
             "plan": {
@@ -185,7 +191,10 @@ class ProductGateTests(unittest.TestCase):
         self.assertEqual(receipt["canonicalWorkPackage"]["blobOid"], CANONICAL_BLOB)
         self.assertEqual(
             receipt["canonicalWorkPackage"]["developmentAfter"],
-            ["DOC-2-DEFAULT-BRANCH-SELECTION"],
+            [
+                "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+                "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+            ],
         )
         self.assertFalse(receipt["mergeAuthority"])
         self.assertFalse(receipt["releaseAuthority"])
