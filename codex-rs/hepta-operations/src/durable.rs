@@ -920,6 +920,96 @@ impl DurableOperationStore {
         Ok(updated)
     }
 
+    /// Rebind unresolved work to a newer authority epoch while retaining the
+    /// same process owner generation. Existing claims are fenced immediately.
+    /// Pending work is requeued under the new epoch; an already-dispatched
+    /// operation becomes indeterminate and is never blindly resent.
+    pub async fn rotate_authority_epoch(
+        &self,
+        operation_id: &StableId,
+        owner_generation: Generation,
+        new_authority_epoch: Generation,
+    ) -> Result<DurableOperationRecord, OperationError> {
+        let now = now_millis()?;
+        let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)?;
+        let record = load_required_operation(&mut tx, operation_id).await?;
+        if record.intent.owner_generation != owner_generation {
+            return Err(OperationError::StaleGeneration);
+        }
+        if new_authority_epoch <= record.intent.authority_epoch {
+            return Err(OperationError::InvalidRequest(
+                "new authority epoch must increase",
+            ));
+        }
+        if record.state.is_terminal() {
+            return Err(OperationError::Terminal);
+        }
+        let outbox = load_required_outbox(&mut tx, operation_id).await?;
+        let fence = outbox
+            .fence
+            .checked_add(1)
+            .ok_or(OperationError::StaleLease)?;
+        let revision = next_revision(record.revision, operation_id)?;
+        let (next_state, reason_digest) = match record.state {
+            DurableOperationState::Pending => (DurableOperationState::Pending, None),
+            DurableOperationState::Dispatched => (
+                DurableOperationState::Indeterminate,
+                Some(authority_rotation_reason_digest(
+                    operation_id,
+                    record.intent.authority_epoch,
+                    new_authority_epoch,
+                )),
+            ),
+            DurableOperationState::Indeterminate => (
+                DurableOperationState::Indeterminate,
+                record.indeterminate_reason_digest,
+            ),
+            DurableOperationState::Applied
+            | DurableOperationState::NotApplied
+            | DurableOperationState::Quarantined => return Err(OperationError::Terminal),
+        };
+        sqlx::query(
+            "UPDATE operation_ledger SET authority_epoch = ?, revision = ?,
+                state = ?, writer_fence = ?, indeterminate_reason_digest = ?, updated_at_ms = ?
+             WHERE operation_id = ?",
+        )
+        .bind(new_authority_epoch.get().to_be_bytes().as_slice())
+        .bind(revision.get().to_be_bytes().as_slice())
+        .bind(next_state.label())
+        .bind(fence)
+        .bind(reason_digest.map(|value| value.into_array().to_vec()))
+        .bind(now)
+        .bind(operation_id.as_str())
+        .execute(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let outbox_state = match next_state {
+            DurableOperationState::Pending => "queued",
+            DurableOperationState::Indeterminate => "indeterminate",
+            _ => {
+                return Err(OperationError::Corrupt(
+                    "invalid authority rotation state".into(),
+                ));
+            }
+        };
+        sqlx::query(
+            "UPDATE cross_owner_outbox SET state = ?, fence = ?, worker_id = NULL,
+                lease_until_ms = NULL, available_at_ms = ?, updated_at_ms = ?
+             WHERE operation_id = ?",
+        )
+        .bind(outbox_state)
+        .bind(fence)
+        .bind(now)
+        .bind(now)
+        .bind(operation_id.as_str())
+        .execute(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let updated = load_required_operation(&mut tx, operation_id).await?;
+        tx.commit().await.map_err(storage)?;
+        Ok(updated)
+    }
+
     /// Transfer unresolved ownership to a strictly newer process generation and
     /// a strictly newer authority epoch. The authority owner must publish that
     /// epoch before the new writer is allowed to enter an effect boundary.
@@ -1566,6 +1656,18 @@ fn terminal_state(outcome: ReconciliationOutcome) -> DurableOperationState {
 fn attempt_budget_digest(operation_id: &StableId) -> Digest32 {
     let mut bytes = b"hepta.kernel.operations.attempt-budget.v1\0".to_vec();
     append_text(&mut bytes, operation_id);
+    Digest32::of_bytes(&bytes)
+}
+
+fn authority_rotation_reason_digest(
+    operation_id: &StableId,
+    old_authority_epoch: Generation,
+    new_authority_epoch: Generation,
+) -> Digest32 {
+    let mut bytes = b"hepta.kernel.operations.authority-rotation.v1\0".to_vec();
+    append_text(&mut bytes, operation_id);
+    bytes.extend_from_slice(&old_authority_epoch.get().to_be_bytes());
+    bytes.extend_from_slice(&new_authority_epoch.get().to_be_bytes());
     Digest32::of_bytes(&bytes)
 }
 
