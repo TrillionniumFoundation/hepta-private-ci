@@ -188,7 +188,7 @@ async fn outbound_terminality_requires_sync_observation_and_redaction_keeps_send
         "origin_server_ts": 15,
         "type": "m.room.message",
         "content": {"msgtype":"m.text","body":"terminal only after sync"},
-        "unsigned": {"transaction_id": txn_id.as_str()}
+        "unsigned": {}
     });
     let first = response(vec![outbound])?;
     fixture
