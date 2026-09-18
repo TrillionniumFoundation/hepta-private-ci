@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. The current source surface includes V1 immutable registry/storage, V2 manifest and lifecycle contracts, V3 withdrawal-frontier admission, withdrawal/lifecycle durable journal adapters, pinned loading, iteration state and `IterationLedgerV1`, plus an explicit artifact publication transaction contract. The machine-readable source map is [`IMPLEMENTATION_MAP.json`](./IMPLEMENTATION_MAP.json). This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -144,13 +144,27 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. The following source contracts are now first-class:
+
+- `ArtifactRegistry` is append-only and bounded to the durable snapshot record ceiling. A state accepted in memory must remain representable by the standard create-only snapshot path.
+- `DatasetWithdrawalRegistry` and `ArtifactLifecycleJournalV2` expose replayable snapshots; `journal_storage.rs` persists them through create-only files with an independently retained `JournalSnapshotReceiptV1`.
+- V3 artifact admission is bound to the exact withdrawal head **and** `WithdrawalRegistryScopeV1 { registry_id, authority_domain_id, scope_id }`. Equal head digests from different domains are not interchangeable.
+- `prepare_artifact_publication_v1` validates V2/V3 admission against the candidate V1 registry representation and mints an immutable publication intent.
+- The host syncs candidate payload bytes and the create-only registry snapshot, then calls `finalize_artifact_publication_v1`. Finalization revalidates the withdrawal head/scope and binds the durable snapshot receipt into `ArtifactPublicationCommitV1`.
+- A host-owned CURRENT pointer or equivalent observable publication **MUST NOT** advance without the matching `ArtifactPublicationCommitV1`. A crash before commit leaves only unselected create-only files, which may be reconciled as orphans; a crash after commit requires the host to recover or republish the same commit identity, never synthesize a new one from file contents.
+- `iteration.rs` validates candidate transition semantics; `iteration_ledger.rs` stores bounded iteration evidence. Neither surface grants activation, selection, promotion or release authority.
+
+This is a hard host transaction contract rather than a claim that this crate owns the deployment filesystem namespace or CURRENT pointer. The selected host remains responsible for exclusive writer fencing, containing-directory durability, authenticated path selection and atomic pointer publication.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Lifecycle replay deliberately separates historical validity from present mutation authority. New `ArtifactLifecycleJournalV2::append` calls require actor evidence to be current at `now`; `from_snapshot` instead revalidates the persisted actor/event binding, role, state predecessor, event digest and hash chain without requiring the historical credential to remain unexpired at restart time. Therefore a record legitimately written while a credential was current remains recoverable after expiry, while the same expired evidence cannot authorize a new append.
+
+Withdrawal and lifecycle durable snapshots are create-only, bounded and receipt-bound. Reopen requires the independently retained binding, record count, head digest, encoded byte count and file digest, then reconstructs the in-memory journal through the normal replay validator. Corrupt bytes, a stale/tampered receipt, chain mismatch or semantic mismatch fail closed.
+
+Publication recovery follows the contract in Section 7: payload/snapshot sync may leave unselected files; CURRENT publication may occur only after a valid commit receipt. Orphan reconciliation may delete only files not referenced by an authenticated committed generation. It must never infer committed state from file presence alone.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -168,7 +182,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-learning-artifacts/src/lib.rs](../../../codex-rs/hepta-learning-artifacts/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Current native limits are enforced by the linked implementation components. The V1 in-memory registry and create-only durable snapshot path now share the same 4,096-record ceiling; the encoded snapshot also remains bounded to 8 MiB and each candidate payload to 64 MiB. The 8 MiB byte ceiling can reject a state before the record ceiling when individual records are large, so callers must treat durable encoding capacity as part of admission and never assume record count alone guarantees persistence.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -182,6 +196,9 @@ Current operating and state-format references:
 - [codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md](../../../codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md).
 - [codex-rs/hepta-learning-artifacts/PINNED_LOAD.md](../../../codex-rs/hepta-learning-artifacts/PINNED_LOAD.md).
 - [codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md](../../../codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md).
+- [codex-rs/hepta-learning-artifacts/src/journal_storage.rs](../../../codex-rs/hepta-learning-artifacts/src/journal_storage.rs) for durable withdrawal/lifecycle snapshot formats and reopen validation.
+- [codex-rs/hepta-learning-artifacts/src/publication.rs](../../../codex-rs/hepta-learning-artifacts/src/publication.rs) for the V2/V3 admission → V1 durable publication transaction contract.
+- [codex-rs/hepta-learning-artifacts/src/iteration.rs](../../../codex-rs/hepta-learning-artifacts/src/iteration.rs) and [iteration_ledger.rs](../../../codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs) for self-iteration candidate/evidence state.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -191,6 +208,9 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs); named case: `art_01_manifest_v2_normalizes_complete_lineage`.
 - [codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs); named case: `batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input`.
+- [codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs](../../../codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs); regression case: historical lifecycle snapshot replay after actor credential expiry while new expired-credential append remains denied.
+- [codex-rs/hepta-learning-artifacts/src/admission_v3.rs](../../../codex-rs/hepta-learning-artifacts/src/admission_v3.rs); regression case: equal withdrawal heads from a different scope/domain are rejected.
+- [codex-rs/hepta-learning-artifacts/src/journal_storage.rs](../../../codex-rs/hepta-learning-artifacts/src/journal_storage.rs); durable withdrawal and lifecycle write/reopen round trips.
 
 In `codex-rs`, run `just test -p codex-hepta-learning-artifacts`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md) separately labels target acceptance designs.
 
