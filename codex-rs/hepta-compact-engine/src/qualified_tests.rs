@@ -59,12 +59,23 @@ fn record(
     }
 }
 
-fn input(record: MemoryRecord, priority: u32) -> CompactionInputRecordV2 {
+fn input_with_cost(
+    record: MemoryRecord,
+    priority: u32,
+    encoded_bytes: u64,
+    token_count: u64,
+) -> CompactionInputRecordV2 {
     CompactionInputRecordV2 {
         retention_reason_digest: digest(&format!("reason:{}", record.record_id)),
         record,
         retention_priority: priority,
+        encoded_bytes,
+        token_count,
     }
+}
+
+fn input(record: MemoryRecord, priority: u32) -> CompactionInputRecordV2 {
+    input_with_cost(record, priority, 64, 8)
 }
 
 fn policy(maximum: u32, protected: Vec<StableId>) -> CompactionPolicyV2 {
@@ -73,7 +84,57 @@ fn policy(maximum: u32, protected: Vec<StableId>) -> CompactionPolicyV2 {
         algorithm_digest: digest("algorithm"),
         compatibility_digest: digest("compatibility"),
         maximum_retained_records: maximum,
+        maximum_retained_bytes: 4096,
+        maximum_retained_tokens: 512,
+        maximum_payload_bytes: 2048,
+        maximum_payload_tokens: 256,
         protected_record_ids: protected,
+    }
+}
+
+fn semantic_payload(snapshot: &CognitiveSnapshotKeyV1) -> CompactionSemanticPayloadV2 {
+    CompactionSemanticPayloadV2 {
+        source_snapshot_digest: snapshot.vector_digest,
+        payload_digest: digest("semantic-payload"),
+        generator_implementation_digest: digest("semantic-generator"),
+        generator_receipt_digest: digest("semantic-generator-receipt"),
+        tokenizer_digest: snapshot.vector.tokenizer_digest,
+        encoded_bytes: 256,
+        token_count: 32,
+    }
+}
+
+fn build(
+    policy: &CompactionPolicyV2,
+    inputs: Vec<CompactionInputRecordV2>,
+) -> Result<QualifiedCompactionCandidateV2, QualifiedCompactionError> {
+    let snapshot = snapshot_key();
+    let semantic = semantic_payload(&snapshot);
+    build_qualified_candidate(
+        snapshot,
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        policy,
+        &semantic,
+        inputs,
+    )
+}
+
+fn qualification() -> CompactionQualificationV2 {
+    CompactionQualificationV2 {
+        evaluator_id: id("evaluator:independent"),
+        evaluator_implementation_digest: digest("evaluator-implementation"),
+        evaluation_artifact_digest: digest("evaluation-artifact"),
+        attestation_digest: digest("attestation"),
+        attestation_signature_digest: digest("attestation-signature"),
+        signature_verification_receipt_digest: digest("signature-verification-receipt"),
+        retained_query_suite_digest: digest("queries"),
+        reconstruction_obligation_digest: digest("reconstruction"),
+        contradiction_holdout_digest: digest("contradictions"),
+        retained_queries_passed: true,
+        reconstruction_passed: true,
+        contradictions_preserved: true,
+        deletion_non_resurrection_passed: true,
     }
 }
 
@@ -81,10 +142,7 @@ fn policy(maximum: u32, protected: Vec<StableId>) -> CompactionPolicyV2 {
 fn protected_live_reference_is_retained_before_higher_priority_optional_record() {
     let protected = record("memory:protected", 1, None, RecordState::Live);
     let optional = record("memory:optional", 1, None, RecordState::Live);
-    let candidate = build_qualified_candidate(
-        snapshot_key(),
-        generation(2),
-        Some(digest("predecessor-checkpoint")),
+    let candidate = build(
         &policy(1, vec![id("memory:protected")]),
         vec![input(optional, 100), input(protected, 1)],
     )
@@ -107,10 +165,7 @@ fn tombstoned_head_is_never_replayed_or_retained() {
         Some(live.record_digest()),
         RecordState::Tombstone,
     );
-    let candidate = build_qualified_candidate(
-        snapshot_key(),
-        generation(2),
-        Some(digest("predecessor-checkpoint")),
+    let candidate = build(
         &policy(4, vec![id("memory:deleted")]),
         vec![input(live, 10), input(tombstone, 10)],
     )
@@ -122,7 +177,7 @@ fn tombstoned_head_is_never_replayed_or_retained() {
 }
 
 #[test]
-fn explicit_resurrection_after_tombstone_is_rejected() {
+fn canonical_path_rejects_live_tombstone_live_resurrection() {
     let live = record("memory:resurrected", 1, None, RecordState::Live);
     let tombstone = record(
         "memory:resurrected",
@@ -137,10 +192,7 @@ fn explicit_resurrection_after_tombstone_is_rejected() {
         RecordState::Live,
     );
     assert_eq!(
-        build_qualified_candidate(
-            snapshot_key(),
-            generation(2),
-            Some(digest("predecessor-checkpoint")),
+        build(
             &policy(4, Vec::new()),
             vec![input(live, 1), input(tombstone, 1), input(resurrected, 1)],
         ),
@@ -159,50 +211,36 @@ fn candidate_is_order_independent() {
     ];
     let mut reversed = inputs.clone();
     reversed.reverse();
-    let left = build_qualified_candidate(
-        snapshot_key(),
-        generation(2),
-        Some(digest("predecessor-checkpoint")),
-        &policy(2, Vec::new()),
-        inputs,
-    )
-    .unwrap_or_else(|error| panic!("valid left candidate: {error}"));
-    let right = build_qualified_candidate(
-        snapshot_key(),
-        generation(2),
-        Some(digest("predecessor-checkpoint")),
-        &policy(2, Vec::new()),
-        reversed,
-    )
-    .unwrap_or_else(|error| panic!("valid right candidate: {error}"));
+    let left = build(&policy(2, Vec::new()), inputs)
+        .unwrap_or_else(|error| panic!("valid left candidate: {error}"));
+    let right = build(&policy(2, Vec::new()), reversed)
+        .unwrap_or_else(|error| panic!("valid right candidate: {error}"));
     assert_eq!(left, right);
 }
 
 #[test]
-fn proof_requires_all_loss_and_deletion_obligations() {
-    let candidate = build_qualified_candidate(
-        snapshot_key(),
-        generation(2),
-        Some(digest("predecessor-checkpoint")),
+fn proof_binds_evaluator_attestation_and_candidate_identity() {
+    let candidate = build(
         &policy(2, Vec::new()),
         vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
     )
     .unwrap_or_else(|error| panic!("valid candidate: {error}"));
-    let qualification = CompactionQualificationV2 {
-        evaluator_id: id("evaluator:independent"),
-        retained_query_suite_digest: digest("queries"),
-        reconstruction_obligation_digest: digest("reconstruction"),
-        contradiction_holdout_digest: digest("contradictions"),
-        retained_queries_passed: true,
-        reconstruction_passed: true,
-        contradictions_preserved: true,
-        deletion_non_resurrection_passed: true,
-    };
+    let qualification = qualification();
     let proof = prove_compaction(&candidate, qualification.clone())
         .unwrap_or_else(|error| panic!("valid proof: {error}"));
     assert_eq!(
         proof.checkpoint_digest,
         candidate.checkpoint.checkpoint_digest
+    );
+    assert_eq!(proof.candidate_digest, candidate.candidate_digest);
+    assert_eq!(proof.evaluator_id, id("evaluator:independent"));
+    assert_eq!(
+        proof.attestation_signature_digest,
+        qualification.attestation_signature_digest
+    );
+    assert_eq!(
+        proof.signature_verification_receipt_digest,
+        qualification.signature_verification_receipt_digest
     );
     assert_eq!(proof.authority, AuthorityPosture::DENY_ALL);
 
@@ -219,13 +257,123 @@ fn protected_set_cannot_exceed_checkpoint_capacity() {
     let first = record("memory:a", 1, None, RecordState::Live);
     let second = record("memory:b", 1, None, RecordState::Live);
     assert_eq!(
-        build_qualified_candidate(
-            snapshot_key(),
-            generation(2),
-            Some(digest("predecessor-checkpoint")),
+        build(
             &policy(1, vec![id("memory:a"), id("memory:b")]),
             vec![input(first, 1), input(second, 1)],
         ),
         Err(QualifiedCompactionError::ProtectedReferencesExceedCapacity)
+    );
+}
+
+#[test]
+fn missing_protected_reference_fails_closed() {
+    assert_eq!(
+        build(
+            &policy(2, vec![id("memory:missing")]),
+            vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+        ),
+        Err(QualifiedCompactionError::ProtectedReferenceMissing(
+            "memory:missing".to_string()
+        ))
+    );
+}
+
+#[test]
+fn retained_byte_and_token_budgets_are_enforced() {
+    let mut bounded = policy(3, Vec::new());
+    bounded.maximum_retained_bytes = 80;
+    bounded.maximum_retained_tokens = 8;
+    let candidate = build(
+        &bounded,
+        vec![
+            input_with_cost(record("memory:a", 1, None, RecordState::Live), 3, 60, 6),
+            input_with_cost(record("memory:b", 1, None, RecordState::Live), 2, 50, 5),
+            input_with_cost(record("memory:c", 1, None, RecordState::Live), 1, 20, 2),
+        ],
+    )
+    .unwrap_or_else(|error| panic!("budgeted candidate: {error}"));
+    assert_eq!(
+        candidate
+            .retained_records
+            .iter()
+            .map(|record| record.record_id.as_str())
+            .collect::<Vec<_>>(),
+        vec!["memory:a", "memory:c"]
+    );
+    assert_eq!(candidate.loss_report.retained_bytes, 80);
+    assert_eq!(candidate.loss_report.retained_tokens, 8);
+    assert_eq!(candidate.loss_report.omitted_live_records, 1);
+}
+
+#[test]
+fn protected_record_must_fit_combined_resource_budget() {
+    let mut bounded = policy(2, vec![id("memory:protected")]);
+    bounded.maximum_retained_bytes = 32;
+    bounded.maximum_retained_tokens = 4;
+    assert_eq!(
+        build(
+            &bounded,
+            vec![input_with_cost(
+                record("memory:protected", 1, None, RecordState::Live),
+                1,
+                64,
+                8,
+            )],
+        ),
+        Err(QualifiedCompactionError::ProtectedReferencesExceedCapacity)
+    );
+}
+
+#[test]
+fn semantic_payload_is_snapshot_and_tokenizer_bound() {
+    let snapshot = snapshot_key();
+    let mut semantic = semantic_payload(&snapshot);
+    semantic.tokenizer_digest = digest("different-tokenizer");
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot,
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &policy(2, Vec::new()),
+            &semantic,
+            vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+        ),
+        Err(QualifiedCompactionError::TokenizerMismatch)
+    );
+}
+
+#[test]
+fn semantic_payload_output_budget_is_enforced() {
+    let snapshot = snapshot_key();
+    let mut bounded = policy(2, Vec::new());
+    bounded.maximum_payload_bytes = 128;
+    let semantic = semantic_payload(&snapshot);
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot,
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &bounded,
+            &semantic,
+            vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+        ),
+        Err(QualifiedCompactionError::PayloadBudgetExceeded)
+    );
+}
+
+#[test]
+fn qualification_requires_signature_verification_receipt() {
+    let candidate = build(
+        &policy(2, Vec::new()),
+        vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+    )
+    .unwrap_or_else(|error| panic!("valid candidate: {error}"));
+    let mut qualification = qualification();
+    qualification.signature_verification_receipt_digest = Digest32::ZERO;
+    assert_eq!(
+        prove_compaction(&candidate, qualification),
+        Err(QualifiedCompactionError::EmptyDigest(
+            "signature_verification_receipt"
+        ))
     );
 }
