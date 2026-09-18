@@ -71,6 +71,28 @@ PROTECTED_PREFIXES = (
     "qualification",
 )
 
+# Candidate-owned code may never rewrite the oracle that judges the same candidate.
+# These repository-shape rules are mandatory and cannot be removed by an envelope.
+_ORACLE_SEGMENTS = frozenset({"test", "tests", "__tests__", "fixtures", "goldens"})
+_ORACLE_FILE_PREFIXES = ("test_",)
+_ORACLE_FILE_SUFFIXES = (
+    "_test.py",
+    "_tests.py",
+    "_test.rs",
+    "_tests.rs",
+    ".snap",
+    ".golden",
+)
+
+
+def is_candidate_oracle_path(value: str) -> bool:
+    path = canonical_repo_path(value)
+    parts = path.split("/")
+    name = parts[-1].casefold()
+    if any(part.casefold() in _ORACLE_SEGMENTS for part in parts[:-1]):
+        return True
+    return name.startswith(_ORACLE_FILE_PREFIXES) or name.endswith(_ORACLE_FILE_SUFFIXES)
+
 
 @dataclass(frozen=True)
 class Mutation:
@@ -435,6 +457,8 @@ def generate_candidates(
                 raise EngineeringError("path_outside_candidate_envelope")
             if path_is_within(mutation.path, protected):
                 raise EngineeringError("protected_path")
+            if is_candidate_oracle_path(mutation.path):
+                raise EngineeringError("candidate_oracle_path")
         candidate_id, digest = _candidate_identity(envelope, mutation)
         if digest in seen:
             continue
@@ -1047,6 +1071,8 @@ def sandbox_candidate(
             raise EngineeringError("sandbox_path_escape")
         if any(path_is_within(path, protected) for path in changed):
             raise EngineeringError("protected_path")
+        if any(is_candidate_oracle_path(path) for path in changed):
+            raise EngineeringError("candidate_oracle_path")
         if (
             _changed_byte_budget(base_manifest, candidate_manifest, changed)
             > envelope.maximum_diff_bytes
@@ -1116,6 +1142,8 @@ def sandbox_candidate(
             raise EngineeringError("sandbox_path_escape")
         if any(path_is_within(path, protected) for path in post_changed):
             raise EngineeringError("protected_path")
+        if any(is_candidate_oracle_path(path) for path in post_changed):
+            raise EngineeringError("candidate_oracle_path")
         source_after = _git(root, "rev-parse", f"{envelope.base_commit}^{{tree}}")
         if source_after != source_tree:
             raise EngineeringError("source_tree_mutated")
