@@ -46,12 +46,7 @@ pub(crate) async fn reconcile_one(
     if reconcile_one_unknown_dispatch(store, state, identity, now_ms).await? {
         return Ok(true);
     }
-    let Some(work) = store
-        .pending_occurrence_work(1)
-        .await?
-        .into_iter()
-        .next()
-    else {
+    let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
         return Ok(false);
     };
     reconcile_work(store, state, identity, work, now_ms).await?;
@@ -266,19 +261,14 @@ async fn reconcile_admitted_without_turn(
     .await;
     let _ = client.shutdown().await;
     let response = response?;
-    validate_reconcile_identity(
-        &response,
-        &work.admission.client_user_message_id,
-        &expected,
-    )?;
+    validate_reconcile_identity(&response, &work.admission.client_user_message_id, &expected)?;
     match &response.outcome {
         ThreadQueueReconcileOutcome::Queued {
             queued_submission,
             created,
         } => {
             if *created
-                || queued_submission.client_user_message_id
-                    != work.admission.client_user_message_id
+                || queued_submission.client_user_message_id != work.admission.client_user_message_id
                 || input_digest(&queued_submission.input)? != expected
             {
                 return Err(AgentdError::Protocol(
@@ -373,11 +363,11 @@ async fn pending_exact(
         .pending_occurrence_work(1024)
         .await?
         .into_iter()
-        .find(|work| {
-            work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence
-        })
+        .find(|work| work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence)
         .ok_or_else(|| {
-            AgentdError::Protocol("automation occurrence is not in the recovery frontier".to_string())
+            AgentdError::Protocol(
+                "automation occurrence is not in the recovery frontier".to_string(),
+            )
         })
 }
 
@@ -390,8 +380,10 @@ async fn connect(
             "automation recovery requires a ready owning Agent generation".to_string(),
         ));
     }
-    let socket_path = AbsolutePathBuf::from_absolute_path(&identity.app_server_socket)
-        .map_err(|error| AgentdError::Protocol(format!("automation socket path invalid: {error}")))?;
+    let socket_path =
+        AbsolutePathBuf::from_absolute_path(&identity.app_server_socket).map_err(|error| {
+            AgentdError::Protocol(format!("automation socket path invalid: {error}"))
+        })?;
     let client = RemoteAppServerClient::connect_with_bounded_events(
         RemoteAppServerConnectArgs {
             endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
@@ -405,7 +397,9 @@ async fn connect(
         16,
     )
     .await
-    .map_err(|error| AgentdError::Protocol(format!("automation recovery connect failed: {error}")))?;
+    .map_err(|error| {
+        AgentdError::Protocol(format!("automation recovery connect failed: {error}"))
+    })?;
     let expected_home = identity.home_root.to_string_lossy();
     if client.codex_home() != Some(expected_home.as_ref()) {
         let _ = client.shutdown().await;
@@ -436,7 +430,9 @@ async fn reconcile_queue(
             },
         })
         .await
-        .map_err(|error| AgentdError::Protocol(format!("automation queue reconcile failed: {error}")))
+        .map_err(|error| {
+            AgentdError::Protocol(format!("automation queue reconcile failed: {error}"))
+        })
 }
 
 async fn find_turn(
@@ -449,9 +445,7 @@ async fn find_turn(
         let response: ThreadTurnsListResponse = client
             .request_handle()
             .request_typed(ClientRequest::ThreadTurnsList {
-                request_id: RequestId::Integer(
-                    i64::try_from(page_index + 2).unwrap_or(i64::MAX),
-                ),
+                request_id: RequestId::Integer(i64::try_from(page_index + 2).unwrap_or(i64::MAX)),
                 params: ThreadTurnsListParams {
                     thread_id: thread_id.to_string(),
                     cursor,
