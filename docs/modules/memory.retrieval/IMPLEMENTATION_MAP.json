@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "1153890edbe2b3ab3a8f077aa995365143ba1018",
+    "tree": "65228a1c272d3e5781c4ac9b6b9d3fb72d7bc345"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -18,49 +18,86 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "owner_observation_composed_agentd",
   "productionWriterState": "not_established",
   "operations": [
     {
+      "operation": "rank_owner_candidates",
+      "designOperation": "rank_owner_candidates",
+      "nativeSymbol": "rank_owner_candidates",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/owner_rank.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/owner_rank_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compile_cue",
+      "designOperation": "compile_cue",
+      "nativeSymbol": "compile_cue",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "retrieve_v2",
+      "designOperation": "retrieve_v2",
       "nativeSymbol": "retrieve_v2",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
       "operation": "build_candidate_union",
+      "designOperation": "build_candidate_union",
       "nativeSymbol": "build_candidate_union",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "build_candidate_union",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
       "operation": "recall",
+      "designOperation": "recall",
       "nativeSymbol": "recall",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "recall",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Owner-observation ranking is composed by Agentd; semantically typed vector, causal, procedural and contradiction generators plus HNMF engram/synapse settling remain uncomposed.",
+    "Bind physical turn assembly and dispatch-time currentness to the selected context before changing the product-evidence claim boundary.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the qualification claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -78,5 +115,8 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-retrieval"
+  ],
+  "productCallsites": [
+    "codex-rs/hepta-agentd/src/cognitive_context.rs"
   ]
 }
