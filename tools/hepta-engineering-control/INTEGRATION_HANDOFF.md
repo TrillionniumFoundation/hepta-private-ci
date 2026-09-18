@@ -18,7 +18,9 @@ Run `python3 tools/hepta-engineering-control/deployment_inventory.py --base FULL
 
 New engineering-control callers must use `control_engineering_v2`; the historical
 `hepta_engineering_control.py` scheduler/boolean integration decision is compatibility
-only and cannot establish product evidence.
+only and cannot establish product evidence. Its legacy boolean
+`decide_integration` path is permanently ineligible for independent review;
+positive eligibility requires the authenticated v2 evidence/seal path.
 
 Repository-local composition follows this sequence:
 
