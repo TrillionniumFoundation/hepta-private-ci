@@ -73,7 +73,12 @@ impl PayloadCodec for RecordCodec {
     }
 
     fn encode(&self, value: &Self::Value) -> Result<Vec<u8>, SchemaError> {
-        if value.kind.contains([';', '=']) || value.body.contains([';', '=']) {
+        if value
+            .kind
+            .bytes()
+            .chain(value.body.bytes())
+            .any(|byte| matches!(byte, b';' | b'='))
+        {
             return Err(SchemaError::CodecRejected {
                 schema: self.schema.clone(),
                 reason: "reserved delimiter in field".to_owned(),
