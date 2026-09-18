@@ -44,7 +44,7 @@ Normalization and canonical sorting are `O(n log n)`. A feasibility oracle has p
 
 Pilot bounds are 256 KiB raw input, 256 constraints, 128 success predicates, 64 soft dimensions, 127 caller actions without explicit abstain, 128 compiled actions and 257 conflict-oracle calls. No network or synchronous central RPC occurs in the deterministic compiler path.
 
-Latency claims require a named host, compiler, build profile, input class and exact source. The product-composition workflow records a separate 32-sample authenticated-admission + compile + durable-fsync p50/p95/p99 receipt on its named Ubuntu runner. This is qualification telemetry only and does not satisfy a selected production-host SLA. A normal successful compile measurement cannot be reused as a conflict-extraction measurement.
+Latency claims require a named host, compiler, build profile, input class and exact source. The product-composition workflow records host/compiler identity plus two release-profile receipts on its named Ubuntu runner: a 32-sample authenticated-admission + compile + durable-fsync p50/p95/p99 receipt and a separate 16-sample 256-atom inclusion-minimal-conflict receipt that asserts 257 oracle calls per sample. These are qualification telemetry only and do not satisfy a selected production-host SLA.
 
 ## 6. Concrete verification cases
 
