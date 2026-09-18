@@ -38,6 +38,7 @@ pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::canonical_utility_profile_digest;
+#[allow(deprecated)]
 pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
 pub use evaluator::legacy_evaluation_policy;
@@ -66,6 +67,7 @@ pub use preference::NduSolverTerminationReceipt;
 pub use preference::PreferenceState;
 pub use preference::SolveDisposition;
 pub use preference::UpdateGeneration;
+#[allow(deprecated)]
 pub use preference::solve_preference_target;
 pub use preference::solve_preference_target_with_context;
 pub use preference::validate_staged_updates;
