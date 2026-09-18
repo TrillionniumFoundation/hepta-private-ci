@@ -48,7 +48,7 @@ There is no Browser discovery listener. The default long-running Agentd daemon r
 
 ## 3. Exact final-use linearization
 
-For a new effect Browser first validates page/document generation, typed action, proposal provenance, destination, final payload digest, operation identity, grant, epoch and deadline. It then emits an exact authority challenge to Agentd.
+For a new effect Browser first validates page/document generation, typed action, proposal provenance, destination, final payload digest, operation identity, grant, epoch and deadline. It then emits an exact authority challenge to Agentd. That challenge contains only the immutable request digest and authority epoch; it does not duplicate the typed action or `type.text` into the authority control plane.
 
 Agentd verifies that challenge against the independently signed final-use binding and calls the real persistent `FinalUseAuthority::with_verified_use`. While the live revocation mutex is held:
 

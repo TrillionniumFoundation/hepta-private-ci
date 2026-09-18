@@ -242,6 +242,11 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         invocation: &BrowserFinalUseInvocation,
     ) -> Result<(), BrowserServoError> {
         let payload = require_plain_object(&challenge.payload, "Browser authority challenge")?;
+        require_exact_object_keys(
+            payload,
+            &["authorityEpoch", "requestDigest"],
+            "Browser authority challenge",
+        )?;
         let request_digest_text = payload
             .get("requestDigest")
             .and_then(Value::as_str)
@@ -297,6 +302,11 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                 }
                 let boundary_payload =
                     require_plain_object(&boundary.payload, "Browser final-use boundary")?;
+                require_exact_object_keys(
+                    boundary_payload,
+                    &["localDispatchCrossed", "requestDigest", "witnessDigest"],
+                    "Browser final-use boundary",
+                )?;
                 if boundary_payload
                     .get("requestDigest")
                     .and_then(Value::as_str)
@@ -578,6 +588,21 @@ fn write_canonical(
             }
             output.push('}');
         }
+    }
+    Ok(())
+}
+
+fn require_exact_object_keys(
+    object: &Map<String, Value>,
+    expected: &[&str],
+    name: &str,
+) -> Result<(), BrowserServoError> {
+    if object.len() != expected.len()
+        || expected.iter().any(|key| !object.contains_key(*key))
+    {
+        return Err(BrowserServoError::Protocol(format!(
+            "{name} contains missing or unknown fields"
+        )));
     }
     Ok(())
 }
@@ -1233,7 +1258,6 @@ mod tests {
                 "authority_challenge",
                 "browser.agentd.1",
                 json!({
-                    "request": {"operationId":"operation.1"},
                     "requestDigest": hex_lower(&harness.request_digest),
                     "authorityEpoch": 7,
                 }),
@@ -1321,7 +1345,6 @@ mod tests {
                 "authority_challenge",
                 "browser.agentd.1",
                 json!({
-                    "request": {"operationId":"operation.write-timeout"},
                     "requestDigest": hex_lower(&harness.request_digest),
                     "authorityEpoch": 7,
                 }),
@@ -1378,7 +1401,6 @@ mod tests {
                 "authority_challenge",
                 "browser.agentd.1",
                 json!({
-                    "request": {"operationId":"operation.timeout"},
                     "requestDigest": hex_lower(&harness.request_digest),
                     "authorityEpoch": 7,
                 }),
@@ -1436,7 +1458,6 @@ mod tests {
                 "authority_challenge",
                 "browser.agentd.1",
                 json!({
-                    "request": {"operationId":"operation.rejected"},
                     "requestDigest": hex_lower(&harness.request_digest),
                     "authorityEpoch": 7,
                 }),
@@ -1524,7 +1545,6 @@ mod tests {
                 "authority_challenge",
                 "browser.agentd.1",
                 json!({
-                    "request": {"operationId":"operation.2"},
                     "requestDigest": hex_lower(&[0x99; 32]),
                     "authorityEpoch": 7,
                 }),

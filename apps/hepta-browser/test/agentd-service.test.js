@@ -30,7 +30,12 @@ function fakeHost(authority, events) {
     async navigateOrAct(input) {
       events.push("host_admitted");
       return authority.withVerifiedUse(
-        { requestDigest: D1, authorityEpoch: 7, operationId: input.operationId },
+        {
+          requestDigest: D1,
+          authorityEpoch: 7,
+          operationId: input.operationId,
+          typedAction: input.typedAction,
+        },
         async (witness) => {
           events.push("inside_fence");
           assert.equal(witness.witnessDigest, W1);
@@ -78,7 +83,14 @@ test("navigate request challenges Agentd before local dispatch and reports the b
 
   await channels.parent.send("request", "request.1", {
     method: "navigate_or_act",
-    input: { operationId: "operation.1" },
+    input: {
+      operationId: "operation.1",
+      typedAction: {
+        kind: "type",
+        selector: "input:nth-of-type(1)",
+        text: "authority-layer-secret-must-not-cross",
+      },
+    },
   });
 
   const challenge = await channels.parent.nextFrame();
@@ -86,6 +98,16 @@ test("navigate request challenges Agentd before local dispatch and reports the b
   assert.equal(challenge.requestId, "request.1");
   assert.equal(challenge.payload.requestDigest, D1);
   assert.equal(challenge.payload.authorityEpoch, 7);
+  assert.deepEqual(
+    Object.keys(challenge.payload).sort(),
+    ["authorityEpoch", "requestDigest"],
+  );
+  assert.equal(
+    JSON.stringify(challenge.payload).includes(
+      "authority-layer-secret-must-not-cross",
+    ),
+    false,
+  );
   assert.deepEqual(events, ["host_admitted"]);
 
   await channels.parent.send("authority_enter", "request.1", {

@@ -175,8 +175,10 @@ export class ParentFinalUseAuthority {
     const requestId = this.#activeRequestId;
     const requestDigest = digest(request.requestDigest, "requestDigest");
     const authorityEpoch = positiveInteger(request.authorityEpoch, "authorityEpoch");
+    // Final-use authority consumes immutable identity, not the live action
+    // body. Avoid duplicating typed action data (notably type.text) into the
+    // authority control plane.
     await this.#channel.send("authority_challenge", requestId, {
-      request,
       requestDigest,
       authorityEpoch,
     });
