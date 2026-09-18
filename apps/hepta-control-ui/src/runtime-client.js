@@ -371,6 +371,9 @@ export class RuntimeClient {
   }
 
   async reconcilePending({ force = false } = {}) {
+    if (this.#closing) {
+      fail(ERROR_CODES.NOT_CONNECTED, "runtime client is closing");
+    }
     this.#requireSession();
     if (typeof force !== "boolean") {
       fail(ERROR_CODES.INVALID_INPUT, "force must be boolean");
@@ -686,7 +689,7 @@ export class RuntimeClient {
     ignoreBackoff = false,
     includeRecoveryRequired = false,
   } = {}) {
-    if (!this.#session || this.#pending.size === 0) return;
+    if (this.#closing || !this.#session || this.#pending.size === 0) return;
     const session = this.#captureSession();
     const eligible = [];
     const now = this.#now();
@@ -790,7 +793,7 @@ export class RuntimeClient {
   }
 
   #scheduleReconciliation() {
-    if (!this.#session || !this.#setTimer) return;
+    if (this.#closing || !this.#session || !this.#setTimer) return;
     let due = null;
     const now = this.#now();
     let recoveryChanged = false;
