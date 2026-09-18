@@ -203,7 +203,7 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
     identity.resources.turn_queue_capacity += 1;
     let changed = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16);
     assert!(
-        matches!(changed, Err(AgentdError::Protocol(message)) if message.contains("Conflict")),
+        matches!(changed, Err(AgentdError::Protocol(message)) if message.contains("InvalidGeneration")),
         "same-generation composition drift reached a serving Agentd"
     );
     registry
