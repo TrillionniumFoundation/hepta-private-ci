@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentRecord;
 use codex_hepta_fleet::FleetRegistry;
@@ -383,11 +384,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let target = slot
+        let previous = slot
             .previous_release
             .as_ref()
             .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
-        self.preflight_upgrade(agent_id, target)
+        let target = AgentRelease::try_from(
+            self.registry
+                .resolve_release(agent_id, previous.release_id())?,
+        )?;
+        self.preflight_upgrade(agent_id, &target)
     }
 
     pub fn agent_ids(&self) -> Vec<AgentId> {
@@ -455,10 +460,19 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
-            let target = slot
+            let previous = slot
                 .previous_release
-                .clone()
+                .as_ref()
                 .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
+            // Re-resolve the predecessor on every rollback. This re-checks the
+            // current per-Agent allowance and immutable release bytes instead
+            // of trusting a cached AgentRelease captured before a revocation
+            // or catalog integrity change.
+            let target = AgentRelease::try_from(
+                supervisor
+                    .registry
+                    .resolve_release(agent_id, previous.release_id())?,
+            )?;
             supervisor.upgrade_slot(agent_id, slot, target, now, /*explicit_rollback*/ true)
         })
     }
@@ -505,6 +519,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     )));
                 }
             }
+            let release_selection = supervisor.release_selection_binding(
+                agent_id,
+                current,
+                &target,
+                expected_authority_epoch,
+            )?;
             verifier
                 .verify(
                     grant,
@@ -512,6 +532,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     agent_id,
                     current.identity(),
                     target.identity(),
+                    &release_selection,
                     slot.control_revision,
                     record.lifecycle.generation,
                     expected_authority_epoch,
@@ -686,6 +707,41 @@ impl<D: ProcessDriver> Supervisor<D> {
             .compare_and_transition(agent_id, expected, lifecycle)?;
         slot.event(next.generation, SupervisorEventKind::Lifecycle(lifecycle));
         Ok(next.generation)
+    }
+
+    pub(crate) fn release_selection_binding(
+        &self,
+        agent_id: &AgentId,
+        source: &AgentRelease,
+        target: &AgentRelease,
+        revocation_frontier: u64,
+    ) -> Result<ReleaseSelectionBinding, SupervisorError> {
+        let source = self
+            .registry
+            .release_provenance(agent_id, source.release_id())?;
+        let target = self
+            .registry
+            .release_provenance(agent_id, target.release_id())?;
+        let parse = |value: String, label: &str| {
+            Sha256Digest::parse(value)
+                .map_err(|_| SupervisorError::Invalid(format!("{label} digest is malformed")))
+        };
+        ReleaseSelectionBinding::new(
+            parse(source.manifest_sha256, "source release manifest")?,
+            parse(source.agentd_sha256, "source agentd")?,
+            source
+                .matrixd_sha256
+                .map(|value| parse(value, "source matrixd"))
+                .transpose()?,
+            parse(target.manifest_sha256, "target release manifest")?,
+            parse(target.agentd_sha256, "target agentd")?,
+            target
+                .matrixd_sha256
+                .map(|value| parse(value, "target matrixd"))
+                .transpose()?,
+            revocation_frontier,
+        )
+        .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))
     }
 
     pub(crate) fn record(&self, agent_id: &AgentId) -> Result<AgentRecord, SupervisorError> {
