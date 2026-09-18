@@ -15,7 +15,7 @@ workspace = true
 
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
-tokio = { workspace = true, features = ["time"] }
+tokio = { workspace = true, features = ["macros", "time"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["macros", "rt"] }
