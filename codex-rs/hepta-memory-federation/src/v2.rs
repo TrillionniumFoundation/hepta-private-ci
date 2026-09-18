@@ -536,11 +536,26 @@ impl FederatedResultV2 {
         if indeterminate != matches!(self.validity, FederatedValidityV2::Indeterminate) {
             return Err(FederationV2Error::InvalidCompleteness);
         }
-        if indeterminate
-            && (!self.items.is_empty()
+        if indeterminate {
+            if !self.items.is_empty()
                 || self.observed_frontier.is_some()
-                || self.remote_response_digest.is_some())
+                || self.remote_response_digest.is_some()
+                || self.coverage.completed_peers != 0
+                || self.coverage.failed_peers != 1
+            {
+                return Err(FederationV2Error::InvalidCompleteness);
+            }
+        } else if self.observed_frontier.is_none()
+            || self.remote_response_digest.is_none()
+            || self.coverage.completed_peers != 1
+            || self.coverage.failed_peers != 0
         {
+            return Err(FederationV2Error::InvalidCompleteness);
+        }
+        if matches!(self.completeness, FederatedCompletenessV2::Empty) && !self.items.is_empty() {
+            return Err(FederationV2Error::InvalidCompleteness);
+        }
+        if matches!(self.completeness, FederatedCompletenessV2::Complete) && self.items.is_empty() {
             return Err(FederationV2Error::InvalidCompleteness);
         }
         if !matches!(self.validity, FederatedValidityV2::Valid | FederatedValidityV2::Indeterminate)
@@ -760,7 +775,11 @@ where
                     .then_with(|| left.record_revision.cmp(&right.record_revision))
             });
             items.truncate(maximum_results);
-            let truncated_items = remote_item_count.saturating_sub(items.len());
+            let truncated_items = if matches!(final_validity, FederatedValidityV2::Valid) {
+                remote_item_count.saturating_sub(items.len())
+            } else {
+                0
+            };
             let completeness = if !matches!(final_validity, FederatedValidityV2::Valid) {
                 FederatedCompletenessV2::Partial
             } else if items.is_empty() {
