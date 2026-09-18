@@ -40,8 +40,6 @@ pub struct AuthBusObjectiveBody {
     pub prompt_registry_digest: String,
     pub artifact_set_digest: String,
     pub authority_epoch: u64,
-    pub generation: u64,
-    pub fence_digest: String,
 }
 
 /// Signed objective ingress. The signature covers the body plus the
