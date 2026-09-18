@@ -766,6 +766,7 @@ mod tests {
     use codex_hepta_memory::CognitiveStore;
     use codex_hepta_memory::FederatedMemoryReader;
     use codex_hepta_memory::FederatedRecallSet;
+    use codex_hepta_memory::FederatedRetrievalBatch;
     use codex_hepta_memory::FederationGrantRequest;
     use codex_hepta_memory::FederationGrantScope;
     use codex_hepta_memory::LedgerSourceKind;
