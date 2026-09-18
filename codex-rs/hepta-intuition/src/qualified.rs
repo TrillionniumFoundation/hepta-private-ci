@@ -236,10 +236,23 @@ pub fn canonical_scoring_evidence_payload_v1(
     profile: &CanonicalPolicyProfileV1,
     commitment: &ScoringCommitmentV1,
 ) -> Result<Vec<u8>, QualifiedCalibratedError> {
-    let request_digest = canonical_calibrated_request_digest_v1(request)?;
     let profile_digest = canonical_policy_profile_digest_v1(profile)?;
     let scoring_digest = canonical_scoring_commitment_digest_v1(request, profile, commitment)?;
     let mut bytes = b"hepta.intuition.scoring-evidence.v1\0".to_vec();
+    bytes.extend_from_slice(profile_digest.as_array());
+    bytes.extend_from_slice(scoring_digest.as_array());
+    Ok(bytes)
+}
+
+pub fn canonical_decision_request_evidence_payload_v1(
+    request: &CalibratedDecisionRequestV1,
+    profile: &CanonicalPolicyProfileV1,
+    commitment: &ScoringCommitmentV1,
+) -> Result<Vec<u8>, QualifiedCalibratedError> {
+    let request_digest = canonical_calibrated_request_digest_v1(request)?;
+    let profile_digest = canonical_policy_profile_digest_v1(profile)?;
+    let scoring_digest = canonical_scoring_commitment_digest_v1(request, profile, commitment)?;
+    let mut bytes = b"hepta.intuition.decision-request-evidence.v1\0".to_vec();
     bytes.extend_from_slice(request_digest.as_array());
     bytes.extend_from_slice(profile_digest.as_array());
     bytes.extend_from_slice(scoring_digest.as_array());
