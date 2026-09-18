@@ -9,7 +9,7 @@ use codex_hepta_types::{AuthorityPosture, Digest32};
 
 use crate::{
     ArtifactEvent, ArtifactLifecycleJournalV2, ArtifactRegistry, ArtifactState,
-    DatasetWithdrawalRegistry,
+    DatasetWithdrawalRegistry, WithdrawalRegistryBindingV1,
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -65,7 +65,9 @@ pub fn inspect_artifact_admin_state(
         eligible_artifacts,
         quarantined_artifacts,
         revoked_artifacts,
-        withdrawal_binding_digest: withdrawal.binding().map(|binding| binding.binding_digest()),
+        withdrawal_binding_digest: withdrawal
+            .binding()
+            .map(WithdrawalRegistryBindingV1::binding_digest),
         withdrawal_head_digest: withdrawal_snapshot.head_digest,
         withdrawal_records: withdrawal_snapshot.records().len(),
         lifecycle_head_digest: lifecycle.head_digest(),
@@ -79,7 +81,7 @@ mod tests {
     use codex_hepta_types::{Digest32, Generation, StableId};
 
     use super::*;
-    use crate::{ArtifactKind, ArtifactManifest, WithdrawalRegistryBindingV1};
+    use crate::{ArtifactKind, ArtifactManifest};
 
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("valid id")
