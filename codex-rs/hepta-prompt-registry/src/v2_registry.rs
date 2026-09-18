@@ -26,11 +26,10 @@ use crate::v2::types::PromptRegistrySnapshotV2;
 use crate::v2::types::PromptRegistryV2Error;
 use crate::v2::types::PromptRoleV2;
 use crate::v2::types::ensure_digest;
-use crate::v2::types::role_code;
 
 impl PromptRegistry {
     /// Register a V2 realization together with the exact bounded payload bytes.
-    /// An active realization with the same factor/profile/role may be replaced
+    /// An active realization with the same factor/profile may be replaced
     /// only when `predecessor_realization_id` names that exact active record.
     pub fn register_realization_v2(
         &mut self,
