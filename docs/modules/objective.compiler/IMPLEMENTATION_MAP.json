@@ -153,16 +153,16 @@
     },
     {
       "operation": "compile",
-      "nativeSymbol": "codex_hepta_objective::compile",
+      "nativeSymbol": "codex_hepta_objective::compiler::compile",
       "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
       "inputs": [
-        "ObjectiveSourceEnvelope"
+        "AdmittedObjectiveSource"
       ],
       "outputs": [
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_private_admitted_core",
       "authority": "none",
       "tests": [
         {
@@ -179,8 +179,10 @@
         }
       ],
       "designOperation": "compile",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "mappingClass": "owner_private_admitted_core",
+      "delegatedCallees": [
+        "check_feasibility_v1"
+      ],
       "sourcePathExists": true
     },
     {
@@ -266,5 +268,12 @@
     "codex-rs/hepta-agentd/src/objective_runtime.rs",
     "codex-rs/hepta-agentd/src/state_control.rs",
     "codex-rs/hepta-agentd/src/objective_runtime_tests.rs"
-  ]
+  ],
+  "legacyCompatibilitySurface": {
+    "feature": "qualification-legacy-objective-compile",
+    "nativeSymbol": "codex_hepta_objective::compile_prevalidated_legacy_objective",
+    "defaultEnabled": false,
+    "purpose": "controlled qualification fixtures only",
+    "productUse": "forbidden"
+  }
 }
