@@ -4,6 +4,7 @@ import {
   MAX_VIEW_BYTES,
   UiControlError,
   fail,
+  snapshotCanonical,
   utf8Bytes,
 } from "./protocol.js";
 
@@ -156,9 +157,12 @@ export class SameOriginHttpTransport {
   }
 
   async #post(path, body) {
+    const canonicalBody = snapshotCanonical(body, "transport request body", {
+      maxBytes: MAX_REQUEST_BYTES,
+    });
     return this.#json(path, {
       method: "POST",
-      body,
+      body: canonicalBody,
       maxBytes: MAX_REQUEST_BYTES,
       csrf: true,
     });
