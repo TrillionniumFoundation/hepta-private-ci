@@ -799,6 +799,19 @@ mod tests {
             .verifier()
     }
 
+    fn selection(frontier: u64) -> ReleaseSelectionBinding {
+        ReleaseSelectionBinding::new(
+            Sha256Digest::for_bytes(b"source-manifest"),
+            Sha256Digest::for_bytes(b"source-agentd"),
+            None,
+            Sha256Digest::for_bytes(b"target-manifest"),
+            Sha256Digest::for_bytes(b"target-agentd"),
+            None,
+            frontier,
+        )
+        .expect("release selection")
+    }
+
     #[test]
     fn external_grant_binds_h7_and_all_cas_fences() {
         let envelope = h7();
@@ -812,6 +825,7 @@ mod tests {
                 "release-v3",
                 H7H89ProductionTransition::Upgrade,
                 &envelope,
+                selection(3),
                 8,
                 11,
                 3,
@@ -833,6 +847,7 @@ mod tests {
                 &agent,
                 "release-v2",
                 "release-v3",
+                &selection(3),
                 8,
                 11,
                 3,
@@ -860,6 +875,7 @@ mod tests {
                 "release-v3",
                 H7H89ProductionTransition::Upgrade,
                 &envelope,
+                selection(3),
                 8,
                 11,
                 3,
@@ -881,6 +897,7 @@ mod tests {
                 &agent,
                 "release-v2",
                 "release-v3",
+                &selection(3),
                 9,
                 11,
                 3,
@@ -900,6 +917,7 @@ mod tests {
                 &agent,
                 "release-v2",
                 "release-v4",
+                &selection(3),
                 8,
                 11,
                 3,
