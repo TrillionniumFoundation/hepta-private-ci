@@ -1,9 +1,8 @@
 //! Current-generation qualification profile for calibrated intuition decisions.
 //!
-//! This layer remains pure and authority-free. It freezes the thresholds and
-//! learned-scorer lineage used by the decision kernel. Cryptographic
-//! authentication belongs to a consumer that owns a trusted key snapshot (the
-//! Lane-F consumer lives in `codex-hepta-intelligence`).
+//! This layer remains pure and authority-free. It freezes policy thresholds,
+//! learned-scorer lineage and accepted calibration/OOD metadata. Cryptographic
+//! authentication belongs to a consumer with a host-owned trust snapshot.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -12,6 +11,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+use crate::calibrated::AssignmentModeV1;
 use crate::calibrated::CalibratedDecisionRequestV1;
 use crate::calibrated::CalibratedError;
 use crate::calibrated::CalibratedIntuitionReceiptV1;
@@ -23,25 +23,31 @@ use crate::calibrated::decide_calibrated_v2;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LearnedScorerContractV1 {
-    /// Exact immutable learned model bytes selected for this generation.
     pub model_digest: Digest32,
-    /// Canonical feature ordering, units, scaling, missing-value and bounds schema.
     pub feature_schema_digest: Digest32,
-    /// Canonical output field ordering and fixed-point representation schema.
     pub output_schema_digest: Digest32,
-    /// Meaning of utility, calibrated confidence and OOD score.
     pub score_semantics_digest: Digest32,
-    /// Versioned pure scorer interface and preprocessing/postprocessing contract.
     pub scorer_contract_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ScoringCommitmentV1 {
+    pub decision_id: StableId,
+    pub model_artifact_digest: Digest32,
+    pub feature_schema_digest: Digest32,
+    pub feature_snapshot_digest: Digest32,
+    pub scorer_contract_digest: Digest32,
+    pub candidate_set_digest: Digest32,
+    pub scored_candidates_digest: Digest32,
+    pub policy_digest: Digest32,
+    pub policy_generation: u64,
+    pub sequence: u64,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CanonicalRiskRuleV1 {
-    /// Low and elevated risk may use the fast path; high risk must use slow path.
     HighOnlySlowPath,
-    /// Only low risk may use the fast path.
     ElevatedAndHighSlowPath,
-    /// Qualification profile disables direct fast-path selection for all risks.
     AlwaysSlowPath,
 }
 
@@ -59,20 +65,22 @@ pub struct CanonicalPolicyProfileV1 {
     pub maximum_in_domain_score: ProbabilityQ32,
     pub risk_rule: CanonicalRiskRuleV1,
     pub scorer: LearnedScorerContractV1,
-    /// Frozen data used to measure `CalibrationArtifactV1::measured_ece_ppm`.
     pub calibration_dataset_digest: Digest32,
-    /// Frozen data used to measure `OodArtifactV1::measured_false_acceptance_ppm`.
     pub ood_dataset_digest: Digest32,
-    /// Only this calibration artifact is admitted for this profile generation.
     pub calibration_artifact_digest: Digest32,
-    /// Only this OOD artifact is admitted for this profile generation.
+    pub calibration_measured_ece_ppm: u32,
+    pub calibration_subgroup_audit_digest: Digest32,
     pub ood_artifact_digest: Digest32,
+    pub ood_measured_false_acceptance_ppm: u32,
+    pub ood_detector_digest: Digest32,
+    pub ood_support_digest: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum QualifiedCalibratedError {
     Policy(CalibratedError),
     EmptyProfileDigest(&'static str),
+    EmptyScoringDigest(&'static str),
     InvalidProfileGeneration,
     InvalidProfileWindow,
     ProfileExpired,
@@ -81,6 +89,9 @@ pub enum QualifiedCalibratedError {
     ProfileGenerationMismatch,
     ProfileThresholdMismatch(&'static str),
     ProfileArtifactMismatch(&'static str),
+    ProfileArtifactMetadataMismatch(&'static str),
+    ScoringCommitmentMismatch(&'static str),
+    AssignmentEvidenceRequiresCounterBased,
 }
 
 impl fmt::Display for QualifiedCalibratedError {
@@ -97,9 +108,6 @@ impl From<CalibratedError> for QualifiedCalibratedError {
     }
 }
 
-/// Canonical identity of the current-generation policy profile. The digest is
-/// stable over exact model/scorer lineage, frozen qualification data, thresholds
-/// and risk routing semantics.
 pub fn canonical_policy_profile_digest_v1(
     profile: &CanonicalPolicyProfileV1,
 ) -> Result<Digest32, QualifiedCalibratedError> {
@@ -117,7 +125,10 @@ pub fn canonical_policy_profile_digest_v1(
         profile.calibration_dataset_digest,
         profile.ood_dataset_digest,
         profile.calibration_artifact_digest,
+        profile.calibration_subgroup_audit_digest,
         profile.ood_artifact_digest,
+        profile.ood_detector_digest,
+        profile.ood_support_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
@@ -132,13 +143,54 @@ pub fn canonical_policy_profile_digest_v1(
     bytes.extend_from_slice(&profile.maximum_ece_ppm.to_be_bytes());
     bytes.extend_from_slice(&profile.maximum_ood_false_acceptance_ppm.to_be_bytes());
     bytes.extend_from_slice(&profile.maximum_in_domain_score.raw().to_be_bytes());
+    bytes.extend_from_slice(&profile.calibration_measured_ece_ppm.to_be_bytes());
+    bytes.extend_from_slice(&profile.ood_measured_false_acceptance_ppm.to_be_bytes());
     bytes.push(risk_rule_code(profile.risk_rule));
     Ok(Digest32::of_bytes(&bytes))
 }
 
-/// Payload signed by the legal-set generator. It binds the exact state and the
-/// exact complete candidate-set receipt without asking that signer to attest to
-/// calibration, OOD or assignment semantics owned by other roles.
+pub fn canonical_scored_candidates_digest_v1(
+    request: &CalibratedDecisionRequestV1,
+) -> Result<Digest32, QualifiedCalibratedError> {
+    let mut bytes = b"hepta.intuition.scored-candidates.v1\0".to_vec();
+    let count =
+        u32::try_from(request.candidates.len()).map_err(|_| CalibratedError::Arithmetic)?;
+    bytes.extend_from_slice(&count.to_be_bytes());
+    for candidate in &request.candidates {
+        push_id(&mut bytes, &candidate.candidate_id)?;
+        bytes.extend_from_slice(&candidate.utility.raw().to_be_bytes());
+        bytes.extend_from_slice(&candidate.calibrated_confidence.raw().to_be_bytes());
+        bytes.extend_from_slice(&candidate.ood_score.raw().to_be_bytes());
+        bytes.extend_from_slice(candidate.support_digest.as_array());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+pub fn canonical_scoring_commitment_digest_v1(
+    request: &CalibratedDecisionRequestV1,
+    profile: &CanonicalPolicyProfileV1,
+    commitment: &ScoringCommitmentV1,
+) -> Result<Digest32, QualifiedCalibratedError> {
+    validate_profile_for_request(request, profile)?;
+    validate_scoring_commitment(request, profile, commitment)?;
+    let mut bytes = b"hepta.intuition.scoring-commitment.v1\0".to_vec();
+    push_id(&mut bytes, &commitment.decision_id)?;
+    for digest in [
+        commitment.model_artifact_digest,
+        commitment.feature_schema_digest,
+        commitment.feature_snapshot_digest,
+        commitment.scorer_contract_digest,
+        commitment.candidate_set_digest,
+        commitment.scored_candidates_digest,
+        commitment.policy_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.extend_from_slice(&commitment.policy_generation.to_be_bytes());
+    bytes.extend_from_slice(&commitment.sequence.to_be_bytes());
+    Ok(Digest32::of_bytes(&bytes))
+}
+
 pub fn canonical_completeness_evidence_payload_v1(
     request: &CalibratedDecisionRequestV1,
 ) -> Result<Vec<u8>, QualifiedCalibratedError> {
@@ -170,9 +222,58 @@ pub fn canonical_completeness_evidence_payload_v1(
     Ok(bytes)
 }
 
-/// Payload signed by an independently trusted qualification evaluator. The
-/// exact request commitment includes calibration/OOD metadata and assignment;
-/// the profile commitment freezes the accepted model, datasets and thresholds.
+pub fn canonical_profile_qualification_evidence_payload_v1(
+    profile: &CanonicalPolicyProfileV1,
+) -> Result<Vec<u8>, QualifiedCalibratedError> {
+    let profile_digest = canonical_policy_profile_digest_v1(profile)?;
+    let mut bytes = b"hepta.intuition.profile-qualification-evidence.v1\0".to_vec();
+    bytes.extend_from_slice(profile_digest.as_array());
+    Ok(bytes)
+}
+
+pub fn canonical_scoring_evidence_payload_v1(
+    request: &CalibratedDecisionRequestV1,
+    profile: &CanonicalPolicyProfileV1,
+    commitment: &ScoringCommitmentV1,
+) -> Result<Vec<u8>, QualifiedCalibratedError> {
+    let request_digest = canonical_calibrated_request_digest_v1(request)?;
+    let profile_digest = canonical_policy_profile_digest_v1(profile)?;
+    let scoring_digest = canonical_scoring_commitment_digest_v1(request, profile, commitment)?;
+    let mut bytes = b"hepta.intuition.scoring-evidence.v1\0".to_vec();
+    bytes.extend_from_slice(request_digest.as_array());
+    bytes.extend_from_slice(profile_digest.as_array());
+    bytes.extend_from_slice(scoring_digest.as_array());
+    Ok(bytes)
+}
+
+pub fn canonical_assignment_evidence_payload_v1(
+    request: &CalibratedDecisionRequestV1,
+) -> Result<Vec<u8>, QualifiedCalibratedError> {
+    let AssignmentModeV1::CounterBased {
+        random_stream_digest,
+        draw,
+        abstain_probability,
+    } = &request.assignment
+    else {
+        return Err(QualifiedCalibratedError::AssignmentEvidenceRequiresCounterBased);
+    };
+    let mut bytes = b"hepta.intuition.assignment-evidence.v1\0".to_vec();
+    push_id(&mut bytes, &request.decision_id)?;
+    for digest in [
+        request.state_digest,
+        request.policy_digest,
+        request.completeness.candidate_set_digest,
+        *random_stream_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.extend_from_slice(&request.policy_generation.to_be_bytes());
+    bytes.extend_from_slice(&request.sequence.to_be_bytes());
+    bytes.extend_from_slice(&draw.raw().to_be_bytes());
+    bytes.extend_from_slice(&abstain_probability.raw().to_be_bytes());
+    Ok(bytes)
+}
+
 pub fn canonical_qualification_evidence_payload_v1(
     request: &CalibratedDecisionRequestV1,
     profile: &CanonicalPolicyProfileV1,
@@ -189,10 +290,6 @@ pub fn canonical_qualification_evidence_payload_v1(
     Ok(bytes)
 }
 
-/// Apply an authenticated-profile-compatible decision. Callers may still carry
-/// the historical threshold fields for wire compatibility, but V3 rejects any
-/// value that differs from the canonical profile. The profile therefore owns the
-/// thresholds and risk routing semantics.
 pub fn decide_calibrated_v3(
     request: CalibratedDecisionRequestV1,
     profile: &CanonicalPolicyProfileV1,
@@ -204,9 +301,6 @@ pub fn decide_calibrated_v3(
     let force_slow_path = risk_requires_slow_path(profile.risk_rule, request.risk_class);
     let mut effective = request;
     if force_slow_path && effective.risk_class != RiskClass::High {
-        // The V2 kernel already implements a fail-closed HighRisk disposition.
-        // V3 may tighten that rule while its own digest remains bound to the
-        // original risk class and the authenticated profile.
         effective.risk_class = RiskClass::High;
     }
     let mut receipt = decide_calibrated_v2(effective)?;
@@ -219,14 +313,76 @@ pub fn decide_calibrated_v3(
     Ok(receipt)
 }
 
+fn validate_scoring_commitment(
+    request: &CalibratedDecisionRequestV1,
+    profile: &CanonicalPolicyProfileV1,
+    commitment: &ScoringCommitmentV1,
+) -> Result<(), QualifiedCalibratedError> {
+    for (name, digest) in [
+        ("model artifact", commitment.model_artifact_digest),
+        ("feature schema", commitment.feature_schema_digest),
+        ("feature snapshot", commitment.feature_snapshot_digest),
+        ("scorer contract", commitment.scorer_contract_digest),
+        ("candidate set", commitment.candidate_set_digest),
+        ("scored candidates", commitment.scored_candidates_digest),
+        ("policy", commitment.policy_digest),
+    ] {
+        if digest.is_zero() {
+            return Err(QualifiedCalibratedError::EmptyScoringDigest(name));
+        }
+    }
+    if commitment.decision_id != request.decision_id {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "decision",
+        ));
+    }
+    if commitment.model_artifact_digest != profile.scorer.model_digest {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch("model"));
+    }
+    if commitment.feature_schema_digest != profile.scorer.feature_schema_digest {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "feature schema",
+        ));
+    }
+    if commitment.scorer_contract_digest != profile.scorer.scorer_contract_digest {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "scorer contract",
+        ));
+    }
+    if commitment.candidate_set_digest != request.completeness.candidate_set_digest {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "candidate set",
+        ));
+    }
+    if commitment.scored_candidates_digest != canonical_scored_candidates_digest_v1(request)? {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch("scores"));
+    }
+    if commitment.policy_digest != request.policy_digest
+        || commitment.policy_digest != profile.policy_digest
+    {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch("policy"));
+    }
+    if commitment.policy_generation != request.policy_generation
+        || commitment.policy_generation != profile.generation
+    {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "generation",
+        ));
+    }
+    if commitment.sequence != request.sequence {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "sequence",
+        ));
+    }
+    Ok(())
+}
+
 fn validate_profile_for_request(
     request: &CalibratedDecisionRequestV1,
     profile: &CanonicalPolicyProfileV1,
 ) -> Result<(), QualifiedCalibratedError> {
     validate_profile_shape(profile)?;
-    if profile.policy_digest != request.policy_digest
-        || profile.scorer.model_digest != request.policy_digest
-    {
+    if profile.policy_digest != request.policy_digest {
         return Err(QualifiedCalibratedError::ProfilePolicyMismatch);
     }
     if profile.objective_class_digest != request.objective_class_digest {
@@ -268,6 +424,25 @@ fn validate_profile_for_request(
     if request.ood.artifact_digest != profile.ood_artifact_digest {
         return Err(QualifiedCalibratedError::ProfileArtifactMismatch("ood"));
     }
+    if request.calibration.measured_ece_ppm != profile.calibration_measured_ece_ppm
+        || request.calibration.subgroup_audit_digest != profile.calibration_subgroup_audit_digest
+        || request.calibration.valid_from_sequence != profile.valid_from_sequence
+        || request.calibration.expires_after_sequence != profile.expires_after_sequence
+    {
+        return Err(QualifiedCalibratedError::ProfileArtifactMetadataMismatch(
+            "calibration",
+        ));
+    }
+    if request.ood.measured_false_acceptance_ppm != profile.ood_measured_false_acceptance_ppm
+        || request.ood.detector_digest != profile.ood_detector_digest
+        || request.ood.support_digest != profile.ood_support_digest
+        || request.ood.valid_from_sequence != profile.valid_from_sequence
+        || request.ood.expires_after_sequence != profile.expires_after_sequence
+    {
+        return Err(QualifiedCalibratedError::ProfileArtifactMetadataMismatch(
+            "ood",
+        ));
+    }
     Ok(())
 }
 
@@ -285,7 +460,13 @@ fn validate_profile_shape(
         ("calibration dataset", profile.calibration_dataset_digest),
         ("ood dataset", profile.ood_dataset_digest),
         ("calibration artifact", profile.calibration_artifact_digest),
+        (
+            "calibration subgroup audit",
+            profile.calibration_subgroup_audit_digest,
+        ),
         ("ood artifact", profile.ood_artifact_digest),
+        ("ood detector", profile.ood_detector_digest),
+        ("ood support", profile.ood_support_digest),
     ] {
         if digest.is_zero() {
             return Err(QualifiedCalibratedError::EmptyProfileDigest(name));
@@ -296,6 +477,16 @@ fn validate_profile_shape(
     }
     if profile.valid_from_sequence > profile.expires_after_sequence {
         return Err(QualifiedCalibratedError::InvalidProfileWindow);
+    }
+    if profile.calibration_measured_ece_ppm > profile.maximum_ece_ppm {
+        return Err(QualifiedCalibratedError::ProfileThresholdMismatch(
+            "qualified calibration ece",
+        ));
+    }
+    if profile.ood_measured_false_acceptance_ppm > profile.maximum_ood_false_acceptance_ppm {
+        return Err(QualifiedCalibratedError::ProfileThresholdMismatch(
+            "qualified ood false acceptance",
+        ));
     }
     Ok(())
 }
