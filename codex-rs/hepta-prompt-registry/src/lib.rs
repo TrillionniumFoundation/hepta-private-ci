@@ -25,6 +25,8 @@ pub use admission::AdmissionAuthority;
 pub use admission::AdmissionBindingV1;
 pub use admission::AdmissionError;
 pub use admission::AdmissionGrantV1;
+pub use admission::FinalUseAdmissionAuthority;
+pub use admission::final_use_admission_binding;
 pub use admission::SignedAdmissionGrantV1;
 pub use admission::VerifiedAdmission;
 pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;
