@@ -583,6 +583,55 @@ async fn post_send_ack_loss_reuses_txn_and_waits_for_server_observation() -> Tes
 }
 
 #[tokio::test]
+async fn later_permanent_rejection_does_not_erase_prior_unknown_effect() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent(FIRST_AGENT)?;
+    let layout = layout(&temp, &agent_id)?;
+    let store = prepared_store(&layout).await?;
+    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let transport = FakeTransport::new([
+        Err(MatrixTransportError::Retryable),
+        Err(MatrixTransportError::Permanent),
+    ]);
+    let config = OutboxDispatchConfig {
+        lease_ms: 20,
+        retry_delay_ms: 10,
+        max_retry_delay_ms: 40,
+        max_attempts: 3,
+        claim_limit: 1,
+        idle_poll: Duration::from_millis(10),
+    };
+    let cancel = CancellationToken::new();
+
+    let first = dispatch_outbox_once(&store, &transport, &config, &cancel, 10).await?;
+    assert_eq!(first.retry_scheduled, 1);
+    let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
+    assert_eq!(second.permanent_failure, 0);
+    assert_eq!(second.retry_scheduled, 1);
+    assert_eq!(second.indeterminate_held, 1);
+
+    let pending = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("indeterminate outbox row disappeared")?;
+    assert_eq!(pending.state, OutboxState::RetryScheduled);
+    let receipt = store
+        .matrix_dispatch_receipt(&original.stable_txn_id)
+        .await?
+        .ok_or("dispatch receipt disappeared")?;
+    assert_eq!(receipt.state, MatrixDispatchState::Indeterminate);
+    assert_eq!(
+        transport.txn_ids()?,
+        vec![
+            original.stable_txn_id.clone(),
+            original.stable_txn_id.clone(),
+        ]
+    );
+    store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
 async fn transient_failures_use_bounded_backoff_and_remain_indeterminate() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
