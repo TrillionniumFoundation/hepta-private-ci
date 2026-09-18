@@ -36,6 +36,7 @@ pub use learned::TabularOperatorPredictionV1;
 pub use learned::TabularOperatorSampleV1;
 pub use learned::fit_tabular_operator;
 pub use learned::predict_tabular_operator;
+pub use learned::tabular_artifact_payload_digest_v1;
 pub use learned_strict::StrictLearnedOperatorError;
 pub use learned_strict::fit_tabular_operator_strict_v2;
 pub use learned_strict::predict_tabular_operator_indexed_v2;
