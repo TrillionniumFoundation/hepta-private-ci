@@ -192,7 +192,7 @@ The local state machine is deliberately conservative:
 3. A transport exception leaves it `indeterminate`; it is not removed and it is
    not blindly retried.
 4. Reconnect marks unresolved work indeterminate and calls `transport.reconcile()` for each retained operation ID; it never replays the mutation.
-5. Failed or absent reconciliation advances an exponential retry schedule from 1 s up to 60 s. After 64 automatic attempts or 24 h of unresolved age, the entry becomes `recoveryRequired` and automatic attempts stop; an operator may still force an explicit read-only reconciliation.
+5. Reconciliation runs as read-only batches of at most 8 concurrent queries so a reconnect cannot serially block on all 1024 unresolved identities. Failed or absent queries advance an exponential retry schedule from 1 s up to 60 s. After 64 automatic attempts or 24 h of unresolved age, the entry becomes `recoveryRequired` and automatic attempts stop; an operator may still force an explicit read-only reconciliation.
 6. Only a provenance-valid observation with a registered terminal status and `terminalObserved: true` removes the operation from the pending map and durable mirror.
 7. Failure to persist an operation identity before dispatch fails closed: `transport.request()` is not called. Failure to durably remove a terminal entry also fails closed into `recoveryRequired` rather than silently forgetting the identity.
 
@@ -299,6 +299,7 @@ retain tests for:
   reconnect without duplicate submission;
 - cross-session/origin provenance cannot settle a pending operation, and in-flight acknowledgement provenance remains bound across close/reconnect races;
 - reload/crash recovery reconciles the durable operation identity without persisting the request payload or resubmitting mutation;
+- reconnect reconciliation is capped to a bounded concurrent batch rather than serially waiting on the full pending capacity;
 - persistence failure before dispatch prevents transport I/O;
 - rapid duplicate logical actions collapse to one request while awaiting confirmation/acknowledgement and rerender restores focus;
 - an offline/session transition while confirmation is open invalidates the request before transport;
