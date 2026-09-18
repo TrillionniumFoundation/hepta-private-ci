@@ -28,9 +28,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             DeferredAgentActionKind::Drain,
             now,
         )? {
+            if let Some(runtime) = slot.runtime.as_mut() {
+                runtime.restart_on_failure = false;
+            }
+            slot.restart_retry_at = None;
             return Ok(());
         }
         self.fence_runtime(agent_id, slot)?;
+        active_runtime(agent_id, slot)?.restart_on_failure = false;
         let lifecycle = self.record(agent_id)?.lifecycle;
         if lifecycle.lifecycle == AgentLifecycle::Running {
             let next = self.registry.compare_and_transition(
@@ -49,8 +54,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 lifecycle.lifecycle
             )));
         }
+        slot.restart_retry_at = None;
         let generation = {
             let runtime = active_runtime(agent_id, slot)?;
+            runtime.restart_on_failure = false;
             runtime.phase = RuntimePhase::Draining {
                 deadline: deadline(now, self.config.drain_timeout)?,
             };
@@ -71,7 +78,24 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        if slot
+            .runtime
+            .as_ref()
+            .is_some_and(|runtime| !runtime.lease_persisted)
+        {
+            // A child without a durably published lease is quarantined and
+            // must stay on the hard-kill path. An operator Stop may strengthen
+            // cleanup, but must never downgrade it to graceful termination.
+            return self.kill_slot(agent_id, slot);
+        }
+        if self.cancel_scheduled_restart_without_runtime(agent_id, slot)? {
+            return Ok(());
+        }
+        slot.restart_retry_at = None;
         if self.defer_agent_action_for_matrix(agent_id, slot, DeferredAgentActionKind::Stop, now)? {
+            if let Some(runtime) = slot.runtime.as_mut() {
+                runtime.restart_on_failure = false;
+            }
             return Ok(());
         }
         slot.deferred_agent_action = None;
@@ -97,6 +121,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        if self.cancel_scheduled_restart_without_runtime(agent_id, slot)? {
+            return Ok(());
+        }
+        slot.restart_retry_at = None;
         slot.deferred_agent_action = None;
         self.kill_matrix_now(agent_id, slot)?;
         self.prepare_termination(agent_id, slot)?;
@@ -122,6 +150,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
+        slot.restart_attempt = 0;
+        slot.restart_window_started_at = None;
+        slot.restart_retry_at = None;
         let release = slot.active_release.clone().or_else(|| {
             slot.last_command
                 .clone()
@@ -146,6 +177,44 @@ impl<D: ProcessDriver> Supervisor<D> {
         let generation = active_runtime(agent_id, slot)?.generation;
         slot.event(generation, SupervisorEventKind::RestartQueued);
         Ok(())
+    }
+
+    fn cancel_scheduled_restart_without_runtime(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+    ) -> Result<bool, SupervisorError> {
+        if slot.runtime.is_some() || slot.restart_retry_at.is_none() {
+            return Ok(false);
+        }
+        let lifecycle = self.record(agent_id)?.lifecycle;
+        if !matches!(
+            lifecycle.lifecycle,
+            AgentLifecycle::Stopped | AgentLifecycle::Failed
+        ) {
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} cannot cancel automatic restart from {:?}",
+                lifecycle.lifecycle
+            )));
+        }
+
+        slot.restart_retry_at = None;
+        slot.restart_attempt = 0;
+        slot.restart_window_started_at = None;
+        slot.deferred_agent_action = None;
+        self.kill_matrix_now(agent_id, slot)?;
+        let generation = if lifecycle.lifecycle == AgentLifecycle::Failed {
+            self.transition_without_runtime(
+                agent_id,
+                slot,
+                lifecycle.generation,
+                AgentLifecycle::Stopped,
+            )?
+        } else {
+            lifecycle.generation
+        };
+        slot.event(generation, SupervisorEventKind::AutomaticRestartCancelled);
+        Ok(true)
     }
 
     fn prepare_termination(

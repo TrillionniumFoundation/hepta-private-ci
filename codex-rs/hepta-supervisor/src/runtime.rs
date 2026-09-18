@@ -38,6 +38,8 @@ pub(crate) struct AgentRuntime<P> {
     pub phase: RuntimePhase,
     pub healthy: bool,
     pub fenced: bool,
+    pub lease_persisted: bool,
+    pub restart_on_failure: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -141,6 +143,9 @@ pub(crate) struct AgentSlot<P> {
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
     pub restart_pending: bool,
+    pub restart_attempt: u32,
+    pub restart_window_started_at: Option<Instant>,
+    pub restart_retry_at: Option<Instant>,
     pub active_release: Option<AgentRelease>,
     pub previous_release: Option<AgentRelease>,
     pub release_change: Option<ReleaseChange>,
@@ -161,6 +166,9 @@ impl<P> AgentSlot<P> {
             deferred_agent_action: None,
             last_command: None,
             restart_pending: false,
+            restart_attempt: 0,
+            restart_window_started_at: None,
+            restart_retry_at: None,
             active_release: None,
             previous_release: None,
             release_change: None,

@@ -12,6 +12,7 @@ use crate::SupervisorError;
 use crate::SupervisorEventKind;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
+use crate::lease::read_lease;
 use crate::lease::remove_lease;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
@@ -36,20 +37,30 @@ impl<D: ProcessDriver> Supervisor<D> {
             };
             if keep {
                 slot.runtime = Some(runtime);
-            } else if !self.continue_release_change_after_exit(agent_id, slot, now)?
-                && slot.restart_pending
-            {
-                slot.restart_pending = false;
-                let release = slot.active_release.clone().or_else(|| {
-                    slot.last_command
-                        .clone()
-                        .and_then(|command| crate::AgentRelease::unversioned(command).ok())
-                });
-                let release =
-                    release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
-                self.start_release_slot(agent_id, slot, release, now)?;
+            } else {
+                let restart_on_failure = runtime.restart_on_failure;
+                let release_change_continued =
+                    self.continue_release_change_after_exit(agent_id, slot, now)?;
+                if !release_change_continued {
+                    if slot.restart_pending {
+                        slot.restart_pending = false;
+                        slot.restart_retry_at = None;
+                        let release = slot.active_release.clone().or_else(|| {
+                            slot.last_command
+                                .clone()
+                                .and_then(|command| crate::AgentRelease::unversioned(command).ok())
+                        });
+                        let release = release.ok_or_else(|| {
+                            SupervisorError::NoPreviousCommand(agent_id.clone())
+                        })?;
+                        self.start_release_slot(agent_id, slot, release, now)?;
+                    } else if restart_on_failure {
+                        self.schedule_automatic_restart(agent_id, slot, now)?;
+                    }
+                }
             }
         }
+        self.maybe_start_automatic_restart(agent_id, slot, now)?;
         self.tick_matrix_companion(agent_id, slot, now)
     }
 
@@ -63,6 +74,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         let registry_generation = self.record(agent_id)?.lifecycle.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
             self.kill_matrix_now(agent_id, slot)?;
+            runtime.restart_on_failure = false;
             runtime
                 .process
                 .kill()
@@ -76,6 +88,15 @@ impl<D: ProcessDriver> Supervisor<D> {
                     registry: registry_generation,
                 },
             );
+        } else if matches!(runtime.phase, RuntimePhase::Killing) && !runtime.lease_persisted {
+            // Lease publication failed after spawn. Keep kill pressure ahead
+            // of observation so a failing poll cannot strand an untracked
+            // child behind the telemetry path.
+            runtime
+                .process
+                .kill()
+                .map_err(|error| driver_error(agent_id, error))?;
+            slot.event(runtime.generation, SupervisorEventKind::KillRequested);
         }
         let observation = runtime
             .process
@@ -106,6 +127,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     next.generation,
                     SupervisorEventKind::Lifecycle(AgentLifecycle::Running),
                 );
+                slot.restart_retry_at = None;
                 slot.event(next.generation, SupervisorEventKind::Healthy);
                 self.release_became_healthy(agent_id, slot, next.generation)?;
             }
@@ -172,7 +194,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             release_id: runtime.release_id.clone(),
             identity: runtime.identity.clone(),
         };
-        remove_lease(record.layout.run_root(), &lease)?;
+        if runtime.lease_persisted {
+            remove_lease(record.layout.run_root(), &lease)?;
+        } else if matches!(
+            read_lease(record.layout.run_root()),
+            Ok(Some(ref actual)) if actual == &lease
+        ) {
+            // write_lease may have linked the exact final lease before a
+            // directory-fsync failure. Remove only that exact identity. This
+            // cleanup is best-effort because unknown/corrupt lease state must
+            // remain fail-closed rather than being deleted speculatively.
+            let _ = remove_lease(record.layout.run_root(), &lease);
+        }
         let mut generation = runtime.generation;
         if !fenced {
             let target = match record.lifecycle.lifecycle {
@@ -204,6 +237,85 @@ impl<D: ProcessDriver> Supervisor<D> {
             );
         }
         slot.event(generation, SupervisorEventKind::Exited(exit));
+        Ok(())
+    }
+
+    fn schedule_automatic_restart(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        if slot.active_release.is_none() && slot.last_command.is_none() {
+            return Ok(());
+        }
+        let reset_window = slot.restart_window_started_at.is_none_or(|started| {
+            now.checked_duration_since(started)
+                .is_none_or(|elapsed| elapsed >= self.config.restart_recovery_window)
+        });
+        if reset_window {
+            slot.restart_window_started_at = Some(now);
+            slot.restart_attempt = 0;
+        }
+        if slot.restart_attempt >= self.config.restart_attempt_budget {
+            slot.restart_retry_at = None;
+            let generation = self.record(agent_id)?.lifecycle.generation;
+            slot.event(
+                generation,
+                SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                    attempts: slot.restart_attempt,
+                },
+            );
+            return Ok(());
+        }
+        slot.restart_attempt = slot.restart_attempt.saturating_add(1);
+        let shift = slot.restart_attempt.saturating_sub(1).min(31);
+        let delay = self
+            .config
+            .restart_backoff_min
+            .checked_mul(1_u32 << shift)
+            .unwrap_or(self.config.restart_backoff_max)
+            .min(self.config.restart_backoff_max);
+        slot.restart_retry_at = Some(deadline(now, delay)?);
+        let generation = self.record(agent_id)?.lifecycle.generation;
+        slot.event(
+            generation,
+            SupervisorEventKind::AutomaticRestartScheduled {
+                attempt: slot.restart_attempt,
+                delay_millis: u64::try_from(delay.as_millis()).unwrap_or(u64::MAX),
+            },
+        );
+        Ok(())
+    }
+
+    fn maybe_start_automatic_restart(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        if slot.runtime.is_some()
+            || slot.release_change.is_some()
+            || slot.restart_pending
+            || slot.restart_retry_at.is_none_or(|retry_at| now < retry_at)
+        {
+            return Ok(());
+        }
+        slot.restart_retry_at = None;
+        let release = slot.active_release.clone().or_else(|| {
+            slot.last_command
+                .clone()
+                .and_then(|command| crate::AgentRelease::unversioned(command).ok())
+        });
+        let Some(release) = release else {
+            return Ok(());
+        };
+        if let Err(error) = self.start_release_slot(agent_id, slot, release, now) {
+            if slot.runtime.is_none() {
+                self.schedule_automatic_restart(agent_id, slot, now)?;
+            }
+            return Err(error);
+        }
         Ok(())
     }
 

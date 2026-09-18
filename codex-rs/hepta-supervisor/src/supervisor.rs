@@ -145,6 +145,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 },
                 events: slot.events.items.iter().cloned().collect(),
                 logs: slot.logs.items.iter().cloned().collect(),
+                automatic_restart_attempt: slot.restart_attempt,
+                automatic_restart_pending: slot.restart_retry_at.is_some(),
                 control_revision: slot.control_revision,
                 restart_pending: slot.restart_pending,
                 release_state_generation: slot.release_state_generation,
@@ -282,18 +284,27 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let runtime = slot
-            .runtime
-            .as_ref()
-            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
-        if runtime.generation != record.lifecycle.generation {
-            return Err(SupervisorError::GenerationFence {
-                agent_id: agent_id.clone(),
-                runtime: runtime.generation,
-                registry: record.lifecycle.generation,
-            });
+        if let Some(runtime) = slot.runtime.as_ref() {
+            if runtime.generation != record.lifecycle.generation {
+                return Err(SupervisorError::GenerationFence {
+                    agent_id: agent_id.clone(),
+                    runtime: runtime.generation,
+                    registry: record.lifecycle.generation,
+                });
+            }
+            return Ok(());
         }
-        Ok(())
+        if slot.restart_retry_at.is_some()
+            && matches!(
+                record.lifecycle.lifecycle,
+                AgentLifecycle::Stopped | AgentLifecycle::Failed
+            )
+        {
+            // Stop/Kill is also the cancellation authority for a scheduled
+            // automatic restart while no child is currently running.
+            return Ok(());
+        }
+        Err(SupervisorError::Invalid(format!("agent {agent_id} is not active")))
     }
 
     #[cfg(unix)]
@@ -354,7 +365,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "agent {agent_id} has no explicit active release identity"
             ))
         })?;
-        if current.identity() == target.identity() || current.command() == target.command() {
+        if current.identity() == target.identity()
+            || (current.command() == target.command()
+                && current.matrixd_command() == target.matrixd_command())
+        {
             return Err(SupervisorError::TargetReleaseUnchanged(agent_id.clone()));
         }
         if record.lifecycle.lifecycle != AgentLifecycle::Running {
@@ -401,6 +415,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            slot.restart_attempt = 0;
+            slot.restart_window_started_at = None;
+            slot.restart_retry_at = None;
             supervisor.start_slot(agent_id, slot, command, now)
         })
     }
@@ -412,6 +429,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            slot.restart_attempt = 0;
+            slot.restart_window_started_at = None;
+            slot.restart_retry_at = None;
             supervisor.start_release_slot(agent_id, slot, release, now)
         })
     }
