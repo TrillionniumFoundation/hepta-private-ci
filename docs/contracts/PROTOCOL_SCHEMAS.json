@@ -898,6 +898,12 @@
           "maxBytes": 128
         },
         {
+          "name": "requestId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
           "name": "requestDigest",
           "type": "sha256",
           "required": true,
@@ -905,56 +911,153 @@
         },
         {
           "name": "principalScope",
-          "type": "bounded_object",
+          "type": "id128",
           "required": true,
-          "maxBytes": 4096
-        },
-        {
-          "name": "successPredicates",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "terminalConditions",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "hardConstraints",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 32768
-        },
-        {
-          "name": "softUtilityDimensions",
-          "type": "bounded_array",
-          "required": true,
-          "maxBytes": 16384
-        },
-        {
-          "name": "resourceEndowment",
-          "type": "bounded_object",
-          "required": true,
-          "maxBytes": 8192
-        },
-        {
-          "name": "deadlineUnixMs",
-          "type": "u64",
-          "required": false
+          "maxBytes": 128
         },
         {
           "name": "revision",
           "type": "u64",
           "required": true
+        },
+        {
+          "name": "sourceTrustClass",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64,
+          "values": [
+            "principal",
+            "trusted_system",
+            "authorized_adapter",
+            "untrusted_evidence"
+          ]
+        },
+        {
+          "name": "locale",
+          "type": "utf8",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "observedAtUnixMicros",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "deadlineUnixMicros",
+          "type": "u64",
+          "required": false
+        },
+        {
+          "name": "successPredicates",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768,
+          "maxItems": 128
+        },
+        {
+          "name": "terminalConditions",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768,
+          "maxItems": 128
+        },
+        {
+          "name": "hardConstraints",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768,
+          "maxItems": 246
+        },
+        {
+          "name": "evidenceRequirements",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768,
+          "maxItems": 128
+        },
+        {
+          "name": "allowedActionClasses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 127
+        },
+        {
+          "name": "forbiddenActionClasses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 128
+        },
+        {
+          "name": "confirmationActionClasses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 127
+        },
+        {
+          "name": "softUtilityDimensions",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "maxItems": 64
+        },
+        {
+          "name": "resourceEndowment",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096
+        },
+        {
+          "name": "riskProfile",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096
+        },
+        {
+          "name": "sourceDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "inputSchemaDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "normalizationProfileDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "hardConstraintDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "semanticDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
         }
       ],
       "invariants": [
         "bounded_lengths",
         "canonical_field_order",
         "digest_before_authority_use",
-        "unknown_critical_fields_rejected"
+        "unknown_critical_fields_rejected",
+        "successPredicates_plus_terminalConditions_plus_evidenceRequirements_lte_128",
+        "hardConstraints_lte_246_reserving_10_generated_native_rows",
+        "allowedActionClasses_lte_127_reserving_intrinsic_abstain"
       ]
     },
     {

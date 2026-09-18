@@ -83,22 +83,30 @@
     "schema": "ObjectiveFunctionV1",
     "immutableCore": [
       "principalScope",
+      "sourceTrustClass",
       "successPredicates",
       "terminalConditions",
       "hardConstraints",
       "evidenceRequirements",
       "allowedActionClasses",
-      "forbiddenActionClasses"
+      "forbiddenActionClasses",
+      "confirmationActionClasses",
+      "resourceEndowment",
+      "riskProfile",
+      "deadlineUnixMicros"
     ],
     "boundedAdaptiveSurface": [
-      "softUtilityDimensions",
+      "softUtilityDimensions"
+    ],
+    "ambiguityPolicy": "emit_bounded_interpretation_set_or_request_clarification",
+    "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success",
+    "downstreamRuntimeOnly": [
       "resourceAllocation",
       "explorationBudget",
       "evidenceEffort",
       "abstentionThreshold"
     ],
-    "ambiguityPolicy": "emit_bounded_interpretation_set_or_request_clarification",
-    "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success"
+    "projectionPolicy": "canonical ObjectiveFunctionV1 is emitted only from an admitted source plus its successful native compile receipt; downstream planning fields are not fabricated by objective.compiler"
   },
   "baselineProfiles": [
     {
