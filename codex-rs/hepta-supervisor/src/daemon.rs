@@ -31,9 +31,13 @@ use codex_hepta_contracts::AgentId;
 #[cfg(any(unix, test))]
 use codex_hepta_fleet::AgentLifecycle;
 #[cfg(unix)]
+use codex_hepta_fleet::FleetAllocationGrantReadV1;
+#[cfg(unix)]
 use codex_hepta_fleet::FleetRegistry;
 #[cfg(unix)]
 use codex_hepta_fleet::FleetRuntimeAllocator;
+#[cfg(unix)]
+use codex_hepta_fleet::FleetRuntimeAllocatorError;
 #[cfg(unix)]
 use codex_hepta_fleet::LocalCapacityPolicyV1;
 #[cfg(any(unix, test))]
@@ -218,13 +222,15 @@ async fn run_supervisord_inner(
         let runtime_snapshot = supervisor.snapshot(agent_id);
         if runtime_snapshot.as_ref().is_some_and(|runtime| runtime.active) {
             let status = status_from(&supervisor_epoch, record, runtime_snapshot)?;
-            fleet_allocator.reserve_agent_start(
+            let grant = fleet_allocator.reserve_agent_start(
                 agent_id,
                 &record.manifest.resources,
                 record.lifecycle.generation,
                 status.control_fence.state_digest.as_str(),
                 now_ms,
             )?;
+            let read = fleet_allocator.read_grants(now_ms);
+            require_projected_grant(&read, &grant.allocation_id, &grant.semantic_digest)?;
         }
     }
     let state = Arc::new(DaemonState {
@@ -777,18 +783,35 @@ async fn reserve_start_allocation<D: ProcessDriver>(
         .generation
         .checked_add(1)
         .ok_or_else(|| SupervisorError::Invalid("lifecycle generation overflow".to_string()))?;
-    state
-        .fleet_allocator
-        .lock()
-        .await
-        .reserve_agent_start(
-            agent_id,
-            &record.manifest.resources,
-            lifecycle_generation,
-            accepted.control_fence.state_digest.as_str(),
-            unix_millis_now(),
-        )?;
+    let now_ms = unix_millis_now();
+    let mut allocator = state.fleet_allocator.lock().await;
+    let grant = allocator.reserve_agent_start(
+        agent_id,
+        &record.manifest.resources,
+        lifecycle_generation,
+        accepted.control_fence.state_digest.as_str(),
+        now_ms,
+    )?;
+    let read = allocator.read_grants(now_ms);
+    require_projected_grant(&read, &grant.allocation_id, &grant.semantic_digest)?;
     Ok(())
+}
+
+#[cfg(unix)]
+fn require_projected_grant(
+    read: &FleetAllocationGrantReadV1,
+    allocation_id: &str,
+    semantic_digest: &str,
+) -> Result<(), SupervisorError> {
+    if read.grants.iter().any(|grant| {
+        grant.allocation_id == allocation_id && grant.semantic_digest == semantic_digest
+    }) {
+        return Ok(());
+    }
+    Err(FleetRuntimeAllocatorError::Invalid(
+        "committed allocation is absent from the current durable grant read".to_string(),
+    )
+    .into())
 }
 
 #[cfg(unix)]
