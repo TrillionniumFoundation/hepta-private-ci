@@ -53,7 +53,7 @@ reconciliation closes it.
 
 ## Independent replay checkpoint
 
-The production host supplies:
+The production host must supply both the trust projection and independent replay watermark. Agentd rejects signed-ingress startup when the trust file is configured without the checkpoint (or vice versa):
 
 `--authbus-replay-checkpoint-file /independently-retained/private/checkpoint.json`
 
