@@ -108,6 +108,22 @@ impl AutomationStore {
             }
             DestinationApplyStart::Apply(mut apply) => {
                 draft.validate()?;
+                // The destination dedupe transaction is also the domain-write
+                // transaction. Fence this handle inside that same BEGIN
+                // IMMEDIATE transaction before inserting the task row so an
+                // old owner cannot bypass timer handoff through kernel.operations.
+                let phase: Option<String> = sqlx::query_scalar(
+                    "UPDATE automation_timer_lifecycle SET writer_epoch = writer_epoch
+                     WHERE singleton = 1 AND writer_epoch = ? AND phase = 'active'
+                     RETURNING phase",
+                )
+                .bind(self.timer_epoch)
+                .fetch_optional(&mut **apply.transaction().map_err(map_operation_error)?)
+                .await
+                .map_err(|_| AutomationError::Unavailable)?;
+                if phase.as_deref() != Some("active") {
+                    return Err(AutomationError::TimerFenced);
+                }
                 let (schedule_kind, interval_ms) = match draft.schedule {
                     AutomationSchedule::Once => ("once", None),
                     AutomationSchedule::FixedInterval { interval_ms } => {
