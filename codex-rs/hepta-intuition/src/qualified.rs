@@ -505,6 +505,16 @@ fn validate_scoring_commitment_for_request(
     profile: &CanonicalPolicyProfileV1,
     scoring: &ScoringCommitmentV1,
 ) -> Result<(), QualifiedCalibratedError> {
+    if matches!(request.assignment, AssignmentModeV1::Deterministic)
+        && request
+            .candidates
+            .iter()
+            .any(|candidate| candidate.assignment_probability != ProbabilityQ32::ZERO)
+    {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "deterministic assignment probability",
+        ));
+    }
     if canonical_scoring_commitment_digest_v1(scoring)? != scoring.commitment_digest {
         return Err(QualifiedCalibratedError::ScoringCommitmentDigestMismatch);
     }
