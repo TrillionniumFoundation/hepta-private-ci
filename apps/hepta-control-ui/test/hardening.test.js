@@ -474,3 +474,70 @@ test("transport POST body rejects accessor-shaped input before CSRF or network I
   assert.equal(fetchCalls, 0);
 });
 
+test("reconnect reconciliation is capped to one concurrent batch", async () => {
+  const storage = new MemoryStorage();
+  const store = new LocalStoragePendingStore({ storage, key: "hepta.pending.batch" });
+  let connection = 0;
+  let active = 0;
+  let maxActive = 0;
+  let reconcileCalls = 0;
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const transport = {
+    async connect(input) {
+      connection += 1;
+      return {
+        authenticated: true,
+        sessionId: `session.${connection}`,
+        connectionGeneration: connection,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request() { throw new Error("ack lost"); },
+    async reconcile() {
+      reconcileCalls += 1;
+      active += 1;
+      maxActive = Math.max(maxActive, active);
+      await gate;
+      active -= 1;
+      return null;
+    },
+    async close() {},
+  };
+  const first = new RuntimeClient({
+    transport,
+    pendingStore: store,
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  await connectWithSnapshot(first);
+  for (let index = 0; index < 12; index += 1) {
+    const ack = await first.submitRequest({
+      operationId: `operation.batch.${index}`,
+      subjectId: "runtime.agentd",
+      action: "request_retry",
+      expectedRevision: 4,
+      displayedRevision: 9,
+    });
+    assert.equal(ack.status, "indeterminate");
+  }
+
+  const second = new RuntimeClient({
+    transport,
+    pendingStore: store,
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  const reconnect = second.connect({
+    endpointId: "runtime.1",
+    protocolVersion: 1,
+    manifestDigest: D1,
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(reconcileCalls, 8);
+  assert.equal(maxActive, 8);
+  release();
+  const session = await reconnect;
+  assert.equal(session.pendingReconciliation, 12);
+});
+
