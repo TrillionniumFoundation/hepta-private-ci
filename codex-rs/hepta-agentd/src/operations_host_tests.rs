@@ -79,7 +79,8 @@ fn draft() -> AutomationTaskDraft {
 
 #[tokio::test]
 #[cfg(unix)]
-async fn configured_host_create_is_terminal_and_reopen_is_idempotent() -> Result<(), Box<dyn std::error::Error>> {
+async fn configured_host_create_is_terminal_and_reopen_is_idempotent()
+-> Result<(), Box<dyn std::error::Error>> {
     let temp = tempfile::tempdir()?;
     std::fs::set_permissions(temp.path(), std::fs::Permissions::from_mode(0o700))?;
     let root = temp.path().canonicalize()?;
