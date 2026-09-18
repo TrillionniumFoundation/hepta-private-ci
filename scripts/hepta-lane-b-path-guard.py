@@ -180,6 +180,14 @@ def self_test() -> int:
         foreign_source = foreign / "source.rs"
         foreign_source.write_text("pub fn run() {}\n", encoding="utf-8")
         need(canonical_path(root, "owned/source.rs", "fixture", require_file=True) == source, "canonical fixture")
+        need(
+            canonical_path(root, "owned/source.rs", "fixture root", require_file=None) == source,
+            "file-backed root fixture",
+        )
+        need(
+            canonical_path(root, "owned", "fixture root", require_file=None) == owned,
+            "directory-backed root fixture",
+        )
         for bad in (
             "owned/../foreign/source.rs",
             "owned/./source.rs",
