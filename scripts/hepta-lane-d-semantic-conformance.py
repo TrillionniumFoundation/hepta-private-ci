@@ -293,6 +293,13 @@ def verify() -> int:
         "LANE-D-RCP-INTEGRITY-026",
         "LANE-D-RCP-POLICY-027",
         "LANE-D-READINESS-028",
+        "LANE-D-RCP-STATUS-029",
+        "LANE-D-RCP-RESOURCE-030",
+        "LANE-D-RCP-CLOCK-031",
+        "LANE-D-RCP-JOURNAL-032",
+        "LANE-D-RCP-STORE-033",
+        "LANE-D-RCP-COMPOSE-034",
+        "LANE-D-RCP-EVIDENCE-035",
     ]:
         need(gap_id in gap_ids, "missing gap record " + gap_id)
     need(
