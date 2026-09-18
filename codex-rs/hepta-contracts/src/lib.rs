@@ -2,6 +2,7 @@
 
 mod agent_id;
 pub mod authority_lease;
+pub mod authority_replay;
 pub mod authority_trust;
 mod authbus;
 #[cfg(feature = "authbus-local-qualification")]
@@ -26,6 +27,11 @@ mod qualification_receipt;
 mod receipt;
 mod stable_id;
 
+pub use authority_replay::AuthorityReplayClaim;
+pub use authority_replay::AuthorityReplayEpochAdvance;
+pub use authority_replay::AuthorityReplayError;
+pub use authority_replay::AuthorityReplayStore;
+pub use authority_replay::SqliteAuthorityReplayStore;
 pub use authority_trust::AuthorityClock;
 pub use authority_trust::AuthorityFrontierStore;
 pub use authority_trust::AuthorityTrustError;
