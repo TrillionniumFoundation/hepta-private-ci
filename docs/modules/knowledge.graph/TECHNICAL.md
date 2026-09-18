@@ -180,7 +180,8 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-kg/src/generation_tests.rs](../../../codex-rs/hepta-kg/src/generation_tests.rs); named case: `incremental_and_full_rebuilds_are_semantically_equal`.
-- [codex-rs/hepta-kg/src/durable_tests.rs](../../../codex-rs/hepta-kg/src/durable_tests.rs); canonical durable digest and dangling-edge oracle.
+- [codex-rs/hepta-kg/src/durable_tests.rs](../../../codex-rs/hepta-kg/src/durable_tests.rs); canonical durable digest, open-vocabulary predicate, and dangling-edge oracle.
+- `codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs`; correction -> full/incremental equivalence -> persisted V2 publication -> restart -> GraphOneHop product consumer -> tombstone -> restart.
 - [codex-rs/hepta-kg/src/lib_tests.rs](../../../codex-rs/hepta-kg/src/lib_tests.rs); named case: `rebuild_is_canonical_and_authority_free`.
 
 In `codex-rs`, run `just test -p codex-hepta-kg`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) separately labels target acceptance designs.
