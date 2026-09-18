@@ -502,6 +502,7 @@ pub enum EvidenceDispositionV1 {
 #[derive(Clone)]
 struct LoadedQualificationReceipt {
     seq: i64,
+    issuer_root_id: String,
     envelope: QualificationEvidenceEnvelopeV1,
 }
 
@@ -622,9 +623,10 @@ impl HeptaEvidenceStore {
         let insert = sqlx::query(
             "INSERT INTO qualification_issuer_key_revocations (
                 revocation_id, root_id, key_id, observed_unix_ms, reason_code,
-                authority_principal, authority_key_id, authority_verifying_key,
-                payload_json, payload_sha256, signature, recorded_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                authority_principal, authority_key_id, authority_role,
+                authority_verifying_key, payload_json, payload_sha256, signature,
+                recorded_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT DO NOTHING",
         )
         .bind(&signed.revocation.revocation_id)
@@ -637,6 +639,7 @@ impl HeptaEvidenceStore {
         .bind(&signed.revocation.reason_code)
         .bind(authority.principal_id())
         .bind(authority.key_id())
+        .bind(authority.role().as_str())
         .bind(authority_key)
         .bind(&payload_json)
         .bind(payload_sha256.as_str())
@@ -725,7 +728,7 @@ impl HeptaEvidenceStore {
         }
         verify_qualification_evidence_rows(&self.pool).await?;
         let rows = sqlx::query(
-            "SELECT seq, envelope_json
+            "SELECT seq, issuer_root_id, envelope_json
              FROM qualification_evidence
              WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
              ORDER BY seq ASC
@@ -752,6 +755,9 @@ impl HeptaEvidenceStore {
                 })?;
             receipts.push(LoadedQualificationReceipt {
                 seq: row.try_get("seq").map_err(classify_sqlx_error)?,
+                issuer_root_id: row
+                    .try_get("issuer_root_id")
+                    .map_err(classify_sqlx_error)?,
                 envelope,
             });
         }
@@ -779,7 +785,7 @@ impl HeptaEvidenceStore {
                 .filter(|receipt| {
                     !revoked_receipts.contains(receipt.envelope.receipt_id.as_str())
                         && !revoked_keys.contains(&(
-                            receipt.envelope.issuer_principal.clone(),
+                            receipt.issuer_root_id.clone(),
                             receipt.envelope.issuer_key_id.clone(),
                         ))
                         && receipt.envelope.observed_unix_ms <= now_unix_ms
@@ -1124,7 +1130,7 @@ fn verify_predecessor_chain(
         }
         if revoked_receipts.contains(current.envelope.receipt_id.as_str())
             || revoked_keys.contains(&(
-                current.envelope.issuer_principal.clone(),
+                current.issuer_root_id.clone(),
                 current.envelope.issuer_key_id.clone(),
             ))
         {
@@ -1245,8 +1251,8 @@ pub(crate) async fn verify_qualification_evidence_rows(
 
     let revocations = sqlx::query(
         "SELECT revocation_id, root_id, key_id, observed_unix_ms, reason_code,
-                authority_principal, authority_key_id, authority_verifying_key,
-                payload_json, payload_sha256, signature
+                authority_principal, authority_key_id, authority_role,
+                authority_verifying_key, payload_json, payload_sha256, signature
          FROM qualification_issuer_key_revocations ORDER BY revocation_id",
     )
     .fetch_all(pool)
@@ -1393,7 +1399,13 @@ async fn verify_independent_decision_row(
         .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
     let digest = Sha256Digest::for_bytes(&canonical);
     let receipt_id: String = row.try_get("receipt_id").map_err(classify_sqlx_error)?;
+    let conditions_json = serde_json::to_string(&decision.conditions)
+        .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
     if canonical_text != payload_json
+        || conditions_json
+            != row
+                .try_get::<String, _>("conditions_json")
+                .map_err(classify_sqlx_error)?
         || decision.decision_id
             != row.try_get::<String, _>("decision_id").map_err(classify_sqlx_error)?
         || decision.candidate_id
@@ -1471,6 +1483,10 @@ fn verify_revocation_row(row: &sqlx::sqlite::SqliteRow) -> Result<(), EvidenceEr
             != row.try_get::<i64, _>("observed_unix_ms").map_err(classify_sqlx_error)?
         || revocation.reason_code
             != row.try_get::<String, _>("reason_code").map_err(classify_sqlx_error)?
+        || row
+            .try_get::<String, _>("authority_role")
+            .map_err(classify_sqlx_error)?
+            != EvidenceIssuerRoleV1::SecurityReviewer.as_str()
         || digest.as_str()
             != row
                 .try_get::<String, _>("payload_sha256")
