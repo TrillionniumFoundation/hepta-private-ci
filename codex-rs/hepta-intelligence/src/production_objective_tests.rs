@@ -362,3 +362,56 @@ fn exact_retry_is_idempotent_and_run_id_drift_conflicts() {
         )
     ));
 }
+
+#[test]
+fn product_objective_named_host_measurement_receipt() {
+    if std::env::var_os("HEPTA_OBJECTIVE_MEASURE").is_none() {
+        return;
+    }
+    let directory = tempdir().expect("tempdir");
+    let path = directory.path().join("learning.ledger");
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(&path)
+        .expect("create ledger");
+    let mut ledger = DurableLedger::create(file, digest("measurement-binding"), 128).expect("ledger");
+    let profile = profile();
+    let source = source();
+    let context = context(&profile, &source);
+    let mut predecessor = Digest32::ZERO;
+    let mut micros = Vec::new();
+    for index in 0..32 {
+        let started = std::time::Instant::now();
+        let result = prepare_intelligence_run_v1(
+            &mut ledger,
+            &source,
+            &profile,
+            &context,
+            bindings(
+                &format!("measure-record-{index:03}"),
+                &format!("measure-run-{index:03}"),
+                predecessor,
+            ),
+        )
+        .expect("measurement run");
+        let ProductionObjectiveDispositionV1::Published(envelope) = result else {
+            panic!("measurement must publish");
+        };
+        predecessor = envelope.durable_append.chain_digest;
+        micros.push(started.elapsed().as_micros());
+    }
+    micros.sort_unstable();
+    let percentile = |numerator: usize| {
+        let index = ((micros.len() - 1) * numerator + 99) / 100;
+        micros[index]
+    };
+    println!(
+        "{{\"schema\":\"hepta.objective-product-measurement.v1\",\"samples\":{},\"p50Micros\":{},\"p95Micros\":{},\"p99Micros\":{},\"path\":\"authenticated-admission+compile+durable-fsync\"}}",
+        micros.len(),
+        percentile(50),
+        percentile(95),
+        percentile(99)
+    );
+}
