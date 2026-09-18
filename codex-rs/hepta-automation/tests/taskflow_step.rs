@@ -310,10 +310,7 @@ async fn reconciled_step_remains_readable_after_run_projection_refence() {
     let recovery = fence(/*generation*/ 2);
     store
         .claim_taskflow_run(
-            "step-run",
-            &recovery,
-            /*now_ms*/ 2_000,
-            /*lease_duration_ms*/ 1_000,
+            "step-run", &recovery, /*now_ms*/ 2_000, /*lease_duration_ms*/ 1_000,
         )
         .await
         .expect("re-fence run projection");
