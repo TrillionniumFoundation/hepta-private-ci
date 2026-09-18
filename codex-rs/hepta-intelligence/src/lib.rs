@@ -23,6 +23,17 @@ pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
+mod prompt_pipeline;
+
+pub use prompt_pipeline::PreparedPromptContextV1;
+pub use prompt_pipeline::PreparedPromptDeliveryV1;
+pub use prompt_pipeline::PromptContextCompileRequestV1;
+pub use prompt_pipeline::PromptDeliveryPrepareRequestV1;
+pub use prompt_pipeline::PromptPipelineErrorV1;
+pub use prompt_pipeline::compile_exercised_prompt_context_v1;
+pub use prompt_pipeline::observe_prompt_delivery_v1;
+pub use prompt_pipeline::prepare_prompt_delivery_v1;
+
 mod pipeline_v2;
 
 pub use pipeline_v2::LaneFRunRequestV2;
