@@ -62,6 +62,10 @@ impl AuthenticatedOwnerSummaryV1 {
         &self.0
     }
 
+    pub(crate) fn from_verified(summary: OwnerSummaryV1) -> Self {
+        Self(summary)
+    }
+
     fn into_inner(self) -> OwnerSummaryV1 {
         self.0
     }
