@@ -940,6 +940,26 @@ impl MatrixDurableStore {
         if updated.rows_affected() != 1 {
             return Err(MatrixDurableError::Conflict);
         }
+        match &transition {
+            OutboxTransition::Sent { event_id } => {
+                dispatch_ledger::record_compat_sent_tx(
+                    &mut transaction,
+                    &existing,
+                    event_id,
+                    now_ms,
+                )
+                .await?;
+            }
+            OutboxTransition::PermanentFailure => {
+                dispatch_ledger::record_compat_failure_tx(
+                    &mut transaction,
+                    &existing,
+                    now_ms,
+                )
+                .await?;
+            }
+            OutboxTransition::Retry { .. } => {}
+        }
         self.append_change(
             &mut transaction,
             ChangeKind::InboxDispatchQueued,
@@ -1802,6 +1822,28 @@ impl MatrixDurableStore {
         // Exact terminal/retry replay is a lost-ack recovery read. A later
         // room tombstone must not erase the already-durable outcome.
         if let Some(idempotent) = transition.idempotent_result(&existing) {
+            if idempotent.is_ok() {
+                match &transition {
+                    OutboxTransition::Sent { event_id } => {
+                        dispatch_ledger::record_compat_sent_tx(
+                            &mut transaction,
+                            &existing,
+                            event_id,
+                            now_ms,
+                        )
+                        .await?;
+                    }
+                    OutboxTransition::PermanentFailure => {
+                        dispatch_ledger::record_compat_failure_tx(
+                            &mut transaction,
+                            &existing,
+                            now_ms,
+                        )
+                        .await?;
+                    }
+                    OutboxTransition::Retry { .. } => {}
+                }
+            }
             transaction.commit().await.map_err(unavailable)?;
             return idempotent;
         }
