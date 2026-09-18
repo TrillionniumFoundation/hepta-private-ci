@@ -147,6 +147,28 @@ pub fn validate_artifact_manifest_v2(
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DatasetWithdrawalRegistryBindingV1 {
+    pub registry_id: StableId,
+    pub scope_digest: Digest32,
+    pub authority_id: StableId,
+}
+
+impl DatasetWithdrawalRegistryBindingV1 {
+    pub fn validate(&self) -> Result<(), ArtifactClosureError> {
+        require_digest(self.scope_digest, "withdrawal registry scope")
+    }
+
+    #[must_use]
+    pub fn digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal-registry-binding.v1".to_vec();
+        push_id(&mut bytes, &self.registry_id);
+        bytes.extend_from_slice(self.scope_digest.as_array());
+        push_id(&mut bytes, &self.authority_id);
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DatasetWithdrawalNoticeV1 {
     pub notice_id: StableId,
     pub dataset_digest: Digest32,
@@ -184,6 +206,7 @@ pub struct DatasetWithdrawalReceiptV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DatasetWithdrawalRegistrySnapshotV1 {
+    pub binding: DatasetWithdrawalRegistryBindingV1,
     records: Vec<DatasetWithdrawalRecordV1>,
     pub head_digest: Digest32,
 }
@@ -195,17 +218,35 @@ impl DatasetWithdrawalRegistrySnapshotV1 {
     }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct DatasetWithdrawalRegistry {
+    binding: DatasetWithdrawalRegistryBindingV1,
     records: Vec<DatasetWithdrawalRecordV1>,
     notice_digests: BTreeMap<StableId, Digest32>,
     withdrawn_datasets: BTreeMap<Digest32, u64>,
 }
 
 impl DatasetWithdrawalRegistry {
+    pub fn new(
+        binding: DatasetWithdrawalRegistryBindingV1,
+    ) -> Result<Self, ArtifactClosureError> {
+        binding.validate()?;
+        Ok(Self {
+            binding,
+            records: Vec::new(),
+            notice_digests: BTreeMap::new(),
+            withdrawn_datasets: BTreeMap::new(),
+        })
+    }
+
     #[must_use]
-    pub fn new() -> Self {
-        Self::default()
+    pub fn binding(&self) -> &DatasetWithdrawalRegistryBindingV1 {
+        &self.binding
+    }
+
+    #[must_use]
+    pub fn binding_digest(&self) -> Digest32 {
+        self.binding.digest()
     }
 
     pub fn append(
@@ -213,7 +254,11 @@ impl DatasetWithdrawalRegistry {
         notice: DatasetWithdrawalNoticeV1,
     ) -> Result<DatasetWithdrawalReceiptV1, ArtifactClosureError> {
         validate_withdrawal_notice(&notice)?;
-        let event_digest = digest_withdrawal_notice(&notice);
+        if notice.authority_id != self.binding.authority_id {
+            return Err(ArtifactClosureError::WithdrawalAuthorityMismatch);
+        }
+        let binding_digest = self.binding_digest();
+        let event_digest = digest_withdrawal_notice(binding_digest, &notice);
         if let Some(existing) = self.notice_digests.get(&notice.notice_id) {
             if *existing != event_digest {
                 return Err(ArtifactClosureError::WithdrawalIdentityConflict(
@@ -243,8 +288,12 @@ impl DatasetWithdrawalRegistry {
             .records
             .last()
             .map_or(Digest32::ZERO, |record| record.chain_digest);
-        let chain_digest =
-            digest_withdrawal_chain(predecessor_chain_digest, sequence, event_digest);
+        let chain_digest = digest_withdrawal_chain(
+            binding_digest,
+            predecessor_chain_digest,
+            sequence,
+            event_digest,
+        );
         let record = DatasetWithdrawalRecordV1 {
             sequence,
             predecessor_chain_digest,
@@ -288,6 +337,7 @@ impl DatasetWithdrawalRegistry {
     #[must_use]
     pub fn snapshot(&self) -> DatasetWithdrawalRegistrySnapshotV1 {
         DatasetWithdrawalRegistrySnapshotV1 {
+            binding: self.binding.clone(),
             records: self.records.clone(),
             head_digest: self
                 .records
@@ -300,7 +350,7 @@ impl DatasetWithdrawalRegistry {
         snapshot: DatasetWithdrawalRegistrySnapshotV1,
     ) -> Result<Self, ArtifactClosureError> {
         let expected_head = snapshot.head_digest;
-        let mut registry = Self::new();
+        let mut registry = Self::new(snapshot.binding.clone())?;
         for expected in snapshot.records {
             let receipt = registry.append(expected.notice.clone())?;
             let actual = registry
@@ -550,6 +600,7 @@ pub enum ArtifactClosureError {
     SelfPredecessor,
     RollbackPredecessorMissing,
     WithdrawalIdentityConflict(String),
+    WithdrawalAuthorityMismatch,
     WithdrawalLimit,
     WithdrawalSnapshotMismatch,
     WithdrawnDataset,
@@ -621,8 +672,12 @@ fn validate_withdrawal_notice(
     Ok(())
 }
 
-fn digest_withdrawal_notice(notice: &DatasetWithdrawalNoticeV1) -> Digest32 {
+fn digest_withdrawal_notice(
+    binding_digest: Digest32,
+    notice: &DatasetWithdrawalNoticeV1,
+) -> Digest32 {
     let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal.v1".to_vec();
+    bytes.extend_from_slice(binding_digest.as_array());
     push_id(&mut bytes, &notice.notice_id);
     bytes.extend_from_slice(notice.dataset_digest.as_array());
     bytes.extend_from_slice(notice.source_tombstone_digest.as_array());
@@ -635,11 +690,13 @@ fn digest_withdrawal_notice(notice: &DatasetWithdrawalNoticeV1) -> Digest32 {
 }
 
 fn digest_withdrawal_chain(
+    binding_digest: Digest32,
     predecessor: Digest32,
     sequence: LogicalSequence,
     event_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal-chain.v1".to_vec();
+    bytes.extend_from_slice(binding_digest.as_array());
     bytes.extend_from_slice(predecessor.as_array());
     bytes.extend_from_slice(&sequence.get().to_be_bytes());
     bytes.extend_from_slice(event_digest.as_array());
