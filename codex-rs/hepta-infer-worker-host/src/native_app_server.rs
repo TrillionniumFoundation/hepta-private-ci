@@ -37,6 +37,7 @@ use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_codex_adapter::APP_SERVER_V2_PROTOCOL_ID;
 use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_codex_adapter::AppServerObservation;
+use codex_hepta_codex_adapter::Error as CodexAdapterError;
 use codex_hepta_codex_adapter::CodexOperationIntent;
 use codex_hepta_codex_adapter::RetryDisposition;
 use codex_hepta_codex_adapter::adapt as adapt_codex;
@@ -227,7 +228,17 @@ impl AppServerModelDriver {
         let turn = {
             let mut overload_attempt = 0_u32;
             loop {
-                validate_for_dispatch(unix_ms()?, &pre_turn_intent)?;
+                if let Err(error) = validate_for_dispatch(unix_ms()?, &pre_turn_intent) {
+                    if error == CodexAdapterError::DeadlineExpired {
+                        let reason =
+                            "turn/start overload retry deadline expired after proven rejection"
+                                .to_string();
+                        control.reject_native_before_start(request_id, reason.clone())?;
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Err(reason.into());
+                    }
+                    return Err(error.into());
+                }
                 let response = timeout(
                     RPC_TIMEOUT,
                     client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
@@ -270,10 +281,21 @@ impl AppServerModelDriver {
                             continue;
                         }
 
-                        let reason = format!(
+                        if receipt.status == AdapterStatus::Indeterminate {
+                            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                            return Ok(indeterminate_start_output(
+                                &started,
+                                bounded_reason(format!(
+                                    "turn/start server outcome ambiguous (code {}): {}; do not replay",
+                                    source.code, source.message
+                                )),
+                            ));
+                        }
+
+                        let reason = bounded_reason(format!(
                             "turn/start rejected by App Server: {:?}: {}",
                             receipt.status, source.message
-                        );
+                        ));
                         control.reject_native_before_start(request_id, reason.clone())?;
                         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                         return Err(reason.into());
@@ -283,7 +305,9 @@ impl AppServerModelDriver {
                         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                         return Ok(indeterminate_start_output(
                             &started,
-                            format!("turn/start outcome unknown ({error}); do not replay"),
+                            bounded_reason(format!(
+                                "turn/start outcome unknown ({error}); do not replay"
+                            )),
                         ));
                     }
                     Err(_) => {
@@ -606,4 +630,8 @@ fn indeterminate_start_output(
         owner_authority: NativeOwnerAuthority::Unverified,
         stop_reason: Some(reason),
     }
+}
+
+fn bounded_reason(value: String) -> String {
+    value.chars().take(1024).collect()
 }
