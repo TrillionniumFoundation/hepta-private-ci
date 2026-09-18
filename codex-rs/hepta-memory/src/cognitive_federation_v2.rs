@@ -23,6 +23,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use sha2::Digest as _;
 use sha2::Sha256;
+use uuid::Uuid;
 
 use super::*;
 
@@ -303,6 +304,7 @@ impl FederatedMemoryReader {
             ));
         }
 
+        let attempt_id = Uuid::new_v4();
         let query_digest = Digest32::of_bytes(request.query().as_bytes());
         let generation_vector_digest = product_generation_digest(
             &self.capability,
@@ -314,6 +316,7 @@ impl FederatedMemoryReader {
             query_digest,
             generation_vector_digest,
             logical_now_unix_ms,
+            attempt_id.as_bytes(),
         );
         let query = FederatedQueryV2 {
             query_id: StableId::new(format!("federation-query:v2:{query_identity}"))
@@ -335,6 +338,7 @@ impl FederatedMemoryReader {
                 &self.capability,
                 query_identity,
                 logical_now_unix_ms,
+                attempt_id.as_bytes(),
             ),
         };
         let query_binding_digest = query.binding_digest();
@@ -513,6 +517,7 @@ fn product_query_identity_digest(
     query_digest: Digest32,
     generation_vector_digest: Digest32,
     logical_now_unix_ms: u64,
+    attempt_entropy: &[u8],
 ) -> Digest32 {
     let mut hasher = Sha256::new();
     frame_part(&mut hasher, PRODUCT_QUERY_ID_DOMAIN);
@@ -520,6 +525,7 @@ fn product_query_identity_digest(
     frame_part(&mut hasher, query_digest.as_array());
     frame_part(&mut hasher, generation_vector_digest.as_array());
     frame_part(&mut hasher, &logical_now_unix_ms.to_be_bytes());
+    frame_part(&mut hasher, attempt_entropy);
     digest_from_sha256(hasher)
 }
 
@@ -527,12 +533,14 @@ fn product_nonce_digest(
     capability: &FederationCapability,
     query_identity: Digest32,
     logical_now_unix_ms: u64,
+    attempt_entropy: &[u8],
 ) -> Digest32 {
     let mut hasher = Sha256::new();
     frame_part(&mut hasher, PRODUCT_NONCE_DOMAIN);
     frame_part(&mut hasher, capability.id.as_str().as_bytes());
     frame_part(&mut hasher, query_identity.as_array());
     frame_part(&mut hasher, &logical_now_unix_ms.to_be_bytes());
+    frame_part(&mut hasher, attempt_entropy);
     digest_from_sha256(hasher)
 }
 
