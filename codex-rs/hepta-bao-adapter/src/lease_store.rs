@@ -89,13 +89,16 @@ impl BaoLeaseStore {
             {
                 return Err(LeaseStoreError::Conflict);
             }
-            return Ok(match existing.state {
+            let existing_state = existing.state;
+            return Ok(match existing_state {
                 OperationState::Prepared => PrepareDisposition::Dispatch,
                 OperationState::Dispatched | OperationState::Indeterminate => {
-                    if existing.state == OperationState::Dispatched {
-                        if let Some(record) = stored.operations.get_mut(operation_id) {
-                            record.state = OperationState::Indeterminate;
-                        }
+                    if existing_state == OperationState::Dispatched {
+                        stored
+                            .operations
+                            .get_mut(operation_id)
+                            .ok_or(LeaseStoreError::InvalidState)?
+                            .state = OperationState::Indeterminate;
                         self.persist(&stored)?;
                     }
                     PrepareDisposition::Indeterminate
@@ -219,6 +222,28 @@ impl BaoLeaseStore {
                     .metadata
                     .clone()
                     .ok_or(LeaseStoreError::InvalidState)?;
+                if record.kind != BaoLeaseOperationKind::Issue
+                    && record.lease_id.as_deref() != Some(metadata.lease_id.as_str())
+                {
+                    return Err(LeaseStoreError::Conflict);
+                }
+                match record.kind {
+                    BaoLeaseOperationKind::Issue | BaoLeaseOperationKind::Renew
+                        if metadata.state != crate::lease_lifecycle::BaoLeaseState::Active =>
+                    {
+                        return Err(LeaseStoreError::Conflict);
+                    }
+                    BaoLeaseOperationKind::Revoke
+                        if !matches!(
+                            metadata.state,
+                            crate::lease_lifecycle::BaoLeaseState::Revoked
+                                | crate::lease_lifecycle::BaoLeaseState::Missing
+                        ) =>
+                    {
+                        return Err(LeaseStoreError::Conflict);
+                    }
+                    _ => {}
+                }
                 record.state = OperationState::Succeeded;
                 record.lease_id = Some(metadata.lease_id.clone());
                 stored.leases.insert(metadata.lease_id.clone(), metadata);
