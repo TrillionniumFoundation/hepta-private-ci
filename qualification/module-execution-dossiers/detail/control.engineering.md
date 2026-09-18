@@ -12,7 +12,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`issue_repository_work_envelope(repository, store, envelope)` directly verifies the exact Git head/tree/remote for local composition; `issue_signed_work_envelope(store, envelope, source_receipt, trust_store)` is the authenticated remote-service admission path. `plan_engineering_work` consumes the package DAG, signed completion receipts, worker skills/capacity, CI capacity, review topology, expected value, architecture debt and rollback cost and emits bounded assignments, deterministic integration order and authority-free merge-queue proposals. `generate_candidates` supports no-change, atomic multi-file change sets and rename; `SandboxCoordinator` enforces <=8 process-local concurrent sandboxes and <=2 infrastructure-only retries; `run_mutation_testing` requires baseline pass and kills admitted code mutants with the same evaluator-owned check set. `request_independent_review` and `record_integration_decision` remain sealed-evidence transitions, not acceptance or merge.
+`issue_repository_work_envelope(repository, store, envelope)` directly verifies the exact Git head/tree/remote for local composition; `issue_signed_work_envelope(store, envelope, source_receipt, trust_store)` is the authenticated remote-service admission path. `plan_engineering_work` consumes the package DAG, signed completion receipts, worker skills/capacity, CI capacity, review topology, expected value, architecture debt and rollback cost and emits bounded assignments, deterministic integration order and authority-free merge-queue proposals. `generate_candidates` supports no-change, atomic multi-file change sets and rename; `SandboxCoordinator` enforces <=8 concurrent sandboxes across cooperating processes on one POSIX/Linux host using non-blocking host slot locks (with a process-local compatibility ceiling on platforms without `flock`) and <=2 infrastructure-only retries; `run_mutation_testing` requires baseline pass and kills admitted code mutants with the same evaluator-owned check set. `request_independent_review` and `record_integration_decision` remain sealed-evidence transitions, not acceptance or merge.
 
 ## 3. State records and transaction design
 
@@ -24,7 +24,7 @@ Verify signed completion receipts and exact source identity; topologically ident
 
 ## 5. Capacity and performance profile
 
-Canonical <=32 candidates, <=8 process-local parallel sandboxes, <=100 changed files, <=1 MiB textual diff and <=2 infrastructure-only retries are source-enforced. Semantic rejection is never retried. Sandboxes retain explicit CPU/memory/process/network/time limits; worker, CI and reviewer capacity are explicit orchestration inputs. These are enforcement ceilings, not throughput measurements. Distributed multi-host concurrency still requires a separately authenticated lease/fencing service and target-host measurements.
+Canonical <=32 candidates, <=8 host-wide parallel sandboxes on the Linux strong-sandbox host, <=100 changed files, <=1 MiB textual diff and <=2 infrastructure-only retries are source-enforced. Semantic rejection is never retried. Sandboxes retain explicit CPU/memory/process/network/time limits; worker, CI and reviewer capacity are explicit orchestration inputs. These are enforcement ceilings, not throughput measurements. Distributed multi-host concurrency still requires a separately authenticated lease/fencing service and target-host measurements.
 
 ## 6. Concrete verification cases
 
