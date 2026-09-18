@@ -303,9 +303,7 @@ pub enum FederationTransportResultV2 {
 }
 
 pub type FederationTransportFuture<'a> = Pin<
-    Box<
-        dyn Future<Output = Result<FederationTransportResultV2, FederationV2Error>> + Send + 'a,
-    >,
+    Box<dyn Future<Output = Result<FederationTransportResultV2, FederationV2Error>> + Send + 'a>,
 >;
 
 /// One enrolled, authenticated transport attempt.
