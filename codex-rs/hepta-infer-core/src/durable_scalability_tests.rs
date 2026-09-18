@@ -278,6 +278,67 @@ fn released_runs_leave_hot_state_but_keep_permanent_command_identity() {
 }
 
 #[test]
+fn repeated_release_archival_keeps_hot_state_bounded_and_old_commands_retired() {
+    let fixture = Fixture::new();
+    let mut control = DurableInferenceControl::open(fixture.path(), 32).unwrap();
+    let mut first_round_archive_bytes = None;
+
+    for round in 0..8 {
+        for index in 0..16 {
+            let id = format!("round-{round}-released-{index}");
+            control.reserve_native(request(&id), 1).unwrap();
+            control
+                .stop_native_before_dispatch(&id, "generation retired".to_string())
+                .unwrap();
+        }
+
+        let receipt = control.archive_released_native().unwrap();
+        assert_eq!(receipt.archived, 16);
+        assert_eq!(receipt.remaining_native, 0);
+        assert!(
+            receipt.journal_bytes < 4 * 1024,
+            "hot replay cut grew despite retiring every request: {} bytes",
+            receipt.journal_bytes
+        );
+
+        let baseline = *first_round_archive_bytes.get_or_insert(receipt.released_archive_bytes);
+        assert!(
+            receipt.released_archive_bytes
+                <= baseline.saturating_mul((round + 1) as u64).saturating_mul(2),
+            "released identity archive grew faster than the bounded per-command history profile"
+        );
+
+        let oldest = request("round-0-released-0");
+        let before_duplicate = fs::metadata(fixture.path()).unwrap().len();
+        assert_eq!(
+            control.reserve_native(oldest, 1).unwrap().state,
+            NativeReservationState::Released
+        );
+        assert_eq!(
+            fs::metadata(fixture.path()).unwrap().len(),
+            before_duplicate,
+            "a retired command must not re-enter hot history"
+        );
+    }
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(fixture.path(), 32).unwrap();
+    for id in ["round-0-released-0", "round-3-released-7", "round-7-released-15"] {
+        assert_eq!(
+            reopened.reserve_native(request(id), 1).unwrap().state,
+            NativeReservationState::Released,
+            "retired identity resurrected after reopen: {id}"
+        );
+    }
+    assert_eq!(
+        fs::read_dir(released_archive_dir(&fixture.path()))
+            .unwrap()
+            .count(),
+        8 * 16
+    );
+}
+
+#[test]
 fn reserved_headroom_can_be_used_for_cancel_and_proven_pre_dispatch_stop() {
     let fixture = Fixture::new();
     let mut control = DurableInferenceControl::open(fixture.path(), 8).unwrap();
@@ -374,12 +435,23 @@ fn alternating_writers_replay_only_peer_deltas() {
             first_stats.incremental_replays + second_stats.incremental_replays
                 >= (scale.saturating_sub(1)) as u64
         );
+        let journal_bytes = fs::metadata(fixture.path()).unwrap().len();
+        let replayed_bytes = first_stats.replayed_bytes + second_stats.replayed_bytes;
+        assert!(
+            replayed_bytes <= journal_bytes.saturating_mul(2),
+            "alternating writers replayed {replayed_bytes} bytes for a {journal_bytes}-byte journal"
+        );
+        let replay_amplification_ppm = if journal_bytes == 0 {
+            0
+        } else {
+            replayed_bytes.saturating_mul(1_000_000) / journal_bytes
+        };
         println!(
             "HEPTA_INFERENCE_MULTIWRITER scale={scale} update_p95_us={p95_micros} \
-             first_incremental={} second_incremental={} replayed_bytes={}",
+             first_incremental={} second_incremental={} replayed_bytes={replayed_bytes} \
+             journal_bytes={journal_bytes} replay_amplification_ppm={replay_amplification_ppm}",
             first_stats.incremental_replays,
             second_stats.incremental_replays,
-            first_stats.replayed_bytes + second_stats.replayed_bytes,
         );
     }
 }
@@ -476,6 +548,19 @@ fn history_growth_emits_update_recovery_memory_and_disk_curve() {
             + archive_receipt.released_archive_bytes
             + audit_archive_bytes;
         let journal_bytes_per_run = journal_before_bytes.div_ceil(scale as u64);
+        // Approximate durable byte write amplification for the exercised lifecycle:
+        // append-only hot history plus the released identity archive, audit archive,
+        // and compacted active cut. This is a logical byte metric, not a claim
+        // about filesystem block/device write amplification.
+        let lifecycle_written_bytes = journal_before_bytes
+            .saturating_add(archive_receipt.released_archive_bytes)
+            .saturating_add(audit_archive_bytes)
+            .saturating_add(active_after_archive_bytes);
+        let write_amplification_ppm = if journal_before_bytes == 0 {
+            0
+        } else {
+            lifecycle_written_bytes.saturating_mul(1_000_000) / journal_before_bytes
+        };
 
         println!(
             "HEPTA_INFERENCE_SCALE scale={scale} update_p95_us={update_p95_micros} \
@@ -484,7 +569,9 @@ fn history_growth_emits_update_recovery_memory_and_disk_curve() {
              journal_bytes_per_run={journal_bytes_per_run} \
              active_after_archive_bytes={active_after_archive_bytes} \
              released_archive_bytes={} audit_archive_bytes={audit_archive_bytes} \
-             total_after_archive_bytes={total_after_archive_bytes}",
+             total_after_archive_bytes={total_after_archive_bytes} \
+             lifecycle_written_bytes={lifecycle_written_bytes} \
+             write_amplification_ppm={write_amplification_ppm}",
             peak_rss_kib().unwrap_or(0),
             archive_receipt.released_archive_bytes,
         );
