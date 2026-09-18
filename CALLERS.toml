@@ -33,6 +33,7 @@ required_boundary_ids = [
   "authority_lease_epoch_advance",
   "authority_lease_verify_use",
   "authority_lease_delivery",
+  "self_evolution_adoption",
 ]
 
 [[boundary]]
@@ -258,6 +259,15 @@ definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "drop(state)"]
 product_callers = []
 caller_markers = []
+
+[[boundary]]
+id = "self_evolution_adoption"
+symbol = "SelfEvolutionRuntimeV1::adopt_self_evolution"
+call_pattern = "\\.\\s*adopt_self_evolution\\s*\\("
+definition_path = "codex-rs/hepta-control-plane/src/self_evolution.rs"
+definition_markers = ["pub fn adopt_self_evolution(", "SelectionAuthority", "PredecessorMismatch", "GenerationMismatch"]
+product_callers = ["codex-rs/hepta-agentd/src/self_evolution_host.rs"]
+caller_markers = ["select_self_evolution_v1", "self.runtime.adopt_self_evolution(&selection)", "LearningEvidenceVerifierV1"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
