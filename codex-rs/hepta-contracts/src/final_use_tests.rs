@@ -3,6 +3,48 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use std::os::unix::fs::PermissionsExt;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+#[derive(Debug)]
+struct FixedClock(u64);
+
+impl AuthorityClock for FixedClock {
+    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+        Ok(self.0)
+    }
+}
+
+#[derive(Debug)]
+struct MemoryFinalUseFrontier(Mutex<FinalUseFrontier>);
+
+impl AuthorityFrontierStore<FinalUseFrontier> for MemoryFinalUseFrontier {
+    fn load(&self, _owner_id: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {
+        self.0
+            .lock()
+            .map(|frontier| *frontier)
+            .map_err(|_| AuthorityTrustError::Unavailable)
+    }
+
+    fn compare_and_set(
+        &self,
+        _owner_id: &str,
+        expected: &FinalUseFrontier,
+        next: &FinalUseFrontier,
+    ) -> Result<(), AuthorityTrustError> {
+        let mut current = self
+            .0
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        if *current != *expected {
+            return Err(AuthorityTrustError::Conflict);
+        }
+        *current = *next;
+        Ok(())
+    }
+}
 
 fn fixture()
 -> Result<(FinalUseAuthority, SignedFinalUseGrant, tempfile::TempDir), Box<dyn std::error::Error>> {
@@ -190,6 +232,314 @@ fn reopen(directory: &std::path::Path) -> Result<FinalUseAuthority, FinalUseErro
             revoked_grant_ids: BTreeSet::new(),
         },
     )
+}
+
+#[test]
+fn injected_clock_is_the_only_final_use_time_source() {
+    let issuer = SigningKey::from_bytes(&[57; 32]);
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "clock-owner".into(),
+        authority_epoch: 3,
+        grant_id: "clock-use".into(),
+        nonce: [8; 32],
+        binding: FinalUseBinding {
+            subject_id: "agent-one".into(),
+            destination_id: "provider:heptabao".into(),
+            request_sha256: [11; 32],
+            scope_sha256: [12; 32],
+            payload_sha256: [13; 32],
+        },
+        not_before_unix_ms: 1_000,
+        expires_at_unix_ms: 3_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let authority = FinalUseAuthority::open_state_dir_with_clock(
+        directory.path(),
+        "clock-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 3,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+        Arc::new(FixedClock(2_000)),
+    )
+    .unwrap();
+    assert!(authority.claim(&signed, &signed.grant.binding).is_ok());
+}
+
+#[test]
+fn external_final_use_frontier_detects_restored_claim_snapshot() {
+    let issuer = SigningKey::from_bytes(&[58; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 4,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "frontier-owner".into(),
+        authority_epoch: 4,
+        grant_id: "frontier-use".into(),
+        nonce: [14; 32],
+        binding: FinalUseBinding {
+            subject_id: "agent-one".into(),
+            destination_id: "provider:heptabao".into(),
+            request_sha256: [15; 32],
+            scope_sha256: [16; 32],
+            payload_sha256: [17; 32],
+        },
+        not_before_unix_ms: 1_000,
+        expires_at_unix_ms: 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&head).unwrap(),
+    )));
+    let authority = FinalUseAuthority::open_state_dir_with_trust(
+        directory.path(),
+        "frontier-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        head.clone(),
+        Arc::new(FixedClock(2_000)),
+        frontier_store.clone(),
+    )
+    .unwrap();
+    let initial = std::fs::read(directory.path().join("authority.json")).unwrap();
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    drop(token);
+    let advanced = frontier_store.load("frontier-owner").unwrap();
+    assert_ne!(advanced, FinalUseFrontier::for_initial_head(&head).unwrap());
+    drop(authority);
+    std::fs::write(directory.path().join("authority.json"), initial).unwrap();
+    assert_eq!(
+        FinalUseAuthority::open_state_dir_with_trust(
+            directory.path(),
+            "frontier-owner".into(),
+            issuer.verifying_key().to_bytes(),
+            head,
+            Arc::new(FixedClock(2_000)),
+            frontier_store,
+        )
+        .unwrap_err(),
+        FinalUseError::AntiRollbackViolation
+    );
+}
+
+#[test]
+fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
+    let old = SigningKey::from_bytes(&[61; 32]);
+    let next = SigningKey::from_bytes(&[62; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&head).unwrap(),
+    )));
+    let authority = FinalUseAuthority::open_state_dir_with_issuer_keys(
+        directory.path(),
+        "rotating-owner".into(),
+        vec![
+            FinalUseIssuerTrustKey {
+                key_id: "old".into(),
+                verifying_key: old.verifying_key().to_bytes(),
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: 9,
+            },
+            FinalUseIssuerTrustKey {
+                key_id: "next".into(),
+                verifying_key: next.verifying_key().to_bytes(),
+                not_before_authority_epoch: 9,
+                not_after_authority_epoch: 20,
+            },
+        ],
+        head,
+        Arc::new(FixedClock(2_000)),
+        frontier_store,
+    )
+    .unwrap();
+    assert_eq!(authority.issuer_key_ids(), vec!["next", "old"]);
+
+    let make = |grant_id: &str, nonce: [u8; 32], signer: &SigningKey| {
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "rotating-owner".into(),
+            authority_epoch: 9,
+            grant_id: grant_id.into(),
+            nonce,
+            binding: FinalUseBinding {
+                subject_id: "agent-one".into(),
+                destination_id: "provider:heptabao".into(),
+                request_sha256: [21; 32],
+                scope_sha256: [22; 32],
+                payload_sha256: [23; 32],
+            },
+            not_before_unix_ms: 1_000,
+            expires_at_unix_ms: 3_000,
+        };
+        SignedFinalUseGrant {
+            signature: signer
+                .sign(&grant.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            grant,
+        }
+    };
+    let old_grant = make("old-key-use", [24; 32], &old);
+    let next_grant = make("next-key-use", [25; 32], &next);
+    assert!(authority
+        .claim(&old_grant, &old_grant.grant.binding)
+        .is_ok());
+    assert!(authority
+        .claim(&next_grant, &next_grant.grant.binding)
+        .is_ok());
+
+    let retired_head = FinalUseRevocations {
+        authority_epoch: 10,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let retired_dir = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(
+        retired_dir.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    let retired_frontier = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&retired_head).unwrap(),
+    )));
+    let retired = FinalUseAuthority::open_state_dir_with_issuer_keys(
+        retired_dir.path(),
+        "rotating-owner".into(),
+        vec![
+            FinalUseIssuerTrustKey {
+                key_id: "old".into(),
+                verifying_key: old.verifying_key().to_bytes(),
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: 9,
+            },
+            FinalUseIssuerTrustKey {
+                key_id: "next".into(),
+                verifying_key: next.verifying_key().to_bytes(),
+                not_before_authority_epoch: 9,
+                not_after_authority_epoch: 20,
+            },
+        ],
+        retired_head,
+        Arc::new(FixedClock(2_000)),
+        retired_frontier,
+    )
+    .unwrap();
+    let mut retired_old = old_grant.clone();
+    retired_old.grant.authority_epoch = 10;
+    retired_old.grant.grant_id = "retired-old-key".into();
+    retired_old.grant.nonce = [26; 32];
+    retired_old.signature = old
+        .sign(&retired_old.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+    assert_eq!(
+        retired
+            .claim(&retired_old, &retired_old.grant.binding)
+            .unwrap_err(),
+        FinalUseError::InvalidSignature
+    );
+}
+
+#[test]
+fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
+    let issuer = SigningKey::from_bytes(&[59; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 6,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "failure-owner".into(),
+        authority_epoch: 6,
+        grant_id: "failure-use".into(),
+        nonce: [31; 32],
+        binding: FinalUseBinding {
+            subject_id: "agent-one".into(),
+            destination_id: "provider:heptabao".into(),
+            request_sha256: [32; 32],
+            scope_sha256: [33; 32],
+            payload_sha256: [34; 32],
+        },
+        not_before_unix_ms: 1_000,
+        expires_at_unix_ms: 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&head).unwrap(),
+    )));
+    let authority = FinalUseAuthority::open_state_dir_with_trust(
+        directory.path(),
+        "failure-owner".into(),
+        issuer.verifying_key().to_bytes(),
+        head.clone(),
+        Arc::new(FixedClock(2_000)),
+        frontier_store.clone(),
+    )
+    .unwrap();
+
+    std::fs::create_dir(directory.path().join("authority.next")).unwrap();
+    assert_eq!(
+        authority
+            .claim(&signed, &signed.grant.binding)
+            .unwrap_err(),
+        FinalUseError::Unavailable
+    );
+    assert_eq!(authority.capacity().unwrap_err(), FinalUseError::Unavailable);
+    assert_ne!(
+        frontier_store.load("failure-owner").unwrap(),
+        FinalUseFrontier::for_initial_head(&head).unwrap()
+    );
+
+    std::fs::remove_dir(directory.path().join("authority.next")).unwrap();
+    drop(authority);
+    assert_eq!(
+        FinalUseAuthority::open_state_dir_with_trust(
+            directory.path(),
+            "failure-owner".into(),
+            issuer.verifying_key().to_bytes(),
+            head,
+            Arc::new(FixedClock(2_000)),
+            frontier_store,
+        )
+        .unwrap_err(),
+        FinalUseError::AntiRollbackViolation
+    );
 }
 
 #[test]
