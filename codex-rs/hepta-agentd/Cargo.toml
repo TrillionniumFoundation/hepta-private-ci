@@ -69,6 +69,8 @@ tokio-util = { workspace = true }
 
 [dev-dependencies]
 app_test_support = { workspace = true }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+codex-hepta-objective = { path = "../hepta-objective" }
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
