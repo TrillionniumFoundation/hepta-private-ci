@@ -314,7 +314,8 @@ export class RuntimeClient {
   async submitRequest(input) {
     requireRecord(input, "input");
     const proposal = buildOperationProposal(input);
-    const displayedView = normalizeDisplayedView(input.displayedView);
+    const inputFields = readOwnDataFields(input, "input", ["displayedView"]);
+    const displayedView = normalizeDisplayedView(inputFields.displayedView);
     return this.#submit("operation/request", {
       operationId: proposal.operationId,
       displayedView,
@@ -324,11 +325,15 @@ export class RuntimeClient {
   }
 
   async requestStop(input) {
-    requireRecord(input, "input");
-    const operationId = stableId(input.operationId, "operationId");
-    requireRecord(input.scope, "scope");
-    const scope = snapshotCanonical(input.scope, "scope", { maxBytes: MAX_REQUEST_BYTES });
-    const displayedView = normalizeDisplayedView(input.displayedView);
+    const inputFields = readOwnDataFields(
+      input,
+      "input",
+      ["operationId", "scope", "displayedView"],
+    );
+    const operationId = stableId(inputFields.operationId, "operationId");
+    requireRecord(inputFields.scope, "scope");
+    const scope = snapshotCanonical(inputFields.scope, "scope", { maxBytes: MAX_REQUEST_BYTES });
+    const displayedView = normalizeDisplayedView(inputFields.displayedView);
     return this.#submit("runtime/stop", {
       operationId,
       displayedView,
