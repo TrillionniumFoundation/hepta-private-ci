@@ -275,6 +275,61 @@ impl LeaseLedger {
             .count()
     }
 
+    pub fn revoke_principal(&mut self, principal_id: &str, now_ms: u64) -> Result<usize, Error> {
+        validate_identity(principal_id, "principal")?;
+        let ids: Vec<_> = self
+            .grants
+            .values()
+            .filter(|grant| {
+                grant.principal_id == principal_id && !grant.revoked && grant.expires_at_ms > now_ms
+            })
+            .map(|grant| grant.allocation_id.clone())
+            .collect();
+        for id in &ids {
+            let grant = self.grants.get_mut(id).ok_or(Error::AllocationNotFound)?;
+            let predecessor = grant.lease_generation;
+            grant.revoked = true;
+            grant.revoked_at_ms = Some(now_ms);
+            grant.predecessor_lease_generation = Some(predecessor);
+            grant.lease_generation = predecessor
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
+        }
+        Ok(ids.len())
+    }
+
+    /// Fences grants from an earlier supervisor/writer epoch after restart.
+    pub fn fence_authority_epoch(
+        &mut self,
+        current_authority_epoch: u64,
+        now_ms: u64,
+    ) -> Result<usize, Error> {
+        if current_authority_epoch == 0 {
+            return Err(Error::InvalidGeneration);
+        }
+        let ids: Vec<_> = self
+            .grants
+            .values()
+            .filter(|grant| {
+                grant.authority_epoch != current_authority_epoch
+                    && !grant.revoked
+                    && grant.expires_at_ms > now_ms
+            })
+            .map(|grant| grant.allocation_id.clone())
+            .collect();
+        for id in &ids {
+            let grant = self.grants.get_mut(id).ok_or(Error::AllocationNotFound)?;
+            let predecessor = grant.lease_generation;
+            grant.revoked = true;
+            grant.revoked_at_ms = Some(now_ms);
+            grant.predecessor_lease_generation = Some(predecessor);
+            grant.lease_generation = predecessor
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
+        }
+        Ok(ids.len())
+    }
+
     pub fn committed_resources(
         &self,
         host_id: &str,
