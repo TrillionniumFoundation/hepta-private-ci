@@ -297,6 +297,24 @@ pub fn prepare_artifact_publication_v1(
     })
 }
 
+pub fn validate_artifact_publication_retry_v1(
+    recorded: &ArtifactPublicationContractV1,
+    candidate: &ArtifactPublicationContractV1,
+) -> Result<(), ArtifactPublicationError> {
+    if recorded.snapshot_binding != publication_contract_binding(recorded)
+        || candidate.snapshot_binding != publication_contract_binding(candidate)
+    {
+        return Err(ArtifactPublicationError::ContractBindingMismatch);
+    }
+    if recorded.operation_id != candidate.operation_id {
+        return Err(ArtifactPublicationError::OperationIdentityMismatch);
+    }
+    if recorded != candidate {
+        return Err(ArtifactPublicationError::OperationIdentityConflict);
+    }
+    Ok(())
+}
+
 pub fn recover_artifact_publication_v1(
     contract: ArtifactPublicationContractV1,
     snapshot_receipt: Option<RegistrySnapshotReceipt>,
@@ -349,6 +367,8 @@ pub enum ArtifactPublicationError {
     RegistryEventMismatch,
     RegistryChainMismatch,
     ContractBindingMismatch,
+    OperationIdentityMismatch,
+    OperationIdentityConflict,
     MultiDatasetProjectionUnsupported,
     MultiPredecessorProjectionUnsupported,
     SnapshotReceiptMismatch,
@@ -782,6 +802,32 @@ mod tests {
         assert_eq!(
             recover_artifact_publication_v1(contract, None, None),
             Err(ArtifactPublicationError::ContractBindingMismatch)
+        );
+    }
+
+    #[test]
+    fn publication_retry_requires_identical_operation_contract() {
+        let recorded = publication_contract();
+        let identical = recorded.clone();
+        assert_eq!(
+            validate_artifact_publication_retry_v1(&recorded, &identical),
+            Ok(())
+        );
+
+        let mut changed = recorded.clone();
+        changed.admission_digest = digest("changed-admission");
+        changed.snapshot_binding = publication_contract_binding(&changed);
+        assert_eq!(
+            validate_artifact_publication_retry_v1(&recorded, &changed),
+            Err(ArtifactPublicationError::OperationIdentityConflict)
+        );
+
+        let mut different_operation = recorded.clone();
+        different_operation.operation_id = id("other-operation");
+        different_operation.snapshot_binding = publication_contract_binding(&different_operation);
+        assert_eq!(
+            validate_artifact_publication_retry_v1(&recorded, &different_operation),
+            Err(ArtifactPublicationError::OperationIdentityMismatch)
         );
     }
 
