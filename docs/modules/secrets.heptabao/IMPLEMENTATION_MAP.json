@@ -166,12 +166,56 @@
       "designOperation": "lookup_secret_lease",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "lease_registry_open",
+      "nativeSymbol": "SecretLeaseRegistry::open",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "secrets.heptabao",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lease_registry_open",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lease_registry_recover",
+      "nativeSymbol": "SecretLeaseRegistry::recover_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "secrets.heptabao",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lease_registry_recover",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lease_registry_operation_state",
+      "nativeSymbol": "SecretLeaseRegistry::operation_state",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "secrets.heptabao",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lease_registry_operation_state",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind dynamic lease handles to a durable lease-registry owner before claiming crash/reopen lifecycle recovery.",
-    "Bind every operation to an authenticated production consumer callsite and owner store.",
-    "Qualify request/renew/revoke/lookup against the pinned external HeptaBao service.",
+    "Bind every dynamic lease operation to an authenticated production consumer callsite.",
+    "Qualify request/renew/revoke/lookup and registry recovery against the pinned external HeptaBao service.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
