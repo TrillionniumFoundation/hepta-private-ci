@@ -363,6 +363,11 @@ path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 required = ["pub struct RegisteredBaoConsumer", "pub struct BaoFinalUseHost", "pub fn apply_revocation_update", "pub async fn consume_kv_v2", "StaleRevocationFeed", "AuthorityClock", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
 forbidden = ["impl Default for BaoFinalUseHost", "permit_all"]
 
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/browser_servo.rs"
+required = ["FinalUseAuthority", "claim_final_use", "dispatch_final_use", "authority_enter", "dispatch_boundary"]
+forbidden = [".claim(", ".with_dispatch_boundary("]
+
 [authority]
 runtime_authority = false
 production_caller = false
