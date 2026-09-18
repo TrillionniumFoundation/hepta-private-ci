@@ -60,6 +60,7 @@ fn acquisition_request() -> SnapshotAcquisitionRequestV1 {
         request_id: id("request:one"),
         scope_id: id("scope:one"),
         purpose_id: id("purpose:read"),
+        consumer_profile_digest: digest("consumer-profile"),
         minimum_memory_frontier: 10,
         minimum_source_frontier: 9,
         minimum_tombstone_frontier: 4,
@@ -156,6 +157,13 @@ fn provider_rejects_scope_frontier_and_epoch_drift() {
     assert_eq!(
         envelope.validate_for_request(10, &request),
         Err(SnapshotProviderError::StaleKnowledgeGraphGeneration)
+    );
+
+    let mut request = acquisition_request();
+    request.consumer_profile_digest = digest("different-profile");
+    assert_eq!(
+        envelope.validate_for_request(10, &request),
+        Err(SnapshotProviderError::ConsumerProfileMismatch)
     );
 
     let mut request = acquisition_request();
