@@ -125,7 +125,10 @@ impl Store {
                 (StoreTrust::SingleKey(verifying_key), 1) => {
                     let stored: StoredV1 =
                         serde_json::from_value(value).map_err(|_| FinalUseError::InvalidTrust)?;
-                    if stored.signer_id != signer_id || stored.verifying_key != verifying_key {
+                    if stored.schema != 1
+                        || stored.signer_id != signer_id
+                        || stored.verifying_key != verifying_key
+                    {
                         return Err(FinalUseError::InvalidTrust);
                     }
                     stored.state
@@ -133,7 +136,8 @@ impl Store {
                 (StoreTrust::IssuerKeyRing(issuer_trust_sha256), 2) => {
                     let stored: StoredV2 =
                         serde_json::from_value(value).map_err(|_| FinalUseError::InvalidTrust)?;
-                    if stored.signer_id != signer_id
+                    if stored.schema != 2
+                        || stored.signer_id != signer_id
                         || stored.issuer_trust_sha256 != issuer_trust_sha256
                     {
                         return Err(FinalUseError::InvalidTrust);
