@@ -58,6 +58,7 @@ connection, modules or database.
 - `assignment_generations`: immutable assigned and blocked package-ID projections;
 - `assignment_generation_frontiers`: exact envelope revision, source and active-lease frontier;
 - `orchestration_generations`: immutable rich worker/review/CI/value/debt/rollback assignment, blocked-reason, integration-order and merge-queue projections;
+- `distributed_write_frontiers`: highest externally admitted leader/fencing grant per worker, source-bound and replay-fenced;
 - `integration_decisions`: immutable eligibility and rejection projection;
 - `integration_decision_bindings`: candidate, sandbox and evidence identity;
 - `integration_decision_seals`: authenticated seal identity, freshness and replay uniqueness;
@@ -69,7 +70,7 @@ roll back together. Equal identity and semantics replay idempotently; different
 semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5 stores migrate
 transactionally to v6; historical generations without a bound frontier remain
 unusable and require a new generation. A future version is rejected before any
-schema or journal-mode write. A database claiming v5 but missing a required table
+schema or journal-mode write. A database claiming v6 but missing a required table
 is rejected. A corrupted store must be quarantined and restored from a verified
 backup; startup does not silently reconstruct acceptance or change owner facts.
 
