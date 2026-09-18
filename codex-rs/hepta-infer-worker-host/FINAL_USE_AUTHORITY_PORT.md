@@ -22,11 +22,15 @@ payload digest, builds the runtime.codex request digest and then derives a
 - the exact serialized `TurnStartParams` digest.
 
 No `turn/start` request is sent without a non-constructible
-`VerifiedUseToken` for that exact binding. The durable native journal records
-the authority witness and exact request/payload digests before effect entry.
-Immediately before the network call, `VerifiedUseToken::enter` rechecks
-binding, time, epoch and revocation state and returns the one-entry
-`EnteredUseToken` consumed by the send boundary.
+`VerifiedUseToken` for that exact binding. Authority acquisition consumes the
+same runtime.codex deadline as the model attempt. After the external authority
+await, the worker rechecks cancellation, the exact Agent generation/readiness,
+the App Server ingress path and the request deadline. `VerifiedUseToken::enter`
+then rechecks binding, time, epoch and revocation state. The durable native
+journal records the authority witness and exact request/payload digests after
+that one-entry check but before the first App Server `turn/start` await. Thus a
+failure before the write-ahead record is definitely unsent; a crash or
+acknowledgement loss after it is reconcile-only.
 
 ## Protected host configuration
 
@@ -117,10 +121,12 @@ malformed/oversized replies, explicit denial, stale revocation head, invalid
 signature, wrong binding, expiry, revoked grant, reused nonce or unsafe
 authority storage all fail closed before `turn/start`.
 
-Once `VerifiedUseToken::enter` succeeds, the effect is considered entered.
-A lost `turn/start` acknowledgement is therefore never turned into a blind
-retry. The native control journal retains the slot and reconciles the original
-stable request through `thread/read(includeTurns=true)`.
+Once `VerifiedUseToken::enter` succeeds, the capability cannot authorize a
+second entry. The worker durably writes the dispatch binding before the actual
+`turn/start` network await. A lost `turn/start` acknowledgement is therefore
+never turned into a blind retry; the native control journal retains the slot
+and reconciles the original stable request through
+`thread/read(includeTurns=true)`.
 
 The independent authority endpoint owns approval policy and private-key
 custody. This repository client protocol does not make an automatically
