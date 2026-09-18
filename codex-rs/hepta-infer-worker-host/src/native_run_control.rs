@@ -72,6 +72,8 @@ impl AppServerModelDriver {
                 output: String::new(),
                 observed_output_tokens: None,
                 terminal_observed: false,
+                codex_request_digest: None,
+                codex_receipt_digest: None,
                 owner_authority: NativeOwnerAuthority::Unverified,
                 stop_reason: Some(
                     "reopened after possible dispatch; reservation held, no replay".to_string(),
