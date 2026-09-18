@@ -24,15 +24,15 @@ use codex_hepta_context_compiler::build_attachment;
 use codex_hepta_context_compiler::compile_v2;
 use codex_hepta_context_compiler::record_serialization;
 use codex_hepta_prompt_optimizer::PromptCandidateRoleV1;
-use codex_hepta_prompt_optimizer::PromptCandidateSetAuditV1;
+use codex_hepta_prompt_optimizer::PromptRegistryCandidateSetAuditV1;
 use codex_hepta_prompt_optimizer::PromptCandidateSourceAuthenticatorV1;
-use codex_hepta_prompt_optimizer::PromptExerciseAuditV1;
+use codex_hepta_prompt_optimizer::PromptRegistryExerciseAuditV1;
 use codex_hepta_prompt_optimizer::PromptExerciseDispositionV1;
 use codex_hepta_prompt_optimizer::PromptExerciseErrorV1;
 use codex_hepta_prompt_optimizer::PromptExerciseInvalidationV1;
 use codex_hepta_prompt_optimizer::PromptExerciseRequestV1;
-use codex_hepta_prompt_optimizer::PromptPortfolioAuditV1;
-use codex_hepta_prompt_optimizer::PromptPricingSetAuditV1;
+use codex_hepta_prompt_optimizer::PromptRegistryPortfolioAuditV1;
+use codex_hepta_prompt_optimizer::PromptRegistryPricingSetAuditV1;
 use codex_hepta_prompt_optimizer::PromptRelationSourceV1;
 use codex_hepta_prompt_registry::CompatibleRealizationSetV2;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
@@ -150,11 +150,11 @@ impl PromptRegistryCompiledContextV2 {
 pub fn compile_prompt_registry_v2(
     registry: &DurablePromptRegistry,
     adapter: &PromptRegistryCandidateAdapterV1,
-    candidate_set: &PromptCandidateSetAuditV1,
-    pricing: &PromptPricingSetAuditV1,
+    candidate_set: &PromptRegistryCandidateSetAuditV1,
+    pricing: &PromptRegistryPricingSetAuditV1,
     relations: &PromptRelationSourceV1,
-    portfolio: &PromptPortfolioAuditV1,
-    exercise: &PromptExerciseAuditV1,
+    portfolio: &PromptRegistryPortfolioAuditV1,
+    exercise: &PromptRegistryExerciseAuditV1,
     exercise_request: &PromptExerciseRequestV1,
     request: PromptRegistryCompilationRequestV2,
 ) -> Result<PromptRegistryCompiledContextV2, PromptRegistryCompilationErrorV2> {

@@ -213,11 +213,11 @@ impl PromptRelationSourceAuthenticatorV1 for AcceptRelations {
 
 struct CanonicalSelection {
     adapter: PromptRegistryCandidateAdapterV1,
-    candidate_set: PromptCandidateSetAuditV1,
-    pricing: PromptPricingSetAuditV1,
+    candidate_set: PromptRegistryCandidateSetAuditV1,
+    pricing: PromptRegistryPricingSetAuditV1,
     relations: PromptRelationSourceV1,
-    portfolio: PromptPortfolioAuditV1,
-    exercise: PromptExerciseAuditV1,
+    portfolio: PromptRegistryPortfolioAuditV1,
+    exercise: PromptRegistryExerciseAuditV1,
     exercise_request: PromptExerciseRequestV1,
 }
 
