@@ -29,6 +29,7 @@ const MAX_OPERATION_ID_BYTES: usize = 128;
 const MAX_PROVIDER_LEASE_ID_BYTES: usize = 2048;
 const MAX_DYNAMIC_PATH_BYTES: usize = 1024;
 const MAX_PARAMETER_BYTES: usize = 64 * 1024;
+const MAX_LEASE_TTL_SECONDS: u64 = 86_400;
 const MAX_JOURNAL_BYTES: u64 = 256 * 1024 * 1024;
 const MAX_RECORDS_ON_OPEN: usize = 1_000_000;
 
@@ -42,6 +43,7 @@ pub enum LeaseState {
     Unknown,
     Revoked,
     Expired,
+    NotApplied,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -79,6 +81,7 @@ pub struct BaoDynamicLeaseRequest {
     pub provider_path: String,
     pub operation_id: String,
     pub parameters: Value,
+    pub max_ttl_seconds: u64,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -132,7 +135,7 @@ pub struct LeaseRegistry {
     journal: File,
     _lock: File,
     records: BTreeMap<String, SecretLeaseMetadata>,
-    operations: BTreeMap<String, String>,
+    operations: BTreeMap<String, SecretLeaseMetadata>,
 }
 
 impl fmt::Debug for LeaseRegistry {
@@ -195,14 +198,12 @@ impl LeaseRegistry {
                 return Err(BaoClientError::LeaseStoreCorrupt);
             }
             if let Some(existing) = operations.get(&entry.record.operation_id)
-                && existing != &entry.record.local_lease_id
+                && (existing.local_lease_id != entry.record.local_lease_id
+                    || existing.semantic_sha256 != entry.record.semantic_sha256)
             {
                 return Err(BaoClientError::LeaseStoreCorrupt);
             }
-            operations.insert(
-                entry.record.operation_id.clone(),
-                entry.record.local_lease_id.clone(),
-            );
+            operations.insert(entry.record.operation_id.clone(), entry.record.clone());
             records.insert(entry.record.local_lease_id.clone(), entry.record);
         }
         journal
@@ -228,11 +229,7 @@ impl LeaseRegistry {
         semantic_sha256: [u8; 32],
     ) -> Result<BeginResult, BaoClientError> {
         validate_dynamic_request(request)?;
-        if let Some(local_id) = self.operations.get(&request.operation_id) {
-            let existing = self
-                .records
-                .get(local_id)
-                .ok_or(BaoClientError::LeaseStoreCorrupt)?;
+        if let Some(existing) = self.operations.get(&request.operation_id) {
             if existing.semantic_sha256 != semantic_sha256 {
                 return Err(BaoClientError::OperationConflict);
             }
@@ -274,11 +271,7 @@ impl LeaseRegistry {
         {
             return Err(BaoClientError::InvalidRequest);
         }
-        if let Some(existing_id) = self.operations.get(operation_id) {
-            let existing = self
-                .records
-                .get(existing_id)
-                .ok_or(BaoClientError::LeaseStoreCorrupt)?;
+        if let Some(existing) = self.operations.get(operation_id) {
             if existing.semantic_sha256 != semantic_sha256 {
                 return Err(BaoClientError::OperationConflict);
             }
@@ -400,7 +393,16 @@ impl LeaseRegistry {
                 )
                 .map(Some),
             ReconciliationObservation::Revoked => self.mark_revoked(local_lease_id).map(Some),
-            ReconciliationObservation::NotApplied => Ok(None),
+            ReconciliationObservation::NotApplied => {
+                let mut next = current;
+                next.state = if next.provider_lease_id.is_some() {
+                    LeaseState::Active
+                } else {
+                    LeaseState::NotApplied
+                };
+                self.append(next.clone())?;
+                Ok(Some(next))
+            },
         }
     }
 
@@ -427,8 +429,7 @@ impl LeaseRegistry {
             .write_all(&bytes)
             .and_then(|_| self.journal.sync_data())
             .map_err(|_| BaoClientError::LeaseStoreUnavailable)?;
-        self.operations
-            .insert(record.operation_id.clone(), record.local_lease_id.clone());
+        self.operations.insert(record.operation_id.clone(), record.clone());
         self.records.insert(record.local_lease_id.clone(), record);
         Ok(())
     }
@@ -460,6 +461,7 @@ impl BaoClient {
             &request.provider_path,
             &request.operation_id,
             parameter_sha,
+            request.max_ttl_seconds,
             &request.subject_id,
             &request.consumer_id,
         ))
@@ -543,10 +545,21 @@ impl BaoClient {
             }
         }
         let mut body = read_bounded_body(&mut response).await?;
-        let decoded: DynamicLeaseResponse =
-            serde_json::from_slice(&body).map_err(|_| BaoClientError::InvalidResponse)?;
-        if !provider_lease_id_valid(&decoded.lease_id) || decoded.lease_duration == 0 {
-            return Err(BaoClientError::InvalidResponse);
+        let decoded: DynamicLeaseResponse = match serde_json::from_slice(&body) {
+            Ok(decoded) => decoded,
+            Err(_) => {
+                return registry
+                    .mark_unknown(&record.local_lease_id)
+                    .map(BaoLeaseOutcome::Indeterminate);
+            }
+        };
+        if !provider_lease_id_valid(&decoded.lease_id)
+            || decoded.lease_duration == 0
+            || decoded.lease_duration > request.max_ttl_seconds
+        {
+            return registry
+                .mark_unknown(&record.local_lease_id)
+                .map(BaoLeaseOutcome::Indeterminate);
         }
         let mut secret_json = Zeroizing::new(
             serde_json::to_vec(&decoded.data).map_err(|_| BaoClientError::InvalidResponse)?,
@@ -555,12 +568,6 @@ impl BaoClient {
         let expires = unix_ms_now()?
             .checked_add(decoded.lease_duration.saturating_mul(1000))
             .ok_or(BaoClientError::InvalidResponse)?;
-        authority
-            .with_verified_use(verified, &binding, || consumer(&secret_json))
-            .map_err(BaoClientError::Authority)?
-            .map_err(|()| BaoClientError::ConsumerIndeterminate)?;
-        secret_json.zeroize();
-        body.zeroize();
         let active = registry.mark_active(
             &record.local_lease_id,
             decoded.lease_id,
@@ -568,6 +575,12 @@ impl BaoClient {
             expires,
             Some(secret_digest),
         )?;
+        authority
+            .with_verified_use(verified, &binding, || consumer(&secret_json))
+            .map_err(BaoClientError::Authority)?
+            .map_err(|()| BaoClientError::ConsumerIndeterminate)?;
+        secret_json.zeroize();
+        body.zeroize();
         Ok(BaoLeaseOutcome::Active(active))
     }
 
@@ -578,6 +591,9 @@ impl BaoClient {
         registry: &mut LeaseRegistry,
         request: &BaoLeaseRenewRequest,
     ) -> Result<BaoLeaseOutcome, BaoClientError> {
+        if request.increment_seconds == 0 || request.increment_seconds > MAX_LEASE_TTL_SECONDS {
+            return Err(BaoClientError::InvalidRequest);
+        }
         let current = registry
             .get(&request.local_lease_id)
             .cloned()
@@ -642,18 +658,31 @@ impl BaoClient {
                 .mark_unknown(&record.local_lease_id)
                 .map(BaoLeaseOutcome::Indeterminate);
         }
-        let body = read_bounded_body(&mut response).await?;
-        let decoded: LeaseRenewResponse =
-            serde_json::from_slice(&body).map_err(|_| BaoClientError::InvalidResponse)?;
-        if decoded.lease_duration == 0 {
-            return Err(BaoClientError::InvalidResponse);
+        let body = match read_bounded_body(&mut response).await {
+            Ok(body) => body,
+            Err(_) => {
+                return registry
+                    .mark_unknown(&record.local_lease_id)
+                    .map(BaoLeaseOutcome::Indeterminate);
+            }
+        };
+        let decoded: LeaseRenewResponse = match serde_json::from_slice(&body) {
+            Ok(decoded) => decoded,
+            Err(_) => {
+                return registry
+                    .mark_unknown(&record.local_lease_id)
+                    .map(BaoLeaseOutcome::Indeterminate);
+            }
+        };
+        if decoded.lease_duration == 0 || decoded.lease_duration > MAX_LEASE_TTL_SECONDS {
+            return registry
+                .mark_unknown(&record.local_lease_id)
+                .map(BaoLeaseOutcome::Indeterminate);
         }
         let expires = unix_ms_now()?
             .checked_add(decoded.lease_duration.saturating_mul(1000))
             .ok_or(BaoClientError::InvalidResponse)?;
-        authority
-            .with_verified_use(verified, &binding, || ())
-            .map_err(BaoClientError::Authority)?;
+        drop(verified);
         let active = registry.mark_active(
             &record.local_lease_id,
             decoded.lease_id.unwrap_or(provider_lease_id),
@@ -734,9 +763,7 @@ impl BaoClient {
                 .mark_unknown(&record.local_lease_id)
                 .map(BaoLeaseOutcome::Indeterminate);
         }
-        authority
-            .with_verified_use(verified, &binding, || ())
-            .map_err(BaoClientError::Authority)?;
+        drop(verified);
         registry
             .mark_revoked(&record.local_lease_id)
             .map(BaoLeaseOutcome::Revoked)
@@ -842,6 +869,8 @@ fn validate_dynamic_request(request: &BaoDynamicLeaseRequest) -> Result<(), BaoC
         || !segmented(&request.provider_path)
         || request.provider_path.len() > MAX_DYNAMIC_PATH_BYTES
         || !identifier(&request.operation_id)
+        || request.max_ttl_seconds == 0
+        || request.max_ttl_seconds > MAX_LEASE_TTL_SECONDS
     {
         return Err(BaoClientError::InvalidRequest);
     }
@@ -856,7 +885,6 @@ fn validate_dynamic_request(request: &BaoDynamicLeaseRequest) -> Result<(), BaoC
 fn valid_metadata(record: &SecretLeaseMetadata) -> bool {
     identifier(&record.local_lease_id)
         && identifier(&record.operation_id)
-        && (!record.namespace.is_empty() || record.namespace.is_empty())
         && (record.namespace.is_empty() || segmented(&record.namespace))
         && segmented(&record.provider_path)
         && component(&record.subject_id)
@@ -898,7 +926,7 @@ fn existing_outcome(record: SecretLeaseMetadata) -> BaoLeaseOutcome {
         LeaseState::Unknown | LeaseState::IssuePending | LeaseState::RenewPending | LeaseState::RevokePending => {
             BaoLeaseOutcome::Indeterminate(record)
         }
-        LeaseState::Expired => BaoLeaseOutcome::Existing(record),
+        LeaseState::Expired | LeaseState::NotApplied => BaoLeaseOutcome::Existing(record),
     }
 }
 
