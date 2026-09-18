@@ -99,3 +99,7 @@ fn start_host_envelope_v1(
         )
         .map_err(ObjectiveHostError::Runtime)
 }
+
+#[cfg(test)]
+#[path = "objective_host_tests.rs"]
+mod tests;
