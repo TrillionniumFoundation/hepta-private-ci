@@ -165,6 +165,7 @@ export function createAccessibleConfirmAction({ document, mount = document?.body
       const controls = document.createElement("div");
       const cancel = document.createElement("button");
       cancel.setAttribute("type", "button");
+      cancel.setAttribute("data-hepta-confirm-cancel", "true");
       cancel.textContent = "Cancel";
       const confirm = document.createElement("button");
       confirm.setAttribute("type", "button");
@@ -193,7 +194,7 @@ export function createAccessibleConfirmAction({ document, mount = document?.body
       } else {
         dialog.setAttribute("open", "");
       }
-      confirm.focus?.();
+      cancel.focus?.();
     });
   };
 }
