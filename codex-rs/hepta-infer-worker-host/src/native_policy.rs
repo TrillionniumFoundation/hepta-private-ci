@@ -98,7 +98,9 @@ impl NativeExecutionPolicy {
             || now_unix_seconds < self.resource.not_before_unix_seconds
             || now_unix_seconds >= self.resource.expires_at_unix_seconds
         {
-            return Err(NativePolicyError::Invalid("policy evidence expired or not yet valid"));
+            return Err(NativePolicyError::Invalid(
+                "policy evidence expired or not yet valid",
+            ));
         }
         if generation == 0
             || self.quota.generation != generation
@@ -119,7 +121,9 @@ impl NativeExecutionPolicy {
             || self.quota.reserved_tokens < maximum_output_tokens
             || self.quota.reserved_day_budget < maximum_budget_units
         {
-            return Err(NativePolicyError::Invalid("quota/resource authority mismatch"));
+            return Err(NativePolicyError::Invalid(
+                "quota/resource authority mismatch",
+            ));
         }
 
         let quota_digest = self
@@ -215,7 +219,8 @@ impl NativeExecutionPolicy {
             scope_sha256,
             payload_sha256: hash_array(exact_turn_payload),
         };
-        let signed = resolver(&binding).map_err(|error| NativePolicyError::Grant(error.to_string()))?;
+        let signed =
+            resolver(&binding).map_err(|error| NativePolicyError::Grant(error.to_string()))?;
         if signed.grant.authority_epoch != admission.quota.authority_epoch {
             return Err(NativePolicyError::Invalid("grant authority epoch mismatch"));
         }
