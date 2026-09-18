@@ -3653,7 +3653,7 @@
       "id": "OBJ-1-OBJECTIVE-COMPILER",
       "module": "objective.compiler",
       "priority": 1,
-      "state": "planned",
+      "state": "source_implemented",
       "parallelClass": "contract_coordinated",
       "authorityDelta": "none",
       "developmentAfter": [
@@ -3723,7 +3723,10 @@
         "unbounded_resource_or_retry"
       ],
       "qualificationProfile": "contracts",
-      "claimImpact": [],
+      "claimImpact": [
+        "source_implementation",
+        "product_caller_candidate"
+      ],
       "invariantChecklist": {
         "forbiddenAuthorities": [
           "runtime_objective_rewrite",
