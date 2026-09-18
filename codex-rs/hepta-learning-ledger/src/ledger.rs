@@ -706,6 +706,7 @@ fn push_run_start(bytes: &mut Vec<u8>, value: &RunStartPublicationV1) {
     bytes.extend_from_slice(&snapshot.authority_epoch.to_be_bytes());
     bytes.extend_from_slice(&snapshot.generation.to_be_bytes());
     push_digest(bytes, snapshot.fence_digest);
+    push_digest(bytes, value.runtime_body_digest);
 }
 
 fn push_decision(bytes: &mut Vec<u8>, value: &EpisodeDecision) {
