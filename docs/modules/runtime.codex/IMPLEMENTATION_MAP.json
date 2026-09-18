@@ -130,10 +130,9 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "The native App Server caller does not yet consume kernel.authority's non-constructible VerifiedUseToken immediately before turn/start; CodexOperationIntent currently receives an equal caller-supplied lease_payload_digest rather than an authority-authenticated final-use capability. The caller now persists and binds the exact serialized final TurnStart payload digest; the remaining gap is authentication/consumption of that digest through kernel.authority."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
+    "independently operated final-use authority endpoint, signer-key custody, socket identity, clock and revocation-distribution qualification",
     "authenticated target-host Agentd/App Server execution receipt",
     "real model/provider terminal stream observation under the target deployment",
     "delegated external tool terminal and acknowledgement-loss qualification",
@@ -143,7 +142,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -156,7 +155,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "composed_authority_gate_pending",
+  "productCallerState": "composed_authority_external_qualification_pending",
   "productionWriterState": "existing_app_server_owner",
   "owner": "codex-integration",
   "deputy": "agent-runtime",
@@ -171,7 +170,14 @@
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "symbol": "pub(super) async fn run_once(",
       "buildTarget": "codex-hepta-infer-worker-host",
-      "semantics": "Sends real v2 thread/start and turn/start requests, routes typed turn/start errors and matching TurnCompleted notifications through hepta-codex-adapter, and never replays an unknown turn/start acknowledgement. Source composition exists, but this caller is not production-authorized until it consumes a kernel.authority final-use capability bound to the exact final TurnStart payload."
+      "semantics": "Sends real v2 thread/start and turn/start requests, requires an independently signed kernel.authority final-use capability for the exact final TurnStartParams binding, persists its witness before effect entry, routes typed turn/start errors and matching TurnCompleted notifications through hepta-codex-adapter, and never replays an unknown turn/start acknowledgement. Target-host issuer/provider qualification remains external evidence."
+    },
+    {
+      "role": "final_use_authority_port",
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "symbol": "impl TurnStartAuthorizer for UnixFinalUseAuthorizer",
+      "buildTarget": "codex-hepta-infer-worker-host",
+      "semantics": "Uses a protected Unix endpoint to obtain an independently signed exact-binding grant and trusted revocation head, locally verifies/claims it through FinalUseAuthority, and exposes only the non-constructible VerifiedUseToken to the native caller; the worker owns no issuer private key."
     },
     {
       "role": "durable_reconciler",
@@ -216,6 +222,16 @@
         "duplicate no-replay",
         "pre-dispatch failure",
         "durable reopen"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer_tests.rs",
+      "command": "just test -p codex-hepta-infer-worker-host",
+      "covers": [
+        "independently signed exact-binding grant",
+        "forged grant rejection",
+        "explicit authority denial",
+        "revocation-head rollback rejection"
       ]
     }
   ]
