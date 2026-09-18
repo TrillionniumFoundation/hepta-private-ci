@@ -96,7 +96,7 @@ The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is ex
 
 ## 6. Data authority, persistence and migrations
 
-Schema v9 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
+Schema v10 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
 - `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, recovery phase and terminal receipt.
@@ -106,13 +106,13 @@ Schema v9 retains the original `automation_tasks`, `automation_runs` and dispatc
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v9. An older binary that only understands automation schema v3 must not be started against a v9 owner store.
+Migrations are additive from v3 through v10. An older binary that only understands automation schema v3 must not be started against a v10 owner store.
 
 ## 7. Runtime, concurrency and transaction model
 
 One Agent generation owns the per-Agent writer. Scheduler lease generation/token becomes the TaskFlow run/step fence. Pre-dispatch intent is durable before App Server contact. App Server admission uses `thread/queue/reconcile` with stable `client_user_message_id` and canonical payload digest, eliminating a separate lookup/add race.
 
-`DispatchUnknown` no longer authorizes retry or permanently kills the scheduler. The next tick first performs bounded `ReconcileOnly` recovery for the same identity. Only an explicit `Missing` result releases that same occurrence/client identity for a safe retry.
+`DispatchUnknown` no longer authorizes retry or permanently kills the scheduler. The next tick first performs bounded `ReconcileOnly` recovery for the same identity. Only an explicit `Missing` result may append `requeued_proven_absent`, release that same occurrence/client identity, and allocate a new durable step attempt on reclaim.
 
 For external effects, `FinalUseAuthority::claim` durably consumes the signed grant nonce and `with_verified_use` revalidates current authority while the registered driver crosses the provider boundary. Driver errors are allowed only before provider contact; ambiguous contact must return `Indeterminate` so the outbox can quarantine the step.
 
@@ -121,7 +121,7 @@ For external effects, `FinalUseAuthority::claim` durably consumes the signed gra
 Crash boundaries are explicit:
 
 - before durable intent: no provider claim exists;
-- after intent/claim but before proven provider contact: retry may reuse the same occurrence/attempt when the provider owner proves absence;
+- after intent/claim but before proven provider contact: an exact provider-absence proof requeues the same TaskFlow run, preserves occurrence/client identity, and allocates a new step attempt before any retry;
 - after possible App Server admission: stable-id `ReconcileOnly`; no blind duplicate;
 - after persisted turn: store turn identity, then observe terminal status from persisted turn history;
 - after terminal provider observation but before run projection settlement: reconcile the historical step first, then a newer Agent generation may re-fence only the TaskFlow run projection for `Indeterminate -> Reconcile`; it does not replay the effect;
