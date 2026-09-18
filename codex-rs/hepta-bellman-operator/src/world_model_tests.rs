@@ -11,6 +11,14 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+fn model_pin(model: &TabularWorldModelV1) -> WorldModelPinV1 {
+    WorldModelPinV1 {
+        payload_digest: world_model_payload_digest_v1(model).expect("payload digest"),
+        model_digest: model.model_digest,
+        dataset_digest: model.dataset_digest,
+    }
+}
+
 fn sample(name: &str, next: &str, outcome: i64) -> WorldModelSampleV1 {
     WorldModelSampleV1 {
         sample_id: id(name),
@@ -68,14 +76,20 @@ fn op_04_prediction_is_synthetic_and_unsupported_pairs_abstain() {
         Ok(model) => model,
         Err(error) => panic!("valid transition model failed: {error}"),
     };
-    let prediction = match predict_transition(&model, &id("state-a"), &id("action-a")) {
-        Ok(prediction) => prediction,
-        Err(error) => panic!("supported prediction failed: {error}"),
-    };
+    let prediction =
+        match predict_transition(&model, &model_pin(&model), &id("state-a"), &id("action-a")) {
+            Ok(prediction) => prediction,
+            Err(error) => panic!("supported prediction failed: {error}"),
+        };
     assert!(prediction.synthetic);
     assert!(!prediction.authority.grants_any());
     assert_eq!(
-        predict_transition(&model, &id("state-unknown"), &id("action-a")),
+        predict_transition(
+            &model,
+            &model_pin(&model),
+            &id("state-unknown"),
+            &id("action-a")
+        ),
         Err(WorldModelError::UnsupportedStateAction)
     );
 }
@@ -87,14 +101,107 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
         fit_transition_model(
             id("world-model-1"),
             digest("dataset"),
-            vec![duplicate.clone(), duplicate],
+            vec![duplicate.clone(), duplicate.clone()],
         ),
         Err(WorldModelError::DuplicateSample("sample-1".to_owned()))
+    );
+
+    let mut replayed = sample("sample-2", "state-c", 20);
+    replayed.evidence_digest = duplicate.evidence_digest;
+    let relabelled = WorldModelSampleV1 {
+        sample_id: id("sample-3"),
+        ..replayed
+    };
+    assert_eq!(
+        fit_transition_model(
+            id("world-model-replay"),
+            digest("dataset"),
+            vec![duplicate.clone(), relabelled],
+        ),
+        Err(WorldModelError::DuplicateEvidence)
     );
 
     let invalid = sample("sample-2", "state-b", FixedQ32::ONE.raw() + 1);
     assert_eq!(
         fit_transition_model(id("world-model-2"), digest("dataset"), vec![invalid],),
         Err(WorldModelError::InvalidOutcome)
+    );
+}
+
+#[test]
+fn world_model_loaded_pin_authenticates_identity_and_structure() {
+    let model = fit_transition_model(
+        id("world-model-loaded"),
+        digest("dataset-loaded"),
+        vec![sample("sample-loaded", "state-b", 10)],
+    )
+    .expect("fit");
+    let pin = model_pin(&model);
+    let loaded = LoadedTabularWorldModelV1::from_pinned_model(model.clone(), &pin)
+        .expect("pinned model admitted");
+    assert_eq!(loaded.model_id(), &id("world-model-loaded"));
+    assert!(
+        loaded
+            .predict(&id("state-a"), &id("action-a"))
+            .expect("predict")
+            .synthetic
+    );
+
+    let mut tampered = model;
+    tampered.estimates[0].sample_count += 1;
+    assert_eq!(
+        LoadedTabularWorldModelV1::from_pinned_model(tampered, &pin),
+        Err(WorldModelError::InvalidModel)
+    );
+}
+
+#[test]
+fn raw_world_model_prediction_rejects_tampered_model() {
+    let mut model = fit_transition_model(
+        id("world-model-raw"),
+        digest("dataset-raw"),
+        vec![sample("sample-raw", "state-b", 10)],
+    )
+    .expect("fit");
+    model.estimates[0].sample_count += 1;
+    assert_eq!(
+        predict_transition(&model, &model_pin(&model), &id("state-a"), &id("action-a")),
+        Err(WorldModelError::InvalidModel)
+    );
+}
+
+#[test]
+fn raw_world_model_prediction_rejects_unmatched_pin() {
+    let model = fit_transition_model(
+        id("world-model-pin"),
+        digest("dataset-pin"),
+        vec![sample("sample-pin", "state-b", 10)],
+    )
+    .expect("fit");
+    let mut pin = model_pin(&model);
+    pin.dataset_digest = digest("other-dataset");
+    assert_eq!(
+        predict_transition(&model, &pin, &id("state-a"), &id("action-a")),
+        Err(WorldModelError::InvalidModel)
+    );
+}
+
+#[test]
+fn world_model_pin_rejects_semantically_valid_payload_substitution() {
+    let mut model = fit_transition_model(
+        id("world-model-payload"),
+        digest("dataset-payload"),
+        vec![sample("sample-payload", "state-b", 10)],
+    )
+    .expect("fit");
+    let pin = model_pin(&model);
+    model.estimates[0].mean_outcome = FixedQ32::from_raw(9);
+    assert_eq!(
+        predict_transition(&model, &pin, &id("state-a"), &id("action-a")),
+        Err(WorldModelError::InvalidModel)
+    );
+    assert_eq!(
+        LoadedTabularWorldModelV1::from_pinned_model(model, &pin),
+        Err(WorldModelError::InvalidModel)
     );
 }

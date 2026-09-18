@@ -12,6 +12,7 @@ use std::fmt;
 use codex_hepta_types::StableId;
 
 use crate::LearnedOperatorError;
+use crate::TabularArtifactPinV1;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorPredictionV1;
@@ -37,30 +38,20 @@ pub fn fit_tabular_operator_strict_v2(
 
 pub fn predict_tabular_operator_indexed_v2(
     artifact: &TabularOperatorArtifactV1,
+    pin: &TabularArtifactPinV1,
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, StrictLearnedOperatorError> {
-    if artifact.cells.windows(2).any(|adjacent| {
-        (&adjacent[0].sensor_id, &adjacent[0].action_id)
-            >= (&adjacent[1].sensor_id, &adjacent[1].action_id)
-    }) {
-        return Err(StrictLearnedOperatorError::NonCanonicalArtifact);
+    match crate::predict_tabular_operator(artifact, pin, sensor_id, action_id) {
+        Ok(prediction) => Ok(prediction),
+        Err(LearnedOperatorError::UnsupportedCell) => {
+            Err(StrictLearnedOperatorError::UnsupportedCell)
+        }
+        Err(LearnedOperatorError::InvalidGrid) => {
+            Err(StrictLearnedOperatorError::NonCanonicalArtifact)
+        }
+        Err(error) => Err(StrictLearnedOperatorError::Learned(error)),
     }
-    let index = artifact
-        .cells
-        .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor_id, action_id)))
-        .map_err(|_| StrictLearnedOperatorError::UnsupportedCell)?;
-    let cell = &artifact.cells[index];
-    Ok(TabularOperatorPredictionV1 {
-        artifact_id: artifact.artifact_id.clone(),
-        sensor_id: cell.sensor_id.clone(),
-        action_id: cell.action_id.clone(),
-        value: cell.mean_target,
-        cell_evidence_digest: cell.evidence_digest,
-        learned: true,
-        synthetic: true,
-        authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
-    })
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -159,8 +150,18 @@ mod tests {
     #[test]
     fn op_05_indexed_prediction_uses_canonical_grid() {
         let artifact = fit_tabular_operator_strict_v2(plan()).expect("strict fit succeeds");
+        let pin = TabularArtifactPinV1 {
+            payload_digest: crate::tabular_artifact_payload_digest_v1(&artifact)
+                .expect("payload digest"),
+            artifact_digest: artifact.artifact_digest,
+            objective_digest: artifact.objective_digest,
+            dataset_digest: artifact.dataset_digest,
+            sensor_core_digest: artifact.sensor_core_digest,
+            training_profile_digest: artifact.training_profile_digest,
+            generation: artifact.generation,
+        };
         let prediction =
-            predict_tabular_operator_indexed_v2(&artifact, &id("sensor-b"), &id("action-a"))
+            predict_tabular_operator_indexed_v2(&artifact, &pin, &id("sensor-b"), &id("action-a"))
                 .expect("supported cell");
         assert_eq!(prediction.value, FixedQ32::from_raw(30));
         assert!(prediction.synthetic);

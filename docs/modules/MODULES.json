@@ -1474,6 +1474,10 @@
         {
           "path": "codex-rs/hepta-bellman-operator",
           "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-operator-acceptance",
+          "mode": "exclusive"
         }
       ],
       "hotPathPolicy": {
@@ -1490,7 +1494,8 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-bellman-operator"
+        "codex-rs/hepta-bellman-operator",
+        "codex-rs/hepta-operator-acceptance"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",

@@ -181,7 +181,8 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
+            "sourceFreshnessPolicy": "bound_sources_unchanged_since_source_base",
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -287,7 +288,7 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
+    head = git("rev-parse", "HEAD")
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -309,6 +310,8 @@ def verify():
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
+        if row.get("sourceFreshnessPolicy") != "bound_sources_unchanged_since_source_base":
+            failures.append(f"{mid}: source freshness policy")
         if (
             not isinstance(source_base, dict)
             or not source_base.get("commit")
@@ -316,7 +319,24 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            source_commit = source_base["commit"]
+            source_tree = source_base["tree"]
+            try:
+                actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base commit missing")
+                actual_tree = None
+            if actual_tree is not None and actual_tree != source_tree:
+                failures.append(f"{mid}: source base tree mismatch")
+            if actual_tree is not None:
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", source_commit, head],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -324,8 +344,34 @@ def verify():
         if declared != roots:
             failures.append(f"{mid}: declared roots")
         try:
-            if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
+            resolved = resolve_source_roots(ROOT, module)
+            if row.get("resolvedRoots") != resolved:
                 failures.append(f"{mid}: resolved source roots")
+            if (
+                isinstance(source_base, dict)
+                and source_base.get("commit")
+                and row.get("sourceFreshnessPolicy")
+                == "bound_sources_unchanged_since_source_base"
+            ):
+                for source in resolved:
+                    base_object = subprocess.run(
+                        ["git", "rev-parse", f"{source_base['commit']}:{source}"],
+                        cwd=ROOT,
+                        capture_output=True,
+                        text=True,
+                    )
+                    head_object = subprocess.run(
+                        ["git", "rev-parse", f"HEAD:{source}"],
+                        cwd=ROOT,
+                        capture_output=True,
+                        text=True,
+                    )
+                    if (
+                        base_object.returncode != 0
+                        or head_object.returncode != 0
+                        or base_object.stdout.strip() != head_object.stdout.strip()
+                    ):
+                        failures.append(f"{mid}: stale source mapping for {source}")
         except (ValueError, OSError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")
@@ -345,8 +391,6 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
