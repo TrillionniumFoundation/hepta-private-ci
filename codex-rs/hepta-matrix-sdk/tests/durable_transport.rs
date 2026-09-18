@@ -427,10 +427,8 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
     let store = prepared_store(&layout).await?;
     let original = enqueue_final(&store, &agent_id, 10).await?;
     let sent_event = event("$sent-after-retry")?;
-    let transport = FakeTransport::new([
-        Err(MatrixTransportError::Retryable),
-        Ok(sent_event.clone()),
-    ]);
+    let transport =
+        FakeTransport::new([Err(MatrixTransportError::Retryable), Ok(sent_event.clone())]);
     let config = OutboxDispatchConfig {
         lease_ms: 20,
         retry_delay_ms: 10,
