@@ -49,12 +49,25 @@ impl AgentdState {
             )));
         }
         self.refresh_generation()?;
-        let (current_generation, lifecycle, app_server_ready, fenced) = {
+        let (
+            current_generation,
+            lifecycle,
+            app_server_ready,
+            critical_stores_ready,
+            revocation_ready,
+            required_ports_ready,
+            admission_open,
+            fenced,
+        ) = {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
             (
                 runtime.current_generation,
                 runtime.lifecycle,
                 runtime.app_server_ready,
+                runtime.critical_stores_ready,
+                runtime.revocation_ready,
+                runtime.required_ports_ready,
+                runtime.admission_open,
                 runtime.fenced,
             )
         };
@@ -69,8 +82,17 @@ impl AgentdState {
                     lifecycle,
                     AgentLifecycle::Starting | AgentLifecycle::Running
                 ) && app_server_ready
+                    && critical_stores_ready
+                    && revocation_ready
+                    && required_ports_ready
                     && !fenced,
-                ready: lifecycle == AgentLifecycle::Running && app_server_ready && !fenced,
+                ready: lifecycle == AgentLifecycle::Running
+                    && app_server_ready
+                    && critical_stores_ready
+                    && revocation_ready
+                    && required_ports_ready
+                    && admission_open
+                    && !fenced,
                 fenced,
                 lifecycle,
                 process_id: std::process::id(),
@@ -83,6 +105,26 @@ impl AgentdState {
                 app_server_ready,
                 fenced,
             }),
+            crate::AgentdMethod::Readiness => {
+                AgentdPayload::Readiness(crate::ReadinessSnapshot {
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                })
+            }
+            crate::AgentdMethod::Drain => {
+                if !matches!(lifecycle, AgentLifecycle::Draining | AgentLifecycle::Running) {
+                    return Err(AgentdError::Invalid(
+                        "drain requires running or draining lifecycle".to_string(),
+                    ));
+                }
+                self.begin_drain()?;
+                AgentdPayload::Drain(crate::DrainSnapshot {
+                    admission_stopped: true,
+                    drain_accepted: true,
+                })
+            }
             crate::AgentdMethod::SessionIngress => {
                 if lifecycle != AgentLifecycle::Running || !app_server_ready || fenced {
                     AgentdPayload::Error {
