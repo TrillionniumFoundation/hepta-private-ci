@@ -73,6 +73,8 @@ pub struct TabularOperatorArtifactV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TabularArtifactPinV1 {
+    /// Independent digest of the complete public artifact payload.
+    pub payload_digest: Digest32,
     pub artifact_digest: Digest32,
     pub objective_digest: Digest32,
     pub dataset_digest: Digest32,
@@ -319,11 +321,13 @@ pub fn predict_tabular_operator(
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, LearnedOperatorError> {
-    if pin.artifact_digest.is_zero()
+    if pin.payload_digest.is_zero()
+        || pin.artifact_digest.is_zero()
         || pin.objective_digest.is_zero()
         || pin.dataset_digest.is_zero()
         || pin.sensor_core_digest.is_zero()
         || pin.training_profile_digest.is_zero()
+        || tabular_artifact_payload_digest_v1(artifact)? != pin.payload_digest
         || artifact.artifact_digest != pin.artifact_digest
         || artifact.objective_digest != pin.objective_digest
         || artifact.dataset_digest != pin.dataset_digest
@@ -349,6 +353,39 @@ pub fn predict_tabular_operator(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+pub fn tabular_artifact_payload_digest_v1(
+    artifact: &TabularOperatorArtifactV1,
+) -> Result<Digest32, LearnedOperatorError> {
+    let mut bytes = b"hepta.bellman-operator.tabular-public-payload.v1".to_vec();
+    push_id(&mut bytes, &artifact.artifact_id);
+    push_id(&mut bytes, &artifact.producer_id);
+    bytes.extend_from_slice(&artifact.generation.get().to_be_bytes());
+    for digest in [
+        artifact.artifact_digest,
+        artifact.objective_digest,
+        artifact.dataset_digest,
+        artifact.sensor_core_digest,
+        artifact.training_profile_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.extend_from_slice(
+        &u32::try_from(artifact.cells.len())
+            .map_err(|_| LearnedOperatorError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for cell in &artifact.cells {
+        push_id(&mut bytes, &cell.sensor_id);
+        push_id(&mut bytes, &cell.action_id);
+        bytes.extend_from_slice(&cell.sample_count.to_be_bytes());
+        for value in [cell.mean_target, cell.minimum_target, cell.maximum_target] {
+            bytes.extend_from_slice(&value.raw().to_be_bytes());
+        }
+        bytes.extend_from_slice(cell.evidence_digest.as_array());
+    }
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn validate_prediction_artifact(
