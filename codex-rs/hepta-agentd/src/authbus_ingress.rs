@@ -109,7 +109,13 @@ pub(crate) async fn submit(
     let body = payload(&request.body)?;
     let result = host
         .evidence
-        .enqueue_authbus_message(&trust.issuer_for(request.key_epoch, now)?, &message, &host.subject, host.scope, &body)
+        .enqueue_authbus_message(
+            &trust.issuer_for(request.key_epoch, now)?,
+            &message,
+            &host.subject,
+            host.scope,
+            &body,
+        )
         .await
         .map_err(|error| invalid(&error.to_string()))?;
     // If authority changed during admission, preserve the committed message but
