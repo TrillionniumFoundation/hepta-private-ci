@@ -12,8 +12,8 @@ from .candidate import (
     Mutation,
     SandboxReceipt,
     generate_candidates,
-    sandbox_candidate,
 )
+from .sandbox_control import SandboxCoordinator
 from .control_plane import (
     EngineeringStore,
     ScheduleReceipt,
@@ -98,7 +98,14 @@ def execute_candidate_sandbox(
     candidate: Candidate,
     checks: Iterable[Sequence[str]],
 ) -> tuple[Candidate, SandboxReceipt]:
-    return sandbox_candidate(repository, envelope, candidate, checks)
+    """Execute through the bounded host admission/retry owner."""
+    result = SandboxCoordinator().execute(
+        str(repository),
+        envelope,
+        candidate,
+        checks,
+    )
+    return result.candidate, result.receipt
 
 
 def verify_integration_evidence(
