@@ -493,7 +493,7 @@ impl CognitiveStore {
         })
     }
 
-    async fn load_durable_generation_tx(
+    pub(crate) async fn load_durable_generation_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         scope: &CognitiveScope,
@@ -617,14 +617,35 @@ impl CognitiveStore {
                 .map_err(|_| CognitiveStoreError::Corrupt("negative KG generation".to_string()))?,
         )
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
-        build_durable_generation_from_snapshot_v2(
+        let rebuilt = build_durable_generation_from_snapshot_v2(
             generation,
             projection_scope,
             source_snapshot,
             &nodes,
             &edges,
         )
-        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+        let persisted_digest: Option<String> = sqlx::query_scalar(
+            "SELECT generation_digest
+             FROM kg_projection_v2_generation_receipts
+             WHERE projection_scope = ? AND generation = ?",
+        )
+        .bind(projection_scope)
+        .bind(i64::try_from(generation.get()).unwrap_or(i64::MAX))
+        .fetch_optional(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        if let Some(persisted_digest) = persisted_digest {
+            let persisted_digest = persisted_digest
+                .parse::<Digest32>()
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            if persisted_digest != rebuilt.generation_digest {
+                return Err(CognitiveStoreError::Corrupt(
+                    "persisted KG V2 generation digest differs from canonical rebuild".to_string(),
+                ));
+            }
+        }
+        Ok(rebuilt)
     }
 
 }
