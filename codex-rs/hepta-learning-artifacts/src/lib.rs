@@ -14,6 +14,7 @@ mod iteration_ledger;
 mod lifecycle_journal;
 mod model;
 mod pinned;
+mod publication;
 mod registry;
 mod storage;
 
@@ -79,6 +80,10 @@ pub use pinned::PinnedCandidateLoadError;
 pub use pinned::PinnedCandidateSpec;
 pub use pinned::RevalidatingCandidate;
 pub use pinned::load_pinned_candidate;
+pub use publication::{
+    ArtifactPublicationError, ArtifactPublicationRecoveryV1, ArtifactPublicationTransactionV1,
+    classify_artifact_publication_recovery_v1, prepare_artifact_publication_transaction_v1,
+};
 pub use registry::ArtifactRegistry;
 pub use storage::ArtifactStorageError;
 pub use storage::CreateOnlyArtifactFile;
