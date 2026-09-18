@@ -217,22 +217,22 @@ async fn stored_candidates(
             .await
             .unwrap();
     }
-    let batch = store
-        .retrieve_memory_candidates(
+    let observation = store
+        .observe_memory_retrieval(
             &access,
             &RetrievalRequest::new("lemon", /*now_unix_seconds*/ 100),
         )
         .await
         .unwrap();
-    let items: Vec<_> = batch
-        .candidates
-        .into_iter()
+    let items: Vec<_> = observation
+        .ranked_candidates()
+        .iter()
         .map(|candidate| {
-            let memory = candidate.memory;
+            let memory = &candidate.memory;
             CognitiveContextItem {
                 memory_id: memory.id.memory_id.as_str().to_string(),
                 revision: memory.id.revision,
-                content: memory.content,
+                content: memory.content.clone(),
                 content_sha256: memory.content_sha256.as_str().to_string(),
             }
         })
@@ -245,6 +245,44 @@ fn escaping_contents() -> Vec<String> {
     (0..4)
         .map(|index| format!("lemon {index} {}", "\\\"".repeat(/*n*/ 1700)))
         .collect()
+}
+
+#[tokio::test]
+async fn learned_ranker_can_promote_candidate_below_legacy_top_four() {
+    let contents = (0..8)
+        .map(|index| format!("lemon bounded candidate {index}"))
+        .collect();
+    let (_directory, store, owner, items) = stored_candidates(contents).await;
+    let baseline = read(
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 4,
+        /*ranker*/ None,
+    )
+    .await
+    .unwrap();
+    let winner = items.last().unwrap().clone();
+    assert!(!baseline.items.contains(&winner));
+
+    let scores = items
+        .iter()
+        .map(|item| if item == &winner { 100 } else { 0 })
+        .collect::<Vec<_>>();
+    let fixture = fitted_ranker(owner.clone(), &items, &scores);
+    let selected = read(
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 1,
+        Some(&fixture.ranker),
+    )
+    .await
+    .unwrap();
+
+    assert_eq!(selected.items, vec![winner]);
 }
 
 #[tokio::test]
