@@ -424,7 +424,7 @@ fn paged_snapshot_binds_one_ledger_root_and_rejects_midstream_mutation() {
     assert_eq!(first.cursor, 0);
     assert_eq!(first.next_cursor, Some(2));
     assert_eq!(first.total_records, 5);
-    assert!(first.previous_record_digest.is_none());
+    assert!(first.previous_record.is_none());
 
     let second = store
         .open_snapshot_page(
@@ -438,7 +438,10 @@ fn paged_snapshot_binds_one_ledger_root_and_rejects_midstream_mutation() {
         )
         .expect("second page");
     assert_eq!(
-        second.previous_record_digest,
+        second
+            .previous_record
+            .as_ref()
+            .map(|anchor| anchor.record_digest),
         first.records.last().map(MemoryRecord::record_digest)
     );
     assert_eq!(second.next_cursor, Some(4));
