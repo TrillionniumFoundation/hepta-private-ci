@@ -138,9 +138,12 @@ def run(args):
         check("real_tls_consumer", result.returncode == 0)
         receipt = json.loads(result.stdout)
         check(
-            "version_and_digest",
+            "version_and_internal_verification",
             receipt["version"] == 1
-            and receipt["secret_sha256"] == config["request"]["expected_secret_sha256"],
+            and receipt["secret_verified"] is True
+            and receipt["secret_bytes"] == len(secret)
+            and "secret_sha256" not in receipt
+            and "response_sha256" not in receipt,
         )
         replay = consume(config, instance.token)
         check(
@@ -177,11 +180,12 @@ def run(args):
             secret.encode() not in (instance.root / "audit.jsonl").read_bytes(),
         )
         evidence = {
-            "schema": "hepta.bao.real-consumer-smoke.v1",
+            "schema": "hepta.bao.real-consumer-smoke.v2",
             "passed": passed,
             "count": len(passed),
             "version": receipt["version"],
-            "secret_sha256": bytes(receipt["secret_sha256"]).hex(),
+            "secret_verified": receipt["secret_verified"],
+            "secret_bytes": receipt["secret_bytes"],
         }
         (args.work_dir / "result.json").write_text(
             json.dumps(evidence, indent=2) + "\n"
