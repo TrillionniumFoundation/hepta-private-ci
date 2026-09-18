@@ -373,11 +373,11 @@ class ExternalControlTests(unittest.TestCase):
                     )
                 )
                 decision = verify_production_controls(
-                    store,
-                    self.envelope,
                     lease,
+                    self.envelope,
                     fence,
                     frontier,
+                    store,
                     audit,
                     self.custody_set(),
                     self.trust,
