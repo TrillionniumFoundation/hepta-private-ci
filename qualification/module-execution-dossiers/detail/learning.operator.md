@@ -12,7 +12,7 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-bellman-operat
 
 ## 2. Public operations and contract details
 
-`build_sensor_core(design) -> OperatorSensorCoreManifestV1`; `fit_transition_model(dataset) -> TabularWorldModelV1`; `build_targets(dataset, objective) -> BellmanOperatorArtifact`; `fit_tabular_operator(dataset, sensor_core, profile) -> TabularOperatorArtifactV1`; `predict_transition(model, state, legal_action) -> WorldModelPredictionV1`; `predict_tabular_operator(artifact, sensor, legal_action) -> TabularOperatorPredictionV1`; `admit_operator_regularity(assessment) -> OperatorRegularityAdmissionV1`.
+`build_sensor_core(design) -> OperatorSensorCoreManifestV1`; `fit_transition_model(dataset) -> TabularWorldModelV1`; `build_targets(dataset, objective) -> BellmanOperatorArtifact`; `fit_tabular_operator(dataset, sensor_core, profile) -> TabularOperatorArtifactV1`; `predict_transition(model, pin, state, legal_action) -> WorldModelPredictionV1`; `predict_tabular_operator(artifact, pin, sensor, legal_action) -> TabularOperatorPredictionV1`; `admit_operator_regularity(assessment) -> OperatorRegularityAdmissionV1`.
 
 The original `train` function remains a compatibility alias for `build_targets`; it is explicitly a target builder, not a neural trainer. Transition/dynamics estimation and continuation-value estimation have separate artifacts and evidence.
 
@@ -20,13 +20,13 @@ The original `train` function remains a compatibility alias for `build_targets`;
 
 There is no production source writer. Training reads immutable ledger-bound datasets and emits deny-all candidate values for `learning.artifacts`. Sensor cores are fixed versioned designs, not replay caches. Artifacts bind axis partition, conditioning snapshot, model and dataset lineage, normalized units, code/runtime/device, error budget, applicability certificate and predecessor through the artifact owner.
 
-The tabular learner requires a complete canonical sensor-by-action grid and a minimum sample count for every cell. It stores per-cell mean, minimum, maximum, sample count and evidence digest. Missing or underfilled cells fail. Predictions outside the fitted grid fail rather than extrapolate.
+The tabular learner requires a complete canonical sensor-by-action grid and a minimum sample count for every cell. It stores per-cell mean, minimum, maximum, sample count and evidence digest. Duplicate underlying evidence is rejected even when relabelled with a different sample ID. Missing or underfilled cells fail. Raw prediction requires an independent artifact pin; persisted candidates use the once-validated loaded surface. Predictions outside the fitted grid fail rather than extrapolate.
 
 ## 4. Deterministic algorithm and scheduling
 
 Partition smooth, jump and hard axes; reject unsupported ellipticity or regularity rather than inject noise into hard state; construct deterministic farthest-point sensors; measure fill distance, separation radius and mesh ratio; run the complete tabular Bellman reference; fit the simplest sufficient tabular candidate; and measure rank, reconstruction, shape, OOD and complete error budget separately.
 
-The action-conditioned world-model baseline groups immutable observed samples by state/action, publishes exact Q32 branch distributions that sum to one and rejects unsupported pairs. Every prediction is marked synthetic. A model prediction cannot become an independent factual outcome.
+The action-conditioned world-model baseline groups immutable observed samples by state/action, rejects duplicate evidence across relabelled sample IDs, publishes exact Q32 branch distributions that sum to one and rejects unsupported pairs. Raw prediction requires a model/dataset pin; `LoadedTabularWorldModelV1` provides validated repeated lookup. Every prediction is marked synthetic. A model prediction cannot become an independent factual outcome.
 
 A later neural or low-rank tensor model must use a separately reviewed training profile and must beat or justify itself against the deterministic/tabular reference. Source presence alone cannot bypass applicability, future calibration, retention or rollback gates.
 
