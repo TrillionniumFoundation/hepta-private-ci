@@ -21,6 +21,13 @@ use crate::SuccessPredicate;
 const RUN_START_DOMAIN: &[u8] = b"hepta.objective.run-start.v1";
 const PUBLICATION_DOMAIN: &[u8] = b"hepta.objective.run-publication.v1";
 
+#[must_use]
+pub fn objective_run_publication_digest_v1(canonical_json: &[u8]) -> Digest32 {
+    let mut bytes = PUBLICATION_DOMAIN.to_vec();
+    bytes.extend_from_slice(canonical_json);
+    Digest32::of_bytes(&bytes)
+}
+
 /// Caller-owned bindings that are frozen with one compiled objective before a
 /// runtime run can be admitted. These values are observations, not effect grants.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -119,9 +126,7 @@ impl ObjectiveRunPublicationV1 {
 
     pub fn publication_digest(&self) -> Result<Digest32, serde_json::Error> {
         let bytes = self.canonical_json()?;
-        let mut domain = PUBLICATION_DOMAIN.to_vec();
-        domain.extend_from_slice(&bytes);
-        Ok(Digest32::of_bytes(&domain))
+        Ok(objective_run_publication_digest_v1(&bytes))
     }
 }
 
