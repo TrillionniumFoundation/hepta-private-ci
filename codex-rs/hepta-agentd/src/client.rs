@@ -28,6 +28,8 @@ use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
 use crate::SessionIngress;
+use crate::AuthBusObjectiveIngress;
+use crate::ObjectiveStartOutcome;
 
 pub struct AgentdClient {
     socket_path: PathBuf,
@@ -110,6 +112,31 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::SessionIngress(ingress) => Ok(ingress),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn objective_start(
+        &self,
+        request: AuthBusObjectiveIngress,
+    ) -> Result<ObjectiveStartOutcome, AgentdError> {
+        match self
+            .send(AgentdRequest::objective_start(
+                self.request_id(),
+                self.spawn_generation,
+                request,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::ObjectiveRun(receipt) => Ok(ObjectiveStartOutcome::Admitted { receipt }),
+            AgentdPayload::ObjectiveConflict {
+                run_id,
+                conflict_digest,
+            } => Ok(ObjectiveStartOutcome::Conflict {
+                run_id,
+                conflict_digest,
+            }),
             payload => unexpected(payload),
         }
     }
