@@ -35,8 +35,11 @@ or membership changes the public receipt even when the selected IDs happen to
 remain the same.
 
 `serialize_context_v2` requires the actual bytes for every selected item,
-recomputes their content digests, invokes the selected serializer, then invokes
-the selected exact tokenizer over the actual final serialized payload. The
+recomputes their content digests, invokes the selected serializer, and requires
+one verified `ContextPayloadPlacementV2` per selected item. The compiler checks
+that every declared final-payload slice is byte-for-byte equal to the selected
+item and binds the placement digest into the serialization receipt before
+invoking the selected exact tokenizer over the actual final serialized payload. The
 provider-facing token budget is enforced against this final measurement, not
 against the sum of candidate token counts.
 
@@ -95,9 +98,8 @@ Native compatibility cases remain in `src/lib_tests.rs`,
 `src/v2_tests.rs`.
 
 Proof-boundary cases are in `src/proof_v2_tests.rs`, including admission
-binding drift, revoked admission, compile-to-attach revocation, final
-serialization overhead, selected-content substitution, mandatory-group
-provenance, provider acknowledgement, payload mismatch and indeterminate
+binding drift, revoked admission, compile-to-attach revocation, final serialization overhead, selected-content substitution, serializer item
+drop/placement mismatch, mandatory-group provenance, provider acknowledgement, payload mismatch and indeterminate
 delivery.
 
 Run from `codex-rs`:
