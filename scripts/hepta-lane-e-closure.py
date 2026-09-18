@@ -567,17 +567,27 @@ def verify_workflow(findings: Findings) -> None:
         "production_e2e_missing",
         "cross-crate closure does not use signed durable evaluation admission",
     )
+    intelligence_lib = (
+        ROOT / "codex-rs/hepta-intelligence/src/lib.rs"
+    ).read_text(encoding="utf-8")
+    intelligence_shadow = (
+        ROOT / "codex-rs/hepta-intelligence/src/evaluated_shadow.rs"
+    ).read_text(encoding="utf-8")
     findings.require(
         "run_evaluated_shadow_v2"
         in (
             ROOT / "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
         ).read_text(encoding="utf-8")
-        and "decide_with_signed_durable_evidence_v3"
-        in (
-            ROOT / "codex-rs/hepta-intelligence/src/evaluated_shadow.rs"
-        ).read_text(encoding="utf-8"),
+        and "decide_with_signed_durable_evidence_v3" in intelligence_shadow,
         "production_consumer_missing",
         "evaluated-shadow consumer does not use strict signed durable evaluation admission",
+    )
+    findings.require(
+        'trusted-evaluated-shadow-v1' in intelligence_lib
+        and '#[cfg(feature = "trusted-evaluated-shadow-v1")]' in intelligence_shadow
+        and "--features trusted-evaluated-shadow-v1" in text,
+        "compatibility_ingress_exposed",
+        "pre-durable evaluated-shadow compatibility must be feature-gated and explicitly compiled",
     )
     findings.require(
         "--features trusted-inprocess-eval" in text
