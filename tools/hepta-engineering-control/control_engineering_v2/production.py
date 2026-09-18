@@ -77,6 +77,15 @@ class ProductionReadinessFacts:
     rollback_rehearsed: bool
     rollback_receipt_digest: str
     authority_delta: bool = False
+    orchestration_product_receipt_digest: str = ""
+    sandbox_controller_verified: bool = False
+    sandbox_controller_receipt_digest: str = ""
+    generated_test_mutation_gate_verified: bool = False
+    generated_test_mutation_receipt_digest: str = ""
+    distributed_fencing_verified: bool = False
+    distributed_fencing_receipt_digest: str = ""
+    external_audit_anchor_verified: bool = False
+    external_audit_anchor_receipt_digest: str = ""
 
 
 @dataclass(frozen=True)
@@ -104,8 +113,9 @@ def evaluate_production_readiness(
 
     `deployment_readiness_ready` is intentionally stricter.  It additionally
     requires identity-separated independent review, authorized handoff, external
-    key custody, a real strong-sandbox observation, an observed target deployment,
-    and a rollback rehearsal.  Neither result is authority.
+    key custody, a real strong-sandbox observation, distributed fencing, an
+    externally retained audit anchor, an observed target deployment, and a
+    rollback rehearsal.  Neither result is authority.
     """
     if not isinstance(facts, ProductionReadinessFacts):
         raise TypeError("ProductionReadinessFacts required")
@@ -140,6 +150,16 @@ def evaluate_production_readiness(
         implementation.append("synthetic_merge_ci_not_passed")
     if facts.product_tests_passed is not True:
         implementation.append("product_tests_not_passed")
+    if not _valid_sha256(facts.orchestration_product_receipt_digest):
+        implementation.append("orchestration_product_receipt_invalid")
+    if facts.sandbox_controller_verified is not True:
+        implementation.append("sandbox_controller_not_verified")
+    if not _valid_sha256(facts.sandbox_controller_receipt_digest):
+        implementation.append("sandbox_controller_receipt_invalid")
+    if facts.generated_test_mutation_gate_verified is not True:
+        implementation.append("generated_test_mutation_gate_not_verified")
+    if not _valid_sha256(facts.generated_test_mutation_receipt_digest):
+        implementation.append("generated_test_mutation_receipt_invalid")
     if facts.authority_delta is not False:
         implementation.append("authority_delta")
 
@@ -177,6 +197,14 @@ def evaluate_production_readiness(
         deployment.append("rollback_not_rehearsed")
     if not _valid_sha256(facts.rollback_receipt_digest):
         deployment.append("rollback_receipt_invalid")
+    if facts.distributed_fencing_verified is not True:
+        deployment.append("distributed_fencing_not_verified")
+    if not _valid_sha256(facts.distributed_fencing_receipt_digest):
+        deployment.append("distributed_fencing_receipt_invalid")
+    if facts.external_audit_anchor_verified is not True:
+        deployment.append("external_audit_anchor_not_verified")
+    if not _valid_sha256(facts.external_audit_anchor_receipt_digest):
+        deployment.append("external_audit_anchor_receipt_invalid")
 
     implementation_blockers = tuple(sorted(set(implementation)))
     deployment_blockers = tuple(sorted(set(deployment)))
