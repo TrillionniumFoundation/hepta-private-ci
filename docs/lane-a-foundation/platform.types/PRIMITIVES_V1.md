@@ -42,7 +42,7 @@ fields/map entries. Cross-language fixture bytes are frozen in
 
 `BoundedText<N>` and `BoundedBytes<N>` reject zero maximum, empty content and
 content larger than `N`; text additionally rejects NUL. The bound is encoded
-byte length, not Unicode scalar count. `from_str` / `from_slice` validate a
+byte length, not Unicode scalar count. `try_from_str` / `try_from_slice` validate a
 borrowed input before allocating the owned bounded value.
 
 ## Registry definitions
