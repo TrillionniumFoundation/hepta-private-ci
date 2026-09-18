@@ -176,7 +176,11 @@ async fn real_tls_read_uses_headers_exact_version_and_secret_only_consumer() {
         .consume_kv_v2(&authority, &grant, &request)
         .await
         .unwrap();
-    assert!(!serde_json::to_string(&receipt).unwrap().contains(SECRET));
+    let serialized = serde_json::to_string(&receipt).unwrap();
+    assert!(!serialized.contains(SECRET));
+    assert!(!serialized.contains("secret_sha256"));
+    assert!(!serialized.contains("response_sha256"));
+    assert!(!format!("{receipt:?}").contains("secret_sha256"));
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
     assert!(observed.starts_with("get /v1/secret/data/provider/token?version=2 http/1.1\r\n"));
     assert!(observed.contains("x-vault-token: fixture-provider-token\r\n"));
