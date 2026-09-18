@@ -7,6 +7,7 @@ use std::fs::File;
 use std::fs::OpenOptions;
 #[cfg(unix)]
 use std::fs::TryLockError;
+#[cfg(unix)]
 use std::io;
 #[cfg(unix)]
 use std::io::Write;
