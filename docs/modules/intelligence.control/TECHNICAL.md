@@ -114,6 +114,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `IntelligenceHostEnvelopeV1`
 - `LearningArtifactManifestV1`
 - `LegalActionCandidateSetV1`
 
