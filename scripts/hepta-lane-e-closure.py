@@ -57,7 +57,9 @@ EXPECTED_OPERATIONS = {
         "evaluate_bellman_reference",
         "admit_operator_regularity",
         "fit_transition_model",
-        "predict_transition",
+        "world_model_payload_digest_v1",
+        "LoadedTabularWorldModelV1::from_pinned_model",
+        "LoadedTabularWorldModelV1::predict",
     },
     "learning.eval": {
         "estimate_ope",
@@ -71,6 +73,7 @@ EXPECTED_CRATES = {
     "codex-hepta-learning-ledger",
     "codex-hepta-learning-artifacts",
     "codex-hepta-bellman-operator",
+    "codex-hepta-operator-acceptance",
     "codex-hepta-intelligence-eval",
     "codex-hepta-shadow-qualification",
 }
