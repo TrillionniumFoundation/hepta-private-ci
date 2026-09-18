@@ -1167,7 +1167,11 @@ mod tests {
                 .expect("register factor");
             durable
                 .registry
-                .admit_factor(&factor.factor_id, &id("reviewer:active-reopen"), digest("evidence"))
+                .admit_factor(
+                    &factor.factor_id,
+                    &id("reviewer:active-reopen"),
+                    digest("evidence"),
+                )
                 .expect("legacy test admission");
             let binding = PromptRealizationBindingV2 {
                 realization_id: id("realization:active-reopen"),
@@ -1186,7 +1190,10 @@ mod tests {
             durable
                 .register_realization_payload_v2(binding, payload.clone(), None)
                 .expect("register payload");
-            durable.store.persist(&durable.registry).expect("persist admission");
+            durable
+                .store
+                .persist(&durable.registry)
+                .expect("persist admission");
         }
 
         let reopened =
