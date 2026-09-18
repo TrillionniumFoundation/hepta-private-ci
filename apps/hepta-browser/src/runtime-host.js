@@ -613,42 +613,40 @@ export class BrowserProfileHost {
       if (input.principalId !== durable.principalId) {
         throw new TypeError("principal does not own persisted operation");
       }
-      const pseudoState = {
-        profileId: durable.profileId,
-        principalId: durable.principalId,
-        processId: durable.processId,
-        generation: durable.generation,
-        grantDigest: durable.profileGrantDigest,
-      };
-      const semantics = this.#requestSemanticsFromDurableInput(
-        pseudoState,
-        input,
-        durable,
-      );
-      const requestDigest = canonicalDigest(semantics);
-      if (requestDigest !== durable.requestDigest) {
-        throw new TypeError(
-          "persisted reconciliation changed immutable semantics",
-        );
-      }
       if (durable.terminalObserved === true) {
         const receipt = this.#receiptFromDurable(durable);
         await this.#retireRecoveredGenerationIfTerminal(profileId, generation);
         return receipt;
       }
-      const effectSemantics = Object.freeze({
-        ...semantics,
+      // Persisted recovery must not require reconstructing the live typed
+      // action. In particular, secret-bearing type.text is deliberately absent
+      // from the journal. The trusted crash reconciler receives only the
+      // checksum-protected, non-secret durable identity of the crossed effect.
+      const persistedIdentity = Object.freeze({
+        profileId: durable.profileId,
+        principalId: durable.principalId,
+        processId: durable.processId,
+        profileGeneration: durable.generation,
+        pageGeneration: durable.pageGeneration,
+        documentDigest: durable.documentDigest,
+        operationId: durable.operationId,
+        action: durable.action,
+        destinationOrigin: durable.destinationOrigin,
+        finalPayloadDigest: durable.finalPayloadDigest,
+        profileGrantDigest: durable.profileGrantDigest,
+        effectGrantDigest: durable.effectGrantDigest,
+        authorityEpoch: durable.authorityEpoch,
+        deadlineMs: durable.deadlineMs,
+        requestDigest: durable.requestDigest,
+        semanticDigest: durable.semanticDigest,
         verifiedUseTokenWitnessDigest: durable.verifiedUseTokenWitnessDigest,
       });
-      if (canonicalDigest(effectSemantics) !== durable.semanticDigest) {
-        throw new TypeError("persisted semantic digest mismatch");
-      }
       let receipt;
       try {
         const observed = requireRecord(
           await this.#callDriver(
             "reconcilePersisted",
-            effectSemantics,
+            persistedIdentity,
             this.#clock() + this.#driverCallTimeoutMs,
           ),
           "persisted driver reconciliation observation",

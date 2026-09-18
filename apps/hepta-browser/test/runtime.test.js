@@ -686,7 +686,15 @@ test("persisted indeterminate operation requires an explicit crash reconciler af
     blockedHost.openProfile(input({ generation: 2 })),
     /unresolved durable effects/,
   );
-  const unresolved = await blockedHost.reconcilePersistedOperation(operation());
+  const persistedIdentity = {
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    operationId: "operation.1",
+  };
+  const unresolved = await blockedHost.reconcilePersistedOperation(
+    persistedIdentity,
+  );
   assert.equal(unresolved.status, "indeterminate");
   assert.equal(unresolved.terminalObserved, false);
   assert.equal(unavailableDriver.persistedReconcileCalls, 1);
@@ -707,7 +715,9 @@ test("persisted indeterminate operation requires an explicit crash reconciler af
     allowVolatileJournalForTests: true,
     driverCallTimeoutMs: 50,
   });
-  const recovered = await recoveredHost.reconcilePersistedOperation(operation());
+  const recovered = await recoveredHost.reconcilePersistedOperation(
+    persistedIdentity,
+  );
   assert.equal(recovered.status, "succeeded");
   assert.equal(recovered.terminalObserved, true);
   assert.equal(recoveryDriver.dispatchCalls, 0);
@@ -718,6 +728,70 @@ test("persisted indeterminate operation requires an explicit crash reconciler af
     /already been retired/,
   );
   await journal.assertProfileGenerationAvailable("profile.1", 2);
+});
+
+test("persisted recovery never requires or forwards secret type text", async () => {
+  const secret = "credential-like-secret-that-must-not-be-durable";
+  const typedAction = Object.freeze({
+    kind: "type",
+    selector: "input:nth-of-type(1)",
+    text: secret,
+  });
+  const finalPayloadDigest = browserActionDigest(typedAction);
+  const journal = new MemoryBrowserOperationJournal();
+  const firstDriver = driver({
+    dispatchImpl: async () => {
+      throw new Error("process lost after type dispatch");
+    },
+  });
+  const first = await preparedHost({
+    driver: firstDriver,
+    journal,
+    profileInput: input({
+      effectGrants: [
+        effectGrant({
+          action: "type",
+          finalPayloadDigest,
+        }),
+      ],
+    }),
+  });
+  await first.host.navigateOrAct(
+    operation({ typedAction, finalPayloadDigest }),
+  );
+  const durable = await journal.getOperation("profile.1", 1, "operation.1");
+  assert.equal("typedAction" in durable, false);
+  assert.equal(JSON.stringify(durable).includes(secret), false);
+
+  let observedIdentity;
+  const recoveryDriver = driver({
+    persistedReconcileImpl: async (identity) => {
+      observedIdentity = identity;
+      return {
+        terminalObserved: true,
+        status: "succeeded",
+        outcomeDigest: D1,
+      };
+    },
+  });
+  const recoveredHost = new BrowserProfileHost({
+    driver: recoveryDriver,
+    authority: authority(),
+    journal,
+    clock: () => 20_000,
+    allowVolatileJournalForTests: true,
+    driverCallTimeoutMs: 50,
+  });
+  const receipt = await recoveredHost.reconcilePersistedOperation({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    operationId: "operation.1",
+  });
+  assert.equal(receipt.terminalObserved, true);
+  assert.equal(observedIdentity.finalPayloadDigest, finalPayloadDigest);
+  assert.equal("typedAction" in observedIdentity, false);
+  assert.equal(JSON.stringify(observedIdentity).includes(secret), false);
 });
 
 test("terminal operation retention uses durable tombstones instead of exhausting active capacity", async () => {
