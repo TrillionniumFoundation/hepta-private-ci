@@ -2,91 +2,156 @@
 
 ## Current executable contract
 
-The implemented HTTPS slice is `BaoClient::consume_kv_v2`: a bounded read of one
-string field from one exact KV-v2 version. It pins a supplied CA, validates the
-hostname, disables ambient proxies and redirects, applies one bounded deadline
-and caps the complete response at one mebibyte.
+The module now has two executable provider paths.
 
-Before dispatch, `FinalUseAuthority` verifies an independently signed,
-single-use binding over subject, consumer, HTTPS origin, CA, namespace, mount,
-path, field, version and expected secret digest. After response and
-digest/version validation, authority is rechecked before secret delivery.
-Receipts contain metadata and digests, never raw secret data.
+The first is `BaoClient::consume_kv_v2`: a bounded read of one string field
+from one exact KV-v2 version. It pins a supplied CA, validates the hostname,
+disables ambient proxies and redirects, applies one bounded deadline and caps
+the complete response at one mebibyte.
 
-The production-capable source composition is `BaoFinalUseHost` in
-`src/final_use_host.rs`. It removes the arbitrary-closure assumption from the
-callsite: the signed `consumer_id` must resolve in a closed host registry of
-`RegisteredBaoConsumer` callbacks. The host also requires an independent
-operator approval signature for the exact grant and accepts revocation heads
-only through an independently pinned signed revocation feed.
+The second is the provider-native dynamic SecretLease lifecycle:
 
-The final-use mutex is held only for the final live-authority recheck, not while
-the registered callback runs. That recheck is the consumer-entry linearization
-point: revocation completed before it denies delivery; revocation completed
-after it is ordered after entry.
+- `request_secret_lease` reads an enrolled dynamic-secret endpoint and
+  persists metadata before returning;
+- `renew_secret_lease` calls the provider lease-renew endpoint;
+- `revoke_secret_lease` uses synchronous provider revocation;
+- `reconcile_secret_lease` queries provider lease truth to settle an
+  indeterminate renew or revoke.
+
+All four lease operations are exposed through `BaoFinalUseHost`. The host
+requires an independently signed final-use grant, a separate operator approval,
+an enrolled consumer identity and current signed revocation state. Dynamic
+credential bytes are delivered only to the registered consumer callback.
+Ordinary return values and durable records contain lease metadata, not raw
+provider credential data.
+
+## Durable lease owner
+
+`SecretLeaseStore` owns `heptabao_leases_1.sqlite3`. Its durable records
+contain provider lease identity, namespace, registered consumer, request/scope
+digests, keyed secret fingerprint, TTL, renewable flag, monotone rotation
+generation, local state and revision.
+
+The operation ledger records one caller-supplied operation identity with an
+exact semantic digest and one of:
+
+- `prepared`;
+- `dispatching`;
+- `applied`;
+- `not_applied`;
+- `indeterminate`.
+
+Reusing an operation identity with changed semantics is a conflict. The
+`prepared -> dispatching` transition is durable before the provider request.
+After restart, a `dispatching` or `indeterminate` operation is recoverable
+but is not automatically resent.
+
+Renew/revoke uncertainty fences the affected local lease from normal use until
+provider lookup reconciles it. A lookup showing an active lease restores the
+observed provider TTL and renewable bit. A lookup showing absence fences the
+local lease as revoked.
+
+Dynamic issuance has a different recovery limit. If the provider created a
+credential but the response containing the provider lease ID was lost, generic
+lease lookup has no stable ID to query. That operation remains indeterminate
+until an independently trusted provider/audit observation proves applied or
+not-applied. The implementation deliberately does not create another dynamic
+credential to discover the answer.
+
+## Secret and fingerprint boundary
+
+The dynamic response body is stored in a zeroizing byte buffer. The provider
+`data` object is borrowed from that buffer and may cross only the registered
+consumer callback.
+
+Secret-derived metadata uses `BaoReceiptKey`, a host-provisioned HMAC-SHA-256
+key. Durable metadata retains the key identifier and keyed fingerprint, not a
+plain SHA-256 secret fingerprint. This reduces offline enumeration risk for
+low-entropy credentials. The HMAC key is not serialized by the adapter and its
+`Debug` representation is redacted.
+
+The keyed fingerprint is still correlation metadata and must be treated as
+sensitive. Rotation/retention policy belongs to the selected host and key
+custody boundary.
+
+Local zeroization is application-buffer hygiene. It does not prove that TLS,
+HTTP, allocator or operating-system internals made no transient plaintext
+copies.
+
+## Registered final-use host
+
+`BaoFinalUseHost` removes the arbitrary-closure assumption from product
+composition. A signed `consumer_id` must resolve in a closed
+`RegisteredBaoConsumer` registry. The host separately verifies operator
+approval for the exact grant and accepts revocation state only through the
+pinned signed revocation feed.
+
+For KV reads, the kernel revalidates live authority immediately before consumer
+entry. The consumer callback is not executed while holding the authority
+mutex; that live check is the local consumer-entry linearization point.
+
+For dynamic provider operations, the lease operation identity is durably fenced
+before external dispatch. Once a provider-side effect may have been admitted,
+timeout or protocol ambiguity is recorded as indeterminate rather than inferred
+as failure.
 
 ## Public symbols and source bindings
 
-- `BaoToken`, `BaoReadRequest`, `BaoSecretReceipt`, `BaoClient`,
-  `BaoClientError`: `codex-rs/hepta-bao-adapter/src/https_consumer.rs`;
-- `BaoFinalUseHost`, `RegisteredBaoConsumer`, `BaoFinalUseHostError`:
+- KV-v2 transport: `BaoToken`, `BaoReadRequest`, `BaoSecretReceipt`,
+  `BaoClient`, `BaoClientError` in
+  `codex-rs/hepta-bao-adapter/src/https_consumer.rs`;
+- dynamic lease API: `BaoSecretLeaseRequest`,
+  `BaoSecretLeaseRenewRequest`, `BaoSecretLeaseRevokeRequest`,
+  `BaoSecretLeaseReconcileRequest`, `BaoReceiptKey`, `BaoLeaseError` in
+  `codex-rs/hepta-bao-adapter/src/lease_client.rs`;
+- durable metadata and operation state: `SecretLeaseStore`,
+  `SecretLeaseMetadataV1`, operation/state enums in
+  `codex-rs/hepta-bao-adapter/src/lease_store.rs`;
+- closed consumer/approval composition: `BaoFinalUseHost`,
+  `RegisteredBaoConsumer` in
   `codex-rs/hepta-bao-adapter/src/final_use_host.rs`;
-- final-use grant and durable nonce/revocation state:
+- final-use grant and replay/revocation owner:
   `codex-rs/hepta-contracts/src/final_use*.rs`;
 - independent approval and revocation-feed verification:
-  `codex-rs/hepta-contracts/src/final_use_control.rs`;
-- host integration and real-service procedure:
-  `codex-rs/hepta-bao-adapter/README.md`.
+  `codex-rs/hepta-contracts/src/final_use_control.rs`.
 
-## Durability and activation
+## Current source-completion boundary
 
-Secret values remain owned by the external Bao service. Local durability is
-limited to kernel authority nonce/revocation state. Source composition now
-binds consumer identity to a registered callback and separates issuer,
-approver and revocation-distributor trust, but there is still no selected
-production process caller in the current candidate.
+The source now implements the module-owned SecretLease issuance, renew, revoke,
+local lease registry and reconciliation model. This does **not** establish
+production activation.
 
-Activation requires protected host configuration, provider token, pinned issuer
-/ approver / revocation trust, an independently provisioned consumer registry,
-current signed revocation data, target-host qualification and operator
-acceptance. Source composition alone does not satisfy those gates.
+The following remain outside the module-owned source-completion claim:
 
-## Target-only design
+- selection and qualification of a named product-process caller;
+- real provider-native dynamic-engine qualification on the exact enrolled
+  OpenBao/HeptaBao source pin;
+- protected provisioning/rotation of `BaoReceiptKey`, issuer, approver and
+  revocation-distributor trust;
+- external anti-rollback/trusted-time/fleet revocation qualification;
+- the shared `kernel.authority` replay-store scalability/active-active work,
+  which is owned by `security-authority`;
+- independent acceptance, canary, promotion and release.
 
-Secret mutation, durable operations/evidence composition, quota settlement and
-automatic product enrollment remain outside this slice. Fleet revocation
-transport/freshness, external anti-rollback, trusted time and HSM/KMS/operator
-ceremony are deployment or separately owned authority concerns.
-
-## Known limits and non-claims
-
-Local zeroization does not prove that TLS, HTTP or the OS made no transient
-copies. A callback error or crash after the final entry point is indeterminate.
-Revocation cannot retroactively undo an effect that has already crossed the
-final synchronous entry linearization point. The current error surface does not
-return the precomputed metadata receipt when the callback reports failure.
-
-The registered host is source-composed but not product-process activated;
-source implementation and tests do not grant operator acceptance, promotion or
-release.
+The current kernel replay compatibility store still has its own 16,384
+claim-per-epoch ceiling and local single-active persistence model. The new
+SecretLease SQLite store does not hide or bypass that kernel limitation.
 
 ## Verification
 
-Tests and the isolated real-service fixture cover pinned TLS, exact
-headers/version, forged/replayed grants, revocation during network wait,
-provider denial, response bounds, digest mismatch, timeout and consumer
-uncertainty. Registered-host tests cover closed/unique consumer identities and
-deny unregistered identities or forged approvals before network dispatch;
-kernel control tests cover independent grant approval, signed monotonic
-revocation ingestion and forged-feed rejection.
+Source tests cover:
 
-Recorded bounded evidence is not production acceptance. Exact-head and
-synthetic-merge receipts for the current candidate are the relevant execution
-evidence.
+- exact-version KV-v2 HTTPS reads, TLS pinning, response bounds, replay,
+  revocation races and consumer uncertainty;
+- dynamic issuance through a real loopback TLS server without persisting raw
+  provider credentials;
+- keyed fingerprints;
+- durable operation identity and semantic-drift conflict;
+- restart with a `dispatching` operation and no blind resend;
+- monotone rotation generation;
+- renew ambiguity fencing and lookup reconciliation;
+- revoke ambiguity and terminal absence fencing.
 
-## Integration prerequisites
-
-A selected production caller must durably record operation intent before
-dispatch, persist response/consumer observations, reconcile indeterminate
-outcomes and settle quota from terminal evidence. Secret bytes must never enter
-general logs, prompts, learning records or ordinary receipts.
+Exact-head and deterministic synthetic-merge execution receipts are required
+before the source candidate may be reported as qualified. Recorded historical
+fixtures are not evidence for a newer commit.

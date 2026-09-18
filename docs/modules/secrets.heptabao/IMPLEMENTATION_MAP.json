@@ -20,37 +20,114 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "registered_host_composed_not_activated",
+  "productionWriterState": "lease_registry_source_implemented_not_activated",
   "operations": [
     {
       "operation": "consume_kv_v2",
       "nativeSymbol": "consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "source_implemented_registered_host_not_product_activated",
+      "authority": "kernel.authority final-use grant + independent approval",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "binding",
-      "nativeSymbol": "binding",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "request_secret_lease",
+      "nativeSymbol": "request_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_registered_host_not_product_activated",
+      "authority": "kernel.authority final-use grant + independent approval",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_client_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/lease_store_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "binding",
+      "designOperation": "request_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "renew_secret_lease",
+      "nativeSymbol": "renew_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_registered_host_not_product_activated",
+      "authority": "kernel.authority final-use grant + independent approval",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "renew",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_secret_lease",
+      "nativeSymbol": "revoke_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_registered_host_not_product_activated",
+      "authority": "kernel.authority final-use grant + independent approval",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reconcile_secret_lease",
+      "nativeSymbol": "reconcile_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_registered_host_not_product_activated",
+      "authority": "kernel.authority final-use grant + independent approval",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reconcile",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "secret_lease_store",
+      "nativeSymbol": "SecretLeaseStore",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_store.rs",
+      "state": "source_implemented_not_product_activated",
+      "authority": "secrets.heptabao durable owner",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "secret_lease_registry",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "registered_final_use_host",
+      "nativeSymbol": "BaoFinalUseHost",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "state": "source_implemented_registered_host_not_product_activated",
+      "authority": "independent approval + signed revocation feed + closed consumer registry",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "registered_consumer_boundary",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Select and qualify a named product-process caller for the registered SecretLease host before activation.",
+    "Run the provider-native dynamic lease fixture against the exact enrolled OpenBao/HeptaBao source pin and retain exact-candidate receipts.",
+    "Provision and rotate the BaoReceiptKey through a protected host/KMS channel; the repository stores only its key identifier and keyed fingerprints.",
+    "The shared kernel.authority replay store scalability and distributed active-active backend remain owned by security-authority and must be qualified separately."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
