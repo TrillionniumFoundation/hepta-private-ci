@@ -306,25 +306,46 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
         .expect("uncertain row");
 
     // Only an external ReconcileOnly `Missing` proof may open this retry path.
+    let proof_digest = Sha256Digest::for_bytes(b"provider proved stable id absent");
     store
-        .reconcile_uncertain_occurrence_absent(task.task_id, 1, &uncertain.client_user_message_id)
+        .reconcile_uncertain_occurrence_absent(
+            task.task_id,
+            1,
+            &uncertain.client_user_message_id,
+            &proof_digest,
+            101,
+        )
         .await
         .expect("release after absence proof");
-    let lease = store
-        .claim_due(101, 2, 30_000)
-        .await
-        .expect("claim")
-        .expect("retry due");
-    assert_eq!(lease.occurrence, 1);
-    assert_eq!(
-        lease.client_user_message_id,
-        uncertain.client_user_message_id
-    );
+
+    // Exercise the real second scheduler pass, not merely rematerialization.
+    // Reusing the same Agent generation proves TaskFlow's attempt-generation
+    // fence advances independently from the Agent spawn generation.
+    let retry_scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("retry scheduler");
+    assert!(matches!(
+        retry_scheduler.tick(102).await.expect("retry tick"),
+        AutomationTick::Submitted {
+            task_id,
+            occurrence: 1,
+            ..
+        } if task_id == task.task_id
+    ));
     let second = store
-        .materialize_occurrence(&lease, 101)
+        .automation_occurrence(task.task_id, 1)
         .await
-        .expect("rematerialize same occurrence");
+        .expect("occurrence")
+        .expect("same occurrence after retry");
     assert_eq!(second.occurrence_id, first.occurrence_id);
     assert_eq!(second.schedule_revision, first.schedule_revision);
-    assert_eq!(second.claim_generation, 2);
+    assert_eq!(second.client_user_message_id, uncertain.client_user_message_id);
+    assert_eq!(second.claim_generation, 1);
+    assert_eq!(second.step_attempt, 2);
+    assert_eq!(second.state, AutomationOccurrenceState::Admitted);
 }
