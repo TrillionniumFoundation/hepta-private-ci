@@ -1,4 +1,3 @@
-from pathlib import Path
 import tempfile
 import unittest
 from unittest import mock
@@ -97,25 +96,26 @@ class SandboxCoordinatorTests(unittest.TestCase):
         if sandbox_control._fcntl is None:
             self.skipTest("host admission locks require POSIX flock")
         with tempfile.TemporaryDirectory() as temp:
-            coordinators = [
-                SandboxCoordinator(
-                    SandboxExecutionPolicy(8, 0),
-                    admission_directory=Path(temp),
-                )
-                for _ in range(9)
-            ]
-            held = []
-            try:
-                for coordinator in coordinators[:8]:
-                    held.append((coordinator, coordinator._enter()))
-                    self.assertEqual(coordinator.admission_scope, "host")
-                with self.assertRaisesRegex(
-                    EngineeringError, "sandbox_capacity_exhausted"
-                ):
-                    coordinators[8]._enter()
-            finally:
-                for coordinator, token in reversed(held):
-                    coordinator._exit(token)
+            with mock.patch(
+                "control_engineering_v2.sandbox_control.tempfile.gettempdir",
+                return_value=temp,
+            ):
+                coordinators = [
+                    SandboxCoordinator(SandboxExecutionPolicy(8, 0))
+                    for _ in range(9)
+                ]
+                held = []
+                try:
+                    for coordinator in coordinators[:8]:
+                        held.append((coordinator, coordinator._enter()))
+                        self.assertEqual(coordinator.admission_scope, "host")
+                    with self.assertRaisesRegex(
+                        EngineeringError, "sandbox_capacity_exhausted"
+                    ):
+                        coordinators[8]._enter()
+                finally:
+                    for coordinator, token in reversed(held):
+                        coordinator._exit(token)
 
     def test_policy_cannot_exceed_dossier_ceiling(self):
         with self.assertRaisesRegex(EngineeringError, "invalid_sandbox_execution_policy"):
