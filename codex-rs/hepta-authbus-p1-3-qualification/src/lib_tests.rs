@@ -87,3 +87,13 @@ fn qualification_rejects_failed_or_unbound_execution() {
     }
     assert_eq!(qualify(invalid), Err(Error::InvalidExecutionProvenance));
 }
+
+
+#[test]
+fn native_negative_matrix_executes_before_qualification() {
+    let receipt = execute_native_negative_qualification(execution())
+        .expect("native negative matrix must execute and qualify");
+    assert_eq!(receipt.case_count, 4);
+    assert_eq!(receipt.source_sha, execution().source_sha);
+    assert!(!receipt.authority.grants_any());
+}
