@@ -72,7 +72,7 @@ jobs:
         run: |
           mkdir -p dist
           tar -C target/release -czf "dist/hepta-native-${RUNNER_OS}-${RUNNER_ARCH}-unsigned.tar.gz" \
-            hepta-native hepta-native-updater
+            hepta-native hepta-native-updater hepta-native-credential
 
       - name: Package unsigned development artifact (Windows)
         if: runner.os == 'Windows'
@@ -80,7 +80,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           Compress-Archive -Force `
-            -Path target/release/hepta-native.exe,target/release/hepta-native-updater.exe `
+            -Path target/release/hepta-native.exe,target/release/hepta-native-updater.exe,target/release/hepta-native-credential.exe `
             -DestinationPath "dist/hepta-native-$env:RUNNER_OS-$env:RUNNER_ARCH-unsigned.zip"
 
       - name: Upload unsigned development artifact
