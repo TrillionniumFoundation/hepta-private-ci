@@ -1,18 +1,18 @@
 # secrets.heptabao: implementation design
 
 Parent: `docs/modules/secrets.heptabao/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: authorized exact-version KV v2 HTTPS read consumer implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: exact-version KV v2 final-use and provider-backed dynamic SecretLease issue/renew/revoke/reconciliation are source implemented; product composition and independent acceptance remain separate and are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `external/HeptaBao`, `codex-rs/hepta-bao-adapter`.
 Packages: `HEPTABAO-1-SECRET-BOUNDARY`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+Operation signatures below describe the contract and are now backed by the native entrypoints identified in section 8. Product composition, external-provider qualification and release remain separate. Preserve existing stores and APIs; do not create another authority or execution spine.
 
 ## 2. Public operations and contract details
 
-`request_secret_lease(secret_reference, capability, operation_id) -> SecretLeaseMetadata`; `renew(lease_id, grant) -> LeaseMetadata`; `revoke(lease_id, grant) -> RevocationObservation`. Deliver an authorized secret only through the dedicated consumer channel; ordinary receipts contain references and lease metadata, never raw values. Freeze the external source pin/API version and verify it before enabling an adapter.
+`request_secret_lease(...) -> BaoLeaseReceipt`; `renew_secret_lease(...) -> BaoLeaseMetadata`; `revoke_secret_lease(...) -> BaoLeaseMetadata`; `lookup_secret_lease(...) -> BaoLeaseMetadata`; `reconcile_lease_operation(...) -> ()`. Deliver an authorized secret only through the dedicated consumer channel; ordinary receipts contain references and lease metadata, never raw values. Freeze the external source pin/API version and verify it before enabling an adapter.
 
 ## 3. State records and transaction design
 
@@ -45,8 +45,11 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `consume_kv_v2` in [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); `binding` in [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs). Authorized exact-version KV v2 HTTPS read consumer implemented.
-- **State and recovery:** BaoReadRequest binds one mount/path/version/string field, expected digest and consumer identity. The client owns no secret database or lease registry: it uses pinned direct HTTPS, a 1 MiB response cap, zeroizing buffers and kernel-owned durable nonce/revocation state.
-- **Source tests:** [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs), [codex-rs/hepta-bao-adapter/qa/real_service_smoke.py](../../../codex-rs/hepta-bao-adapter/qa/real_service_smoke.py). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-bao-adapter/README.md](../../../codex-rs/hepta-bao-adapter/README.md).
-- **Remaining work:** request_secret_lease, renew and revoke in section 2 are target operations, not implemented adapter APIs. The external HeptaBao service owns its own wider capabilities and must be assessed at its own source pin. Bind the real registered host consumer; the callback and trust configuration are trusted host inputs. Existing recorded tests are tied to their recorded candidates, not this documentation revision.
+- **Implemented static entrypoints:** `binding` and `consume_kv_v2` in [https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs). Final delivery resolves the signed consumer ID through a host-built `TrustedConsumerRegistry`; there is no per-request public callback.
+- **Implemented lease entrypoints:** `issue_binding`, `request_secret_lease`, `renew_secret_lease`, `revoke_secret_lease`, `lookup_secret_lease`, `reconciliation_binding` and `reconcile_lease_operation` in [lease_lifecycle.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs).
+- **State and recovery:** [lease_store.rs](../../../codex-rs/hepta-bao-adapter/src/lease_store.rs) persists only operation/lease metadata. Effect operations move durably through `Prepared -> Dispatched -> Succeeded|Rejected|Indeterminate`; an ambiguous dispatched operation is fenced from blind retry until an explicit signed reconciliation observation resolves it.
+- **Final-use replay state:** [final_use_store.rs](../../../codex-rs/hepta-contracts/src/final_use_store.rs) uses a small schema-v2 authority head plus an append-only checksummed replay journal. Active processes share the state directory through short cross-process fences and incremental journal-tail refresh; the former 16,384 claim ceiling and whole-state rewrite on every claim are removed.
+- **Secret handling:** application-owned provider tokens, response bodies, decoded strings and dynamic-secret payload buffers zeroize on drop. Serialized/debug receipts omit stable secret/body fingerprints. This is not a claim of complete plaintext exclusion from TLS/HTTP/allocator/kernel internals.
+- **Source tests:** [https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs), [lease_lifecycle_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs), [final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs), plus the existing real-service smoke fixture for the previously qualified KV profile.
+- **Authoritative implementation notes:** [CURRENT_IMPLEMENTATION.md](../../../docs/modules/secrets.heptabao/CURRENT_IMPLEMENTATION.md), [SECRET_LEASE_DESIGN.md](../../../docs/modules/secrets.heptabao/SECRET_LEASE_DESIGN.md), [FAILURE_RECOVERY.md](../../../docs/modules/secrets.heptabao/FAILURE_RECOVERY.md), [HA_AND_STORAGE.md](../../../docs/modules/secrets.heptabao/HA_AND_STORAGE.md), and the adapter [README](../../../codex-rs/hepta-bao-adapter/README.md).
+- **Remaining integration/qualification:** compose a named production caller, qualify the chosen HeptaBao dynamic-secret engine/profile and multi-host state backend, and obtain independent acceptance/promotion/release evidence. The generic V1 issue profile is intentionally GET-only with string secret fields; wider provider request shapes require a new typed profile.
