@@ -127,6 +127,18 @@ fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorErro
     )
 }
 
+fn release_with_matrixd(
+    identity: &str,
+    agentd_program: &str,
+    matrixd_program: &str,
+) -> Result<AgentRelease, SupervisorError> {
+    AgentRelease::with_matrixd(
+        identity,
+        AgentCommand::new(fake_program(agentd_program), Vec::new())?,
+        AgentCommand::new(fake_program(matrixd_program), Vec::new())?,
+    )
+}
+
 fn config() -> SupervisorConfig {
     SupervisorConfig {
         health_timeout: Duration::from_millis(10),
@@ -157,6 +169,9 @@ struct FakeWorld {
     processes: BTreeMap<u64, FakeState>,
     reject_adoption: BTreeSet<AgentId>,
     reject_spawn_programs: BTreeSet<PathBuf>,
+    lease_obstacle_on_spawn: BTreeSet<AgentId>,
+    kill_failures_remaining: BTreeMap<AgentId, usize>,
+    poll_failures_remaining: BTreeMap<AgentId, usize>,
 }
 
 struct FakeState {
@@ -266,6 +281,34 @@ impl FakeControl {
             .insert(program.into());
     }
 
+    fn obstruct_next_agent_lease(&self, agent_id: AgentId) {
+        self.world
+            .lock()
+            .expect("fake world lock")
+            .lease_obstacle_on_spawn
+            .insert(agent_id);
+    }
+
+    fn fail_next_kill(&self, agent_id: AgentId) {
+        *self
+            .world
+            .lock()
+            .expect("fake world lock")
+            .kill_failures_remaining
+            .entry(agent_id)
+            .or_insert(0) += 1;
+    }
+
+    fn fail_next_poll(&self, agent_id: AgentId) {
+        *self
+            .world
+            .lock()
+            .expect("fake world lock")
+            .poll_failures_remaining
+            .entry(agent_id)
+            .or_insert(0) += 1;
+    }
+
     fn counts(&self, agent_id: &AgentId) -> (usize, usize, usize) {
         self.counts_role(agent_id, FakeRole::Agentd)
     }
@@ -340,6 +383,13 @@ impl ProcessDriver for FakeDriver {
                 kill_requests: 0,
             },
         );
+        if world.lease_obstacle_on_spawn.remove(&spec.agent_id) {
+            std::fs::write(
+                spec.run_root.join("supervisor-process.json"),
+                b"lease publication obstacle",
+            )
+            .map_err(|error| ProcessDriverError::new(error.to_string()))?;
+        }
         Ok(SpawnedProcess {
             identity,
             process: FakeProcess {
@@ -428,6 +478,18 @@ impl ProcessDriver for FakeDriver {
 impl ManagedProcess for FakeProcess {
     fn poll(&mut self, max_logs: usize) -> Result<ProcessObservation, ProcessDriverError> {
         let mut world = self.world.lock().expect("fake world lock");
+        let agent_id = world
+            .processes
+            .get(&self.id)
+            .expect("fake process")
+            .agent_id
+            .clone();
+        if let Some(remaining) = world.poll_failures_remaining.get_mut(&agent_id)
+            && *remaining > 0
+        {
+            *remaining -= 1;
+            return Err(ProcessDriverError::new("injected poll failure"));
+        }
         let state = world.processes.get_mut(&self.id).expect("fake process");
         let logs = (0..max_logs)
             .filter_map(|_| state.logs.pop_front())
@@ -468,13 +530,18 @@ impl ManagedProcess for FakeProcess {
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
-            .processes
-            .get_mut(&self.id)
-            .expect("fake process")
-            .kill_requests += 1;
+        let mut world = self.world.lock().expect("fake world lock");
+        let agent_id = {
+            let state = world.processes.get_mut(&self.id).expect("fake process");
+            state.kill_requests += 1;
+            state.agent_id.clone()
+        };
+        if let Some(remaining) = world.kill_failures_remaining.get_mut(&agent_id)
+            && *remaining > 0
+        {
+            *remaining -= 1;
+            return Err(ProcessDriverError::new("injected kill failure"));
+        }
         Ok(())
     }
 }
@@ -817,6 +884,95 @@ fn stale_runtime_is_fenced_without_touching_peer() -> Result<(), SupervisorError
             .lifecycle
             .lifecycle,
         AgentLifecycle::Running
+    );
+    Ok(())
+}
+
+#[test]
+fn upgrade_preflight_allows_matrix_only_release_change() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start_release(
+        &fleet.first,
+        release("release-v1", "shared/hepta-agentd")?,
+        now,
+    )?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let target = release_with_matrixd(
+        "release-v2",
+        "shared/hepta-agentd",
+        "release-v2/hepta-matrixd",
+    )?;
+    assert!(supervisor.preflight_upgrade(&fleet.first, &target).is_ok());
+    supervisor.upgrade(&fleet.first, target, now)?;
+    assert!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("snapshot")
+            .release_change_pending
+    );
+    Ok(())
+}
+
+#[test]
+fn lease_publication_failure_keeps_child_tracked_until_exit() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    control.obstruct_next_agent_lease(fleet.first.clone());
+    control.fail_next_kill(fleet.first.clone());
+    control.fail_next_poll(fleet.first.clone());
+    assert!(matches!(
+        supervisor.start(&fleet.first, command()?, now),
+        Err(SupervisorError::Driver { .. })
+    ));
+    assert!(supervisor.snapshot(&fleet.first).expect("snapshot").active);
+    assert_eq!(control.counts(&fleet.first), (0, 0, 1));
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Starting
+    );
+
+    #[cfg(unix)]
+    assert!(supervisor.preflight_stop_or_kill(&fleet.first).is_ok());
+    supervisor.stop(&fleet.first, now)?;
+    assert_eq!(control.counts(&fleet.first), (0, 0, 2));
+
+    let report = supervisor.tick(now);
+    assert_eq!(report.faults.len(), 1);
+    assert_eq!(report.faults[0].agent_id, fleet.first);
+    assert_eq!(control.counts(&fleet.first), (0, 0, 3));
+    assert!(supervisor.snapshot(&fleet.first).expect("snapshot").active);
+
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(1)),
+        TickReport::default()
+    );
+    assert!(!supervisor.snapshot(&fleet.first).expect("snapshot").active);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Stopped
     );
     Ok(())
 }
