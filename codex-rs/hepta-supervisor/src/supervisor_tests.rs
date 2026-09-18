@@ -532,13 +532,108 @@ fn hung_agent_is_stopped_and_killed_without_blocking_peer() -> Result<(), Superv
 
     let first = supervisor.snapshot(&fleet.first).expect("first slot");
     let second = supervisor.snapshot(&fleet.second).expect("second slot");
-    assert!(!first.active);
+    assert!(
+        first.active,
+        "health-timeout exit should enter bounded automatic restart"
+    );
+    assert_eq!(first.restart_attempts, 1);
     assert!(second.active);
     assert_eq!((first.logs.len(), second.logs.len()), (3, 3));
     assert!(first.events.len() <= 8);
     assert!(second.events.len() <= 8);
     assert!(first.logs.iter().all(|log| log.bytes.len() <= 8));
     assert!(second.logs.iter().all(|log| log.bytes.len() <= 8));
+    Ok(())
+}
+
+#[test]
+fn automatic_restart_uses_exponential_budget_and_stops_after_three_flaps(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let mut tick = now;
+    for attempt in 1_u8..=3 {
+        control.set_exit(&fleet.first);
+        tick += Duration::from_millis(1);
+        assert_eq!(supervisor.tick(tick), TickReport::default());
+        let scheduled = supervisor.snapshot(&fleet.first).expect("scheduled snapshot");
+        assert!(!scheduled.active);
+        assert_eq!(scheduled.restart_attempts, attempt);
+        assert!(scheduled.automatic_restart);
+        assert!(scheduled.restart_not_before_pending);
+
+        let delay_ms = 1_u64 << u32::from(attempt - 1);
+        tick += Duration::from_millis(delay_ms);
+        assert_eq!(supervisor.tick(tick), TickReport::default());
+        assert_eq!(control.spawn_count(&fleet.first), usize::from(attempt) + 1);
+        control.set_healthy(&fleet.first);
+        assert_eq!(supervisor.tick(tick), TickReport::default());
+        assert_eq!(
+            fleet
+                .registry
+                .load()?
+                .agent(&fleet.first)
+                .expect("agent")
+                .lifecycle
+                .lifecycle,
+            AgentLifecycle::Running
+        );
+    }
+
+    control.set_exit(&fleet.first);
+    tick += Duration::from_millis(1);
+    assert_eq!(supervisor.tick(tick), TickReport::default());
+    let exhausted = supervisor.snapshot(&fleet.first).expect("exhausted snapshot");
+    assert!(!exhausted.active);
+    assert!(!exhausted.restart_pending);
+    assert_eq!(exhausted.restart_attempts, 3);
+    assert!(exhausted.events.iter().any(|event| {
+        matches!(
+            event.kind,
+            SupervisorEventKind::RestartBudgetExhausted { attempts: 3 }
+        )
+    }));
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+    Ok(())
+}
+
+#[test]
+fn restart_budget_survives_supervisor_recovery() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    supervisor.tick(now);
+
+    control.set_exit(&fleet.first);
+    let crashed_at = now + Duration::from_millis(1);
+    supervisor.tick(crashed_at);
+    let before = supervisor.snapshot(&fleet.first).expect("before recovery");
+    assert_eq!(before.restart_attempts, 1);
+    assert!(before.restart_pending);
+    drop(supervisor);
+
+    let recovery_now = now + Duration::from_millis(20);
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), recovery_now)?;
+    assert_eq!(report, TickReport::default());
+    let restored = recovered.snapshot(&fleet.first).expect("restored snapshot");
+    assert_eq!(restored.restart_attempts, 1);
+    assert!(restored.restart_pending);
+    assert!(restored.automatic_restart);
+
+    recovered.tick(recovery_now + Duration::from_millis(5));
+    assert_eq!(control.spawn_count(&fleet.first), 2);
     Ok(())
 }
 
