@@ -399,6 +399,7 @@ fn qualified_output(status: NativeRunStatus) -> NativeRunOutput {
         owner_authority: NativeOwnerAuthority::ObservedReady,
         codex_boundary: Some(NativeCodexBoundaryReceipt {
             request_digest: "c".repeat(64),
+            context_digest: "b".repeat(64),
             response_digest: terminal.then(|| "e".repeat(64)),
             connection_digest: "d".repeat(64),
             session_generation: 4,
