@@ -51,8 +51,7 @@ fn durable_store_fsync_reopens_selected_plan() {
     store.persist(&journal).expect("persist selected journal");
     drop(store);
 
-    let (_store, reopened) =
-        PlannerJournalStoreV1::open(&root, &[]).expect("reopen durable store");
+    let (_store, reopened) = PlannerJournalStoreV1::open(&root, &[]).expect("reopen durable store");
     assert_eq!(reopened.entries(), journal.entries());
     assert_eq!(reopened.selected_plan_digest(), Some(digest("decision")));
 }
@@ -79,8 +78,7 @@ fn v1_reference_envelope_migrates_atomically_to_v2() {
     state.sync_all().expect("sync legacy state");
     drop(state);
 
-    let (_store, reopened) =
-        PlannerJournalStoreV1::open(&root, &[]).expect("migrate v1 store");
+    let (_store, reopened) = PlannerJournalStoreV1::open(&root, &[]).expect("migrate v1 store");
     assert_eq!(reopened.entries(), journal.entries());
     let migrated = std::fs::read(&state_path).expect("read migrated state");
     assert_eq!(&migrated[..STORE_V2_MAGIC.len()], STORE_V2_MAGIC);
@@ -91,8 +89,7 @@ fn restore_of_pre_revocation_backup_fails_current_recovery_floor() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let root = temporary.path().join("planner");
 
-    let (mut store, _initial) =
-        PlannerJournalStoreV1::open(&root, &[]).expect("open store");
+    let (mut store, _initial) = PlannerJournalStoreV1::open(&root, &[]).expect("open store");
     let mut journal = selected_journal();
     store.persist(&journal).expect("persist selected state");
     let backup = std::fs::read(root.join(STATE_FILE)).expect("capture backup");
@@ -126,8 +123,7 @@ fn persist_rejects_history_regression() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let root = temporary.path().join("planner");
 
-    let (mut store, _initial) =
-        PlannerJournalStoreV1::open(&root, &[]).expect("open store");
+    let (mut store, _initial) = PlannerJournalStoreV1::open(&root, &[]).expect("open store");
     let journal = selected_journal();
     store.persist(&journal).expect("persist selected state");
 
@@ -159,13 +155,14 @@ fn corrupt_v1_migration_leaves_predecessor_bytes_unchanged() {
         .mode(0o600)
         .open(&state_path)
         .expect("create corrupt legacy state");
-    state.write_all(&legacy).expect("write corrupt legacy state");
+    state
+        .write_all(&legacy)
+        .expect("write corrupt legacy state");
     state.sync_all().expect("sync corrupt legacy state");
     drop(state);
 
     assert_eq!(
-        PlannerJournalStoreV1::open(&root, &[])
-            .expect_err("corrupt migration must fail closed"),
+        PlannerJournalStoreV1::open(&root, &[]).expect_err("corrupt migration must fail closed"),
         PlannerStoreError::CorruptState
     );
     assert_eq!(
