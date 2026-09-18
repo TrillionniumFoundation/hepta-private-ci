@@ -218,7 +218,7 @@ async fn stored_candidates(
             .unwrap();
     }
     let batch = store
-        .retrieve_memory_candidates(
+        .retrieve_memory_candidates_for_ranking(
             &access,
             &RetrievalRequest::new("lemon", /*now_unix_seconds*/ 100),
         )
@@ -348,4 +348,29 @@ async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstenti
     .await
     .unwrap();
     assert_eq!(selected.items, vec![baseline.items[0].clone()]);
+}
+
+#[tokio::test]
+async fn learned_ranker_can_select_beyond_legacy_top_four() {
+    let contents = (0..8)
+        .map(|index| format!("lemon ranked candidate {index}"))
+        .collect();
+    let (_directory, store, owner, items) = stored_candidates(contents).await;
+    assert_eq!(items.len(), 8);
+    let winner = items[7].clone();
+    let scores = (0..items.len())
+        .map(|index| if index == 7 { 100 } else { 0 })
+        .collect::<Vec<_>>();
+    let fixture = fitted_ranker(owner.clone(), &items, &scores);
+    let selected = read(
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 1,
+        Some(&fixture.ranker),
+    )
+    .await
+    .unwrap();
+    assert_eq!(selected.items, vec![winner]);
 }
