@@ -364,6 +364,7 @@ fn revocation_after_selection_rejects_exercise_at_delivery_boundary() {
             binding_digest: realization.digest(),
             realization,
         }],
+        objective_digest: digest("objective"),
         state_digest: digest("state"),
         model_tuple: model_tuple(),
         model_tuple_digest: model_tuple().digest(),
