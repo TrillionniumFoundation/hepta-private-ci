@@ -277,11 +277,7 @@ def _validate_completion_receipts(
             or value.source_tree != envelope.source_tree
         ):
             raise EngineeringError("completion_receipt_source_mismatch")
-        if value.issuer not in {
-            "ci_executor",
-            "independent_evaluator",
-            "work_completion_authority",
-        }:
+        if value.issuer not in {"ci_executor", "independent_evaluator"}:
             raise EngineeringError("completion_receipt_issuer_role")
         if not _valid_window(value.observed_unix_ns, value.expires_unix_ns, now_ns):
             raise EngineeringError("completion_receipt_stale")
@@ -316,7 +312,7 @@ def _validate_leadership(
         or value.source_tree != envelope.source_tree
     ):
         raise EngineeringError("leadership_source_mismatch")
-    if value.issuer != "coordination_authority":
+    if value.issuer != "external_coordination_authority":
         raise EngineeringError("leadership_issuer_role")
     if not _valid_window(value.observed_unix_ns, value.expires_unix_ns, now_ns):
         raise EngineeringError("leadership_receipt_stale")
