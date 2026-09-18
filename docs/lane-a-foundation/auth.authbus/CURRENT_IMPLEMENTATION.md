@@ -2,85 +2,123 @@
 
 ## Current executable contract
 
-`codex-rs/hepta-authbus` verifies issuer-bound Ed25519 messages. The host supplies
-trusted issuer registration, current revocation and expected scope/payload.
-`SignedMessage::authenticate` checks the signature, issuer/key epoch, expiry,
-scope and payload and returns a privately constructed `AuthenticatedMessage`.
-Authentication alone does not consume a durable replay sequence.
+The candidate keeps signed authentication and effect authority separate. `codex-rs/hepta-authbus`
+verifies issuer-bound Ed25519 messages and exports the typed policy/quota/reservation
+domain records. Successful authentication still returns only ordinary evidence with
+`AuthorityPosture::DENY_ALL`; it is not an effect grant.
 
-`HeptaEvidenceStore::admit_authbus_message` authenticates and consumes the sequence
-inside one immediate SQLite transaction. The replay key is `(issuer, key epoch,
-subject, scope digest)`; sequences must increase, and new keys are bounded at
-16,384. Time is checked after acquiring the write lock. A receipt returns only
-after commit succeeds; failed authentication or capacity admission consumes
-nothing. Receipts carry `AuthorityPosture::DENY_ALL`.
+The durable owner is the existing `HeptaEvidenceStore`. Migrations 0009/0010 retain
+signed replay and durable message delivery. Migration 0011 adds versioned policy
+history/current heads, quota registry/history, reservation state, monotonic host-trust
+heads, permanent replay-epoch retirement markers and the local replay-checkpoint
+projection. Store open verifies quota conservation against every reservation that still
+holds quota.
 
-For durable delivery, `enqueue_authbus_message` replaces direct admission and
-atomically commits the replay advance plus an immutable message. The same
-`HeptaEvidenceStore` provides bounded recovery scanning, claim, renew, retry, ack,
-status and explicit revoked-issuer quarantine. Every worker transition rechecks
-issuer registration and expiry; a new fence invalidates the old lease. Active
-messages cannot be pruned. Terminal history is bounded independently of replay.
-A send followed by a crash before ack can deliver the same ID twice; consumers
-must deduplicate and retain their separate final-use/effect reconciliation rules.
+## Authorization, quota and reservation control
 
-The legacy `PreverifiedAuthEnvelope` / `ReplayWindow` API still accepts already
-verified facts and records sequences only in process memory. It does not verify
-signatures or become durable through the addition of the signed API.
+`HeptaEvidenceStore::put_auth_policy` accepts monotonic policy revisions. Reusing a
+revision with different content conflicts; `authorize` requires the caller's exact
+expected revision and fails closed when the policy is missing, stale or denied.
 
-## Public symbols and source bindings
+`put_quota_registry` stores exact unsigned integer capacity and counters. The owner
+serializes changes with `BEGIN IMMEDIATE`; `authorize_and_reserve` checks policy and
+quota and commits the reservation plus reserved counter in one transaction. Identical
+operation IDs are idempotent; changed semantics conflict. No floating-point quota
+arithmetic is used.
 
-- `IssuerRegistration`, `SignedMessageClaims::signing_bytes`,
-  `SignedMessage::authenticate`, `AuthenticatedMessage`: authbus `src/signed.rs`;
-- `PreverifiedAuthEnvelope`, `TrustedReplayContext`, `ReplayWindow`,
-  `VerificationReceipt`, `Error`: authbus `src/lib.rs`;
-- `HeptaEvidenceStore::admit_authbus_message`, `AuthBusAdmissionError`:
-  evidence `src/authbus_store.rs`;
-- outbox APIs and records: evidence `src/authbus_outbox.rs`,
-  `src/authbus_outbox_worker.rs`, `src/authbus_outbox_record.rs`;
-- replay and outbox tables: evidence migrations `0009` and `0010`.
+Reservation transitions are `Reserved -> InFlight -> Settled|Quarantined`, with
+`Reserved -> Cancelled|Expired` and `Quarantined -> Settled|Cancelled` reconciliation.
+Only `Reserved` can expire automatically. Once `begin_reserved_effect` marks a
+reservation in flight, expiry never implies that no effect occurred. Unknown outcomes
+retain quota in `Quarantined` until a terminal observation proves settlement or
+non-application. Settlement releases the full reservation and adds only the observed
+cost to consumed quota.
 
-## Durability and activation
+Immediately before an effect seam, `begin_reserved_effect` rechecks the exact policy
+revision. A stale or denied policy cancels a still-unstarted reservation and releases
+its quota. The qualification-only provider facade
+`dispatch_provider_effect_guarded_qualification` composes authorize+reserve before the
+existing durable provider-effect journal; the old raw qualification dispatch is crate
+private so an external caller cannot bypass this guard.
 
-The evidence-store admission path preserves replay state across independent
-handles and database reopen. Legacy replay state is lost on restart. The host
-must compose trusted issuer registration and the evidence-store API; production
-enrollment is not established by library tests. Neither path grants effect
-authority.
+## Signed admission, replay and delivery
 
-## Target-only design
+`SignedMessage::authenticate` checks signature, issuer/key epoch, expiry, scope and
+payload. `admit_authbus_message` authenticates and consumes the sequence inside one
+immediate SQLite transaction. The replay key is
+`(issuer, key epoch, subject, scope digest)`; sequences increase monotonically and the
+active registry remains bounded at 16,384 keys.
 
-Host trust provisioning and key lifecycle management, external replay-store
-rollback protection, authorization policy, quota registry, reservation,
-cancellation, expiry settlement and observed-cost settlement remain outside this
-implemented admission slice.
+`enqueue_authbus_message` atomically commits replay advance plus immutable payload.
+Recovery scanning, claim, renew, retry, acknowledgement and quarantine retain the
+existing fenced-lease semantics. A send followed by a crash before acknowledgement can
+still deliver the same ID twice; consumers must deduplicate and reconcile their own
+external effects.
 
-## Known limits and non-claims
+Replay compaction is no longer a raw delete. `retire_authbus_replay_epoch` requires an
+exact externally retained checkpoint, a retired/revoked old epoch, and zero active
+outbox rows. It writes a permanent retired-epoch marker before deleting the old
+high-water rows; later admission for that epoch remains rejected. The checkpoint
+contains a deterministic digest of the complete durable replay registry and a monotonic
+generation.
 
-Issuer registration must come from the host trust store, never the incoming
-message. Current time uses the host clock; SQLite persistence is not protection
-against restoration of an older database. No managed key host or distributed
-replay coordinator is provided. In the legacy API, a nonzero `signature_digest`
-is only a reference, and constructing `TrustedReplayContext` does not authenticate
-its contents.
+## Host trust lifecycle
+
+Agentd signed-text trust uses schema version 2. Every projection carries a monotonic
+`trust_revision`; the evidence owner persists the current trust head and rejects
+revision rollback, epoch rollback, same-epoch key substitution, revoked-to-live
+rollback and any same-revision change to the complete trust projection. The projection
+digest covers issuer, key epoch/key, revoked state, thread allowlist and optional replay
+checkpoint.
+
+An optional externally governed replay checkpoint can be supplied in the trust
+projection and is verified on every admission/dispatch trust refresh. A checkpoint
+stored only with the same filesystem snapshot as the SQLite database is not an
+independent anti-rollback oracle; production provisioning must retain it outside the
+restored state boundary.
+
+## Public source bindings
+
+- protocol/domain types and signed authentication:
+  `codex-rs/hepta-authbus/src/{lib.rs,control.rs,signed.rs}`;
+- durable replay:
+  `codex-rs/hepta-evidence/src/authbus_store.rs`;
+- durable policy/quota/reservation/checkpoint state:
+  `codex-rs/hepta-evidence/src/authbus_control.rs`;
+- guarded provider qualification facade:
+  `codex-rs/hepta-evidence/src/authbus_provider_guard.rs`;
+- durable delivery:
+  `codex-rs/hepta-evidence/src/authbus_outbox*.rs`;
+- Agentd trust/ingress/relay:
+  `codex-rs/hepta-agentd/src/authbus_{trust,ingress,dispatch}.rs`;
+- migrations: evidence `0009`, `0010`, `0011`.
 
 ## Verification
 
-`signed_tests.rs` covers signed-field substitution, key epoch, revocation,
-expiry and scope. Evidence `authbus_store_tests.rs` covers real SQLite reopen,
-the full unsigned sequence range, two-handle contention and failed-admission
-retry. `authbus_outbox_tests.rs` covers atomic insertion rollback, retained
-duplicate admission, competing leases, stale fences, bounded terminal retention
-and actual process exit after send before ack. Legacy `lib_tests.rs` covers replay partitioning, capacity, trusted-context
-validation and deny-all authority. Run `just test -p codex-hepta-authbus
--p codex-hepta-evidence` for native execution; source anchors only establish test
-presence.
+`authbus_control_tests.rs` executes BUS-01 through BUS-04 against real SQLite:
+simultaneous last-unit reservation, idempotent/conflicting settlement, expiry racing a
+terminal result, and stale-policy fencing before the effect boundary. It also covers
+crash/reopen reconciliation, replay-checkpoint drift detection and safe retired-epoch
+compaction.
 
-## Integration prerequisites
+The qualification crate now requires every negative case to carry one identical
+execution provenance tuple: exact source SHA, source tree, executable digest, command
+digest, runner identity, execution interval and zero exit code. Mixed source/binary
+evidence and failed execution are rejected.
 
-The host must supply trusted registration and current revocation, use the durable
-admission API where replay must survive restart, and govern clock/backup recovery.
-Effect-specific policy, quota and the final-use token remain separate checks.
-No effect adapter may consume `VerificationReceipt` as a grant. See
-[`SIGNED_ADMISSION.md`](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md) and the
-separate legacy [`PREVERIFIED_REPLAY_V1.md`](PREVERIFIED_REPLAY_V1.md) contract.
+Lane A CI explicitly runs `codex-hepta-agentd --test authbus_text_product` for the
+exact source head and deterministic synthetic merge and retains its command record next
+to the Lane A source/native receipts.
+
+## Remaining non-claims
+
+This candidate does not by itself establish independent semantic/security acceptance,
+a named production provider-effect adapter, operator acceptance, canary, promotion or
+release. The Agentd signed-text path is a real narrow host integration, not general
+provider authority. The guarded provider facade remains qualification-only until a
+named production effect caller is activated.
+
+The optional replay checkpoint becomes rollback protection only when its expected value
+is independently retained and governed. Managed private signing-key custody/rotation
+remains an operator/issuer responsibility; Agentd only accepts the protected public
+trust projection and never generates an issuer key.
