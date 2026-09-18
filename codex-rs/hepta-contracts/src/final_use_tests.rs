@@ -221,6 +221,17 @@ fn revocation_survives_restart_and_missing_state_is_not_reset() {
 }
 
 #[test]
+fn missing_authority_lock_inode_after_initialization_fails_closed() {
+    let (authority, _signed, directory) = fixture().unwrap();
+    drop(authority);
+    std::fs::remove_file(directory.path().join("authority.lock")).unwrap();
+    assert_eq!(
+        reopen(directory.path()).unwrap_err(),
+        FinalUseError::InvalidTrust
+    );
+}
+
+#[test]
 fn missing_replay_journal_after_initialization_fails_closed() {
     let (authority, _signed, directory) = fixture().unwrap();
     drop(authority);
