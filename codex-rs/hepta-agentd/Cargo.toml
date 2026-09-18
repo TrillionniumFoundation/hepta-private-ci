@@ -14,6 +14,10 @@ doctest = false
 default = []
 # Qualification-only host profile. Default binaries keep the writer disabled.
 qualification-cognitive-write = []
+# Retains the superseded Agentd-owned Objective file store only for explicit
+# qualification/backward-compatibility tests. The default product path is
+# objective.compiler -> intelligence.control -> learning.ledger -> Agentd.
+qualification-objective-direct-store = []
 
 [[bin]]
 name = "codex-hepta-agentd"
