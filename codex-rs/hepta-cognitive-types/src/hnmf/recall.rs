@@ -365,6 +365,7 @@ pub struct RecallPacketV1 {
     confidence_ppm: u32,
     ood_ppm: u32,
     abstain: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     abstain_reason: Option<RecallAbstainReasonV1>,
     resource_receipt: ResourceReceiptV1,
 }
