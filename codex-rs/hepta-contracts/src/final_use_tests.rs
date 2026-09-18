@@ -220,6 +220,17 @@ fn revocation_survives_restart_and_missing_state_is_not_reset() {
     );
 }
 
+#[test]
+fn missing_replay_journal_after_initialization_fails_closed() {
+    let (authority, _signed, directory) = fixture().unwrap();
+    drop(authority);
+    std::fs::remove_file(directory.path().join("claims.log")).unwrap();
+    assert_eq!(
+        reopen(directory.path()).unwrap_err(),
+        FinalUseError::InvalidTrust
+    );
+}
+
 #[cfg(unix)]
 #[test]
 fn authority_rejects_shared_state_directory_and_symlinked_files() {
