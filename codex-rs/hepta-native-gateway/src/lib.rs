@@ -190,6 +190,43 @@ fn truthy(value: &str) -> bool {
     )
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum RuntimeRepresentation {
+    Json,
+    WireV2,
+    UnsupportedWire,
+}
+
+fn runtime_representation(request: &str) -> RuntimeRepresentation {
+    for line in request.lines().skip(1) {
+        if line.is_empty() {
+            break;
+        }
+        let Some((name, value)) = line.split_once(':') else {
+            continue;
+        };
+        if !name.trim().eq_ignore_ascii_case("accept") {
+            continue;
+        }
+        let mut saw_wire = false;
+        for media_type in value.split(',').map(str::trim) {
+            if media_type.eq_ignore_ascii_case("application/x-hepta-wire; version=2") {
+                return RuntimeRepresentation::WireV2;
+            }
+            if media_type
+                .to_ascii_lowercase()
+                .starts_with("application/x-hepta-wire")
+            {
+                saw_wire = true;
+            }
+        }
+        if saw_wire {
+            return RuntimeRepresentation::UnsupportedWire;
+        }
+    }
+    RuntimeRepresentation::Json
+}
+
 async fn serve_connection(mut stream: TcpStream, runtime: Arc<HeptaRuntime>) -> Result<()> {
     let request = tokio::time::timeout(REQUEST_TIMEOUT, read_request(&mut stream))
         .await
@@ -257,16 +294,38 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
             "application/json; charset=utf-8",
             br#"{"product":"hepta","status":"ok"}"#,
         )),
-        "/api/hepta/runtime" => match runtime.status_json() {
-            Ok(body) => Ok(response("200 OK", "application/json; charset=utf-8", &body)),
-            Err(error) => {
-                eprintln!("Hepta status organ unavailable: {error:#}");
-                Ok(response(
-                    "503 Service Unavailable",
-                    "application/json; charset=utf-8",
-                    br#"{"error":"runtime status unavailable"}"#,
-                ))
-            }
+        "/api/hepta/runtime" => match runtime_representation(request) {
+            RuntimeRepresentation::Json => match runtime.status_json() {
+                Ok(body) => Ok(response("200 OK", "application/json; charset=utf-8", &body)),
+                Err(error) => {
+                    eprintln!("Hepta status organ unavailable: {error:#}");
+                    Ok(response(
+                        "503 Service Unavailable",
+                        "application/json; charset=utf-8",
+                        br#"{"error":"runtime status unavailable"}"#,
+                    ))
+                }
+            },
+            RuntimeRepresentation::WireV2 => match runtime.status_wire_v2() {
+                Ok(body) => Ok(response(
+                    "200 OK",
+                    "application/x-hepta-wire; version=2",
+                    &body,
+                )),
+                Err(error) => {
+                    eprintln!("Hepta wire status unavailable: {error:#}");
+                    Ok(response(
+                        "503 Service Unavailable",
+                        "application/json; charset=utf-8",
+                        br#"{"error":"runtime wire status unavailable"}"#,
+                    ))
+                }
+            },
+            RuntimeRepresentation::UnsupportedWire => Ok(response(
+                "406 Not Acceptable",
+                "application/json; charset=utf-8",
+                br#"{"error":"unsupported wire representation"}"#,
+            )),
         },
         "/" => Ok(response(
             "200 OK",
@@ -315,6 +374,7 @@ mod tests {
     use codex_hepta_runtime::RuntimeAuthorityStatus;
     use codex_hepta_runtime::RuntimeStateAdapter;
     use codex_hepta_runtime::RuntimeStateStatus;
+    use codex_hepta_wire::WireEnvelopeV2;
     use pretty_assertions::assert_eq;
 
     #[derive(Debug)]
@@ -400,6 +460,38 @@ mod tests {
         assert_eq!(value["authority"]["enforce"], false);
         assert_eq!(value["authority"]["promotion"], false);
         assert_eq!(value["authority"]["retirement"], false);
+        Ok(())
+    }
+
+    #[test]
+    fn explicit_accept_header_returns_hpta_v2_runtime_status() -> Result<()> {
+        let response = route_request(
+            b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire; version=2\r\n\r\n",
+            &fixture_runtime()?,
+        )?;
+        assert!(response.starts_with(b"HTTP/1.1 200 OK"));
+        let body_start = response
+            .windows(4)
+            .position(|window| window == b"\r\n\r\n")
+            .context("wire response headers")?
+            + 4;
+        let headers = std::str::from_utf8(&response[..body_start])?;
+        assert!(headers.contains("Content-Type: application/x-hepta-wire; version=2"));
+        let envelope = WireEnvelopeV2::decode(&response[body_start..])?;
+        assert_eq!(envelope.schema().as_str(), "hepta.runtime.status.v1");
+        assert_eq!(envelope.producer().as_str(), "runtime.codex");
+        let value: serde_json::Value = serde_json::from_slice(envelope.payload())?;
+        assert_eq!(value["authority"]["outbound"], false);
+        Ok(())
+    }
+
+    #[test]
+    fn unsupported_wire_accept_version_fails_closed() -> Result<()> {
+        let response = route_request(
+            b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nAccept: application/x-hepta-wire; version=99\r\n\r\n",
+            &fixture_runtime()?,
+        )?;
+        assert!(response.starts_with(b"HTTP/1.1 406 Not Acceptable"));
         Ok(())
     }
 
