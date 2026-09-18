@@ -107,6 +107,7 @@ impl AppServerModelDriver {
         prompt: String,
         context_query: Option<String>,
         maximum_output_tokens: u64,
+        maximum_budget_units: u64,
         policy: &NativeExecutionPolicy,
         cancellation: &CancellationToken,
         grant_resolver: &FinalUseGrantResolver<'_>,
@@ -223,6 +224,7 @@ impl AppServerModelDriver {
             &request_payload_digest,
             &context_digest,
             maximum_output_tokens,
+            maximum_budget_units,
             &exact_turn_payload,
         )?;
         let claimed_authority = policy::claimed_authority(&claimed.witness);
