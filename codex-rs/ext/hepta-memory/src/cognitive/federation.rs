@@ -904,7 +904,7 @@ mod tests {
         padding: usize,
     ) -> CognitiveProposalMaterial {
         let content = serde_json::to_string(&serde_json::json!({
-            "schema_version": 1,
+            "schema_version": 2,
             "source": "explicit_federated_verified_memory",
             "memories": [{
                 "source_agent_id": owner_agent_id,
