@@ -109,6 +109,21 @@ impl BaoFinalUseHost {
         self.consumers.len()
     }
 
+    fn ensure_revocation_fresh(&self) -> Result<(), BaoFinalUseHostError> {
+        let now_unix_ms = self
+            .clock
+            .now_unix_ms()
+            .map_err(BaoFinalUseHostError::Trust)?;
+        let fresh_until = *self
+            .revocation_fresh_until_unix_ms
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
+        if fresh_until == 0 || now_unix_ms >= fresh_until {
+            return Err(BaoFinalUseHostError::StaleRevocationFeed);
+        }
+        Ok(())
+    }
+
     /// Apply one independently signed revocation head. The feed signature is
     /// checked before the durable authority owner sees the head; the authority
     /// itself enforces epoch/revision monotonicity and same-epoch superset rules.
@@ -135,8 +150,10 @@ impl BaoFinalUseHost {
     /// Production composition boundary. The request's signed `consumer_id`
     /// selects one pre-enrolled callback; callers cannot substitute a closure at
     /// the callsite. Independent operator approval is verified before any
-    /// provider dispatch, then the lower-level client performs claim/network/
-    /// digest/final-delivery fencing.
+    /// provider dispatch. Freshness is checked again at the registered consumer
+    /// entry after provider I/O, so a feed that expires while the network call is
+    /// in flight cannot release a secret. The lower-level client performs the
+    /// claim/network/digest/final-delivery authority fencing.
     pub async fn consume_kv_v2(
         &self,
         client: &BaoClient,
@@ -144,17 +161,7 @@ impl BaoFinalUseHost {
         approval: &SignedFinalUseApproval,
         request: &BaoReadRequest,
     ) -> Result<BaoSecretReceipt, BaoFinalUseHostError> {
-        let now_unix_ms = self
-            .clock
-            .now_unix_ms()
-            .map_err(BaoFinalUseHostError::Trust)?;
-        let fresh_until = *self
-            .revocation_fresh_until_unix_ms
-            .lock()
-            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
-        if fresh_until == 0 || now_unix_ms >= fresh_until {
-            return Err(BaoFinalUseHostError::StaleRevocationFeed);
-        }
+        self.ensure_revocation_fresh()?;
         self.approval_verifier
             .verify(grant, approval)
             .map_err(BaoFinalUseHostError::Control)?;
@@ -163,12 +170,19 @@ impl BaoFinalUseHost {
             .get(&request.consumer_id)
             .cloned()
             .ok_or(BaoFinalUseHostError::UnregisteredConsumer)?;
-        client
-            .consume_kv_v2(&self.authority, grant, request, move |secret| {
-                consumer(secret)
+        match client
+            .consume_kv_v2_guarded(&self.authority, grant, request, move |secret| {
+                self.ensure_revocation_fresh()?;
+                consumer(secret).map_err(|()| {
+                    BaoFinalUseHostError::Client(BaoClientError::ConsumerIndeterminate)
+                })
             })
             .await
-            .map_err(BaoFinalUseHostError::Client)
+            .map_err(BaoFinalUseHostError::Client)?
+        {
+            Ok(receipt) => Ok(receipt),
+            Err(error) => Err(error),
+        }
     }
 }
 
