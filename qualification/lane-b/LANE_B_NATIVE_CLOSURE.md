@@ -91,9 +91,9 @@ External evidence gates:
 
 ## 6. `inference.control`
 
-The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.
+The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, quota/resource/economic-budget holds, dispatch/final-use bindings, terminal observations and bounded native compaction archives.
 
-The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.
+The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Live dispatch consumes a signed final-use grant bound to the exact serialized turn. Post-crash recovery is read-only: a persisted matching Completed/Failed turn can establish terminality and release local capacity, but cannot recreate the non-serializable final-use token or retroactively report authorized success.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -104,14 +104,14 @@ The actual Agent-fenced App Server client supplies matching turn observations th
 
 Remaining repository implementation gaps:
 
-- Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.
-- Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.
-- Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history.
+- Compose a named non-CLI production caller that obtains current quota/resource evidence and signed final-use grants from their owners; the explicit native worker CLI is a source/qualification host and does not activate the product.
+- Implement the full target multi-worker schedule(reservation, eligible_worker_snapshot) deterministic feasible ranking when a product actually supplies multiple enrolled workers; the native App Server route currently binds one exact provider/resource and hepta-inferd remains an authority-free exact-binding planner.
 
 External evidence gates:
 
-- real provider deployment and crash/cancellation acceptance
-- real economic quota/capacity authority integration
+- real provider deployment, crash/cancellation/reconciliation acceptance and provider-side retention behavior
+- real economic billing reconciliation and measured device-capacity authority/qualification; source budget units and ResourceAdvertisement bindings do not prove provider charges or hardware availability
+- independently operated final-use signer/revocation service and product activation
 - authenticated remote-worker transport if a separate process is introduced
 
 ## 7. `inference.worker`
