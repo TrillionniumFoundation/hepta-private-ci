@@ -269,6 +269,49 @@ fn request(run_id: &str) -> ObjectiveProductRequestV1 {
     }
 }
 
+fn wire_json(envelope: &ObjectiveSourceEnvelopeV1) -> String {
+    format!(
+        r#"{{"requestId":"request.001","principalScopeDigest":"{}","intentDigest":"{}","structuredIntent":{{"successPredicates":[{{"predicateId":"task.success","unit":"ratio","comparator":"gte","boundQ32":{},"evidenceSourceId":"observer.task","terminal":false}}],"terminalConditions":[{{"predicateId":"task.terminal","unit":"boolean","comparator":"eq","boundQ32":{},"evidenceSourceId":"observer.task","terminal":true}}],"legalActionClasses":["read","inspect"],"forbiddenActionClasses":["network"],"confirmationActionClasses":["inspect"],"constraints":[{{"constraintId":"latency.ceiling","unit":"micros","comparator":"lte","boundQ32":5000,"evidenceSourceId":"observer.clock","terminal":false}}],"softDimensions":[{{"dimensionId":"quality","unit":"ratio","direction":"maximize","minimumWeightQ32":0,"maximumWeightQ32":{}}}],"evidenceRequirements":[{{"requirementId":"evidence.quality","evidenceSourceId":"observer.evidence","minimumConfidencePpm":900000,"terminal":true}}],"resources":{{"timeMicros":10000,"tokenCount":1000,"computeMicros":50000,"memoryBytes":1048576,"networkBytes":0,"externalEffectCount":0}},"risk":{{"riskClass":"low","abstentionRule":"ask","rollbackClass":"reversible","compensationRequired":false}},"provenance":{{"sourceDigest":"{}","normalizationProfileDigest":"{}"}}}},"sourceTrustClass":"principal","locale":"en-US","observedAt":"2026-09-08T10:00:00Z","deadline":"2026-09-08T10:05:00Z","inputSchemaDigest":"{}"}}"#,
+        envelope.principal_scope_digest,
+        envelope.intent_digest,
+        1_i64 << 31,
+        FixedQ32::ONE.raw(),
+        FixedQ32::ONE.raw(),
+        envelope.structured_intent.provenance.source_digest,
+        envelope
+            .structured_intent
+            .provenance
+            .normalization_profile_digest,
+        envelope.input_schema_digest,
+    )
+}
+
+#[test]
+fn strict_json_ingress_reaches_the_same_durable_product_boundary() {
+    let host = NamedTempFile::new().expect("host file");
+    let binding = digest("objective-json-product-store");
+    let mut caller =
+        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+            .expect("create");
+    let request = request("run.json");
+    let json = wire_json(&request.envelope);
+
+    let receipt = caller
+        .decode_admit_compile_publish(
+            json.as_bytes(),
+            request.profile,
+            request.context,
+            request.run,
+        )
+        .expect("decode/admit/compile/publish");
+    assert_eq!(receipt.publication.run_start.run_id, id("run.json"));
+    assert_eq!(
+        receipt.publication.run_start.objective_digest,
+        receipt.publication.objective.objective.semantic_digest
+    );
+    assert_eq!(caller.records().expect("records").len(), 1);
+}
+
 #[test]
 fn product_caller_atomically_publishes_and_recovers_objective_and_run_snapshot() {
     let host = NamedTempFile::new().expect("host file");
