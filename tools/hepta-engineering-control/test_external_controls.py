@@ -3,13 +3,20 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from control_engineering_v2 import EngineeringStore, HmacTrustStore, WorkEnvelope
+from control_engineering_v2 import (
+    DistributedRevocationFrontierReceipt,
+    EngineeringStore,
+    HmacTrustStore,
+    WorkEnvelope,
+    semantic_digest,
+)
 from control_engineering_v2.control_plane import DENIED_AUTHORITIES
 from control_engineering_v2.external_controls import (
     AuditAnchorAttestation,
     DistributedFenceReceipt,
     KeyCustodyReceipt,
     verify_distributed_fence,
+    verify_distributed_revocation_frontier,
     verify_external_audit_anchor,
     verify_external_key_custody,
 )
@@ -38,7 +45,66 @@ class ExternalControlTests(unittest.TestCase):
             self.now + 1000,
         )
 
-    def test_external_fence_binds_local_token_epoch_paths_and_source(self):
+    def sign(self, value):
+        return replace(
+            value,
+            signature=self.trust.sign(
+                value,
+                value.issuer,
+                value.signing_identity,
+            ),
+        )
+
+    def frontier(
+        self,
+        *,
+        sequence=10,
+        digest="1" * 64,
+        leader_term=3,
+        observed_offset=-1,
+        expires_offset=600,
+    ):
+        return self.sign(
+            DistributedRevocationFrontierReceipt(
+                cluster_id="cluster",
+                leader_id="leader",
+                leader_term=leader_term,
+                frontier_sequence=sequence,
+                frontier_digest=digest,
+                issuer="distributed_lease_authority",
+                signing_identity="lease-key",
+                observed_unix_ns=self.now + observed_offset,
+                expires_unix_ns=self.now + expires_offset,
+            )
+        )
+
+    def fence(self, lease, frontier, *, observed_offset=-2, expires_offset=100):
+        return self.sign(
+            DistributedFenceReceipt(
+                cluster_id=frontier.cluster_id,
+                leader_id=frontier.leader_id,
+                leader_term=frontier.leader_term,
+                lease_id=lease.lease_id,
+                holder=lease.holder,
+                authority_epoch=lease.epoch,
+                fencing_token=lease.fencing_token,
+                lease_revision=lease.revision,
+                lease_expires_unix_ns=lease.expires_unix_ns,
+                envelope_id=self.envelope.envelope_id,
+                envelope_revision=self.envelope.revision,
+                paths_digest=semantic_digest(lease.paths),
+                source_commit=self.envelope.source_commit,
+                source_tree=self.envelope.source_tree,
+                revocation_frontier_sequence=frontier.frontier_sequence,
+                revocation_frontier_digest=frontier.frontier_digest,
+                issuer="distributed_lease_authority",
+                signing_identity="lease-key",
+                observed_unix_ns=self.now + observed_offset,
+                expires_unix_ns=self.now + expires_offset,
+            )
+        )
+
+    def test_external_fence_binds_current_local_and_distributed_frontiers(self):
         with tempfile.TemporaryDirectory() as temp:
             with EngineeringStore(Path(temp) / "store.db") as store:
                 store.issue_work_envelope(self.envelope, now_ns=self.now)
@@ -51,71 +117,105 @@ class ExternalControlTests(unittest.TestCase):
                     expires_unix_ns=self.now + 500,
                     now_ns=self.now,
                 )
-                from control_engineering_v2 import semantic_digest
-
-                receipt = DistributedFenceReceipt(
-                    "cluster",
-                    "leader",
-                    lease.lease_id,
-                    lease.holder,
-                    lease.epoch,
-                    lease.fencing_token,
-                    semantic_digest(lease.paths),
-                    self.envelope.source_commit,
-                    self.envelope.source_tree,
-                    "1" * 64,
-                    "distributed_lease_authority",
-                    "lease-key",
-                    self.now - 1,
-                    self.now + 100,
-                )
-                receipt = replace(
-                    receipt,
-                    signature=self.trust.sign(
-                        receipt, receipt.issuer, receipt.signing_identity
-                    ),
-                )
+                frontier = self.frontier()
+                receipt = self.fence(lease, frontier)
                 digest = verify_distributed_fence(
-                    lease, self.envelope, receipt, self.trust, store=store, now_ns=self.now
+                    lease,
+                    self.envelope,
+                    receipt,
+                    frontier,
+                    self.trust,
+                    store=store,
+                    now_ns=self.now,
                 )
                 self.assertEqual(len(digest), 64)
-                with self.assertRaisesRegex(ValueError, "distributed_fence_binding_mismatch"):
+
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "distributed_fence_binding_mismatch",
+                ):
                     verify_distributed_fence(
                         lease,
                         self.envelope,
-                        replace(receipt, fencing_token=lease.fencing_token + 1),
+                        replace(
+                            receipt,
+                            fencing_token=lease.fencing_token + 1,
+                        ),
+                        frontier,
                         self.trust,
                         store=store,
                         now_ns=self.now,
                     )
-                widened = replace(
-                    receipt,
-                    expires_unix_ns=lease.expires_unix_ns + 1,
-                    signature="",
-                )
-                widened = replace(
-                    widened,
-                    signature=self.trust.sign(
-                        widened, widened.issuer, widened.signing_identity
-                    ),
+
+                widened = self.sign(
+                    replace(
+                        receipt,
+                        expires_unix_ns=lease.expires_unix_ns + 1,
+                        signature="",
+                    )
                 )
                 with self.assertRaisesRegex(
-                    ValueError, "distributed_fence_window_exceeds_owner"
+                    ValueError,
+                    "distributed_fence_window_exceeds_owner",
                 ):
                     verify_distributed_fence(
-                        lease, self.envelope, widened, self.trust, store=store, now_ns=self.now
+                        lease,
+                        self.envelope,
+                        widened,
+                        frontier,
+                        self.trust,
+                        store=store,
+                        now_ns=self.now,
                     )
+
                 with self.assertRaisesRegex(
-                    ValueError, "distributed_fence_envelope_mismatch"
+                    ValueError,
+                    "distributed_fence_envelope_mismatch",
                 ):
                     verify_distributed_fence(
                         replace(lease, envelope_id="other"),
                         self.envelope,
                         receipt,
+                        frontier,
                         self.trust,
                         store=store,
                         now_ns=self.now,
                     )
+
+                newer_frontier = self.frontier(
+                    sequence=11,
+                    digest="2" * 64,
+                    observed_offset=0,
+                )
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "distributed_fence_revocation_frontier_mismatch",
+                ):
+                    verify_distributed_fence(
+                        lease,
+                        self.envelope,
+                        receipt,
+                        newer_frontier,
+                        self.trust,
+                        store=store,
+                        now_ns=self.now,
+                    )
+
+                older_frontier = self.frontier(observed_offset=-3)
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "distributed_fence_revocation_frontier_older",
+                ):
+                    verify_distributed_fence(
+                        lease,
+                        self.envelope,
+                        receipt,
+                        older_frontier,
+                        self.trust,
+                        store=store,
+                        now_ns=self.now,
+                    )
+
                 store.transition_path_lease(
                     lease.lease_id,
                     expected_revision=lease.revision,
@@ -124,36 +224,67 @@ class ExternalControlTests(unittest.TestCase):
                     now_ns=self.now,
                 )
                 with self.assertRaisesRegex(
-                    ValueError, "distributed_fence_local_lease_stale"
+                    ValueError,
+                    "distributed_fence_local_lease_stale",
                 ):
                     verify_distributed_fence(
                         lease,
                         self.envelope,
                         receipt,
+                        frontier,
                         self.trust,
                         store=store,
                         now_ns=self.now,
                     )
 
-    def test_audit_anchor_must_match_current_store_head(self):
+    def test_revocation_frontier_requires_order_freshness_and_signature(self):
+        frontier = self.frontier()
+        self.assertEqual(
+            len(
+                verify_distributed_revocation_frontier(
+                    frontier,
+                    self.trust,
+                    now_ns=self.now,
+                )
+            ),
+            64,
+        )
+        with self.assertRaisesRegex(
+            ValueError,
+            "distributed_revocation_frontier_order",
+        ):
+            verify_distributed_revocation_frontier(
+                replace(frontier, frontier_sequence=0),
+                self.trust,
+                now_ns=self.now,
+            )
+        with self.assertRaisesRegex(
+            ValueError,
+            "distributed_revocation_frontier_signature",
+        ):
+            verify_distributed_revocation_frontier(
+                replace(frontier, signature="0" * 64),
+                self.trust,
+                now_ns=self.now,
+            )
+
+    def test_audit_anchor_must_match_current_store_head_and_source(self):
         with tempfile.TemporaryDirectory() as temp:
             with EngineeringStore(Path(temp) / "store.db") as store:
                 store.issue_work_envelope(self.envelope, now_ns=self.now)
                 anchor = store.audit_anchor()
-                receipt = AuditAnchorAttestation(
-                    anchor["sequence"],
-                    anchor["eventDigest"],
-                    self.envelope.source_commit,
-                    "audit_anchor_service",
-                    "audit-key",
-                    self.now - 1,
-                    self.now + 100,
-                )
-                receipt = replace(
-                    receipt,
-                    signature=self.trust.sign(
-                        receipt, receipt.issuer, receipt.signing_identity
-                    ),
+                receipt = self.sign(
+                    AuditAnchorAttestation(
+                        sequence=anchor["sequence"],
+                        event_digest=anchor["eventDigest"],
+                        envelope_id=self.envelope.envelope_id,
+                        source_commit=self.envelope.source_commit,
+                        source_tree=self.envelope.source_tree,
+                        issuer="audit_anchor_service",
+                        signing_identity="audit-key",
+                        observed_unix_ns=self.now - 1,
+                        expires_unix_ns=self.now + 100,
+                    )
                 )
                 self.assertEqual(
                     len(
@@ -167,24 +298,40 @@ class ExternalControlTests(unittest.TestCase):
                     ),
                     64,
                 )
+                drifted = self.sign(
+                    replace(
+                        receipt,
+                        source_tree="f" * 40,
+                        signature="",
+                    )
+                )
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "audit_anchor_binding_mismatch",
+                ):
+                    verify_external_audit_anchor(
+                        store,
+                        self.envelope,
+                        drifted,
+                        self.trust,
+                        now_ns=self.now,
+                    )
 
     def test_empty_audit_chain_cannot_be_externally_attested_as_valid(self):
         with tempfile.TemporaryDirectory() as temp:
             with EngineeringStore(Path(temp) / "store.db") as store:
-                receipt = AuditAnchorAttestation(
-                    0,
-                    "0" * 64,
-                    self.envelope.source_commit,
-                    "audit_anchor_service",
-                    "audit-key",
-                    self.now - 1,
-                    self.now + 100,
-                )
-                receipt = replace(
-                    receipt,
-                    signature=self.trust.sign(
-                        receipt, receipt.issuer, receipt.signing_identity
-                    ),
+                receipt = self.sign(
+                    AuditAnchorAttestation(
+                        sequence=0,
+                        event_digest="0" * 64,
+                        envelope_id=self.envelope.envelope_id,
+                        source_commit=self.envelope.source_commit,
+                        source_tree=self.envelope.source_tree,
+                        issuer="audit_anchor_service",
+                        signing_identity="audit-key",
+                        observed_unix_ns=self.now - 1,
+                        expires_unix_ns=self.now + 100,
+                    )
                 )
                 with self.assertRaisesRegex(ValueError, "audit_anchor_empty"):
                     verify_external_audit_anchor(
@@ -196,28 +343,32 @@ class ExternalControlTests(unittest.TestCase):
                     )
 
     def test_key_custody_requires_hardware_external_boundary_and_roles(self):
-        receipt = KeyCustodyReceipt(
-            "hsm-provider",
-            "key-1",
-            (
-                "source_authority",
-                "ci_executor",
-                "independent_evaluator",
-                "engineering_evidence_binder",
-            ),
-            True,
-            True,
-            "key_custody_authority",
-            "custody-key",
-            self.now - 1,
-            self.now + 100,
-        )
-        receipt = replace(
-            receipt,
-            signature=self.trust.sign(receipt, receipt.issuer, receipt.signing_identity),
+        receipt = self.sign(
+            KeyCustodyReceipt(
+                "hsm-provider",
+                "key-1",
+                (
+                    "source_authority",
+                    "ci_executor",
+                    "independent_evaluator",
+                    "engineering_evidence_binder",
+                ),
+                True,
+                True,
+                "key_custody_authority",
+                "custody-key",
+                self.now - 1,
+                self.now + 100,
+            )
         )
         self.assertEqual(
-            len(verify_external_key_custody(receipt, self.trust, now_ns=self.now)),
+            len(
+                verify_external_key_custody(
+                    receipt,
+                    self.trust,
+                    now_ns=self.now,
+                )
+            ),
             64,
         )
         with self.assertRaisesRegex(ValueError, "key_custody_boundary"):
@@ -226,16 +377,12 @@ class ExternalControlTests(unittest.TestCase):
                 self.trust,
                 now_ns=self.now,
             )
-        duplicate = replace(
-            receipt,
-            roles=receipt.roles + ("source_authority",),
-            signature="",
-        )
-        duplicate = replace(
-            duplicate,
-            signature=self.trust.sign(
-                duplicate, duplicate.issuer, duplicate.signing_identity
-            ),
+        duplicate = self.sign(
+            replace(
+                receipt,
+                roles=receipt.roles + ("source_authority",),
+                signature="",
+            )
         )
         with self.assertRaisesRegex(ValueError, "key_custody_roles"):
             verify_external_key_custody(
