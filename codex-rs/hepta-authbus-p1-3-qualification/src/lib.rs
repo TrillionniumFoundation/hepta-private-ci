@@ -5,6 +5,8 @@
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_authbus::Error as AuthBusError;
 use codex_hepta_authbus::IssuerRegistration;
@@ -61,6 +63,9 @@ pub struct QualificationReceipt {
     pub executable_digest: Digest32,
     pub command_digest: Digest32,
     pub runner_id: StableId,
+    pub started_at_ms: u64,
+    pub completed_at_ms: u64,
+    pub exit_code: i32,
     pub authority: AuthorityPosture,
 }
 
@@ -156,12 +161,15 @@ pub fn qualify(mut cases: Vec<CaseEvidence>) -> Result<QualificationReceipt, Err
         executable_digest: execution.executable_digest,
         command_digest: execution.command_digest,
         runner_id: execution.runner_id,
+        started_at_ms: execution.started_at_ms,
+        completed_at_ms: execution.completed_at_ms,
+        exit_code: execution.exit_code,
         authority: AuthorityPosture::DENY_ALL,
     })
 }
 
 pub fn execute_native_negative_qualification(
-    execution: ExecutionProvenance,
+    mut execution: ExecutionProvenance,
 ) -> Result<QualificationReceipt, Error> {
     validate_execution(&execution)?;
     let key = SigningKey::from_bytes(&[93; 32]);
@@ -235,6 +243,20 @@ pub fn execute_native_negative_qualification(
         .map_err(|error| Error::NativeCaseUnexpected(format!("replay setup: {error:?}")))?;
     let replay_error = replay.verify(context, envelope, scope, payload).err();
     require_auth_error(NegativeCase::Replay, replay_error, AuthBusError::Replay)?;
+
+    // Native execution seals its completion time only after every negative case
+    // above has actually executed. Callers that supply a wider externally
+    // measured interval keep that interval; the native binary passes start==end
+    // so this branch makes the receipt self-describing rather than predictive.
+    if execution.completed_at_ms == execution.started_at_ms {
+        execution.completed_at_ms = u64::try_from(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .map_err(|_| Error::InvalidExecutionProvenance)?
+                .as_millis(),
+        )
+        .map_err(|_| Error::InvalidExecutionProvenance)?;
+    }
 
     let cases = [
         (NegativeCase::Expired, "case:expired", AuthBusError::Expired),
