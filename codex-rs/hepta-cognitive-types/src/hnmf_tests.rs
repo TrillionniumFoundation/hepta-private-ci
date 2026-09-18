@@ -1,0 +1,216 @@
+use std::collections::BTreeSet;
+
+use codex_hepta_types::Digest32;
+
+use super::*;
+
+fn digest(label: &[u8]) -> CanonicalDigestV1 {
+    CanonicalDigestV1::new(Digest32::of_bytes(label)).unwrap()
+}
+
+fn text_span(privacy_class: PrivacyClassV1) -> ModalitySpanRefV1 {
+    ModalitySpanRefV1::try_new(
+        1,
+        ModalityKindV1::Text,
+        digest(b"asset"),
+        SpanRangeV1::ByteRange { start: 0, end: 4 },
+        digest(b"preprocessor"),
+        Some(digest(b"feature")),
+        None,
+        10_000,
+        privacy_class,
+        None,
+    )
+    .unwrap()
+}
+
+fn valid_event() -> MemoryEventV1 {
+    MemoryEventV1::try_new(
+        7,
+        7,
+        MemoryScopeV1::try_agent_private("agent-a").unwrap(),
+        TimeIntervalV1::try_new(1, None).unwrap(),
+        vec![text_span(PrivacyClassV1::AgentPrivate)],
+        Vec::new(),
+        BTreeSet::from(["door".to_owned()]),
+        vec![
+            ProvenanceRefV1::try_new("source-7", 1, digest(b"source"), 1).unwrap(),
+        ],
+        digest(b"objective"),
+        digest(b"ndu"),
+        Some(500_000),
+        MemoryLifecycleV1::Active,
+    )
+    .unwrap()
+}
+
+#[test]
+fn canonical_event_is_constructed_valid() {
+    let event = valid_event();
+    assert_eq!(event.event_id(), 7);
+    assert_eq!(event.episode_id(), 7);
+    event.validate().unwrap();
+}
+
+#[test]
+fn invalid_span_modality_never_constructs() {
+    let result = ModalitySpanRefV1::try_new(
+        1,
+        ModalityKindV1::Image,
+        digest(b"asset"),
+        SpanRangeV1::ByteRange { start: 0, end: 4 },
+        digest(b"preprocessor"),
+        None,
+        None,
+        0,
+        PrivacyClassV1::AgentPrivate,
+        None,
+    );
+    assert!(result.is_err());
+}
+
+#[test]
+fn event_rejects_scope_span_privacy_drift() {
+    let result = MemoryEventV1::try_new(
+        7,
+        7,
+        MemoryScopeV1::try_agent_private("agent-a").unwrap(),
+        TimeIntervalV1::try_new(1, None).unwrap(),
+        vec![text_span(PrivacyClassV1::WorkspacePrivate)],
+        Vec::new(),
+        BTreeSet::from(["door".to_owned()]),
+        vec![
+            ProvenanceRefV1::try_new("source-7", 1, digest(b"source"), 1).unwrap(),
+        ],
+        digest(b"objective"),
+        digest(b"ndu"),
+        None,
+        MemoryLifecycleV1::Active,
+    );
+    assert_eq!(
+        result,
+        Err(ContractErrorV1::Conflict(
+            "span privacy class does not match event scope"
+        ))
+    );
+}
+
+#[test]
+fn cross_modal_binding_requires_distinct_modalities() {
+    let binding = CrossModalBindingV1::try_new(
+        1,
+        7,
+        BTreeSet::from([1, 2]),
+        AlignmentKindV1::SameObservation,
+        900_000,
+        digest(b"binding-producer"),
+    )
+    .unwrap();
+    let second_text = ModalitySpanRefV1::try_new(
+        2,
+        ModalityKindV1::Text,
+        digest(b"asset-2"),
+        SpanRangeV1::ByteRange { start: 4, end: 8 },
+        digest(b"preprocessor-2"),
+        None,
+        None,
+        10_000,
+        PrivacyClassV1::AgentPrivate,
+        None,
+    )
+    .unwrap();
+    let result = MemoryEventV1::try_new(
+        7,
+        7,
+        MemoryScopeV1::try_agent_private("agent-a").unwrap(),
+        TimeIntervalV1::try_new(1, None).unwrap(),
+        vec![text_span(PrivacyClassV1::AgentPrivate), second_text],
+        vec![binding],
+        BTreeSet::from(["door".to_owned()]),
+        vec![
+            ProvenanceRefV1::try_new("source-7", 1, digest(b"source"), 1).unwrap(),
+        ],
+        digest(b"objective"),
+        digest(b"ndu"),
+        None,
+        MemoryLifecycleV1::Active,
+    );
+    assert!(result.is_err());
+}
+
+#[test]
+fn canonical_json_round_trip_is_byte_stable() {
+    let event = valid_event();
+    let encoded = canonical_json_bytes(&event).unwrap();
+    let decoded = decode_canonical_json::<MemoryEventV1>(&encoded).unwrap();
+    assert_eq!(decoded, event);
+    assert_eq!(canonical_json_bytes(&decoded).unwrap(), encoded);
+    assert_eq!(
+        canonical_json_digest(&decoded).unwrap(),
+        Digest32::of_bytes(&encoded)
+    );
+}
+
+#[test]
+fn canonical_json_denies_unknown_fields_and_noncanonical_whitespace() {
+    let event = valid_event();
+    let encoded = canonical_json_bytes(&event).unwrap();
+
+    let mut unknown = String::from_utf8(encoded.clone()).unwrap();
+    unknown.insert_str(1, ""unexpected":true,");
+    assert!(decode_canonical_json::<MemoryEventV1>(unknown.as_bytes()).is_err());
+
+    let mut spaced = encoded;
+    spaced.push(b' ');
+    assert!(matches!(
+        decode_canonical_json::<MemoryEventV1>(&spaced),
+        Err(CanonicalWireErrorV1::NonCanonicalEncoding)
+    ));
+}
+
+#[test]
+fn topology_and_plasticity_cannot_self_activate() {
+    let topology = TopologyProposalV1::try_new(
+        7,
+        8,
+        TopologyOperationV1::AddNode {
+            label: "new-node".to_owned(),
+            population: EngramPopulationV1::SemanticConcept,
+        },
+        true,
+        true,
+        false,
+        false,
+    )
+    .unwrap();
+    topology.validate().unwrap();
+
+    assert!(
+        TopologyProposalV1::try_new(
+            7,
+            8,
+            TopologyOperationV1::RetireNode {
+                node_id: 1,
+                reason: "retire".to_owned(),
+            },
+            true,
+            true,
+            true,
+            false,
+        )
+        .is_err()
+    );
+
+    assert!(
+        PlasticityBatchV1::try_new(
+            7,
+            8,
+            digest(b"outcome"),
+            Vec::new(),
+            Vec::new(),
+            true,
+            true,
+        )
+        .is_err()
+    );
+}
