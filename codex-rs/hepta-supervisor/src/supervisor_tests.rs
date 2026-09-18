@@ -767,6 +767,49 @@ fn running_health_loss_uses_bounded_backoff_and_exhausts_restart_budget()
 }
 
 #[test]
+fn automatic_restart_survives_stop_grace_escalation_to_kill() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.update(&fleet.first, |state| state.healthy = false);
+
+    // Unhealthy grace expires -> Failed + stop request.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(11)),
+        TickReport::default()
+    );
+    assert_eq!(control.counts(&fleet.first), (0, 1, 0));
+
+    // Stop grace expires -> kill request, but this is still a recoverable
+    // failure rather than an explicit operator kill.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(22)),
+        TickReport::default()
+    );
+    assert_eq!(control.counts(&fleet.first), (0, 1, 1));
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(23)),
+        TickReport::default()
+    );
+
+    // The first automatic retry remains queued after the kill escalation.
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(28)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    Ok(())
+}
+
+#[test]
 fn matrix_only_release_change_is_not_rejected_as_unchanged() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
