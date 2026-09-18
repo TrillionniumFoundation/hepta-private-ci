@@ -78,10 +78,13 @@ Repository CI evidence MUST bind, at minimum:
 - exact-head or ordered-parent synthetic-merge identity;
 - UTC generation time and an explicit evidence expiry/revalidation policy.
 
-A CI receipt is not cryptographically signed merely because GitHub Actions
-created it. Unless a separately configured attestation/signing service supplies
-a verifiable signature, its signer field must remain null/unsigned. Never
-fabricate a signer.
+The JSON receipt is deliberately self-unsigned and keeps its signer/signature
+fields null. Same-repository Lane E runs separately attest the receipt and its
+coverage/stress/E2E subjects with GitHub's Sigstore-backed artifact attestation
+service. That external attestation is the verifiable signer/provenance layer;
+never copy an unverifiable identity into the receipt itself. Fork pull-request
+runs cannot be treated as exact-candidate signed provenance until the candidate
+is rerun in an authorized same-repository context.
 
 ## External gates that remain non-self-certifiable
 
