@@ -25,7 +25,7 @@ use zeroize::Zeroizing;
 const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 
 /// Provider credential injected by the enrolled host. Debug never reveals it.
-pub struct BaoToken(Zeroizing<String>);
+pub struct BaoToken(pub(super) Zeroizing<String>);
 
 impl BaoToken {
     pub fn new(value: String) -> Result<Self, BaoClientError> {
@@ -67,10 +67,10 @@ pub struct BaoSecretReceipt {
 }
 
 pub struct BaoClient {
-    client: HttpClient,
-    origin: Url,
-    ca_sha256: [u8; 32],
-    token: BaoToken,
+    pub(super) client: HttpClient,
+    pub(super) origin: Url,
+    pub(super) ca_sha256: [u8; 32],
+    pub(super) token: BaoToken,
 }
 
 impl fmt::Debug for BaoClient {
