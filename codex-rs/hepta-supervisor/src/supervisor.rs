@@ -284,18 +284,29 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let runtime = slot
-            .runtime
-            .as_ref()
-            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
-        if runtime.generation != record.lifecycle.generation {
-            return Err(SupervisorError::GenerationFence {
-                agent_id: agent_id.clone(),
-                runtime: runtime.generation,
-                registry: record.lifecycle.generation,
-            });
+        if let Some(runtime) = slot.runtime.as_ref() {
+            if runtime.generation != record.lifecycle.generation {
+                return Err(SupervisorError::GenerationFence {
+                    agent_id: agent_id.clone(),
+                    runtime: runtime.generation,
+                    registry: record.lifecycle.generation,
+                });
+            }
+            return Ok(());
         }
-        Ok(())
+        if slot.restart_retry_at.is_some()
+            && matches!(
+                record.lifecycle.lifecycle,
+                AgentLifecycle::Stopped | AgentLifecycle::Failed
+            )
+        {
+            // Stop/Kill is also the cancellation authority for a scheduled
+            // automatic restart while no child is currently running.
+            return Ok(());
+        }
+        Err(SupervisorError::Invalid(format!(
+            "agent {agent_id} is not active"
+        )))
     }
 
     #[cfg(unix)]
