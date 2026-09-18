@@ -13,6 +13,8 @@ pub enum LedgerError {
     SelectedCandidateMissing(String),
     ZeroSelectedPropensity,
     EmptyDigest(&'static str),
+    InvalidRunStart(&'static str),
+    RunAlreadyExists(String),
     EpisodeAlreadyExists(String),
     EpisodeNotFound(String),
     EpisodeRevoked(String),
@@ -46,7 +48,8 @@ impl LedgerError {
             | Self::MissingAbstainCandidate
             | Self::SelectedCandidateMissing(_)
             | Self::ZeroSelectedPropensity => "LRN-E002",
-            Self::EpisodeAlreadyExists(_)
+            Self::RunAlreadyExists(_)
+            | Self::EpisodeAlreadyExists(_)
             | Self::OutcomeAlreadyExists(_)
             | Self::CreditIdentityAlreadyExists(_)
             | Self::IdentityConflict(_) => "LRN-E003",
@@ -62,6 +65,7 @@ impl LedgerError {
             Self::SequenceOverflow => "LRN-E010",
             Self::SnapshotHeadMismatch | Self::SnapshotRecordMismatch(_) => "LRN-E011",
             Self::EmptyDigest(_) | Self::InternalInvariant => "LRN-E012",
+            Self::InvalidRunStart(_) => "LRN-E013",
         }
     }
 }
@@ -93,6 +97,8 @@ impl fmt::Display for LedgerError {
                 formatter.write_str("selected propensity must be greater than zero")
             }
             Self::EmptyDigest(kind) => write!(formatter, "{kind} digest must not be zero"),
+            Self::InvalidRunStart(reason) => write!(formatter, "invalid run-start publication: {reason}"),
+            Self::RunAlreadyExists(id) => write!(formatter, "run already exists: {id}"),
             Self::EpisodeAlreadyExists(id) => write!(formatter, "episode already exists: {id}"),
             Self::EpisodeNotFound(id) => write!(formatter, "episode not found: {id}"),
             Self::EpisodeRevoked(id) => write!(formatter, "episode decision is revoked: {id}"),
