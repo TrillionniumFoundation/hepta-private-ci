@@ -23,6 +23,9 @@ Bubblewrap probe; portable fixture success cannot become strong review evidence.
 The named repository caller is `engineering-product-gate-v2`; it is read-only and
 never imports the legacy boolean-only integration module. Test/evaluator paths are
 unconditionally candidate-immutable. Host strong-sandbox parallelism is capped at
-eight and infrastructure retries at two. Multi-host writes, audit anchoring and
-production verifier keys require fresh external signed receipts. Review eligibility,
-merge-queue proposals and dormant proposals do not merge, activate or deploy changes.
+eight and infrastructure retries at two. Multi-host writes require fresh external signed grants and persist the highest
+observed per-worker leader/fencing frontier. External audit anchors bind both the
+audit head and authoritative-store digest. Production verifier keys require
+subject-bound hardware-custody attestations and a custodied signing provider.
+Review eligibility, merge-queue proposals and dormant proposals do not merge,
+activate or deploy changes.
