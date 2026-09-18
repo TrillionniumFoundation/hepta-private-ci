@@ -300,9 +300,14 @@ async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
         )?)
         .open_durable_evidence_pool(&path)
         .await?;
-        sqlx::query(&format!(
+        // The assignment strings above are a closed test-only set used to
+        // corrupt one known column at a time. Mark the constructed statement as
+        // audited dynamic SQL so sqlx's injection guard remains fail-closed for
+        // every non-audited runtime string.
+        let tamper_sql = format!(
             "UPDATE automation_dispatch_outcomes SET {assignment}"
-        ))
+        );
+        sqlx::query(sqlx::AssertSqlSafe(tamper_sql.as_str()))
         .execute(&pool)
         .await?;
         pool.close().await;
