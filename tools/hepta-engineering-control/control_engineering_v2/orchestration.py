@@ -294,6 +294,9 @@ def plan_engineering_work(
         )
 
     for package in sorted(package_values, key=lambda item: (item.priority, -score(item), item.package_id)):
+        if len(assignments) >= envelope.maximum_assignments:
+            blocked.append((package.package_id, "assignment_limit"))
+            continue
         missing = tuple(sorted(set(package.predecessors) - completed))
         if missing:
             blocked.append((package.package_id, "missing_predecessor:" + missing[0]))
