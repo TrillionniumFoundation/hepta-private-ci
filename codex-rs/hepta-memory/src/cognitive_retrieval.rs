@@ -29,6 +29,7 @@ mod observation;
 use observation::ChannelOutput;
 pub use observation::ObservedRetrievalCandidate;
 pub use observation::RetrievalChannelObservation;
+pub use observation::RetrievalChannelRankObservation;
 pub use observation::RetrievalLimitObservation;
 pub use observation::RetrievalObservation;
 
