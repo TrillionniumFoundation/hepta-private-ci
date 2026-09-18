@@ -90,7 +90,7 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
   receipts.
 - **Execution evidence:** Lane A CI emits exact-source and deterministic
   synthetic-merge source/native receipts. See
-  [kernel.evidence traceability](kernel.evidence.traceability.md) for the
+  [kernel.evidence traceability](../../kernel-evidence/TRACEABILITY.md) for the
   requirement-to-receipt mapping.
 - **Remaining external gates:** an independently controlled actor must still
   supply a current signed independent decision for the exact candidate.
