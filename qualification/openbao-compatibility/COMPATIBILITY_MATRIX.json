@@ -10,7 +10,11 @@
     "version": "2.6.2",
     "versionPolicy": "pinned_release_required",
     "profile": "server_api_storage_seal_and_operations",
-    "compatibilityLayers": ["api", "storage", "seal"],
+    "compatibilityLayers": [
+      "api",
+      "storage",
+      "seal"
+    ],
     "observedCandidate": {
       "repositoryHead": "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18",
       "runtimePin": "eac9c608bfda77a8972e1e8a1343dfc21985d62b",
@@ -21,7 +25,11 @@
       "independentObservedCurrentHeadSurfaces": 0
     }
   },
-  "statusVocabulary": ["gap", "partial", "closed"],
+  "statusVocabulary": [
+    "gap",
+    "partial",
+    "closed"
+  ],
   "capabilities": [
     {
       "id": "hepta_bao_kv_v2_read",
@@ -49,8 +57,15 @@
       "status": "partial",
       "blocking": true,
       "summary": "OpenBao HTTP API and CLI surface with versioned error and auth semantics.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["native_server", "endpoint_contract_suite", "cli_compatibility_suite"]
+      "evidence": [
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "native_server",
+        "endpoint_contract_suite",
+        "cli_compatibility_suite"
+      ]
     },
     {
       "id": "kv_engines",
@@ -58,8 +73,15 @@
       "status": "partial",
       "blocking": true,
       "summary": "KV v1/v2 read, write, metadata, versioning, deletion and recovery semantics.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["native_store", "migration_tests", "fault_and_reopen_tests"]
+      "evidence": [
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "native_store",
+        "migration_tests",
+        "fault_and_reopen_tests"
+      ]
     },
     {
       "id": "auth_tokens_policies",
@@ -67,17 +89,35 @@
       "status": "partial",
       "blocking": true,
       "summary": "Auth methods, token lifecycle, ACL policy evaluation and renewal.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["auth_method_matrix", "policy_conformance", "revocation_tests"]
+      "evidence": [
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "auth_method_matrix",
+        "policy_conformance",
+        "revocation_tests"
+      ]
     },
     {
       "id": "leases_dynamic_secrets",
       "layer": "api",
       "status": "partial",
       "blocking": true,
-      "summary": "Lease issuance, renewal, revocation and dynamic database/cloud credentials.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["lease_registry", "indeterminate_reconciliation", "rotation_tests"]
+      "summary": "The adapter now implements bounded dynamic lease issuance, renewal, revocation and non-replaying lookup for known lease handles. Durable lease-registry recovery, provider operation-id idempotency/status lookup for lost issuance responses, rotation qualification and product composition remain open.",
+      "evidence": [
+        "codex-rs/hepta-bao-adapter/src/lease.rs",
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "docs/modules/secrets.heptabao/TECHNICAL.md",
+        "qualification/module-execution-dossiers/detail/secrets.heptabao.md",
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "lease_registry",
+        "indeterminate_reconciliation",
+        "rotation_tests"
+      ]
     },
     {
       "id": "transit_and_crypto_engines",
@@ -85,8 +125,15 @@
       "status": "partial",
       "blocking": true,
       "summary": "Transit encryption, decryption, signing, verification, HMAC, hashing and key lifecycle.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["crypto_engine", "key_rotation_tests", "known_answer_vectors"]
+      "evidence": [
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "crypto_engine",
+        "key_rotation_tests",
+        "known_answer_vectors"
+      ]
     },
     {
       "id": "audit_devices",
@@ -94,8 +141,15 @@
       "status": "partial",
       "blocking": true,
       "summary": "Tamper-evident request/response audit output and failure behavior.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["audit_sink", "hmac_redaction_tests", "durability_and_backpressure_tests"]
+      "evidence": [
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "audit_sink",
+        "hmac_redaction_tests",
+        "durability_and_backpressure_tests"
+      ]
     },
     {
       "id": "seal_unseal_kms",
@@ -103,8 +157,15 @@
       "status": "partial",
       "blocking": true,
       "summary": "Seal, unseal, auto-unseal and KMS integration with recovery semantics.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["seal_provider", "restart_recovery", "key_rotation_and_loss_tests"]
+      "evidence": [
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "seal_provider",
+        "restart_recovery",
+        "key_rotation_and_loss_tests"
+      ]
     },
     {
       "id": "raft_storage_ha",
@@ -112,8 +173,15 @@
       "status": "partial",
       "blocking": true,
       "summary": "Durable storage, Raft replication, active/standby failover and quorum behavior.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["multi_node_cluster", "failover_drill", "rpo_rto_measurements"]
+      "evidence": [
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "multi_node_cluster",
+        "failover_drill",
+        "rpo_rto_measurements"
+      ]
     },
     {
       "id": "backup_restore_replication",
@@ -121,8 +189,15 @@
       "status": "partial",
       "blocking": true,
       "summary": "Snapshots, restore, replication and cross-version recovery.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["snapshot_format", "restore_drill", "rolling_upgrade_and_rollback"]
+      "evidence": [
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "snapshot_format",
+        "restore_drill",
+        "rolling_upgrade_and_rollback"
+      ]
     },
     {
       "id": "plugins_agent_proxy_ui",
@@ -130,8 +205,15 @@
       "status": "partial",
       "blocking": true,
       "summary": "Plugin SDK, agent/proxy behavior and operator UI compatibility.",
-      "evidence": ["external/HeptaBao/README.md", "external/HeptaBao/EXTERNAL_SOURCE.json"],
-      "requiredEvidence": ["plugin_sdk", "agent_proxy_suite", "operator_ui"]
+      "evidence": [
+        "external/HeptaBao/README.md",
+        "external/HeptaBao/EXTERNAL_SOURCE.json"
+      ],
+      "requiredEvidence": [
+        "plugin_sdk",
+        "agent_proxy_suite",
+        "operator_ui"
+      ]
     },
     {
       "id": "migration_and_upgrade",
@@ -140,7 +222,11 @@
       "blocking": true,
       "summary": "Supported OpenBao/Vault migration, upgrade, downgrade and data compatibility.",
       "evidence": [],
-      "requiredEvidence": ["version_matrix", "migration_fixtures", "rollback_drills"]
+      "requiredEvidence": [
+        "version_matrix",
+        "migration_fixtures",
+        "rollback_drills"
+      ]
     },
     {
       "id": "production_security_operations",
@@ -149,7 +235,11 @@
       "blocking": true,
       "summary": "SBOM, signed releases, vulnerability response, monitoring and incident drills.",
       "evidence": [],
-      "requiredEvidence": ["release_attestations", "security_response_process", "operations_runbook"]
+      "requiredEvidence": [
+        "release_attestations",
+        "security_response_process",
+        "operations_runbook"
+      ]
     }
   ],
   "authorityFlags": {
