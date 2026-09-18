@@ -4,9 +4,13 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import re
+import subprocess
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -17,6 +21,11 @@ ROOT = Path(__file__).resolve().parents[1]
 MATRIX_PATH = ROOT / "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json"
 TRACE_PATH = ROOT / "qualification/lane-e/TEST_TRACEABILITY.json"
 WORKFLOW_PATH = ROOT / ".github/workflows/hepta-lane-e-gap-closure.yml"
+PRODUCTION_CONTRACT_PATH = ROOT / "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"
+EVIDENCE_ADMISSION_PATH = ROOT / "codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md"
+NATIVE_MAPPING_PATH = ROOT / "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md"
+EVAL_LIB_PATH = ROOT / "codex-rs/hepta-intelligence-eval/src/lib.rs"
+EVALUATED_SHADOW_PATH = ROOT / "codex-rs/hepta-intelligence/src/evaluated_shadow.rs"
 TEMPORARY_WORKFLOW_PATH = (
     ROOT / ".github/workflows/hepta-lane-e-materialize-generated.yml"
 )
@@ -62,9 +71,10 @@ EXPECTED_OPERATIONS = {
     "learning.eval": {
         "estimate_ope",
         "estimate_sequential",
-        "freeze_cross_fold_plan",
-        "FinalHoldoutRegistry::consume",
-        "decide_independently",
+        "freeze_cross_fold_plan_v2",
+        "FencedFinalHoldoutJournalV2::consume",
+        "decide_with_signed_evidence_v2",
+        "decide_with_signed_longitudinal_evidence_v3",
     },
 }
 EXPECTED_CRATES = {
@@ -467,6 +477,221 @@ def verify_authority_posture(findings: Findings) -> None:
         )
 
 
+def verify_production_contract(findings: Findings) -> None:
+    for path in (
+        PRODUCTION_CONTRACT_PATH,
+        EVIDENCE_ADMISSION_PATH,
+        NATIVE_MAPPING_PATH,
+        EVAL_LIB_PATH,
+        EVALUATED_SHADOW_PATH,
+    ):
+        findings.require(
+            path.is_file(),
+            "production_contract_path_missing",
+            f"missing production-boundary source: {path.relative_to(ROOT)}",
+        )
+    if not all(
+        path.is_file()
+        for path in (
+            PRODUCTION_CONTRACT_PATH,
+            EVIDENCE_ADMISSION_PATH,
+            NATIVE_MAPPING_PATH,
+            EVAL_LIB_PATH,
+            EVALUATED_SHADOW_PATH,
+        )
+    ):
+        return
+
+    contract = PRODUCTION_CONTRACT_PATH.read_text(encoding="utf-8")
+    for token in (
+        "Trusted-only / legacy",
+        "Production-required",
+        "decide_with_signed_evidence_v2",
+        "decide_with_signed_longitudinal_evidence_v3",
+        "FencedFinalHoldoutJournalV2",
+        "transactional compare-and-swap authority",
+        "AuthorityPosture::DENY_ALL",
+    ):
+        findings.require(
+            token in contract,
+            "production_contract_incomplete",
+            f"production contract is missing required token: {token}",
+        )
+
+    lib = EVAL_LIB_PATH.read_text(encoding="utf-8")
+    findings.require(
+        not re.search(r"\bpub\s+fn\s+evaluate\s*\(", lib),
+        "legacy_default_public_api",
+        "weak evaluate() must not be a default public function",
+    )
+    findings.require(
+        'feature = "legacy-inprocess-eval"' in lib
+        and "evaluate_legacy_inprocess_v1" in lib,
+        "legacy_feature_boundary_missing",
+        "legacy evaluator must be explicit and feature-gated",
+    )
+
+    evaluated_shadow = EVALUATED_SHADOW_PATH.read_text(encoding="utf-8")
+    findings.require(
+        "decide_with_signed_evidence_v2" in evaluated_shadow,
+        "signed_ingress_missing",
+        "evaluated shadow must admit external evaluation through signed V2",
+    )
+
+    allowed_direct_roots = (
+        ROOT / "codex-rs/hepta-intelligence-eval",
+        ROOT / "codex-rs/hepta-shadow-qualification",
+    )
+    direct_pattern = re.compile(r"\bdecide_independently(?:_v2)?\s*\(")
+    for rust_path in (ROOT / "codex-rs").rglob("*.rs"):
+        if any(root == rust_path or root in rust_path.parents for root in allowed_direct_roots):
+            continue
+        try:
+            text = rust_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            continue
+        if direct_pattern.search(text):
+            findings.add(
+                "unsigned_production_ingress",
+                "direct structural evaluator call outside trusted/qualification roots: "
+                + str(rust_path.relative_to(ROOT)),
+            )
+
+
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def qualification_input_digest() -> str:
+    paths = [
+        PRODUCTION_CONTRACT_PATH,
+        EVIDENCE_ADMISSION_PATH,
+        NATIVE_MAPPING_PATH,
+        MATRIX_PATH,
+        TRACE_PATH,
+        WORKFLOW_PATH,
+        Path(__file__).resolve(),
+    ]
+    eval_root = ROOT / "codex-rs/hepta-intelligence-eval"
+    paths.extend(
+        path
+        for path in eval_root.rglob("*")
+        if path.is_file()
+        and path.suffix in {".rs", ".toml", ".md"}
+    )
+    digest = hashlib.sha256()
+    for path in sorted(set(paths), key=lambda value: str(value.relative_to(ROOT))):
+        relative = str(path.relative_to(ROOT)).encode("utf-8")
+        raw = path.read_bytes()
+        digest.update(len(relative).to_bytes(4, "big"))
+        digest.update(relative)
+        digest.update(len(raw).to_bytes(8, "big"))
+        digest.update(raw)
+    return digest.hexdigest()
+
+
+def git_value(*args: str) -> str:
+    return subprocess.run(
+        ["git", *args],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+    ).stdout.strip()
+
+
+def write_receipt(kind: str, expected_sha: str, output: Path) -> None:
+    if kind not in {"source-head", "synthetic-merge"}:
+        raise ValueError(f"unsupported receipt kind: {kind}")
+    actual_sha = git_value("rev-parse", "HEAD")
+    if actual_sha != expected_sha:
+        raise ValueError(f"expected {expected_sha}, got {actual_sha}")
+    tree_sha = git_value("rev-parse", "HEAD^{tree}")
+    issued = int(time.time())
+    identity = {
+        "repository": os.environ.get("GITHUB_REPOSITORY", ""),
+        "workflowRef": os.environ.get("GITHUB_WORKFLOW_REF", ""),
+        "workflow": os.environ.get("GITHUB_WORKFLOW", ""),
+        "runId": os.environ.get("GITHUB_RUN_ID", ""),
+        "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
+        "actor": os.environ.get("GITHUB_ACTOR", ""),
+        "serverUrl": os.environ.get("GITHUB_SERVER_URL", ""),
+    }
+    identity_bytes = json.dumps(
+        identity, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")
+    receipt = {
+        "schema": "hepta.lane-e-qualification-receipt.v1",
+        "schemaVersion": 1,
+        "kind": kind,
+        "commitSha": actual_sha,
+        "treeSha": tree_sha,
+        "sourceSha": os.environ.get("SOURCE_SHA", actual_sha),
+        "baseSha": os.environ.get("BASE_SHA", ""),
+        "mergeCommitSha": os.environ.get("MERGE_COMMIT", "")
+        if kind == "synthetic-merge"
+        else "",
+        "mergeTreeSha": os.environ.get("MERGE_TREE", "")
+        if kind == "synthetic-merge"
+        else "",
+        "issuedAtUnix": issued,
+        "expiresAtUnix": issued + 90 * 24 * 60 * 60,
+        "attesterIdentity": identity,
+        "attesterIdentityDigest": hashlib.sha256(identity_bytes).hexdigest(),
+        "signatureProfile": "github_actions_workflow_identity_not_cryptographic_signature",
+        "productionContractSha256": sha256_file(PRODUCTION_CONTRACT_PATH),
+        "evidenceAdmissionSha256": sha256_file(EVIDENCE_ADMISSION_PATH),
+        "nativeMappingSha256": sha256_file(NATIVE_MAPPING_PATH),
+        "traceabilitySha256": sha256_file(TRACE_PATH),
+        "implementationMatrixSha256": sha256_file(MATRIX_PATH),
+        "qualificationInputSha256": qualification_input_digest(),
+        "claims": {
+            "repositorySourceClosureEvidence": True,
+            "independentAcceptance": False,
+            "longitudinalEfficacy": False,
+            "promotionOrReleaseAuthority": False,
+        },
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def verify_receipt(kind: str, expected_sha: str, input_path: Path) -> None:
+    value = json.loads(input_path.read_text(encoding="utf-8"))
+    if value.get("schema") != "hepta.lane-e-qualification-receipt.v1":
+        raise ValueError("unexpected receipt schema")
+    if value.get("kind") != kind:
+        raise ValueError("receipt kind mismatch")
+    if value.get("commitSha") != expected_sha:
+        raise ValueError("receipt commit mismatch")
+    if value.get("treeSha") != git_value("rev-parse", "HEAD^{tree}"):
+        raise ValueError("receipt tree mismatch")
+    expected = {
+        "productionContractSha256": sha256_file(PRODUCTION_CONTRACT_PATH),
+        "evidenceAdmissionSha256": sha256_file(EVIDENCE_ADMISSION_PATH),
+        "nativeMappingSha256": sha256_file(NATIVE_MAPPING_PATH),
+        "traceabilitySha256": sha256_file(TRACE_PATH),
+        "implementationMatrixSha256": sha256_file(MATRIX_PATH),
+        "qualificationInputSha256": qualification_input_digest(),
+    }
+    for key, expected_value in expected.items():
+        if value.get(key) != expected_value:
+            raise ValueError(f"receipt {key} mismatch")
+    claims = value.get("claims")
+    if not isinstance(claims, dict) or claims.get("repositorySourceClosureEvidence") is not True:
+        raise ValueError("source-closure claim missing")
+    for key in (
+        "independentAcceptance",
+        "longitudinalEfficacy",
+        "promotionOrReleaseAuthority",
+    ):
+        if claims.get(key) is not False:
+            raise ValueError(f"receipt overclaims {key}")
+
+
 def verify_workflow(findings: Findings) -> None:
     findings.require(
         WORKFLOW_PATH.is_file(),
@@ -547,6 +772,29 @@ def verify_workflow(findings: Findings) -> None:
         "workflow is missing synthetic-merge job",
     )
     findings.require(
+        "cargo llvm-cov" in text,
+        "workflow_gate_missing",
+        "workflow is missing learning.eval coverage evidence",
+    )
+    findings.require(
+        "durable_holdout_reopen_replay_stress" in text,
+        "workflow_gate_missing",
+        "workflow is missing durable holdout stress audit",
+    )
+    findings.require(
+        "evaluated_shadow" in text and "-p codex-hepta-intelligence" in text,
+        "workflow_gate_missing",
+        "workflow is missing signed evaluated-shadow end-to-end tests",
+    )
+    findings.require(
+        "hepta-lane-e-qualification-" in text
+        and "actions/upload-artifact@" in text
+        and "receipt --kind source-head" in text
+        and "receipt --kind synthetic-merge" in text,
+        "workflow_gate_missing",
+        "workflow must retain exact-source and synthetic-merge qualification receipts",
+    )
+    findings.require(
         not TEMPORARY_WORKFLOW_PATH.exists(),
         "temporary_workflow_present",
         "temporary generated-file materializer must not remain in the candidate",
@@ -583,6 +831,7 @@ def verify() -> Findings:
     modules = verify_matrix(matrix, findings)
     verify_traceability(trace, modules, findings)
     verify_authority_posture(findings)
+    verify_production_contract(findings)
     verify_workflow(findings)
     return findings
 
@@ -591,11 +840,41 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=("verify", "self-test"),
+        choices=("verify", "self-test", "receipt", "receipt-verify"),
         nargs="?",
         default="verify",
     )
+    parser.add_argument("--kind", choices=("source-head", "synthetic-merge"))
+    parser.add_argument("--expected-sha")
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--input", type=Path)
     args = parser.parse_args()
+    if args.command in {"receipt", "receipt-verify"}:
+        if not args.kind or not args.expected_sha:
+            parser.error("--kind and --expected-sha are required for receipt commands")
+        if args.command == "receipt":
+            if args.output is None:
+                parser.error("--output is required for receipt")
+            write_receipt(args.kind, args.expected_sha, args.output)
+        else:
+            if args.input is None:
+                parser.error("--input is required for receipt-verify")
+            verify_receipt(args.kind, args.expected_sha, args.input)
+        print(
+            json.dumps(
+                {
+                    "schema": "hepta.lane-e-receipt-command.v1",
+                    "command": args.command,
+                    "kind": args.kind,
+                    "expectedSha": args.expected_sha,
+                    "ok": True,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+
     if args.command == "self-test":
         findings = run_self_test()
     else:
