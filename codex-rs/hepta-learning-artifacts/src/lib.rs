@@ -99,6 +99,7 @@ pub use storage::read_dataset_withdrawal_snapshot;
 pub use storage::read_lifecycle_journal_snapshot;
 pub use storage::read_registry_head_witness;
 pub use storage::read_registry_snapshot;
+pub use storage::remove_zero_length_orphan_in;
 pub use storage::write_candidate_payload;
 pub use storage::write_dataset_withdrawal_snapshot;
 pub use storage::write_lifecycle_journal_snapshot;
