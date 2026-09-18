@@ -57,6 +57,22 @@ jobs:
         shell: bash
         run: scripts/run_lane_a_native_qualification.sh
 
+      - name: Resolve verified V8 artifacts for AuthBus product execution
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Execute AuthBus Agentd product path with exact-source receipt
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_CI_LANE: source-head
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py             --output "$RUNNER_TEMP/authbus-agentd-product-source.json"             -- cargo test --locked --manifest-path codex-rs/Cargo.toml               -p codex-hepta-agentd --test authbus_text_product --               --nocapture --test-threads=1
+
       - name: Write exact-source and native receipts
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -76,6 +92,14 @@ jobs:
           name: lane-a-source-native-${{ github.event.pull_request.head.sha || github.sha }}
           path: .hepta-evidence/lane-a-*.json
           include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Retain AuthBus exact-source product receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: authbus-agentd-product-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/authbus-agentd-product-source.json
           if-no-files-found: error
           retention-days: 90
 
@@ -121,6 +145,23 @@ jobs:
         shell: bash
         run: scripts/run_lane_a_native_qualification.sh
 
+      - name: Resolve verified V8 artifacts for AuthBus merge product execution
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Execute AuthBus Agentd product path on synthetic merge
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          TESTED_SHA: ${{ steps.merge.outputs.sha }}
+          HEPTA_CI_LANE: base-merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py             --output "$RUNNER_TEMP/authbus-agentd-product-merge.json"             -- cargo test --locked --manifest-path codex-rs/Cargo.toml               -p codex-hepta-agentd --test authbus_text_product --               --nocapture --test-threads=1
+
       - name: Write synthetic-merge receipts
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
@@ -140,5 +181,13 @@ jobs:
           name: lane-a-merge-native-${{ steps.merge.outputs.sha }}
           path: .hepta-evidence/lane-a-*.json
           include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Retain AuthBus merge product receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: authbus-agentd-product-merge-${{ steps.merge.outputs.sha }}
+          path: ${{ runner.temp }}/authbus-agentd-product-merge.json
           if-no-files-found: error
           retention-days: 90
