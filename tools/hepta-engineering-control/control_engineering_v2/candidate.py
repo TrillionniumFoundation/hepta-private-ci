@@ -1184,7 +1184,10 @@ def sandbox_candidate(
     """
     from .sandbox_control import sandbox_admission, run_with_infrastructure_retries
 
+    check_values = bounded_tuple(checks, MAX_CHECKS, "check_limit_exceeded")
     with sandbox_admission():
         return run_with_infrastructure_retries(
-            lambda: _sandbox_candidate_once(repository, envelope, candidate, checks)
+            lambda: _sandbox_candidate_once(
+                repository, envelope, candidate, check_values
+            )
         )
