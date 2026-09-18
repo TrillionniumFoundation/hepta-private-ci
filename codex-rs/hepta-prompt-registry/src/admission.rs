@@ -5,6 +5,13 @@
 //! evidence binding.
 
 use std::fmt;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseError;
+use codex_hepta_contracts::SignedFinalUseGrant;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -17,6 +24,8 @@ use crate::FactorSource;
 use crate::PromptFactor;
 
 const ADMISSION_DOMAIN: &[u8] = b"hepta.prompt-registry.admission.v1\0";
+const FINAL_USE_REQUEST_DOMAIN: &[u8] = b"hepta.prompt-registry.final-use-admission.v1\0";
+const FINAL_USE_DESTINATION: &str = "prompt.registry:admission";
 const MAX_ADMISSION_LIFETIME_MS: u64 = 300_000;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -110,6 +119,10 @@ impl VerifiedAdmission {
         self.expires_at_unix_ms
     }
 
+    pub const fn verified_at_unix_ms(&self) -> u64 {
+        self.verified_at_unix_ms
+    }
+
     pub(crate) const fn is_live_at(&self, now_unix_ms: u64) -> bool {
         now_unix_ms >= self.not_before_unix_ms
             && now_unix_ms >= self.verified_at_unix_ms
@@ -196,6 +209,118 @@ impl AdmissionAuthority {
     }
 }
 
+
+#[derive(Clone, Copy, Debug)]
+pub struct FinalUseAdmissionAuthority<'a> {
+    authority: &'a FinalUseAuthority,
+}
+
+impl<'a> FinalUseAdmissionAuthority<'a> {
+    #[must_use]
+    pub const fn new(authority: &'a FinalUseAuthority) -> Self {
+        Self { authority }
+    }
+
+    pub fn verify(
+        &self,
+        signed: &SignedFinalUseGrant,
+        factor: &PromptFactor,
+        expected_reviewed_scope_digest: Digest32,
+        expected_evidence_digest: Digest32,
+    ) -> Result<VerifiedAdmission, AdmissionError> {
+        let reviewer_id = StableId::new(signed.grant.binding.subject_id.clone())
+            .map_err(|_| AdmissionError::InvalidGrant)?;
+        let expected = final_use_admission_binding(
+            factor,
+            &reviewer_id,
+            expected_reviewed_scope_digest,
+            expected_evidence_digest,
+        )?;
+        let token = self
+            .authority
+            .claim(signed, &expected)
+            .map_err(map_final_use_error)?;
+        self.authority
+            .with_verified_use(token, &expected, || ())
+            .map_err(map_final_use_error)?;
+        let verified_at_unix_ms = current_unix_ms()?;
+        let grant_id = StableId::new(signed.grant.grant_id.clone())
+            .map_err(|_| AdmissionError::InvalidGrant)?;
+        Ok(VerifiedAdmission {
+            grant_id,
+            factor_id: factor.factor_id.clone(),
+            factor_content_digest: factor.content_digest,
+            reviewer_id,
+            reviewed_scope_digest: expected_reviewed_scope_digest,
+            evidence_digest: expected_evidence_digest,
+            not_before_unix_ms: signed.grant.not_before_unix_ms,
+            verified_at_unix_ms,
+            expires_at_unix_ms: signed.grant.expires_at_unix_ms,
+        })
+    }
+}
+
+pub fn final_use_admission_binding(
+    factor: &PromptFactor,
+    reviewer_id: &StableId,
+    reviewed_scope_digest: Digest32,
+    evidence_digest: Digest32,
+) -> Result<FinalUseBinding, AdmissionError> {
+    if factor.source != FactorSource::GovernedInternal {
+        return Err(AdmissionError::UntrustedFactor);
+    }
+    if reviewer_id == &factor.proposer_id {
+        return Err(AdmissionError::SelfReview);
+    }
+    if reviewed_scope_digest.is_zero() || evidence_digest.is_zero() {
+        return Err(AdmissionError::ScopeMismatch);
+    }
+    let mut request = FINAL_USE_REQUEST_DOMAIN.to_vec();
+    push_id(&mut request, &factor.factor_id);
+    push_id(&mut request, &factor.proposer_id);
+    push_id(&mut request, &factor.semantic_version);
+    request.extend_from_slice(factor.content_digest.as_array());
+    Ok(FinalUseBinding {
+        subject_id: reviewer_id.to_string(),
+        destination_id: FINAL_USE_DESTINATION.to_owned(),
+        request_sha256: Digest32::of_bytes(&request).into_array(),
+        scope_sha256: reviewed_scope_digest.into_array(),
+        payload_sha256: evidence_digest.into_array(),
+    })
+}
+
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
+    let raw = value.as_str().as_bytes();
+    bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(raw);
+}
+
+fn current_unix_ms() -> Result<u64, AdmissionError> {
+    let value = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| AdmissionError::AuthorityUnavailable)?
+        .as_millis();
+    u64::try_from(value).map_err(|_| AdmissionError::AuthorityUnavailable)
+}
+
+const fn map_final_use_error(error: FinalUseError) -> AdmissionError {
+    match error {
+        FinalUseError::Unavailable | FinalUseError::StateLocked => AdmissionError::AuthorityUnavailable,
+        FinalUseError::Revoked => AdmissionError::Revoked,
+        FinalUseError::AlreadyClaimed => AdmissionError::AlreadyUsed,
+        FinalUseError::NotYetValid => AdmissionError::NotYetValid,
+        FinalUseError::Expired => AdmissionError::Expired,
+        FinalUseError::BindingMismatch => AdmissionError::FactorBindingMismatch,
+        FinalUseError::InvalidGrant
+        | FinalUseError::InvalidTrust
+        | FinalUseError::InvalidSignature
+        | FinalUseError::EpochMismatch
+        | FinalUseError::StaleRevocationHead
+        | FinalUseError::CapacityExceeded
+        | FinalUseError::UnsafeStateDirectory => AdmissionError::InvalidGrant,
+    }
+}
+
 fn validate_grant_shape(grant: &AdmissionGrantV1) -> Result<(), AdmissionError> {
     if grant.schema_version != 1
         || StableId::new(grant.signer_id.clone()).is_err()
@@ -225,6 +350,9 @@ pub enum AdmissionError {
     SelfReview,
     NotYetValid,
     Expired,
+    Revoked,
+    AlreadyUsed,
+    AuthorityUnavailable,
 }
 
 impl fmt::Display for AdmissionError {
