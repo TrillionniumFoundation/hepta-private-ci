@@ -86,7 +86,8 @@ supplied acknowledgement and returns deterministic acknowledged/missing node
 sets for one still-fresh update.
 
 A missing node is never silently counted as converged. Duplicate, unknown,
-forged, wrong-head, pre-issuance or post-expiry acknowledgements fail closed.
+forged, wrong-head, pre-issuance, post-expiry or future-dated-at-verification
+acknowledgements fail closed.
 A restarted host has no Bao freshness authority until it applies a current
 signed update again; only after that catch-up may its host identity produce an
 ack. The resulting report can prove repository-protocol convergence, but it
@@ -101,18 +102,22 @@ approval verifier, independent revocation-feed verifier, owner-bound
 
 The host starts with **no fresh revocation knowledge**. It must ingest a current
 signed V2 head before allowing secret final use. It records only the signed
-freshness deadline. When the bound trusted clock reaches that deadline, new
-secret final use fails with `StaleRevocationFeed` until another authenticated
-head advances the owner. This makes the repository host policy for network
+freshness deadline. Freshness is checked once before provider dispatch and
+again after provider I/O at the registered consumer boundary. If the feed
+expires while a request is in flight, the secret is not released and the host
+returns `StaleRevocationFeed`. This makes the repository host policy for network
 partition explicit: stale revocation knowledge stops new affected effects.
 
 The request's signed `consumer_id` must resolve to the pre-enrolled callback.
 Independent approval is checked before provider dispatch. The lower Bao client
 still performs exact request binding, single-use claim, pinned HTTPS, response
-bounds, exact version/digest checks and final VerifiedUse revalidation.
+bounds, exact version/digest checks and final VerifiedUse revalidation. The
+registered host uses a crate-private typed final-delivery gate so a freshness
+denial remains distinguishable from a callback failure.
 
 `BaoClient::consume_kv_v2` remains public for lower-level qualification, but
-B4 permits its non-test caller only from the registered host. No deployed
+B4 now requires **zero** non-test product callers for that raw closure path.
+The public product boundary is `BaoFinalUseHost::consume_kv_v2`; no deployed
 product process is selected merely by this source composition.
 
 ## External time and anti-rollback
@@ -149,8 +154,11 @@ perform live verification but cannot mutate authority state.
 
 A verified token is rechecked against the **exact current lease record**.
 Replacing a lease invalidates an outstanding token from an older revision.
-Revocation retry is idempotent only when lease/revision, reason digest **and
-revocation timestamp** are identical.
+An identical lease put is idempotent only with the original predecessor
+revision. Revocation retry is idempotent only for the same lease id, original
+expected revision and reason digest. The caller never supplies the revocation
+timestamp; the authority clock creates it once and an exact retry returns the
+original receipt.
 
 The lease is registry-authoritative, not a portable signed bearer. See ADR-0001.
 
