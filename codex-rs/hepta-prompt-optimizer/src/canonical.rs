@@ -50,12 +50,14 @@ pub struct PromptCandidateSetReceiptV1 {
 pub struct CandidateEvidenceV1 {
     pub candidate_id: StableId,
     pub causal_utility: FixedQ32,
+    pub token_shadow_cost: FixedQ32,
     pub latency_cost: FixedQ32,
     pub crowding_cost: FixedQ32,
     pub interference_cost: FixedQ32,
     pub privacy_cost: FixedQ32,
     pub instability_cost: FixedQ32,
     pub future_option_cost: FixedQ32,
+    pub resource_cost: FixedQ32,
     pub support_digest: Digest32,
     pub confidence_digest: Digest32,
     pub applicability_digest: Digest32,
@@ -65,7 +67,7 @@ pub struct CandidateEvidenceV1 {
 pub struct PromptPriceV1 {
     pub candidate: PromptCandidateV1,
     pub causal_utility: FixedQ32,
-    pub non_token_cost: FixedQ32,
+    pub total_utility_cost: FixedQ32,
     pub net_utility: FixedQ32,
     pub support_digest: Digest32,
     pub confidence_digest: Digest32,
@@ -273,27 +275,29 @@ pub fn price_factors(
         let Some(row) = evidence_by_id.get(&candidate.candidate_id) else {
             return Err(CanonicalError::MissingEvidence(candidate.candidate_id.to_string()));
         };
-        let mut non_token_cost = FixedQ32::ZERO;
+        let mut total_utility_cost = FixedQ32::ZERO;
         for cost in [
+            row.token_shadow_cost,
             row.latency_cost,
             row.crowding_cost,
             row.interference_cost,
             row.privacy_cost,
             row.instability_cost,
             row.future_option_cost,
+            row.resource_cost,
         ] {
-            non_token_cost = non_token_cost
+            total_utility_cost = total_utility_cost
                 .checked_add(cost)
                 .map_err(|_| CanonicalError::Arithmetic)?;
         }
         let net_utility = row
             .causal_utility
-            .checked_sub(non_token_cost)
+            .checked_sub(total_utility_cost)
             .map_err(|_| CanonicalError::Arithmetic)?;
         prices.push(PromptPriceV1 {
             candidate: candidate.clone(),
             causal_utility: row.causal_utility,
-            non_token_cost,
+            total_utility_cost,
             net_utility,
             support_digest: row.support_digest,
             confidence_digest: row.confidence_digest,
@@ -354,7 +358,9 @@ pub fn select_portfolio(
             if additions.is_empty() || selected.len().saturating_add(additions.len()) > budget.maximum_selected {
                 continue;
             }
-            if conflicts_with_selection(&additions, &selected, &graph.conflicts) {
+            if factor_collision(&additions, &selected, &prices)
+                || conflicts_with_selection(&additions, &selected, &graph.conflicts)
+            {
                 continue;
             }
             let token_cost = additions.iter().try_fold(0_u64, |sum, id| {
@@ -589,6 +595,23 @@ fn prerequisite_closure(
     Ok(output)
 }
 
+fn factor_collision(
+    additions: &[StableId],
+    selected: &BTreeSet<StableId>,
+    prices: &BTreeMap<StableId, &PromptPriceV1>,
+) -> bool {
+    let mut factors = BTreeSet::new();
+    for candidate_id in selected.iter().chain(additions.iter()) {
+        let Some(price) = prices.get(candidate_id) else {
+            return true;
+        };
+        if !factors.insert(price.candidate.factor_id.clone()) {
+            return true;
+        }
+    }
+    false
+}
+
 fn conflicts_with_selection(
     additions: &[StableId],
     selected: &BTreeSet<StableId>,
@@ -745,7 +768,7 @@ fn digest_pricing(value: &PromptPricingReceiptV1) -> Digest32 {
         push_u64(&mut bytes, price.candidate.token_cost);
         bytes.push(prompt_role_code(price.candidate.role));
         push_i64(&mut bytes, price.causal_utility.raw());
-        push_i64(&mut bytes, price.non_token_cost.raw());
+        push_i64(&mut bytes, price.total_utility_cost.raw());
         push_i64(&mut bytes, price.net_utility.raw());
         push_digest(&mut bytes, price.support_digest);
         push_digest(&mut bytes, price.confidence_digest);
