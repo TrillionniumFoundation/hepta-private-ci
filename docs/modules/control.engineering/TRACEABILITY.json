@@ -214,13 +214,15 @@
     {
       "designOperation": "verify_external_worker_and_custody_boundaries",
       "nativeModule": "control_engineering_v2.external_control",
-      "nativeSymbol": "verify_distributed_write_grant",
-      "ownerSymbol": "verify_distributed_write_grant / verify_audit_anchor_receipt / verify_key_custody_receipt",
+      "nativeSymbol": "admit_distributed_write_grant",
+      "ownerSymbol": "admit_distributed_write_grant / verify_store_audit_anchor / verify_key_custody_receipt",
       "tests": [
-        "FullOrchestrationClosureTests.test_external_fencing_audit_anchor_and_key_custody_are_verified"
+        "FullOrchestrationClosureTests.test_distributed_frontier_rejects_superseded_grants",
+        "FullOrchestrationClosureTests.test_audit_anchor_binds_authoritative_store_state",
+        "FullOrchestrationClosureTests.test_key_custody_binds_subject_key_attestation"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "external receipt verification only"
+      "capabilityCeiling": "durable external-fence admission and externally attested audit/key verification only"
     },
     {
       "designOperation": "repository_product_composition",
