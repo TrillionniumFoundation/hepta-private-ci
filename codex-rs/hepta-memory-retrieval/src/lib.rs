@@ -3,6 +3,8 @@
 #![forbid(unsafe_code)]
 
 mod generation_bound;
+mod generator_contract;
+mod owner_adapter;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -31,7 +33,23 @@ pub use generation_bound::RetrievalChannelV1;
 pub use generation_bound::RetrievalChannelWeightV1;
 pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::build_candidate_union;
+pub use generation_bound::compile_cue;
 pub use generation_bound::recall;
+pub use generator_contract::GeneratorContractErrorV1;
+pub use generator_contract::HNMF_MAX_CANDIDATE_EVENTS;
+pub use generator_contract::HNMF_MAX_RETURNED_EVENTS;
+pub use generator_contract::RetrievalChannelBatchV1;
+pub use generator_contract::RetrievalChannelCompletenessV1;
+pub use generator_contract::build_candidate_union_from_batches;
+pub use generator_contract::recall_from_batches;
+pub use owner_adapter::OwnerAdapterErrorV1;
+pub use owner_adapter::OwnerChannelCompletenessV1;
+pub use owner_adapter::OwnerChannelObservationV1;
+pub use owner_adapter::OwnerChannelRankV1;
+pub use owner_adapter::OwnerObservedCandidateV1;
+pub use owner_adapter::OwnerRetrievalChannelV1;
+pub use owner_adapter::OwnerRetrievalObservationV1;
+pub use owner_adapter::adapt_owner_observation;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 
