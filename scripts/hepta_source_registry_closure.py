@@ -194,6 +194,7 @@ def _production_implementation_proved(module_id: str) -> bool:
         "releaseAuthority",
         "independentAcceptance",
         "activation",
+        "externalEffectAuthority",
     )
     if not isinstance(boundary, dict) or any(boundary.get(field) is not False for field in denied):
         raise RegistryClosureError(f"production implementation authority boundary is widened: {module_id}")
