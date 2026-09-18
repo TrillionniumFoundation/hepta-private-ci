@@ -1,7 +1,11 @@
 # kernel.operations: implementation design
 
 Parent: `docs/modules/kernel.operations/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: bounded reference semantics and the repository-owned durable ledger/outbox backend are implemented in source; product composition, exact-candidate execution evidence and independent acceptance remain separate gates listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded reference semantics, the repository-owned durable ledger/outbox
+backend, and one real Agentd-to-CognitiveStore destination-owner composition are
+implemented in source. Default runtime construction, exact-candidate execution
+evidence, target-host qualification and independent acceptance remain separate
+gates listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -50,4 +54,5 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 - **State and recovery:** the durable lineage is `hepta_operations_1.sqlite`, opened through the shared FULL-synchronous WAL SQLite shim. Open verifies SQLite quick/foreign-key integrity, migration state and required safety schema objects. A committed dispatch is never requeued after crash/reopen; a newer owner generation must hand it to indeterminate reconciliation.
 - **Source tests:** [ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs), [outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs), and [durable_tests.rs](../../../codex-rs/hepta-operations/src/durable_tests.rs). The durable suite includes injected atomic-prepare failure, reopen replay, competing/expired lease fencing, owner handoff, acknowledgement separation, terminal retention, schema-guard corruption, an actual subprocess exit after the dispatch-start commit and a qualification-only final-use/destination vertical slice.
 - **Implementation and operating references:** [REFERENCE_MODEL_V1.md](../../../docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md), [CURRENT_IMPLEMENTATION.md](../../../docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md), and [DURABLE_STORE_V1.md](../../../docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md).
-- **Remaining repository integration:** bind the durable backend to a named authenticated product caller and a real destination owner's atomic dedupe/apply plus trusted terminal observer. The filesystem destination in the source test is qualification-only. Exact-head/synthetic-merge execution, target-host fault/measurement evidence and independent acceptance remain separate gates and are not created by this documentation update.
+- **Source-integrated real destination:** [codex-rs/hepta-agentd/src/operations_writer_bridge.rs](../../../codex-rs/hepta-agentd/src/operations_writer_bridge.rs) sequences the source ledger through the existing `ProductionDurableWriter`; [codex-rs/hepta-memory/src/cross_owner_operation.rs](../../../codex-rs/hepta-memory/src/cross_owner_operation.rs) and migration `0011_cross_owner_operation_inbox.sql` provide destination-owned exact-payload apply/dedupe and terminal observation. Lost source results reconcile from the destination record without resend.
+- **Remaining repository integration:** construct that coordinator from a named default/runtime lifecycle path and bind `kernel.authority` final-use at actual non-local external adapter boundaries. Exact-head/synthetic-merge execution, target-host fault/measurement evidence and independent acceptance remain separate gates and are not created by this documentation update.
