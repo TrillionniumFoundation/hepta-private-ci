@@ -605,8 +605,12 @@ pub(crate) fn build_v2_generation(
         .iter()
         .map(projection_edge_v2)
         .collect::<Result<Vec<_>, _>>()?;
+    let mut expected_nodes = nodes.clone();
+    expected_nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
+    let mut expected_edges = edges.clone();
+    expected_edges.sort_by(|left, right| left.identity.cmp(&right.identity));
 
-    build_complete_generation(
+    let canonical = build_complete_generation(
         generation,
         KnowledgeProjectionInputV2 {
             source_snapshot_digest,
@@ -621,7 +625,14 @@ pub(crate) fn build_v2_generation(
         CognitiveStoreError::Corrupt(format!(
             "SQLite KG projection failed canonical V2 generation: {error}"
         ))
-    })
+    })?;
+    if canonical.nodes != expected_nodes || canonical.edges != expected_edges {
+        return Err(CognitiveStoreError::Corrupt(
+            "canonical KG V2 materialization changed node/edge identity or support lineage"
+                .to_string(),
+        ));
+    }
+    Ok(canonical)
 }
 
 pub(crate) fn qualify_v2_transition(
