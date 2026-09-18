@@ -124,6 +124,9 @@ impl ArtifactLifecycleJournalV2 {
         }
         validate_actor_current(&actor, now)?;
         validate_actor_event_binding(&actor, &event)?;
+        if event.occurred_at > now {
+            return Err(ArtifactLifecycleJournalError::EventTimeWindow);
+        }
         let event_digest = validate_artifact_lifecycle_transition(producer_id, &event)?;
         if let Some(existing_digest) = self.event_digests.get(&event.event_id) {
             if *existing_digest != event_digest {
@@ -372,6 +375,7 @@ pub enum ArtifactLifecycleJournalError {
     HeadMismatch,
     InvalidActorEvidence,
     ActorBindingMismatch,
+    EventTimeWindow,
     ActorRoleDenied,
     StatePredecessorMismatch,
     EventIdentityConflict,
@@ -394,6 +398,7 @@ impl StdError for ArtifactLifecycleJournalError {
             Self::HeadMismatch
             | Self::InvalidActorEvidence
             | Self::ActorBindingMismatch
+            | Self::EventTimeWindow
             | Self::ActorRoleDenied
             | Self::StatePredecessorMismatch
             | Self::EventIdentityConflict
@@ -499,6 +504,31 @@ mod tests {
                 101,
             ),
             Err(ArtifactLifecycleJournalError::InvalidActorEvidence)
+        );
+    }
+
+    #[test]
+    fn art_06_new_lifecycle_event_cannot_be_future_dated() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        assert_eq!(
+            journal.append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "future-trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    21,
+                ),
+                20,
+            ),
+            Err(ArtifactLifecycleJournalError::EventTimeWindow)
         );
     }
 
