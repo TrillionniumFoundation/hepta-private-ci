@@ -354,6 +354,9 @@ mod tests {
             task_id: AutomationTaskId::parse("019153a4-3088-7000-a56a-9b1964f75007")
                 .expect("task id"),
             occurrence: 3,
+            occurrence_id: "hepta.automation.occurrence.v1:019153a4-3088-7000-a56a-9b1964f75007:1:44"
+                .to_string(),
+            schedule_revision: 1,
             scheduled_for_ms: 44,
             thread_id: "019153a4-3088-7e03-a56a-9b1964f75ddd".to_string(),
             prompt: "run through governance".to_string(),
