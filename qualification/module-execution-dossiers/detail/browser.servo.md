@@ -25,7 +25,7 @@ Navigation proposal provenance is part of the final effect semantics: `navigatio
 
 `browser_profile_state` owns profile/principal/process/page generations, allowed origins, admitted grants and browser-effect operation identities.
 
-Each worker generation receives a fresh random private profile directory plus a mode-0600 `hepta.browser.profile-owner.v1` manifest binding profile ID, principal ID, generation, Browser manifest digest and profile grant digest. A stale `${profileId}.${generation}` directory is never silently reused under another principal.
+Each worker generation receives a fresh random private profile directory. Browser stores the mode-0600 `hepta.browser.profile-owner.v1` manifest in the host-private profile root outside the worker's read/write profile bind; it binds profile ID, principal ID, generation, Browser manifest digest and profile grant digest, while only its digest crosses the session boundary. A stale profile directory is never silently reused under another principal.
 
 A new browser effect linearizes as:
 

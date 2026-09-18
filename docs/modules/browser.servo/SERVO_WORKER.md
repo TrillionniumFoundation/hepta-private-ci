@@ -94,7 +94,7 @@ The durable operation record deliberately excludes the full `typedAction`. It pe
 
 The file journal performs exact field validation on every hydrated record, rejects unknown fields, validates checksum envelopes and semantic identity, fsyncs before dispatch, uses private non-symlink files and parent directories, compacts atomically before the file ceiling and retires a fully terminal profile generation only after fsyncing a separate private generation high-water, so deleting bulky terminal records cannot resurrect the same profile generation after restart. A profile generation with durable operation history cannot be reopened into a fresh worker; unresolved durable effects from another generation block profile advancement. Persisted recovery observes the old identity without redispatch, and automatically retires the generation once all recovered operations are terminal.
 
-Every subprocess worker generation receives a fresh random private directory. Browser writes a mode-0600 `hepta.browser.profile-owner.v1` manifest binding:
+Every subprocess worker generation receives a fresh random private directory. Browser writes a mode-0600 `hepta.browser.profile-owner.v1` manifest in the host-private profile root, outside the writable sandbox profile bind. The worker never receives a path to that metadata; Browser exposes only the manifest digest at the session boundary. The manifest binds:
 
 - profile ID;
 - principal ID;

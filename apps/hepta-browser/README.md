@@ -29,7 +29,7 @@ Typed actions are closed-world: `navigate`, `click`, `type`, `credential`, `uplo
 
 The file journal validates every hydrated field, rejects unknown fields, checks canonical checksum envelopes, fsyncs dispatch intent before the effect boundary, compacts atomically before the file ceiling and retires a fully terminal profile generation after clean close. A generation with durable operation history cannot be reopened into a fresh worker; unresolved durable effects from another generation block profile advancement. Persisted recovery automatically retires the generation once all recovered operations become terminal.
 
-Each worker generation receives a fresh random private profile directory and a mode-0600 `hepta.browser.profile-owner.v1` manifest binding profile ID, principal ID, generation, Browser manifest digest and profile grant digest. Stale profile bytes are not silently reopened for another principal.
+Each worker generation receives a fresh random private profile directory. Its mode-0600 `hepta.browser.profile-owner.v1` ownership manifest lives in the host-private profile root outside the worker's read/write profile bind and binds profile ID, principal ID, generation, Browser manifest digest and profile grant digest; only the digest crosses the session boundary. Stale profile bytes are not silently reopened for another principal.
 
 ## Semantic observe -> reason -> act loop
 

@@ -86,7 +86,7 @@ Admission additionally rejects reopening a profile generation that still has any
 
 `type { selector, text }` may contain sensitive user-entered text at the live effect boundary, but the durable journal stores only the typed action's final payload digest and immutable effect semantics. Raw `type.text`, credential values, upload bytes and page contents are not journal fields.
 
-Each worker generation receives a fresh random private profile directory containing a mode-0600 `hepta.browser.profile-owner.v1` manifest that binds profile ID, principal ID, generation, Browser manifest digest and profile grant digest. Stale profile bytes are never implicitly reopened under a different principal; successful close removes the private directory and retires that journal generation.
+Each worker generation receives a fresh random private profile directory. Browser keeps the mode-0600 `hepta.browser.profile-owner.v1` manifest in the host-private profile root, outside the profile directory mounted read/write into the worker sandbox; the manifest binds profile ID, principal ID, generation, Browser manifest digest and profile grant digest. Only its digest crosses the session boundary. Stale profile bytes are never implicitly reopened under a different principal; successful close removes both host-private metadata and the private profile directory, then retires that journal generation.
 
 ## 7. Runtime, concurrency and transaction model
 
