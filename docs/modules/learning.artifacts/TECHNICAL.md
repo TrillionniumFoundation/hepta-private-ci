@@ -444,3 +444,131 @@ The bootstrap source-location obligation for `learning.artifacts` is implemented
 - `codex-rs/hepta-learning-artifacts`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. Current native closure, durability and host boundary
+
+The module-specific source closure represented by
+`docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json` now includes the
+stable V1 registry/storage surface plus the additive V2/V3 admission,
+withdrawal, lifecycle and governed-iteration surfaces. The map's `sourceBase`
+remains the repository-wide implementation-map generation identity shared by
+all module maps; its `implementationHead` records the newer
+`learning.artifacts` source closure reviewed by this guide.
+
+### 18.1 Bounded durable histories
+
+All crate-owned append-only histories that are expected to round-trip through
+the create-only snapshot formats use the shared
+`MAX_DURABLE_HISTORY_RECORDS = 4096` ceiling. The stable V1 artifact registry,
+the scoped dataset-withdrawal registry and the lifecycle journal must reject a
+new append before they can enter a state that the bounded durable formats cannot
+represent. The byte ceiling remains independently enforced by each format.
+
+The stable artifact snapshot remains `HEPTAR01`. Additive create-only sidecar
+formats provide durable semantic replay for the other authoritative histories:
+
+- `HEPTAW01` persists one scoped `DatasetWithdrawalRegistry`, including its
+  registry identity, scope digest, exact notice sequence and head;
+- `HEPTAL02` persists `ArtifactLifecycleJournalV2`, including predecessor
+  head, actor evidence and the complete lifecycle event for every record.
+
+Readers require an independently retained receipt, verify bounded exact bytes,
+replay the source semantics and reject non-canonical re-encoding.
+
+### 18.2 Historical lifecycle recovery
+
+A lifecycle actor must be currently valid when creating a new mutation.
+Historical snapshot replay is different: each persisted record is revalidated
+at its immutable `event.occurred_at` time. Therefore a credential that was
+valid when an event was accepted may later expire without making the immutable
+history unrecoverable. Reopening after expiry must succeed; attempting a new
+append with the expired credential must still fail.
+
+### 18.3 Scoped withdrawal authority
+
+V3 withdrawal-aware admission requires a
+`WithdrawalRegistryBindingV1 { registry_id, scope_digest }`. The binding is
+domain-separated into its own digest and is carried by the withdrawal snapshot
+and `WithdrawalBoundArtifactAdmissionV3`. The V3 admission digest binds the
+complete V2 manifest digest, withdrawal registry binding, exact withdrawal head
+and admission time.
+
+Two registries with an identical event head are not interchangeable when their
+registry identity or scope differs. Legacy unscoped withdrawal registries remain
+usable for the V2 source API, but they cannot issue a V3 publication admission.
+
+### 18.4 V3 admission to durable registry publication
+
+`prepare_artifact_publication_v3` and
+`revalidate_artifact_publication_v3` define the crate-side transaction
+contract. Preparation binds:
+
+1. the V3 admission digest;
+2. withdrawal registry/scope binding and exact withdrawal head;
+3. the expected stable V1 registry predecessor head;
+4. the exact V1 register-event digest;
+5. the resulting stable registry head.
+
+The resulting transaction digest is the required binding for the create-only
+registry snapshot. Immediately before publication, while holding the host
+writer fence, the host revalidates both mutable frontiers. A changed registry
+head or withdrawal frontier fails closed.
+
+The stable V1 durable registry has one predecessor slot. A V2 manifest with
+multiple predecessors is therefore refused by this bridge instead of silently
+discarding lineage. For a representable V2 manifest, the V1
+`support_digest` is the complete validated V2 manifest digest, retaining a
+cryptographic commitment to all V2-only fields. A future durable
+multi-predecessor encoding requires a new versioned format rather than an
+in-place reinterpretation.
+
+Cross-file durability remains a bounded saga, not a claimed filesystem
+transaction: payload synchronization, registry snapshot creation and current
+head-witness publication are distinct durable effects. The externally visible
+commit point is the host's authenticated publication of the exact registry
+snapshot/current-head witness pair. Crash recovery reconciles by transaction
+digest, exact predecessor and independently retained receipts.
+
+### 18.5 Iteration and iteration-ledger contracts
+
+`iteration.rs` owns bounded iteration-envelope and candidate transition
+semantics only. `iteration_ledger.rs` records bounded externally supplied
+evidence and rebuilds candidate state exclusively by replaying that evidence.
+Neither surface executes a sandbox, evaluates code, chooses a winner, merges a
+candidate, promotes it or releases it. Evidence requiring independence rejects
+the generator identity where the state transition requires a separate actor.
+
+### 18.6 Host-owned obligations and non-claims
+
+The source crate now owns the deterministic validation, create-only bytes,
+semantic replay and digest-bound publication contracts described above. The
+product host still owns all capabilities that require an authenticated or
+platform-specific environment:
+
+- newest/current snapshot and witness discovery;
+- signature verification, key distribution and principal authentication;
+- writer fencing and serialized publication;
+- trusted ancestor-directory traversal, namespace containment and
+  containing-directory synchronization;
+- encryption, quota, retention, backup deletion and physically deleting a
+  proven orphan;
+- target-filesystem locking/power-loss qualification;
+- independently authorized selection, process loading, canary, promotion and
+  release.
+
+An empty or partial file left after a failed create-only write is never silently
+reused. Cleanup is a separately fenced host operation that must first prove the
+path is not referenced by any current or retained historical receipt.
+
+### 18.7 Qualification
+
+`.github/workflows/hepta-lane-e-gap-closure.yml` qualifies the exact PR source
+and an ordered-parent synthetic merge. Pull requests use the PR base SHA; push
+qualification uses `github.event.before`, with the all-zero initial-push value
+falling back to the source commit's parent. Compilation, owner tests,
+cross-crate closure, strict Clippy, rustfmt and clean-tree checks must all be
+green before this source closure is treated as repository-qualified.
+
+These source changes do not change the capability ceiling: product execution,
+independent acceptance, activation and release remain separate evidence gates.
