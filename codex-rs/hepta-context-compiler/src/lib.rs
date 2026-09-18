@@ -1,7 +1,7 @@
 //! Source-aware context compiler.
 //!
 //! The proof-closed V2.1 surface is the normative execution-context API. It
-//! verifies typed trusted-admission evidence, measures actual content and final
+//! verifies typed admission evidence for every candidate, measures actual content and final
 //! serialized payloads with the selected tokenizer, revalidates revocation at
 //! attachment, and binds provider-attempt acknowledgement evidence. The V1
 //! entrypoints remain compatibility-only source APIs. No compiler path grants
