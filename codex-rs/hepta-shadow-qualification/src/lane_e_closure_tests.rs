@@ -5,10 +5,10 @@ use codex_hepta_bellman_operator::evaluate_bellman_reference;
 use codex_hepta_bellman_operator::fit_transition_model;
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
 use codex_hepta_intelligence_eval::CrossFoldPlanV1;
+use codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
 use codex_hepta_intelligence_eval::EvaluationDirectionV1;
 use codex_hepta_intelligence_eval::EvaluationIntervalV1;
-use codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
@@ -349,13 +349,11 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         Ok(file) => file,
         Err(error) => panic!("holdout temp file failed: {error}"),
     };
-    let mut holdout = match DurableFinalHoldoutJournalV1::create(
-        file,
-        digest("lane-e-production-holdout"),
-    ) {
-        Ok(store) => store,
-        Err(error) => panic!("durable holdout initialization failed: {error}"),
-    };
+    let mut holdout =
+        match DurableFinalHoldoutJournalV1::create(file, digest("lane-e-production-holdout")) {
+            Ok(store) => store,
+            Err(error) => panic!("durable holdout initialization failed: {error}"),
+        };
     let durable_holdout = match holdout.consume_proven(holdout.anchor(), &frozen_plan) {
         Ok(proof) => proof,
         Err(error) => panic!("durable final holdout use failed: {error}"),
@@ -434,14 +432,11 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
             support_digest: outcome_digest,
         }],
     };
-    let evaluation_payload = match durable_evaluation_signing_payload_v3(
-        &evaluation_bundle,
-        &roles,
-        &durable_holdout,
-    ) {
-        Ok(payload) => payload,
-        Err(error) => panic!("production evaluation payload failed: {error}"),
-    };
+    let evaluation_payload =
+        match durable_evaluation_signing_payload_v3(&evaluation_bundle, &roles, &durable_holdout) {
+            Ok(payload) => payload,
+            Err(error) => panic!("production evaluation payload failed: {error}"),
+        };
     let evaluation_evidence = SignedEvaluationEvidenceV1 {
         generator_plan: signed_evidence(
             &evaluation_generator,
