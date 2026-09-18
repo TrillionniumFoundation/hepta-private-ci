@@ -5,6 +5,7 @@ use std::sync::Mutex;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
 use codex_hepta_matrix_protocol::MatrixBindingV1;
 use codex_hepta_matrix_protocol::MatrixDeviceId;
@@ -27,6 +28,7 @@ use codex_hepta_matrix_sdk::MatrixTransportError;
 use codex_hepta_matrix_sdk::OutboxDispatchConfig;
 use codex_hepta_matrix_sdk::dispatch_outbox_once;
 use codex_hepta_matrix_sdk::run_outbox_sender;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxDisposition;
@@ -369,12 +371,33 @@ async fn expired_crash_lease_reuses_the_stable_transaction_after_reopen() -> Tes
         31,
     )
     .await?;
-    assert_eq!(stats.sent, 1);
+    assert_eq!(stats.accepted, 1);
     assert_eq!(transport.txn_ids()?, vec![original.stable_txn_id.clone()]);
+    let accepted = reopened
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted outbox record disappeared")?;
+    assert_eq!(accepted.state, OutboxState::InFlight);
+    assert_eq!(accepted.sent_event_id, None);
+    let dispatch = reopened
+        .dispatch_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("dispatch ledger record disappeared")?;
+    assert_eq!(dispatch.state, MatrixDispatchState::Accepted);
+    assert_eq!(dispatch.transport_event_id, Some(sent_event.clone()));
+    reopened
+        .observe_outbox_server_event(
+            &original.stable_txn_id,
+            &room(ALLOWED_ROOM)?,
+            &sent_event,
+            &Sha256Digest::for_bytes(b"reopen-server-observation"),
+            32,
+        )
+        .await?;
     let stored = reopened
         .outbox_for_txn(&original.stable_txn_id)
         .await?
-        .ok_or("sent outbox record disappeared")?;
+        .ok_or("terminal outbox record disappeared")?;
     assert_eq!(stored.state, OutboxState::Sent);
     assert_eq!(stored.sent_event_id, Some(sent_event));
     reopened.close().await;
@@ -388,9 +411,10 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
     let layout = layout(&temp, &agent_id)?;
     let store = prepared_store(&layout).await?;
     let original = enqueue_final(&store, &agent_id, 10).await?;
+    let sent_after_retry = event("$sent-after-retry")?;
     let transport = FakeTransport::new([
         Err(MatrixTransportError::Retryable),
-        Ok(event("$sent-after-retry")?),
+        Ok(sent_after_retry.clone()),
     ]);
     let config = OutboxDispatchConfig {
         lease_ms: 20,
@@ -411,9 +435,18 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
     assert_eq!(
         dispatch_outbox_once(&store, &transport, &config, &cancel, 20)
             .await?
-            .sent,
+            .accepted,
         1
     );
+    store
+        .observe_outbox_server_event(
+            &original.stable_txn_id,
+            &room(ALLOWED_ROOM)?,
+            &sent_after_retry,
+            &Sha256Digest::for_bytes(b"retry-server-observation"),
+            21,
+        )
+        .await?;
     assert_eq!(
         transport.txn_ids()?,
         vec![
@@ -461,7 +494,7 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(after_response_loss.sent_event_id, None);
 
     let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
-    assert_eq!(second.sent, 1);
+    assert_eq!(second.accepted, 1);
     assert_eq!(
         transport.txn_ids()?,
         vec![
@@ -469,10 +502,26 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
             original.stable_txn_id.clone(),
         ]
     );
+    let accepted = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted outbox row disappeared")?;
+    assert_eq!(accepted.state, OutboxState::InFlight);
+    assert_eq!(accepted.attempts, 2);
+    assert_eq!(accepted.sent_event_id, None);
+    store
+        .observe_outbox_server_event(
+            &original.stable_txn_id,
+            &room(ALLOWED_ROOM)?,
+            &accepted_event_id,
+            &Sha256Digest::for_bytes(b"ack-loss-server-observation"),
+            21,
+        )
+        .await?;
     let committed = store
         .outbox_for_txn(&original.stable_txn_id)
         .await?
-        .ok_or("sent outbox row disappeared")?;
+        .ok_or("terminal outbox row disappeared")?;
     assert_eq!(committed.state, OutboxState::Sent);
     assert_eq!(committed.attempts, 2);
     assert_eq!(committed.sent_event_id, Some(accepted_event_id));
