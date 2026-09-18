@@ -984,7 +984,7 @@
       "guide": "docs/modules/cognitive.read/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/cognitive.read.md",
       "implementationState": "product_source_composed_not_execution_evidence",
-      "apiContract": "Acquire one provider-owned immutable snapshot for bound scope/purpose/frontiers/authority epoch; perform bounded typed projection; retain an AuthoritativeReadGuardV1; reacquire and revalidate provider/vector/snapshot/lease at final use. Export no writer/SQL connection.",
+      "apiContract": "Product: acquire one provider-owned immutable snapshot for bound scope/purpose/frontiers/authority epoch; perform bounded typed projection; retain an AuthoritativeReadGuardV1; reacquire and revalidate provider/vector/snapshot/lease at final use. Legacy read/read_v2 remain caller-supplied source/shadow compatibility primitives and do not establish host-current authority. Export no writer/SQL connection.",
       "stateAndEncoding": "Ephemeral immutable owner cut plus authoritative acquisition/read receipts. Generation vector binds scope, purpose, memory/source/tombstone/knowledge frontiers, KG generation, retrieval/encoder identity, optional pinned model digest, authority epoch and explicit unused host dimensions.",
       "linearizationAndRecovery": "Acquire one SQLite transaction cut; bind the exact refreshed Agentd current_generation as authority epoch; read; intersect exact revision/content candidates; plan bounded context; reacquire current owner cut; reject provider/vector/snapshot/lease drift; then refresh Agentd lifecycle again and require Running+Ready with unchanged current_generation.",
       "algorithmAndBounds": "IDs<=512,result<=1 MiB subject to context limit; lifetime<=request deadline; host-bounded pins/cache. Slow readers expire instead of retaining unbounded history.",
@@ -994,6 +994,10 @@
       "deploymentQualified": false,
       "nativeImplementation": {
         "entrypoints": [
+          {
+            "path": "codex-rs/hepta-cognitive-read/src/lib.rs",
+            "symbol": "read"
+          },
           {
             "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
             "symbol": "read_authoritative"
@@ -1011,7 +1015,7 @@
             "symbol": "AgentdAuthoritativeSnapshotProvider"
           }
         ],
-        "stateAndRecovery": "The production path uses a provider-owned single-transaction SQLite cut and a final-use authoritative guard. Direct DurableCognitiveSnapshot V2 projection is test-only; read_v2 remains a lower-level caller-supplied-snapshot primitive in the cognitive-read crate.",
+        "stateAndRecovery": "The production path uses a provider-owned single-transaction SQLite cut and a final-use authoritative guard. Direct DurableCognitiveSnapshot V2 projection is test-only; legacy read and read_v2 remain lower-level caller-supplied source/shadow compatibility primitives in the cognitive-read crate.",
         "testFiles": [
           "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
           "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
