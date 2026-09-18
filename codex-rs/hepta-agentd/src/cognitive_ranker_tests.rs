@@ -304,31 +304,23 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
         memory_ids.push(memory.id.memory_id);
     }
     let planner_clock = crate::cognitive_context::MonotonicClockV1::new();
-    let baseline = crate::cognitive_context::read(
+    let baseline =
+        crate::cognitive_context::read(&store, &owner(), 1, "lemon", 4, None, &planner_clock)
+            .await
+            .unwrap();
+    assert_eq!(baseline.items.len(), 2);
+    let fixture = fixture(&baseline.items, &[0, 10]);
+    let ranked = crate::cognitive_context::read(
         &store,
         &owner(),
         1,
         "lemon",
-        4,
-        None,
+        1,
+        Some(&fixture.ranker),
         &planner_clock,
     )
-        .await
-        .unwrap();
-    assert_eq!(baseline.items.len(), 2);
-    let fixture = fixture(&baseline.items, &[0, 10]);
-    let ranked =
-        crate::cognitive_context::read(
-            &store,
-            &owner(),
-            1,
-            "lemon",
-            1,
-            Some(&fixture.ranker),
-            &planner_clock,
-        )
-            .await
-            .unwrap();
+    .await
+    .unwrap();
     assert_eq!(ranked.items, vec![baseline.items[1].clone()]);
     assert!(ranked.plan.as_ref().unwrap().read_allowed);
     // The read owner, not the learned ranker, remains authoritative on deletion.
