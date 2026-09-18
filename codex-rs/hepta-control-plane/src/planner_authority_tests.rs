@@ -8,7 +8,6 @@ use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_hepta_ndu::EvaluationDisposition;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
