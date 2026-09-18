@@ -354,7 +354,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "agent {agent_id} has no explicit active release identity"
             ))
         })?;
-        if current.identity() == target.identity() || current.command() == target.command() {
+        if current.identity() == target.identity()
+            || (current.command() == target.command()
+                && current.matrixd_command() == target.matrixd_command())
+        {
             return Err(SupervisorError::TargetReleaseUnchanged(agent_id.clone()));
         }
         if record.lifecycle.lifecycle != AgentLifecycle::Running {

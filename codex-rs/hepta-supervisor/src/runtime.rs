@@ -38,6 +38,11 @@ pub(crate) struct AgentRuntime<P> {
     pub phase: RuntimePhase,
     pub healthy: bool,
     pub fenced: bool,
+    /// True only after the process identity is durably published in the
+    /// supervisor lease. A spawned child whose lease publication fails stays
+    /// tracked in memory until terminal observation instead of becoming an
+    /// untracked orphan.
+    pub lease_persisted: bool,
 }
 
 #[derive(Clone, Copy, Debug)]

@@ -165,14 +165,16 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let fenced = runtime.fenced || record.lifecycle.generation != runtime.generation;
-        let lease = ProcessLease {
-            schema_version: PROCESS_LEASE_SCHEMA_VERSION,
-            agent_id: agent_id.clone(),
-            spawn_generation: runtime.spawn_generation,
-            release_id: runtime.release_id.clone(),
-            identity: runtime.identity.clone(),
-        };
-        remove_lease(record.layout.run_root(), &lease)?;
+        if runtime.lease_persisted {
+            let lease = ProcessLease {
+                schema_version: PROCESS_LEASE_SCHEMA_VERSION,
+                agent_id: agent_id.clone(),
+                spawn_generation: runtime.spawn_generation,
+                release_id: runtime.release_id.clone(),
+                identity: runtime.identity.clone(),
+            };
+            remove_lease(record.layout.run_root(), &lease)?;
+        }
         let mut generation = runtime.generation;
         if !fenced {
             let target = match record.lifecycle.lifecycle {

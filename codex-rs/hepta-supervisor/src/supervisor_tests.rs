@@ -154,6 +154,8 @@ struct FakeWorld {
     processes: BTreeMap<u64, FakeState>,
     reject_adoption: BTreeSet<AgentId>,
     reject_spawn_programs: BTreeSet<PathBuf>,
+    poison_lease_on_spawn: BTreeSet<AgentId>,
+    fail_next_kill: BTreeSet<AgentId>,
 }
 
 struct FakeState {
@@ -263,6 +265,22 @@ impl FakeControl {
             .insert(program.into());
     }
 
+    fn poison_lease_on_spawn(&self, agent_id: AgentId) {
+        self.world
+            .lock()
+            .expect("fake world lock")
+            .poison_lease_on_spawn
+            .insert(agent_id);
+    }
+
+    fn fail_next_kill(&self, agent_id: AgentId) {
+        self.world
+            .lock()
+            .expect("fake world lock")
+            .fail_next_kill
+            .insert(agent_id);
+    }
+
     fn counts(&self, agent_id: &AgentId) -> (usize, usize, usize) {
         self.counts_role(agent_id, FakeRole::Agentd)
     }
@@ -337,6 +355,10 @@ impl ProcessDriver for FakeDriver {
                 kill_requests: 0,
             },
         );
+        if world.poison_lease_on_spawn.remove(&spec.agent_id) {
+            std::fs::create_dir(spec.run_root.join("supervisor-process.json"))
+                .map_err(ProcessDriverError::from)?;
+        }
         Ok(SpawnedProcess {
             identity,
             process: FakeProcess {
@@ -465,15 +487,99 @@ impl ManagedProcess for FakeProcess {
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
+        let mut world = self.world.lock().expect("fake world lock");
+        let agent_id = world
+            .processes
+            .get(&self.id)
+            .expect("fake process")
+            .agent_id
+            .clone();
+        if world.fail_next_kill.remove(&agent_id) {
+            return Err(ProcessDriverError::new("injected cleanup kill failure"));
+        }
+        world
             .processes
             .get_mut(&self.id)
             .expect("fake process")
             .kill_requests += 1;
         Ok(())
     }
+}
+
+#[test]
+fn preflight_accepts_matrix_only_release_change() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let agent_command = AgentCommand::new(fake_program("shared/hepta-agentd"), Vec::new())?;
+    supervisor.start_release(
+        &fleet.first,
+        AgentRelease::new("paired-v1", agent_command.clone())?,
+        now,
+    )?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let target = AgentRelease::with_matrixd(
+        "paired-v2",
+        agent_command,
+        AgentCommand::new(fake_program("matrix-v2/hepta-matrixd"), Vec::new())?,
+    )?;
+    supervisor.preflight_upgrade(&fleet.first, &target)?;
+    supervisor.upgrade(&fleet.first, target, now)?;
+    assert!(supervisor.snapshot(&fleet.first).unwrap().release_change_pending);
+    Ok(())
+}
+
+#[test]
+fn lease_write_and_cleanup_kill_failure_keeps_child_tracked_until_exit()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    control.poison_lease_on_spawn(fleet.first.clone());
+    control.fail_next_kill(fleet.first.clone());
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    let error = supervisor
+        .start(&fleet.first, command()?, now)
+        .expect_err("lease publication failure must reject start");
+    assert!(matches!(error, SupervisorError::Driver { .. }));
+    let failed = supervisor.snapshot(&fleet.first).expect("tracked failed child");
+    assert!(failed.active, "spawned child must remain tracked after cleanup failure");
+    assert!(!failed.healthy);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
+
+    // The retained handle keeps a safe retry path instead of orphaning the
+    // process. A later kill can succeed and terminal observation closes it.
+    supervisor.kill(&fleet.first)?;
+    assert_eq!(control.counts(&fleet.first).2, 1);
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert!(!supervisor.snapshot(&fleet.first).unwrap().active);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Stopped
+    );
+    Ok(())
 }
 
 #[test]
