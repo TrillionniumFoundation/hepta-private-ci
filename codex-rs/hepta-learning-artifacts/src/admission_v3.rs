@@ -196,6 +196,7 @@ impl StdError for ArtifactAdmissionError {
             | Self::ManifestDigestMismatch
             | Self::AdmissionDigestMismatch => None,
         }
+    }
 }
 
 impl From<ArtifactClosureError> for ArtifactAdmissionError {
@@ -323,6 +324,5 @@ mod tests {
             withdrawal_head_digest_v3(&registry, &tenant_a).unwrap(),
             withdrawal_head_digest_v3(&registry, &tenant_b).unwrap()
         );
-    }
     }
 }
