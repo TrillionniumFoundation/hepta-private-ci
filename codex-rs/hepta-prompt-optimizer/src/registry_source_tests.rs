@@ -31,7 +31,8 @@ fn digest(value: &str) -> Digest32 {
 }
 
 fn authorize(registry: &mut PromptRegistry, factor_id: &str, nonce: u8) -> tempfile::TempDir {
-    let signing = SigningKey::from_bytes(&[99; 32]);
+    let signing_seed = Digest32::of_bytes(b"optimizer-registry-test-signing-key").into_array();
+    let signing = SigningKey::from_bytes(&signing_seed);
     let directory = tempfile::tempdir().expect("authority directory");
     let authority = FinalUseAuthority::open_state_dir(
         directory.path(),
@@ -63,7 +64,8 @@ fn authorize(registry: &mut PromptRegistry, factor_id: &str, nonce: u8) -> tempf
         signer_id: "optimizer-registry-review-owner".to_string(),
         authority_epoch: 1,
         grant_id: format!("optimizer-admission-{nonce}"),
-        nonce: [nonce; 32],
+        nonce: Digest32::of_bytes(format!("optimizer-admission-nonce:{nonce}").as_bytes())
+            .into_array(),
         binding,
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now.saturating_add(30_000),

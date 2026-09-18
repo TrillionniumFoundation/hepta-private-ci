@@ -173,6 +173,34 @@ fn v0_migration_refuses_to_invent_admission_authority() {
 }
 
 #[test]
+fn interrupted_replacement_restores_last_durable_generation_on_reopen() {
+    let directory = tempfile::tempdir().expect("store temp dir");
+    {
+        let mut store =
+            DurablePromptRegistry::open_or_create(directory.path(), 64).expect("create store");
+        store
+            .register_factor(factor_with_id("factor:1", FactorSource::GovernedInternal))
+            .expect("register factor");
+    }
+
+    let current = directory.path().join(STATE_FILE);
+    let backup = directory.path().join(BACKUP_FILE);
+    let temporary = directory.path().join(TEMP_FILE);
+    std::fs::rename(&current, &backup).expect("simulate current-to-backup crash window");
+    std::fs::write(&temporary, b"incomplete next generation").expect("write interrupted temp");
+
+    let reopened = DurablePromptRegistry::open(directory.path()).expect("recover predecessor");
+    assert!(reopened.registry().factor(&id("factor:1")).is_some());
+    assert!(current.exists());
+    assert!(!backup.exists());
+    assert!(!temporary.exists());
+    reopened
+        .registry()
+        .validate_integrity()
+        .expect("recovered integrity");
+}
+
+#[test]
 fn durable_store_rejects_concurrent_authoritative_writer() {
     let directory = tempfile::tempdir().expect("store temp dir");
     let first = DurablePromptRegistry::open_or_create(directory.path(), 64)

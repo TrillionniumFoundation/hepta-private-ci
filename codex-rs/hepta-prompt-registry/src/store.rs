@@ -23,6 +23,7 @@ use crate::protocol::encode_registry_state;
 
 const STATE_FILE: &str = "prompt-registry.json";
 const TEMP_FILE: &str = ".prompt-registry.json.tmp";
+const BACKUP_FILE: &str = ".prompt-registry.json.bak";
 const WRITER_LOCK_FILE: &str = ".prompt-registry.writer.lock";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -64,6 +65,7 @@ impl DurablePromptRegistry {
     ) -> Result<Self, PromptRegistryStoreError> {
         fs::create_dir_all(directory).map_err(io_error)?;
         let writer_lock = acquire_writer_lock(directory)?;
+        recover_interrupted_commit(directory)?;
         let path = directory.join(STATE_FILE);
         if path.exists() {
             let host = Self::open_with_lock(directory, writer_lock)?;
@@ -91,6 +93,7 @@ impl DurablePromptRegistry {
     pub fn open(directory: &Path) -> Result<Self, PromptRegistryStoreError> {
         fs::create_dir_all(directory).map_err(io_error)?;
         let writer_lock = acquire_writer_lock(directory)?;
+        recover_interrupted_commit(directory)?;
         Self::open_with_lock(directory, writer_lock)
     }
 
@@ -231,27 +234,83 @@ fn acquire_writer_lock(directory: &Path) -> Result<File, PromptRegistryStoreErro
     }
 }
 
+fn recover_interrupted_commit(directory: &Path) -> Result<(), PromptRegistryStoreError> {
+    let temporary = directory.join(TEMP_FILE);
+    let destination = directory.join(STATE_FILE);
+    let backup = directory.join(BACKUP_FILE);
+
+    if destination.exists() {
+        remove_file_if_exists(&temporary)?;
+        remove_file_if_exists(&backup)?;
+        return Ok(());
+    }
+
+    if backup.exists() {
+        fs::rename(&backup, &destination).map_err(io_error)?;
+        sync_directory(directory)?;
+        remove_file_if_exists(&temporary)?;
+        return Ok(());
+    }
+
+    remove_file_if_exists(&temporary)?;
+    Ok(())
+}
+
 fn atomic_write(directory: &Path, bytes: &[u8]) -> Result<(), PromptRegistryStoreError> {
     fs::create_dir_all(directory).map_err(io_error)?;
     let temporary = directory.join(TEMP_FILE);
     let destination = directory.join(STATE_FILE);
-    let write_result = (|| {
-        let mut file = File::create(&temporary).map_err(io_error)?;
-        file.write_all(bytes).map_err(io_error)?;
-        file.sync_all().map_err(io_error)?;
-        fs::rename(&temporary, &destination).map_err(io_error)?;
+    let backup = directory.join(BACKUP_FILE);
+
+    remove_file_if_exists(&temporary)?;
+    let mut file = File::create(&temporary).map_err(io_error)?;
+    file.write_all(bytes).map_err(io_error)?;
+    file.sync_all().map_err(io_error)?;
+    drop(file);
+
+    let had_destination = destination.exists();
+    if had_destination {
+        remove_file_if_exists(&backup)?;
+        fs::rename(&destination, &backup).map_err(io_error)?;
         sync_directory(directory)?;
-        Ok(())
-    })();
-    if write_result.is_err() {
-        let _ = fs::remove_file(&temporary);
     }
-    write_result
+
+    if let Err(error) = fs::rename(&temporary, &destination) {
+        if had_destination && !destination.exists() && backup.exists() {
+            let _ = fs::rename(&backup, &destination);
+            let _ = sync_directory(directory);
+        }
+        let _ = fs::remove_file(&temporary);
+        return Err(io_error(error));
+    }
+
+    sync_directory(directory)?;
+    if had_destination {
+        let _ = fs::remove_file(&backup);
+        let _ = sync_directory(directory);
+    }
+    Ok(())
 }
 
+fn remove_file_if_exists(path: &Path) -> Result<(), PromptRegistryStoreError> {
+    match fs::remove_file(path) {
+        Ok(()) => Ok(()),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(io_error(error)),
+    }
+}
+
+#[cfg(unix)]
 fn sync_directory(directory: &Path) -> Result<(), PromptRegistryStoreError> {
     let file = File::open(directory).map_err(io_error)?;
     file.sync_all().map_err(io_error)
+}
+
+#[cfg(not(unix))]
+fn sync_directory(_directory: &Path) -> Result<(), PromptRegistryStoreError> {
+    // File contents are synced before each rename. The backup/current naming
+    // protocol makes an interrupted replacement recoverable on reopen.
+    Ok(())
 }
 
 fn io_error(error: std::io::Error) -> PromptRegistryStoreError {
