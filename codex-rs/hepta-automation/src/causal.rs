@@ -259,6 +259,62 @@ impl AutomationStore {
         Ok(())
     }
 
+    /// Reconciles the automation occurrence only from the durable state of its
+    /// already-bound TaskFlow run. Non-terminal TaskFlow projections cannot
+    /// advance the recurring schedule.
+    pub async fn reconcile_occurrence_from_taskflow(
+        &self,
+        task_id: AutomationTaskId,
+        occurrence: u64,
+        run_id: &str,
+        now_ms: u64,
+    ) -> Result<AutomationTask, AutomationError> {
+        validate_identifier(run_id)?;
+        let row = sqlx::query(
+            "SELECT o.taskflow_run_id, r.state, r.terminal_reason
+             FROM automation_occurrences o
+             JOIN automation_tasks t ON t.task_id = o.task_id
+             JOIN taskflow_runs r
+               ON r.owner_agent_id = t.owner_agent_id AND r.run_id = o.taskflow_run_id
+             WHERE o.task_id = ? AND o.occurrence = ?
+               AND t.owner_agent_id = ?",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .fetch_optional(self.taskflow_pool())
+        .await
+        .map_err(unavailable)?
+        .ok_or(AutomationError::Conflict)?;
+        let bound_run_id: Option<String> =
+            row.try_get("taskflow_run_id").map_err(unavailable)?;
+        if bound_run_id.as_deref() != Some(run_id) {
+            return Err(AutomationError::Conflict);
+        }
+        let state: String = row.try_get("state").map_err(unavailable)?;
+        let terminal = match state.as_str() {
+            "succeeded" => AutomationOccurrenceTerminal::Succeeded,
+            "failed" => AutomationOccurrenceTerminal::Failed,
+            "cancelled" => AutomationOccurrenceTerminal::Cancelled,
+            "indeterminate" => {
+                let reason = row
+                    .try_get::<Option<String>, _>("terminal_reason")
+                    .map_err(unavailable)?
+                    .unwrap_or_else(|| "taskflow_indeterminate".to_string());
+                self.mark_occurrence_indeterminate(task_id, occurrence, now_ms, &reason)
+                    .await?;
+                return self.task(task_id).await?.ok_or(AutomationError::Corrupt);
+            }
+            _ => return Err(AutomationError::Conflict),
+        };
+        let reason = row
+            .try_get::<Option<String>, _>("terminal_reason")
+            .map_err(unavailable)?
+            .unwrap_or_else(|| format!("taskflow_{state}"));
+        self.reconcile_occurrence_terminal(task_id, occurrence, terminal, now_ms, &reason)
+            .await
+    }
+
     /// Commits the authoritative occurrence terminal state and only then
     /// advances the recurring schedule.  Queue admission never reaches this
     /// method implicitly.
