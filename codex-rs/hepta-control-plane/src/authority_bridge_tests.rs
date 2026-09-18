@@ -17,6 +17,7 @@ use ed25519_dalek::SigningKey;
 use super::AuthorityBridgeError;
 use super::claim_final_use_for_grant_request_v1;
 use super::final_use_binding_for_grant_request_v1;
+use super::with_authorized_grant_request_v1;
 use crate::GrantRequestV1;
 
 fn id(value: &str) -> StableId {
@@ -113,6 +114,48 @@ fn independent_authority_claims_exact_planner_binding() {
         .with_verified_use(token, &binding, || "released")
         .expect("final revalidation");
     assert_eq!(released, "released");
+}
+
+
+#[test]
+fn final_boundary_helper_revalidates_and_consumes_authority_once() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let signing = SigningKey::from_bytes(&[33; 32]);
+    let authority = authority(&temporary.path().join("authority"), &signing);
+    let request = request();
+    let subject = id("agent:alpha");
+    let destination = id("provider:effect");
+    let scope = digest("effect-scope");
+    let binding =
+        final_use_binding_for_grant_request_v1(&request, &subject, &destination, scope)
+            .expect("binding");
+    let signed = signed_grant(&signing, binding);
+
+    let released = with_authorized_grant_request_v1(
+        &authority,
+        &signed,
+        &request,
+        &subject,
+        &destination,
+        scope,
+        || "released",
+    )
+    .expect("final boundary");
+    assert_eq!(released, "released");
+
+    assert_eq!(
+        with_authorized_grant_request_v1(
+            &authority,
+            &signed,
+            &request,
+            &subject,
+            &destination,
+            scope,
+            || "must-not-run",
+        )
+        .expect_err("nonce reuse must fail before dispatch"),
+        AuthorityBridgeError::Authority(FinalUseError::AlreadyClaimed)
+    );
 }
 
 #[test]
