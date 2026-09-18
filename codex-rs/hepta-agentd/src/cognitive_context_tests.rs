@@ -126,14 +126,8 @@ async fn revocation_between_ranking_and_publication_fails_closed() {
         .await
         .unwrap();
 
-    let result = super::read_with_before_revalidate(
-        &store,
-        &owner,
-        1,
-        "revocable",
-        4,
-        None,
-        || {
+    let result =
+        super::read_with_before_revalidate(&store, &owner, 1, "revocable", 4, None, || {
             let store = &store;
             let access = &access;
             let memory_id = memory.id.memory_id.clone();
@@ -155,9 +149,11 @@ async fn revocation_between_ranking_and_publication_fails_closed() {
                     .await
                     .unwrap();
             }
-        },
-    )
-    .await;
+        })
+        .await;
 
-    assert!(result.is_err(), "stale ranked context must not be published");
+    assert!(
+        result.is_err(),
+        "stale ranked context must not be published"
+    );
 }
