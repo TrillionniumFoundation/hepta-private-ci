@@ -45,7 +45,7 @@ impl RunLedger {
     pub(crate) fn open(identity: &AgentdIdentity) -> Result<Self, AgentdError> {
         let path = identity.run_root.join(RUN_LEDGER_FILE);
         let agent_id = identity.agent_id.to_string();
-        let composition = runtime_composition(identity);
+        let composition = runtime_composition(identity)?;
 
         let coordinator = if path_exists_without_following(&path)? {
             validate_private_regular_file(&path)?;
@@ -155,14 +155,17 @@ impl RunLedger {
     }
 }
 
-fn runtime_composition(identity: &AgentdIdentity) -> RuntimeComposition {
+fn runtime_composition(identity: &AgentdIdentity) -> Result<RuntimeComposition, AgentdError> {
+    let resources = serde_json::to_string(&identity.resources)?;
     let configuration = format!(
-        "agentd-composition-v1\nagent={}\nspawn_generation={}\nworkspace={}\nhome={}\nrun={}\ncancellation_ack_timeout_ms={}\n",
+        "agentd-composition-v1\nagent={}\nspawn_generation={}\nfleet={}\nworkspace={}\nhome={}\nrun={}\nresources={}\ncancellation_ack_timeout_ms={}\n",
         identity.agent_id,
         identity.spawn_generation,
+        identity.fleet_root.display(),
         identity.workspace.display(),
         identity.home_root.display(),
         identity.run_root.display(),
+        resources,
         DEFAULT_CANCELLATION_ACK_TIMEOUT_MS,
     );
     let ports = format!(
@@ -171,7 +174,7 @@ fn runtime_composition(identity: &AgentdIdentity) -> RuntimeComposition {
         identity.app_server_socket.display(),
         crate::AGENTD_CONTROL_SCHEMA_VERSION,
     );
-    RuntimeComposition {
+    Ok(RuntimeComposition {
         agent_id: identity.agent_id.to_string(),
         supervisor_generation: identity.spawn_generation,
         agentd_generation: identity.spawn_generation,
@@ -182,7 +185,7 @@ fn runtime_composition(identity: &AgentdIdentity) -> RuntimeComposition {
             .as_str()
             .to_string(),
         cancellation_ack_timeout_ms: DEFAULT_CANCELLATION_ACK_TIMEOUT_MS,
-    }
+    })
 }
 
 fn path_exists_without_following(path: &Path) -> Result<bool, AgentdError> {
