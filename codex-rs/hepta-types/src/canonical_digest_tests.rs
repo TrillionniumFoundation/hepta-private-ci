@@ -76,6 +76,65 @@ fn frozen_cross_language_vector_matches_exact_bytes_and_digest() {
 }
 
 #[test]
+fn integer_boundaries_unicode_and_empty_containers_are_frozen() {
+    let type_id = id("platform.types:canonical-boundaries");
+    let empty_array: [CanonicalValueV1<'_>; 0] = [];
+    let empty_map: [CanonicalMapEntryV1<'_>; 0] = [];
+    let fields = [
+        CanonicalFieldV1 {
+            name: "u64_max",
+            value: CanonicalValueV1::U64(u64::MAX),
+        },
+        CanonicalFieldV1 {
+            name: "u128_max",
+            value: CanonicalValueV1::U128(u128::MAX),
+        },
+        CanonicalFieldV1 {
+            name: "i64_min",
+            value: CanonicalValueV1::I64(i64::MIN),
+        },
+        CanonicalFieldV1 {
+            name: "unicode",
+            value: CanonicalValueV1::Text("hépta/雪"),
+        },
+        CanonicalFieldV1 {
+            name: "empty_text",
+            value: CanonicalValueV1::Text(""),
+        },
+        CanonicalFieldV1 {
+            name: "empty_bytes",
+            value: CanonicalValueV1::Bytes(&[]),
+        },
+        CanonicalFieldV1 {
+            name: "empty_array",
+            value: CanonicalValueV1::Array(&empty_array),
+        },
+        CanonicalFieldV1 {
+            name: "empty_map",
+            value: CanonicalValueV1::Map(&empty_map),
+        },
+    ];
+    let encoded = canonical_encode_v1(&type_id, 1, &fields);
+    let Ok(encoded) = encoded else {
+        panic!("canonical boundary fixture should encode");
+    };
+    assert_eq!(encoded.len(), 249);
+    assert_eq!(
+        hex(&encoded),
+        "485054430001002868657074612e706c6174666f726d2e74797065732e63616e6f6e6963616c2d6469676573742e76310023706c6174666f726d2e74797065733a63616e6f6e6963616c2d626f756e6461726965730000000100000008000b656d7074795f61727261790900000000000b656d7074795f627974657305000000000009656d7074795f6d61700a00000000000a656d7074795f74657874060000000000076936345f6d696e0480000000000000000008753132385f6d617803ffffffffffffffffffffffffffffffff00077536345f6d617802ffffffffffffffff0007756e69636f6465060000000a68c3a97074612fe99baa"
+    );
+    let digest = canonical_digest_v1(&type_id, 1, &fields);
+    let Ok(digest) = digest else {
+        panic!("canonical boundary fixture should digest");
+    };
+    assert_eq!(
+        digest.to_string(),
+        "4f3da3cd80d24cd86b151388b296773054be8a1a81cbe0a281f057647c655b36"
+    );
+}
+
+
+#[test]
 fn field_and_map_order_are_canonical_but_array_order_is_semantic() {
     let type_id = id("platform.types:ordering");
     let map_left = [
