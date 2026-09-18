@@ -186,15 +186,15 @@ impl PlatformPayload {
                 }
             }
             Self::CopyText { text } => {
-                if text.as_bytes().len() > MAX_COPY_TEXT_BYTES {
+                if text.len() > MAX_COPY_TEXT_BYTES {
                     return Err(ShellError::InvalidInput(format!(
                         "copy text exceeds {MAX_COPY_TEXT_BYTES} bytes"
                     )));
                 }
             }
             Self::Notify { title, body } => {
-                if title.as_bytes().len() > MAX_NOTIFICATION_TITLE_BYTES
-                    || body.as_bytes().len() > MAX_NOTIFICATION_BODY_BYTES
+                if title.len() > MAX_NOTIFICATION_TITLE_BYTES
+                    || body.len() > MAX_NOTIFICATION_BODY_BYTES
                 {
                     return Err(ShellError::InvalidInput(
                         "notification text exceeds bounded native limits".to_owned(),
