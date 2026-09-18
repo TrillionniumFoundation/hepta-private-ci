@@ -103,3 +103,32 @@ oracle. Native tests exercise real SQLite and an abrupt child-process exit
 between send and ack.
 Agentd provides a separately configured, restricted [signed text queue host](../hepta-agentd/AUTHBUS_TEXT.md)
 using this library and the existing App Server queue; it is not a general effect dispatcher.
+
+
+## Managed issuer lifecycle and rollback checkpoint
+
+The current source candidate adds a managed issuer registry in the existing
+EvidenceStore. An issuer epoch is enrolled once with one Ed25519 public key.
+The same epoch cannot replace that key; revocation is one-way, and a revoked or
+retired epoch cannot be reactivated. Rotation requires a strictly higher epoch
+and the previous managed head must already be revoked or retired.
+
+Every replay advance and AuthBus policy/quota/issuer control mutation advances a
+local hash-chain checkpoint. The host can read
+`authbus_rollback_checkpoint()` and must retain the returned generation/digest
+outside the SQLite backup boundary. On restore it calls
+`verify_authbus_rollback_checkpoint(expected)`; an older/restored database
+fails closed against a newer externally retained checkpoint. The SQLite file
+alone is deliberately not represented as an anti-rollback oracle.
+
+A revoked old issuer epoch can release replay-registry capacity only through
+`retire_authbus_replay_epoch`. Retirement requires the caller's exact current
+external checkpoint, a newer managed epoch, and zero active queued/leased
+deliveries for the old epoch. The owner deletes that epoch's replay high-water
+rows and atomically writes a permanent retirement tombstone. Future admission
+under that epoch returns `RetiredIssuer`; deleting high-water state therefore
+does not reopen the replay window.
+
+The repository does not provide the independently governed checkpoint storage
+itself. Hardware/remote/operator retention and restore ceremony remain an
+external activation gate.
