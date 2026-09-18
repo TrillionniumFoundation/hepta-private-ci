@@ -47,7 +47,7 @@ None.
 ### 2.1 Current source implementation boundary
 
 The implementation map records code-complete module evidence at
-`ab6ca237d427635fc233b187765173bbf56ebd0a`. The v3 `sourceBase` field remains
+`190641655465dff504292e139cdc6c6c5322d7f7`. The v3 `sourceBase` field remains
 the repository-wide implementation-map catalog baseline because the verifier
 requires every module map to share one source identity; `moduleSourceCommit`
 records the newer module-local code snapshot without falsifying that global
