@@ -107,6 +107,10 @@ impl VerifiedAdmission {
     pub const fn expires_at_unix_ms(&self) -> u64 {
         self.expires_at_unix_ms
     }
+
+    pub(crate) const fn is_live_at(&self, now_unix_ms: u64) -> bool {
+        now_unix_ms < self.expires_at_unix_ms
+    }
 }
 
 impl AdmissionAuthority {
