@@ -41,12 +41,14 @@
       },
       "currentCapabilities": [
         "bounded identity and byte/text values",
-        "digest and monotonic revision/generation primitives",
+        "semantic ID profiles and sealed deny-all authority posture",
+        "raw digest and canonical digest V1 primitives",
+        "immutable schema/normalization definition registry V1",
         "fixed-point probability and numeric-signal conversion"
       ],
       "targetOnlyCapabilities": [
         "cross-language generated bindings",
-        "runtime schema registry"
+        "production-composed registry definitions"
       ],
       "sourceAnchors": [
         {
@@ -54,7 +56,10 @@
           "mustContain": [
             "#![forbid(unsafe_code)]",
             "pub use identity::StableId;",
-            "pub use identity::IdentityError;",
+            "pub use identity::IdProfileV1;",
+            "pub use identity::validate_id;",
+            "pub use canonical::canonical_digest_v1;",
+            "pub use registry::DefinitionRegistryV1;",
             "pub use numeric_conversion::rescale_signal;"
           ]
         },
