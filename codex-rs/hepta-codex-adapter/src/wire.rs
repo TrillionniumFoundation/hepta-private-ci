@@ -3,6 +3,7 @@ use std::fmt;
 use std::str;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_hepta_wire::NegotiatedWire;
 use codex_hepta_wire::PayloadCodec;
@@ -19,6 +20,39 @@ use crate::adapt;
 
 pub const CODEX_OPERATION_INTENT_SCHEMA: &str = "runtime.codex.operation-intent.v1";
 pub const MAX_CODEX_OPERATION_INTENT_PAYLOAD_BYTES: usize = 462;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CodexWireIngressPolicy {
+    negotiated: NegotiatedWire,
+    producer: StableId,
+    generation: Generation,
+}
+
+impl CodexWireIngressPolicy {
+    pub fn new(
+        negotiated: NegotiatedWire,
+        producer: StableId,
+        generation: Generation,
+    ) -> Self {
+        Self {
+            negotiated,
+            producer,
+            generation,
+        }
+    }
+
+    pub const fn negotiated(&self) -> NegotiatedWire {
+        self.negotiated
+    }
+
+    pub fn producer(&self) -> &StableId {
+        &self.producer
+    }
+
+    pub const fn generation(&self) -> Generation {
+        self.generation
+    }
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntentWireCodec {
@@ -77,12 +111,24 @@ pub fn register_wire_schema(
 
 pub fn decode_wire_intent(
     frame: &WireFrame,
-    negotiated: NegotiatedWire,
+    policy: &CodexWireIngressPolicy,
 ) -> Result<CodexOperationIntent, WireIngressError> {
-    let expected = negotiated.version().as_u16();
+    let expected = policy.negotiated().version().as_u16();
     let observed = frame.version();
     if observed != expected {
         return Err(WireIngressError::VersionMismatch { expected, observed });
+    }
+    if frame.producer() != policy.producer() {
+        return Err(WireIngressError::ProducerMismatch {
+            expected: policy.producer().clone(),
+            observed: frame.producer().clone(),
+        });
+    }
+    if frame.generation() != policy.generation() {
+        return Err(WireIngressError::GenerationMismatch {
+            expected: policy.generation(),
+            observed: frame.generation(),
+        });
     }
 
     let mut registry = SchemaRegistry::new();
@@ -95,10 +141,10 @@ pub fn decode_wire_intent(
 pub fn adapt_wire(
     now_ms: u64,
     frame: &WireFrame,
-    negotiated: NegotiatedWire,
+    policy: &CodexWireIngressPolicy,
     observation: Option<AppServerObservation>,
 ) -> Result<CodexAdapterReceipt, WireAdaptError> {
-    let intent = decode_wire_intent(frame, negotiated).map_err(WireAdaptError::Ingress)?;
+    let intent = decode_wire_intent(frame, policy).map_err(WireAdaptError::Ingress)?;
     adapt(now_ms, intent, observation).map_err(WireAdaptError::Adapter)
 }
 
@@ -185,7 +231,7 @@ fn take<'a>(
     offset: &mut usize,
     length: usize,
 ) -> Result<&'a [u8], IntentPayloadError> {
-    let end = offset
+    let end = (*offset)
         .checked_add(length)
         .ok_or(IntentPayloadError::Length)?;
     let raw = payload
@@ -222,6 +268,14 @@ impl fmt::Display for IntentPayloadError {
 pub enum WireIngressError {
     StaticSchema,
     VersionMismatch { expected: u16, observed: u16 },
+    ProducerMismatch {
+        expected: StableId,
+        observed: StableId,
+    },
+    GenerationMismatch {
+        expected: Generation,
+        observed: Generation,
+    },
     Schema(SchemaError),
 }
 
@@ -232,6 +286,16 @@ impl fmt::Display for WireIngressError {
             Self::VersionMismatch { expected, observed } => write!(
                 formatter,
                 "runtime.codex wire version mismatch: negotiated {expected}, observed {observed}"
+            ),
+            Self::ProducerMismatch { expected, observed } => write!(
+                formatter,
+                "runtime.codex wire producer mismatch: expected {expected}, observed {observed}"
+            ),
+            Self::GenerationMismatch { expected, observed } => write!(
+                formatter,
+                "runtime.codex wire generation mismatch: expected {}, observed {}",
+                expected.get(),
+                observed.get()
             ),
             Self::Schema(error) => error.fmt(formatter),
         }
