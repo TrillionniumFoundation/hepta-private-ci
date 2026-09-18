@@ -11,7 +11,12 @@ This matrix is source-level acceptance guidance for the composed Codex App Serve
 | Terminal notification with wrong thread | reject correlation | none | unchanged | adapter negative test |
 | Terminal notification with wrong turn | reject correlation | none | unchanged | adapter negative test |
 | Payload digest differs from authority-bound payload digest | reject request | none | no dispatch | adapter negative test |
-| No non-constructible final-use capability from `kernel.authority` authenticating the persisted exact final `TurnStartParams` digest | production dispatch must be denied | none | no dispatch | **repository-controlled blocker: native caller wiring not yet implemented** |
+| Missing/unsafe final-use authority configuration or unavailable authority socket | reject before `turn/start` | none | release pre-dispatch reservation | production worker fail-closed path |
+| Authority endpoint explicitly denies the exact binding | reject before `turn/start` | none | release pre-dispatch reservation | external-authority port test |
+| Authority endpoint timeout, malformed/oversized response, unsafe socket identity or unsupported schema | reject before `turn/start` | none | release pre-dispatch reservation | external-authority port negative path |
+| Signed grant has wrong binding/signature, is expired/revoked, or reuses a nonce | reject before `turn/start` | none | release pre-dispatch reservation | `FinalUseAuthority` plus external-authority port tests |
+| Authority endpoint attempts revocation-head rollback/removal | reject before `turn/start` | none | release pre-dispatch reservation | monotonic revocation synchronization test |
+| Exact signed grant passes local signature/epoch/revocation/nonce checks and `VerifiedUseToken::enter` | one effect entry only; authority witness persisted before send | never grants blind retry | dispatch journaled before `turn/start` | non-constructible token/entered-token source path |
 | Missing/zero owner generation | reject request | none | no dispatch | adapter negative test |
 | Protocol version other than App Server v2 | reject request | none | no dispatch | adapter negative test |
 | App Server transport overload JSON-RPC `-32001` before handler admission | `Overloaded` | `SafeToRetry` with a new admitted request | release | typed JSON-RPC error from the bounded transport queue |
@@ -39,4 +44,4 @@ The v2 runtime.codex request digest binds the operation ID, Agent/App Server ses
 
 ## Authority ceiling
 
-Every `CodexAdapterReceipt` remains `DENY_ALL` and never grants model, provider, tool, external-effect, promotion, or release authority. Payload-binding checks do not substitute for the separately owned final-use authority contract. The current native caller has not yet composed that final-use capability, so this matrix is not a production-authorization receipt.
+Every `CodexAdapterReceipt` remains `DENY_ALL` and never grants model, provider, tool, external-effect, promotion, or release authority. Payload-binding checks do not substitute for the separately owned final-use authority contract. The native worker now requires the external final-use authority port, locally verifies the independently signed exact binding, persists the authority witness, and consumes the one-entry capability immediately before `turn/start`. This source composition still does not certify the deployed issuer policy/key custody, target-host socket/process identity, provider execution, delegated tool terminality, independent acceptance, activation, promotion or release.
