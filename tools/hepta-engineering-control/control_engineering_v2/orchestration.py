@@ -233,7 +233,11 @@ def _verify_completion(
         raise EngineeringError("completion_receipt_digest")
     if receipt.source_commit != envelope.source_commit or receipt.source_tree != envelope.source_tree:
         raise EngineeringError("completion_source_mismatch")
-    if receipt.issuer not in {"ci_executor", "package_owner"}:
+    # Completion is an independently observed predecessor fact, not a
+    # self-attestation by the package being scheduled.  Package-owner intent may
+    # be carried elsewhere, but only the CI/execution observer can advance the
+    # completed predecessor frontier used by this production orchestrator.
+    if receipt.issuer != "ci_executor":
         raise EngineeringError("completion_issuer_role")
     if not (
         type(receipt.observed_unix_ns) is int
