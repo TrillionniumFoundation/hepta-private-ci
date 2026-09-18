@@ -114,38 +114,100 @@ def verify_local_links(path, text):
 
 
 def refresh_indexes(check):
-    """Recompute derived bytes/counts/digests without changing claims or scope."""
-    specs = [
-        ("docs/modules/MODULE_DOCS.json", "modules", True),
-        ("qualification/module-execution-dossiers/DETAILS.json", "rows", False),
-    ]
+    """Refresh generated module projections and document presentation metrics.
+
+    MODULES.json owns duplicated module status/bootstrap/path facts. Contract,
+    protocol, domain, work-package and threat lists are derived from their
+    canonical registries. SOURCE_BINDINGS keeps only its genuinely independent
+    evidence/lifecycle/interpretation fields as human-maintained data.
+    """
+    modules = load("docs/modules/MODULES.json")
+    bindings = load("docs/modules/SOURCE_BINDINGS.json")
+    docs = load("docs/modules/MODULE_DOCS.json")
+    contracts = load("docs/contracts/CONTRACTS.json")["contracts"]
+    protocols = load("docs/contracts/PROTOCOL_SCHEMAS.json")["protocols"]
+    domains = load("docs/data/DATA_AUTHORITY.json")["domains"]
+    packages = load("docs/delivery/WORK_PACKAGES.json")["packages"]
+    threats = load("docs/security/THREAT_MODEL.json")["threats"]
+
+    module_map = {row["id"]: row for row in modules["modules"]}
     changed = []
-    for relative, key, include_metrics in specs:
-        document = load(relative)
-        for row in document[key]:
-            path = ROOT / row["path"]
-            need(path.is_file(), "index source missing " + row["path"])
-            text = path.read_text(encoding="utf-8")
-            updates = {"sha256": sha(text)}
-            if include_metrics:
-                updates.update(
-                    bytes=len(text.encode("utf-8")),
-                    words=len(re.findall(r"\b[\w.-]+\b", text)),
-                )
-            row.update(updates)
-        # Preserve each existing index's representation; refreshing derived
-        # values must not expand the compact detail index into a formatting diff.
-        rendered = (
-            json.dumps(document, indent=2, ensure_ascii=False)
-            if include_metrics
-            else json.dumps(document, separators=(",", ":"), ensure_ascii=False)
-        ) + "\n"
-        path = ROOT / relative
-        if rendered != path.read_text(encoding="utf-8"):
-            changed.append(relative)
-            if not check:
-                path.write_text(rendered, encoding="utf-8")
-    need(not check or not changed, "derived index drift: " + ", ".join(changed))
+
+    for row in bindings["bindings"]:
+        module = module_map[row["module"]]
+        declared = [binding["path"] for binding in module["rootBindings"]]
+        existing = [item for item in declared if (ROOT / item).exists()]
+        row.update(
+            lifecycle=module["lifecycle"],
+            sourceStatus=module["sourceStatus"],
+            source_root_present=module["source_root_present"],
+            production_implementation=module["production_implementation"],
+            declaredRoots=declared,
+            existingDeclaredRoots=existing,
+            missingDeclaredRoots=[item for item in declared if item not in existing],
+            bootstrapWorkPackage=module["bootstrapWorkPackage"],
+            technicalDocument=module["technicalDocument"],
+        )
+
+    rendered_bindings = json.dumps(bindings, indent=2, ensure_ascii=False) + "\n"
+    bindings_path = ROOT / "docs/modules/SOURCE_BINDINGS.json"
+    if rendered_bindings != bindings_path.read_text(encoding="utf-8"):
+        changed.append("docs/modules/SOURCE_BINDINGS.json")
+        if not check:
+            bindings_path.write_text(rendered_bindings, encoding="utf-8")
+
+    for row in docs["modules"]:
+        module_id = row["module"]
+        module = module_map[module_id]
+        doc_path = ROOT / module["technicalDocument"]
+        need(doc_path.is_file(), "index source missing " + module["technicalDocument"])
+        text = doc_path.read_text(encoding="utf-8")
+        produced = sorted(c["id"] for c in contracts if c["producer"] == module_id)
+        consumed = sorted(c["id"] for c in contracts if module_id in c["consumers"])
+        touched = set(produced + consumed)
+        row.update(
+            path=module["technicalDocument"],
+            sourceStatus=module["sourceStatus"],
+            source_root_present=module["source_root_present"],
+            production_implementation=module["production_implementation"],
+            bootstrapWorkPackage=module["bootstrapWorkPackage"],
+            sha256=sha(text),
+            bytes=len(text.encode("utf-8")),
+            words=len(re.findall(r"\\b[\\w.-]+\\b", text)),
+            requiredSections=HEADINGS,
+            producedContracts=produced,
+            consumedContracts=consumed,
+            protocols=sorted(p["id"] for p in protocols if p.get("contractId") in touched),
+            ownedDomains=sorted(d["id"] for d in domains if d["authoritativeWriter"] == module_id),
+            readDomains=sorted(d["id"] for d in domains if module_id in d.get("readers", [])),
+            workPackages=sorted(
+                p["id"]
+                for p in packages
+                if p["module"] == module_id or module_id in p.get("coOwnerModules", [])
+            ),
+            threats=sorted(t["id"] for t in threats if t["owner"] == module_id),
+        )
+
+    rendered_docs = json.dumps(docs, indent=2, ensure_ascii=False) + "\n"
+    docs_path = ROOT / "docs/modules/MODULE_DOCS.json"
+    if rendered_docs != docs_path.read_text(encoding="utf-8"):
+        changed.append("docs/modules/MODULE_DOCS.json")
+        if not check:
+            docs_path.write_text(rendered_docs, encoding="utf-8")
+
+    details = load("qualification/module-execution-dossiers/DETAILS.json")
+    for row in details["rows"]:
+        detail_path = ROOT / row["path"]
+        need(detail_path.is_file(), "index source missing " + row["path"])
+        row["sha256"] = sha(detail_path.read_text(encoding="utf-8"))
+    rendered_details = json.dumps(details, separators=(",", ":"), ensure_ascii=False) + "\n"
+    details_path = ROOT / "qualification/module-execution-dossiers/DETAILS.json"
+    if rendered_details != details_path.read_text(encoding="utf-8"):
+        changed.append("qualification/module-execution-dossiers/DETAILS.json")
+        if not check:
+            details_path.write_text(rendered_details, encoding="utf-8")
+
+    need(not check or not changed, "generated module projection drift: " + ", ".join(changed))
     print(json.dumps({"updatedIndexes": changed, "checkOnly": check}))
     return 0
 
