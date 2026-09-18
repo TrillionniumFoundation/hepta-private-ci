@@ -1,0 +1,68 @@
+name: Hepta native Rust shell
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-native-gateway/**"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/ui.native/**"
+      - "docs/modules/MODULES.json"
+      - "docs/modules/SOURCE_BINDINGS.json"
+      - "docs/delivery/PATH_OWNERSHIP.json"
+      - "docs/delivery/WORK_PACKAGES.json"
+      - "qualification/module-execution-dossiers/detail/ui.native.md"
+      - ".github/workflows/hepta-native-rust.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    name: Native Rust format
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt
+      - name: Locked metadata
+        run: cargo metadata --locked --no-deps --format-version 1 >/dev/null
+      - name: Format
+        run: cargo fmt --all -- --config imports_granularity=Item --check
+
+  native:
+    name: Native Rust (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04
+          - macos-15
+          - windows-latest
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy
+      - name: Locked native shell tests
+        shell: bash
+        run: cargo test --locked -p codex-hepta-native-gateway --lib
+      - name: Strict native shell Clippy
+        shell: bash
+        run: cargo clippy --locked --all-targets -p codex-hepta-native-gateway -- -D warnings
