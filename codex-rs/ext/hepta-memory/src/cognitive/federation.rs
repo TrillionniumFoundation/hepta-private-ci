@@ -397,7 +397,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 }
                 explanations.push(*explanation);
             }
-            let Some(content) = compile_explanations(&explanations) else {
+            let Some(content) = compile_explanations(&explanations, prepared.coverage) else {
                 return Ok(None);
             };
             let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
@@ -406,6 +406,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 input.turn_id,
                 input.cwd,
                 &prepared.query_sha256,
+                prepared.coverage,
                 &prepared.bindings,
                 &content_sha256,
             ) else {
@@ -913,6 +914,11 @@ mod tests {
         let content = serde_json::to_string(&serde_json::json!({
             "schema_version": 1,
             "source": "explicit_federated_verified_memory",
+            "coverage": {
+                "requested_sources": 1,
+                "completed_sources": 1,
+                "failed_sources": 0
+            },
             "memories": [{
                 "source_agent_id": owner_agent_id,
                 "capability_id": capability_id,
