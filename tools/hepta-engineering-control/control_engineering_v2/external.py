@@ -15,6 +15,7 @@ from .control_plane import (
     ZERO_DIGEST,
     EngineeringError,
     EngineeringStore,
+    bounded_tuple,
     checked_id,
     checked_sha256,
     semantic_digest,
@@ -104,8 +105,9 @@ def verify_external_fact_receipts(
     """Return authenticated fact -> receipt digest, rejecting duplicates/drift."""
     now = _now(now_ns)
     checked_sha256(subject_digest, "subject_digest")
+    values = bounded_tuple(receipts, 16, "external_fact_receipt_limit_exceeded")
     result: dict[str, str] = {}
-    for receipt in receipts:
+    for receipt in values:
         if not isinstance(receipt, ExternalFactReceipt):
             raise EngineeringError("invalid_external_fact_receipt")
         if receipt.fact not in _ALLOWED_FACTS:
@@ -180,7 +182,8 @@ def verify_key_custody(
     checked_id(receipt.provider, "key_provider")
     checked_id(receipt.key_identity, "key_identity")
     checked_sha256(receipt.custody_policy_digest, "custody_policy_digest")
-    roles = tuple(sorted(set(required_roles)))
+    raw_roles = bounded_tuple(required_roles, 16, "key_custody_role_limit_exceeded")
+    roles = tuple(sorted(set(raw_roles)))
     if not roles or any(not isinstance(role, str) or not role for role in roles):
         raise EngineeringError("invalid_key_custody_role")
     if not set(roles).issubset(set(receipt.allowed_roles)):
@@ -231,7 +234,11 @@ def verify_key_custody_set(
     now_ns: int | None = None,
 ) -> str:
     """Require distinct externally custodied key identities for each required role."""
-    if not isinstance(required_role_keys, Mapping) or not required_role_keys:
+    if (
+        not isinstance(required_role_keys, Mapping)
+        or not required_role_keys
+        or len(required_role_keys) > 16
+    ):
         raise EngineeringError("key_custody_roles_required")
     expected: dict[str, str] = {}
     for role, key_identity in required_role_keys.items():
@@ -242,9 +249,9 @@ def verify_key_custody_set(
     if len(set(expected.values())) != len(expected):
         raise EngineeringError("key_custody_role_collision")
 
-    values = tuple(receipts)
-    if len(values) > 32:
-        raise EngineeringError("key_custody_receipt_limit_exceeded")
+    values = bounded_tuple(
+        receipts, 32, "key_custody_receipt_limit_exceeded"
+    )
     by_key: dict[str, KeyCustodyReceipt] = {}
     for receipt in values:
         if not isinstance(receipt, KeyCustodyReceipt):
