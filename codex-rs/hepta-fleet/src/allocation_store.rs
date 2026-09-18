@@ -159,7 +159,10 @@ impl FleetAllocationStore {
         )?;
         publish_state(&self.root, &next)?;
         self.current = next;
-        prune_history(&self.root)?;
+        // Publication above is the linearization point. Retention is
+        // maintenance only: a cleanup failure must never make a committed
+        // generation look like a failed/unknown mutation to its caller.
+        let _ = prune_history(&self.root);
         Ok(&self.current)
     }
 
