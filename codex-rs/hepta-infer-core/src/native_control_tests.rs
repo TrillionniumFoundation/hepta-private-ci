@@ -208,6 +208,60 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
 }
 
 #[test]
+fn one_shot_pre_effect_abort_releases_only_the_live_write_ahead() {
+    let path = path("pre-effect-abort");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let stopped = control
+        .abort_native_before_effect(token, "deadline elapsed before send".to_string())
+        .unwrap();
+    assert_eq!(stopped.state, NativeReservationState::Released);
+    assert_eq!(
+        stopped.pre_dispatch_stop.as_deref(),
+        Some("deadline elapsed before send")
+    );
+    assert_eq!(stopped.observation, None);
+    control.reserve_native(request("r2"), 1).unwrap();
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&stopped));
+    assert_eq!(
+        reopened.stop_native_before_dispatch("r2", "not reserved".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn recovered_or_started_dispatch_cannot_use_pre_dispatch_stop_semantics() {
+    let path = path("pre-effect-recovery");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+    assert_eq!(
+        control.abort_native_before_effect(token, "too late".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.stop_native_before_dispatch("r1", "recovered".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn request_rejection_releases_but_unknown_dispatch_outcomes_hold_capacity() {
     let path = path("request-outcomes");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
