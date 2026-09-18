@@ -989,3 +989,39 @@ test("effect grants can be admitted after profile open without widening final-us
   const result = await host.navigateOrAct(operation());
   assert.equal(result.status, "indeterminate");
 });
+
+
+test("worker terminal settlement is recorded after the final-use boundary", async () => {
+  const fakeDriver = driver({
+    dispatchImpl: async () => ({
+      terminalObserved: false,
+      settlement: Promise.resolve({
+        terminalObserved: true,
+        status: "succeeded",
+        outcomeDigest: D1,
+      }),
+    }),
+  });
+  const journal = new MemoryBrowserOperationJournal();
+  const host = new BrowserProfileHost({
+    driver: fakeDriver,
+    authority: authority(),
+    journal,
+    clock: () => 1_000,
+    driverCallTimeoutMs: 50,
+    allowVolatileJournalForTests: true,
+  });
+  await host.openProfile(input());
+  await host.observePage({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    observationBudget: 4096,
+  });
+  const receipt = await host.navigateOrAct(operation());
+  assert.equal(receipt.terminalObserved, true);
+  assert.equal(receipt.status, "succeeded");
+  const durable = await journal.getOperation("profile.1", 1, "operation.1");
+  assert.equal(durable.terminalObserved, true);
+  assert.equal(durable.status, "succeeded");
+});

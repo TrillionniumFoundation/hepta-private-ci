@@ -802,8 +802,13 @@ export class SubprocessBrowserDriver {
         "browser worker settled dispatch before admission boundary",
       );
     }
-    response.catch(() => {});
-    return { terminalObserved: false };
+    // Final-use authority is released at the worker admission boundary, but
+    // retain the bound worker response so the Browser owner can durably record
+    // a terminal local observation without holding the authority fence.
+    return {
+      terminalObserved: false,
+      settlement: response,
+    };
   }
   async reconcile(input, { signal } = {}) {
     this.#requireSession(input);

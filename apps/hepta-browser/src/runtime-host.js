@@ -431,7 +431,7 @@ export class BrowserProfileHost {
 
       let entry = null;
       try {
-        const observed = requireRecord(
+        let observed = requireRecord(
           await this.#withVerifiedUse(
             Object.freeze({ ...requestSemantics, requestDigest }),
             requestSemantics.deadlineMs,
@@ -499,6 +499,19 @@ export class BrowserProfileHost {
           ),
           "driver dispatch observation",
         );
+        if (observed.settlement && typeof observed.settlement.then === "function") {
+          const settlement = observed.settlement;
+          const settled = await this.#awaitDriverSettlement(
+            settlement,
+            requestSemantics.deadlineMs,
+          );
+          if (settled === null) {
+            this.#observeLateDriverSettlement(state, entry, settlement);
+            observed = { terminalObserved: false };
+          } else {
+            observed = requireRecord(settled, "driver terminal settlement");
+          }
+        }
         entry.receipt = this.#effectReceipt(
           state.profileId,
           operationId,
@@ -948,6 +961,52 @@ export class BrowserProfileHost {
       ...admitted.requestSemantics,
       deadlineMs: durable.deadlineMs,
     });
+  }
+
+  async #awaitDriverSettlement(settlement, deadlineMs) {
+    const remaining = Math.min(
+      this.#driverCallTimeoutMs,
+      Math.max(0, deadlineMs - this.#clock()),
+    );
+    if (remaining <= 0) return null;
+    let timer;
+    const result = await Promise.race([
+      Promise.resolve(settlement).then(
+        (value) => ({ kind: "value", value }),
+        (error) => ({ kind: "error", error }),
+      ),
+      new Promise((resolve) => {
+        timer = setTimeout(() => resolve({ kind: "timeout" }), remaining);
+      }),
+    ]);
+    clearTimeout(timer);
+    if (result.kind === "timeout") return null;
+    if (result.kind === "error") throw result.error;
+    return result.value;
+  }
+
+  #observeLateDriverSettlement(state, entry, settlement) {
+    Promise.resolve(settlement)
+      .then((observed) =>
+        exclusive(this.#locks, state.profileId, async () => {
+          if (entry.receipt.terminalObserved) return;
+          const terminal = this.#effectReceipt(
+            state.profileId,
+            entry.semantics.operationId,
+            entry.semanticDigest,
+            requireRecord(observed, "late driver terminal settlement"),
+          );
+          if (!terminal.terminalObserved) return;
+          entry.receipt = terminal;
+          entry.phase = "terminal";
+          await this.#persistReceipt(state, entry);
+          this.#pruneTerminalOperations(state);
+        }),
+      )
+      .catch(() => {
+        // The durable dispatch identity remains indeterminate; explicit
+        // reconciliation owns any later truth.
+      });
   }
 
   #withVerifiedUse(request, deadlineMs, consumer) {
