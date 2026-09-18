@@ -58,7 +58,7 @@ WHEN
         OR (OLD.state = 'renewing'
             AND NEW.state IN ('active', 'unknown', 'expired'))
         OR (OLD.state = 'revoke_pending'
-            AND NEW.state IN ('revoked', 'unknown'))
+            AND NEW.state IN ('active', 'revoked', 'unknown'))
         OR (OLD.state = 'unknown'
             AND NEW.state IN ('active', 'revoked', 'expired', 'rejected'))
     )
