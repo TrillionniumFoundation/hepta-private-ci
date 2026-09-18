@@ -166,6 +166,8 @@ pub struct BoundModelExecutionV1 {
     pub sbom_digest: Digest32,
     /// License/admission manifest for the selected model/runtime package.
     pub license_digest: Digest32,
+    /// Exact OOD detector identity used to produce ood_score_q24.
+    pub ood_detector_digest: Digest32,
     pub drive_q24: Vec<i64>,
     pub prediction_q24: Vec<i64>,
     /// Detector score in Q24. Zero is maximally in-distribution.
@@ -557,6 +559,7 @@ impl BoundModelExecutionV1 {
         if self.runtime_binary_digest.is_zero()
             || self.sbom_digest.is_zero()
             || self.license_digest.is_zero()
+            || self.ood_detector_digest.is_zero()
         {
             return Err(ProtocolError::InvalidModelExecution(
                 "execution attestation",
@@ -589,6 +592,7 @@ impl BoundModelExecutionV1 {
             self.runtime_binary_digest,
             self.sbom_digest,
             self.license_digest,
+            self.ood_detector_digest,
         ] {
             bytes.extend_from_slice(digest.as_array());
         }
