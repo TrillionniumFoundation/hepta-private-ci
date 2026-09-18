@@ -73,10 +73,13 @@ The withdrawal and lifecycle adapters are independent create-only durable stores
 Their receipts bind the external scope binding, complete file digest, record count
 and chain head; withdrawal receipts additionally bind the scoped withdrawal-domain
 digest. Reload performs bounded reads, full semantic replay and canonical
-re-encoding. Lifecycle reload reconstructs the persisted snapshot through
-historical replay validation: recorded actor evidence is checked against the
-recorded event time, not the restart wall clock; current-time credential validity
-remains mandatory for new lifecycle mutations. These stores do not discover a
+re-encoding. The lifecycle V2 journal head commits producer identity plus the
+full actor evidence tuple as well as the stable lifecycle-event digest, preventing
+a replay from changing authorization semantics while retaining the same chain
+head. Lifecycle reload reconstructs the persisted snapshot through historical
+replay validation: recorded actor evidence is checked against the recorded event
+time, not the restart wall clock; current-time credential validity remains
+mandatory for new lifecycle mutations. These stores do not discover a
 newest generation or grant publication authority by themselves.
 
 ## Failure and retry semantics
