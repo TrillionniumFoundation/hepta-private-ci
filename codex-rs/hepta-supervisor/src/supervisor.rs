@@ -263,6 +263,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        Self::ensure_signed_intent_resolved(agent_id, slot)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
         }
@@ -309,6 +310,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        Self::ensure_signed_intent_resolved(agent_id, slot)?;
         if slot.release_change.is_some() || slot.restart_pending {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
@@ -352,6 +354,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        Self::ensure_signed_intent_resolved(agent_id, slot)?;
         if slot.release_change.is_some() || slot.restart_pending {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
@@ -404,6 +407,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         self.slots.keys().cloned().collect()
     }
 
+    fn ensure_signed_intent_resolved(
+        agent_id: &AgentId,
+        slot: &AgentSlot<D::Process>,
+    ) -> Result<(), SupervisorError> {
+        if slot.signed_intent.as_ref().is_some_and(|intent| {
+            !matches!(
+                intent.status,
+                SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+            )
+        }) {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
+        Ok(())
+    }
+
     pub fn start(
         &mut self,
         agent_id: &AgentId,
@@ -411,6 +431,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            Self::ensure_signed_intent_resolved(agent_id, slot)?;
             supervisor.start_slot(agent_id, slot, command, now)
         })
     }
@@ -422,6 +443,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            Self::ensure_signed_intent_resolved(agent_id, slot)?;
             supervisor.start_release_slot(agent_id, slot, release, now)
         })
     }
@@ -446,6 +468,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     pub fn restart(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            Self::ensure_signed_intent_resolved(agent_id, slot)?;
             supervisor.restart_slot(agent_id, slot, now)
         })
     }
@@ -457,6 +480,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            Self::ensure_signed_intent_resolved(agent_id, slot)?;
             supervisor.upgrade_slot(
                 agent_id, slot, target, now, /*explicit_rollback*/ false,
             )
@@ -465,6 +489,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            Self::ensure_signed_intent_resolved(agent_id, slot)?;
             let previous = slot
                 .previous_release
                 .as_ref()
