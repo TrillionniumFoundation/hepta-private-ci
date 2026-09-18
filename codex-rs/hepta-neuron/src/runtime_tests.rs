@@ -112,7 +112,7 @@ fn input(sequence: u64, predecessor: Digest32) -> NeuronTickInputV1 {
 fn model_receipt(config: &NeuronRuntimeConfigV1) -> LocalModelRuntimeReceiptV1 {
     let mut receipt = LocalModelRuntimeReceiptV1 {
         model_id: id("encoder-head:1"),
-        weights_digest: composite_model_digest(config),
+        weights_digest: config.encoder_digest,
         tokenizer_digest: digest(b"tokenizer"),
         preprocessor_digest: digest(b"preprocessor"),
         quantization_id: id("q4"),
@@ -205,7 +205,7 @@ fn canonical_tick_binds_model_calibration_and_sparse_state() {
             execution_micros: 200,
             transient_allocation_bytes: 4096,
             checkpoint_bytes: 2048,
-            saturation_count: 0,
+            saturation_count: pending.sparse_receipt.projection_count,
             queue_age_micros: 0,
         },
     )
@@ -263,7 +263,7 @@ fn resource_overrun_is_not_reported_as_success() {
                 execution_micros: 8_001,
                 transient_allocation_bytes: 1,
                 checkpoint_bytes: 1,
-                saturation_count: 0,
+                saturation_count: pending.sparse_receipt.projection_count,
                 queue_age_micros: 0,
             },
         ),

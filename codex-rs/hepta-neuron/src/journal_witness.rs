@@ -183,18 +183,21 @@ impl AnchorWitnessStore {
         if anchor.sequence == 0 || anchor.checkpoint_digest.is_zero() {
             return Err(WitnessError::Conflict);
         }
-        if let Some(current) = self.anchors.last().copied() {
-            if anchor.sequence <= current.sequence {
-                return if anchor == current {
-                    Ok(current)
-                } else {
-                    Err(WitnessError::Conflict)
-                };
-            }
-            if anchor.sequence != current.sequence + 1 {
-                return Err(WitnessError::Conflict);
-            }
-        } else if anchor.sequence != 1 {
+        if let Some(index) = anchor
+            .sequence
+            .checked_sub(1)
+            .and_then(|value| usize::try_from(value).ok())
+            && let Some(existing) = self.anchors.get(index).copied()
+        {
+            return if existing == anchor {
+                Ok(existing)
+            } else {
+                Err(WitnessError::Conflict)
+            };
+        }
+        let expected_sequence = u64::try_from(self.anchors.len() + 1)
+            .map_err(|_| WitnessError::Capacity)?;
+        if anchor.sequence != expected_sequence {
             return Err(WitnessError::Conflict);
         }
         if self.anchors.len() >= self.max_records {
@@ -245,7 +248,11 @@ impl ManagedSparseJournal {
         max_records: usize,
     ) -> Result<Self, WitnessError> {
         let journal_length = journal_file.metadata()?.len();
-        let witness = AnchorWitnessStore::open(witness_file, &config, scope, max_records)?;
+        let witness_length = witness_file.metadata()?.len();
+        if journal_length > HEADER as u64 && witness_length == 0 {
+            return Err(WitnessError::AcknowledgedHistoryMissing);
+        }
+        let mut witness = AnchorWitnessStore::open(witness_file, &config, scope, max_records)?;
         let anchor = witness.current()?;
         if anchor.is_none() && journal_length > HEADER as u64 {
             return Err(WitnessError::AcknowledgedHistoryMissing);
@@ -261,6 +268,7 @@ impl ManagedSparseJournal {
             None => SparseJournal::open(journal_file, config, scope, max_records),
         }
         .map_err(WitnessError::Journal)?;
+        reconcile_witness(&journal, &mut witness)?;
         Ok(Self {
             journal,
             witness,
@@ -277,7 +285,11 @@ impl ManagedSparseJournal {
         seed: crate::SparseCheckpoint,
     ) -> Result<Self, WitnessError> {
         let journal_length = journal_file.metadata()?.len();
-        let witness = AnchorWitnessStore::open(witness_file, &config, scope, max_records)?;
+        let witness_length = witness_file.metadata()?.len();
+        if journal_length > HEADER as u64 && witness_length == 0 {
+            return Err(WitnessError::AcknowledgedHistoryMissing);
+        }
+        let mut witness = AnchorWitnessStore::open(witness_file, &config, scope, max_records)?;
         let anchor = witness.current()?;
         if anchor.is_none() && journal_length > HEADER as u64 {
             return Err(WitnessError::AcknowledgedHistoryMissing);
@@ -300,6 +312,7 @@ impl ManagedSparseJournal {
             ),
         }
         .map_err(WitnessError::Journal)?;
+        reconcile_witness(&journal, &mut witness)?;
         Ok(Self {
             journal,
             witness,
@@ -344,6 +357,22 @@ impl ManagedSparseJournal {
             self.witness.current()
         }
     }
+}
+
+fn reconcile_witness(
+    journal: &SparseJournal,
+    witness: &mut AnchorWitnessStore,
+) -> Result<(), WitnessError> {
+    let current_sequence = witness.current()?.map_or(0, |anchor| anchor.sequence);
+    for anchor in journal
+        .committed_anchors()
+        .map_err(WitnessError::Journal)?
+        .into_iter()
+        .skip(usize::try_from(current_sequence).map_err(|_| WitnessError::Capacity)?)
+    {
+        witness.acknowledge(anchor)?;
+    }
+    Ok(())
 }
 
 fn witness_semantic_digest(anchor: &JournalAnchor) -> Digest32 {

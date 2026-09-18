@@ -410,11 +410,11 @@ pub fn sparse_tick_ablated(
         digest: Digest32::ZERO,
     };
     let mut inhibition = vec![0_i64; config.width];
-    if !ablation.no_inhibition {
-        if let Some(prior) = previous {
-            for edge in &config.inhibition {
-                inhibition[edge.target] += mul(edge.weight_q24, prior.activation[edge.source]);
-            }
+    if !ablation.no_inhibition
+        && let Some(prior) = previous
+    {
+        for edge in &config.inhibition {
+            inhibition[edge.target] += mul(edge.weight_q24, prior.activation[edge.source]);
         }
     }
     let mut scores = Vec::with_capacity(config.width);

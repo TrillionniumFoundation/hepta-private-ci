@@ -391,6 +391,22 @@ impl SparseJournal {
             Ok(self.current.as_ref())
         }
     }
+
+    pub fn committed_anchors(&self) -> Result<Vec<JournalAnchor>, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        self.entries
+            .iter()
+            .enumerate()
+            .map(|(index, (_, receipt))| {
+                Ok(JournalAnchor {
+                    sequence: u64::try_from(index + 1).map_err(|_| JournalError::Capacity)?,
+                    checkpoint_digest: receipt.checkpoint_after,
+                })
+            })
+            .collect()
+    }
 }
 
 fn encode_tick(tick: &SparseTick) -> Vec<u8> {

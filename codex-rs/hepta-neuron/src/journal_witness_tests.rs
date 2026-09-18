@@ -222,3 +222,64 @@ fn seeded_journal_reopens_with_seeded_magic_and_witness() {
         Some(receipt.checkpoint_after)
     );
 }
+
+
+#[test]
+fn reopen_reconciles_complete_journal_suffix_into_witness_before_new_commit() {
+    let fixture = Fixture::new();
+    let (first, second) = {
+        let mut host = fixture.open(config(1));
+        let first = checked(host.commit(Digest32::ZERO, &tick(1, 1)));
+        drop(host);
+
+        let mut journal = checked(SparseJournal::open_anchored(
+            fixture.file("journal"),
+            config(1),
+            scope(),
+            16,
+            JournalAnchor {
+                sequence: 1,
+                checkpoint_digest: first.checkpoint_after,
+            },
+        ));
+        let second = checked(journal.commit(first.checkpoint_after, &tick(2, 1)));
+        (first, second)
+    };
+    assert_ne!(first.checkpoint_after, second.checkpoint_after);
+
+    let mut reopened = fixture.open(config(1));
+    assert_eq!(
+        checked(reopened.acknowledged()),
+        Some(JournalAnchor {
+            sequence: 2,
+            checkpoint_digest: second.checkpoint_after,
+        })
+    );
+    let third = checked(reopened.commit(second.checkpoint_after, &tick(3, 1)));
+    assert_eq!(
+        checked(reopened.acknowledged()),
+        Some(JournalAnchor {
+            sequence: 3,
+            checkpoint_digest: third.checkpoint_after,
+        })
+    );
+}
+
+#[test]
+fn managed_old_retry_is_idempotent_after_later_witnesses_exist() {
+    let fixture = Fixture::new();
+    let mut host = fixture.open(config(1));
+    let first = checked(host.commit(Digest32::ZERO, &tick(1, 1)));
+    let second = checked(host.commit(first.checkpoint_after, &tick(2, 1)));
+    assert_eq!(
+        checked(host.commit(Digest32::ZERO, &tick(1, 1))),
+        first
+    );
+    assert_eq!(
+        checked(host.acknowledged()),
+        Some(JournalAnchor {
+            sequence: 2,
+            checkpoint_digest: second.checkpoint_after,
+        })
+    );
+}

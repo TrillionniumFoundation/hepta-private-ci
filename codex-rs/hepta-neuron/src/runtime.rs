@@ -330,6 +330,9 @@ pub fn finalize_tick(
     pending: PendingNeuronTickV1,
     resources: NeuronResourceReceiptV1,
 ) -> Result<RuntimeTickOutputV1, RuntimeError> {
+    if resources.saturation_count != pending.sparse_receipt.projection_count {
+        return Err(RuntimeError::ResourceCeiling("saturation count binding"));
+    }
     validate_resources(config, &resources)?;
     let mut tick_receipt = NeuronTickReceiptV1 {
         tick_id: input.tick_id.clone(),
@@ -386,7 +389,7 @@ fn validate_model_execution(
     if execution.output_digest.is_zero() {
         return Err(RuntimeError::ModelOutputDigest);
     }
-    if execution.runtime_receipt.weights_digest != composite_model_digest(config) {
+    if execution.runtime_receipt.weights_digest != config.encoder_digest {
         return Err(RuntimeError::ModelRuntimeBinding);
     }
     if execution.drive_q24.len() != width
