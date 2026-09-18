@@ -14,11 +14,12 @@ result must match a recomputed `decide_calibrated_v2` receipt and disposition fo
 the supplied typed request.
 
 This is now a compatibility surface, not the preferred current-generation
-admission path. New learned-policy composition must first use
-`decide_authenticated_intuition_v2`, which verifies the reusable canonical
-profile plus exact per-decision completeness, request, scoring and CounterBased
-random-stream commitments. The legacy evaluated-shadow wrapper remains limited
-to `HighOnlySlowPath` parity until a native V3 host port is composed. The generic eight-port API and its simulation tests
+admission path. New learned-policy composition uses
+`run_qualified_evaluated_shadow_v3`, which first applies
+`decide_authenticated_intuition_v2` and verifies the reusable canonical profile
+plus exact per-decision completeness, request, scoring and CounterBased
+random-stream commitments. The legacy V2 wrapper remains limited to
+`HighOnlySlowPath` parity for historical callers. The generic eight-port API and its simulation tests
 remain available. This wrapper does not enroll a production host or implement
 neural input, prompt, context, model invocation or external dispatch adapters.
 
