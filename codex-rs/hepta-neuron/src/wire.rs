@@ -361,7 +361,7 @@ pub fn encode_neuron_tick_input_v1(input: &NeuronTickInputV1) -> Result<Vec<u8>,
     );
     object.insert(
         "featureVectorQ24".to_string(),
-        json!(input.feature_vector_q24),
+        json!(&input.feature_vector_q24),
     );
     object.insert(
         "objectiveDigest".to_string(),
