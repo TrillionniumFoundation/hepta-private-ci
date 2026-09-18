@@ -166,6 +166,12 @@ CREATE TABLE authbus_retired_epochs (
     PRIMARY KEY (issuer_id, key_epoch)
 ) WITHOUT ROWID;
 
+CREATE TRIGGER authbus_retired_epochs_no_update
+BEFORE UPDATE ON authbus_retired_epochs
+BEGIN
+    SELECT RAISE(ABORT, 'AuthBus retired epochs are immutable');
+END;
+
 CREATE TRIGGER authbus_retired_epochs_no_delete
 BEFORE DELETE ON authbus_retired_epochs
 BEGIN
