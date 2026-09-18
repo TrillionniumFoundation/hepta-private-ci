@@ -17,6 +17,7 @@ use codex_hepta_memory::MAX_FEDERATION_GRANT_LIFETIME_SECONDS;
 use codex_hepta_memory::workspace_binding_digest;
 
 use crate::AgentdError;
+use crate::AgentdOperationsError;
 use crate::AgentdPayload;
 use crate::AgentdResponse;
 use crate::HealthSnapshot;
@@ -59,6 +60,7 @@ impl AgentdState {
             )
         };
         let automation = self.automation.lock().map_err(poisoned_state)?.clone();
+        let automation_operations = self.automation_operations();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
@@ -230,12 +232,30 @@ impl AgentdState {
             }
             crate::AgentdMethod::AutomationCreate { draft } => {
                 require_automation_ready(lifecycle, app_server_ready, fenced)?;
-                match automation {
-                    Some(store) => self.automation_result(
-                        store.create_task(&draft).await,
-                        AgentdPayload::AutomationTask,
-                    )?,
-                    None => automation_unavailable(),
+                if let Some(host) = automation_operations {
+                    match host.create_automation_task(draft).await {
+                        Ok(task) => {
+                            self.fence_after_durable_change()?;
+                            AgentdPayload::AutomationTask(task)
+                        }
+                        Err(AgentdOperationsError::Automation(error)) => self.automation_result(
+                            Err(error),
+                            AgentdPayload::AutomationTask,
+                        )?,
+                        Err(error) => {
+                            return Err(AgentdError::Protocol(format!(
+                                "durable automation operation failed: {error}"
+                            )));
+                        }
+                    }
+                } else {
+                    match automation {
+                        Some(store) => self.automation_result(
+                            store.create_task(&draft).await,
+                            AgentdPayload::AutomationTask,
+                        )?,
+                        None => automation_unavailable(),
+                    }
                 }
             }
             crate::AgentdMethod::AutomationList { limit } => {

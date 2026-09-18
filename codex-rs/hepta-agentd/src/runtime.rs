@@ -13,6 +13,7 @@ use codex_hepta_automation::AutomationStore;
 use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FederatedRecallSet;
+use codex_hepta_types::Generation;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::task::JoinHandle;
 use tokio::time::timeout;
@@ -53,6 +54,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         ));
     }
     let ranker = config.cognitive_ranker();
+    let automation_operations = config.automation_operations();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -120,6 +122,37 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     .await?;
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
+    }
+    if let Some(operations) = automation_operations {
+        let store = automation_store.as_ref().ok_or_else(|| {
+            AgentdError::Protocol(
+                "durable automation operations were configured but automation storage is unavailable"
+                    .to_string(),
+            )
+        })?;
+        let generation = Generation::new(identity.spawn_generation)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        let operations_path = identity
+            .layout
+            .agent_root()
+            .join("kernel-operations")
+            .join("automation.sqlite3");
+        state.refresh_generation()?;
+        let host = crate::AgentdOperationsHost::open(
+            &operations_path,
+            store.clone(),
+            operations.authority,
+            operations.grants,
+            generation,
+        )
+        .await
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "durable automation operations host failed to open: {error}"
+            ))
+        })?;
+        state.refresh_generation()?;
+        state.attach_automation_operations(Arc::new(host))?;
     }
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(
