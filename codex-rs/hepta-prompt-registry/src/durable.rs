@@ -438,10 +438,7 @@ fn restore_v2(
     }
     let mut realizations = BTreeMap::new();
     for stored_realization in stored.realizations {
-        let mut realization = decode_realization(stored_realization)?;
-        // Legacy V1 stored only a payload digest. Preserve the historical
-        // record, but do not let migration reactivate bytes that are absent.
-        realization.active = false;
+        let realization = decode_realization(stored_realization)?;
         if realizations
             .insert(realization.realization_id.clone(), realization)
             .is_some()
@@ -563,7 +560,12 @@ fn migrate_v1(
 
     let mut realizations = BTreeMap::new();
     for stored_realization in stored.realizations {
-        let realization = decode_realization(stored_realization)?;
+        let mut realization = decode_realization(stored_realization)?;
+        // V1 persisted only a payload digest and never persisted the payload
+        // bytes. Migration must therefore preserve the historical identity but
+        // fail closed by deactivating the realization until bytes are
+        // re-registered through the V2 payload path.
+        realization.active = false;
         if realizations
             .insert(realization.realization_id.clone(), realization)
             .is_some()
@@ -1125,6 +1127,92 @@ mod tests {
                 .map(|record| record.active),
             Some(false)
         );
+    }
+
+    #[test]
+    fn restart_preserves_active_payload_backed_realization() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry");
+        let factor = PromptFactor {
+            factor_id: id("factor:active-reopen"),
+            proposer_id: id("proposer:active-reopen"),
+            semantic_version: id("v1"),
+            content_digest: digest("factor:active-reopen"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        let tuple = PromptModelTupleV2 {
+            model_digest: digest("model:active-reopen"),
+            tokenizer_digest: digest("tokenizer:active-reopen"),
+            template_digest: digest("template:active-reopen"),
+            tool_schema_digest: digest("tool-schema:active-reopen"),
+            context_profile_digest: digest("context-profile:active-reopen"),
+            locale_id: id("locale:en-US"),
+        };
+        let payload = b"persist this active realization".to_vec();
+        {
+            let mut durable =
+                DurablePromptRegistry::open_state_dir(&root, 64).expect("open registry");
+            durable
+                .register_factor(factor.clone())
+                .expect("register factor");
+            durable
+                .registry
+                .admit_factor(&factor.factor_id, &id("reviewer:active-reopen"), digest("evidence"))
+                .expect("legacy test admission");
+            let binding = PromptRealizationBindingV2 {
+                realization_id: id("realization:active-reopen"),
+                factor_id: factor.factor_id.clone(),
+                model_digest: tuple.model_digest,
+                tokenizer_digest: tuple.tokenizer_digest,
+                template_digest: tuple.template_digest,
+                tool_schema_digest: tuple.tool_schema_digest,
+                context_profile_digest: tuple.context_profile_digest,
+                locale_id: tuple.locale_id.clone(),
+                role: PromptRoleV2::DeveloperInstruction,
+                payload_digest: Digest32::of_bytes(&payload),
+                token_cost: 6,
+                expires_unix_ms: None,
+            };
+            durable
+                .register_realization_payload_v2(binding, payload.clone(), None)
+                .expect("register payload");
+            durable.store.persist(&durable.registry).expect("persist admission");
+        }
+
+        let reopened =
+            DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen active registry");
+        assert_eq!(
+            reopened
+                .registry()
+                .realization(&id("realization:active-reopen"))
+                .map(|record| record.active),
+            Some(true)
+        );
+        let snapshot = reopened
+            .snapshot_v2(digest("generation-vector:active-reopen"), &tuple)
+            .expect("snapshot");
+        let compatible = reopened
+            .read_compatible_v2(
+                &snapshot,
+                digest("generation-vector:active-reopen"),
+                &tuple,
+                10,
+                vec![factor.factor_id],
+                8,
+            )
+            .expect("active realization remains readable after reopen");
+        assert_eq!(compatible.bindings.len(), 1);
+        let delivery = reopened
+            .dereference_realization_v2(
+                &id("realization:active-reopen"),
+                &snapshot,
+                digest("generation-vector:active-reopen"),
+                &tuple,
+                10,
+            )
+            .expect("payload remains dereferenceable after reopen");
+        assert_eq!(delivery.payload, payload);
     }
 
     #[test]
