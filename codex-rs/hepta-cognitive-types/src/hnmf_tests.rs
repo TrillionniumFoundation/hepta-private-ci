@@ -36,6 +36,8 @@ fn valid_event() -> MemoryEventV1 {
         vec![
             ProvenanceRefV1::try_new("source-7", 1, digest(b"source"), 1).unwrap(),
         ],
+        MemoryVerificationStateV1::Verified,
+        RetentionPolicyV1::try_new(digest(b"retention"), None).unwrap(),
         digest(b"objective"),
         digest(b"ndu"),
         Some(500_000),
@@ -82,6 +84,8 @@ fn event_rejects_scope_span_privacy_drift() {
         vec![
             ProvenanceRefV1::try_new("source-7", 1, digest(b"source"), 1).unwrap(),
         ],
+        MemoryVerificationStateV1::Verified,
+        RetentionPolicyV1::try_new(digest(b"retention"), None).unwrap(),
         digest(b"objective"),
         digest(b"ndu"),
         None,
@@ -130,6 +134,8 @@ fn cross_modal_binding_requires_distinct_modalities() {
         vec![
             ProvenanceRefV1::try_new("source-7", 1, digest(b"source"), 1).unwrap(),
         ],
+        MemoryVerificationStateV1::Verified,
+        RetentionPolicyV1::try_new(digest(b"retention"), None).unwrap(),
         digest(b"objective"),
         digest(b"ndu"),
         None,
