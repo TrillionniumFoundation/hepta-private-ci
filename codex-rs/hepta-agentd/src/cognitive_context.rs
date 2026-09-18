@@ -13,6 +13,11 @@ use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_memory_retrieval::RetrievalCandidate as BoundRetrievalCandidate;
+use codex_hepta_memory_retrieval::RetrievalRequest as BoundRetrievalRequest;
+use codex_hepta_memory_retrieval::retrieve_v2;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -78,30 +83,75 @@ pub(crate) async fn read(
         items: Vec::new(),
         plan: None,
     };
-    // Admit the whole bounded owner cut before applying the response byte
-    // budget.  Ranking must see every admitted candidate; otherwise a large
-    // low-ranked record can hide the learned winner before the ranker runs.
-    let mut admitted_items = Vec::new();
-    for candidate in candidates.candidates {
-        let memory = candidate.memory;
-        // The legacy search ranks candidates; the new owner cut admits only
-        // the exact verified revision and content bound by the read port.
-        let accepted = read.records().iter().any(|record| {
+
+    // The SQLite owner is the only candidate generator. The retrieval module
+    // receives only exact records admitted by the coherent Lane-C cut and binds
+    // the complete owner-supplied set through V2 before any learned reordering.
+    // The legacy lexical score field carries the already-aggregated owner RRF
+    // score here; graph/freshness stay zero so the bridge never double-counts.
+    let mut bound_candidates = Vec::with_capacity(candidates.candidates.len());
+    for candidate in &candidates.candidates {
+        let memory = &candidate.memory;
+        let Some(record) = read.records().iter().find(|record| {
             record.record_id.as_str() == memory.id.memory_id.as_str()
                 && record.revision.get() == memory.id.revision
                 && record.content_digest.to_string() == memory.content_sha256.as_str()
                 && memory.scope == scope
-        });
-        if !accepted {
+        }) else {
             continue;
-        }
-        let item = CognitiveContextItem {
+        };
+        let owner_score = i64::try_from(candidate.reciprocal_rank_score).map_err(|_| {
+            CognitiveStoreError::Corrupt("retrieval owner score exceeds i64".to_string())
+        })?;
+        bound_candidates.push(BoundRetrievalCandidate {
+            record: record.clone(),
+            snapshot_digest: read.snapshot_digest(),
+            lexical_score: FixedQ32::from_raw(owner_score),
+            graph_score: FixedQ32::ZERO,
+            freshness_score: FixedQ32::ZERO,
+        });
+    }
+    let query_digest = Digest32::of_bytes(query.as_bytes());
+    let query_id = StableId::new(format!("memory-query-{query_digest}"))
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+    let bound = retrieve_v2(BoundRetrievalRequest {
+        query_id,
+        query_digest,
+        snapshot_digest: read.snapshot_digest(),
+        maximum_results: 16,
+        candidates: bound_candidates,
+    })
+    .map_err(|error| CognitiveStoreError::Corrupt(format!("memory retrieval binding: {error}")))?;
+
+    // Ranking sees the complete owner batch admitted above before the response
+    // byte/result budget. The optional learned ranker is deliberately downstream
+    // of the deterministic owner+memory.retrieval ordering and cannot add items.
+    let mut admitted_items = Vec::new();
+    for result in &bound.retrieval.results {
+        let Some(record) = read.records().iter().find(|record| {
+            record.record_id == result.record_id && record.record_digest() == result.record_digest
+        }) else {
+            return Err(CognitiveStoreError::Corrupt(
+                "bound retrieval result left the admitted snapshot".to_string(),
+            )
+            .into());
+        };
+        let Some(candidate) = candidates.candidates.iter().find(|candidate| {
+            candidate.memory.id.memory_id.as_str() == record.record_id.as_str()
+                && candidate.memory.id.revision == record.revision.get()
+        }) else {
+            return Err(CognitiveStoreError::Corrupt(
+                "bound retrieval result left the owner candidate set".to_string(),
+            )
+            .into());
+        };
+        let memory = &candidate.memory;
+        admitted_items.push(CognitiveContextItem {
             memory_id: memory.id.memory_id.as_str().to_string(),
             revision: memory.id.revision,
-            content: memory.content,
+            content: memory.content.clone(),
             content_sha256: memory.content_sha256.as_str().to_string(),
-        };
-        admitted_items.push(item);
+        });
     }
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
