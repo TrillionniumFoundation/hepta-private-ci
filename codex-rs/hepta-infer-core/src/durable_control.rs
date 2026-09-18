@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
@@ -197,6 +198,14 @@ pub struct JournalReplayStats {
     pub full_replays: u64,
     pub replayed_bytes: u64,
     pub unchanged_reuses: u64,
+}
+
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct NativeArchiveReceipt {
+    pub archived: usize,
+    pub remaining_native: usize,
+    pub journal_bytes: u64,
+    pub released_archive_bytes: u64,
 }
 
 /// A cache discriminator for cooperating writers in a host-owned directory.
@@ -555,8 +564,148 @@ impl DurableInferenceControl {
     /// content-addressed sibling archive. Indeterminate/in-flight records stay
     /// in the compacted active journal, so compaction never makes them
     /// replayable or releases their capacity.
+    /// Move released native runs out of the hot replay set while preserving
+    /// exact idempotence identity in owner-only per-request archives. The full
+    /// pre-compaction event stream is still retained by the content-addressed
+    /// compaction archive, so this is a hot-state optimization rather than
+    /// history deletion.
+    pub fn archive_released_native(&mut self) -> Result<NativeArchiveReceipt, Error> {
+        let _writer_fence = self.reload_locked()?;
+        let released = self
+            .native
+            .records
+            .iter()
+            .filter_map(|(id, record)| {
+                (record.state == native::NativeReservationState::Released).then(|| id.clone())
+            })
+            .collect::<BTreeSet<_>>();
+
+        if released.is_empty() {
+            if self.needs_compaction() {
+                let native_state = self.native.clone();
+                self.compact_current_with_archive(&native_state)?;
+            }
+            return Ok(NativeArchiveReceipt {
+                archived: 0,
+                remaining_native: self.native.records.len(),
+                journal_bytes: self.journal_bytes,
+                released_archive_bytes: released_archive_bytes(&self.path)?,
+            });
+        }
+
+        ensure_released_archive_dir(&self.path)?;
+        for request_id in &released {
+            let record = self
+                .native
+                .records
+                .get(request_id)
+                .ok_or(Error::RequestNotFound)?;
+            self.persist_released_native_record(record)?;
+        }
+        sync_released_archive_dir(&self.path)?;
+
+        // Stage hot-state removal separately. Publication of the compacted
+        // journal happens before the in-memory cut changes, so a failed rename
+        // never lets this handle forget a command identity while still usable.
+        let mut staged_native = self.native.clone();
+        for request_id in &released {
+            staged_native.records.remove(request_id);
+        }
+        self.compact_current_with_archive(&staged_native)?;
+        self.native = staged_native;
+
+        Ok(NativeArchiveReceipt {
+            archived: released.len(),
+            remaining_native: self.native.records.len(),
+            journal_bytes: self.journal_bytes,
+            released_archive_bytes: released_archive_bytes(&self.path)?,
+        })
+    }
+
+    pub(super) fn archived_native_record(
+        &self,
+        request_id: &str,
+    ) -> Result<Option<native::NativeRunRecord>, Error> {
+        validate_identity(request_id, "native archived request")?;
+        let path = released_record_path(&self.path, request_id)?;
+        let mut file = match File::open(&path) {
+            Ok(file) => file,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+            Err(error) => return Err(error.into()),
+        };
+        validate_private_file(&file)?;
+        if file.metadata()?.len() > MAX_JOURNAL_LINE_BYTES as u64 {
+            return Err(Error::CorruptJournal("native released archive size"));
+        }
+        let mut bytes = Vec::new();
+        file.read_to_end(&mut bytes)?;
+        let record: native::NativeRunRecord = serde_json::from_slice(&bytes)
+            .map_err(|_| Error::CorruptJournal("native released archive decode"))?;
+        native::validate_checkpoint(&record)?;
+        if record.request.request_id != request_id
+            || record.state != native::NativeReservationState::Released
+        {
+            return Err(Error::CorruptJournal("native released archive identity"));
+        }
+        Ok(Some(record))
+    }
+
+    fn persist_released_native_record(
+        &self,
+        record: &native::NativeRunRecord,
+    ) -> Result<(), Error> {
+        if record.state != native::NativeReservationState::Released {
+            return Err(Error::InvalidTransition);
+        }
+        native::validate_checkpoint(record)?;
+        let path = released_record_path(&self.path, &record.request.request_id)?;
+        let encoded = serde_json::to_vec(record)
+            .map_err(|_| Error::CorruptJournal("native released archive encode"))?;
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+
+        match File::open(&path) {
+            Ok(mut existing) => {
+                validate_private_file(&existing)?;
+                if existing.metadata()?.len() > MAX_JOURNAL_LINE_BYTES as u64 {
+                    return Err(Error::CorruptJournal("native released archive size"));
+                }
+                let mut bytes = Vec::new();
+                existing.read_to_end(&mut bytes)?;
+                if bytes != encoded {
+                    return Err(Error::Conflict);
+                }
+                return Ok(());
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(error.into()),
+        }
+
+        let mut options = OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut archive = options.open(path)?;
+        archive.write_all(&encoded)?;
+        archive.flush()?;
+        archive.sync_all()?;
+        Ok(())
+    }
+
     pub fn compact_with_archive(&mut self) -> Result<PathBuf, Error> {
         let _writer_fence = self.reload_locked()?;
+        let native_state = self.native.clone();
+        self.compact_current_with_archive(&native_state)
+    }
+
+    fn compact_current_with_archive(
+        &mut self,
+        native_state: &native::NativeJournal,
+    ) -> Result<PathBuf, Error> {
         let mut source = File::open(&self.path)?;
         let archive_digest = digest_hex(Digest32::of_reader(&mut source, MAX_JOURNAL_BYTES)?);
         let archive = archive_path(&self.path, &archive_digest)?;
@@ -596,7 +745,7 @@ impl DurableInferenceControl {
                 &format!("{LEGACY_CHECKPOINT_PREFIX}{json}\n"),
             )?;
         }
-        for line in self.native.checkpoint_lines() {
+        for line in native_state.checkpoint_lines() {
             write_checkpoint_line(&mut compact_file, &mut compacted_bytes, &line?)?;
         }
         compact_file.flush()?;
@@ -785,6 +934,71 @@ impl DurableInferenceControl {
         }
         Ok(())
     }
+}
+
+fn released_archive_dir(path: &Path) -> PathBuf {
+    sibling_temp_path(path, "released")
+}
+
+fn ensure_released_archive_dir(path: &Path) -> Result<(), Error> {
+    let directory = released_archive_dir(path);
+    match fs::symlink_metadata(&directory) {
+        Ok(metadata) if !metadata.is_dir() => {
+            return Err(Error::InvalidIdentity("native released archive must be a directory"));
+        }
+        Ok(metadata) => {
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                if metadata.permissions().mode() & 0o077 != 0 {
+                    return Err(Error::InvalidIdentity("native released archive must be owner-only"));
+                }
+            }
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            fs::create_dir(&directory)?;
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                fs::set_permissions(&directory, fs::Permissions::from_mode(0o700))?;
+            }
+            sync_parent(path)?;
+        }
+        Err(error) => return Err(error.into()),
+    }
+    Ok(())
+}
+
+fn released_record_path(path: &Path, request_id: &str) -> Result<PathBuf, Error> {
+    validate_identity(request_id, "native archived request")?;
+    let name = digest_hex(Digest32::of_bytes(request_id.as_bytes()));
+    Ok(released_archive_dir(path).join(format!("{name}.json")))
+}
+
+fn sync_released_archive_dir(path: &Path) -> Result<(), Error> {
+    File::open(released_archive_dir(path))?.sync_all()?;
+    Ok(())
+}
+
+fn released_archive_bytes(path: &Path) -> Result<u64, Error> {
+    let directory = released_archive_dir(path);
+    let entries = match fs::read_dir(&directory) {
+        Ok(entries) => entries,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(0),
+        Err(error) => return Err(error.into()),
+    };
+    let mut total = 0_u64;
+    for entry in entries {
+        let entry = entry?;
+        let metadata = entry.metadata()?;
+        if !metadata.is_file() {
+            return Err(Error::InvalidIdentity("native released archive entry"));
+        }
+        total = total
+            .checked_add(metadata.len())
+            .ok_or(Error::ArithmeticOverflow)?;
+    }
+    Ok(total)
 }
 
 fn acquire_writer_lock(path: &Path) -> Result<File, Error> {
