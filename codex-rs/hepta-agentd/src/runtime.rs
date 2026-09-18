@@ -39,6 +39,12 @@ enum CompletedRuntimeTask {
     AuthBus,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ShutdownSignal {
+    Drain,
+    Stop,
+}
+
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
     let trust_file = config
         .authbus_trust_file()
@@ -160,8 +166,19 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             Some(CompletedRuntimeTask::Automation),
         ),
         signal = shutdown_signal() => {
-            signal?;
-            state.mark_draining()?;
+            match signal? {
+                ShutdownSignal::Drain => {
+                    // The supervisor has already advanced the Fleet lifecycle
+                    // to Draining before issuing SIGUSR1. Close local
+                    // admission explicitly before runtime tasks are cancelled.
+                    state.mark_draining()?;
+                }
+                ShutdownSignal::Stop => {
+                    // SIGTERM is the later stop phase. Keep admission closed
+                    // while the remaining runtime tasks are torn down.
+                    state.mark_draining()?;
+                }
+            }
             (Ok(()), None)
         }
     };
@@ -372,16 +389,30 @@ async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, Au
 }
 
 #[cfg(unix)]
-async fn shutdown_signal() -> Result<(), AgentdError> {
+async fn shutdown_signal() -> Result<ShutdownSignal, AgentdError> {
     let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
-    terminate.recv().await.ok_or_else(|| {
-        AgentdError::Protocol("SIGTERM listener closed before receiving a signal".to_string())
-    })
+    let mut drain =
+        tokio::signal::unix::signal(tokio::signal::unix::SignalKind::user_defined1())?;
+    tokio::select! {
+        signal = drain.recv() => signal
+            .map(|_| ShutdownSignal::Drain)
+            .ok_or_else(|| AgentdError::Protocol(
+                "SIGUSR1 listener closed before receiving a drain signal".to_string(),
+            )),
+        signal = terminate.recv() => signal
+            .map(|_| ShutdownSignal::Stop)
+            .ok_or_else(|| AgentdError::Protocol(
+                "SIGTERM listener closed before receiving a stop signal".to_string(),
+            )),
+    }
 }
 
 #[cfg(not(unix))]
-async fn shutdown_signal() -> Result<(), AgentdError> {
-    tokio::signal::ctrl_c().await.map_err(Into::into)
+async fn shutdown_signal() -> Result<ShutdownSignal, AgentdError> {
+    tokio::signal::ctrl_c()
+        .await
+        .map(|_| ShutdownSignal::Stop)
+        .map_err(Into::into)
 }
 
 #[cfg(test)]

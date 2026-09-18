@@ -16,6 +16,14 @@ This page describes executable behavior in the source, including gaps that requi
 
 The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-control`, and `hepta-matrix-send-observer` entry points exit 64 with the real owner or missing integration named. Their former empty mains returned success without doing work. Existing component tests now run as library tests, with sibling test sources.
 
+## Supervisor lifecycle source behavior
+
+The native supervisor owns one generation-fenced process handle per Agent and the Fleet-backed lifecycle/release transition facts. Post-readiness health loss enters a bounded unhealthy grace period instead of remaining indefinitely Running. Unexpected failure can schedule an automatic replacement with a finite configured attempt budget and capped exponential backoff; explicit stop, kill or restart cancels that automatic path.
+
+Release transitions revalidate current Fleet state at admission. Ordinary rollback resolves the recorded predecessor release ID through the current per-Agent allowance and immutable release manifest. A supervisord started with an externally pinned production grant verifier rejects unsigned Upgrade/Rollback RPCs; signed release changes retain the separate production-grant and durable-intent path. A paired release whose agentd command is unchanged but whose matrixd companion changes is not treated as an unchanged release.
+
+A child spawned before process-lease publication fails remains attached to the live supervisor as a fenced cleanup runtime until exit is observed; a failed kill is not silently discarded. This closes the in-process ownership gap but does not make an unavailable filesystem or host crash self-recovering evidence. On Unix, SIGUSR1 is the drain request and SIGTERM is the later stop request. Agentd closes local admission on the drain signal. The Unix driver does not invent a drain-complete bit: process exit is the local terminal observation, and target-host watchdog/drain timing plus crash cleanup still require external qualification.
+
 ## Canonical memory to actual model execution
 
 `AgentdMethod::CognitiveContext { query, limit }` and `AgentdClient::cognitive_context` use the normal owner/generation-fenced local protocol. The host selects its own Agent identity and private scope; callers cannot supply another scope or a success receipt.

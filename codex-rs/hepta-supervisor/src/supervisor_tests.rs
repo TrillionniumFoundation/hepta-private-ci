@@ -13,6 +13,7 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
@@ -132,6 +133,10 @@ fn config() -> SupervisorConfig {
         health_timeout: Duration::from_millis(10),
         drain_timeout: Duration::from_millis(10),
         stop_grace: Duration::from_millis(10),
+        restart_backoff_min: Duration::from_millis(5),
+        restart_backoff_max: Duration::from_millis(20),
+        restart_recovery_window: Duration::from_millis(200),
+        restart_attempt_budget: 3,
         event_capacity: 8,
         log_capacity: 3,
         max_log_bytes: 8,
@@ -154,6 +159,8 @@ struct FakeWorld {
     processes: BTreeMap<u64, FakeState>,
     reject_adoption: BTreeSet<AgentId>,
     reject_spawn_programs: BTreeSet<PathBuf>,
+    race_process_lease_publish: BTreeSet<AgentId>,
+    reject_kill: BTreeSet<AgentId>,
 }
 
 struct FakeState {
@@ -263,6 +270,22 @@ impl FakeControl {
             .insert(program.into());
     }
 
+    fn race_process_lease_publish(&self, agent_id: AgentId) {
+        self.world
+            .lock()
+            .expect("fake world lock")
+            .race_process_lease_publish
+            .insert(agent_id);
+    }
+
+    fn reject_kill(&self, agent_id: AgentId) {
+        self.world
+            .lock()
+            .expect("fake world lock")
+            .reject_kill
+            .insert(agent_id);
+    }
+
     fn counts(&self, agent_id: &AgentId) -> (usize, usize, usize) {
         self.counts_role(agent_id, FakeRole::Agentd)
     }
@@ -317,6 +340,13 @@ impl ProcessDriver for FakeDriver {
         let mut world = self.world.lock().expect("fake world lock");
         if world.reject_spawn_programs.contains(&spec.command.program) {
             return Err(ProcessDriverError::new("injected spawn failure"));
+        }
+        let race_process_lease_publish = world.race_process_lease_publish.remove(&spec.agent_id);
+        if race_process_lease_publish {
+            drop(world);
+            std::fs::create_dir(spec.run_root.join("supervisor-process.json"))
+                .map_err(ProcessDriverError::from)?;
+            world = self.world.lock().expect("fake world lock");
         }
         world.next_id += 1;
         let id = world.next_id;
@@ -465,13 +495,15 @@ impl ManagedProcess for FakeProcess {
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
-            .processes
-            .get_mut(&self.id)
-            .expect("fake process")
-            .kill_requests += 1;
+        let mut world = self.world.lock().expect("fake world lock");
+        let agent_id = {
+            let state = world.processes.get_mut(&self.id).expect("fake process");
+            state.kill_requests += 1;
+            state.agent_id.clone()
+        };
+        if world.reject_kill.contains(&agent_id) {
+            return Err(ProcessDriverError::new("injected kill failure"));
+        }
         Ok(())
     }
 }
@@ -567,6 +599,299 @@ fn restart_drains_one_agent_and_spawns_a_new_generation() -> Result<(), Supervis
             .lifecycle,
         AgentLifecycle::Starting
     );
+    Ok(())
+}
+
+#[test]
+fn lease_publish_failure_retains_child_until_observed_exit_even_when_kill_fails()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    control.race_process_lease_publish(fleet.first.clone());
+    control.reject_kill(fleet.first.clone());
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    let error = supervisor
+        .start(&fleet.first, command()?, now)
+        .expect_err("lease publication race must fail the start");
+    assert!(matches!(error, SupervisorError::Driver { .. }));
+
+    let retained = supervisor.snapshot(&fleet.first).expect("retained cleanup runtime");
+    assert!(retained.active);
+    assert!(retained.runtime_fenced);
+    assert_eq!(control.counts(&fleet.first).2, 1);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
+
+    // Remove the injected conflicting path, then observe the exact spawned
+    // process exit. The supervisor must keep ownership until this point even
+    // though the first kill request failed.
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    std::fs::remove_dir(record.layout.run_root().join("supervisor-process.json"))?;
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert!(!supervisor.snapshot(&fleet.first).expect("slot").active);
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    Ok(())
+}
+
+#[test]
+fn running_health_loss_uses_bounded_backoff_and_exhausts_restart_budget()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    // A post-readiness health loss first enters a bounded grace period.
+    control.update(&fleet.first, |state| state.healthy = false);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(1)),
+        TickReport::default()
+    );
+    assert_eq!(control.counts(&fleet.first), (0, 0, 0));
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(12)),
+        TickReport::default()
+    );
+    assert_eq!(control.counts(&fleet.first), (0, 1, 0));
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(13)),
+        TickReport::default()
+    );
+
+    // Attempt 1 is queued for +5ms, not started immediately.
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(17)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(18)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+
+    // Attempt 1 fails readiness; attempt 2 waits +10ms.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(29)),
+        TickReport::default()
+    );
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(30)),
+        TickReport::default()
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(39)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(40)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 3);
+
+    // Attempt 2 fails; attempt 3 is capped at +20ms.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(51)),
+        TickReport::default()
+    );
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(52)),
+        TickReport::default()
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(71)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 3);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(72)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+
+    // Attempt 3 fails inside the same recovery window; no fourth automatic
+    // retry is admitted.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(83)),
+        TickReport::default()
+    );
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(84)),
+        TickReport::default()
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(180)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+    assert!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("final slot")
+            .events
+            .iter()
+            .any(|event| matches!(
+                event.kind,
+                SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+            ))
+    );
+    Ok(())
+}
+
+#[test]
+fn automatic_restart_survives_stop_grace_escalation_to_kill() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.update(&fleet.first, |state| state.healthy = false);
+
+    // First observation enters Unhealthy; the grace period then expires
+    // into Failed + stop request.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(1)),
+        TickReport::default()
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(12)),
+        TickReport::default()
+    );
+    assert_eq!(control.counts(&fleet.first), (0, 1, 0));
+
+    // Stop grace expires -> kill request, but this is still a recoverable
+    // failure rather than an explicit operator kill.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(23)),
+        TickReport::default()
+    );
+    assert_eq!(control.counts(&fleet.first), (0, 1, 1));
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(24)),
+        TickReport::default()
+    );
+
+    // The first automatic retry remains queued after the kill escalation.
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(29)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    Ok(())
+}
+
+#[test]
+fn matrix_only_release_change_is_not_rejected_as_unchanged() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let agent_command = AgentCommand::new(fake_program("shared/hepta-agentd"), Vec::new())?;
+    let current = AgentRelease::with_matrixd(
+        "paired-v1",
+        agent_command.clone(),
+        AgentCommand::new(fake_program("matrix-v1/hepta-matrixd"), Vec::new())?,
+    )?;
+    supervisor.start_release(&fleet.first, current, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let target = AgentRelease::with_matrixd(
+        "paired-v2",
+        agent_command,
+        AgentCommand::new(fake_program("matrix-v2/hepta-matrixd"), Vec::new())?,
+    )?;
+    supervisor.preflight_upgrade(&fleet.first, &target)?;
+    Ok(())
+}
+
+#[test]
+fn rollback_rechecks_current_fleet_allowance_before_reusing_predecessor()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source = fleet.write_release_source()?;
+    let release_v1 = ReleaseId::parse("rollback-v1")?;
+    let release_v2 = ReleaseId::parse("rollback-v2")?;
+    for release_id in [&release_v1, &release_v2] {
+        fleet
+            .registry
+            .install_release(release_id.clone(), &source, Vec::new())?;
+        fleet.registry.allow_release(&fleet.first, release_id)?;
+    }
+
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    let v1 = AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &release_v1)?)?;
+    supervisor.start_release(&fleet.first, v1, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let v2 = AgentRelease::try_from(fleet.registry.resolve_release(&fleet.first, &release_v2)?)?;
+    supervisor.upgrade(&fleet.first, v2, now)?;
+    finish_release_drain(&mut supervisor, &control, &fleet.first, now);
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    std::fs::remove_file(
+        record
+            .layout
+            .releases_root()
+            .join(format!("allow-{release_v1}.json")),
+    )?;
+
+    let error = supervisor
+        .rollback(&fleet.first, now)
+        .expect_err("removed predecessor allowance must block rollback");
+    assert!(matches!(
+        error,
+        SupervisorError::Registry(FleetRegistryError::ReleaseNotAllowed { .. })
+    ));
+    let snapshot = supervisor.snapshot(&fleet.first).expect("unchanged runtime");
+    assert_eq!(snapshot.active_release.as_deref(), Some("rollback-v2"));
+    assert!(!snapshot.release_change_pending);
     Ok(())
 }
 

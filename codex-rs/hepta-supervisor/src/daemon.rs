@@ -105,7 +105,7 @@ use crate::daemon_protocol::SupervisordHealth;
 use crate::daemon_protocol::SupervisordMatrixStatus;
 #[cfg(unix)]
 use crate::daemon_protocol::SupervisordMethod;
-#[cfg(unix)]
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordMutation;
 #[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordPayload;
@@ -161,8 +161,10 @@ pub async fn run_supervisord(
 
 /// Production entry point for a daemon whose trust root was pinned by an
 /// external authority/configuration ceremony.  The verifier is intentionally
-/// a parameter: the daemon never reads a public key from a mutation request
-/// and the legacy entry point keeps signed mutations disabled.
+/// a parameter: the daemon never reads a public key from a mutation request.
+/// While this verifier is configured, unsigned Upgrade/Rollback RPCs are
+/// rejected so local-control methods cannot bypass the signed transition path;
+/// the legacy entry point keeps signed mutations disabled.
 /// After the feature gate, non-Unix hosts return an unsupported-platform I/O
 /// error before accessing fleet state.
 pub async fn run_supervisord_with_grant_verifier(
@@ -377,6 +379,18 @@ async fn write_response(
     Ok(())
 }
 
+#[cfg(any(unix, test))]
+fn unsigned_release_transition_requires_authority(
+    production_verifier_configured: bool,
+    operation: SupervisordMutation,
+) -> bool {
+    production_verifier_configured
+        && matches!(
+            operation,
+            SupervisordMutation::Upgrade | SupervisordMutation::Rollback
+        )
+}
+
 #[cfg(unix)]
 async fn handle_request<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
@@ -511,6 +525,17 @@ async fn handle_request<D: ProcessDriver>(
             .await
         }
         SupervisordMethod::Upgrade { fence, release_id } => {
+            if unsigned_release_transition_requires_authority(
+                state.production_grant_verifier.is_some(),
+                SupervisordMutation::Upgrade,
+            ) {
+                let actual = agent_status(&state, &fence.agent_id).await.ok();
+                return error_payload(
+                    "production_authority_required",
+                    "production-configured supervisord requires SignedUpgrade for release changes",
+                    actual,
+                );
+            }
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
@@ -527,6 +552,17 @@ async fn handle_request<D: ProcessDriver>(
             handle_mutation(state, SupervisordMutation::Upgrade, fence, Some(target)).await
         }
         SupervisordMethod::Rollback { fence } => {
+            if unsigned_release_transition_requires_authority(
+                state.production_grant_verifier.is_some(),
+                SupervisordMutation::Rollback,
+            ) {
+                let actual = agent_status(&state, &fence.agent_id).await.ok();
+                return error_payload(
+                    "production_authority_required",
+                    "production-configured supervisord requires SignedRollback for release changes",
+                    actual,
+                );
+            }
             handle_mutation(
                 state,
                 SupervisordMutation::Rollback,
@@ -947,6 +983,8 @@ struct HiddenControlState<'a> {
     registry_current_release: &'a Option<ReleaseId>,
     registry_previous_release: &'a Option<ReleaseId>,
     restart_pending: bool,
+    automatic_restart_attempt: u32,
+    automatic_restart_pending: bool,
     runtime_phase: &'a Option<crate::ControlRuntimePhase>,
     runtime_release: &'a Option<String>,
     runtime_incarnation: &'a Option<String>,
@@ -981,6 +1019,8 @@ fn control_state_digest(
             registry_current_release: &record.release_state.current,
             registry_previous_release: &record.release_state.previous,
             restart_pending: snapshot.restart_pending,
+            automatic_restart_attempt: snapshot.automatic_restart_attempt,
+            automatic_restart_pending: snapshot.automatic_restart_pending,
             runtime_phase: &snapshot.runtime_phase,
             runtime_release: &snapshot.runtime_release,
             runtime_incarnation: &snapshot.runtime_incarnation,
@@ -1265,6 +1305,35 @@ mod tests {
     }
 
     #[test]
+    fn production_configured_daemon_requires_signed_release_transitions() {
+        assert!(unsigned_release_transition_requires_authority(
+            true,
+            SupervisordMutation::Upgrade,
+        ));
+        assert!(unsigned_release_transition_requires_authority(
+            true,
+            SupervisordMutation::Rollback,
+        ));
+        for operation in [
+            SupervisordMutation::Start,
+            SupervisordMutation::Drain,
+            SupervisordMutation::Stop,
+            SupervisordMutation::Kill,
+            SupervisordMutation::Restart,
+        ] {
+            assert!(!unsigned_release_transition_requires_authority(true, operation));
+        }
+        assert!(!unsigned_release_transition_requires_authority(
+            false,
+            SupervisordMutation::Upgrade,
+        ));
+        assert!(!unsigned_release_transition_requires_authority(
+            false,
+            SupervisordMutation::Rollback,
+        ));
+    }
+
+    #[test]
     fn every_external_fence_field_participates_in_constant_time_cas_identity() {
         let actual = fence();
         assert!(control_fence_matches(&actual, &actual));
@@ -1395,6 +1464,94 @@ mod tests {
             logs: Vec::new(),
             control_revision: 0,
             restart_pending: false,
+            automatic_restart_attempt: 0,
+            automatic_restart_pending: false,
+            release_state_generation: record.release_state.generation,
+            runtime_phase: None,
+            runtime_release: None,
+            runtime_incarnation: None,
+            runtime_fenced: false,
+            release_change: None,
+            has_last_command: false,
+        };
+        status_from(
+            &SupervisorEpoch::parse(EPOCH).expect("fixed epoch"),
+            &record,
+            Some(snapshot),
+        )
+        .expect("derive status")
+        .control_fence
+        .state_digest
+    }
+
+    #[test]
+    fn automatic_restart_state_participates_in_control_state_digest() {
+        let matrix = MatrixSupervisorSnapshot {
+            configured: false,
+            active: false,
+            healthy: false,
+            degraded: false,
+            process_system_id: None,
+            attached_agent_generation: None,
+            binding_revision: None,
+            restart_attempt: 0,
+            last_error: None,
+        };
+        let baseline = recovery_control_digest(matrix.clone(), 0, false);
+        assert_ne!(
+            recovery_control_digest(matrix.clone(), 1, false),
+            baseline,
+            "automatic restart attempt changed without changing the control digest"
+        );
+        assert_ne!(
+            recovery_control_digest(matrix, 0, true),
+            baseline,
+            "automatic restart pending state changed without changing the control digest"
+        );
+    }
+
+    fn recovery_control_digest(
+        matrix: MatrixSupervisorSnapshot,
+        automatic_restart_attempt: u32,
+        automatic_restart_pending: bool,
+    ) -> ControlStateDigest {
+        let temp = tempfile::tempdir().expect("create temporary fleet");
+        let fleet_root =
+            HeptaFleetRoot::parse(temp.path().join("fleet")).expect("parse temporary fleet root");
+        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
+        let workspace = temp.path().join("workspace");
+        std::fs::create_dir(&workspace).expect("create workspace");
+        let agent_id = AgentId::parse(AGENT_ID).expect("fixed AgentId");
+        let record = registry
+            .register(
+                AgentManifest::new(
+                    agent_id,
+                    WorkspaceBinding::new(
+                        workspace.canonicalize().expect("canonical workspace"),
+                        &fleet_root,
+                    )
+                    .expect("workspace binding"),
+                    ResourceBudget::local_default(),
+                )
+                .expect("agent manifest"),
+            )
+            .expect("register agent");
+        let snapshot = AgentSupervisorSnapshot {
+            active: false,
+            healthy: false,
+            runtime_generation: None,
+            spawn_generation: None,
+            process_system_id: None,
+            active_release: None,
+            previous_release: None,
+            release_change_pending: false,
+            matrix,
+            events: Vec::new(),
+            logs: Vec::new(),
+            control_revision: 0,
+            restart_pending: false,
+            automatic_restart_attempt,
+            automatic_restart_pending,
             release_state_generation: record.release_state.generation,
             runtime_phase: None,
             runtime_release: None,

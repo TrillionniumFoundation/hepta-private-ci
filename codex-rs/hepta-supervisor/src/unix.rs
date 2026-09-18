@@ -130,7 +130,10 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGTERM)
+        // SIGUSR1 is the supervisor/agentd local drain signal. It is
+        // intentionally distinct from SIGTERM so a graceful drain cannot be
+        // silently collapsed into an immediate stop request.
+        send_signal(self.handle.process_id(), libc::SIGUSR1)
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {

@@ -128,6 +128,14 @@ pub struct SupervisorConfig {
     pub health_timeout: Duration,
     pub drain_timeout: Duration,
     pub stop_grace: Duration,
+    /// Minimum delay before an automatic restart after an unexpected process failure.
+    pub restart_backoff_min: Duration,
+    /// Maximum delay between automatic restart attempts.
+    pub restart_backoff_max: Duration,
+    /// Healthy-runtime interval after which the automatic restart budget is replenished.
+    pub restart_recovery_window: Duration,
+    /// Maximum automatic restart attempts within one recovery window.
+    pub restart_attempt_budget: u32,
     pub event_capacity: usize,
     pub log_capacity: usize,
     pub max_log_bytes: usize,
@@ -144,6 +152,10 @@ impl SupervisorConfig {
             health_timeout: Duration::from_secs(60),
             drain_timeout: Duration::from_secs(30),
             stop_grace: Duration::from_secs(5),
+            restart_backoff_min: Duration::from_millis(250),
+            restart_backoff_max: Duration::from_secs(30),
+            restart_recovery_window: Duration::from_secs(60),
+            restart_attempt_budget: 3,
             event_capacity: 128,
             log_capacity: 256,
             max_log_bytes: 4_096,
@@ -155,13 +167,18 @@ impl SupervisorConfig {
         if self.health_timeout.is_zero()
             || self.drain_timeout.is_zero()
             || self.stop_grace.is_zero()
+            || self.restart_backoff_min.is_zero()
+            || self.restart_backoff_max < self.restart_backoff_min
+            || self.restart_recovery_window < self.restart_backoff_max
+            || !(1..=3).contains(&self.restart_attempt_budget)
             || !(1..=4_096).contains(&self.event_capacity)
             || !(1..=16_384).contains(&self.log_capacity)
             || !(1..=65_536).contains(&self.max_log_bytes)
             || !(1..=1_024).contains(&self.driver_poll_batch)
         {
             return Err(SupervisorError::Invalid(
-                "supervisor deadlines and buffer bounds must be finite and non-zero".to_string(),
+                "supervisor deadlines, restart policy and buffer bounds must be finite and bounded"
+                    .to_string(),
             ));
         }
         Ok(())
@@ -230,6 +247,8 @@ pub enum SupervisorEventKind {
     StopRequested,
     KillRequested,
     RestartQueued,
+    AutomaticRestartQueued { attempt: u32 },
+    AutomaticRestartBudgetExhausted { attempts: u32 },
     UpgradeQueued { previous: String, target: String },
     UpgradeCommitted { previous: String, target: String },
     AutomaticRollbackQueued { failed: String, target: String },
@@ -286,6 +305,8 @@ pub struct AgentSupervisorSnapshot {
     pub logs: Vec<ProcessLog>,
     pub(crate) control_revision: u64,
     pub(crate) restart_pending: bool,
+    pub(crate) automatic_restart_attempt: u32,
+    pub(crate) automatic_restart_pending: bool,
     pub(crate) release_state_generation: u64,
     pub(crate) runtime_phase: Option<ControlRuntimePhase>,
     pub(crate) runtime_release: Option<String>,
@@ -300,6 +321,7 @@ pub struct AgentSupervisorSnapshot {
 pub(crate) enum ControlRuntimePhase {
     AwaitingHealth,
     Running,
+    Unhealthy,
     Draining,
     Stopping,
     Killing,

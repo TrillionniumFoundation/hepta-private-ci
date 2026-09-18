@@ -149,6 +149,10 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
+The native supervisor treats post-readiness health loss as a watchdog state, not as healthy Running. The local default automatic-recovery policy permits at most three attempts per 60-second recovery window with exponential backoff starting at 250 ms and capped at 30 s; a stable healthy interval replenishes the budget. Explicit stop, kill and restart supersede queued automatic recovery. A failed process-lease publication retains the exact spawned process as a fenced cleanup runtime until exit is observed in the live supervisor generation; this does not turn an unavailable filesystem or host crash into durable evidence.
+
+Rollback never treats the cached predecessor object as current authority: ordinary rollback re-resolves its release ID through FleetRegistry allowance/manifest validation. A production-configured supervisord with an externally pinned grant verifier rejects unsigned Upgrade/Rollback and accepts release transitions only through the signed RPC path.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls
@@ -163,13 +167,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-supervisor/src/supervisor.rs](../../../codex-rs/hepta-supervisor/src/supervisor.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-supervisor/src/supervisor.rs](../../../codex-rs/hepta-supervisor/src/supervisor.rs) and the linked implementation components. `SupervisorConfig` bounds health, drain and stop deadlines together with automatic-restart minimum/maximum backoff, recovery window and an attempt budget no greater than three.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Build hepta-supervisord from codex-hepta-supervisor; its native CLI requires --fleet-root with an absolute path. Grant and H7 verifier options are complete trust tuples, not request-supplied switches. The signer binaries require the production-authority build feature; lifecycle startup alone never enrolls effect authority.
+Build hepta-supervisord from codex-hepta-supervisor; its native CLI requires --fleet-root with an absolute path. Grant and H7 verifier options are complete trust tuples, not request-supplied switches. The signer binaries require the production-authority build feature; lifecycle startup alone never enrolls effect authority. On Unix, supervisor drain and stop are deliberately separate controls: SIGUSR1 requests Agentd drain/admission closure and SIGTERM is the later stop request. Process exit remains the local terminal drain observation; target-host drain measurements are qualification evidence, not inferred from signal delivery.
 
 Current operating and state-format references:
 
