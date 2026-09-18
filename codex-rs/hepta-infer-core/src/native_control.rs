@@ -14,6 +14,7 @@ use super::validate_digest;
 use super::validate_identity;
 
 pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
+pub(super) const CHECKPOINT_PREFIX: &str = "checkpoint-native-v1|";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -113,10 +114,18 @@ pub struct NativeRunRecord {
     pub observation: Option<NativeRunOutput>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub(super) struct NativeJournal {
     maximum_in_flight: Option<usize>,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct NativeCheckpointV1 {
+    maximum_in_flight: Option<usize>,
+    record: NativeRunRecord,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -353,6 +362,57 @@ impl DurableInferenceControl {
 }
 
 impl NativeJournal {
+    pub(super) fn checkpoint_lines(&self) -> Result<Vec<String>, Error> {
+        let mut lines = Vec::with_capacity(self.records.len());
+        for record in self.records.values() {
+            let checkpoint = NativeCheckpointV1 {
+                maximum_in_flight: self.maximum_in_flight,
+                record: record.clone(),
+            };
+            let json = serde_json::to_string(&checkpoint)
+                .map_err(|_| Error::CorruptJournal("native checkpoint encode"))?;
+            lines.push(format!("{CHECKPOINT_PREFIX}{json}\n"));
+        }
+        Ok(lines)
+    }
+
+    pub(super) fn replay_checkpoint(&mut self, json: &str) -> Result<(), Error> {
+        let checkpoint: NativeCheckpointV1 = serde_json::from_str(json)
+            .map_err(|_| Error::CorruptJournal("native checkpoint decode"))?;
+        if checkpoint.maximum_in_flight.is_some_and(|limit| !(1..=256).contains(&limit)) {
+            return Err(Error::CorruptJournal("native checkpoint capacity"));
+        }
+        if self
+            .maximum_in_flight
+            .zip(checkpoint.maximum_in_flight)
+            .is_some_and(|(left, right)| left != right)
+        {
+            return Err(Error::CorruptJournal("native checkpoint capacity drift"));
+        }
+        validate_checkpoint(&checkpoint.record)?;
+        if self
+            .records
+            .insert(
+                checkpoint.record.request.request_id.clone(),
+                checkpoint.record,
+            )
+            .is_some()
+        {
+            return Err(Error::CorruptJournal("duplicate native checkpoint"));
+        }
+        self.maximum_in_flight = checkpoint.maximum_in_flight.or(self.maximum_in_flight);
+        if self.maximum_in_flight.is_some_and(|limit| {
+            self.records
+                .values()
+                .filter(|record| record.state != NativeReservationState::Released)
+                .count()
+                > limit
+        }) {
+            return Err(Error::CorruptJournal("native checkpoint in-flight capacity"));
+        }
+        Ok(())
+    }
+
     pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
         let event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
@@ -470,6 +530,97 @@ impl NativeJournal {
             .ok_or(Error::ArithmeticOverflow)?;
         Ok(())
     }
+}
+
+fn validate_checkpoint(record: &NativeRunRecord) -> Result<(), Error> {
+    validate_identity(&record.request.request_id, "native request")?;
+    validate_identity(&record.request.principal_id, "native principal")?;
+    validate_digest(&record.request.payload_digest, "native payload")?;
+    if record.request.worker_generation == 0
+        || record.request.model.is_empty()
+        || record.request.model.len() > 256
+        || record.revision == 0
+    {
+        return Err(Error::CorruptJournal("native checkpoint request"));
+    }
+    if let Some(dispatch) = &record.dispatch {
+        validate_identity(&dispatch.thread_id, "native thread")?;
+        validate_identity(&dispatch.model_provider, "native provider")?;
+        validate_digest(&dispatch.context_digest, "native context")?;
+    }
+    if let Some(turn_id) = &record.turn_id {
+        validate_identity(turn_id, "native turn")?;
+    }
+    if record
+        .pre_dispatch_stop
+        .as_ref()
+        .is_some_and(|reason| reason.is_empty() || reason.len() > 4096)
+    {
+        return Err(Error::CorruptJournal("native checkpoint stop"));
+    }
+    match record.state {
+        NativeReservationState::Reserved => {
+            if record.dispatch.is_some()
+                || record.turn_id.is_some()
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native checkpoint reserved state"));
+            }
+        }
+        NativeReservationState::Dispatching => {
+            if record.dispatch.is_none()
+                || record.turn_id.is_some()
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native checkpoint dispatching state"));
+            }
+        }
+        NativeReservationState::Running => {
+            if record.dispatch.is_none()
+                || record.turn_id.is_none()
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native checkpoint running state"));
+            }
+        }
+        NativeReservationState::Cancelling => {
+            if record.dispatch.is_none() || !record.cancel_requested {
+                return Err(Error::CorruptJournal("native checkpoint cancelling state"));
+            }
+        }
+        NativeReservationState::Indeterminate => {
+            if record.dispatch.is_none()
+                || record
+                    .observation
+                    .as_ref()
+                    .is_none_or(|output| output.terminal_observed)
+            {
+                return Err(Error::CorruptJournal("native checkpoint indeterminate state"));
+            }
+        }
+        NativeReservationState::Released => {
+            let stopped = record.pre_dispatch_stop.is_some() && record.observation.is_none();
+            let terminal = record
+                .observation
+                .as_ref()
+                .is_some_and(|output| output.terminal_observed);
+            if !stopped && !terminal {
+                return Err(Error::CorruptJournal("native checkpoint released state"));
+            }
+        }
+    }
+    if let Some(output) = &record.observation {
+        let mut candidate = record.clone();
+        candidate.observation = None;
+        apply_observation(&mut candidate, output.clone())?;
+        if candidate.state != record.state {
+            return Err(Error::CorruptJournal("native checkpoint observation state"));
+        }
+    }
+    Ok(())
 }
 
 fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
