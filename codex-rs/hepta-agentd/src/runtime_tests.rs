@@ -154,6 +154,10 @@ async fn duplicate_automation_attachment_does_not_replace_the_live_store() {
     fixture.state.refresh_generation().expect("refresh running");
     fixture
         .state
+        .mark_runtime_prerequisites_ready()
+        .expect("mark runtime prerequisites ready");
+    fixture
+        .state
         .mark_app_server_ready()
         .expect("mark App Server ready");
 
@@ -227,6 +231,10 @@ async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
         )
         .expect("running generation");
     fixture.state.refresh_generation().expect("refresh running");
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready()
+        .expect("mark runtime prerequisites ready");
     fixture
         .state
         .mark_app_server_ready()
@@ -376,6 +384,10 @@ async fn qualification_prepare_takes_over_expired_registry_head_without_evidence
     fixture.state.refresh_generation().expect("refresh running");
     fixture
         .state
+        .mark_runtime_prerequisites_ready()
+        .expect("mark runtime prerequisites ready");
+    fixture
+        .state
         .mark_app_server_ready()
         .expect("mark App Server ready");
 
@@ -450,6 +462,10 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         )
         .expect("running generation");
     fixture.state.refresh_generation().expect("refresh running");
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready()
+        .expect("mark runtime prerequisites ready");
     fixture
         .state
         .mark_app_server_ready()
@@ -684,6 +700,10 @@ async fn runtime_automation_store_failure_stops_only_the_scheduler_plane() {
     fixture.state.refresh_generation().expect("refresh running");
     fixture
         .state
+        .mark_runtime_prerequisites_ready()
+        .expect("mark runtime prerequisites ready");
+    fixture
+        .state
         .mark_app_server_ready()
         .expect("mark App Server ready");
 
@@ -765,6 +785,10 @@ async fn dispatch_uncertain_tick_fail_stops_scheduler_until_cancelled() {
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
         .expect("running generation");
     fixture.state.refresh_generation().expect("refresh running");
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready()
+        .expect("mark runtime prerequisites ready");
     fixture
         .state
         .mark_app_server_ready()
