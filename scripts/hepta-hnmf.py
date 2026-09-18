@@ -478,6 +478,7 @@ def verify() -> int:
         "shared_fixture_is_valid_in_production",
         "shared_fixture_rejects_modality_range_mismatch_in_production",
         "shared_fixture_modality_closed_world_in_production",
+        "shared_fixture_cross_modal_binding_is_valid_in_production",
     ]:
         need(token in conformance, f"production conformance {token}")
     reference_conformance = (
@@ -488,6 +489,7 @@ def verify() -> int:
         "shared_fixture_is_valid_in_reference",
         "shared_fixture_rejects_modality_range_mismatch_in_reference",
         "shared_fixture_modality_closed_world_in_reference",
+        "shared_fixture_cross_modal_binding_is_valid_in_reference",
     ]:
         need(token in reference_conformance, f"reference conformance {token}")
 
