@@ -51,9 +51,9 @@ plan identity with changed semantics conflicts, while a different plan using
 either the same final-holdout digest or the same final-holdout window is
 rejected. The emitted holdout-use receipt binds the complete plan semantics,
 registry state and use digest and carries its own deterministic integrity seal.
-A future persistent host adapter must retain this registry under a single
-writer; the pure type and unkeyed seals alone do not prove durable exclusivity
-or authenticated origin.
+For multi-host production, the external `HoldoutFenceStoreV1` supplies the
+linearizable single-owner point and independent anti-rollback durability; the
+pure registry/journal types and unkeyed seals alone do not authenticate origin.
 
 `decide_independently_v2` is the trusted-only deterministic core and consumes supplied authenticated generator and evaluator identities
 from `learning.ledger`. It rejects shared principal, credential-chain or
