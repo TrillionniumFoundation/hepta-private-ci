@@ -361,6 +361,12 @@ export class RuntimeClient {
     if (!pending) {
       fail(ERROR_CODES.RECONCILIATION_MISMATCH, "observation does not match a pending operation");
     }
+    if (pending.requestInFlight === true) {
+      fail(
+        ERROR_CODES.RECONCILIATION_MISMATCH,
+        "operation cannot reconcile while its original mutation dispatch is still in flight",
+      );
+    }
     return this.#reconcileObservation(safeObservation, pending, session);
   }
 
