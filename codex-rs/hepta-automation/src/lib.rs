@@ -13,6 +13,7 @@ pub mod effect_executor;
 mod authorized_effect;
 mod automation_taskflow;
 mod dispatch_recovery;
+mod effect_dispatch_ledger;
 mod lifecycle;
 mod model;
 mod scheduler;
@@ -115,4 +116,4 @@ pub use taskflow_step::TaskFlowStepObservation;
 pub use taskflow_step::TaskFlowStepReceipt;
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 10;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 11;
