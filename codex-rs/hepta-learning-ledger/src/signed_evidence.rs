@@ -24,21 +24,20 @@ pub enum LearningEvidenceRoleV1 {
     Generator,
     Observer,
     Evaluator,
+    RevocationAuthority,
 }
 
 impl LearningEvidenceRoleV1 {
-    const fn tag(self) -> u8 {
+    pub(crate) const fn tag(self) -> u8 {
         match self {
             Self::Generator => 0,
             Self::Observer => 1,
             Self::Evaluator => 2,
+            Self::RevocationAuthority => 3,
         }
     }
 }
 
-/// Host-authorized key and role assignment. `controller_id` identifies the
-/// controlling authority across credentials; changing keys does not establish
-/// independent evaluation. The host remains responsible for this mapping.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedLearningSignerV1 {
     pub principal: AuthenticatedPrincipalV1,
@@ -72,7 +71,6 @@ pub struct SignedLearningEvidenceV1 {
 }
 
 impl SignedLearningEvidenceV1 {
-    /// Canonical bytes signed with Ed25519; the signature itself is excluded.
     #[must_use]
     pub fn signing_bytes(&self) -> Vec<u8> {
         let mut bytes = b"hepta.learning-ledger.signed-evidence.v1".to_vec();
@@ -88,11 +86,15 @@ impl SignedLearningEvidenceV1 {
         bytes.extend_from_slice(self.payload_digest.as_array());
         bytes
     }
+
+    #[must_use]
+    pub fn evidence_digest(&self) -> Digest32 {
+        let mut bytes = self.signing_bytes();
+        bytes.extend_from_slice(&self.signature);
+        Digest32::of_bytes(&bytes)
+    }
 }
 
-/// Only `LearningEvidenceVerifierV1` can construct this value. It is valid for
-/// the verifier's immutable trust snapshot and the admitted payload, not an
-/// unbounded authorization token. Reverify after rotation or revocation.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedLearningEvidenceV1 {
     principal: AuthenticatedPrincipalV1,
@@ -112,8 +114,20 @@ impl VerifiedLearningEvidenceV1 {
         &self.principal
     }
     #[must_use]
+    pub fn controller_id(&self) -> &StableId {
+        &self.controller_id
+    }
+    #[must_use]
     pub fn role(&self) -> LearningEvidenceRoleV1 {
         self.role
+    }
+    #[must_use]
+    pub fn trust_digest(&self) -> Digest32 {
+        self.trust_digest
+    }
+    #[must_use]
+    pub fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
     }
     #[must_use]
     pub fn payload_digest(&self) -> Digest32 {
@@ -131,8 +145,6 @@ pub struct LearningEvidenceVerifierV1 {
 }
 
 impl LearningEvidenceVerifierV1 {
-    /// Constructs a verifier from host-owned trust state. Remote evidence must
-    /// not be allowed to choose this state or replace the verifier's epoch.
     pub fn new(trust: LearningEvidenceTrustV1) -> Result<Self, SignedEvidenceError> {
         if trust.scope_digest == Digest32::ZERO
             || trust.objective_digest == Digest32::ZERO
@@ -151,7 +163,7 @@ impl LearningEvidenceVerifierV1 {
                 || signer.principal.authority_epoch != trust.authority_epoch
                 || signer.principal.signing_key_digest != Digest32::of_bytes(&signer.verifying_key)
                 || signer.roles.is_empty()
-                || signer.roles.len() > 3
+                || signer.roles.len() > 4
             {
                 return Err(SignedEvidenceError::InvalidTrust);
             }
@@ -207,6 +219,21 @@ impl LearningEvidenceVerifierV1 {
     #[must_use]
     pub fn trust_digest(&self) -> Digest32 {
         self.trust_digest
+    }
+
+    #[must_use]
+    pub fn scope_digest(&self) -> Digest32 {
+        self.scope_digest
+    }
+
+    #[must_use]
+    pub fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+
+    #[must_use]
+    pub fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
     }
 
     pub fn verify(
