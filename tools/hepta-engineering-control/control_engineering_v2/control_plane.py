@@ -916,6 +916,26 @@ class EngineeringStore:
                 now,
             )
 
+    def audit_anchor(self) -> dict[str, object]:
+        """Return the current append-only audit head for external immutable anchoring."""
+        row = self.connection.execute(
+            "SELECT sequence,event_id,event_digest,created_unix_ns "
+            "FROM audit_events ORDER BY sequence DESC LIMIT 1"
+        ).fetchone()
+        if row is None:
+            return {
+                "sequence": 0,
+                "eventId": "",
+                "eventDigest": ZERO_DIGEST,
+                "createdUnixNs": 0,
+            }
+        return {
+            "sequence": int(row["sequence"]),
+            "eventId": str(row["event_id"]),
+            "eventDigest": str(row["event_digest"]),
+            "createdUnixNs": int(row["created_unix_ns"]),
+        }
+
     def audit_projection(
         self,
         *,
