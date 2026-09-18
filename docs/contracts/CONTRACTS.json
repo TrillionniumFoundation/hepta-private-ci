@@ -1423,6 +1423,20 @@
       "compatibility": "backward_compatible_or_explicit_migration"
     },
     {
+      "id": "ModulePort::kernel.authority::prompt.registry",
+      "version": 1,
+      "kind": "module_port",
+      "producer": "kernel.authority",
+      "consumers": [
+        "prompt.registry"
+      ],
+      "transport": "typed_local_or_versioned_wire",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "digest_bound_summary_or_request",
+      "compatibility": "backward_compatible_or_explicit_migration"
+    },
+    {
       "id": "ModulePort::kernel.authority::runtime.codex",
       "version": 1,
       "kind": "module_port",
