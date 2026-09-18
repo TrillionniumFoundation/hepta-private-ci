@@ -22,7 +22,9 @@ Owned logical domains remain:
 The pure core has no ambient I/O. `DurableLedger` writes only through a
 host-supplied file capability and the host remains responsible for trusted path
 opening, directory durability, writer fencing and publication of an independent
-anchor.
+anchor. `LedgerWitnessStore` now supplies the repository-owned append-only
+witness implementation, while the host remains responsible for placing it on a
+separately governed durability boundary.
 
 ## Design operation to Rust symbol
 
@@ -30,17 +32,24 @@ anchor.
 |---|---|---|---|
 | append a validated V1 event | `LearningLedger::append` | `src/ledger.rs` | retained |
 | durable append and anchored reopen | `DurableLedger`, `LedgerAnchor`, `LedgerRecovery` | `src/durable.rs` | retained |
+| segmented durable append/rotation | `SegmentedLedger`, `LedgerSegmentCheckpoint` | `src/segments.rs` | retained |
+| persist independent acknowledgement frontier | `LedgerWitnessStore` | `src/witness.rs` | implemented |
+| acknowledge only after ledger + witness sync | `WitnessedLearningJournal` | `src/witnessed.rs` | implemented |
 | map a deny-all intuition decision | `prepare_shadow_decision`, `append_shadow_decision` | `src/shadow.rs` | implemented |
 | authenticate generator/observer separation | `verify_independent_roles` | `src/causal_v2.rs` | implemented |
+| verify signed evidence against host trust | `LearningEvidenceVerifierV1`, `verify_signed_role_separation` | `src/signed_evidence.rs` | implemented |
 | validate delayed/corrected outcome | `validate_authenticated_outcome` | `src/causal_v2.rs` | implemented |
 | prove generator-relative candidate completeness | `validate_candidate_set_completeness` | `src/causal_v2.rs` | implemented |
 | finalize conserved credit | `finalize_credit_batch` | `src/causal_v2.rs` | implemented |
 | freeze immutable dataset | `freeze_dataset` | `src/causal_v2.rs` | implemented |
+| derive dataset membership from authoritative ledger | `freeze_dataset_receipt_from_ledger_v3` | `src/dataset_receipt_v3.rs` | implemented |
+| verify frozen membership against authoritative ledger | `verify_dataset_snapshot_receipt_against_ledger_v3` | `src/dataset_receipt_v3.rs` | implemented |
 
 The V2 identity check compares principal ID, credential-chain digest and
 signing-key digest, and validates authority epoch and expiry. It is stronger
-than string inequality but is not a cryptographic verifier: a product host must
-supply receipts already authenticated against the current trust root.
+than string inequality but is not a cryptographic verifier: external evidence is
+admitted through `LearningEvidenceVerifierV1`, whose trust snapshot must still
+come from the product host's current authority store.
 
 `OutcomeWatermarkV1` distinguishes pending, censored and terminal observations.
 Terminal records require an observed value and finalization time; censored
@@ -54,7 +63,9 @@ the terminal outcome exactly in raw Q32 units before a receipt is emitted.
 `DatasetSnapshotV2` binds the exact ledger head, eligible frontier, outcome
 watermark, correction cut, revocation cut, inclusion policy and canonical source
 record digest set. It carries pending and censored counts and has `DENY_ALL`
-authority.
+authority. The V3 ledger-derived path removes caller control over the source
+record set and rejects stale-head, omission, insertion and revoked-row
+resurrection when verified against the authoritative snapshot.
 
 ## Host and caller obligations
 
@@ -64,7 +75,7 @@ A product integration receipt must name all of the following:
 2. the current credential/trust-root verifier;
 3. the exclusive writer fence and durable file/store identity;
 4. the source of independent terminal observations;
-5. the acknowledgement witness retained outside the ledger file;
+5. the independently placed `LedgerWitnessStore` and its authenticated binding;
 6. the revocation and correction frontier used for dataset freeze;
 7. target-host latency, storage-growth and crash/reopen measurements;
 8. the exact commit, tree, binary and configuration generation.
@@ -72,15 +83,20 @@ A product integration receipt must name all of the following:
 A test caller or source-path inventory is not a production caller. A different
 `StableId` without credential and signing-key separation is not independent.
 
+For the required production write sequence and remaining external gates, see
+[`PRODUCTION_CLOSURE.md`](PRODUCTION_CLOSURE.md).
+
 ## Failure and retry rules
 
 - semantic identity reuse with changed content conflicts;
 - missing/stale authentication fails before a causal receipt is emitted;
 - acknowledgement loss retries the original identity and semantic digest;
+- `WitnessedLearningJournal` returns no success before independent witness sync;
+- a witness failure after ledger sync is `CommittedButUnwitnessed`, not success;
 - pending or censored outcomes never become zero reward;
 - a failed anchored reopen never silently retries unanchored;
-- dataset source digests are sorted and duplicate source records reject;
-- every exported V2 receipt remains deny-all and cannot select or activate an
+- ledger-derived dataset source digests are sorted and omission/insertion rejects;
+- every exported V2/V3 receipt remains deny-all and cannot select or activate an
   artifact.
 
 ## Qualification mapping
@@ -89,6 +105,9 @@ Focused tests live in:
 
 - `src/durable_tests.rs`;
 - `src/causal_v2_tests.rs`;
+- `src/signed_evidence_tests.rs`;
+- `src/witness_tests.rs`;
+- `src/witnessed_tests.rs`;
 - `src/shadow_tests.rs`.
 
 Cross-crate composition is exercised by
