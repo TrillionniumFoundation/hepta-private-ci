@@ -17,6 +17,7 @@ use crate::LedgerSnapshot;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
 use crate::Revocation;
+use crate::RunStartPublicationV1;
 
 const MAX_RECORDS: usize = 1_000_000;
 const MAX_CANDIDATES: usize = 128;
@@ -49,6 +50,7 @@ pub struct LearningLedger {
     records: Vec<LedgerRecord>,
     record_digests: BTreeMap<StableId, Digest32>,
     record_kinds: BTreeMap<StableId, u8>,
+    run_starts: BTreeMap<StableId, StableId>,
     decisions: BTreeMap<StableId, DecisionIndex>,
     outcomes: BTreeMap<StableId, OutcomeIndex>,
     credit_ids: BTreeSet<StableId>,
@@ -190,11 +192,65 @@ impl LearningLedger {
     fn validate_event(&self, event: &LedgerEvent) -> Result<(), LedgerError> {
         validate_support_digests(event)?;
         match event {
+            LedgerEvent::RunStart(value) => self.validate_run_start(value),
             LedgerEvent::Decision(value) => self.validate_decision(value),
             LedgerEvent::Outcome(value) => self.validate_outcome(value),
             LedgerEvent::Credit(value) => self.validate_credit(value),
             LedgerEvent::Revocation(value) => self.validate_revocation(value),
         }
+    }
+
+    fn validate_run_start(&self, publication: &RunStartPublicationV1) -> Result<(), LedgerError> {
+        if publication.admission.authority.grants_any() {
+            return Err(LedgerError::InvalidRunStart("admission grants authority"));
+        }
+        if publication.compile.disposition != codex_hepta_objective::CompileDisposition::Compiled {
+            return Err(LedgerError::InvalidRunStart("compile disposition is not compiled"));
+        }
+        if !publication.compile.removed_action_ids.is_empty() {
+            return Err(LedgerError::InvalidRunStart("successful compile removed requested actions"));
+        }
+        codex_hepta_objective::validate_compiled_objective_v1(&publication.compile.objective)
+            .map_err(|_| LedgerError::InvalidRunStart("compiled objective validation failed"))?;
+
+        let objective_v1 =
+            codex_hepta_objective::ObjectiveFunctionV1::from_canonical_json(
+                &publication.objective_v1_json,
+            )
+            .map_err(|_| LedgerError::InvalidRunStart("canonical objective decode failed"))?;
+        let canonical_digest = objective_v1
+            .digest()
+            .map_err(|_| LedgerError::InvalidRunStart("canonical objective digest failed"))?;
+        if canonical_digest != publication.objective_v1_digest
+            || objective_v1.objective_id
+                != format!("objective.{}", publication.compile.objective.semantic_digest)
+            || objective_v1.request_digest != publication.admission.intent_digest.to_string()
+            || objective_v1.principal_scope.scope_id
+                != publication.compile.objective.principal_scope.to_string()
+            || objective_v1.revision != publication.compile.objective.revision.get()
+        {
+            return Err(LedgerError::InvalidRunStart("canonical objective binding mismatch"));
+        }
+        publication
+            .run_start
+            .validate_for_objective(&publication.compile.objective, canonical_digest)
+            .map_err(|_| LedgerError::InvalidRunStart("run snapshot validation failed"))?;
+        if publication.compile.objective.source_digest != publication.admission.admitted_source_digest {
+            return Err(LedgerError::InvalidRunStart("admitted source digest mismatch"));
+        }
+        if publication.admission.profile_digest.is_zero()
+            || publication.admission.supplied_source_digest.is_zero()
+            || publication.admission.intent_digest.is_zero()
+            || publication.admission.admitted_source_digest.is_zero()
+        {
+            return Err(LedgerError::InvalidRunStart("admission digest is zero"));
+        }
+        if self.run_starts.contains_key(&publication.run_start.run_id) {
+            return Err(LedgerError::RunAlreadyExists(
+                publication.run_start.run_id.to_string(),
+            ));
+        }
+        Ok(())
     }
 
     fn validate_decision(&self, decision: &EpisodeDecision) -> Result<(), LedgerError> {
@@ -313,6 +369,12 @@ impl LearningLedger {
         self.record_kinds
             .insert(record_id, event_kind(&record.event));
         match &record.event {
+            LedgerEvent::RunStart(value) => {
+                self.run_starts.insert(
+                    value.run_start.run_id.clone(),
+                    value.record_id.clone(),
+                );
+            }
             LedgerEvent::Decision(value) => {
                 self.decisions.insert(
                     value.episode_id.clone(),
@@ -352,6 +414,7 @@ impl LearningLedger {
             return false;
         }
         match &record.event {
+            LedgerEvent::RunStart(_) => true,
             LedgerEvent::Decision(_) => true,
             LedgerEvent::Outcome(outcome) => self
                 .decisions
@@ -375,6 +438,20 @@ impl LearningLedger {
 
 fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
     match event {
+        LedgerEvent::RunStart(value) => {
+            for (field, digest) in [
+                ("objective", value.run_start.objective_digest),
+                ("canonical objective", value.objective_v1_digest),
+                ("hard constraint", value.run_start.hard_constraint_digest),
+                ("admission profile", value.admission.profile_digest),
+                ("intent", value.admission.intent_digest),
+                ("admitted source", value.admission.admitted_source_digest),
+            ] {
+                if digest.is_zero() {
+                    return Err(LedgerError::EmptyDigest(field));
+                }
+            }
+        }
         LedgerEvent::Decision(value) => {
             if value.objective_digest.is_zero() {
                 return Err(LedgerError::EmptyDigest("objective"));
@@ -433,6 +510,7 @@ enum EventKind {
     Outcome,
     Credit,
     Revocation,
+    RunStart,
 }
 
 const fn event_kind_code(kind: EventKind) -> u8 {
@@ -441,11 +519,14 @@ const fn event_kind_code(kind: EventKind) -> u8 {
         EventKind::Outcome => 1,
         EventKind::Credit => 2,
         EventKind::Revocation => 3,
+        // Preserve durable tags 0..=3 for compatibility with existing ledgers.
+        EventKind::RunStart => 4,
     }
 }
 
 fn event_kind(event: &LedgerEvent) -> u8 {
     let kind = match event {
+        LedgerEvent::RunStart(_) => EventKind::RunStart,
         LedgerEvent::Decision(_) => EventKind::Decision,
         LedgerEvent::Outcome(_) => EventKind::Outcome,
         LedgerEvent::Credit(_) => EventKind::Credit,
@@ -463,6 +544,7 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
     bytes.extend_from_slice(EVENT_DIGEST_DOMAIN);
     bytes.push(event_kind(event));
     match event {
+        LedgerEvent::RunStart(value) => push_run_start(&mut bytes, value),
         LedgerEvent::Decision(value) => push_decision(&mut bytes, value),
         LedgerEvent::Outcome(value) => push_outcome(&mut bytes, value),
         LedgerEvent::Credit(value) => push_credit(&mut bytes, value),
@@ -482,6 +564,138 @@ fn digest_chain(
     bytes.extend_from_slice(&sequence.get().to_be_bytes());
     bytes.extend_from_slice(event_digest.as_array());
     Digest32::of_bytes(&bytes)
+}
+
+fn push_run_start(bytes: &mut Vec<u8>, value: &RunStartPublicationV1) {
+    use codex_hepta_objective::ConfirmationPolicy;
+    use codex_hepta_objective::ConstraintClass;
+    use codex_hepta_objective::ConstraintRelation;
+    use codex_hepta_objective::PredicateTerminality;
+    use codex_hepta_objective::SoftDirection;
+    use codex_hepta_objective::SourceTrust;
+
+    push_id(bytes, &value.record_id);
+    push_id(bytes, &value.admission.profile_id);
+    bytes.extend_from_slice(&value.admission.profile_revision.get().to_be_bytes());
+    push_digest(bytes, value.admission.profile_digest);
+    push_digest(bytes, value.admission.supplied_source_digest);
+    push_digest(bytes, value.admission.intent_digest);
+    push_digest(bytes, value.admission.admitted_source_digest);
+    bytes.extend_from_slice(&value.admission.observed_at_unix_micros.to_be_bytes());
+    match value.admission.deadline_unix_micros {
+        Some(deadline) => {
+            bytes.push(1);
+            bytes.extend_from_slice(&deadline.to_be_bytes());
+        }
+        None => bytes.push(0),
+    }
+    for granted in [
+        value.admission.authority.runtime,
+        value.admission.authority.production_writer,
+        value.admission.authority.model_invocation,
+        value.admission.authority.provider_dispatch,
+        value.admission.authority.external_effect,
+        value.admission.authority.selection,
+        value.admission.authority.promotion,
+        value.admission.authority.release,
+    ] {
+        bytes.push(u8::from(granted));
+    }
+
+    bytes.push(match value.compile.disposition {
+        codex_hepta_objective::CompileDisposition::Compiled => 0,
+        codex_hepta_objective::CompileDisposition::ExplicitAbstain => 1,
+    });
+    push_ids(bytes, &value.compile.removed_action_ids);
+
+    let objective = &value.compile.objective;
+    push_id(bytes, &objective.request_id);
+    push_id(bytes, &objective.principal_scope);
+    bytes.extend_from_slice(&objective.revision.get().to_be_bytes());
+    bytes.push(match objective.source_trust {
+        SourceTrust::PrincipalStructured => 0,
+        SourceTrust::RegisteredAdapter => 1,
+        SourceTrust::UntrustedEvidence => 2,
+    });
+    push_digest(bytes, objective.source_digest);
+    push_digest(bytes, objective.schema_digest);
+    push_digest(bytes, objective.hard_constraint_digest);
+    push_digest(bytes, objective.semantic_digest);
+
+    push_len(bytes, objective.constraints.len());
+    for constraint in &objective.constraints {
+        push_id(bytes, &constraint.id);
+        bytes.push(match constraint.class {
+            ConstraintClass::Constitutional => 0,
+            ConstraintClass::Principal => 1,
+            ConstraintClass::Environment => 2,
+            ConstraintClass::Task => 3,
+        });
+        push_id(bytes, &constraint.axis);
+        bytes.push(match constraint.relation {
+            ConstraintRelation::AtLeast => 0,
+            ConstraintRelation::AtMost => 1,
+            ConstraintRelation::Equal => 2,
+        });
+        bytes.extend_from_slice(&constraint.bound.raw().to_be_bytes());
+        push_id(bytes, &constraint.evidence_source);
+    }
+
+    push_len(bytes, objective.success_predicates.len());
+    for predicate in &objective.success_predicates {
+        push_id(bytes, &predicate.id);
+        push_id(bytes, &predicate.axis);
+        bytes.push(match predicate.relation {
+            ConstraintRelation::AtLeast => 0,
+            ConstraintRelation::AtMost => 1,
+            ConstraintRelation::Equal => 2,
+        });
+        bytes.extend_from_slice(&predicate.bound.raw().to_be_bytes());
+        push_id(bytes, &predicate.evidence_source);
+        bytes.push(match predicate.terminality {
+            PredicateTerminality::Intermediate => 0,
+            PredicateTerminality::Terminal => 1,
+        });
+    }
+
+    push_len(bytes, objective.legal_actions.len());
+    for action in &objective.legal_actions {
+        push_id(bytes, &action.id);
+        bytes.push(match action.confirmation {
+            ConfirmationPolicy::NotRequired => 0,
+            ConfirmationPolicy::Required => 1,
+        });
+    }
+
+    push_len(bytes, objective.soft_preferences.len());
+    for preference in &objective.soft_preferences {
+        push_id(bytes, &preference.dimension);
+        bytes.push(match preference.direction {
+            SoftDirection::Maximize => 0,
+            SoftDirection::Minimize => 1,
+        });
+        bytes.extend_from_slice(&preference.weight.raw().to_be_bytes());
+    }
+
+    push_len(bytes, value.objective_v1_json.len());
+    bytes.extend_from_slice(&value.objective_v1_json);
+    push_digest(bytes, value.objective_v1_digest);
+
+    let snapshot = &value.run_start;
+    push_id(bytes, &snapshot.run_id);
+    for digest in [
+        snapshot.objective_digest,
+        snapshot.hard_constraint_digest,
+        snapshot.preference_state_digest,
+        snapshot.model_tuple_digest,
+        snapshot.prompt_registry_digest,
+        snapshot.artifact_set_digest,
+    ] {
+        push_digest(bytes, digest);
+    }
+    bytes.extend_from_slice(&snapshot.authority_epoch.to_be_bytes());
+    bytes.extend_from_slice(&snapshot.generation.to_be_bytes());
+    push_digest(bytes, snapshot.fence_digest);
 }
 
 fn push_decision(bytes: &mut Vec<u8>, value: &EpisodeDecision) {
