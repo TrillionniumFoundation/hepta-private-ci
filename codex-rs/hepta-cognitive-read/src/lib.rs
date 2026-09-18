@@ -67,6 +67,10 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Legacy V1 caller-supplied snapshot projection retained for source/shadow
+/// compatibility. Like `read_v2`, this function does not prove that the
+/// supplied bytes are the host's current authoritative generation. Product
+/// delivery paths must use `read_authoritative` and its final-use guard.
 pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadReceipt, Error> {
     if request.snapshot_digest != snapshot.snapshot_digest {
         return Err(Error::SnapshotMismatch);
