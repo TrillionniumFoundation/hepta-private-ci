@@ -376,7 +376,7 @@ mod tests {
     use super::*;
 
     fn id(value: &str) -> StableId {
-        StableId::new(value.to_owned()).expect("valid test id")
+        StableId::new(value).expect("valid test id")
     }
 
     fn digest(value: &str) -> Digest32 {
