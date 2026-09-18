@@ -133,7 +133,6 @@ fn integer_boundaries_unicode_and_empty_containers_are_frozen() {
     );
 }
 
-
 #[test]
 fn field_and_map_order_are_canonical_but_array_order_is_semantic() {
     let type_id = id("platform.types:ordering");
