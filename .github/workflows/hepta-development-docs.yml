@@ -60,6 +60,7 @@ jobs:
           python3 scripts/hepta-docs.py generate-status
           git diff --exit-code -- docs/STATUS.md
           python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-implementation-maps.py evidence --output .hepta-evidence/implementation-maps-source-head.json
           python3 scripts/hepta-algorithm-docs.py self-test
           python3 scripts/hepta-algorithm-docs.py verify-sources
           python3 scripts/hepta-algorithm-docs.py generate-status --check
@@ -120,6 +121,7 @@ jobs:
           # revalidates the merged tree and receipt identity, so every PR does
           # not pay for the same document suite twice.
           python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py evidence --output .hepta-evidence/implementation-maps-merge-candidate.json
           python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
           python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
           git diff --check
