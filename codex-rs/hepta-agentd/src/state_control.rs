@@ -238,10 +238,9 @@ impl AgentdState {
                             self.fence_after_durable_change()?;
                             AgentdPayload::AutomationTask(task)
                         }
-                        Err(AgentdOperationsError::Automation(error)) => self.automation_result(
-                            Err(error),
-                            AgentdPayload::AutomationTask,
-                        )?,
+                        Err(AgentdOperationsError::Automation(error)) => {
+                            self.automation_result(Err(error), AgentdPayload::AutomationTask)?
+                        }
                         Err(error) => {
                             return Err(AgentdError::Protocol(format!(
                                 "durable automation operation failed: {error}"
