@@ -29,6 +29,7 @@ mod observation;
 use observation::ChannelOutput;
 pub use observation::ObservedRetrievalCandidate;
 pub use observation::RetrievalChannelObservation;
+pub use observation::RetrievalChannelRankObservation;
 pub use observation::RetrievalLimitObservation;
 pub use observation::RetrievalObservation;
 
@@ -91,6 +92,7 @@ pub struct RetrievalCandidate {
     pub memory: MemoryRevisionRecord,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
+    pub channel_ranks: Vec<RetrievalChannelRankObservation>,
     pub revalidation: MemoryRevalidationBinding,
 }
 
@@ -154,6 +156,7 @@ struct MemoryKey {
 struct AggregatedRank {
     score: u64,
     channels: BTreeSet<RetrievalChannel>,
+    channel_ranks: BTreeMap<RetrievalChannel, u32>,
 }
 
 struct EntitySeed {
@@ -836,6 +839,10 @@ fn add_rrf_channel(
         let aggregate = ranked.entry(memory.clone()).or_default();
         aggregate.score += RRF_SCALE / (RRF_K + rank);
         aggregate.channels.insert(source);
+        aggregate.channel_ranks.insert(
+            source,
+            u32::try_from(index + 1).unwrap_or(u32::MAX),
+        );
     }
 }
 
