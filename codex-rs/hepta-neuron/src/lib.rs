@@ -23,6 +23,7 @@ mod protocol;
 mod runtime;
 mod sparse;
 mod witness;
+mod wire;
 
 pub use calibration::CalibratedSignalV1;
 pub use calibration::CalibrationBinV1;
@@ -85,6 +86,14 @@ pub use sparse::sparse_tick;
 pub use witness::FileRecoveryWitness;
 pub use witness::RecoveryWitnessStore;
 pub use witness::WitnessError;
+pub use wire::NeuronWireError;
+pub use wire::decode_neuron_runtime_config_v1;
+pub use wire::decode_neuron_tick_input_v1;
+pub use wire::encode_local_model_runtime_receipt_v1;
+pub use wire::encode_neuron_runtime_config_v1;
+pub use wire::encode_neuron_signal_receipt_v1;
+pub use wire::encode_neuron_tick_input_v1;
+pub use wire::encode_neuron_tick_receipt_v1;
 
 const MAX_FEATURES: usize = 4_096;
 
