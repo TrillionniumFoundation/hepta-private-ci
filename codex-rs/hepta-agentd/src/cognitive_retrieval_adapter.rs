@@ -46,9 +46,7 @@ pub fn adapt_sqlite_owner_observation(
                 candidate_count: u32::try_from(channel.candidate_count)
                     .map_err(|_| "owner channel candidate count overflow".to_string())?,
                 completeness: match channel.limit {
-                    RetrievalLimitObservation::Exhausted => {
-                        OwnerChannelCompletenessV1::Exhausted
-                    }
+                    RetrievalLimitObservation::Exhausted => OwnerChannelCompletenessV1::Exhausted,
                     RetrievalLimitObservation::LimitReached => {
                         OwnerChannelCompletenessV1::LimitReached
                     }
