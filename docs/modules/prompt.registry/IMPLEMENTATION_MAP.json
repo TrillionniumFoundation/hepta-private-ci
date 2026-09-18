@@ -18,30 +18,62 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_composed_not_runtime_activated",
+  "productionWriterState": "durable_owner_source_implemented_not_runtime_activated",
   "operations": [
     {
       "operation": "promptregistry",
       "nativeSymbol": "PromptRegistry",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_domain_core",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "promptregistry",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "register_realization_v2",
-      "nativeSymbol": "register_realization_v2",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "verify_admission",
+      "nativeSymbol": "AdmissionAuthority::verify",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/admission.rs",
+      "state": "source_implemented_not_runtime_activated",
+      "authority": "verifies_external_review_signature_only",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "register_realization_v2",
+      "designOperation": "admit_factor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "durable_owner",
+      "nativeSymbol": "DurablePromptRegistry",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_runtime_activated",
+      "authority": "local_owner_store_only",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "promptregistry",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "register_realization_payload_v2",
+      "nativeSymbol": "register_realization_payload_v2",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/delivery.rs",
+      "state": "source_implemented_not_runtime_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "register_realization",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -49,18 +81,40 @@
       "operation": "read_compatible_v2",
       "nativeSymbol": "read_compatible_v2",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_source_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "read_compatible_v2",
+      "designOperation": "read_compatible",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "intelligence.control::compile_prompt_registry_v2"
+      ]
+    },
+    {
+      "operation": "dereference_realization_v2",
+      "nativeSymbol": "dereference_realization_v2",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/delivery.rs",
+      "state": "source_implemented_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs",
+        "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_compatible",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "intelligence.control::compile_prompt_registry_v2"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind DurablePromptRegistry and compile_prompt_registry_v2 into an activated named runtime host.",
+    "Carry selected realization bytes through context serialization/attachment and prove terminal model/provider delivery observation.",
+    "Run exact-head and deterministic synthetic-merge tests for this candidate before changing the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
