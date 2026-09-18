@@ -374,3 +374,19 @@ fn payload_registration_supersedes_and_dereferences_exact_bytes() {
         .validate()
         .unwrap_or_else(|error| panic!("delivery validates: {error}"));
 }
+
+#[test]
+fn payload_ceiling_rejects_atomically() {
+    let mut registry = admitted_registry();
+    let before = registry.clone();
+    let payload = vec![b'x'; crate::MAX_REALIZATION_PAYLOAD_BYTES + 1];
+    let mut oversized = binding();
+    oversized.payload_digest = Digest32::of_bytes(&payload);
+    oversized.expires_unix_ms = None;
+
+    assert_eq!(
+        registry.register_realization_payload_v2(oversized, payload, None),
+        Err(Error::PayloadTooLarge)
+    );
+    assert_eq!(registry, before);
+}
