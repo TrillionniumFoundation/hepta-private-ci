@@ -5,6 +5,12 @@
 
 #![forbid(unsafe_code)]
 
+/// Maximum append-only history that the crate-owned durable snapshot formats can encode.
+///
+/// In-memory owners fail before crossing this boundary so every accepted state remains
+/// representable by the durable create-only storage contract.
+pub const MAX_DURABLE_HISTORY_RECORDS: usize = 4096;
+
 mod admission_v3;
 mod closure_v2;
 mod dataset_revocation;
