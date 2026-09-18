@@ -135,13 +135,16 @@ class ProductGateTests(unittest.TestCase):
             ("rev-parse", "HEAD^{tree}"): merge_tree,
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
             ("show", "-s", "--format=%P", "HEAD"): f"{base} {source}",
-            ("show", f"HEAD:{CANONICAL_PATH}"): CANONICAL_REGISTRY,
             ("rev-parse", f"HEAD:{CANONICAL_PATH}"): CANONICAL_BLOB,
         }
         with mock.patch.object(
             product_gate,
             "_git",
             side_effect=lambda _root, *args: calls[args],
+        ), mock.patch.object(
+            product_gate,
+            "_git_bytes",
+            return_value=CANONICAL_REGISTRY.encode("utf-8"),
         ), mock.patch(
             "control_engineering_v2.orchestration._git",
             side_effect=lambda _root, *args: {
@@ -191,13 +194,16 @@ class ProductGateTests(unittest.TestCase):
             ("rev-parse", "HEAD^{tree}"): source_tree,
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
             ("show", "-s", "--format=%P", "HEAD"): "f" * 40,
-            ("show", f"HEAD:{CANONICAL_PATH}"): CANONICAL_REGISTRY,
             ("rev-parse", f"HEAD:{CANONICAL_PATH}"): CANONICAL_BLOB,
         }
         with mock.patch.object(
             product_gate,
             "_git",
             side_effect=lambda _root, *args: calls[args],
+        ), mock.patch.object(
+            product_gate,
+            "_git_bytes",
+            return_value=CANONICAL_REGISTRY.encode("utf-8"),
         ), mock.patch(
             "control_engineering_v2.orchestration._git",
             side_effect=lambda _root, *args: {
@@ -272,16 +278,16 @@ class ProductGateTests(unittest.TestCase):
             ("rev-parse", "HEAD^{tree}"): source_tree,
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
             ("show", "-s", "--format=%P", "HEAD"): "f" * 40,
+            ("rev-parse", f"HEAD:{CANONICAL_PATH}"): CANONICAL_BLOB,
         }
-        def missing_registry(_root, *args):
-            if args == ("show", f"HEAD:{CANONICAL_PATH}"):
-                raise ValueError("git_read_failed")
-            return calls[args]
-
         with mock.patch.object(
             product_gate,
             "_git",
-            side_effect=missing_registry,
+            side_effect=lambda _root, *args: calls[args],
+        ), mock.patch.object(
+            product_gate,
+            "_git_bytes",
+            side_effect=ValueError("git_read_failed"),
         ):
             with tempfile.TemporaryDirectory() as temp:
                 with self.assertRaisesRegex(
@@ -302,15 +308,18 @@ class ProductGateTests(unittest.TestCase):
             ("rev-parse", "HEAD^{tree}"): source_tree,
             ("rev-parse", f"{source}^{{tree}}"): source_tree,
             ("show", "-s", "--format=%P", "HEAD"): "f" * 40,
-            ("show", f"HEAD:{CANONICAL_PATH}"): CANONICAL_REGISTRY.replace(
-                '"authorityDelta": "none"', '"authorityDelta": "merge"'
-            ),
             ("rev-parse", f"HEAD:{CANONICAL_PATH}"): CANONICAL_BLOB,
         }
         with mock.patch.object(
             product_gate,
             "_git",
             side_effect=lambda _root, *args: calls[args],
+        ), mock.patch.object(
+            product_gate,
+            "_git_bytes",
+            return_value=CANONICAL_REGISTRY.replace(
+                '"authorityDelta": "none"', '"authorityDelta": "merge"'
+            ).encode("utf-8"),
         ):
             with tempfile.TemporaryDirectory() as temp:
                 root = Path(temp)
