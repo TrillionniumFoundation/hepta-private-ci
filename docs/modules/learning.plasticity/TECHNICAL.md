@@ -175,6 +175,7 @@ Current operating and state-format references:
 - [codex-rs/hepta-plasticity/src/parameter_v2.rs](../../../codex-rs/hepta-plasticity/src/parameter_v2.rs) — stable V2 record/verifier boundary.
 - [codex-rs/hepta-plasticity/src/generator_v3.rs](../../../codex-rs/hepta-plasticity/src/generator_v3.rs) and [mutation_grammar_v1.rs](../../../codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs) — governed deterministic generation and typed mutation policy.
 - [codex-rs/hepta-plasticity/src/durable_registry.rs](../../../codex-rs/hepta-plasticity/src/durable_registry.rs) and [durable_topology_registry_v2.rs](../../../codex-rs/hepta-plasticity/src/durable_topology_registry_v2.rs) — parameter/topology proposal durability.
+- [codex-rs/hepta-plasticity/src/topology_governance_v1.rs](../../../codex-rs/hepta-plasticity/src/topology_governance_v1.rs) — typed topology protected-surface policy and per-candidate writer-handoff validation.
 - [codex-rs/hepta-intelligence/src/plasticity_product.rs](../../../codex-rs/hepta-intelligence/src/plasticity_product.rs) and [plasticity_topology_product.rs](../../../codex-rs/hepta-intelligence/src/plasticity_topology_product.rs) — authenticated product composition.
 - [codex-rs/hepta-agentd/src/plasticity_host.rs](../../../codex-rs/hepta-agentd/src/plasticity_host.rs) — selected-host artifact/evidence and anchor/fence boundary.
 - [docs/readiness/SELF_ITERATION_EXECUTION.md](../../readiness/SELF_ITERATION_EXECUTION.md).
@@ -189,7 +190,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-plasticity/src/lib_tests.rs](../../../codex-rs/hepta-plasticity/src/lib_tests.rs); named case: `legacy_v1_is_explicit_read_only_and_never_upconverted`.
 - [codex-rs/hepta-plasticity/src/generator_v3.rs](../../../codex-rs/hepta-plasticity/src/generator_v3.rs) and [mutation_grammar_v1.rs](../../../codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs); inline deterministic generation, completeness, trust-region and protected-surface cases.
 - [codex-rs/hepta-intelligence/src/plasticity_product_tests.rs](../../../codex-rs/hepta-intelligence/src/plasticity_product_tests.rs); authenticated parameter admission, evaluation coverage and poisoned-writer cases.
-- [codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs](../../../codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs); authenticated topology admission, handoff and durable-anchor cases.
+- [codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs](../../../codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs); authenticated topology admission, protected-surface rejection, per-candidate handoff and durable-anchor cases.
 - [codex-rs/hepta-agentd/tests/plasticity_product_host.rs](../../../codex-rs/hepta-agentd/tests/plasticity_product_host.rs); authoritative artifact frontier, owner-evidence context/owner policy, host anchor/fence and stale-evidence cases.
 - [qualification/lane-f-shadow/tests/plasticity_structural_canary.rs](../../../qualification/lane-f-shadow/tests/plasticity_structural_canary.rs); bounded PLS-3 persist/reopen and abort-before-persistence cases.
 
