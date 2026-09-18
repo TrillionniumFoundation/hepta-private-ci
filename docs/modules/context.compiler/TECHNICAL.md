@@ -14,7 +14,7 @@
 
 **Bootstrap work package:** `CTX-1-CONTEXT-COMPILER`
 
-This stable document is the implementation guide for `context.compiler`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This stable document is the implementation guide for `context.compiler`. Normative identity, ownership, registered wire-contract, data-authority and delivery facts remain in the canonical JSON registries. The crate-native proof-closed V2.1 source API is documented in [V2_TECHNICAL.md](V2_TECHNICAL.md) and is the normative public V2 execution-context API; registered V1 wire contracts remain unchanged until separately versioned and admitted. Documentation readiness is not source implementation, product composition, activation, operator acceptance, promotion or release.
 
 ## 1. Identity, mission and ownership
 
@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs); observed identifiers include `CompilationRequest`, `ContextCompilationReceipt`, `CompilationRequirementsV1`, `compile`, `compile_candidate_bound`, `compile_with_requirements`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs). The normative crate-native V2.1 implementation is [codex-rs/hepta-context-compiler/src/proof_v2.rs](../../../codex-rs/hepta-context-compiler/src/proof_v2.rs); public identifiers include `ContextAdmissionSnapshotV2`, `VerifiedContextAdmissionV2`, `ExactContextTokenizerV2`, `ContextSerializerV2`, `ContextDeliveryAdapterV2`, `compile_v2`, `serialize_context_v2`, `build_attachment` and `deliver_attachment`. The previous `src/v2.rs` is private selection-engine implementation; V1 `compile`, `compile_with_requirements` and candidate-bound entrypoints remain compatibility-only. This is a source navigation binding, not proof that a real product host authenticated the external witnesses or composed real tokenizer/serializer/provider adapters. Read the [V2.1 technical reference](V2_TECHNICAL.md) and [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) together.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -76,9 +76,14 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
+- `typed admission snapshot verifier`
+- `exact tokenizer boundary`
 - `input normalizer`
 - `constraint validator`
 - `deterministic compiler`
+- `canonical serializer boundary`
+- `attachment-time revocation revalidator`
+- `delivery-adapter evidence binder`
 - `digest and receipt emitter`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -172,7 +177,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Stateless context compiler, embedded before the physical App Server request. Reserve mandatory groups and reject insufficient budget; preserve exact compiled payload/digest through delivery. The host must revalidate current cognitive and factor revocations at attachment; a successful compilation receipt is not a provider send receipt.
+Stateless context compiler, embedded before the physical App Server request. Proof-closed V2.1 reserves mandatory groups, binds their canonical provenance, measures candidate and final serialized bytes with the selected exact tokenizer, and revalidates current trusted admissions/revocations immediately before attachment. The delivery boundary receives the exact attachment payload bytes and can call an attempt `Delivered` only with matching transport payload identity plus provider request/acknowledgement evidence. The host must still authenticate the admission witness/revocation owner and real tokenizer/serializer/delivery adapters; a compilation or source-level adapter receipt alone is not product execution evidence.
 
 Current operating and state-format references:
 
@@ -184,8 +189,10 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs); named case: `omitted_content_is_bound_without_changing_legacy_compilation`.
-- [codex-rs/hepta-context-compiler/src/lib_tests.rs](../../../codex-rs/hepta-context-compiler/src/lib_tests.rs); named case: `evidence_never_becomes_instruction`.
+- [codex-rs/hepta-context-compiler/src/proof_v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/proof_v2_tests.rs): typed admission binding drift/revocation, compile-to-attach revocation, exact final-payload tokenization, selected-byte substitution, mandatory-group provenance, provider acknowledgement, payload mismatch and indeterminate delivery.
+- [codex-rs/hepta-context-compiler/src/v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/v2_tests.rs): private deterministic V2 selection-engine regressions.
+- [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs); named V1 compatibility case: `omitted_content_is_bound_without_changing_legacy_compilation`.
+- [codex-rs/hepta-context-compiler/src/lib_tests.rs](../../../codex-rs/hepta-context-compiler/src/lib_tests.rs); named V1 compatibility case: `evidence_never_becomes_instruction`.
 
 In `codex-rs`, run `just test -p codex-hepta-context-compiler`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) separately labels target acceptance designs.
 
