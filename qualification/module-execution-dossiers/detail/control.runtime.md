@@ -15,14 +15,19 @@ Implemented operations are:
 
 ```text
 collect_snapshot(SnapshotRequestV1, OwnerSummaryV1[]) -> GlobalStateSnapshotV1
+canonical_resource_profile_digest(ResourceReservationV1[]) -> Digest32
 prepare_plan(snapshot, PlanningRequestV1) -> PreparedPlanInputV1
 bind_ndu_plan_evaluation_v1(NduPlanEvaluationInputV1) -> NduPlanEvaluationV1
+evaluate_prepared_plan_with_ndu(snapshot, prepared, NduPlanningInputV1, now) -> EvaluatedPlanV1
 finalize_plan(snapshot, prepared, ndu_evaluation, now) -> FeasiblePlanReceiptV1
 request_execution_grants(snapshot, prepared, receipt, now) -> GrantRequestSetV1
+plan_observed_context(ObservedContextV1) -> ObservedContextPlanV1
+evaluate_global_plan_v1(authenticator, GlobalPlanningInputV1) -> GlobalPlanningOutputV1
 PlannerJournalV1::{append, record_decision, select_plan, revoke, reopen}
+PlannerJournalStoreV1::{open, open_with_minimum_head, record_*, select_plan, revoke}
 ```
 
-Planning is deliberately two-stage. `prepare_plan` owns snapshot, owner and resource-floor feasibility only. `utility.ndu` independently computes its evaluation. `finalize_plan` consumes a digest-bound projection and validates complete candidate coverage. Control runtime does not import or duplicate NDU’s utility/Pareto kernel.
+Planning is deliberately two-stage. `prepare_plan` owns snapshot, owner and resource-floor feasibility only. The planner core does not duplicate NDU semantics; `evaluate_prepared_plan_with_ndu` is the explicit composition port that calls the `utility.ndu` owner implementation, then binds its result before `finalize_plan`. `evaluate_global_plan_v1` composes authenticated multi-owner admission through that same path and stops at deny-all grant requests.
 
 Every prepared input, evaluation binding, plan receipt and grant-request set is `AuthorityPosture::DENY_ALL`. A grant request is not a capability.
 
@@ -30,13 +35,13 @@ Every prepared input, evaluation binding, plan receipt and grant-request set is 
 
 `GlobalStateSnapshotV1` binds exact objective, body generation, configuration, revocation frontier, owner revisions, observation/expiry times, readiness, source frontiers and support. Missing, stale and unavailable owner masks are explicit. Any non-empty required mask blocks planning; absence is never treated as zero cost or ready state.
 
-`PreparedPlanInputV1` retains both the source candidate-set digest and the resource-feasible candidate-set digest. It records candidates rejected by essential resource floors. Missing resource axes reject instead of becoming zero. Intrinsic abstain must remain feasible.
+`PreparedPlanInputV1` retains both the source candidate-set digest and the resource-feasible candidate-set digest. It records candidates rejected by essential resource floors. `canonical_resource_profile_digest` canonicalizes axis/endowment/essential-floor tuples, and `prepare_plan` rejects any caller-supplied profile digest that does not equal those exact reservations. Missing resource axes reject instead of becoming zero. Intrinsic abstain must remain feasible.
 
 `NduPlanEvaluationV1` binds the NDU owner’s opaque evaluation digest plus the exact evaluated, rejected, Pareto and advisory candidate projection consumed by Control. Its binding digest is independently recomputed at finalization.
 
 `FeasiblePlanReceiptV1` binds snapshot, configuration, current revocation frontier, both candidate sets, resource rejections, NDU policy/evaluation/binding digests, disposition, uncertainty, selected plan and expiry. It claims only a result over the bounded supplied set.
 
-`PlannerJournalV1` provides a bounded append-only reference for snapshot/decision/selection/revocation records. It validates sequence, predecessor hashes, semantic identities and entry hashes on reopen. A revoked decision cannot be reselected or resurrected through restart.
+`PlannerJournalV1` provides a bounded append-only reference for snapshot/decision/selection/revocation records. Reopen validates sequence, predecessor hashes, semantic identities, entry hashes, prior-decision existence and revocation ordering. `PlannerJournalStoreV1` adds a Unix single-writer lock, private-file checks, bounded versioned envelope, write+fsync+atomic-rename+directory-fsync publication, deterministic V0 migration and an optional trusted minimum head that rejects older restored backups. A revoked decision cannot be reselected or resurrected through restart. The trusted head must live outside the journal backup domain.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -72,6 +77,16 @@ Metrics include source ages, missing/stale/unavailable masks, resource rejection
 - `RCP-08`: grant requests bind final payloads and remain deny-all.
 - `RCP-09`: journal reopen preserves selection.
 - `RCP-10`: journal truncation/tampering fails closed and revocation prevents reselection.
+- `RCP-11`: a revoked plan cannot be reselected after reopen.
+- `RCP-12`: no receipt claims an optimum outside the bounded candidate set.
+- `RCP-13`: operation, payload, resource or required-owner mutation rejects before grant construction.
+- `RCP-14`: grant construction revalidates snapshot masks and digest.
+- `RCP-15`: NDU policy and resource profile are frozen before evaluation.
+- `RCP-16`: changing reservations without recomputing their canonical profile digest rejects preparation.
+- `RCP-17`: hash-valid journal bytes with invalid selection ordering fail semantic replay.
+- `RCP-18`: durable reopen migrates V0 deterministically and rejects an older backup against the trusted head.
+- `RCP-19`: authenticated multi-owner composition rejects a failed owner and binds authentication-evidence drift.
+- `RCP-20`: the Agentd context caller supplies planner timestamps from one process-local monotonic clock domain.
 
 Native tests are registered in the implementation map. Product-callsite, production-store and named-host evidence are not inferred from unit tests.
 
@@ -85,10 +100,12 @@ This candidate grants no model, provider, tool, network, filesystem, secret, Mat
 
 ## 8. Current native implementation
 
-`examples/cart_closed_loop.rs` runs the existing typed cart sensor/controller/actuator loop and emits a bounded CSV trace. It uses the same Q24 simulator rather than another plant implementation. Simulation ticks are not elapsed real time; no hardware, HIL or physical-safety qualification is implied.
+The native source now contains three intentionally different composition levels:
 
-- **Implemented entrypoints:** `collect_snapshot` in [codex-rs/hepta-control-plane/src/planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs); `finalize_plan` in [codex-rs/hepta-control-plane/src/planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs); `OrganHostV1` in [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs); `admit_compiled_body_graph_v2` in [codex-rs/hepta-control-plane/src/organ_wire.rs](../../../codex-rs/hepta-control-plane/src/organ_wire.rs); `SyntheticCartIoV1` in [codex-rs/hepta-control-plane/src/embodiment/io.rs](../../../codex-rs/hepta-control-plane/src/embodiment/io.rs).
-- **State and recovery:** GlobalStateSnapshotV1 binds owner readiness/frontiers and expiry; missing/stale owners block planning. PlannerJournalV1 provides bounded hash-chain replay. OrganHostV1 runs trusted compiled-in read-only handlers and is not a sandbox or effect executor. Failed owner-callback restoration now quarantines predecessor dispatch and retains rollback errors; this is not a durable writer migration service. Native handoff matches host-owned protocol/profile/version/schema before graph construction. SyntheticCartIoV1 owns only an in-memory deterministic Q24 plant; read_sensor checks age/calibration and dispatch checks actuator identity, observation binding and DENY_ALL before a simulator step. Recreating the adapter resets this simulated plant; it is not physical-device recovery.
-- **Source tests:** [codex-rs/hepta-control-plane/src/planner_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_tests.rs), [codex-rs/hepta-control-plane/src/planner_journal_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_tests.rs), [codex-rs/hepta-control-plane/src/organ_runtime_tests.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime_tests.rs), [codex-rs/hepta-control-plane/src/organ_wire_tests.rs](../../../codex-rs/hepta-control-plane/src/organ_wire_tests.rs), [codex-rs/hepta-control-plane/src/embodiment/io.rs](../../../codex-rs/hepta-control-plane/src/embodiment/io.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/readiness/CONTROL_RUNTIME_EXECUTION.md](../../../docs/readiness/CONTROL_RUNTIME_EXECUTION.md), [codex-rs/hepta-control-plane/src/ORGAN_RUNTIME.md](../../../codex-rs/hepta-control-plane/src/ORGAN_RUNTIME.md), [codex-rs/hepta-control-plane/src/ORGAN_WIRE.md](../../../codex-rs/hepta-control-plane/src/ORGAN_WIRE.md), [docs/readiness/EMBODIED_TYPED_IO.md](../../../docs/readiness/EMBODIED_TYPED_IO.md).
-- **Remaining work:** Compose authenticated owner ports and durable product publication; a grant request remains DENY_ALL and the planner does not issue execution authority or an independent NDU convergence decision. Authenticated canonical producer wiring, durable stateful handoff, real simulator/HIL/device adapters and physical terminal reconciliation remain separate implementations and qualification.
+- **Planner kernel:** `collect_snapshot`, `canonical_resource_profile_digest`, `prepare_plan`, `bind_ndu_plan_evaluation_v1`, `finalize_plan` and `request_execution_grants` live in [planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs). Their sealed outputs remain `AuthorityPosture::DENY_ALL`.
+- **Owner composition:** [planner_ndu.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu.rs) invokes the real `utility.ndu` implementation rather than accepting a self-reported choice. [planner_global.rs](../../../codex-rs/hepta-control-plane/src/planner_global.rs) admits every owner through `OwnerSummaryAuthenticatorV1`, folds authentication evidence into snapshot support, composes the real NDU evaluation and emits only deny-all `GrantRequestSetV1`. No named global product host calls this coordinator yet.
+- **Narrow product composition:** [planner_context.rs](../../../codex-rs/hepta-control-plane/src/planner_context.rs) is called by [hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs) for the bounded read-context-versus-abstain decision. The caller now uses a process-local `Instant` epoch for planner observation/deadline time while retaining Unix wall time only for storage-domain timestamps.
+- **Durability candidate:** `PlannerJournalV1` performs bounded semantic replay. [planner_store.rs](../../../codex-rs/hepta-control-plane/src/planner_store.rs) adds a Unix single-writer fsync-backed owner store with atomic replace, deterministic legacy migration and caller-supplied trusted-head anti-rollback. This is source-complete durability machinery, not an activated production state directory or an external-effect ledger.
+- **Existing organ/runtime surfaces:** `OrganHostV1`, native handoff and the deterministic cart/timing fixtures remain separate from the global optimizer and retain their existing capability ceilings.
+- **Source tests:** [planner_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_tests.rs), [planner_ndu_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu_tests.rs), [planner_global_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_global_tests.rs), [planner_journal_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_tests.rs), [planner_store_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_store_tests.rs), [planner_context_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_context_tests.rs) and the ignored named-host profile in [planner_profile_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_profile_tests.rs). Test identities are not pass receipts for an unexecuted candidate.
+- **Remaining product work:** select a named authenticated multi-owner host, provision the durable state root and trusted anti-rollback head outside its backup domain, register/admit any cross-process wire profile, submit each final `GrantRequestV1` to independent `kernel.authority` immediately before an effect boundary, reconcile terminal outcomes in the effect owner, and obtain exact-head/synthetic-merge/named-host evidence plus independent acceptance and activation. The Agentd context caller proves only the narrow read-only planning path.
