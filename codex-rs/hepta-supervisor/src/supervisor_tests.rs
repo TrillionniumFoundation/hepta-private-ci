@@ -794,6 +794,7 @@ fn stale_runtime_is_fenced_without_touching_peer() -> Result<(), SupervisorError
     Ok(())
 }
 
+#[cfg(unix)]
 #[test]
 fn upgrade_preflight_allows_matrix_only_release_change() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
