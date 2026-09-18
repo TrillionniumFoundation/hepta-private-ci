@@ -33,8 +33,12 @@ The store uses the repository SQLite durability configuration and validates
 quick-check, migration ledger, schema manifest, provider projections/effect
 rows and foreign keys on open. A read-only diagnostic open neither creates nor
 migrates. The target qualification API is composed through the existing
-`codex-hepta-governance::GovernanceState` product host. Activation, independent
-acceptance, promotion and release remain separately gated.
+`codex-hepta-governance::GovernanceState` product host. Issuer authentication
+uses a host-pinned `EvidenceIssuerAuthorityV1`; request payloads cannot select a
+trust root. The ordinary App Server installation has no default qualification
+trust root, so the writer fails closed until an external trust-root ceremony
+provides one through the protected host configuration seam. Activation,
+independent acceptance, promotion and release remain separately gated.
 
 ## Target-only design
 
