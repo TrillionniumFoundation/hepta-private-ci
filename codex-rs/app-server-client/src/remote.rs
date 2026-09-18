@@ -172,6 +172,13 @@ impl ObservedAppServerEvent {
     pub fn into_event(self) -> AppServerEvent {
         self.event
     }
+
+    #[cfg(feature = "test-support")]
+    #[doc(hidden)]
+    pub fn from_event_for_test(sequence: u64, event: AppServerEvent) -> Self {
+        assert!(sequence > 0, "test witness sequence must be non-zero");
+        Self { sequence, event }
+    }
 }
 
 pub struct RemoteAppServerClient {
