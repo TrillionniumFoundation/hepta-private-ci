@@ -83,7 +83,7 @@ function operation({
 
 async function settle(host, input, receipt) {
   let current = receipt;
-  for (let attempt = 0; attempt < 250 && current.terminalObserved !== true; attempt += 1) {
+  for (let attempt = 0; attempt < 750 && current.terminalObserved !== true; attempt += 1) {
     await new Promise((resolve) => setTimeout(resolve, 20));
     current = await host.reconcileOperation(input);
   }
@@ -338,7 +338,17 @@ try {
     origin,
     effectGrant: redirectGrant,
   });
-  await host.navigateOrAct(redirectInput);
+  const redirectReceipt = await settle(
+    host,
+    redirectInput,
+    await host.navigateOrAct(redirectInput),
+  );
+  assert.equal(redirectReceipt.terminalObserved, true);
+  assert.equal(
+    ["succeeded", "failed"].includes(redirectReceipt.status),
+    true,
+    "redirect denial must reach a terminal local observation before profile close",
+  );
   await new Promise((resolve) => setTimeout(resolve, 250));
   assert.equal(forbiddenHits, 0, "redirect target outside the origin grant must not be reached");
 
