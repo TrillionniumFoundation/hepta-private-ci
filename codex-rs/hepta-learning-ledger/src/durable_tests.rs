@@ -236,7 +236,7 @@ fn invalid_causal_facts_and_oversized_candidate_sets_fail_before_io() {
     ));
     let mut oversized = decision();
     if let LedgerEvent::Decision(value) = &mut oversized {
-        value.candidate_ids = vec![id("same"); 129];
+        value.candidate_ids = vec![id("same"); MAX_CANDIDATES + 1];
     }
     assert_eq!(
         ledger.append(first.chain_digest, oversized),
@@ -246,6 +246,37 @@ fn invalid_causal_facts_and_oversized_candidate_sets_fail_before_io() {
     );
     assert_eq!(locked_bytes(&ledger), before);
     assert_eq!(must(ledger.records()).len(), 1);
+}
+
+#[test]
+fn maximum_retrieval_candidate_set_round_trips_through_durable_recovery() {
+    let fixture = Fixture::new();
+    let mut candidates = (0..512_u32)
+        .map(|index| id(&format!("rc-{index:048x}")))
+        .collect::<Vec<_>>();
+    candidates.push(id("abstain"));
+    let selected = candidates[0].clone();
+    let event = LedgerEvent::Decision(EpisodeDecision {
+        record_id: id("retrieval-decision-max"),
+        episode_id: id("retrieval-episode-max"),
+        objective_digest: Digest32::of_bytes(b"retrieval-objective"),
+        policy_id: id("retrieval-policy-max"),
+        candidate_ids: candidates,
+        selected_candidate_id: selected,
+        selected_propensity: ProbabilityQ32::ONE,
+        completeness: CandidateSetCompleteness::Complete,
+        support_digest: Digest32::of_bytes(b"retrieval-max-support"),
+    });
+    let mut ledger = fixture.create();
+    let receipt = must(ledger.append(Digest32::ZERO, event));
+    let snapshot = must(ledger.snapshot());
+    assert!(crate::ledger::encode_event(&snapshot.records()[0]).len() <= MAX_EVENT);
+    drop(ledger);
+    let reopened = must(fixture.recover(LedgerRecovery::Acknowledged(LedgerAnchor {
+        sequence: 1,
+        chain_digest: receipt.chain_digest,
+    })));
+    assert_eq!(must(reopened.snapshot()), snapshot);
 }
 
 #[test]

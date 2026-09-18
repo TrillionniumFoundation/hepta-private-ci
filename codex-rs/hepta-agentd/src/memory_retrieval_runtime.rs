@@ -264,6 +264,7 @@ impl PinnedMemoryRetrievalRuntime {
         built: &CandidateUnionBuildV1,
         receipt: &HnmfRecallReceiptV1,
         selected_identity: Option<(String, u64)>,
+        downstream_policy_id: Option<StableId>,
     ) -> Result<Digest32, String> {
         if !built.all_enabled_channels_exhausted {
             return Err("incomplete retrieval coverage cannot be logged as a causal decision".to_string());
@@ -297,11 +298,14 @@ impl PinnedMemoryRetrievalRuntime {
             }
             None => StableId::new("abstain").map_err(|error| error.to_string())?,
         };
+        let effective_policy_id =
+            compound_policy_id(&prepared.profile.policy.policy_id, downstream_policy_id.as_ref())?;
         let mut support_bytes = b"hepta.memory-retrieval.learning-decision.v1".to_vec();
         support_bytes.extend_from_slice(prepared.preparation_digest.as_array());
         support_bytes.extend_from_slice(prepared.profile_digest.as_array());
         support_bytes.extend_from_slice(built.coverage_digest.as_array());
         support_bytes.extend_from_slice(receipt.receipt_digest.as_array());
+        push_bytes(&mut support_bytes, effective_policy_id.as_str().as_bytes());
         let support_digest = Digest32::of_bytes(&support_bytes);
         let episode_id = digest_stable_id("retrieval-episode", support_digest)?;
         let record_id = digest_stable_id("retrieval-decision", support_digest)?;
@@ -309,7 +313,7 @@ impl PinnedMemoryRetrievalRuntime {
             record_id,
             episode_id,
             objective_digest: prepared.profile.objective_digest,
-            policy_id: prepared.profile.policy.policy_id.clone(),
+            policy_id: effective_policy_id,
             candidate_ids,
             selected_candidate_id,
             selected_propensity: ProbabilityQ32::ONE,
@@ -318,6 +322,19 @@ impl PinnedMemoryRetrievalRuntime {
         };
         self.decision_sink.append_decision(decision)
     }
+}
+
+fn compound_policy_id(
+    retrieval_policy_id: &StableId,
+    downstream_policy_id: Option<&StableId>,
+) -> Result<StableId, String> {
+    let Some(downstream_policy_id) = downstream_policy_id else {
+        return Ok(retrieval_policy_id.clone());
+    };
+    let mut bytes = b"hepta.memory-retrieval.compound-policy.v1".to_vec();
+    push_bytes(&mut bytes, retrieval_policy_id.as_str().as_bytes());
+    push_bytes(&mut bytes, downstream_policy_id.as_str().as_bytes());
+    digest_stable_id("retrieval-policy", Digest32::of_bytes(&bytes))
 }
 
 fn retrieval_candidate_id(record_id: &StableId, revision: u64) -> Result<StableId, String> {

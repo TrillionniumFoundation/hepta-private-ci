@@ -106,6 +106,10 @@ impl PinnedCognitiveRanker {
         Ok(())
     }
 
+    pub(crate) fn policy_id(&self) -> StableId {
+        self.model.artifact_id().clone()
+    }
+
     fn with_current<T>(&self, consume: impl FnOnce() -> Result<T, String>) -> Result<T, String> {
         let mut cache = self
             .cache

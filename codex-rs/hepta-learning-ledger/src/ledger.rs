@@ -19,7 +19,7 @@ use crate::OutcomeObservation;
 use crate::Revocation;
 
 const MAX_RECORDS: usize = 1_000_000;
-const MAX_CANDIDATES: usize = 513;
+pub(crate) const MAX_CANDIDATES: usize = 513;
 const EVENT_DIGEST_DOMAIN: &[u8] = b"hepta.learning-ledger.event.v1";
 const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-ledger.chain.v1";
 

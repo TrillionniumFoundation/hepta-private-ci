@@ -292,7 +292,9 @@ async fn read_inner(
         prepared_runtime = Some(prepared);
     }
 
+    let mut applied_ranker_policy_id = None;
     if let Some(ranker) = ranker {
+        let policy_id = ranker.policy_id();
         let ranker = std::sync::Arc::clone(ranker);
         let rank_owner = owner.clone();
         let rank_query = query.to_string();
@@ -308,24 +310,7 @@ async fn read_inner(
         .await
         .map_err(|_| CognitiveContextError::RankerUnavailable)?
         .map_err(|_| CognitiveContextError::RankerUnavailable)?;
-    }
-
-    if let (Some(runtime), Some((prepared, built, receipt))) =
-        (retrieval_runtime, causal_decision.as_ref())
-    {
-        let runtime = std::sync::Arc::clone(runtime);
-        let prepared = prepared.clone();
-        let built = built.clone();
-        let receipt = receipt.clone();
-        let selected_identity = admitted_items
-            .first()
-            .map(|item| (item.memory_id.clone(), item.revision));
-        tokio::task::spawn_blocking(move || {
-            runtime.record_decision(&prepared, &built, &receipt, selected_identity)
-        })
-        .await
-        .map_err(|_| CognitiveContextError::RetrievalUnavailable)?
-        .map_err(|_| CognitiveContextError::RetrievalUnavailable)?;
+        applied_ranker_policy_id = Some(policy_id);
     }
 
     for item in admitted_items {
@@ -402,6 +387,31 @@ async fn read_inner(
             .await
             .map_err(|_| CognitiveContextError::RankerUnavailable)?
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
+    }
+    if let (Some(runtime), Some((prepared, built, receipt))) =
+        (retrieval_runtime, causal_decision.as_ref())
+    {
+        let runtime = std::sync::Arc::clone(runtime);
+        let prepared = prepared.clone();
+        let built = built.clone();
+        let receipt = receipt.clone();
+        let selected_identity = response
+            .items
+            .first()
+            .map(|item| (item.memory_id.clone(), item.revision));
+        let downstream_policy_id = applied_ranker_policy_id.clone();
+        tokio::task::spawn_blocking(move || {
+            runtime.record_decision(
+                &prepared,
+                &built,
+                &receipt,
+                selected_identity,
+                downstream_policy_id,
+            )
+        })
+        .await
+        .map_err(|_| CognitiveContextError::RetrievalUnavailable)?
+        .map_err(|_| CognitiveContextError::RetrievalUnavailable)?;
     }
     Ok(response)
 }

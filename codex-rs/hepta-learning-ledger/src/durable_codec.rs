@@ -50,7 +50,7 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             policy_id: reader.id()?,
             candidate_ids: {
                 let count = u32::from_be_bytes(reader.take()?) as usize;
-                if count > 128 {
+                if count > crate::ledger::MAX_CANDIDATES {
                     return Err(DurableLedgerError::Corrupt);
                 }
                 (0..count)
