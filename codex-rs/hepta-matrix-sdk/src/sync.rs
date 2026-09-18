@@ -76,7 +76,6 @@ impl MatrixSyncComposer<'_> {
                 txn_id.as_str(),
                 room_id.as_str(),
                 event_id.as_str(),
-                response.next_batch.as_str(),
             ))
             .map_err(|_| MatrixSdkError::Sync)?;
             let digest = Sha256Digest::for_bytes(&evidence);
