@@ -301,3 +301,7 @@ fn host_wall_now_ms() -> Result<u64, GlobalControlHostError> {
         .as_millis();
     u64::try_from(millis).map_err(|_| GlobalControlHostError::WallClockUnavailable)
 }
+
+#[cfg(all(test, unix))]
+#[path = "global_control_tests.rs"]
+mod tests;
