@@ -68,7 +68,8 @@ impl HeptaEvidenceStore {
                     .try_get("policy_digest")
                     .map_err(classify_sqlx_error)?,
             )?;
-            let previous_revoked: i64 = previous.try_get("revoked").map_err(classify_sqlx_error)?;
+            let previous_revoked: i64 =
+                previous.try_get("revoked").map_err(classify_sqlx_error)?;
             if policy.revision == previous_revision {
                 if previous_digest == digest && previous_revoked == if revoked { 1 } else { 0 } {
                     tx.commit().await.map_err(classify_sqlx_error)?;
@@ -136,9 +137,8 @@ impl HeptaEvidenceStore {
             .map_err(classify_sqlx_error)?;
         require_policy_head(&mut tx, policy_id, revision, Some(false)).await?;
         sqlx::query(
-            "UPDATE authbus_policy_heads SET revoked = ?, updated_at_ms = ? WHERE policy_id = ?",
+            "UPDATE authbus_policy_heads SET revoked = 1, updated_at_ms = ? WHERE policy_id = ?",
         )
-        .bind(if revoked { 1_i64 } else { 0_i64 })
         .bind(now_millis()?)
         .bind(policy_id.as_str())
         .execute(&mut *tx)
@@ -152,10 +152,8 @@ impl HeptaEvidenceStore {
         &self,
         quota: &QuotaConfig,
     ) -> Result<(), AuthBusControlError> {
-        if quota.revision == 0 {
-            return Err(AuthBusControlError::Invalid(
-                "quota revision must be nonzero",
-            ));
+        if quota.revision == 0 || quota.window_start_ms >= quota.window_end_ms {
+            return Err(AuthBusControlError::Invalid("invalid quota revision/window"));
         }
         let mut tx = self
             .pool
@@ -163,18 +161,35 @@ impl HeptaEvidenceStore {
             .await
             .map_err(classify_sqlx_error)?;
         let row = sqlx::query(
-            "SELECT revision, endowment, reserved, consumed FROM authbus_quota_registry WHERE quota_key = ?",
+            "SELECT revision, unit_id, window_start_ms, window_end_ms,
+                    endowment, reserved, consumed
+             FROM authbus_quota_registry WHERE quota_key = ?",
         )
         .bind(quota.quota_key.as_str())
         .fetch_optional(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
+
         let (reserved, consumed) = if let Some(row) = row {
             let revision = decode_u64(row.try_get("revision").map_err(classify_sqlx_error)?)?;
+            let unit_id: String = row.try_get("unit_id").map_err(classify_sqlx_error)?;
+            let current_start =
+                decode_u64(row.try_get("window_start_ms").map_err(classify_sqlx_error)?)?;
+            let current_end =
+                decode_u64(row.try_get("window_end_ms").map_err(classify_sqlx_error)?)?;
             let current_endowment =
                 decode_u64(row.try_get("endowment").map_err(classify_sqlx_error)?)?;
+            let reserved =
+                decode_u64(row.try_get("reserved").map_err(classify_sqlx_error)?)?;
+            let consumed =
+                decode_u64(row.try_get("consumed").map_err(classify_sqlx_error)?)?;
+
             if quota.revision == revision {
-                if quota.endowment == current_endowment {
+                if unit_id == quota.unit_id.as_str()
+                    && current_start == quota.window_start_ms
+                    && current_end == quota.window_end_ms
+                    && current_endowment == quota.endowment
+                {
                     tx.commit().await.map_err(classify_sqlx_error)?;
                     return Ok(());
                 }
@@ -183,34 +198,56 @@ impl HeptaEvidenceStore {
             if quota.revision < revision {
                 return Err(AuthBusControlError::StaleRevision);
             }
-            (
-                decode_u64(row.try_get("reserved").map_err(classify_sqlx_error)?)?,
-                decode_u64(row.try_get("consumed").map_err(classify_sqlx_error)?)?,
-            )
+            if unit_id != quota.unit_id.as_str() {
+                return Err(AuthBusControlError::Invalid(
+                    "quota unit is immutable for one quota key",
+                ));
+            }
+            if reserved != 0 {
+                return Err(AuthBusControlError::Invalid(
+                    "quota revision cannot change while reservations are held",
+                ));
+            }
+            if quota.window_start_ms == current_start && quota.window_end_ms == current_end {
+                if consumed > quota.endowment {
+                    return Err(AuthBusControlError::Invalid(
+                        "new endowment is below consumed quota",
+                    ));
+                }
+                (0, consumed)
+            } else {
+                if quota.window_start_ms < current_end {
+                    return Err(AuthBusControlError::Invalid(
+                        "quota windows must not overlap",
+                    ));
+                }
+                (0, 0)
+            }
         } else {
             (0, 0)
         };
-        if reserved
-            .checked_add(consumed)
-            .is_none_or(|used| used > quota.endowment)
-        {
-            return Err(AuthBusControlError::Invalid(
-                "new endowment is below committed quota",
-            ));
-        }
+
+        let now = now_millis()?;
         sqlx::query(
             "INSERT INTO authbus_quota_registry
-             (quota_key, revision, endowment, reserved, consumed, updated_at_ms)
-             VALUES (?, ?, ?, ?, ?, ?)
+             (quota_key, revision, unit_id, window_start_ms, window_end_ms,
+              endowment, reserved, consumed, updated_at_ms)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT(quota_key) DO UPDATE SET revision=excluded.revision,
-             endowment=excluded.endowment, updated_at_ms=excluded.updated_at_ms",
+             unit_id=excluded.unit_id, window_start_ms=excluded.window_start_ms,
+             window_end_ms=excluded.window_end_ms, endowment=excluded.endowment,
+             reserved=excluded.reserved, consumed=excluded.consumed,
+             updated_at_ms=excluded.updated_at_ms",
         )
         .bind(quota.quota_key.as_str())
         .bind(quota.revision.to_be_bytes().as_slice())
+        .bind(quota.unit_id.as_str())
+        .bind(quota.window_start_ms.to_be_bytes().as_slice())
+        .bind(quota.window_end_ms.to_be_bytes().as_slice())
         .bind(quota.endowment.to_be_bytes().as_slice())
         .bind(reserved.to_be_bytes().as_slice())
         .bind(consumed.to_be_bytes().as_slice())
-        .bind(now_millis()?)
+        .bind(now)
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
@@ -232,10 +269,11 @@ impl HeptaEvidenceStore {
         operation_id: &StableId,
         amount: u64,
         expires_at_ms: u64,
+        effect_digest: Digest32,
     ) -> Result<(PolicyDecision, Reservation), AuthBusControlError> {
-        if amount == 0 || expires_at_ms == 0 {
+        if amount == 0 || expires_at_ms == 0 || scope_digest.is_zero() || effect_digest.is_zero() {
             return Err(AuthBusControlError::Invalid(
-                "reservation amount/expiry must be nonzero",
+                "reservation amount/expiry/scope/effect must be nonzero",
             ));
         }
         let mut tx = self
@@ -243,6 +281,12 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let now_i64 = now_millis()?;
+        let now = clock(now_i64)?;
+        if now >= expires_at_ms {
+            return Err(AuthBusControlError::InvalidTransition);
+        }
+
         let decision = authorize_in_tx(
             &mut tx,
             policy_id,
@@ -252,21 +296,44 @@ impl HeptaEvidenceStore {
             scope_digest,
         )
         .await?;
+
+        let binding_digest = reservation_binding_digest(
+            policy_id,
+            policy_revision,
+            principal_id,
+            action_id,
+            scope_digest,
+            quota_key,
+            quota_revision,
+            reservation_id,
+            operation_id,
+            amount,
+            expires_at_ms,
+            effect_digest,
+        );
+
         if let Some(existing) = load_reservation_by_operation(&mut tx, operation_id).await? {
             if existing.reservation_id == *reservation_id
+                && existing.principal_id == *principal_id
+                && existing.action_id == *action_id
+                && existing.scope_digest == scope_digest
                 && existing.quota_key == *quota_key
+                && existing.quota_revision == quota_revision
                 && existing.amount == amount
                 && existing.expires_at_ms == expires_at_ms
                 && existing.policy_id == *policy_id
                 && existing.policy_revision == policy_revision
+                && existing.effect_digest == effect_digest
+                && existing.binding_digest == binding_digest
             {
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Ok((decision, existing));
             }
             return Err(AuthBusControlError::IdempotencyConflict);
         }
+
         let row = sqlx::query(
-            "SELECT revision, endowment, reserved, consumed
+            "SELECT revision, window_start_ms, window_end_ms, endowment, reserved, consumed
              FROM authbus_quota_registry WHERE quota_key = ?",
         )
         .bind(quota_key.as_str())
@@ -276,6 +343,15 @@ impl HeptaEvidenceStore {
         .ok_or(AuthBusControlError::NotFound)?;
         if decode_u64(row.try_get("revision").map_err(classify_sqlx_error)?)? != quota_revision {
             return Err(AuthBusControlError::StaleRevision);
+        }
+        let window_start =
+            decode_u64(row.try_get("window_start_ms").map_err(classify_sqlx_error)?)?;
+        let window_end =
+            decode_u64(row.try_get("window_end_ms").map_err(classify_sqlx_error)?)?;
+        if now < window_start || now >= window_end || expires_at_ms > window_end {
+            return Err(AuthBusControlError::Invalid(
+                "reservation is outside the quota window",
+            ));
         }
         let endowment = decode_u64(row.try_get("endowment").map_err(classify_sqlx_error)?)?;
         let reserved = decode_u64(row.try_get("reserved").map_err(classify_sqlx_error)?)?;
@@ -289,21 +365,28 @@ impl HeptaEvidenceStore {
         if used.checked_add(amount).is_none_or(|next| next > endowment) {
             return Err(AuthBusControlError::QuotaExceeded);
         }
-        let now = now_millis()?;
+
         sqlx::query(
             "INSERT INTO authbus_quota_reservations
-             (reservation_id, operation_id, quota_key, amount, expires_at_ms, policy_id,
-              policy_revision, state, updated_at_ms)
-             VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?)",
+             (reservation_id, operation_id, principal_id, action_id, scope_digest,
+              quota_key, quota_revision, amount, expires_at_ms, policy_id,
+              policy_revision, effect_digest, binding_digest, state, updated_at_ms)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?)",
         )
         .bind(reservation_id.as_str())
         .bind(operation_id.as_str())
+        .bind(principal_id.as_str())
+        .bind(action_id.as_str())
+        .bind(scope_digest.as_array().as_slice())
         .bind(quota_key.as_str())
+        .bind(quota_revision.to_be_bytes().as_slice())
         .bind(amount.to_be_bytes().as_slice())
         .bind(expires_at_ms.to_be_bytes().as_slice())
         .bind(policy_id.as_str())
         .bind(policy_revision.to_be_bytes().as_slice())
-        .bind(now)
+        .bind(effect_digest.as_array().as_slice())
+        .bind(binding_digest.as_array().as_slice())
+        .bind(now_i64)
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
@@ -311,39 +394,68 @@ impl HeptaEvidenceStore {
             "UPDATE authbus_quota_registry SET reserved = ?, updated_at_ms = ? WHERE quota_key = ?",
         )
         .bind(next_reserved.to_be_bytes().as_slice())
-        .bind(now)
+        .bind(now_i64)
         .bind(quota_key.as_str())
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
         tx.commit().await.map_err(classify_sqlx_error)?;
+
         Ok((
             decision,
             Reservation {
                 reservation_id: reservation_id.clone(),
                 operation_id: operation_id.clone(),
+                principal_id: principal_id.clone(),
+                action_id: action_id.clone(),
+                scope_digest,
                 quota_key: quota_key.clone(),
+                quota_revision,
                 amount,
                 expires_at_ms,
                 policy_id: policy_id.clone(),
                 policy_revision,
+                effect_digest,
+                binding_digest,
                 state: ReservationState::Active,
+                effect_started_at_ms: None,
             },
         ))
     }
 
-    pub async fn validate_authbus_reservation_for_effect(
+    /// Atomically consume an active reservation for one exact final effect.
+    /// The owner reads time only after taking the SQLite write lock. Once this
+    /// transition commits, ordinary cancellation/expiry can never refund it.
+    pub async fn begin_authbus_effect(
         &self,
         reservation_id: &StableId,
-        now_ms: u64,
+        expected_effect_digest: Digest32,
     ) -> Result<Reservation, AuthBusControlError> {
+        if expected_effect_digest.is_zero() {
+            return Err(AuthBusControlError::Invalid("effect digest is empty"));
+        }
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        let reservation = load_reservation(&mut tx, reservation_id).await?;
-        if reservation.state != ReservationState::Active || now_ms >= reservation.expires_at_ms {
+        let now_i64 = now_millis()?;
+        let now = clock(now_i64)?;
+        let mut reservation = load_reservation(&mut tx, reservation_id).await?;
+        if reservation.state != ReservationState::Active
+            || reservation.effect_digest != expected_effect_digest
+        {
+            return Err(AuthBusControlError::InvalidTransition);
+        }
+        if now >= reservation.expires_at_ms {
+            release_active_in_tx(
+                &mut tx,
+                &reservation,
+                ReservationState::Expired,
+                now_i64,
+            )
+            .await?;
+            tx.commit().await.map_err(classify_sqlx_error)?;
             return Err(AuthBusControlError::InvalidTransition);
         }
         require_policy_head(
@@ -353,7 +465,32 @@ impl HeptaEvidenceStore {
             Some(false),
         )
         .await?;
+        let quota_revision: Vec<u8> = sqlx::query_scalar(
+            "SELECT revision FROM authbus_quota_registry WHERE quota_key = ?",
+        )
+        .bind(reservation.quota_key.as_str())
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?
+        .ok_or(AuthBusControlError::NotFound)?;
+        if decode_u64(quota_revision)? != reservation.quota_revision {
+            return Err(AuthBusControlError::StaleRevision);
+        }
+
+        sqlx::query(
+            "UPDATE authbus_quota_reservations
+             SET state='effect_started', effect_started_at_ms=?, updated_at_ms=?
+             WHERE reservation_id=?",
+        )
+        .bind(now_i64)
+        .bind(now_i64)
+        .bind(reservation_id.as_str())
+        .execute(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
         tx.commit().await.map_err(classify_sqlx_error)?;
+        reservation.state = ReservationState::EffectStarted;
+        reservation.effect_started_at_ms = Some(now);
         Ok(reservation)
     }
 
@@ -383,14 +520,10 @@ impl HeptaEvidenceStore {
             .map_err(classify_sqlx_error)?;
             let stored_cost =
                 decode_u64(row.try_get("observed_cost").map_err(classify_sqlx_error)?)?;
-            let stored_evidence = digest(
-                row.try_get("terminal_evidence")
-                    .map_err(classify_sqlx_error)?,
-            )?;
-            let stored_digest = digest(
-                row.try_get("settlement_digest")
-                    .map_err(classify_sqlx_error)?,
-            )?;
+            let stored_evidence =
+                digest(row.try_get("terminal_evidence").map_err(classify_sqlx_error)?)?;
+            let stored_digest =
+                digest(row.try_get("settlement_digest").map_err(classify_sqlx_error)?)?;
             if stored_cost == observed_cost && stored_evidence == terminal_evidence {
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Ok(Settlement {
@@ -404,18 +537,27 @@ impl HeptaEvidenceStore {
         }
         if !matches!(
             existing.state,
-            ReservationState::Active | ReservationState::Quarantined
+            ReservationState::EffectStarted | ReservationState::Quarantined
         ) || observed_cost > existing.amount
         {
             return Err(AuthBusControlError::InvalidTransition);
         }
+
         let quota = sqlx::query(
-            "SELECT reserved, consumed FROM authbus_quota_registry WHERE quota_key = ?",
+            "SELECT revision, reserved, consumed
+             FROM authbus_quota_registry WHERE quota_key = ?",
         )
         .bind(existing.quota_key.as_str())
         .fetch_one(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
+        if decode_u64(quota.try_get("revision").map_err(classify_sqlx_error)?)?
+            != existing.quota_revision
+        {
+            return Err(
+                EvidenceError::Corrupt("AuthBus quota revision changed while held".into()).into(),
+            );
+        }
         let reserved = decode_u64(quota.try_get("reserved").map_err(classify_sqlx_error)?)?;
         let consumed = decode_u64(quota.try_get("consumed").map_err(classify_sqlx_error)?)?;
         let next_reserved = reserved
@@ -424,8 +566,10 @@ impl HeptaEvidenceStore {
         let next_consumed = consumed
             .checked_add(observed_cost)
             .ok_or_else(|| EvidenceError::Corrupt("AuthBus quota consumption overflow".into()))?;
-        let settlement_digest = settlement_digest(reservation_id, observed_cost, terminal_evidence);
+        let settlement_digest =
+            settlement_digest(reservation_id, observed_cost, terminal_evidence);
         let now = now_millis()?;
+
         sqlx::query(
             "UPDATE authbus_quota_reservations SET state='settled', observed_cost=?,
              terminal_evidence=?, settlement_digest=?, updated_at_ms=? WHERE reservation_id=?",
@@ -457,27 +601,26 @@ impl HeptaEvidenceStore {
         })
     }
 
+    /// Cancel only while the reservation is still active. EffectStarted and
+    /// Quarantined reservations remain held until observed reconciliation.
     pub async fn cancel_authbus_reservation(
         &self,
         reservation_id: &StableId,
     ) -> Result<(), AuthBusControlError> {
-        release_reservation(self, reservation_id, ReservationState::Cancelled, None).await
+        release_reservation(self, reservation_id, ReservationState::Cancelled, false).await
     }
 
+    /// Expiry uses the evidence owner's clock after the write lock. It cannot
+    /// expire/refund a reservation once final-use intent has committed.
     pub async fn expire_authbus_reservation(
         &self,
         reservation_id: &StableId,
-        now_ms: u64,
     ) -> Result<(), AuthBusControlError> {
-        release_reservation(
-            self,
-            reservation_id,
-            ReservationState::Expired,
-            Some(now_ms),
-        )
-        .await
+        release_reservation(self, reservation_id, ReservationState::Expired, true).await
     }
 
+    /// Mark an effect-started reservation indeterminate. Quarantine keeps the
+    /// full amount reserved and may later be settled from terminal evidence.
     pub async fn quarantine_authbus_reservation(
         &self,
         reservation_id: &StableId,
@@ -488,11 +631,16 @@ impl HeptaEvidenceStore {
             .await
             .map_err(classify_sqlx_error)?;
         let reservation = load_reservation(&mut tx, reservation_id).await?;
-        if reservation.state != ReservationState::Active {
+        if reservation.state == ReservationState::Quarantined {
+            tx.commit().await.map_err(classify_sqlx_error)?;
+            return Ok(());
+        }
+        if reservation.state != ReservationState::EffectStarted {
             return Err(AuthBusControlError::InvalidTransition);
         }
         sqlx::query(
-            "UPDATE authbus_quota_reservations SET state='quarantined', updated_at_ms=? WHERE reservation_id=?",
+            "UPDATE authbus_quota_reservations
+             SET state='quarantined', updated_at_ms=? WHERE reservation_id=?",
         )
         .bind(now_millis()?)
         .bind(reservation_id.as_str())
@@ -501,6 +649,29 @@ impl HeptaEvidenceStore {
         .map_err(classify_sqlx_error)?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(())
+    }
+
+    /// Bounded recovery projection for effects that crossed the durable
+    /// final-use boundary but do not yet have terminal settlement.
+    pub async fn pending_authbus_effect_reservations(
+        &self,
+        quota_key: &StableId,
+        limit: u32,
+    ) -> Result<Vec<Reservation>, AuthBusControlError> {
+        if limit == 0 || limit > 128 {
+            return Err(AuthBusControlError::Invalid("list limit must be 1..=128"));
+        }
+        let rows = sqlx::query(
+            "SELECT * FROM authbus_quota_reservations
+             WHERE quota_key=? AND state IN ('effect_started','quarantined')
+             ORDER BY updated_at_ms, reservation_id LIMIT ?",
+        )
+        .bind(quota_key.as_str())
+        .bind(i64::from(limit))
+        .fetch_all(&self.pool)
+        .await
+        .map_err(classify_sqlx_error)?;
+        rows.into_iter().map(decode_reservation).collect()
     }
 
     pub async fn reconcile_authbus_quota(
@@ -512,17 +683,40 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        let row = sqlx::query("SELECT endowment FROM authbus_quota_registry WHERE quota_key=?")
-            .bind(quota_key.as_str())
-            .fetch_optional(&mut *tx)
-            .await
-            .map_err(classify_sqlx_error)?
-            .ok_or(AuthBusControlError::NotFound)?;
-        let endowment = decode_u64(row.try_get("endowment").map_err(classify_sqlx_error)?)?;
-        let rows = sqlx::query(
-            "SELECT amount, observed_cost, state FROM authbus_quota_reservations WHERE quota_key=?",
+        let row = sqlx::query(
+            "SELECT revision, endowment FROM authbus_quota_registry WHERE quota_key=?",
         )
         .bind(quota_key.as_str())
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?
+        .ok_or(AuthBusControlError::NotFound)?;
+        let revision = decode_u64(row.try_get("revision").map_err(classify_sqlx_error)?)?;
+        let endowment = decode_u64(row.try_get("endowment").map_err(classify_sqlx_error)?)?;
+
+        let foreign_held: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_quota_reservations
+             WHERE quota_key=? AND quota_revision != ?
+             AND state IN ('active','effect_started','quarantined')",
+        )
+        .bind(quota_key.as_str())
+        .bind(revision.to_be_bytes().as_slice())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if foreign_held != 0 {
+            return Err(
+                EvidenceError::Corrupt("held AuthBus reservation crossed quota revision".into())
+                    .into(),
+            );
+        }
+
+        let rows = sqlx::query(
+            "SELECT amount, observed_cost, state FROM authbus_quota_reservations
+             WHERE quota_key=? AND quota_revision=?",
+        )
+        .bind(quota_key.as_str())
+        .bind(revision.to_be_bytes().as_slice())
         .fetch_all(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
@@ -532,7 +726,7 @@ impl HeptaEvidenceStore {
             let state: String = row.try_get("state").map_err(classify_sqlx_error)?;
             let amount = decode_u64(row.try_get("amount").map_err(classify_sqlx_error)?)?;
             match state.as_str() {
-                "active" | "quarantined" => {
+                "active" | "effect_started" | "quarantined" => {
                     reserved = reserved
                         .checked_add(amount)
                         .ok_or(AuthBusControlError::QuotaExceeded)?;
@@ -642,7 +836,7 @@ async fn release_reservation(
     store: &HeptaEvidenceStore,
     reservation_id: &StableId,
     state: ReservationState,
-    now_ms: Option<u64>,
+    require_expired: bool,
 ) -> Result<(), AuthBusControlError> {
     let mut tx = store
         .pool
@@ -653,37 +847,59 @@ async fn release_reservation(
     if reservation.state != ReservationState::Active {
         return Err(AuthBusControlError::InvalidTransition);
     }
-    if now_ms.is_some_and(|now| now < reservation.expires_at_ms) {
+    let now_i64 = now_millis()?;
+    let now = clock(now_i64)?;
+    if require_expired && now < reservation.expires_at_ms {
         return Err(AuthBusControlError::InvalidTransition);
     }
-    let row = sqlx::query("SELECT reserved FROM authbus_quota_registry WHERE quota_key=?")
+    release_active_in_tx(&mut tx, &reservation, state, now_i64).await?;
+    tx.commit().await.map_err(classify_sqlx_error)?;
+    Ok(())
+}
+
+async fn release_active_in_tx(
+    tx: &mut Transaction<'_, Sqlite>,
+    reservation: &Reservation,
+    state: ReservationState,
+    now: i64,
+) -> Result<(), AuthBusControlError> {
+    if reservation.state != ReservationState::Active
+        || !matches!(state, ReservationState::Cancelled | ReservationState::Expired)
+    {
+        return Err(AuthBusControlError::InvalidTransition);
+    }
+    let row = sqlx::query("SELECT revision, reserved FROM authbus_quota_registry WHERE quota_key=?")
         .bind(reservation.quota_key.as_str())
-        .fetch_one(&mut *tx)
+        .fetch_one(&mut **tx)
         .await
         .map_err(classify_sqlx_error)?;
+    if decode_u64(row.try_get("revision").map_err(classify_sqlx_error)?)?
+        != reservation.quota_revision
+    {
+        return Err(
+            EvidenceError::Corrupt("AuthBus quota revision changed while active".into()).into(),
+        );
+    }
     let reserved = decode_u64(row.try_get("reserved").map_err(classify_sqlx_error)?)?;
     let next = reserved
         .checked_sub(reservation.amount)
         .ok_or_else(|| EvidenceError::Corrupt("AuthBus quota reservation underflow".into()))?;
-    let now = i64::try_from(now_ms.unwrap_or(u64::try_from(now_millis()?).unwrap_or(u64::MAX)))
-        .unwrap_or(i64::MAX);
     sqlx::query(
         "UPDATE authbus_quota_reservations SET state=?, updated_at_ms=? WHERE reservation_id=?",
     )
     .bind(state.as_str())
     .bind(now)
-    .bind(reservation_id.as_str())
-    .execute(&mut *tx)
+    .bind(reservation.reservation_id.as_str())
+    .execute(&mut **tx)
     .await
     .map_err(classify_sqlx_error)?;
     sqlx::query("UPDATE authbus_quota_registry SET reserved=?, updated_at_ms=? WHERE quota_key=?")
         .bind(next.to_be_bytes().as_slice())
         .bind(now)
         .bind(reservation.quota_key.as_str())
-        .execute(&mut *tx)
+        .execute(&mut **tx)
         .await
         .map_err(classify_sqlx_error)?;
-    tx.commit().await.map_err(classify_sqlx_error)?;
     Ok(())
 }
 
@@ -724,24 +940,51 @@ fn decode_reservation(row: sqlx::sqlite::SqliteRow) -> Result<Reservation, AuthB
     let state: String = row.try_get("state").map_err(classify_sqlx_error)?;
     let state = match state.as_str() {
         "active" => ReservationState::Active,
+        "effect_started" => ReservationState::EffectStarted,
         "settled" => ReservationState::Settled,
         "cancelled" => ReservationState::Cancelled,
         "expired" => ReservationState::Expired,
         "quarantined" => ReservationState::Quarantined,
         _ => return Err(EvidenceError::Corrupt("invalid AuthBus reservation state".into()).into()),
     };
+    let effect_started_at_ms: Option<i64> = row
+        .try_get("effect_started_at_ms")
+        .map_err(classify_sqlx_error)?;
+    let effect_started_at_ms = effect_started_at_ms
+        .map(clock)
+        .transpose()?;
+
     Ok(Reservation {
         reservation_id: id("reservation_id")?,
         operation_id: id("operation_id")?,
+        principal_id: id("principal_id")?,
+        action_id: id("action_id")?,
+        scope_digest: digest(row.try_get("scope_digest").map_err(classify_sqlx_error)?)?,
         quota_key: id("quota_key")?,
+        quota_revision: decode_u64(
+            row.try_get("quota_revision")
+                .map_err(classify_sqlx_error)?,
+        )?,
         amount: decode_u64(row.try_get("amount").map_err(classify_sqlx_error)?)?,
-        expires_at_ms: decode_u64(row.try_get("expires_at_ms").map_err(classify_sqlx_error)?)?,
+        expires_at_ms: decode_u64(
+            row.try_get("expires_at_ms")
+                .map_err(classify_sqlx_error)?,
+        )?,
         policy_id: id("policy_id")?,
         policy_revision: decode_u64(
             row.try_get("policy_revision")
                 .map_err(classify_sqlx_error)?,
         )?,
+        effect_digest: digest(
+            row.try_get("effect_digest")
+                .map_err(classify_sqlx_error)?,
+        )?,
+        binding_digest: digest(
+            row.try_get("binding_digest")
+                .map_err(classify_sqlx_error)?,
+        )?,
         state,
+        effect_started_at_ms,
     })
 }
 
@@ -770,6 +1013,37 @@ fn canonical_policy_digest(policy: &PolicyRevision) -> Result<Digest32, AuthBusC
     Ok(Digest32::of_bytes(&bytes))
 }
 
+#[allow(clippy::too_many_arguments)]
+fn reservation_binding_digest(
+    policy_id: &StableId,
+    policy_revision: u64,
+    principal_id: &StableId,
+    action_id: &StableId,
+    scope_digest: Digest32,
+    quota_key: &StableId,
+    quota_revision: u64,
+    reservation_id: &StableId,
+    operation_id: &StableId,
+    amount: u64,
+    expires_at_ms: u64,
+    effect_digest: Digest32,
+) -> Digest32 {
+    let mut bytes = b"hepta.authbus.reservation-binding.v2\0".to_vec();
+    push(&mut bytes, policy_id.as_str());
+    bytes.extend_from_slice(&policy_revision.to_be_bytes());
+    push(&mut bytes, principal_id.as_str());
+    push(&mut bytes, action_id.as_str());
+    bytes.extend_from_slice(scope_digest.as_array());
+    push(&mut bytes, quota_key.as_str());
+    bytes.extend_from_slice(&quota_revision.to_be_bytes());
+    push(&mut bytes, reservation_id.as_str());
+    push(&mut bytes, operation_id.as_str());
+    bytes.extend_from_slice(&amount.to_be_bytes());
+    bytes.extend_from_slice(&expires_at_ms.to_be_bytes());
+    bytes.extend_from_slice(effect_digest.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
 fn digest32(bytes: Vec<u8>) -> Result<Digest32, AuthBusControlError> {
     digest(bytes)
 }
@@ -786,6 +1060,11 @@ fn digest(bytes: Vec<u8>) -> Result<Digest32, AuthBusControlError> {
         .try_into()
         .map_err(|_| EvidenceError::Corrupt("invalid AuthBus digest width".into()))?;
     Ok(Digest32::from_array(bytes))
+}
+
+fn clock(now: i64) -> Result<u64, AuthBusControlError> {
+    u64::try_from(now)
+        .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()).into())
 }
 
 fn settlement_digest(
