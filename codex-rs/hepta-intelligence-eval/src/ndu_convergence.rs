@@ -34,7 +34,6 @@ pub enum NduMultipleSolutionDispositionV1 {
     Unique,
     PredecessorNearestCertified,
     MultipleSolutionUnresolved,
-    InvalidEvaluatorIdentity,
 }
 
 impl NduMultipleSolutionDispositionV1 {
@@ -106,6 +105,7 @@ pub enum NduConvergenceAdmissionError {
     SpectralRadiusGate,
     ConservationGate,
     MultipleSolutionUnresolved,
+    InvalidEvaluatorIdentity,
 }
 
 impl fmt::Display for NduConvergenceAdmissionError {
@@ -127,10 +127,7 @@ pub fn admit_ndu_convergence_certificate_v1(
     require_digest(certificate.objective_class_digest, "objective_class")?;
     require_digest(certificate.solver_digest, "solver")?;
     require_digest(certificate.initialization_digest, "initialization")?;
-    require_digest(
-        context.expected_objective_class_digest,
-        "expected_objective_class",
-    )?;
+    require_digest(context.expected_objective_class_digest, "expected_objective_class")?;
     require_digest(context.expected_solver_digest, "expected_solver")?;
 
     if certificate.objective_class_digest != context.expected_objective_class_digest {
