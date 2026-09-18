@@ -385,7 +385,7 @@ mod tests {
         assert_eq!(receipt.snapshot.source_record_digests.len(), 1);
         assert_eq!(receipt.snapshot.ledger_head_digest, snapshot.head_digest);
 
-        let mut tampered = receipt.clone();
+        let mut tampered = receipt;
         tampered
             .snapshot
             .source_record_digests
