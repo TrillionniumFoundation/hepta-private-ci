@@ -148,6 +148,7 @@ async fn explicit_grant_is_owner_written_consumer_read_only_and_scope_exact() {
     assert_eq!(batch.coverage.requested_sources, 1);
     assert_eq!(batch.coverage.completed_sources, 1);
     assert_eq!(batch.coverage.failed_sources, 0);
+    assert_eq!(batch.admission_expires_unix_ms, Some(152_000));
     assert_eq!(batch.candidates[0].source_agent_id, owner_id);
     assert_eq!(
         batch.candidates[0].candidate.memory.content,
@@ -517,6 +518,7 @@ async fn revoked_peer_is_explicit_partial_coverage_not_silent_empty() {
     assert_eq!(batch.coverage.requested_sources, 2);
     assert_eq!(batch.coverage.completed_sources, 1);
     assert_eq!(batch.coverage.failed_sources, 1);
+    assert_eq!(batch.admission_expires_unix_ms, Some(154_000));
     assert_eq!(batch.candidates.len(), 1);
     assert_eq!(batch.candidates[0].source_agent_id, agent_id(91));
 }
