@@ -990,6 +990,18 @@ impl<D: ProcessDriver> Supervisor<D> {
         // requirement; normal ticking must not continue an ambiguous
         // external transition.
         self.mark_signed_intent_recovery_required(agent_id, slot)?;
+        let lifecycle = self.record(agent_id)?.lifecycle;
+        if matches!(
+            lifecycle.lifecycle,
+            AgentLifecycle::Starting | AgentLifecycle::Running | AgentLifecycle::Draining
+        ) {
+            self.transition_without_runtime(
+                agent_id,
+                slot,
+                lifecycle.generation,
+                AgentLifecycle::Failed,
+            )?;
+        }
         if let Some(runtime) = slot.runtime.as_mut() {
             let _ = runtime.process.kill();
             runtime.fenced = true;
