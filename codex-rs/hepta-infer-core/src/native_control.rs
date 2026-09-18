@@ -126,6 +126,23 @@ pub struct NativeDispatch {
     pub codex_request_digest: Option<String>,
 }
 
+/// In-memory proof that the current process has durably written one dispatch
+/// intent but has not yet crossed the external App Server effect boundary.
+///
+/// The token is deliberately non-cloneable and non-serializable. A recovered
+/// process cannot recreate it from the journal, so it can never downgrade an
+/// uncertain historical dispatch into a definitive pre-effect stop.
+pub struct NativePreEffectAbortToken {
+    request_id: String,
+    dispatch_revision: u64,
+}
+
+impl std::fmt::Debug for NativePreEffectAbortToken {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str("NativePreEffectAbortToken([LOCAL ONLY])")
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct NativeRunRecord {
@@ -166,6 +183,10 @@ enum Event {
         request_id: String,
     },
     Stop {
+        request_id: String,
+        reason: String,
+    },
+    AbortBeforeEffect {
         request_id: String,
         reason: String,
     },
@@ -234,6 +255,53 @@ impl DurableInferenceControl {
             Event::Dispatch {
                 request_id: request_id.to_string(),
                 dispatch,
+            },
+        )
+    }
+
+    /// Commit the same write-ahead dispatch while issuing a non-serializable
+    /// proof that only this live process may still abort before external effect
+    /// entry. Losing the process loses the proof; recovery must reconcile.
+    pub fn dispatch_native_with_pre_effect_abort(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+    ) -> Result<(NativeRunRecord, NativePreEffectAbortToken), Error> {
+        let record = self.dispatch_native(request_id, dispatch)?;
+        Ok((
+            record.clone(),
+            NativePreEffectAbortToken {
+                request_id: request_id.to_string(),
+                dispatch_revision: record.revision,
+            },
+        ))
+    }
+
+    /// Release a write-ahead dispatch only when the same live process still
+    /// holds the exact one-shot proof that no external effect has been entered.
+    pub fn abort_native_before_effect(
+        &mut self,
+        token: NativePreEffectAbortToken,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(&token.request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != NativeReservationState::Dispatching
+            || record.revision != token.dispatch_revision
+            || record.turn_id.is_some()
+            || record.observation.is_some()
+            || record.cancel_requested
+        {
+            return Err(Error::InvalidTransition);
+        }
+        self.commit_native(
+            &token.request_id,
+            Event::AbortBeforeEffect {
+                request_id: token.request_id.clone(),
+                reason,
             },
         )
     }
@@ -402,6 +470,7 @@ impl NativeJournal {
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
+            | Event::AbortBeforeEffect { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -461,6 +530,19 @@ impl NativeJournal {
             }
             Event::Stop { reason, .. } => {
                 if record.state != NativeReservationState::Reserved
+                    || reason.is_empty()
+                    || reason.len() > 4096
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                record.pre_dispatch_stop = Some(reason);
+                record.state = NativeReservationState::Released;
+            }
+            Event::AbortBeforeEffect { reason, .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || record.cancel_requested
                     || reason.is_empty()
                     || reason.len() > 4096
                 {
