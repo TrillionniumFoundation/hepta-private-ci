@@ -198,6 +198,29 @@ fn payload_rejects_wrong_bytes_without_reusing_its_created_target() {
 }
 
 #[test]
+fn create_in_directory_rejects_lexical_path_escape() {
+    let root = TestFile::new();
+    fs::create_dir(&root.0).unwrap();
+
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in_directory(&root.0, "../escape").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in_directory(&root.0, "nested/file").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+
+    let leaf = root.0.join("snapshot");
+    let created = CreateOnlyArtifactFile::create_in_directory(&root.0, "snapshot").unwrap();
+    write_registry_snapshot(created, &ArtifactRegistry::new(), binding()).unwrap();
+    assert!(leaf.is_file());
+
+    fs::remove_file(leaf).unwrap();
+    fs::remove_dir(&root.0).unwrap();
+}
+
+#[test]
 fn existing_nonempty_file_is_never_reopened_for_writing() {
     let registry = ArtifactRegistry::new();
     let file = TestFile::new();
