@@ -253,7 +253,10 @@ mod tests {
     fn art_05_admission_rejects_same_head_from_different_withdrawal_scope() {
         let registry = withdrawal_registry("scope-a");
         let other_scope = withdrawal_registry("scope-b");
-        assert_eq!(registry.snapshot().head_digest, other_scope.snapshot().head_digest);
+        assert_eq!(
+            registry.snapshot().head_digest,
+            other_scope.snapshot().head_digest
+        );
 
         let admission = admit_manifest_at_withdrawal_head_v3(
             &registry,
@@ -268,5 +271,4 @@ mod tests {
             Err(ArtifactAdmissionError::WithdrawalBindingChanged)
         );
     }
-
 }
