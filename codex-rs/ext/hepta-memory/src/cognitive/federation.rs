@@ -910,8 +910,13 @@ mod tests {
         padding: usize,
     ) -> CognitiveProposalMaterial {
         let content = serde_json::to_string(&serde_json::json!({
-            "schema_version": 1,
+            "schema_version": 2,
             "source": "explicit_federated_verified_memory",
+            "coverage": {
+                "requested_sources": 1,
+                "completed_sources": 1,
+                "failed_sources": 0
+            },
             "memories": [{
                 "source_agent_id": owner_agent_id,
                 "capability_id": capability_id,
@@ -1075,7 +1080,14 @@ mod tests {
         .expect("contributor")
         .expect("proposal before revoke");
         assert_eq!(first.source().as_str(), FEDERATED_COGNITIVE_SOURCE);
-        assert!(first.into_content().contains(OWNER_ID));
+        let first_content = first.into_content();
+        assert!(first_content.contains(OWNER_ID));
+        let first_payload =
+            serde_json::from_str::<serde_json::Value>(&first_content).expect("federated payload");
+        assert_eq!(first_payload["schema_version"], 2);
+        assert_eq!(first_payload["coverage"]["requested_sources"], 1);
+        assert_eq!(first_payload["coverage"]["completed_sources"], 1);
+        assert_eq!(first_payload["coverage"]["failed_sources"], 0);
 
         owner
             .revoke_federated_recall(&owner_access, &capability, now)
