@@ -295,10 +295,12 @@ fn v3_orders_utility_and_evaluation_in_one_predecessor_chain() {
     let request = request(false);
     let control = Control::new(request.started_at_micros);
     let mut ports = Ports::new(&request);
-    let receipt =
-        prepare_intelligence_run_v3(request, &mut ports, &control).expect("prepared run");
+    let receipt = prepare_intelligence_run_v3(request, &mut ports, &control).expect("prepared run");
 
-    assert_eq!(receipt.disposition, CompositionDispositionV3::ReadyForDispatch);
+    assert_eq!(
+        receipt.disposition,
+        CompositionDispositionV3::ReadyForDispatch
+    );
     assert_eq!(receipt.stages.len(), 9);
     assert_eq!(
         receipt
@@ -320,18 +322,28 @@ fn v3_orders_utility_and_evaluation_in_one_predecessor_chain() {
     );
     assert!(receipt.stages.iter().any(|stage| {
         stage.stage == CompositionStageV3::NeuralSignalCollected
-            && stage.outcome
-                == StageOutcomeV3::FallbackUsed(PortFailureClassV1::Unavailable)
+            && stage.outcome == StageOutcomeV3::FallbackUsed(PortFailureClassV1::Unavailable)
     }));
     assert!(receipt.stages.iter().any(|stage| {
         stage.stage == CompositionStageV3::PromptPortfolioBuilt
-            && stage.outcome
-                == StageOutcomeV3::FallbackUsed(PortFailureClassV1::Unavailable)
+            && stage.outcome == StageOutcomeV3::FallbackUsed(PortFailureClassV1::Unavailable)
     }));
-    assert!(!ports.calls.contains(&CompositionStageV3::NeuralSignalCollected));
-    assert!(!ports.calls.contains(&CompositionStageV3::PromptPortfolioBuilt));
+    assert!(
+        !ports
+            .calls
+            .contains(&CompositionStageV3::NeuralSignalCollected)
+    );
+    assert!(
+        !ports
+            .calls
+            .contains(&CompositionStageV3::PromptPortfolioBuilt)
+    );
     assert!(ports.calls.contains(&CompositionStageV3::UtilityEvaluated));
-    assert!(ports.calls.contains(&CompositionStageV3::EvaluationAdmitted));
+    assert!(
+        ports
+            .calls
+            .contains(&CompositionStageV3::EvaluationAdmitted)
+    );
     let envelope = receipt.envelope.expect("host envelope");
     envelope.validate().expect("valid envelope");
     assert_eq!(envelope.authority_epoch, 7);
@@ -347,14 +359,27 @@ fn present_optional_capabilities_invoke_native_owner_ports() {
     let request = request(true);
     let control = Control::new(request.started_at_micros);
     let mut ports = Ports::new(&request);
-    let receipt =
-        prepare_intelligence_run_v3(request, &mut ports, &control).expect("prepared run");
-    assert_eq!(receipt.disposition, CompositionDispositionV3::ReadyForDispatch);
-    assert!(ports.calls.contains(&CompositionStageV3::NeuralSignalCollected));
-    assert!(ports.calls.contains(&CompositionStageV3::PromptPortfolioBuilt));
-    assert!(receipt.stages.iter().all(|stage| {
-        !matches!(stage.outcome, StageOutcomeV3::FallbackUsed(_))
-    }));
+    let receipt = prepare_intelligence_run_v3(request, &mut ports, &control).expect("prepared run");
+    assert_eq!(
+        receipt.disposition,
+        CompositionDispositionV3::ReadyForDispatch
+    );
+    assert!(
+        ports
+            .calls
+            .contains(&CompositionStageV3::NeuralSignalCollected)
+    );
+    assert!(
+        ports
+            .calls
+            .contains(&CompositionStageV3::PromptPortfolioBuilt)
+    );
+    assert!(
+        receipt
+            .stages
+            .iter()
+            .all(|stage| { !matches!(stage.outcome, StageOutcomeV3::FallbackUsed(_)) })
+    );
 }
 
 #[test]
@@ -363,8 +388,7 @@ fn abstention_skips_dispatch_inputs_but_records_the_decision() {
     let control = Control::new(request.started_at_micros);
     let mut ports = Ports::new(&request);
     ports.intuition = PortDecisionV1::Abstain;
-    let receipt =
-        prepare_intelligence_run_v3(request, &mut ports, &control).expect("abstained");
+    let receipt = prepare_intelligence_run_v3(request, &mut ports, &control).expect("abstained");
     assert_eq!(receipt.disposition, CompositionDispositionV3::Abstained);
     assert_eq!(
         receipt.stages.last().map(|stage| stage.stage),
@@ -376,7 +400,11 @@ fn abstention_skips_dispatch_inputs_but_records_the_decision() {
     );
     assert!(receipt.envelope.is_none());
     assert!(!ports.calls.contains(&CompositionStageV3::ContextCompiled));
-    assert!(!ports.calls.contains(&CompositionStageV3::EvaluationAdmitted));
+    assert!(
+        !ports
+            .calls
+            .contains(&CompositionStageV3::EvaluationAdmitted)
+    );
     assert!(ports.calls.contains(&CompositionStageV3::DecisionRecorded));
 }
 
@@ -389,8 +417,8 @@ fn utility_failure_is_terminal_and_never_reaches_intuition() {
         CompositionStageV3::UtilityEvaluated,
         PortFailureClassV1::Unavailable,
     ));
-    let receipt = prepare_intelligence_run_v3(request, &mut ports, &control)
-        .expect("failure is receipted");
+    let receipt =
+        prepare_intelligence_run_v3(request, &mut ports, &control).expect("failure is receipted");
     assert_eq!(
         receipt.disposition,
         CompositionDispositionV3::Failed(PortFailureClassV1::Unavailable)
