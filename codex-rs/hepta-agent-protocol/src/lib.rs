@@ -643,12 +643,8 @@ mod tests {
 
     #[test]
     fn cognitive_context_finalize_wire_round_trip_is_strict_and_bounded() {
-        let request = AgentdRequest::cognitive_context_finalize(
-            8,
-            11,
-            "a".repeat(64),
-            "b".repeat(64),
-        );
+        let request =
+            AgentdRequest::cognitive_context_finalize(8, 11, "a".repeat(64), "b".repeat(64));
         let request_bytes = serde_json::to_vec(&request).expect("serialize finalize request");
         assert!(request_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
@@ -661,7 +657,8 @@ mod tests {
         };
         let payload_bytes = serde_json::to_vec(&payload).expect("serialize finalize payload");
         assert_eq!(
-            serde_json::from_slice::<AgentdPayload>(&payload_bytes).expect("parse finalize payload"),
+            serde_json::from_slice::<AgentdPayload>(&payload_bytes)
+                .expect("parse finalize payload"),
             payload
         );
     }
