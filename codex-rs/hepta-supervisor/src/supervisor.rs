@@ -189,6 +189,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .as_ref()
                     .map(|runtime| runtime.identity.incarnation().to_string()),
                 runtime_fenced: slot.runtime.as_ref().is_some_and(|runtime| runtime.fenced),
+                runtime_lease_persisted: slot
+                    .runtime
+                    .as_ref()
+                    .is_none_or(|runtime| runtime.lease_persisted),
                 release_change: slot
                     .release_change
                     .as_ref()
