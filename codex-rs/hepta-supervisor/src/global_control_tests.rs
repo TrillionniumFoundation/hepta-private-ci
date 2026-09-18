@@ -1,4 +1,5 @@
 use std::collections::BTreeSet;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -86,15 +87,22 @@ fn evidence_owner(
 }
 
 fn sign_owner(summary: &OwnerSummaryV1) -> (SignedMessage, IssuerRegistration) {
+    sign_owner_sequence(summary, 9)
+}
+
+fn sign_owner_sequence(
+    summary: &OwnerSummaryV1,
+    sequence: u64,
+) -> (SignedMessage, IssuerRegistration) {
     let signing = SigningKey::from_bytes(&[21; 32]);
     let claims = SignedMessageClaims {
         issuer_id: id("issuer:evidence"),
         key_epoch: Generation::new(4).expect("key epoch"),
-        message_id: id("message:evidence:9"),
+        message_id: id(&format!("message:evidence:{sequence}")),
         subject_id: summary.owner_id.clone(),
         scope_digest: owner_summary_scope_digest_v1(summary),
         payload_digest: owner_summary_payload_digest_v1(summary),
-        sequence: 9,
+        sequence,
         expires_at_ms: u64::MAX,
     };
     let signature = signing.sign(&claims.signing_bytes()).to_bytes();
@@ -436,4 +444,131 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
         ),
         Err(GlobalControlHostError::Authority(_))
     ));
+}
+
+
+#[tokio::test]
+async fn named_host_profile_emits_exact_runner_measurements() {
+    const PLAN_ITERATIONS: u64 = 24;
+    const REOPEN_ITERATIONS: usize = 6;
+
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let evidence_path = temporary.path().join("evidence");
+    let planner_path = temporary.path().join("planner");
+    let authority_path = temporary.path().join("authority");
+    let authority_signing = SigningKey::from_bytes(&[61; 32]);
+    let objective = digest("global-objective");
+    let configuration = digest("global-configuration");
+    let generation = Generation::new(11).expect("generation");
+    let summary = evidence_owner(objective, generation, configuration);
+    let (_, issuer) = sign_owner_sequence(&summary, 1);
+
+    let mut host = GlobalControlHostV1::open(
+        evidence_store(&evidence_path).await,
+        &planner_path,
+        &[],
+        authority(&authority_path, &authority_signing),
+        vec![GlobalOwnerTrustV1 {
+            owner_id: id("kernel.evidence"),
+            issuer,
+        }],
+    )
+    .expect("profile host");
+
+    let mut plan_micros = Vec::with_capacity(PLAN_ITERATIONS as usize);
+    let mut last_message = None;
+    for sequence in 1..=PLAN_ITERATIONS {
+        let (message, _) = sign_owner_sequence(&summary, sequence);
+        let request = plan_request(summary.clone(), message.clone());
+        let started = Instant::now();
+        host.plan(&fleet_ledger(), request)
+            .await
+            .expect("profile plan");
+        plan_micros.push(elapsed_micros(started));
+        last_message = Some(message);
+    }
+    drop(host);
+
+    let mut reopen_micros = Vec::with_capacity(REOPEN_ITERATIONS);
+    for _ in 0..REOPEN_ITERATIONS {
+        let (_, issuer) = sign_owner_sequence(&summary, PLAN_ITERATIONS + 1);
+        let started = Instant::now();
+        let reopened = GlobalControlHostV1::open(
+            evidence_store(&evidence_path).await,
+            &planner_path,
+            &[],
+            authority(&authority_path, &authority_signing),
+            vec![GlobalOwnerTrustV1 {
+                owner_id: id("kernel.evidence"),
+                issuer,
+            }],
+        )
+        .expect("profile reopen");
+        reopen_micros.push(elapsed_micros(started));
+        drop(reopened);
+    }
+
+    let (_, issuer) = sign_owner_sequence(&summary, PLAN_ITERATIONS + 1);
+    let mut reopened = GlobalControlHostV1::open(
+        evidence_store(&evidence_path).await,
+        &planner_path,
+        &[],
+        authority(&authority_path, &authority_signing),
+        vec![GlobalOwnerTrustV1 {
+            owner_id: id("kernel.evidence"),
+            issuer,
+        }],
+    )
+    .expect("fault probe host");
+    let replay_rejected = matches!(
+        reopened
+            .plan(
+                &fleet_ledger(),
+                plan_request(summary, last_message.expect("profile emitted message")),
+            )
+            .await,
+        Err(GlobalControlHostError::Evidence(_))
+    );
+    assert!(replay_rejected);
+
+    plan_micros.sort_unstable();
+    reopen_micros.sort_unstable();
+    println!(
+        concat!(
+            "HEPTA_SUPERVISOR_GLOBAL_CONTROL_PROFILE ",
+            "{{\"schema\":\"hepta.supervisor-global-control-profile.v1\",",
+            "\"sha\":\"{}\",",
+            "\"runner_os\":\"{}\",",
+            "\"runner_arch\":\"{}\",",
+            "\"plan\":{{\"iterations\":{},\"p50_us\":{},\"p95_us\":{},\"p99_us\":{},\"max_us\":{}}},",
+            "\"reopen\":{{\"iterations\":{},\"p50_us\":{},\"p95_us\":{},\"max_us\":{}}},",
+            "\"faults\":{{\"durable_replay_rejected\":{}}}}}"
+        ),
+        std::env::var("GITHUB_SHA").unwrap_or_else(|_| "local".to_string()),
+        std::env::var("RUNNER_OS").unwrap_or_else(|_| std::env::consts::OS.to_string()),
+        std::env::var("RUNNER_ARCH").unwrap_or_else(|_| std::env::consts::ARCH.to_string()),
+        PLAN_ITERATIONS,
+        percentile(&plan_micros, 50),
+        percentile(&plan_micros, 95),
+        percentile(&plan_micros, 99),
+        plan_micros.last().copied().unwrap_or(0),
+        REOPEN_ITERATIONS,
+        percentile(&reopen_micros, 50),
+        percentile(&reopen_micros, 95),
+        reopen_micros.last().copied().unwrap_or(0),
+        replay_rejected,
+    );
+}
+
+fn elapsed_micros(started: Instant) -> u64 {
+    u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX)
+}
+
+fn percentile(values: &[u64], percentile: usize) -> u64 {
+    if values.is_empty() {
+        return 0;
+    }
+    let numerator = percentile.saturating_mul(values.len().saturating_sub(1));
+    let index = numerator.div_ceil(100);
+    values[index.min(values.len() - 1)]
 }
