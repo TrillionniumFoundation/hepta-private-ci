@@ -35,6 +35,7 @@ pub use observation::RetrievalObservation;
 pub const MAX_RETRIEVAL_QUERY_BYTES: usize = 2 * 1024;
 pub const MAX_RETRIEVAL_CHANNEL_CANDIDATES: usize = 32;
 pub const MAX_RETRIEVAL_RESULTS: usize = 4;
+pub const MAX_RETRIEVAL_RANKING_CANDIDATES: usize = 16;
 
 const RRF_K: u64 = 60;
 const RRF_SCALE: u64 = 1_000_000;
@@ -299,6 +300,36 @@ impl CognitiveStore {
             .await?;
         transaction.commit().await.map_err(unavailable)?;
         Ok(batch)
+    }
+
+    /// Produces the bounded owner-native candidate window used by the
+    /// memory.retrieval product composition before the final response top-k.
+    /// This does not widen channel scans or grant authority; it only postpones
+    /// the legacy top-four truncation to the downstream bounded ranker.
+    pub async fn retrieve_memory_candidates_for_ranking(
+        &self,
+        access: &CognitiveAccess,
+        request: &RetrievalRequest,
+    ) -> Result<RetrievalBatch, CognitiveStoreError> {
+        let fts_query = self.validate_retrieval_request(access, request)?;
+        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let generated = self
+            .generate_retrieval_tx(&mut transaction, access, request, &fts_query)
+            .await?;
+        let candidates = self
+            .resolve_retrieval_tx(
+                &mut transaction,
+                access,
+                request,
+                generated.ranked,
+                MAX_RETRIEVAL_RANKING_CANDIDATES,
+            )
+            .await?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(RetrievalBatch {
+            query_sha256: Sha256Digest::for_bytes(request.query.as_bytes()),
+            candidates,
+        })
     }
 
     async fn retrieve_memory_candidates_tx(
