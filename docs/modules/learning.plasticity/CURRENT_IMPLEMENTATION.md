@@ -22,6 +22,7 @@ source paths and test names are not pass receipts by themselves.
 | `agentd_owner_evidence_binding` | `source_implemented_not_deployment_bound` | `PlasticityOwnerEvidencePolicyV1` | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
 | `agentd_anchor_fence_store` | `source_implemented_not_deployment_bound` | `AgentdPlasticityAnchorFenceStoreV1` | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
 | `topology_v2_proposal` | `source_implemented_proposal_only` | `propose_topology_v2` | `codex-rs/hepta-plasticity/src/topology_v2.rs` |
+| `topology_protected_surface_policy` | `source_implemented` | `TopologyMutationPolicyV1` | `codex-rs/hepta-plasticity/src/topology_governance_v1.rs` |
 | `topology_writer_handoff` | `source_implemented_validation_only` | `TopologyWriterHandoffV1` | `codex-rs/hepta-plasticity/src/topology_governance_v1.rs` |
 | `topology_durable_registry` | `source_implemented_proposal_only` | `DurableTopologyProposalRegistryV2` | `codex-rs/hepta-plasticity/src/durable_topology_registry_v2.rs` |
 | `topology_authenticated_admission` | `source_implemented_not_runtime_enrolled` | `propose_authenticated_topology_plasticity_v1` | `codex-rs/hepta-intelligence/src/plasticity_topology_product.rs` |
