@@ -34,8 +34,7 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
     let _ = codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1::consume_proven;
     let _ = codex_hepta_intelligence_eval::decide_with_signed_durable_evidence_v3;
-    let _ =
-        codex_hepta_intelligence_eval::decide_with_signed_durable_longitudinal_evidence_v4;
+    let _ = codex_hepta_intelligence_eval::decide_with_signed_durable_longitudinal_evidence_v4;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::consume;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::from_snapshot;
 
