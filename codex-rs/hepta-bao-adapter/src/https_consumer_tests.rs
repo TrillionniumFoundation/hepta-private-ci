@@ -4,7 +4,15 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_authbus::PolicyRevision;
+use codex_hepta_authbus::PolicyRule;
+use codex_hepta_authbus::QuotaConfig;
 use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_evidence::AuthBusControlError;
+use codex_hepta_evidence::HeptaEvidenceStore;
+use codex_hepta_types::StableId;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_hepta_contracts::FinalUseRevocations;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
@@ -457,4 +465,93 @@ async fn root_namespace_omits_namespace_header() {
         .unwrap();
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
     assert!(!observed.contains("x-vault-namespace:"));
+}
+
+#[tokio::test]
+async fn authbus_wrapper_cancels_reservation_when_request_fails_before_effect() {
+    let certified = rcgen::generate_simple_self_signed(vec!["localhost".to_owned()]).unwrap();
+    let client = BaoClient::new(
+        "https://localhost:443/",
+        certified.cert.pem().as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let valid_request = read_request();
+    let (authority, grant, _authority_dir) = grant(&client, &valid_request).unwrap();
+
+    let evidence_dir = tempfile::tempdir().unwrap();
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
+    );
+    let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let policy_id = StableId::new("policy:bao").unwrap();
+    let principal = StableId::new("principal:bao").unwrap();
+    let action = StableId::new("action:bao-read").unwrap();
+    let quota = StableId::new("quota:bao-read").unwrap();
+    let reservation_id = StableId::new("reservation:bao-read").unwrap();
+    let operation_id = StableId::new("operation:bao-read").unwrap();
+    let scope = Digest32::of_bytes(b"bao-read-scope");
+    evidence
+        .install_authbus_policy(
+            &PolicyRevision {
+                policy_id: policy_id.clone(),
+                revision: 1,
+                rules: vec![PolicyRule {
+                    principal_id: principal.clone(),
+                    action_id: action.clone(),
+                    scope_digest: scope,
+                    allow: true,
+                }],
+            },
+            false,
+        )
+        .await
+        .unwrap();
+    evidence
+        .configure_authbus_quota(&QuotaConfig {
+            quota_key: quota.clone(),
+            revision: 1,
+            endowment: 1,
+        })
+        .await
+        .unwrap();
+    evidence
+        .authorize_and_reserve_authbus(
+            &policy_id,
+            1,
+            &principal,
+            &action,
+            scope,
+            &quota,
+            1,
+            &reservation_id,
+            &operation_id,
+            1,
+            u64::MAX,
+        )
+        .await
+        .unwrap();
+
+    let mut invalid_request = valid_request;
+    invalid_request.field.clear();
+    assert_eq!(
+        client
+            .consume_kv_v2_with_authbus(
+                &evidence,
+                &reservation_id,
+                &authority,
+                &grant,
+                &invalid_request,
+                |_| panic!("pre-effect invalid request reached consumer"),
+            )
+            .await,
+        Err(BaoClientError::InvalidRequest)
+    );
+    assert!(matches!(
+        evidence
+            .validate_authbus_reservation_for_effect(&reservation_id, 1)
+            .await,
+        Err(AuthBusControlError::InvalidTransition)
+    ));
 }
