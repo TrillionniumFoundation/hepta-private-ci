@@ -85,3 +85,42 @@ fn buffer_limit_rejects_before_copying_unbounded_chunk() {
     ));
     assert_eq!(decoder.buffered_len(), 0);
 }
+
+#[test]
+fn blocking_reader_validates_header_before_reading_body() -> Result<(), Box<dyn Error>> {
+    let mut oversized_header = WireEnvelopeV2::new(
+        stable("s")?,
+        stable("p")?,
+        Generation::new(1)?,
+        vec![1],
+    )?
+    .encode();
+    oversized_header[50..54]
+        .copy_from_slice(&((MAX_WIRE_PAYLOAD_BYTES as u32) + 1).to_be_bytes());
+    oversized_header.truncate(WIRE_HEADER_BYTES);
+
+    let mut cursor = std::io::Cursor::new(oversized_header);
+    assert!(matches!(
+        read_frame(&mut cursor),
+        Err(ReadFrameError::Protocol(StreamDecodeError::PayloadLength))
+    ));
+    assert_eq!(cursor.position(), WIRE_HEADER_BYTES as u64);
+    Ok(())
+}
+
+#[test]
+fn blocking_reader_allocates_and_reads_only_after_admission() -> Result<(), Box<dyn Error>> {
+    let frame = WireEnvelopeV2::new(
+        stable("hepta.stream.v2")?,
+        stable("producer")?,
+        Generation::new(3)?,
+        b"body".to_vec(),
+    )?
+    .encode();
+    let mut cursor = std::io::Cursor::new(frame.clone());
+    let decoded = read_frame(&mut cursor)?;
+    assert_eq!(decoded.version(), WireVersion::V2);
+    assert_eq!(decoded.payload(), b"body");
+    assert_eq!(cursor.position(), frame.len() as u64);
+    Ok(())
+}
