@@ -425,25 +425,35 @@
       "symbols": [
         "DistributedWriteGrant",
         "verify_distributed_write_grant",
+        "admit_distributed_write_grant",
+        "distributed_write_frontier",
         "AuditAnchorReceipt",
         "export_audit_anchor",
+        "store_snapshot_digest",
         "verify_audit_anchor_receipt",
+        "verify_store_audit_anchor",
         "KeyCustodyReceipt",
-        "verify_key_custody_receipt"
+        "CustodiedSignatureProvider",
+        "verify_key_custody_receipt",
+        "verify_custodied_signature_provider"
       ],
       "state": "source_implemented_external_provider_required",
       "failureModel": [
         "distributed_fence_stale",
+        "distributed_fence_conflict",
         "distributed_write_grant_signature",
         "audit_anchor_signature",
         "audit_anchor_stale_sequence",
+        "audit_anchor_store_mismatch",
         "key_custody_boundary",
+        "key_custody_identity_mismatch",
         "key_custody_signature"
       ],
       "resourceBounds": {
         "ambientAuthority": 0
       },
-      "rollback": "deny multi-host writes or deployment until fresh external receipts are available"
+      "rollback": "deny multi-host writes or deployment until a fresh monotonic fence, store-bound audit anchor and subject-bound custody attestation are available",
+      "physicalState": "SQLite distributed_write_frontiers plus externally retained signed audit/key-custody receipts"
     },
     {
       "id": "repository-v2-product-caller",
