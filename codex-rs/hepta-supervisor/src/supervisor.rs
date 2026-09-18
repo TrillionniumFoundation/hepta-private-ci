@@ -46,6 +46,9 @@ pub struct Supervisor<D: ProcessDriver> {
     pub(crate) registry: FleetRegistry,
     pub(crate) driver: D,
     pub(crate) config: SupervisorConfig,
+    /// Host-pinned revocation frontier for production release selection.
+    /// None keeps ordinary lifecycle-only embeddings unchanged.
+    pub(crate) production_revocation_frontier: Option<u64>,
     slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
 }
 
@@ -72,6 +75,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             registry,
             driver,
             config,
+            production_revocation_frontier: None,
             slots,
         };
         let mut report = TickReport::default();
@@ -90,6 +94,19 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
         Ok((supervisor, report))
+    }
+
+    pub fn set_production_revocation_frontier(
+        &mut self,
+        revocation_frontier: u64,
+    ) -> Result<(), SupervisorError> {
+        if revocation_frontier == 0 {
+            return Err(SupervisorError::Invalid(
+                "production revocation frontier must be non-zero".to_string(),
+            ));
+        }
+        self.production_revocation_frontier = Some(revocation_frontier);
+        Ok(())
     }
 
     pub fn snapshot(&self, agent_id: &AgentId) -> Option<AgentSupervisorSnapshot> {
