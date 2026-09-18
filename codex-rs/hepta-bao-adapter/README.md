@@ -4,7 +4,7 @@ The legacy `resolve` and `assess_secret_boundary_v1` remain metadata-only;
 `PROVIDER_DISPATCH_ENABLED` remains false for that API. A caller-provided
 `Granted` observation cannot enable this separate client.
 
-`BaoClient::consume_kv_v2` is the executable host integration point. It reads
+`BaoClient::consume_kv_v2` is the exact-version static-secret integration point. `BaoClient::request_secret_lease`, `renew_secret_lease`, `revoke_secret_lease` and `lookup_secret_lease` are the bounded dynamic-lease lifecycle entrypoints. The KV path reads
 `GET /v1/{mount}/data/{path}?version=N`, supplies `X-Vault-Token` and
 `X-Vault-Namespace`, requires a configured CA and hostname-valid HTTPS, disables
 redirects and ambient proxies, and caps the complete response at 1 MiB.
@@ -30,12 +30,52 @@ version, expected secret digest and consumer identity. The adapter owns no
 signing key. The host pins the public key, epoch and revocation head; request
 JSON must never supply or replace these trust inputs.
 
-After the network response and digest/version validation, the kernel checks
+For KV and dynamic issuance, after the network response and validation the kernel checks
 current time, epoch and revocation again. The synchronous consumer executes
 under that revocation lock. It must be bounded, must not reenter the authority,
 and must not copy secret bytes into model context, logs or receipts. Response
 buffers and decoded secret strings are zeroized on drop; TLS/HTTP libraries
 may retain internal copies, so this is not a locked-memory guarantee.
+
+## Dynamic secret leases
+
+Dynamic issuance calls `GET /v1/{mount}/creds/{role}` through the same pinned,
+direct HTTPS client. The independent final-use grant binds origin, CA identity,
+namespace, mount, role, consumer and a caller-owned operation ID. The provider
+secret cannot be known before dispatch, so the signed payload digest binds the
+complete issuance operation; the returned secret digest is computed only after
+the provider response. Secret fields are held in zeroizing values, serialized
+into a zeroizing buffer and passed only to the trusted callback.
+
+The provider `lease_id` is retained in an opaque `SecretLeaseHandle`. Its
+`Debug` representation is redacted and ordinary metadata exports only
+`lease_id_sha256`. A successful issuance returns the handle plus expiry,
+renewability, operation digest, secret digest and byte count. If the provider
+has issued a lease but the final-use recheck is revoked before consumer entry,
+`DeliveryBlocked` returns the known opaque handle to the trusted host so it
+can revoke or reconcile the credential instead of orphaning it.
+
+Renew and revoke use `PUT /v1/sys/leases/renew` and
+`PUT /v1/sys/leases/revoke`. They consume their final-use token immediately
+before the external mutation. `lookup_secret_lease` uses
+`PUT /v1/sys/leases/lookup` and never replays the mutation. Network failure,
+server error, or response-body timeout after a mutation may have taken effect
+returns `Indeterminate`; callers must not blind-retry.
+
+A known handle can therefore be queried after an ambiguous renew/revoke. This
+does not make generic dynamic issuance exactly-once: if issuance reaches the
+provider and its response is lost, no lease ID exists locally and the generic
+OpenBao lease API provides no caller operation-ID status lookup. Automatic
+reconciliation of that case requires a HeptaBao/provider contract that accepts
+a stable idempotency key and supports durable status lookup. Until then the
+operation remains `Indeterminate` and owner/operator reconciliation is
+required before issuing another unrestricted credential.
+
+The adapter currently keeps known lease handles in the trusted host process;
+it does not yet own a durable lease registry. Product composition must persist
+the required lease identity/state before claiming crash/reopen lifecycle
+recovery. This source-level API therefore closes the typed lifecycle seam, not
+the remaining durable-registry or external-provider qualification gates.
 
 ## Host integration
 
@@ -103,14 +143,11 @@ Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
 malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+Dynamic lease mutation APIs now exist, but they deliberately do not reuse read retry rules. Unknown mutation outcomes remain indeterminate, known leases use a non-replaying lookup, and lost issuance responses cannot be automatically retried without provider operation-key idempotency/status lookup. Durable lease-registry recovery is still a separate composition gate.
 
 ## Verification
 
-Targeted tests cover a real loopback TLS exchange, exact request headers and
-version, forged signature rejection, nonce replay rejection, provider denial,
-revocation during a network wait, incorrect trust root and response bounds.
+Targeted tests cover a real loopback TLS exchange, exact KV request headers and version, dynamic lease issuance with secret-only callback delivery, dynamic response-body timeout becoming indeterminate, forged signature rejection, nonce replay rejection, provider denial, revocation during a network wait, incorrect trust root and response bounds.
 Kernel tests cover signed-field changes, wrong issuer, expiry and epoch fences.
 Run `just test -p codex-hepta-bao-adapter -p codex-hepta-contracts` in the normal
 workspace and the repository formatting/lint gates before merging.
