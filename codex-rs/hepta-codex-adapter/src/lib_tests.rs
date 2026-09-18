@@ -25,18 +25,19 @@ fn intent() -> CodexOperationIntent {
     }
 }
 
-fn observation(outcome: TerminalOutcome) -> AppServerObservation {
-    AppServerObservation {
+fn observation(outcome: TerminalOutcome) -> TerminalObservation {
+    TerminalObservation {
         thread_id: id("thread:1"),
         turn_id: id("turn:1"),
         outcome,
+        protocol_version: 2,
         response_digest: digest(b"response"),
     }
 }
 
 #[test]
 fn completed_terminal_observation_maps_to_success_without_authority() {
-    let Ok(receipt) = adapt(
+    let Ok(receipt) = adapt_observation(
         1_000,
         intent(),
         Some(observation(TerminalOutcome::Completed)),
@@ -51,7 +52,7 @@ fn completed_terminal_observation_maps_to_success_without_authority() {
 
 #[test]
 fn failed_terminal_observation_is_not_success() {
-    let receipt = adapt(
+    let receipt = adapt_observation(
         1_000,
         intent(),
         Some(observation(TerminalOutcome::Failed)),
@@ -62,7 +63,7 @@ fn failed_terminal_observation_is_not_success() {
 
 #[test]
 fn interrupted_terminal_observation_is_not_success() {
-    let receipt = adapt(
+    let receipt = adapt_observation(
         1_000,
         intent(),
         Some(observation(TerminalOutcome::Interrupted)),
@@ -73,7 +74,7 @@ fn interrupted_terminal_observation_is_not_success() {
 
 #[test]
 fn missing_observation_is_indeterminate() {
-    let Ok(receipt) = adapt(1_000, intent(), None) else {
+    let Ok(receipt) = adapt_observation(1_000, intent(), None) else {
         panic!("unknown outcome must be represented");
     };
     assert_eq!(receipt.status, AdapterStatus::Indeterminate);
@@ -85,7 +86,7 @@ fn payload_drift_is_rejected() {
     let mut value = intent();
     value.lease_payload_digest = digest(b"other");
     assert_eq!(
-        adapt(1_000, value, None),
+        adapt_observation(1_000, value, None),
         Err(Error::PayloadBindingMismatch)
     );
 }
@@ -95,7 +96,7 @@ fn mismatched_turn_observation_is_rejected() {
     let mut value = observation(TerminalOutcome::Completed);
     value.turn_id = id("turn:other");
     assert_eq!(
-        adapt(1_000, intent(), Some(value)),
+        adapt_observation(1_000, intent(), Some(value)),
         Err(Error::ObservationCorrelationMismatch)
     );
 }
@@ -105,7 +106,7 @@ fn zero_session_generation_is_rejected() {
     let mut value = intent();
     value.session_generation = 0;
     assert_eq!(
-        adapt(1_000, value, None),
+        adapt_observation(1_000, value, None),
         Err(Error::InvalidSessionGeneration)
     );
 }
@@ -117,5 +118,15 @@ fn zero_protocol_version_is_rejected() {
     assert_eq!(
         adapt(1_000, value, None),
         Err(Error::InvalidProtocolVersion)
+    );
+}
+
+#[test]
+fn mismatched_protocol_observation_is_rejected() {
+    let mut value = observation(TerminalOutcome::Completed);
+    value.protocol_version = 3;
+    assert_eq!(
+        adapt_observation(1_000, intent(), Some(value)),
+        Err(Error::ObservationProtocolMismatch)
     );
 }
