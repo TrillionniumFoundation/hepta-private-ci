@@ -2,6 +2,7 @@
 
 mod agent_id;
 pub mod authority_lease;
+pub mod authority_trust;
 mod authbus;
 #[cfg(feature = "authbus-local-qualification")]
 pub mod authbus_b3_adapter;
@@ -24,6 +25,11 @@ mod provider_effect;
 mod qualification_receipt;
 mod receipt;
 mod stable_id;
+
+pub use authority_trust::AuthorityClock;
+pub use authority_trust::AuthorityFrontierStore;
+pub use authority_trust::AuthorityTrustError;
+pub use authority_trust::SystemAuthorityClock;
 
 pub use final_use::FinalUseAuthority;
 pub use final_use::FinalUseBinding;
