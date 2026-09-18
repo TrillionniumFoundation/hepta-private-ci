@@ -67,7 +67,7 @@ pub struct VerifiedResourceGrant {
 }
 
 impl VerifiedResourceGrant {
-    pub fn trusted_in_process(now_ms: u64, grant: ResourceGrant) -> Result<Self, Error> {
+    pub(crate) fn trusted_in_process(now_ms: u64, grant: ResourceGrant) -> Result<Self, Error> {
         validate_grant(now_ms, &grant)?;
         Ok(Self {
             grant,
@@ -82,13 +82,17 @@ impl VerifiedResourceGrant {
     ) -> Result<Self, Error> {
         validate_grant(now_ms, &grant)?;
         let verification = verifier.verify(now_ms, &grant)?;
-        if let GrantVerification::Authenticated {
-            authority_id,
-            evidence_digest,
-        } = &verification
-        {
-            validate_identity(authority_id, "grant authority")?;
-            validate_digest(evidence_digest, "grant evidence")?;
+        match &verification {
+            GrantVerification::Authenticated {
+                authority_id,
+                evidence_digest,
+            } => {
+                validate_identity(authority_id, "grant authority")?;
+                validate_digest(evidence_digest, "grant evidence")?;
+            }
+            GrantVerification::TrustedInProcess => {
+                return Err(Error::InvalidGrant);
+            }
         }
         Ok(Self {
             grant,
