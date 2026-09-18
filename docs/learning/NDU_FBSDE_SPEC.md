@@ -12,7 +12,7 @@
 
 This specification defines a deterministic implementation baseline and a separately qualified stochastic candidate. It does not establish dynamic-preference efficacy, production activation, biological equivalence, or autonomous software evolution. The four-level hierarchy, event sourcing and deployment controls are Hepta engineering extensions. `docs/evidence/CLAIMS.json` and current independent evidence govern capability claims.
 
-Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include `evaluate_candidates`, `solve_preference_target`, `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. Reuse compatible primitives and add owner-scoped adapters; a symbol inventory proves neither a real consumer nor an implemented stochastic solver.
+Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include the policy-bound evaluator, bounded preference state, context-bound solver/protocol adapter, recursive utility and fixed-point arithmetic. The former `evaluate_candidates` and unbound `solve_preference_target` entries are compatibility surfaces; new integrations use `evaluate_candidates_with_policy` and `solve_preference_target_with_context`. The source also contains an owner-local stochastic evidence admission boundary around the numeric covariance solver. Reuse compatible primitives and add owner-scoped adapters; a symbol or admission inventory proves neither an authenticated real coefficient/evidence set nor a complete stochastic FBSDE solution.
 
 ## 2. Symbols, dimensions, units and normalization
 
@@ -92,7 +92,7 @@ Feasibility precedes scoring. Missing support/units is unavailable, not zero cos
 
 `NDU-GV-001`: P0=0; two unit steps; drifts 0.25,-0.5; instantaneous utilities 0.5,0.25; discount 0.8; terminal utility 1. Expected real values are P=[0,0.25,-0.25], U=[1.34,1.05,1]. Q32 nearest/ties-to-even goldens are P=[0,1073741824,-1073741824], U=[5755256177,4509715661,4294967296]. Canonical reference goldens are exact; the separate adaptive zero-noise comparison uses the declared tolerance.
 
-The deterministic fixed-point solve has at most 64 iterations and residual <=2^-20; exhaustion reports unavailable. Damping, clipping or a bounded iteration count alone does not prove convergence.
+The deterministic fixed-point solve has 1–64 preference dimensions, requires every state/target component in [-1,1], has at most 64 iterations and residual <=2^-20, and reports exhaustion as unavailable. The protocol-capable entry receives the canonical subject/objective/generation/event/coefficient context digest before iteration; every local receipt carries that digest and publication rejects rebinding. A state already within tolerance is an exact zero-iteration no-op and does not advance revision. Damping, clipping or a bounded iteration count alone does not prove convergence.
 
 ## 5. Trainable or estimated algorithm
 
@@ -108,13 +108,13 @@ Start with deterministic/scalar or tabular baselines. Add stochastic or neural c
 
 Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`. This correction adds no unregistered field to an existing wire version.
 
-`NduCoefficientManifestV1` binds artifact, subject/objective class, dimensions, fixed-point scales, bounds, normalization, runtime, predecessor, expiry and rollback. The integration package must register a versioned coefficient-profile reference for the covariance/conditioning convention before admitting a stochastic implementation that needs it. An incompatible existing consumer returns unavailable; it cannot silently assume identity covariance.
+`NduCoefficientManifestV1` binds artifact, subject/objective class, dimensions, fixed-point scales, bounds, normalization, runtime, predecessor, expiry and rollback. The owner-local `admit_stochastic_evidence_binding_v1` now requires digest-bound coefficient manifest, normalization/runtime tuple, conditioning specification, Q24 conversion evidence, conditional-identification evidence, well-posedness certificate, independent convergence certificate, rollback identity, objective class, expiry and exact covariance profile before `solve_backward_regression_with_admission` can run. This is source admission only: the integration package must still register the canonical external coefficient-profile reference and authenticate the evidence under its owner. An incompatible existing consumer returns unavailable; it cannot silently assume identity covariance.
 
 `NduWellPosednessCertificateV1` binds operating domain, coefficient boundedness and Lipschitz assumptions, square integrability, conditional means, generator monotonicity/dissipativity, Z growth, terminal conditions, continuity scope, solver stability and independent decision. An empirical local spectral-radius estimate is a diagnostic, not a universal well-posedness or global stability proof.
 
-`NduUpdateReceiptV1` binds subject, old/new revision, event, objective, coefficient, duration, before/after/utility digests, uncertainty, projection count, boundary and conservation residuals and disposition. The full idempotency identity is subject + objective + predecessor + event + coefficient within principal scope. A shorter local key is valid only inside an object whose immutable scope already binds the omitted fields; cross-run collision tests are mandatory.
+`NduUpdateReceiptV1` binds subject, old/new revision, event, objective, coefficient, duration, before/after/utility digests, uncertainty, projection count, boundary and conservation residuals and disposition. The full idempotency identity is subject + objective + predecessor + event + coefficient within principal scope. The native local solver uses the canonical digest of exactly that frozen context before stepping, preventing a local receipt from being rebound at publication. A shorter local key is valid only inside an object whose immutable scope already binds the omitted fields; cross-run collision tests are mandatory.
 
-Preference/utility rows append by revision. A selected projection pointer changes atomically only after immutable data and required evidence exist. Corrections append revoked ancestry and rebuilt successors. Lineage is source -> approved feature generation -> dataset -> training code -> coefficient -> evaluation -> selected snapshot -> runtime observation. No raw secret, unrestricted prompt or consumable authority token is stored in this chain.
+Preference/utility rows append by revision. A selected projection pointer changes atomically only after immutable data and required evidence exist. Owner-local revocations are keyed by objective + subject + projection payload rather than payload alone. The reference journal exposes a record-count/hash-chain-head checkpoint that an external trusted store or signer can anchor; it does not self-sign or replace production durability. Corrections append revoked ancestry and rebuilt successors. Lineage is source -> approved feature generation -> dataset -> training code -> coefficient -> evaluation -> selected snapshot -> runtime observation. No raw secret, unrestricted prompt or consumable authority token is stored in this chain.
 
 ## 7. Numerical stability, complexity and resource bounds
 
@@ -126,7 +126,7 @@ Training bounds remain 512 event boundaries per episode and gradient checkpointi
 
 ## 8. Failure detection, fallback and rollback
 
-Reject unknown subject, stale objective, missing legal set, wrong units/dimensions, expired/revoked artifacts, convention mismatch, bad covariance, unsupported representation, conservation failure or simultaneous parent/child selection. Optional input masks increase uncertainty; they do not manufacture support.
+Reject unknown subject, stale objective, missing legal set, wrong units/dimensions, preference dimensions above 64, preference values outside [-1,1], missing axis-semantics binding, unbound/rebound solver evidence, expired/revoked artifacts, convention mismatch, bad covariance, missing stochastic evidence, unsupported representation, conservation failure or simultaneous direct parent/child selection. Optional input masks increase uncertainty; they do not manufacture support.
 
 Fallback is a compatible selected adaptive artifact, then compatible selected deterministic artifact, then valid deterministic objective-class snapshot, then immutable objective baseline, then abstain/slow path. Every predecessor is checked against current revocations. A revoked or incompatible predecessor is quarantined, not loaded because it once worked.
 
@@ -140,7 +140,7 @@ Negative tests cover instruction/credential injection into features, outcome-obs
 
 ## 10. Verification, golden vectors and property tests
 
-Keep `NDU-GV-001`, projection, monotonicity, terminal-revision mismatch, parent-child conservation, staged-versus-simultaneous coupling, crash/reopen, idempotency, correction, zero-noise parity and fixed-point edge tests.
+Keep `NDU-GV-001`, projection, monotonicity, terminal-revision mismatch, explicit hierarchy relation, staged-versus-simultaneous coupling, preference dimension/range boundaries, zero-revision no-op, solver-exhaustion unavailable semantics, canonical-context rebinding rejection, scoped revocation/checkpoint, crash/reopen, idempotency, correction, zero-noise parity and fixed-point edge tests.
 
 Add exact backward-regression cases: scalar Sigma=2dt with U_next=3m recovers Z=3 rather than 6; Sigma=[[2,1],[1,2]], B=[5,1] recovers [3,-1]; identity covariance reduces to B/dt; singular/indefinite covariance rejects; nonzero sample means require centering both terms; whitened-coordinate conversion preserves the predicted increment. A reference numeric pass proves the tested algebra, not conditional identification, a complete FBSDE solution or efficacy.
 
@@ -175,6 +175,6 @@ The four-level hierarchy, fixed-point event discretization, covariance estimatio
 
 ## 13. Implementation sequence and completion rule
 
-Implement shared protocols/numerics, deterministic goldens, owner projections, coherent consumers, conditional moments, stochastic shadow solver and certificate, backward-regression parity, frozen-parent hierarchy, immutable training, independent future/retention evaluation, next-snapshot loading and rollback. Freeze covariance/profile admission before stochastic consumer coding; unchanged deterministic APIs remain usable.
+Implement shared protocols/numerics, deterministic goldens, owner projections, coherent consumers, conditional moments, stochastic shadow solver and evidence admission, backward-regression parity, explicit frozen-parent hierarchy, immutable training, independent convergence/well-posedness plus future/retention evaluation, next-snapshot loading and rollback. The source-level covariance/evidence admission is now present, but canonical external coefficient-profile admission and authenticated independent evidence still precede any production stochastic consumer.
 
-Documentation completion means this file, its exact blob identity in `ALGORITHM_SPECS.json`, paper scopes and required CI agree. Source completion additionally requires native code, stores, callers and tests. Dynamic efficacy additionally requires supported real future outcomes and distinct independent decisions. This document does not advance `D0_SPECIFIED_ONLY`, authorize a production writer or set all capability gaps closed.
+Documentation completion means this file, its exact blob identity in `ALGORITHM_SPECS.json`, paper scopes and required CI agree. Source-level deterministic evaluation, context-bound preference solving, covariance numerics and stochastic evidence binding can be implemented without implying a production store or efficacy. Full source/composition completion additionally requires canonical external admissions, the selected durable writer, coherent callers and exact-candidate tests. Dynamic efficacy additionally requires authenticated real future outcomes and distinct independently issued decisions. This document does not authorize a production writer, activation or release, and source admission alone does not set the remaining capability/evidence gates closed.
