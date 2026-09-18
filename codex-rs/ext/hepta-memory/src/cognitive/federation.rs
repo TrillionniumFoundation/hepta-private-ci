@@ -511,8 +511,17 @@ fn combine_cognitive_materials(
     let local_memory = compact_local_memory(local_value.get("memories")?.as_array()?.first()?)?;
     let federated_memory =
         compact_federated_memory(federated_value.get("memories")?.as_array()?.first()?)?;
+    let federation_coverage = federated_value.get("coverage")?.as_array()?;
+    if federation_coverage.len() != 4
+        || federation_coverage
+            .iter()
+            .any(|value| value.as_u64().is_none())
+    {
+        return None;
+    }
     let content = serde_json::to_string(&json!({
         "s": "verified_cognitive_v1",
+        "f": federation_coverage,
         "m": [local_memory, federated_memory],
     }))
     .ok()?;
@@ -896,6 +905,11 @@ mod tests {
         );
         let payload =
             serde_json::from_str::<serde_json::Value>(&boundary.content).expect("combined payload");
+        assert_eq!(
+            payload["f"],
+            serde_json::json!([2, 1, 1, 0]),
+            "combined payload must preserve explicit federated coverage",
+        );
         let memories = payload["m"].as_array().expect("combined memories");
         assert_eq!(memories.len(), 2);
         assert_eq!(memories[0]["h"], "22".repeat(32));
@@ -975,6 +989,7 @@ mod tests {
         let content = serde_json::to_string(&serde_json::json!({
             "schema_version": 1,
             "source": "explicit_federated_verified_memory",
+            "coverage": [2, 1, 1, 0],
             "memories": [{
                 "source_agent_id": owner_agent_id,
                 "capability_id": capability_id,
