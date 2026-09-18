@@ -46,12 +46,18 @@
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "pending_current_candidate_workflows",
-          "evidence": []
+          "state": "workflow_enforced_per_candidate",
+          "evidence": [
+            ".github/workflows/hepta-objective-admission.yml",
+            ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+          ]
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "source_composed_not_activated",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/objective_runtime.rs::admit_publish_and_start_objective_run_v1",
+            "codex-rs/hepta-agentd/src/objective_runtime.rs::ObjectiveRunFileStore"
+          ]
         },
         "productionWriter": {
           "state": "not_applicable_stateless_compiler",
@@ -260,7 +266,7 @@
     }
   ],
   "repositoryControlledClosure": {
-    "state": "candidate_pending_exact_head_qualification",
+    "state": "candidate_requires_current_workflow_success",
     "requiredChecks": [
       "Lane D semantic conformance",
       "cargo fmt",
