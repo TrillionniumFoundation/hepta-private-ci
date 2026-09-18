@@ -19,6 +19,7 @@ use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 use codex_hepta_intuition::decide_calibrated_v3;
+use codex_hepta_intuition::scoring_commitment_for_request_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
@@ -114,9 +115,10 @@ fn main() {
 }
 
 fn run_gate(gate: Gate) {
-    let (template, profile) = fixture(gate.candidates);
+    let (template, profile, scoring) = fixture(gate.candidates);
     for _ in 0..100 {
-        let receipt = decide_calibrated_v3(template.clone(), &profile).expect("warmup decision");
+        let receipt =
+            decide_calibrated_v3(template.clone(), &profile, &scoring).expect("warmup decision");
         black_box(receipt.receipt_digest);
     }
 
@@ -128,7 +130,8 @@ fn run_gate(gate: Gate) {
         let count_before = ALLOCATION_COUNT.load(Ordering::Relaxed);
         let bytes_before = ALLOCATION_BYTES.load(Ordering::Relaxed);
         let started = Instant::now();
-        let receipt = decide_calibrated_v3(black_box(request), &profile).expect("qualified decision");
+        let receipt = decide_calibrated_v3(black_box(request), &profile, &scoring)
+            .expect("qualified decision");
         let elapsed = started.elapsed();
         let count_after = ALLOCATION_COUNT.load(Ordering::Relaxed);
         let bytes_after = ALLOCATION_BYTES.load(Ordering::Relaxed);
@@ -197,8 +200,15 @@ fn percentile(values: &[u64], percentile: usize) -> u64 {
     values[index.min(values.len() - 1)]
 }
 
-fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
+fn fixture(
+    candidate_count: usize,
+) -> (
+    CalibratedDecisionRequestV1,
+    CanonicalPolicyProfileV1,
+    codex_hepta_intuition::ScoringCommitmentV1,
+) {
     let policy_digest = digest("benchmark-policy");
+    let model_artifact_digest = digest("benchmark-model-artifact");
     let calibration_artifact_digest = digest("benchmark-calibration");
     let ood_artifact_digest = digest("benchmark-ood");
     let candidates = (0..candidate_count)
@@ -275,7 +285,7 @@ fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPol
         maximum_in_domain_score: probability_ppm(250_000),
         risk_rule: CanonicalRiskRuleV1::HighOnlySlowPath,
         scorer: LearnedScorerContractV1 {
-            model_digest: policy_digest,
+            model_artifact_digest,
             feature_schema_digest: digest("benchmark-features"),
             output_schema_digest: digest("benchmark-outputs"),
             score_semantics_digest: digest("benchmark-semantics"),
@@ -284,9 +294,21 @@ fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPol
         calibration_dataset_digest: digest("benchmark-calibration-data"),
         ood_dataset_digest: digest("benchmark-ood-data"),
         calibration_artifact_digest,
+        calibration_measured_ece_ppm: 0,
+        calibration_subgroup_audit_digest: digest("benchmark-subgroup"),
+        calibration_valid_from_sequence: 1,
+        calibration_expires_after_sequence: 1,
         ood_artifact_digest,
+        ood_measured_false_acceptance_ppm: 0,
+        ood_detector_digest: digest("benchmark-detector"),
+        ood_support_digest: digest("benchmark-ood-support"),
+        ood_valid_from_sequence: 1,
+        ood_expires_after_sequence: 1,
     };
-    (request, profile)
+    let scoring =
+        scoring_commitment_for_request_v1(&request, &profile, digest("benchmark-feature-snapshot"))
+            .unwrap();
+    (request, profile, scoring)
 }
 
 fn id(value: &str) -> StableId {
