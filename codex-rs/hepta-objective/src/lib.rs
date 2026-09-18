@@ -19,7 +19,9 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
-pub use compiler::compile;
+#[cfg(feature = "legacy-prevalidated-objective")]
+#[doc(hidden)]
+pub use compiler::compile as compile_prevalidated_legacy_objective;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
 pub use feasibility_model::AtomPrecedenceV1;
@@ -48,6 +50,7 @@ pub use model::SoftDirection;
 pub use model::SoftPreference;
 pub use model::SourceTrust;
 pub use model::SuccessPredicate;
+pub use objective_admission::AdmittedObjectiveV1;
 pub use objective_admission::ObjectiveAbstentionRuleProfileV1;
 pub use objective_admission::ObjectiveActionProfileV1;
 pub use objective_admission::ObjectiveAdmissionContextV1;
@@ -64,6 +67,8 @@ pub use objective_admission::ObjectiveRiskProfileV1;
 pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
 pub use objective_admission::admit_and_compile_objective_v1;
+pub use objective_admission::admit_objective_v1;
+pub use objective_admission::compile_admitted_objective_v1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
