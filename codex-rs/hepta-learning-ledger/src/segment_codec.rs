@@ -8,17 +8,21 @@ use std::io::SeekFrom;
 use std::io::Write;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::LogicalSequence;
 
 use crate::AppendDisposition;
 use crate::DurableLedgerError;
 use crate::LearningLedger;
 use crate::LedgerAnchor;
 use crate::LedgerRecovery;
+use crate::LedgerRecord;
 use crate::LedgerSegmentLimits;
 use crate::durable_codec::FRAME_OVERHEAD;
 use crate::durable_codec::MAX_EVENT;
 use crate::durable_codec::decode_event;
 use crate::durable_codec::encode_frame;
+use crate::ledger::digest_chain;
+use crate::ledger::digest_event;
 use crate::segments::current_anchor;
 
 pub(crate) const HEADER: usize = 136;
@@ -174,6 +178,127 @@ pub(crate) fn replay(
         cursor,
         sealed,
     })
+}
+
+pub(crate) fn read_record_at_sequence(
+    file: &mut File,
+    binding: Digest32,
+    limits: LedgerSegmentLimits,
+    index: usize,
+    prior: LedgerAnchor,
+    target_sequence: u64,
+) -> Result<Option<LedgerRecord>, DurableLedgerError> {
+    let length = file.metadata()?.len();
+    if length < (HEADER + FOOTER) as u64 || length > limits.bytes {
+        return Err(DurableLedgerError::Corrupt);
+    }
+    file.seek(SeekFrom::Start(0))?;
+    let mut stored_header = [0; HEADER];
+    file.read_exact(&mut stored_header)?;
+    if stored_header.as_slice() != header(binding, limits, index, prior) {
+        return Err(DurableLedgerError::BindingMismatch);
+    }
+
+    let mut cursor = HEADER as u64;
+    let mut current = prior;
+    let mut record_count = 0usize;
+    let mut found = None;
+    while cursor < length {
+        if length - cursor < 8 {
+            return Err(DurableLedgerError::IncompleteTail);
+        }
+        let mut prefix = [0; 8];
+        file.read_exact(&mut prefix)?;
+        let size = u32::from_be_bytes(
+            prefix[..4]
+                .try_into()
+                .map_err(|_| DurableLedgerError::Corrupt)?,
+        );
+        let complement = u32::from_be_bytes(
+            prefix[4..]
+                .try_into()
+                .map_err(|_| DurableLedgerError::Corrupt)?,
+        );
+        if size != !complement || size as usize > MAX_EVENT {
+            return Err(DurableLedgerError::Corrupt);
+        }
+        if size == 0 {
+            if length - cursor != FOOTER as u64 || current.sequence == prior.sequence {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            let mut bytes = [0; FOOTER];
+            bytes[..8].copy_from_slice(&prefix);
+            file.read_exact(&mut bytes[8..])?;
+            if bytes.as_slice() != footer(binding, index, current) {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            return Ok(found);
+        }
+
+        record_count = record_count
+            .checked_add(1)
+            .ok_or(DurableLedgerError::Capacity)?;
+        if record_count > limits.records {
+            return Err(DurableLedgerError::Capacity);
+        }
+        let total = size as usize + FRAME_OVERHEAD;
+        if length - cursor < total as u64 || cursor + total as u64 + FOOTER as u64 > limits.bytes {
+            return Err(DurableLedgerError::IncompleteTail);
+        }
+        let mut frame = vec![0; total];
+        frame[..8].copy_from_slice(&prefix);
+        file.read_exact(&mut frame[8..])?;
+        if Digest32::of_bytes(&frame[..total - 32])
+            .as_array()
+            .as_slice()
+            != &frame[total - 32..]
+        {
+            return Err(DurableLedgerError::Corrupt);
+        }
+
+        let sequence_value = u64::from_be_bytes(
+            frame[8..16]
+                .try_into()
+                .map_err(|_| DurableLedgerError::Corrupt)?,
+        );
+        let predecessor_chain_digest = Digest32::from_array(
+            frame[16..48]
+                .try_into()
+                .map_err(|_| DurableLedgerError::Corrupt)?,
+        );
+        let event = decode_event(&frame[48..48 + size as usize])?;
+        let event_digest = digest_event(&event);
+        let chain_start = 48 + size as usize;
+        let chain_digest = Digest32::from_array(
+            frame[chain_start..chain_start + 32]
+                .try_into()
+                .map_err(|_| DurableLedgerError::Corrupt)?,
+        );
+        let sequence =
+            LogicalSequence::new(sequence_value).map_err(|_| DurableLedgerError::Corrupt)?;
+        if sequence_value != current.sequence.saturating_add(1)
+            || predecessor_chain_digest != current.chain_digest
+            || chain_digest != digest_chain(current.chain_digest, sequence, event_digest)
+        {
+            return Err(DurableLedgerError::Corrupt);
+        }
+        let record = LedgerRecord {
+            sequence,
+            predecessor_chain_digest,
+            event_digest,
+            chain_digest,
+            event,
+        };
+        if sequence_value == target_sequence {
+            found = Some(record.clone());
+        }
+        current = LedgerAnchor {
+            sequence: sequence_value,
+            chain_digest,
+        };
+        cursor += total as u64;
+    }
+    Err(DurableLedgerError::IncompleteTail)
 }
 
 pub(crate) fn validate_anchor(
