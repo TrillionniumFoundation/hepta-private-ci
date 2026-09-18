@@ -172,3 +172,50 @@ fn lost_commit_acknowledgement_poison_fences_handle() {
     let (_, mut fence) = owner.into_parts();
     assert!(!fence.load().unwrap().pending_plan_digest.is_zero());
 }
+
+#[test]
+fn pending_reservation_reconciles_before_or_after_journal_sync() {
+    // Crash after reservation but before journal mutation: reconciliation owns
+    // the exact plan, performs the durable consume, then commits the new anchor.
+    let before = Directory::new();
+    let journal = before.create();
+    let frozen = plan("plan-before-sync");
+    let reserved = HoldoutFenceStateV1 {
+        epoch: 8,
+        committed_anchor: journal.anchor(),
+        pending_plan_digest: frozen.plan_digest,
+    };
+    let fence = MemoryFence {
+        state: reserved,
+        fail_commit: false,
+        swaps: 0,
+    };
+    let owner = FencedFinalHoldoutOwnerV1::reconcile_pending(journal, fence, &frozen).unwrap();
+    assert_eq!(owner.anchor().sequence, 1);
+    let (journal, mut fence) = owner.into_parts();
+    assert_eq!(fence.load().unwrap().committed_anchor, journal.anchor());
+    assert!(fence.load().unwrap().pending_plan_digest.is_zero());
+
+    // Crash/lost acknowledgement after journal sync: the replay proves the
+    // pending plan is exactly the durable record before the fence advances.
+    let after = Directory::new();
+    let mut journal = after.create();
+    let frozen = plan("plan-after-sync");
+    let old = journal.anchor();
+    journal.consume(old, &frozen).unwrap();
+    let reserved = HoldoutFenceStateV1 {
+        epoch: 20,
+        committed_anchor: old,
+        pending_plan_digest: frozen.plan_digest,
+    };
+    let fence = MemoryFence {
+        state: reserved,
+        fail_commit: false,
+        swaps: 0,
+    };
+    let mut owner = FencedFinalHoldoutOwnerV1::reconcile_pending(journal, fence, &frozen).unwrap();
+    assert_eq!(
+        owner.consume(&frozen).unwrap().disposition,
+        HoldoutUseDispositionV1::IdempotentReplay
+    );
+}
