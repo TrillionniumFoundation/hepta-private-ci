@@ -4,9 +4,13 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
+use sha2::Digest;
+use sha2::Sha256;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
+const MAX_INPUT_BYTES: usize = 1024 * 1024;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ModelManifest {
@@ -34,11 +38,81 @@ pub struct ResourceGrant {
     pub semantic_digest: String,
 }
 
+/// Raw grant fields are not an authenticated capability by themselves.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum GrantVerification {
+    /// Only valid when the caller and worker share the same trusted process
+    /// boundary and the caller is the authority owner.
+    TrustedInProcess,
+    /// Evidence emitted by an external grant authority/verifier. The worker
+    /// does not invent or upgrade this evidence.
+    Authenticated {
+        authority_id: String,
+        evidence_digest: String,
+    },
+}
+
+pub trait ResourceGrantVerifier {
+    fn verify(
+        &self,
+        now_ms: u64,
+        grant: &ResourceGrant,
+    ) -> Result<GrantVerification, Error>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct VerifiedResourceGrant {
+    grant: ResourceGrant,
+    verification: GrantVerification,
+}
+
+impl VerifiedResourceGrant {
+    pub fn trusted_in_process(now_ms: u64, grant: ResourceGrant) -> Result<Self, Error> {
+        validate_grant(now_ms, &grant)?;
+        Ok(Self {
+            grant,
+            verification: GrantVerification::TrustedInProcess,
+        })
+    }
+
+    pub fn verify_with<V: ResourceGrantVerifier>(
+        now_ms: u64,
+        grant: ResourceGrant,
+        verifier: &V,
+    ) -> Result<Self, Error> {
+        validate_grant(now_ms, &grant)?;
+        let verification = verifier.verify(now_ms, &grant)?;
+        if let GrantVerification::Authenticated {
+            authority_id,
+            evidence_digest,
+        } = &verification
+        {
+            validate_identity(authority_id, "grant authority")?;
+            validate_digest(evidence_digest, "grant evidence")?;
+        }
+        Ok(Self {
+            grant,
+            verification,
+        })
+    }
+
+    pub fn grant(&self) -> &ResourceGrant {
+        &self.grant
+    }
+
+    pub fn verification(&self) -> &GrantVerification {
+        &self.verification
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WorkerRequest {
     pub request_id: String,
     pub reservation_id: String,
     pub model_digest: String,
+    /// Exact UTF-8 model input presented to the local runtime.
+    pub input: String,
+    /// SHA-256 of `input`; this is also the lease-bound payload digest.
     pub payload_digest: String,
     pub maximum_tokens: u32,
     pub deadline_ms: u64,
@@ -59,7 +133,8 @@ pub struct DriverRunObservation {
     pub terminal_observed: bool,
     pub succeeded: bool,
     pub output_digest: Option<String>,
-    pub consumed_tokens: u32,
+    /// None means usage was not durably observed; it must never be coerced to zero.
+    pub consumed_tokens: Option<u32>,
     pub observed_memory_bytes: u64,
 }
 
@@ -89,7 +164,8 @@ pub struct InferenceExecutionObservation {
     pub payload_digest: String,
     pub status: ExecutionStatus,
     pub output_digest: Option<String>,
-    pub consumed_tokens: u32,
+    /// None means provider/runtime usage is still unknown.
+    pub consumed_tokens: Option<u32>,
     pub observed_memory_bytes: u64,
     pub terminal_observed: bool,
 }
@@ -153,6 +229,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     worker_id: String,
     generation: u64,
     grant: ResourceGrant,
+    grant_verification: GrantVerification,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
@@ -163,18 +240,23 @@ impl<D: ModelDriver> InferenceWorker<D> {
         now_ms: u64,
         worker_id: String,
         generation: u64,
-        grant: ResourceGrant,
+        grant: VerifiedResourceGrant,
         driver: D,
     ) -> Result<Self, Error> {
         validate_identity(&worker_id, "worker")?;
-        validate_grant(now_ms, &grant)?;
-        if generation == 0 || generation != grant.generation {
+        validate_grant(now_ms, grant.grant())?;
+        if generation == 0 || generation != grant.grant().generation {
             return Err(Error::InvalidGrant);
         }
+        let VerifiedResourceGrant {
+            grant,
+            verification: grant_verification,
+        } = grant;
         Ok(Self {
             worker_id,
             generation,
             grant,
+            grant_verification,
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
@@ -183,6 +265,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
 
     pub fn worker_id(&self) -> &str {
         &self.worker_id
+    }
+
+    pub fn grant_verification(&self) -> &GrantVerification {
+        &self.grant_verification
     }
 
     pub fn load_model(
@@ -262,7 +348,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 payload_digest: request.payload_digest,
                 status: ExecutionStatus::Cancelled,
                 output_digest: None,
-                consumed_tokens: 0,
+                consumed_tokens: Some(0),
                 observed_memory_bytes: loaded.handle.observed_memory_bytes,
                 terminal_observed: true,
             });
@@ -278,9 +364,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
-        if observed.consumed_tokens > request.maximum_tokens
-            || observed.consumed_tokens > request.reservation_maximum_tokens
-        {
+        if observed.consumed_tokens.is_some_and(|tokens| {
+            tokens > request.maximum_tokens || tokens > request.reservation_maximum_tokens
+        }) {
             return Err(Error::TokenLimit);
         }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
@@ -385,6 +471,12 @@ fn validate_request(now_ms: u64, value: &WorkerRequest) -> Result<(), Error> {
     validate_digest(&value.model_digest, "model")?;
     validate_digest(&value.payload_digest, "payload")?;
     validate_digest(&value.lease_payload_digest, "lease payload")?;
+    if value.input.is_empty() || value.input.len() > MAX_INPUT_BYTES {
+        return Err(Error::PayloadMismatch);
+    }
+    if sha256(value.input.as_bytes()) != value.payload_digest {
+        return Err(Error::PayloadMismatch);
+    }
     validate_digest(&value.reservation_model_digest, "reservation model")?;
     if value.maximum_tokens == 0
         || value.maximum_tokens > MAX_TOKENS
@@ -397,6 +489,10 @@ fn validate_request(now_ms: u64, value: &WorkerRequest) -> Result<(), Error> {
         return Err(Error::DeadlineExpired);
     }
     Ok(())
+}
+
+fn sha256(bytes: &[u8]) -> String {
+    format!("{:x}", Sha256::digest(bytes))
 }
 
 fn validate_identity(value: &str, field: &'static str) -> Result<(), Error> {
