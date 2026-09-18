@@ -13,7 +13,7 @@ use std::io::SeekFrom;
 use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
-use std::path::Path;
+use std::path::{Component, Path};
 use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
@@ -64,6 +64,41 @@ impl CreateOnlyArtifactFile {
             Err(error) => Err(error.into()),
         }
     }
+
+    /// Create below a host-selected root after rejecting absolute paths,
+    /// parent traversal and symlinked ancestor escapes. This is a cooperative
+    /// containment check; hostile rename races still require target-host
+    /// openat-style qualification outside this safe-Rust crate.
+    pub fn create_in(
+        root: impl AsRef<Path>,
+        relative: impl AsRef<Path>,
+    ) -> Result<Self, ArtifactStorageError> {
+        let relative = relative.as_ref();
+        if relative.as_os_str().is_empty()
+            || relative.is_absolute()
+            || relative
+                .components()
+                .any(|component| !matches!(component, Component::Normal(_)))
+        {
+            return Err(ArtifactStorageError::InvalidPath);
+        }
+
+        let canonical_root = root.as_ref().canonicalize()?;
+        if !canonical_root.is_dir() {
+            return Err(ArtifactStorageError::InvalidPath);
+        }
+        let target = canonical_root.join(relative);
+        let file_name = target
+            .file_name()
+            .ok_or(ArtifactStorageError::InvalidPath)?
+            .to_owned();
+        let parent = target.parent().ok_or(ArtifactStorageError::InvalidPath)?;
+        let canonical_parent = parent.canonicalize()?;
+        if !canonical_parent.starts_with(&canonical_root) {
+            return Err(ArtifactStorageError::PathEscape);
+        }
+        Self::create(canonical_parent.join(file_name))
+    }
 }
 
 /// Exact bytes and history witness. This is not a signature or acceptance.
@@ -96,6 +131,8 @@ pub enum ArtifactStorageError {
     InvalidReceipt,
     InvalidHeadWitness,
     HeadWitnessMismatch,
+    InvalidPath,
+    PathEscape,
     Busy,
     NotRegular,
     AlreadyExists,
