@@ -107,6 +107,11 @@ impl Drop for AgentdControlServer {
 }
 
 async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+    // Socket-path permissions protect rendezvous. Also bind mutation authority
+    // to the kernel-reported peer user before reading any protocol bytes.
+    stream.ensure_current_user_peer().map_err(|error| {
+        AgentdError::Protocol(format!("reject agentd control peer identity: {error}"))
+    })?;
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
