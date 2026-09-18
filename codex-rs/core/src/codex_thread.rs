@@ -1197,6 +1197,11 @@ impl CodexThread {
         arguments: Option<serde_json::Value>,
         meta: Option<serde_json::Value>,
     ) -> anyhow::Result<CallToolResult> {
+        if self.enabled(Feature::HeptaCodexEffectFence) {
+            anyhow::bail!(
+                "direct App Server MCP tool calls are disabled by the runtime.codex effect fence"
+            );
+        }
         if self.enabled(Feature::HeptaGovernance) {
             anyhow::bail!(
                 "direct App Server MCP tool calls are disabled while Hepta governance is active"
