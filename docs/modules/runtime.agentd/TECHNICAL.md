@@ -108,7 +108,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-None.
+- `IntelligenceHostEnvelopeV1`
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -174,6 +174,17 @@ Current operating and state-format references:
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+
+### Intelligence V3 envelope consumer
+
+The source candidate includes
+[`AgentdIntelligenceCaller`](../../../codex-rs/hepta-agentd/src/intelligence_facade.rs),
+which validates `IntelligenceHostEnvelopeV1` and maps its exact frozen
+request/objective/body/artifact tuple and context receipt into the existing
+`AgentRunCoordinator`. The caller does not bypass the Codex execution spine:
+dispatch is still a separate existing runtime transition. This is source
+composition only; the non-test daemon request path and target-host execution
+remain required before a production implementation claim.
 
 ## 12. Verification and qualification
 
