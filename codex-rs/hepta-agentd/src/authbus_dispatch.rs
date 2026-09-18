@@ -66,8 +66,7 @@ pub(crate) async fn run(
 pub(crate) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
-    let trust = host.trust(state)?;
-    let issuer = trust.issuer()?;
+    let (trust, issuer) = host.managed_trust(state).await?;
     if issuer.revoked {
         host.evidence
             .quarantine_authbus_issuer(&issuer)
@@ -93,7 +92,7 @@ pub(crate) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     };
     let client = connect(state).await?;
     require_ready(state)?;
-    let issuer = host.trust(state)?.issuer()?;
+    let (_, issuer) = host.managed_trust(state).await?;
     let worker = StableId::new(format!("agentd:{}", state.identity().spawn_generation))
         .map_err(|error| invalid(&error.to_string()))?;
     let delivery = host
@@ -150,8 +149,7 @@ async fn deliver<Q: TextQueueTransport>(
     client: &Q,
     delivery: AuthBusDelivery,
 ) -> Result<(), AgentdError> {
-    let trust = host.trust(state)?;
-    let issuer = trust.issuer()?;
+    let (trust, issuer) = host.managed_trust(state).await?;
     let body = serde_json::from_slice::<AuthBusTextBody>(&delivery.payload);
     let Ok(body) = body else {
         return host
@@ -188,8 +186,7 @@ async fn deliver<Q: TextQueueTransport>(
         .await
         .map_err(|error| invalid(&error.to_string()))?;
     require_ready(state)?;
-    let fresh = host.trust(state)?;
-    let fresh_issuer = fresh.issuer()?;
+    let (fresh, fresh_issuer) = host.managed_trust(state).await?;
     if !fresh.permits(&body.thread_id) {
         return host
             .evidence
@@ -229,8 +226,7 @@ async fn deliver<Q: TextQueueTransport>(
     )
     .await;
     require_ready(state)?;
-    let current = host.trust(state)?;
-    let issuer = current.issuer()?;
+    let (current, issuer) = host.managed_trust(state).await?;
     if !current.permits(&body.thread_id) {
         return host
             .evidence
