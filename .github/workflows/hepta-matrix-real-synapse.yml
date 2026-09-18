@@ -63,7 +63,11 @@ jobs:
           artifacts="$RUNNER_TEMP/hepta-matrix-real-synapse"
           mkdir -p "$artifacts"
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh             --source-root "$GITHUB_WORKSPACE"             --source-mode exact             --artifacts-dir "$artifacts"             2>&1 | tee "$artifacts/qualification.log"
+          codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh \
+            --source-root "$GITHUB_WORKSPACE" \
+            --source-mode exact \
+            --artifacts-dir "$artifacts" \
+            2>&1 | tee "$artifacts/qualification.log"
           python3 - "$artifacts" "$EXPECTED_SHA" "$(git rev-parse HEAD^{tree})" <<'PY'
           import hashlib
           import json
