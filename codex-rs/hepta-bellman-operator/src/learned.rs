@@ -88,6 +88,7 @@ pub enum LearnedOperatorError {
     EmptyDigest(&'static str),
     InvalidGrid,
     DuplicateIdentity(String),
+    DuplicateEvidence,
     SampleLimit,
     UnknownSensor(String),
     UnknownAction(String),
@@ -158,10 +159,14 @@ pub fn fit_tabular_operator(
 
     let sensors = plan.sensor_ids.iter().collect::<BTreeSet<_>>();
     let actions = plan.action_ids.iter().collect::<BTreeSet<_>>();
+    let mut seen_evidence = BTreeSet::new();
     let mut groups: BTreeMap<(StableId, StableId), CellAccumulator> = BTreeMap::new();
     let mut sample_binding = b"hepta.bellman-operator.tabular-samples.v1".to_vec();
     for sample in &plan.samples {
         require_digest(sample.evidence_digest, "operator training sample")?;
+        if !seen_evidence.insert(sample.evidence_digest) {
+            return Err(LearnedOperatorError::DuplicateEvidence);
+        }
         if !sensors.contains(&sample.sensor_id) {
             return Err(LearnedOperatorError::UnknownSensor(
                 sample.sensor_id.to_string(),
@@ -292,16 +297,23 @@ pub fn fit_tabular_operator(
     })
 }
 
+/// Legacy raw-artifact prediction surface.
+///
+/// Callers loading persisted/untrusted candidates should use
+/// `LoadedTabularOperatorV1`; this compatibility path now still fails closed
+/// on non-canonical or malformed public artifacts before lookup.
+#[deprecated(note = "use LoadedTabularOperatorV1 for persisted candidates")]
 pub fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, LearnedOperatorError> {
-    let cell = artifact
+    validate_prediction_artifact(artifact)?;
+    let index = artifact
         .cells
-        .iter()
-        .find(|cell| &cell.sensor_id == sensor_id && &cell.action_id == action_id)
-        .ok_or(LearnedOperatorError::UnsupportedCell)?;
+        .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor_id, action_id)))
+        .map_err(|_| LearnedOperatorError::UnsupportedCell)?;
+    let cell = &artifact.cells[index];
     Ok(TabularOperatorPredictionV1 {
         artifact_id: artifact.artifact_id.clone(),
         sensor_id: cell.sensor_id.clone(),
@@ -312,6 +324,54 @@ pub fn predict_tabular_operator(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+fn validate_prediction_artifact(
+    artifact: &TabularOperatorArtifactV1,
+) -> Result<(), LearnedOperatorError> {
+    if artifact.authority.grants_any()
+        || artifact.artifact_digest.is_zero()
+        || artifact.objective_digest.is_zero()
+        || artifact.dataset_digest.is_zero()
+        || artifact.sensor_core_digest.is_zero()
+        || artifact.training_profile_digest.is_zero()
+        || artifact.cells.is_empty()
+        || artifact.cells.len() > MAX_CELLS
+    {
+        return Err(LearnedOperatorError::InvalidGrid);
+    }
+    if artifact.cells.windows(2).any(|pair| {
+        (&pair[0].sensor_id, &pair[0].action_id)
+            >= (&pair[1].sensor_id, &pair[1].action_id)
+    }) {
+        return Err(LearnedOperatorError::InvalidGrid);
+    }
+    let mut sensors = BTreeMap::<&StableId, usize>::new();
+    let mut actions = BTreeSet::new();
+    let mut samples = 0_u64;
+    for cell in &artifact.cells {
+        if cell.sample_count == 0
+            || cell.evidence_digest.is_zero()
+            || cell.minimum_target > cell.mean_target
+            || cell.mean_target > cell.maximum_target
+        {
+            return Err(LearnedOperatorError::InvalidGrid);
+        }
+        *sensors.entry(&cell.sensor_id).or_default() += 1;
+        actions.insert(&cell.action_id);
+        samples = samples
+            .checked_add(u64::from(cell.sample_count))
+            .ok_or(LearnedOperatorError::Arithmetic)?;
+    }
+    if sensors.len() > MAX_SENSORS
+        || actions.is_empty()
+        || actions.len() > MAX_ACTIONS
+        || samples > MAX_SAMPLES as u64
+        || sensors.values().any(|count| *count != actions.len())
+    {
+        return Err(LearnedOperatorError::InvalidGrid);
+    }
+    Ok(())
 }
 
 fn digest_cell(
