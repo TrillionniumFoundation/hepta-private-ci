@@ -15,8 +15,16 @@ workspace = true
 
 [dependencies]
 anyhow = { workspace = true }
+arboard = { workspace = true }
+codex-hepta-agentd = { workspace = true }
+codex-hepta-authbus = { path = "../hepta-authbus" }
+codex-hepta-contracts = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-hepta-runtime = { workspace = true }
+codex-hepta-types = { workspace = true }
+codex-keyring-store = { workspace = true }
+ed25519-dalek = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = [
     "io-util",
