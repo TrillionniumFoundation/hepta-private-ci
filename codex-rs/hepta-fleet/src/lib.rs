@@ -6,6 +6,7 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod lease_ledger;
+pub mod revocation_control;
 
 mod allocation;
 mod allocation_digest;
@@ -50,6 +51,11 @@ pub use release::RegisteredRelease;
 pub use release::ReleaseId;
 pub use release::ReleaseMetadata;
 pub use release::ReleaseProgramMetadata;
+pub use revocation_control::FleetNodeRevocationState;
+pub use revocation_control::FleetRevocationCoordinator;
+pub use revocation_control::FleetRevocationError;
+pub use revocation_control::FleetRevocationStatus;
+pub use revocation_control::MAX_FLEET_REVOCATION_NODES;
 
 #[cfg(test)]
 #[path = "allocation_tests.rs"]
