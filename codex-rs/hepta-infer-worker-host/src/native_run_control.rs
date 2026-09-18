@@ -100,9 +100,16 @@ impl AppServerModelDriver {
             )?;
             return Err("cancelled before provider dispatch".into());
         }
-        let final_use = final_use.ok_or(
-            "kernel final-use authority and an independently signed grant are required before provider dispatch",
-        )?;
+        let Some(final_use) = final_use else {
+            control.stop_native_before_dispatch(
+                &record.request.request_id,
+                "missing kernel final-use authority/grant".to_string(),
+            )?;
+            return Err(
+                "kernel final-use authority and an independently signed grant are required before provider dispatch"
+                    .into(),
+            );
+        };
         let request = record.request;
         let request_id = request.request_id.clone();
         match self
