@@ -173,7 +173,7 @@ export class RuntimeClient {
     this.#previousSnapshot = null;
     this.#markPendingIndeterminate();
     this.#persistBestEffort();
-    await this.#resumePending({ force: true });
+    await this.#resumePending({ ignoreBackoff: true, includeRecoveryRequired: false });
     this.#scheduleReconciliation();
 
     return freezeResult({
@@ -338,7 +338,10 @@ export class RuntimeClient {
     if (typeof force !== "boolean") {
       fail(ERROR_CODES.INVALID_INPUT, "force must be boolean");
     }
-    await this.#resumePending({ force });
+    await this.#resumePending({
+      ignoreBackoff: force,
+      includeRecoveryRequired: force,
+    });
     this.#scheduleReconciliation();
     return freezeResult({
       kind: "ReconciliationSummaryV1",
@@ -597,15 +600,18 @@ export class RuntimeClient {
     }
   }
 
-  async #resumePending({ force = false } = {}) {
+  async #resumePending({
+    ignoreBackoff = false,
+    includeRecoveryRequired = false,
+  } = {}) {
     if (!this.#session || this.#pending.size === 0) return;
     const session = this.#captureSession();
     const eligible = [];
     const now = this.#now();
     for (const entry of this.#pending.values()) {
       this.#refreshRecoveryRequirement(entry, now);
-      if (entry.recoveryRequired && !force) continue;
-      if (!force && entry.nextReconcileAtMs > now) continue;
+      if (entry.recoveryRequired && !includeRecoveryRequired) continue;
+      if (!ignoreBackoff && entry.nextReconcileAtMs > now) continue;
       eligible.push(entry);
       if (eligible.length >= RECONCILE_BATCH_SIZE) break;
     }
