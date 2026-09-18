@@ -11,6 +11,7 @@
 /// representable by the durable create-only storage contract.
 pub const MAX_DURABLE_HISTORY_RECORDS: usize = 4096;
 
+mod admin;
 mod admission_v3;
 mod aux_storage;
 mod closure_v2;
@@ -25,6 +26,8 @@ mod publication;
 mod registry;
 mod storage;
 
+pub use admin::ArtifactAdminSnapshotV1;
+pub use admin::inspect_artifact_admin_state;
 pub use admission_v3::ArtifactAdmissionError;
 pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
 pub use admission_v3::admit_manifest_at_withdrawal_head_v3;
@@ -100,8 +103,10 @@ pub use publication::revalidate_artifact_publication_v3;
 pub use registry::ArtifactRegistry;
 pub use storage::ArtifactStorageError;
 pub use storage::CreateOnlyArtifactFile;
+pub use storage::OrphanInspection;
 pub use storage::RegistryHeadWitnessReceipt;
 pub use storage::RegistrySnapshotReceipt;
+pub use storage::inspect_orphan_candidate;
 pub use storage::read_candidate_payload;
 pub use storage::read_registry_head_witness;
 pub use storage::read_registry_snapshot;
