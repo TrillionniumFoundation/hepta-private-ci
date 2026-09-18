@@ -11,6 +11,7 @@ use codex_hepta_learning_ledger::AppendReceipt;
 use codex_hepta_learning_ledger::DurableLearningJournal;
 use codex_hepta_learning_ledger::DurableLedgerError;
 use codex_hepta_learning_ledger::LedgerEvent;
+use codex_hepta_learning_ledger::LedgerRecord;
 use codex_hepta_learning_ledger::RunStartPublicationV1;
 use codex_hepta_objective::CompileDisposition;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
@@ -183,6 +184,7 @@ pub enum ProductionObjectiveError {
     InvalidDurableSequence,
     RunStartDigestMismatch,
     EnvelopeDigestMismatch,
+    NotRunStartRecord,
 }
 
 impl fmt::Display for ProductionObjectiveError {
@@ -209,6 +211,7 @@ impl fmt::Display for ProductionObjectiveError {
             Self::InvalidDurableSequence => formatter.write_str("host envelope durable sequence is zero"),
             Self::RunStartDigestMismatch => formatter.write_str("host envelope run-start digest mismatch"),
             Self::EnvelopeDigestMismatch => formatter.write_str("objective host envelope digest mismatch"),
+            Self::NotRunStartRecord => formatter.write_str("ledger record is not a run-start publication"),
         }
     }
 }
@@ -228,7 +231,8 @@ impl StdError for ProductionObjectiveError {
             | Self::EmptyHostDigest(_)
             | Self::InvalidDurableSequence
             | Self::RunStartDigestMismatch
-            | Self::EnvelopeDigestMismatch => None,
+            | Self::EnvelopeDigestMismatch
+            | Self::NotRunStartRecord => None,
         }
     }
 }
@@ -332,6 +336,38 @@ pub fn prepare_intelligence_run_v1<J: DurableLearningJournal>(
     };
     receipt.validate()?;
     Ok(ProductionObjectiveDispositionV1::Published(receipt))
+}
+
+
+/// Reconstruct the exact runtime handoff from an already-validated durable
+/// RunStart record. This is used after process recovery and intentionally
+/// rejects pre-runtime-body candidate records.
+pub fn recover_intelligence_host_envelope_v1(
+    record: &LedgerRecord,
+) -> Result<IntelligenceHostEnvelopeV1, ProductionObjectiveError> {
+    let LedgerEvent::RunStart(publication) = &record.event else {
+        return Err(ProductionObjectiveError::NotRunStartRecord);
+    };
+    if publication.runtime_body_digest.is_zero() {
+        return Err(ProductionObjectiveError::EmptyHostDigest("runtime body"));
+    }
+    let mut envelope = IntelligenceHostEnvelopeV1 {
+        run_start: publication.run_start.clone(),
+        profile_digest: publication.admission.profile_digest,
+        intent_digest: publication.admission.intent_digest,
+        admitted_source_digest: publication.admission.admitted_source_digest,
+        runtime_body_digest: publication.runtime_body_digest,
+        deadline_unix_micros: publication.admission.deadline_unix_micros,
+        durable_sequence: record.sequence.get(),
+        durable_event_digest: record.event_digest,
+        durable_chain_digest: record.chain_digest,
+        run_start_digest: publication.run_start.digest(),
+        envelope_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    envelope.envelope_digest = envelope_digest(&envelope);
+    envelope.validate()?;
+    Ok(envelope)
 }
 
 fn envelope_digest(value: &IntelligenceHostEnvelopeV1) -> Digest32 {
