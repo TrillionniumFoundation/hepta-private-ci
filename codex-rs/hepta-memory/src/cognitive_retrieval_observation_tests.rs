@@ -283,3 +283,59 @@ async fn omitted_candidate_content_is_bound_even_when_selected_ids_do_not_change
     );
     assert_ne!(before.observation_sha256(), after.observation_sha256());
 }
+
+
+#[tokio::test]
+async fn large_store_retrieval_remains_bounded_before_top_four() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(/*suffix*/ 46);
+    let store = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("store");
+    let access = CognitiveAccess::agent_private(owner);
+    for index in 0..512 {
+        remember(
+            &store,
+            &access,
+            &format!("large-store-{index:03}"),
+            revision(
+                CognitiveScope::AgentPrivate,
+                &format!("Large-store beacon evidence {index:03}."),
+            ),
+        )
+        .await;
+    }
+
+    let observation = store
+        .observe_memory_retrieval(
+            &access,
+            &RetrievalRequest::new("Large-store beacon", /*now_unix_seconds*/ 200),
+        )
+        .await
+        .expect("bounded large-store observation");
+
+    assert_eq!(observation.batch().candidates.len(), MAX_RETRIEVAL_RESULTS);
+    assert!(
+        observation.materialized_candidates().len()
+            <= 4 * MAX_RETRIEVAL_CHANNEL_CANDIDATES
+    );
+    assert_eq!(
+        observation
+            .channels()
+            .iter()
+            .find(|row| row.channel == RetrievalChannel::MemoryFts)
+            .expect("memory FTS observation")
+            .limit,
+        RetrievalLimitObservation::LimitReached
+    );
+    assert_eq!(
+        observation
+            .channels()
+            .iter()
+            .find(|row| row.channel == RetrievalChannel::Recency)
+            .expect("recency observation")
+            .limit,
+        RetrievalLimitObservation::LimitReached
+    );
+    assert!(observation.omitted_count() > 0);
+}
