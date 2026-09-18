@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_infer_core::durable_handle::DurableInferenceControlHandle;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
@@ -58,6 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
     }
+    let control = DurableInferenceControlHandle::new(journal, /*capacity*/ 16_384)?;
     let admission = NativeAdmission {
         request_id: request_id.ok_or("--request-id is required")?,
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
@@ -75,9 +77,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     });
     let result = driver
-        .run_detached(
-            journal,
-            /*journal_capacity*/ 16_384,
+        .run_managed(
+            &control,
             admission,
             prompt,
             context_query,

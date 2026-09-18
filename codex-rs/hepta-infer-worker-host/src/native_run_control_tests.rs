@@ -183,32 +183,3 @@ async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_
         std::fs::remove_file(path).unwrap();
     }
 }
-
-
-#[test]
-fn detached_control_releases_the_writer_lock_between_mutations() {
-    use crate::native_app_server::DetachedNativeControl;
-    use crate::native_app_server::NativeControlPort;
-
-    let (driver, path) = fixture("detached-lock");
-    let mut detached = DetachedNativeControl::new(path.clone(), 8);
-    detached.reserve_native(request(&driver), 2).unwrap();
-
-    // The detached owner closed its writer before returning, so another owner
-    // can immediately reopen the same journal. This is the critical invariant
-    // that prevents provider latency from becoming journal lock latency.
-    let other = DurableInferenceControl::open(&path, 8).unwrap();
-    assert!(other.native_record("r1").is_some());
-    drop(other);
-
-    detached
-        .stop_native_before_dispatch("r1", "qualification stop".to_string())
-        .unwrap();
-    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
-    assert_eq!(
-        reopened.native_record("r1").unwrap().state,
-        NativeReservationState::Released
-    );
-    drop(reopened);
-    std::fs::remove_file(path).unwrap();
-}

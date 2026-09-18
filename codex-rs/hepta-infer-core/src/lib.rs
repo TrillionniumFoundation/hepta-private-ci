@@ -6,6 +6,8 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
+/// Reopen-per-transaction owner handle used by concurrent hosted inference.
+pub mod durable_handle;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
