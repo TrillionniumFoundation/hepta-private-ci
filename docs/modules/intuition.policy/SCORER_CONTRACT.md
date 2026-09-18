@@ -36,9 +36,9 @@ Every current-generation V3 decision carries one exact scorer-owned commitment c
 - feature snapshot and feature-schema digests;
 - output-schema and score-semantics digests;
 - canonical candidate-identity digest;
-- exact scored-candidate digest covering utility, calibrated confidence and OOD outputs.
+- exact scored/policy-output digest covering utility, calibrated confidence, OOD outputs and randomized assignment probabilities.
 
-Assignment probabilities and the random draw are intentionally excluded: those belong to the random-source owner.
+The random draw is excluded from the scorer commitment. Assignment probabilities are policy outputs and are signed by the scorer/policy-output owner; the RandomSource separately signs the same distribution context together with its stream/counter/draw so a valid draw cannot be transplanted onto a different distribution.
 
 `decide_calibrated_v3` validates the commitment against both the canonical profile and the exact request before selection. Mutating one candidate score, model identity, feature snapshot, generation or scorer schema after commitment fails closed.
 
@@ -67,7 +67,7 @@ The consumer verifies four signed facts through the existing `LearningEvidenceVe
 1. `Generator`: legal candidate identity and completeness, including `omitted_count_bound == 0`;
 2. `Scorer`: the exact `ScoringCommitmentV1`;
 3. `Evaluator`: the reusable canonical profile qualification;
-4. `RandomSource`: for CounterBased decisions only, the exact stream, request sequence/counter, draw, abstain mass and assignment distribution.
+4. `RandomSource`: for CounterBased decisions only, the exact stream, request sequence/counter, draw, abstain mass and already-authenticated assignment distribution context.
 
 The four verified principals/controllers must be independent. Deterministic assignment requires no random-source evidence; supplying one is rejected.
 
