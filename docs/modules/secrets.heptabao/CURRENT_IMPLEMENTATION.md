@@ -27,8 +27,7 @@ registered synchronous consumer under the final-use revocation fence.
 - dynamic secret delivery only through the final-use callback
 - no persisted raw dynamic secret values
 
-Dynamic issue uses `POST /v1/{provider_path}`. Renew and revoke use
-`PUT /v1/sys/leases/renew` and `PUT /v1/sys/leases/revoke`. No automatic
+Dynamic issue explicitly binds a `GET` or `POST` method for `/v1/{provider_path}`. Renew and revoke use `POST /v1/sys/leases/renew` and `POST /v1/sys/leases/revoke`. No automatic
 retry is performed after a provider operation may have been applied.
 
 The local registry is append-only and fsyncs every state transition. It is
