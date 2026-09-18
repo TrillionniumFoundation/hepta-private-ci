@@ -5,6 +5,7 @@ import { LocalStoragePendingStore } from "./pending-store.js";
 import {
   ERROR_CODES,
   canonicalSha256,
+  fail,
   positiveInteger,
   requireDigest,
   stableId,
@@ -12,6 +13,7 @@ import {
 import { RuntimeClient } from "./runtime-client.js";
 
 const PERSISTENCE_DOMAIN_SCHEMA = "hepta.ui-control.persistence-domain.v1";
+const RUNTIME_BINDING_SCHEMA = "hepta.ui-control.runtime-binding.v1";
 
 function boundedPoll(value, fallback) {
   const candidate = value == null ? fallback : value;
@@ -40,8 +42,13 @@ async function normalizeBootstrap({ url, origin, fetchImpl }) {
     schema: PERSISTENCE_DOMAIN_SCHEMA,
     endpointId,
     protocolVersion,
-    manifestDigest,
     persistenceNamespace,
+  });
+  const runtimeBinding = await canonicalSha256({
+    schema: RUNTIME_BINDING_SCHEMA,
+    endpointId,
+    protocolVersion,
+    manifestDigest,
     basePath: raw.basePath,
   });
   return Object.freeze({
@@ -52,6 +59,7 @@ async function normalizeBootstrap({ url, origin, fetchImpl }) {
     persistenceNamespace,
     snapshotPollMs,
     persistenceKey: `hepta.ui.control.pending.${persistenceDomain}`,
+    runtimeBinding,
   });
 }
 
@@ -156,6 +164,15 @@ export async function startControlPlane({
       const nextConfig = await loadConfig();
       const samePersistenceDomain =
         config !== null && nextConfig.persistenceKey === config.persistenceKey;
+      const sameRuntimeBinding =
+        config !== null && nextConfig.runtimeBinding === config.runtimeBinding;
+
+      if (client && samePersistenceDomain && !sameRuntimeBinding) {
+        fail(
+          ERROR_CODES.INCOMPATIBLE_PROTOCOL,
+          "runtime bootstrap binding changed; reload before reconciling the durable pending domain",
+        );
+      }
 
       if (client && samePersistenceDomain) {
         try {
