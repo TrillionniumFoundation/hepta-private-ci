@@ -32,7 +32,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-const TURN_START_METHOD: &str = "turn/start";
+pub const TURN_START_METHOD_ID: &str = "codex.turn.start.v2";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {
@@ -391,7 +391,7 @@ struct TerminalObservation {
 }
 
 fn adapt_observation(
-    now_ms: u64,
+    _now_ms: u64,
     dispatched: &DispatchedCodexOperation,
     observation: Option<TerminalObservation>,
 ) -> Result<CodexAdapterReceipt, Error> {
@@ -444,7 +444,7 @@ fn validate_turn_start(
     params: &TurnStartParams,
 ) -> Result<(), Error> {
     validate_intent_for_admission(now_ms, intent)?;
-    if intent.method_id.as_str() != TURN_START_METHOD {
+    if intent.method_id.as_str() != TURN_START_METHOD_ID {
         return Err(Error::MethodBindingMismatch);
     }
     if params.thread_id != intent.thread_id.as_str() {
