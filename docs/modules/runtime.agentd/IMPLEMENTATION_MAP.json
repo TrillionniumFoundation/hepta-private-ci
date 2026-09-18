@@ -107,7 +107,16 @@
       "recoveryLedger": {
         "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
         "disposition": "owner_local_recovery_metadata_not_product_fact"
-      }
+      },
+      "supportingEntrypoints": [
+        {
+          "role": "dispatch_boundary",
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "symbol": "pub fn mark_dispatched(",
+          "liveDaemonSymbol": "AgentdMethod::RunMarkDispatched",
+          "liveDaemonPath": "codex-rs/hepta-agentd/src/state_control.rs"
+        }
+      ]
     },
     {
       "designOperation": "cancel_run",
@@ -157,7 +166,16 @@
       "recoveryLedger": {
         "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
         "disposition": "owner_local_recovery_metadata_not_product_fact"
-      }
+      },
+      "supportingEntrypoints": [
+        {
+          "role": "terminal_observer",
+          "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "symbol": "pub fn observe_terminal(",
+          "liveDaemonSymbol": "AgentdMethod::RunObserveTerminal",
+          "liveDaemonPath": "codex-rs/hepta-agentd/src/state_control.rs"
+        }
+      ]
     },
     {
       "designOperation": "attach_context",
@@ -208,90 +226,6 @@
         "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
         "disposition": "owner_local_recovery_metadata_not_product_fact"
       }
-    },
-    {
-      "designOperation": "mark_dispatched",
-      "mappingClass": "owner_native",
-      "ownerEntrypoint": {
-        "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-        "symbol": "pub fn mark_dispatched(",
-        "buildTarget": "codex-hepta-agentd"
-      },
-      "liveDaemonEntrypoint": {
-        "role": "live_daemon_control",
-        "path": "codex-rs/hepta-agentd/src/state_control.rs",
-        "symbol": "AgentdMethod::RunMarkDispatched",
-        "buildTarget": "codex-hepta-agentd"
-      },
-      "wireContract": {
-        "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-        "schemaVersion": 2
-      },
-      "recoveryLedger": {
-        "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
-        "disposition": "owner_local_recovery_metadata_not_product_fact"
-      },
-      "delegatedCallees": [],
-      "tests": [
-        {
-          "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-          "kind": "deadline_and_dispatch_boundary",
-          "command": "just test -p codex-hepta-agentd --lib"
-        },
-        {
-          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-          "kind": "strict_wire_round_trip",
-          "command": "just test -p codex-hepta-agent-protocol"
-        }
-      ],
-      "sourceSemantics": "Moves only a context-bound, unexpired run across the dispatch boundary and persists the revision before later terminal observation.",
-      "operation": "mark_dispatched",
-      "nativeSymbol": "pub fn mark_dispatched(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
-    },
-    {
-      "designOperation": "observe_terminal",
-      "mappingClass": "owner_native",
-      "ownerEntrypoint": {
-        "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-        "symbol": "pub fn observe_terminal(",
-        "buildTarget": "codex-hepta-agentd"
-      },
-      "liveDaemonEntrypoint": {
-        "role": "live_daemon_control",
-        "path": "codex-rs/hepta-agentd/src/state_control.rs",
-        "symbol": "AgentdMethod::RunObserveTerminal",
-        "buildTarget": "codex-hepta-agentd"
-      },
-      "wireContract": {
-        "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-        "schemaVersion": 2
-      },
-      "recoveryLedger": {
-        "path": "codex-rs/hepta-agentd/src/run_ledger.rs",
-        "disposition": "owner_local_recovery_metadata_not_product_fact"
-      },
-      "delegatedCallees": [],
-      "tests": [
-        {
-          "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-          "kind": "terminal_and_indeterminate_reconciliation",
-          "command": "just test -p codex-hepta-agentd --lib"
-        },
-        {
-          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-          "kind": "strict_wire_round_trip",
-          "command": "just test -p codex-hepta-agent-protocol"
-        }
-      ],
-      "sourceSemantics": "Accepts terminal state only from an explicit observer and preserves unknown post-dispatch outcomes as indeterminate without redispatch.",
-      "operation": "observe_terminal",
-      "nativeSymbol": "pub fn observe_terminal(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
