@@ -5,6 +5,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxRecord;
@@ -66,6 +67,7 @@ pub struct OutboxDispatchStats {
     /// Transport returned a Matrix event id. This is not terminal delivery;
     /// terminality is settled only by a trusted homeserver timeline observation.
     pub accepted: u64,
+    pub terminal_reconciled: u64,
     pub retry_scheduled: u64,
     pub permanent_failure: u64,
     pub cancelled: bool,
@@ -120,7 +122,7 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                 stats.accepted += 1;
             }
             Err(MatrixTransportError::Retryable) => {
-                store
+                let dispatch = store
                     .record_transport_indeterminate(
                         &record.stable_txn_id,
                         record.attempts,
@@ -128,6 +130,13 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                     )
                     .await
                     .map_err(store_error)?;
+                if matches!(
+                    dispatch.state,
+                    MatrixDispatchState::ObservedTerminal | MatrixDispatchState::Redacted
+                ) {
+                    stats.terminal_reconciled += 1;
+                    continue;
+                }
                 if record.attempts >= config.max_attempts {
                     store
                         .mark_outbox_permanent_failure(
