@@ -343,13 +343,6 @@ fn route_request(
             br#"{"error":"bad request"}"#,
         ));
     }
-    if method != "GET" {
-        return Ok(response(
-            "405 Method Not Allowed",
-            "application/json; charset=utf-8",
-            br#"{"error":"live shell is read-only"}"#,
-        ));
-    }
     if let Some(expected) = auth_token {
         if !request_authorized(request, expected) {
             return Ok(response(
@@ -358,6 +351,13 @@ fn route_request(
                 br#"{"error":"native gateway authentication required"}"#,
             ));
         }
+    }
+    if method != "GET" {
+        return Ok(response(
+            "405 Method Not Allowed",
+            "application/json; charset=utf-8",
+            br#"{"error":"live shell is read-only"}"#,
+        ));
     }
     let path = target.split('?').next().unwrap_or(target);
     match path {
