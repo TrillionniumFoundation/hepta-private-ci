@@ -121,7 +121,7 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             .dispatch_context(&record)
             .map_err(|_| OutboxDispatchError::Invalid)?;
         let operation_id = format!("matrix-send-{}", record.stable_txn_id.as_str());
-        let payload_digest = Sha256Digest::for_bytes(&record.payload).to_string();
+        let payload_digest = Sha256Digest::for_bytes(&record.payload).as_str().to_string();
         let intent = SendIntent {
             operation_id: operation_id.clone(),
             transaction_id: record.stable_txn_id.as_str().to_string(),
@@ -335,7 +335,7 @@ fn dispatch_observation_digest(
         record.stable_txn_id.as_str(),
         event_id.map(MatrixEventId::as_str).unwrap_or("")
     );
-    Sha256Digest::for_bytes(identity.as_bytes()).to_string()
+    Sha256Digest::for_bytes(identity.as_bytes()).as_str().to_string()
 }
 
 fn system_time_ms() -> Result<u64, OutboxDispatchError> {

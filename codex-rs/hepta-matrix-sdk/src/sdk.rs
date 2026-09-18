@@ -361,6 +361,7 @@ impl MatrixOutboundTransport for MatrixSdkClient {
         }
         let authority_identity = matrix_binding_digest(&self.config.binding)
             .map_err(|_| MatrixTransportError::Permanent)?
+            .as_str()
             .to_string();
         Ok(MatrixDispatchContext {
             homeserver_id: self.config.binding.homeserver.as_str().to_string(),

@@ -248,7 +248,7 @@ impl MatrixSyncComposer<'_> {
                     transaction_id,
                     room_id: room_id.clone(),
                     session_generation: self.config.matrix_generation,
-                    observation_digest: Sha256Digest::for_bytes(&identity).to_string(),
+                    observation_digest: Sha256Digest::for_bytes(&identity).as_str().to_string(),
                     observed_at_ms,
                 };
                 if let Some(previous) = observations.insert(event_id, observation.clone())
