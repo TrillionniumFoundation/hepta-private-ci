@@ -20,6 +20,8 @@ This matrix is source-level acceptance guidance for the composed Codex App Serve
 | Agent generation/readiness or App Server ingress changes while authority is pending | reject after grant claim but before `turn/start`; burned nonce is not reused | none | release pre-dispatch reservation | post-authority owner/ingress recheck |
 | Cancellation arrives while authority is pending | reject before final-use entry / `turn/start` | none | release pre-dispatch reservation | post-authority cancellation fence |
 | Exact signed grant passes local signature/epoch/revocation/nonce checks and `VerifiedUseToken::enter` | one capability entry only; authority witness and exact request are durably recorded before the network send | never grants blind retry | write-ahead dispatch journaled before `turn/start` | non-constructible token/entered-token source path |
+| Deadline/cancellation changes during the durable dispatch fsync, before the network call starts | live process consumes its non-serializable pre-effect abort proof and records a definitive local stop | none | release | one-shot dispatch-revision-bound abort proof |
+| Process dies after durable dispatch fsync but before/while network entry is knowable | abort proof is lost; recovery must not infer unsent | `ReconcileOnly` | hold | reopened journal has `Dispatching` but no reconstructible abort proof |
 | Missing/zero owner generation | reject request | none | no dispatch | adapter negative test |
 | Protocol version other than App Server v2 | reject request | none | no dispatch | adapter negative test |
 | App Server transport overload JSON-RPC `-32001` before handler admission | `Overloaded` | `SafeToRetry` with a new admitted request | release | typed JSON-RPC error from the bounded transport queue |
