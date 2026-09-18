@@ -43,7 +43,7 @@ order, encoding or semantics requires a new version and signing domain.
 | `FinalUseBinding.subject_id`, `destination_id` | Exact principal and effect destination; 1–128 ASCII identifier bytes |
 | `request_sha256` | Nonzero 32-byte digest of the complete adapter operation |
 | `scope_sha256` | Nonzero 32-byte digest of destination/resource/consumer scope |
-| `payload_sha256` | Nonzero 32-byte digest of the expected material |
+| `payload_sha256` | Nonzero 32-byte digest of the adapter-defined final effect/material binding |
 | `FinalUseGrant.signer_id`, `grant_id` | Bounded owner and revocation identifiers |
 | `authority_epoch` | Nonzero epoch; must exactly match the current durable head |
 | `nonce` | Nonzero 32-byte random value; unique across that authority epoch |
@@ -52,11 +52,15 @@ order, encoding or semantics requires a new version and signing domain.
 | `SignedFinalUseGrant.signature` | Exactly 64 raw Ed25519 signature bytes |
 | `FinalUseRevocations` | Epoch, nonzero monotonically increasing revision and at most 16,384 revoked grant IDs |
 
-For Bao, the request digest binds the HTTPS origin, CA bytes, namespace, mount,
-path, field, exact KV v2 version, expected secret digest, subject and consumer.
-The destination is `provider:heptabao`. Signature validation uses Ed25519
-`verify_strict`; weak trust keys, malformed signatures and changed bindings
-are rejected before dispatch.
+For Bao KV v2, the request digest binds the HTTPS origin, CA bytes, namespace,
+mount, path, field, exact version, expected secret digest, subject and consumer.
+For provider-native dynamic issuance, the credential bytes do not exist yet;
+the binding instead covers the exact origin/CA, namespace/path, logical lease,
+request body, selected response fields, subject and final consumer. Renew,
+revoke and reconcile bind the durable provider lease identity, revision and
+exact operation request. The destination remains `provider:heptabao`.
+Signature validation uses Ed25519 `verify_strict`; weak trust keys, malformed
+signatures and changed bindings are rejected before dispatch.
 
 ## Durable schema and storage protocol
 
@@ -74,20 +78,25 @@ does not redirect an already opened authority's writes.
 | Entry | Contents and invariant |
 | --- | --- |
 | `authority.lock` | Owner-only regular file; `File::try_lock` held by the shared authority owner |
-| `authority.json` | JSON `{schema:1, signer_id, verifying_key, state:{head, used_nonces}}`; maximum read 8 MiB |
-| `authority.next` | Temporary complete replacement written with owner-only permissions before rename |
+| `authority.json` | Schema-2 JSON `{schema:2, signer_id, verifying_key, head}`; bounded revocation/trust snapshot, maximum read 8 MiB |
+| `authority.claims` | Append-only fixed-width 32-byte nonce journal for the current authority epoch |
+| `authority.next` | Temporary head replacement written with owner-only permissions before rename |
 
 Files must be regular, singly linked, owned by the effective user and have no
 group/world permissions; opens reject symlinks. The lock is held until the
 last authority/token reference disappears. It also releases automatically on
 process death. Concurrent opens fail with `StateLocked`.
 
-Every successful claim or head update serializes the complete next state,
-truncates and writes `authority.next`, fsyncs that file, renames it over
-`authority.json`, and fsyncs the root directory. The operation is not admitted
-until persistence succeeds. On a storage error, the live authority becomes
-unavailable and stays fenced; callers cannot remove a bad temporary file and
-silently retry through that same instance.
+A successful claim appends exactly one 32-byte nonce to
+`authority.claims` and fsyncs that file before dispatch admission. It does not
+serialize or rewrite the complete replay set. Revocation-head updates write the
+bounded schema-2 snapshot to `authority.next`, fsync it, rename it over
+`authority.json`, and fsync the root directory. On an authority-epoch increase
+the stronger head is made durable before the old-epoch claim journal is
+truncated and synced; a crash in between can cause extra denial but cannot
+reopen an old nonce. On a storage error, the live authority becomes unavailable
+and stays fenced; callers cannot remove a bad temporary file and silently retry
+through that same instance.
 
 The lock file also records that initialization has begun. If a later open
 finds it but no durable state file, it fails closed instead of resetting the
@@ -95,13 +104,17 @@ nonce registry. Corrupt or oversized JSON and trust-key/schema mismatch also
 fail closed. A crash during first initialization can therefore require owner
 recovery rather than automatic recreation.
 
-Normal restart loads the persisted nonce set and revocation head automatically.
-An old configuration cannot roll back a stronger stored head. A newer trusted
-startup head can be applied atomically when its revision increases, its epoch
-does not decrease, and same-epoch revocations are a superset. An epoch increase
-fences every old grant and clears the previous nonce set. There is no silent
-nonce eviction: 16,384 claims fill the epoch and reject further claims until a
-trusted epoch transition.
+Normal restart loads the schema-2 revocation head and replays the fixed-width
+nonce journal automatically. Schema-1 stores are migrated fail-closed: legacy
+nonces are written to the journal before the schema-2 head is published, so a
+crash cannot silently refund them. An old configuration cannot roll back a
+stronger stored head. A newer trusted startup head can be applied when its
+revision increases, its epoch does not decrease, and same-epoch revocations are
+a superset. An epoch increase fences every old grant and resets the old-epoch
+claim journal only after the stronger head is durable. There is no 16,384-claim
+logical ceiling or silent nonce eviction; physical memory, disk and restart
+cost still require operational sizing and trusted epoch rotation. The revoked
+grant-ID set remains separately bounded at 16,384.
 
 These files are not an external anti-rollback oracle. Deleting the entire
 store, restoring an old filesystem snapshot, or switching its configured
@@ -114,7 +127,7 @@ turn missing/corrupt state into an empty registry.
 
 1. `claim(signed, expected)` validates the exact binding, signer and signature.
 2. Under the owner mutex it checks the current clock, epoch and revocations,
-   rejects a consumed nonce or full registry, and persists the nonce claim.
+   rejects a consumed nonce, and durably appends the nonce claim.
 3. It samples time again after disk I/O, then returns a private, non-cloneable,
    non-serializable `VerifiedUseToken`. The claim is the dispatch admission
    point; rejection or expiry after persistence does not refund the nonce.
@@ -146,7 +159,8 @@ or persistence failure refuses further operations.
 | `with_verified_use` | Consume that token at the final synchronous secret-use boundary |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use |
-| `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
+| `AlreadyClaimed` | Require owner reconciliation/new authorization; claimed nonces are never refunded |
+| `CapacityExceeded` | Reserved fail-closed capacity error for bounded authority metadata such as the revocation head; schema-2 nonce claims do not use the former 16,384 claim ceiling |
 | `InvalidTrust`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner configuration/storage without resetting authority implicitly |
 | `StaleRevocationHead` | Reject a rollback/inconsistent host update |
 
@@ -177,8 +191,9 @@ The existing H7 signer has a separate protocol and is not widened by this tool.
 
 Kernel tests cover field/key substitution, expiry, epoch fences, monotonic
 revocation, cross-restart replay rejection, concurrent owners, missing state,
-unsafe permissions/symlinks, newer startup heads, and SIGKILL of a lock holder
-while retaining its persisted claim. Adapter tests cover real loopback TLS,
+unsafe permissions/symlinks, newer startup heads, schema-1 to schema-2 replay
+migration, fixed-width nonce-journal durability, epoch compaction, and SIGKILL
+of a lock holder while retaining its persisted claim. Adapter tests cover real loopback TLS,
 exact headers/version, bad trust, forged/denied grants, response bounds,
 revocation during network wait, timeout and consumer uncertainty. Test fixtures
 explicitly create private directories; timeout cleanup cancels its local test
