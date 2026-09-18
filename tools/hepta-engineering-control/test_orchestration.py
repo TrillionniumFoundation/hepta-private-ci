@@ -1,4 +1,5 @@
 from dataclasses import replace
+import json
 from pathlib import Path
 import subprocess
 import tempfile
@@ -139,6 +140,115 @@ class OrchestrationTests(unittest.TestCase):
         self.assertIn(("foundation", "already_completed"), plan.blocked)
         self.assertEqual(plan.merge_queue[0].state, "awaiting_candidate_evidence")
         self.assertFalse(plan.merge_queue[0].merge_authority)
+
+    def test_value_ordering_and_durable_generation_are_identical(self):
+        envelope = replace(self.envelope, maximum_assignments=1)
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(envelope, now_ns=self.now)
+                plan = plan_engineering_work(
+                    store,
+                    envelope,
+                    (
+                        EngineeringWorkPackage(
+                            0,
+                            "priority-first",
+                            (),
+                            ("src/priority",),
+                            expected_value_q32=1,
+                        ),
+                        EngineeringWorkPackage(
+                            100,
+                            "value-first",
+                            (),
+                            ("src/value",),
+                            expected_value_q32=100,
+                        ),
+                    ),
+                    (WorkerProfile("worker", (), 2, ("src",)),),
+                    (),
+                    self.trust,
+                    EngineeringCapacity(2, ()),
+                    generation_id="g-value-order",
+                    now_ns=self.now,
+                )
+                row = store.connection.execute(
+                    "SELECT semantic_digest,assigned_json,blocked_json "
+                    "FROM assignment_generations WHERE generation_id=?",
+                    ("g-value-order",),
+                ).fetchone()
+                self.assertIsNotNone(row)
+                assigned = tuple(
+                    json.loads(bytes(row["assigned_json"]).decode("utf-8"))
+                )
+                blocked = dict(
+                    tuple(item)
+                    for item in json.loads(
+                        bytes(row["blocked_json"]).decode("utf-8")
+                    )
+                )
+                self.assertEqual(assigned, ("value-first",))
+                self.assertEqual(
+                    tuple(item.package_id for item in plan.assignments),
+                    assigned,
+                )
+                self.assertEqual(row["semantic_digest"], plan.base_schedule_digest)
+                self.assertEqual(blocked["priority-first"], "assignment_limit")
+
+    def test_infeasible_high_score_does_not_consume_assignment_slot(self):
+        envelope = replace(self.envelope, maximum_assignments=1)
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(envelope, now_ns=self.now)
+                plan = plan_engineering_work(
+                    store,
+                    envelope,
+                    (
+                        EngineeringWorkPackage(
+                            0,
+                            "no-worker",
+                            (),
+                            ("src/no-worker",),
+                            required_skills=("gpu",),
+                            expected_value_q32=100,
+                        ),
+                        EngineeringWorkPackage(
+                            1,
+                            "feasible",
+                            (),
+                            ("src/feasible",),
+                            required_skills=("rust",),
+                            expected_value_q32=50,
+                        ),
+                    ),
+                    (WorkerProfile("worker", ("rust",), 1, ("src",)),),
+                    (),
+                    self.trust,
+                    EngineeringCapacity(2, ()),
+                    generation_id="g-capacity-backfill",
+                    now_ns=self.now,
+                )
+                row = store.connection.execute(
+                    "SELECT assigned_json,blocked_json "
+                    "FROM assignment_generations WHERE generation_id=?",
+                    ("g-capacity-backfill",),
+                ).fetchone()
+                self.assertIsNotNone(row)
+                self.assertEqual(
+                    tuple(json.loads(bytes(row["assigned_json"]).decode("utf-8"))),
+                    ("feasible",),
+                )
+                blocked = dict(
+                    tuple(item)
+                    for item in json.loads(
+                        bytes(row["blocked_json"]).decode("utf-8")
+                    )
+                )
+                self.assertEqual(blocked["no-worker"], "worker_skill_or_capacity")
+                self.assertEqual(
+                    tuple(item.package_id for item in plan.assignments),
+                    ("feasible",),
+                )
 
     def test_unsigned_completion_cannot_satisfy_predecessor(self):
         with tempfile.TemporaryDirectory() as temp:
