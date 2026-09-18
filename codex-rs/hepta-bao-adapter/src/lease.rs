@@ -658,15 +658,12 @@ impl<P: BaoLeaseProvider> BaoLeaseCoordinator<P> {
                         return Err(error);
                     }
                 };
-                if let Err(error) = self.store.append(LeaseJournalRecord::Ack {
+                self.store.append(LeaseJournalRecord::Ack {
                     operation_id: operation.operation_id.clone(),
                     ack,
                     source: ProviderEffectAckSource::DispatchResponse,
                     lease: metadata,
-                }) {
-                    self.mark_indeterminate(&intent.key, "provider_dispatch_commit_unknown")?;
-                    return Err(error);
-                }
+                })?;
                 let state = self
                     .store
                     .state()
