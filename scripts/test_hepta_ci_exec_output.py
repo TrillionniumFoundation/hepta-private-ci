@@ -1,4 +1,4 @@
-"""Behavioral tests of retained diagnostics and mandatory libtest execution."""
+"""Behavioral tests of retained diagnostics and mandatory libtest and unittest execution."""
 
 import contextlib
 import hashlib
@@ -127,6 +127,84 @@ class CommandOutputTests(unittest.TestCase):
         self.assertEqual(second.returncode, 0)
         self.assertNotEqual(record["log_file"], next_record["log_file"])
         self.assertEqual(old_log.read_bytes(), b"first\n")
+
+    def test_real_unittest_success_satisfies_minimum(self):
+        result, record = self.execute(
+            "import unittest\n"
+            "class Cases(unittest.TestCase):\n"
+            " def test_pass(self): self.assertEqual(2 + 2, 4)\n"
+            "unittest.main()\n"
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(record["observed_passed_tests"], 1)
+        self.assertEqual(record["observed_failed_tests"], 0)
+
+    def test_real_unittest_skip_and_expected_failure_do_not_count_as_pass(self):
+        result, record = self.execute(
+            "import unittest\n"
+            "class Cases(unittest.TestCase):\n"
+            " @unittest.skip('fixture')\n"
+            " def test_skipped(self): pass\n"
+            " @unittest.expectedFailure\n"
+            " def test_expected_failure(self): self.fail('expected')\n"
+            "unittest.main()\n"
+        )
+        self.assertEqual(record["command_exit_code"], 0)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(record["observed_passed_tests"], 0)
+
+    def test_real_unittest_empty_suite_fails_minimum(self):
+        result, record = self.execute("import unittest; unittest.TextTestRunner().run(unittest.TestSuite())")
+        self.assertEqual(record["command_exit_code"], 0)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(record["observed_passed_tests"], 0)
+
+    def test_real_unittest_partial_skip_counts_only_success(self):
+        result, record = self.execute(
+            "import unittest\n"
+            "class Cases(unittest.TestCase):\n"
+            " def test_pass(self): pass\n"
+            " @unittest.skip('fixture')\n"
+            " def test_skipped(self): pass\n"
+            "unittest.main()\n", minimum=2,
+        )
+        self.assertEqual(record["observed_passed_tests"], 1)
+        self.assertEqual(result.returncode, 1)
+
+    def test_swallowed_unittest_failure_cannot_become_success(self):
+        result, record = self.execute(
+            "import unittest\n"
+            "class Cases(unittest.TestCase):\n"
+            " def test_fail(self): self.fail('real failure')\n"
+            "unittest.TextTestRunner().run(unittest.defaultTestLoader.loadTestsFromTestCase(Cases))\n"
+        )
+        self.assertEqual(record["command_exit_code"], 0)
+        self.assertEqual(record["observed_failed_tests"], 1)
+        self.assertEqual(result.returncode, 1)
+
+    def test_real_unittest_unexpected_success_is_failure(self):
+        result, record = self.execute(
+            "import unittest\n"
+            "class Cases(unittest.TestCase):\n"
+            " @unittest.expectedFailure\n"
+            " def test_unexpected(self): pass\n"
+            "unittest.main()\n"
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(record["observed_passed_tests"], 0)
+        self.assertEqual(record["observed_failed_tests"], 1)
+
+    def test_unfinished_unittest_footer_is_not_success(self):
+        result, record = self.execute("print('Ran 99 tests in 0.001s')")
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(record["observed_passed_tests"], 0)
+
+    def test_unittest_footer_at_eof_is_counted(self):
+        result, record = self.execute(
+            "import sys; sys.stdout.write('Ran 2 tests in 0.001s\\n\\nOK')"
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(record["observed_passed_tests"], 2)
 
     def test_existing_log_cannot_be_reused(self):
         log = self.root / "retained.log"

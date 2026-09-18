@@ -354,7 +354,9 @@ fn repeated_release_archival_keeps_hot_state_bounded_and_old_commands_retired() 
         let baseline = *first_round_archive_bytes.get_or_insert(receipt.released_archive_bytes);
         assert!(
             receipt.released_archive_bytes
-                <= baseline.saturating_mul((round + 1) as u64).saturating_mul(2),
+                <= baseline
+                    .saturating_mul((round + 1) as u64)
+                    .saturating_mul(2),
             "released identity archive grew faster than the bounded per-command history profile"
         );
 
@@ -373,7 +375,11 @@ fn repeated_release_archival_keeps_hot_state_bounded_and_old_commands_retired() 
 
     drop(control);
     let mut reopened = DurableInferenceControl::open(fixture.path(), 32).unwrap();
-    for id in ["round-0-released-0", "round-3-released-7", "round-7-released-15"] {
+    for id in [
+        "round-0-released-0",
+        "round-3-released-7",
+        "round-7-released-15",
+    ] {
         assert_eq!(
             reopened.reserve_native(request(id), 1).unwrap().state,
             NativeReservationState::Released,
@@ -500,8 +506,7 @@ fn alternating_writers_replay_only_peer_deltas() {
             "HEPTA_INFERENCE_MULTIWRITER scale={scale} update_p95_us={p95_micros} \
              first_incremental={} second_incremental={} replayed_bytes={replayed_bytes} \
              journal_bytes={journal_bytes} replay_amplification_ppm={replay_amplification_ppm}",
-            first_stats.incremental_replays,
-            second_stats.incremental_replays,
+            first_stats.incremental_replays, second_stats.incremental_replays,
         );
     }
 }
@@ -580,19 +585,23 @@ fn history_growth_emits_update_recovery_memory_and_disk_curve() {
         let compacted_recovery_micros = compacted_recovery_started.elapsed().as_micros() as u64;
         assert!(compacted.native_record("curve-0").is_none());
         assert_eq!(
-            compacted.reserve_native(request("curve-0"), 1).unwrap().state,
+            compacted
+                .reserve_native(request("curve-0"), 1)
+                .unwrap()
+                .state,
             NativeReservationState::Released
         );
 
         let audit_archive_bytes = fs::read_dir(&fixture.0)
             .unwrap()
-            .filter_map(Result::ok)
-            .filter_map(|entry| {
-                let name = entry.file_name();
-                let name = name.to_string_lossy();
-                (name.starts_with("inference.journal.archive-"))
-                    .then(|| entry.metadata().ok()?.len())
+            .map(|entry| entry.expect("enumerate inference archive"))
+            .filter(|entry| {
+                entry
+                    .file_name()
+                    .to_string_lossy()
+                    .starts_with("inference.journal.archive-")
             })
+            .map(|entry| entry.metadata().expect("measure inference archive").len())
             .sum::<u64>();
         let total_after_archive_bytes = active_after_archive_bytes
             + archive_receipt.released_archive_bytes

@@ -24,6 +24,55 @@ MAX_OUTPUT_BYTES = 64 * 1024 * 1024
 LIBTEST_SUMMARY = re.compile(
     rb"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;.*"
 )
+UNITTEST_SUMMARY = re.compile(rb"Ran (\d+) tests? in [0-9.]+s")
+UNITTEST_RESULT = re.compile(rb"(OK|FAILED)(?: \(([^()]*)\))?")
+UNITTEST_DETAIL = re.compile(
+    rb"(failures|errors|skipped|expected failures|unexpected successes)=(\d+)"
+)
+
+
+class TestSummaryCounter:
+    """Count completed libtest/unittest suites, excluding skipped/expected failures.
+
+    A process exit alone, an unfinished 'Ran' footer, or compilation is not a
+    test pass. Like the retained log, this is diagnostic evidence from trusted
+    test runners, not an independently authenticated evaluation of a candidate.
+    """
+
+    def __init__(self) -> None:
+        self.passed = 0
+        self.failed = 0
+        self.unittest_total: int | None = None
+
+    def observe(self, line: bytes) -> None:
+        line = line.strip()
+        if match := LIBTEST_SUMMARY.fullmatch(line):
+            self.passed += int(match[2])
+            self.failed += int(match[3])
+            self.unittest_total = None
+        elif match := UNITTEST_SUMMARY.fullmatch(line):
+            self.unittest_total = int(match[1])
+        elif self.unittest_total is not None and line:
+            total, self.unittest_total = self.unittest_total, None
+            match = UNITTEST_RESULT.fullmatch(line)
+            if match is None:
+                return
+            details: dict[bytes, int] = {}
+            for part in (match[2].split(b", ") if match[2] else []):
+                detail = UNITTEST_DETAIL.fullmatch(part)
+                if detail is None or detail[1] in details:
+                    return
+                details[detail[1]] = int(detail[2])
+            failures = sum(details.get(key, 0) for key in
+                           (b"failures", b"errors", b"unexpected successes"))
+            if match[1] == b"OK" and failures:
+                return
+            if match[1] == b"FAILED":
+                # Even an incomplete failure detail cannot make a swallowed
+                # unittest runner failure look like a successful process.
+                self.failed += max(1, failures)
+            else:
+                self.passed += max(0, total - sum(details.values()))
 
 
 def git(*args: str) -> str:
@@ -54,13 +103,14 @@ def _kill_command(process: subprocess.Popen) -> None:
 def execute_logged(command: list[str], log: Path, maximum_bytes: int = MAX_OUTPUT_BYTES) -> dict:
     """Keep bounded merged stdout/stderr, including failures before test startup.
 
-    Test counts recognize libtest summaries, not compilation or process success.
+    Test counts recognize completed test summaries, not compilation or process success.
     This parser is not an independent evaluator of adversarial candidate code.
     """
     if maximum_bytes <= 0:
         raise ValueError("output bound must be positive")
     digest = hashlib.sha256()
-    count = passed = failed = 0
+    count = 0
+    tests = TestSummaryCounter()
     pending = b""
     exceeded = False
     # Never overwrite an earlier invocation's diagnostic output.
@@ -82,10 +132,7 @@ def execute_logged(command: list[str], log: Path, maximum_bytes: int = MAX_OUTPU
                 lines = (pending + kept).split(b"\n")
                 pending = lines.pop()[-4096:]
                 for line in lines:
-                    match = LIBTEST_SUMMARY.fullmatch(line.strip())
-                    if match:
-                        passed += int(match[2])
-                        failed += int(match[3])
+                    tests.observe(line)
                 if hasattr(sys.stdout, "buffer"):
                     sys.stdout.buffer.write(kept)
                     sys.stdout.buffer.flush()
@@ -96,9 +143,7 @@ def execute_logged(command: list[str], log: Path, maximum_bytes: int = MAX_OUTPU
                     exceeded = True
                     _kill_command(process)
                     break
-            if match := LIBTEST_SUMMARY.fullmatch(pending.strip()):
-                passed += int(match[2])
-                failed += int(match[3])
+            tests.observe(pending)
             returncode = process.wait()
         except BaseException:
             _kill_command(process)
@@ -112,7 +157,7 @@ def execute_logged(command: list[str], log: Path, maximum_bytes: int = MAX_OUTPU
         "returncode": returncode, "log_file": log.name,
         "log_bytes": count, "log_sha256": digest.hexdigest(),
         "output_limit_exceeded": exceeded,
-        "observed_passed_tests": passed, "observed_failed_tests": failed,
+        "observed_passed_tests": tests.passed, "observed_failed_tests": tests.failed,
     }
 
 
