@@ -154,7 +154,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies the resource-aware algorithm and qualification ceilings. Current native enforcement belongs to `control_engineering_v2`: candidate count/file/diff bounds in `candidate.py`; <=8 process-local sandbox concurrency and <=2 infrastructure-only retries in `sandbox_control.py`; worker/CI/reviewer capacity in `orchestration.py`; and mutation-test cardinality in `mutation_testing.py`. These ceilings are not throughput measurements. Multi-host capacity and failover require the separately authenticated distributed-fence boundary.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies the resource-aware algorithm and qualification ceilings. Current native enforcement belongs to `control_engineering_v2`: candidate count/file/diff bounds in `candidate.py`; <=8 host-wide POSIX sandbox concurrency (process-local fallback on non-POSIX fixtures) and <=2 infrastructure-only retries in `sandbox_control.py`; worker/CI/reviewer capacity in `orchestration.py`; and mutation-test cardinality in `mutation_testing.py`. These ceilings are not throughput measurements. Multi-host capacity and failover require the separately authenticated distributed-fence boundary.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
