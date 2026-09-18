@@ -42,7 +42,7 @@ Normalization and canonical sorting are `O(n log n)`. A feasibility oracle has p
 
 Pilot bounds are 256 KiB raw input, 256 constraints, 128 success predicates, 64 soft dimensions, 127 caller actions without explicit abstain, 128 compiled actions and 257 conflict-oracle calls. No network or synchronous central RPC occurs in the deterministic compiler path.
 
-Latency claims require a named host, compiler, build profile, input class and exact source. A normal successful compile measurement cannot be reused as a conflict-extraction measurement.
+Latency claims require a named host, compiler, build profile, input class and exact source. A normal successful compile measurement cannot be reused as a conflict-extraction measurement. The repository now supplies `scripts/hepta-objective-target-measure.py` and [docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md](../../../docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md): release-mode ignored fixtures emit separate p50/p95/p99 distributions for authenticated admission+compile and the 256-atom/257-oracle conflict path. The harness is source-complete; actual target-host observations remain external evidence.
 
 ## 6. Concrete verification cases
 
