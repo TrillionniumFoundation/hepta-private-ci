@@ -43,7 +43,7 @@ pub fn withdrawal_head_digest_v3(
     let domain_digest = digest_withdrawal_domain(domain)?;
     Ok(digest_scoped_withdrawal_head(
         domain_digest,
-        registry.snapshot().head_digest,
+        registry.head_digest(),
     ))
 }
 
