@@ -24,7 +24,6 @@ impl AuthPolicy {
             && self.max_reservation > 0
             && !self.resource_digest.is_zero()
             && !self.scope_digest.is_zero()
-            && !self.payload_digest.is_zero()
     }
 
     pub fn digest(&self) -> Digest32 {
@@ -60,6 +59,7 @@ impl AuthorizationRequest {
         self.expected_policy_revision > 0
             && !self.resource_digest.is_zero()
             && !self.scope_digest.is_zero()
+            && !self.payload_digest.is_zero()
     }
 
     pub fn digest(&self) -> Digest32 {
