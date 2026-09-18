@@ -441,6 +441,9 @@ fn runtime_executes_model_commits_witness_and_rotates_without_state_reset() {
     assert_eq!(runtime.remaining_records(), 0);
 
     let checkpoint = first.tick_receipt.checkpoint_after;
+    let genesis = checked(runtime.current_checkpoint())
+        .cloned()
+        .expect("first checkpoint");
     let mut runtime = checked(runtime.rotate(fixture.file("segment-2"), 2));
     let second = checked(runtime.tick(
         input(2, checkpoint),
@@ -454,6 +457,34 @@ fn runtime_executes_model_commits_witness_and_rotates_without_state_reset() {
     assert_eq!(
         checked(runtime.current_checkpoint()).map(SparseCheckpoint::sequence),
         Some(2)
+    );
+
+    let terminal = second.tick_receipt.checkpoint_after;
+    drop(runtime);
+    let reopened_witness = checked(open_file_witness(
+        fixture.file("witness"),
+        config_digest,
+        &scope(),
+    ));
+    let reopened = checked(NeuronRuntimeHost::open_with_genesis(
+        fixture.file("segment-2"),
+        config(),
+        native(),
+        scope(),
+        2,
+        Executor {
+            execution: model_execution(),
+        },
+        reopened_witness,
+        Lineage { denied: None },
+        calibration_policy(),
+        Some(calibration_artifact()),
+        genesis,
+        4,
+    ));
+    assert_eq!(
+        checked(reopened.current_checkpoint()).map(SparseCheckpoint::digest),
+        Some(terminal)
     );
 }
 
