@@ -46,13 +46,136 @@
       "designOperation": "binding",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "secret_lease_binding",
+      "nativeSymbol": "secret_lease_binding",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/lease.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "secret_lease_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "request_secret_lease",
+      "nativeSymbol": "request_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/lease.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "request_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "secret_lease_renew_binding",
+      "nativeSymbol": "secret_lease_renew_binding",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/lease.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "secret_lease_renew_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "renew_secret_lease",
+      "nativeSymbol": "renew_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/lease.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "renew_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "secret_lease_revoke_binding",
+      "nativeSymbol": "secret_lease_revoke_binding",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/lease.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "secret_lease_revoke_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_secret_lease",
+      "nativeSymbol": "revoke_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/lease.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "secret_lease_lookup_binding",
+      "nativeSymbol": "secret_lease_lookup_binding",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/lease.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "secret_lease_lookup_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lookup_secret_lease",
+      "nativeSymbol": "lookup_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/lease.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lookup_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind dynamic lease handles to a durable lease-registry owner before claiming crash/reopen lifecycle recovery.",
+    "Bind every operation to an authenticated production consumer callsite and owner store.",
+    "Qualify request/renew/revoke/lookup against the pinned external HeptaBao service.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
+    "HeptaBao/provider stable operation-id idempotency plus status lookup is required before automatic reconciliation of an issuance whose response is lost",
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
