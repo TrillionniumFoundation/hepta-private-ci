@@ -159,6 +159,13 @@ pub struct LocalModelRuntimeReceiptV1 {
 pub struct BoundModelExecutionV1 {
     pub runtime_receipt: LocalModelRuntimeReceiptV1,
     pub head_digest: Digest32,
+    /// Exact executable/runtime binary identity. This is intentionally native
+    /// attestation rather than a new critical field in LocalModelRuntimeReceiptV1.
+    pub runtime_binary_digest: Digest32,
+    /// SBOM/provenance manifest bound to the executable and model package.
+    pub sbom_digest: Digest32,
+    /// License/admission manifest for the selected model/runtime package.
+    pub license_digest: Digest32,
     pub drive_q24: Vec<i64>,
     pub prediction_q24: Vec<i64>,
     /// Detector score in Q24. Zero is maximally in-distribution.
@@ -547,6 +554,14 @@ impl BoundModelExecutionV1 {
         if self.head_digest != config.head_digest {
             return Err(ProtocolError::InvalidModelExecution("head mismatch"));
         }
+        if self.runtime_binary_digest.is_zero()
+            || self.sbom_digest.is_zero()
+            || self.license_digest.is_zero()
+        {
+            return Err(ProtocolError::InvalidModelExecution(
+                "execution attestation",
+            ));
+        }
         let width = config.state_dimensions.activation as usize;
         if self.drive_q24.len() != width || self.prediction_q24.len() != width {
             return Err(ProtocolError::InvalidModelExecution("output dimensions"));
@@ -570,13 +585,20 @@ impl BoundModelExecutionV1 {
         let mut bytes = b"hepta.neuron.model-identity.v1".to_vec();
         bytes.extend_from_slice(self.runtime_receipt.identity_digest()?.as_array());
         bytes.extend_from_slice(self.head_digest.as_array());
+        for digest in [
+            self.runtime_binary_digest,
+            self.sbom_digest,
+            self.license_digest,
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
         Ok(Digest32::of_bytes(&bytes))
     }
 
     pub fn model_runtime_digest(&self) -> Result<Digest32, ProtocolError> {
         let mut bytes = b"hepta.neuron.model-execution.v1".to_vec();
         bytes.extend_from_slice(self.runtime_receipt.digest()?.as_array());
-        bytes.extend_from_slice(self.head_digest.as_array());
+        bytes.extend_from_slice(self.model_identity_digest()?.as_array());
         bytes.extend_from_slice(self.output_digest.as_array());
         Ok(Digest32::of_bytes(&bytes))
     }
@@ -584,7 +606,7 @@ impl BoundModelExecutionV1 {
     pub fn calculate_output_digest(&self) -> Result<Digest32, ProtocolError> {
         let mut bytes = b"hepta.neuron.model-output.q24.v1".to_vec();
         bytes.extend_from_slice(self.runtime_receipt.digest()?.as_array());
-        bytes.extend_from_slice(self.head_digest.as_array());
+        bytes.extend_from_slice(self.model_identity_digest()?.as_array());
         for values in [&self.drive_q24, &self.prediction_q24] {
             bytes.extend_from_slice(&(values.len() as u64).to_be_bytes());
             for value in values {
