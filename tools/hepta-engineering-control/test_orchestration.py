@@ -7,6 +7,7 @@ import unittest
 
 import control_engineering_v2
 from control_engineering_v2 import (
+    CanonicalSourceReceipt,
     EngineeringStore,
     HmacTrustStore,
     WorkEnvelope,
@@ -20,6 +21,7 @@ from control_engineering_v2.orchestration import (
     ReviewCapacity,
     WorkerProfile,
     issue_repository_work_envelope,
+    issue_signed_work_envelope,
     plan_engineering_work,
 )
 
@@ -488,6 +490,52 @@ class OrchestrationTests(unittest.TestCase):
                         generation_id="g-invalid-worker-scope",
                         now_ns=self.now,
                     )
+
+    def test_signed_source_receipt_caps_work_envelope_lifetime(self):
+        trust = HmacTrustStore({("source_authority", "source"): b"source-secret"})
+        source = CanonicalSourceReceipt(
+            "TrillionniumFoundation/hepta-private-ci",
+            self.envelope.source_commit,
+            self.envelope.source_tree,
+            "f" * 64,
+            "source_authority",
+            "source",
+            self.now - 1,
+            self.now + 100,
+        )
+        source = replace(
+            source,
+            signature=trust.sign(source, source.issuer, source.signing_identity),
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                too_long = replace(self.envelope, expires_unix_ns=self.now + 101)
+                with self.assertRaisesRegex(
+                    ValueError, "source_receipt_window_exceeded"
+                ):
+                    issue_signed_work_envelope(
+                        store,
+                        too_long,
+                        source,
+                        trust,
+                        expected_repository="TrillionniumFoundation/hepta-private-ci",
+                        expected_document_set_digest="f" * 64,
+                        now_ns=self.now,
+                    )
+
+                admitted = replace(self.envelope, expires_unix_ns=self.now + 100)
+                self.assertEqual(
+                    issue_signed_work_envelope(
+                        store,
+                        admitted,
+                        source,
+                        trust,
+                        expected_repository="TrillionniumFoundation/hepta-private-ci",
+                        expected_document_set_digest="f" * 64,
+                        now_ns=self.now,
+                    ),
+                    admitted,
+                )
 
     def test_repository_envelope_rejects_dirty_and_untracked_source(self):
         with tempfile.TemporaryDirectory() as temp:
