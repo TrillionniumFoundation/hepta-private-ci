@@ -69,12 +69,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     }
     if let Some(path) = trust_file {
         state.refresh_generation()?;
-        let host = crate::authbus_ingress::TextIngress::open(
-            &identity,
-            path,
-            replay_checkpoint_file,
-        )
-        .await?;
+        let host =
+            crate::authbus_ingress::TextIngress::open(&identity, path, replay_checkpoint_file)
+                .await?;
         state.refresh_generation()?;
         state
             .authbus
