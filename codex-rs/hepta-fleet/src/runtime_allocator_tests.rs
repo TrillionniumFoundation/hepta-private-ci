@@ -98,6 +98,47 @@ fn durable_grant_reopens_and_new_writer_epoch_fences_it() {
 }
 
 #[test]
+fn descending_writer_epoch_advances_host_generation_instead_of_rejecting_restart() {
+    let (_temp, registry) = registry();
+    let first = FleetRuntimeAllocator::open_with_observer(
+        &registry,
+        9,
+        100,
+        Box::new(ScriptedObserver {
+            capacities: VecDeque::from([Ok(capacity())]),
+            ttl_ms: 60_000,
+        }),
+    )
+    .expect("first allocator");
+    let first_generation = first
+        .state()
+        .ledger
+        .host(&first.host_id)
+        .expect("first host")
+        .generation;
+    drop(first);
+
+    let second = FleetRuntimeAllocator::open_with_observer(
+        &registry,
+        2,
+        200,
+        Box::new(ScriptedObserver {
+            capacities: VecDeque::from([Ok(capacity())]),
+            ttl_ms: 60_000,
+        }),
+    )
+    .expect("second allocator");
+    let second_generation = second
+        .state()
+        .ledger
+        .host(&second.host_id)
+        .expect("second host")
+        .generation;
+    assert_eq!(second_generation, first_generation + 1);
+    assert_eq!(second.writer_epoch(), 2);
+}
+
+#[test]
 fn start_reservation_is_durable_and_full_budget() {
     let (_temp, registry) = registry();
     let mut allocator = FleetRuntimeAllocator::open_with_observer(

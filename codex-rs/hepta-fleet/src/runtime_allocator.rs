@@ -38,6 +38,7 @@ pub struct FleetRuntimeAllocator {
     store: FleetAllocationStore,
     observer: Box<dyn FleetCapacityObserver>,
     writer_epoch: u64,
+    host_generation: u64,
     host_id: String,
     failure_domain_id: String,
     lease_ttl_ms: u64,
@@ -102,9 +103,17 @@ impl FleetRuntimeAllocator {
 
         let mut store =
             FleetAllocationStore::open_or_initialize(registry.layout().state_root(), writer_epoch, now_ms)?;
+        let previous_writer_epoch = store.current().writer_epoch;
         let mut ledger = store.current().ledger.clone();
+        let host_generation = match ledger.host(&host_id) {
+            Some(host) if previous_writer_epoch == writer_epoch => host.generation,
+            Some(host) => host.generation.checked_add(1).ok_or_else(|| {
+                FleetRuntimeAllocatorError::Invalid("host generation overflow".to_string())
+            })?,
+            None => 1,
+        };
         let fenced = ledger.fence_authority_epoch(writer_epoch, now_ms)?;
-        if store.current().writer_epoch != writer_epoch || fenced > 0 {
+        if previous_writer_epoch != writer_epoch || fenced > 0 {
             let revision = store.current().revision;
             store.commit(revision, writer_epoch, now_ms, ledger)?;
         }
@@ -113,6 +122,7 @@ impl FleetRuntimeAllocator {
             store,
             observer,
             writer_epoch,
+            host_generation,
             host_id,
             failure_domain_id,
             lease_ttl_ms: DEFAULT_RUNTIME_LEASE_TTL_MS,
@@ -348,7 +358,7 @@ impl FleetRuntimeAllocator {
             .ledger
             .host(&self.host_id)
             .is_some_and(|host| {
-                host.generation == self.writer_epoch && host.valid_until_ms >= required_until
+                host.generation == self.host_generation && host.valid_until_ms >= required_until
             })
         {
             return Ok(());
@@ -359,7 +369,7 @@ impl FleetRuntimeAllocator {
             .current()
             .ledger
             .host(&self.host_id)
-            .filter(|host| host.generation == self.writer_epoch)
+            .filter(|host| host.generation == self.host_generation)
             .map(|host| host.observation_revision)
             .unwrap_or(0)
             .checked_add(1)
@@ -371,14 +381,14 @@ impl FleetRuntimeAllocator {
         let observed = self.observer.observe(&CapacityObservationRequestV1 {
             host_id: self.host_id.clone(),
             failure_domain_id: self.failure_domain_id.clone(),
-            host_generation: self.writer_epoch,
+            host_generation: self.host_generation,
             observation_revision,
             now_ms,
         })?;
         observed.validate(now_ms)?;
         if observed.host_id != self.host_id
             || observed.failure_domain_id != self.failure_domain_id
-            || observed.host_generation != self.writer_epoch
+            || observed.host_generation != self.host_generation
             || observed.observation_revision != observation_revision
         {
             return Err(FleetRuntimeAllocatorError::Invalid(
