@@ -448,6 +448,7 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
 
 
 #[tokio::test]
+#[ignore = "profiled separately by the Lane B exact-head workflow"]
 async fn named_host_profile_emits_exact_runner_measurements() {
     const PLAN_ITERATIONS: u64 = 24;
     const REOPEN_ITERATIONS: usize = 6;
