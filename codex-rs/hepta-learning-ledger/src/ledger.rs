@@ -8,6 +8,7 @@ use codex_hepta_types::StableId;
 
 use crate::AppendDisposition;
 use crate::AppendReceipt;
+use crate::AuthenticatedDecisionRecordV2;
 use crate::AuthenticatedOutcomeRecordV2;
 use crate::AuthenticatedOutcomeTerminality;
 use crate::CandidateSetCompleteness;
@@ -33,6 +34,7 @@ const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-ledger.chain.v1";
 struct DecisionIndex {
     record_id: StableId,
     policy_id: StableId,
+    controller_id: Option<StableId>,
 }
 
 #[derive(Clone, Debug)]
@@ -40,6 +42,7 @@ struct OutcomeIndex {
     record_id: StableId,
     episode_id: StableId,
     observer_id: StableId,
+    controller_id: Option<StableId>,
     terminal: bool,
     value: Option<FixedQ32>,
     lineage_managed: bool,
@@ -207,6 +210,7 @@ impl LearningLedger {
             LedgerEvent::Outcome(value) => self.validate_outcome(value),
             LedgerEvent::Credit(value) => self.validate_credit(value),
             LedgerEvent::Revocation(value) => self.validate_revocation(value),
+            LedgerEvent::AuthenticatedDecisionV2(value) => self.validate_authenticated_decision(value),
             LedgerEvent::AuthenticatedOutcomeV2(value) => {
                 self.validate_authenticated_outcome(value)
             }
@@ -236,6 +240,42 @@ impl LearningLedger {
             .candidate_ids
             .contains(&decision.selected_candidate_id)
         {
+            return Err(LedgerError::SelectedCandidateMissing(
+                decision.selected_candidate_id.to_string(),
+            ));
+        }
+        if decision.selected_propensity.raw() == 0 {
+            return Err(LedgerError::ZeroSelectedPropensity);
+        }
+        if self.decisions.contains_key(&decision.episode_id) {
+            return Err(LedgerError::EpisodeAlreadyExists(
+                decision.episode_id.to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    fn validate_authenticated_decision(
+        &self,
+        decision: &AuthenticatedDecisionRecordV2,
+    ) -> Result<(), LedgerError> {
+        if decision.generator_authority_epoch == 0 {
+            return Err(LedgerError::InvalidAuthorityEpoch);
+        }
+        if decision.candidate_ids.is_empty() {
+            return Err(LedgerError::EmptyCandidateSet);
+        }
+        if decision.candidate_ids.len() > MAX_CANDIDATES {
+            return Err(LedgerError::CandidateLimitExceeded);
+        }
+        if !decision
+            .candidate_ids
+            .iter()
+            .any(|candidate| candidate.as_str() == "abstain")
+        {
+            return Err(LedgerError::MissingAbstainCandidate);
+        }
+        if !decision.candidate_ids.contains(&decision.selected_candidate_id) {
             return Err(LedgerError::SelectedCandidateMissing(
                 decision.selected_candidate_id.to_string(),
             ));
@@ -352,7 +392,11 @@ impl LearningLedger {
         if !outcome.terminal || outcome.value != Some(batch.terminal_outcome) {
             return Err(LedgerError::OutcomeNotTerminal);
         }
-        if decision.policy_id == batch.allocator_id || outcome.observer_id == batch.allocator_id {
+        if decision.policy_id == batch.allocator_id
+            || outcome.observer_id == batch.allocator_id
+            || decision.controller_id.as_ref() == Some(&batch.allocator_controller_id)
+            || outcome.controller_id.as_ref() == Some(&batch.allocator_controller_id)
+        {
             return Err(LedgerError::CreditAllocatorNotIndependent);
         }
         if self.credited_outcomes.contains(&batch.outcome_id) {
@@ -483,6 +527,17 @@ impl LearningLedger {
                     DecisionIndex {
                         record_id: value.record_id.clone(),
                         policy_id: value.policy_id.clone(),
+                        controller_id: None,
+                    },
+                );
+            }
+            LedgerEvent::AuthenticatedDecisionV2(value) => {
+                self.decisions.insert(
+                    value.episode_id.clone(),
+                    DecisionIndex {
+                        record_id: value.record_id.clone(),
+                        policy_id: value.generator_id.clone(),
+                        controller_id: Some(value.generator_controller_id.clone()),
                     },
                 );
             }
@@ -493,6 +548,7 @@ impl LearningLedger {
                         record_id: value.record_id.clone(),
                         episode_id: value.episode_id.clone(),
                         observer_id: value.observer_id.clone(),
+                        controller_id: None,
                         terminal: value.finality == OutcomeFinality::Terminal,
                         value: Some(value.value),
                         lineage_managed: false,
@@ -506,6 +562,7 @@ impl LearningLedger {
                         record_id: value.record_id.clone(),
                         episode_id: value.episode_id.clone(),
                         observer_id: value.observer_id.clone(),
+                        controller_id: Some(value.observer_controller_id.clone()),
                         terminal: value.terminality == AuthenticatedOutcomeTerminality::Terminal,
                         value: value.value,
                         lineage_managed: true,
@@ -548,7 +605,7 @@ impl LearningLedger {
             return false;
         }
         match &record.event {
-            LedgerEvent::Decision(_) => true,
+            LedgerEvent::Decision(_) | LedgerEvent::AuthenticatedDecisionV2(_) => true,
             LedgerEvent::Outcome(outcome) => {
                 let indexed = self.outcomes.get(&outcome.outcome_id);
                 self.decisions
@@ -581,7 +638,18 @@ impl LearningLedger {
                     });
                 decision_active && outcome_active
             }
-            LedgerEvent::CreditBatchV2(batch) => {
+            LedgerEvent::AuthenticatedDecisionV2(decision) => {
+            if decision.candidate_ids.len() > MAX_CANDIDATES {
+                return Err(LedgerError::CandidateLimitExceeded);
+            }
+            decision.candidate_ids.sort();
+            for window in decision.candidate_ids.windows(2) {
+                if window[0] == window[1] {
+                    return Err(LedgerError::DuplicateCandidate(window[0].to_string()));
+                }
+            }
+        }
+        LedgerEvent::CreditBatchV2(batch) => {
                 let decision_active = self
                     .decisions
                     .get(&batch.episode_id)
@@ -651,6 +719,22 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
         LedgerEvent::Decision(value) => {
             require_digest(value.objective_digest, "objective")?;
             require_digest(value.support_digest, "decision support")?;
+        }
+        LedgerEvent::AuthenticatedDecisionV2(value) => {
+            if value.generator_authority_epoch == 0 {
+                return Err(LedgerError::InvalidAuthorityEpoch);
+            }
+            for (digest, label) in [
+                (value.objective_digest, "objective"),
+                (value.generator_credential_chain_digest, "generator credential chain"),
+                (value.generator_signing_key_digest, "generator signing key"),
+                (value.generator_scope_digest, "generator scope"),
+                (value.candidate_completeness_digest, "candidate completeness"),
+                (value.support_digest, "decision support"),
+                (value.authentication_digest, "decision authentication"),
+            ] {
+                require_digest(digest, label)?;
+            }
         }
         LedgerEvent::Outcome(value) => {
             require_digest(value.support_digest, "outcome support")?;
@@ -750,6 +834,7 @@ enum EventKind {
     Revocation,
     AuthenticatedOutcomeV2,
     CreditBatchV2,
+    AuthenticatedDecisionV2,
     UnlearningLineageV1,
 }
 
@@ -762,6 +847,7 @@ const fn event_kind_code(kind: EventKind) -> u8 {
         EventKind::AuthenticatedOutcomeV2 => 4,
         EventKind::CreditBatchV2 => 5,
         EventKind::UnlearningLineageV1 => 6,
+        EventKind::AuthenticatedDecisionV2 => 7,
     }
 }
 
@@ -771,6 +857,7 @@ fn event_kind(event: &LedgerEvent) -> u8 {
         LedgerEvent::Outcome(_) => EventKind::Outcome,
         LedgerEvent::Credit(_) => EventKind::Credit,
         LedgerEvent::Revocation(_) => EventKind::Revocation,
+        LedgerEvent::AuthenticatedDecisionV2(_) => EventKind::AuthenticatedDecisionV2,
         LedgerEvent::AuthenticatedOutcomeV2(_) => EventKind::AuthenticatedOutcomeV2,
         LedgerEvent::CreditBatchV2(_) => EventKind::CreditBatchV2,
         LedgerEvent::UnlearningLineageV1(_) => EventKind::UnlearningLineageV1,
@@ -791,6 +878,7 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
         LedgerEvent::Outcome(value) => push_outcome(&mut bytes, value),
         LedgerEvent::Credit(value) => push_credit(&mut bytes, value),
         LedgerEvent::Revocation(value) => push_revocation(&mut bytes, value),
+        LedgerEvent::AuthenticatedDecisionV2(value) => push_authenticated_decision(&mut bytes, value),
         LedgerEvent::AuthenticatedOutcomeV2(value) => {
             push_authenticated_outcome(&mut bytes, value)
         }
@@ -823,6 +911,24 @@ fn push_decision(bytes: &mut Vec<u8>, value: &EpisodeDecision) {
     bytes.extend_from_slice(&value.selected_propensity.raw().to_be_bytes());
     bytes.push(value.completeness.tag());
     push_digest(bytes, value.support_digest);
+}
+
+fn push_authenticated_decision(bytes: &mut Vec<u8>, value: &AuthenticatedDecisionRecordV2) {
+    push_id(bytes, &value.record_id);
+    push_id(bytes, &value.episode_id);
+    push_digest(bytes, value.objective_digest);
+    push_id(bytes, &value.generator_id);
+    push_id(bytes, &value.generator_controller_id);
+    push_digest(bytes, value.generator_credential_chain_digest);
+    push_digest(bytes, value.generator_signing_key_digest);
+    push_digest(bytes, value.generator_scope_digest);
+    bytes.extend_from_slice(&value.generator_authority_epoch.to_be_bytes());
+    push_ids(bytes, &value.candidate_ids);
+    push_id(bytes, &value.selected_candidate_id);
+    bytes.extend_from_slice(&value.selected_propensity.raw().to_be_bytes());
+    push_digest(bytes, value.candidate_completeness_digest);
+    push_digest(bytes, value.support_digest);
+    push_digest(bytes, value.authentication_digest);
 }
 
 fn push_outcome(bytes: &mut Vec<u8>, value: &OutcomeObservation) {
