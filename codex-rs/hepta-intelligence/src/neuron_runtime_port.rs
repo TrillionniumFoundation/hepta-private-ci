@@ -79,11 +79,13 @@ fn convert_runtime_result(
         || result.signal_receipt.signal_set_id != expected_tick
         || result.tick_receipt.checkpoint_after != result.signal_receipt.temporal_state_digest
     {
-        return Err(if result.authority.grants_any() || result.sparse_receipt.authority.grants_any() {
-            NeuronConsumerErrorV1::AuthorityViolation
-        } else {
-            NeuronConsumerErrorV1::ReceiptMismatch
-        });
+        return Err(
+            if result.authority.grants_any() || result.sparse_receipt.authority.grants_any() {
+                NeuronConsumerErrorV1::AuthorityViolation
+            } else {
+                NeuronConsumerErrorV1::ReceiptMismatch
+            },
+        );
     }
     let signal_digest = digest_signal(&result);
     let disposition = if result.tick_receipt.abstain || result.signal_receipt.abstain {
