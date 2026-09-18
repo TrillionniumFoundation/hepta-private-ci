@@ -450,6 +450,28 @@ export async function startControlPlane({
     throw error;
   }
 
+  const suspendPage = (reason) => {
+    if (disposed || suspended) return suspensionPromise;
+    suspended = true;
+    lifecycleGeneration += 1;
+    stopTimer();
+    blockMutations(reason);
+    const suspendedWriterLease = writerLease;
+    writerLease = null;
+    suspensionPromise = (client ? client.suspend().catch(() => {}) : Promise.resolve()).finally(() => {
+      suspendedWriterLease?.lease.release();
+    });
+    return suspensionPromise;
+  };
+
+  const resumePage = (reason) => {
+    if (disposed) return;
+    suspended = false;
+    void suspensionPromise
+      .then(() => recoverSession(reason))
+      .catch(() => {});
+  };
+
   const onOffline = () => {
     stopTimer();
     client?.pauseReconciliation?.();
@@ -460,26 +482,25 @@ export async function startControlPlane({
     void recoverSession("Network connectivity was interrupted; reconnecting.").catch(() => {});
   };
   const onVisibilityChange = () => {
-    if (document.visibilityState === "visible") void refresh().catch(() => {});
+    if (document.visibilityState === "hidden") {
+      void suspendPage("Page is hidden; mutating controls are disabled.");
+      return;
+    }
+    if (document.visibilityState === "visible") {
+      if (suspended) {
+        resumePage("Page became visible; reconnecting.");
+      } else {
+        void refresh().catch(() => {});
+      }
+    }
   };
   const onPageHide = () => {
-    suspended = true;
-    lifecycleGeneration += 1;
-    stopTimer();
-    blockMutations("Page is suspended; mutating controls are disabled.");
-    const suspendedWriterLease = writerLease;
-    writerLease = null;
-    suspensionPromise = (client ? client.close().catch(() => {}) : Promise.resolve()).finally(() => {
-      suspendedWriterLease?.lease.release();
-    });
+    void suspendPage("Page is suspended; mutating controls are disabled.");
   };
   const onPageShow = (event) => {
     if (disposed) return;
     if (event?.persisted === true || timer === null) {
-      suspended = false;
-      void suspensionPromise
-        .then(() => recoverSession("Page session resumed; reconnecting."))
-        .catch(() => {});
+      resumePage("Page session resumed; reconnecting.");
     }
   };
 
@@ -508,6 +529,7 @@ export async function startControlPlane({
         // Local state is already cleared by RuntimeClient.close().
       }
     }
+    await suspensionPromise.catch(() => {});
     writerLease?.lease.release();
     writerLease = null;
   };
