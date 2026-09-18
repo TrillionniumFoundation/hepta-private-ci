@@ -473,13 +473,21 @@ fn paged_snapshot_binds_one_ledger_root_and_rejects_midstream_mutation() {
 #[test]
 fn paged_snapshot_proves_same_record_ancestry_and_rejects_forged_tombstone_boundary() {
     let mut store = store();
-    let first = candidate("memory:chain", "content:v1", MemoryAdmissionKind::Observation);
+    let first = candidate(
+        "memory:chain",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let first_intent = intent(&store, "intent:chain:1", &first);
     store
         .append_admitted(&Verifier, first, first_intent)
         .expect("append first");
 
-    let second = candidate("memory:chain", "content:v2", MemoryAdmissionKind::Observation);
+    let second = candidate(
+        "memory:chain",
+        "content:v2",
+        MemoryAdmissionKind::Observation,
+    );
     let second_intent = intent(&store, "intent:chain:2", &second);
     store
         .append_admitted(&Verifier, second, second_intent)
