@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "tree": "789fa2ea88e8a6e787a0fb838a8dda3cf2e20701"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "intuition.policy",
@@ -25,11 +25,13 @@
       "operation": "decide_calibrated",
       "nativeSymbol": "decide_calibrated",
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "historical_replay_source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "decide_calibrated",
+      "designOperation": "historical_replay",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -37,13 +39,13 @@
       "operation": "decide_calibrated_v2",
       "nativeSymbol": "decide_calibrated_v2",
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_fail_closed_completeness",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intuition/src/qualified_tests.rs::current_v2_rejects_any_omitted_candidate_bound"
       ],
       "sourcePathExists": true,
-      "designOperation": "decide_calibrated_v2",
+      "designOperation": "request_bound_compatibility",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -51,22 +53,55 @@
       "operation": "decide_calibrated_v3",
       "nativeSymbol": "decide_calibrated_v3",
       "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_profile_and_scoring_bound_not_product_composed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intuition/src/qualified_tests.rs",
         "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "decide_calibrated",
+      "designOperation": "qualified_fast_policy",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "scoring_commitment_for_request_v1",
+      "nativeSymbol": "scoring_commitment_for_request_v1",
+      "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
+      "state": "source_implemented_upstream_score_provenance_contract",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/qualified_tests.rs::v3_rejects_score_mutation_after_scoring_commitment"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "consume_upstream_learned_scores",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_authenticated_intuition_v1",
+      "nativeSymbol": "decide_authenticated_intuition_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/intuition_qualification.rs",
+      "state": "source_implemented_consumer_admission_not_product_composed",
+      "authority": "host_trust_snapshot_required",
+      "tests": [
+        "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs",
+        "codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_consumer_admission",
+      "mappingClass": "registered_consumer_adapter",
+      "delegatedCallees": [
+        "LearningEvidenceVerifierV1",
+        "decide_calibrated_v3"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind CounterBased assignment to the eventual owner-supplied authenticated random-stream draw.",
-    "Compose stricter V3 risk profiles through a native V3 host port instead of the HighOnlySlowPath compatibility wrapper.",
-    "Run exact-head and deterministic synthetic-merge qualification before changing the claim boundary."
+    "Compose the authenticated V3 path into a named product caller; the current Lane-F wrapper remains shadow/qualification only.",
+    "Add a native V3 host port for stricter risk rules instead of the HighOnlySlowPath compatibility wrapper.",
+    "Replace repository reference model/data fixtures with independently retained production-candidate artifacts before changing product claims.",
+    "Retain exact target-host authenticated end-to-end performance evidence before activation."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -76,6 +111,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "sourceI1MechanicsImplemented": true,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
