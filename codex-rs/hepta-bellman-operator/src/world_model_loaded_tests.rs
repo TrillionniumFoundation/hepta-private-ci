@@ -110,6 +110,19 @@ fn encoder_rejects_mutated_public_model_structure() {
         Err(WorldModelPayloadError::InvalidModel)
     );
 
+    let mut bad_mean = model.clone();
+    bad_mean.estimates[0].mean_outcome = FixedQ32::from_raw(
+        bad_mean.estimates[0]
+            .mean_outcome
+            .raw()
+            .checked_add(1)
+            .expect("fixture mean"),
+    );
+    assert_eq!(
+        encode_world_model_payload_v1(&bad_mean),
+        Err(WorldModelPayloadError::InvalidModel)
+    );
+
     let mut bad_count = model;
     bad_count.estimates[0].sample_count += 1;
     assert_eq!(
