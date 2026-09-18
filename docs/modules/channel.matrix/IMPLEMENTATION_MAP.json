@@ -51,15 +51,7 @@
         "symbol": "pub async fn dispatch_outbox_once(",
         "buildTarget": "codex-hepta-matrix-sdk"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/hepta-matrix-store/src/dispatch_ledger.rs",
-          "symbol": "pub async fn record_transport_accepted(",
-          "buildTarget": "codex-hepta-matrix-store",
-          "ownerModule": "channel.matrix"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
@@ -82,15 +74,7 @@
         "symbol": "pub async fn commit_response(",
         "buildTarget": "codex-hepta-matrix-sdk"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/hepta-matrix-store/src/dispatch_ledger.rs",
-          "symbol": "pub async fn observe_outbox_server_event(",
-          "buildTarget": "codex-hepta-matrix-store",
-          "ownerModule": "channel.matrix"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
