@@ -495,6 +495,40 @@ async fn actual_process_crash_after_dispatch_reopens_without_resend() {
             .await,
         Err(OperationError::Unavailable)
     ));
+
+    let recovered = store
+        .mark_recovered_indeterminate(
+            &intent().operation_id,
+            Digest32::of_bytes(b"recovered-dispatch-outcome-unknown"),
+            generation(3),
+            generation(9),
+        )
+        .await
+        .unwrap();
+    assert_eq!(recovered.state, DurableOperationState::Indeterminate);
+    assert_eq!(
+        store
+            .mark_recovered_indeterminate(
+                &intent().operation_id,
+                Digest32::of_bytes(b"recovered-dispatch-outcome-unknown"),
+                generation(3),
+                generation(9),
+            )
+            .await
+            .unwrap(),
+        recovered
+    );
+    let terminal = store
+        .observe_terminal(
+            &intent().operation_id,
+            ReconciliationOutcome::Applied,
+            Digest32::of_bytes(b"recovered-terminal-observation"),
+            generation(3),
+            generation(9),
+        )
+        .await
+        .unwrap();
+    assert_eq!(terminal.state, DurableOperationState::Applied);
 }
 
 #[cfg(unix)]
