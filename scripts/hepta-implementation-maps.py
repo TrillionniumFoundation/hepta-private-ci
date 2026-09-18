@@ -17,6 +17,7 @@ from pathlib import Path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
+HEX40 = re.compile(r"[0-9a-f]{40}")
 
 
 def current_source_base() -> dict[str, str]:
@@ -287,7 +288,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -311,12 +311,28 @@ def verify():
         source_base = row.get("sourceBase")
         if (
             not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
+            or set(source_base) != {"commit", "tree"}
+            or not isinstance(source_base.get("commit"), str)
+            or not isinstance(source_base.get("tree"), str)
+            or not HEX40.fullmatch(source_base["commit"])
+            or not HEX40.fullmatch(source_base["tree"])
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            commit, tree = source_base["commit"], source_base["tree"]
+            try:
+                if git("rev-parse", f"{commit}^{{tree}}") != tree:
+                    failures.append(f"{mid}: source base tree mismatch")
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base is not present in repository history")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -345,8 +361,6 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
