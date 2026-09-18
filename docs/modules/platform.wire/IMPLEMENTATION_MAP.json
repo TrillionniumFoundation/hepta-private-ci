@@ -86,7 +86,7 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/schema.rs",
-        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_transport.rs"
+        "codex-rs/hepta-wire/tests/cross_runtime_tcp.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "decode_envelope",
@@ -101,7 +101,7 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/stream.rs",
-        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_transport.rs"
+        "codex-rs/hepta-wire/tests/cross_runtime_tcp.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "decode_envelope",
