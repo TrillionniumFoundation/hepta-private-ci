@@ -907,6 +907,10 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop step outbox");
+    sqlx::query("DROP TABLE IF EXISTS automation_effect_dispatches")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop effect dispatch journal");
     sqlx::query("DROP TABLE IF EXISTS automation_provider_observations")
         .execute(&mut *rewind)
         .await
