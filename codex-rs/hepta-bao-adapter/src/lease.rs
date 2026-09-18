@@ -311,12 +311,27 @@ impl BaoClient {
                     operation_sha256,
                 });
             }
-            Err(error) => return Err(error),
+            Err(_) => {
+                persist_indeterminate(registry, operation_sha256).await?;
+                return Ok(SecretLeaseIssueOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
         };
-        let decoded: DynamicLeaseResponse =
-            serde_json::from_slice(&body).map_err(|_| BaoClientError::InvalidResponse)?;
+        let decoded: DynamicLeaseResponse = match serde_json::from_slice(&body) {
+            Ok(decoded) => decoded,
+            Err(_) => {
+                persist_indeterminate(registry, operation_sha256).await?;
+                return Ok(SecretLeaseIssueOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
+        };
         if decoded.lease_id.is_empty() || decoded.lease_duration == 0 {
-            return Err(BaoClientError::InvalidResponse);
+            persist_indeterminate(registry, operation_sha256).await?;
+            return Ok(SecretLeaseIssueOutcome::Indeterminate {
+                operation_sha256,
+            });
         }
         let issued_at_unix_ms = now_unix_ms()?;
         let expires_at_unix_ms = issued_at_unix_ms
@@ -468,12 +483,27 @@ impl BaoClient {
                     operation_sha256,
                 });
             }
-            Err(error) => return Err(error),
+            Err(_) => {
+                persist_indeterminate(registry, operation_sha256).await?;
+                return Ok(SecretLeaseMutationOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
         };
-        let decoded: LeaseRenewResponse =
-            serde_json::from_slice(&body).map_err(|_| BaoClientError::InvalidResponse)?;
+        let decoded: LeaseRenewResponse = match serde_json::from_slice(&body) {
+            Ok(decoded) => decoded,
+            Err(_) => {
+                persist_indeterminate(registry, operation_sha256).await?;
+                return Ok(SecretLeaseMutationOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
+        };
         if decoded.lease_duration == 0 {
-            return Err(BaoClientError::InvalidResponse);
+            persist_indeterminate(registry, operation_sha256).await?;
+            return Ok(SecretLeaseMutationOutcome::Indeterminate {
+                operation_sha256,
+            });
         }
         let observed_at_unix_ms = now_unix_ms()?;
         let expires_at_unix_ms = observed_at_unix_ms
@@ -699,8 +729,7 @@ impl BaoClient {
             network_request =
                 network_request.header("X-Vault-Namespace", &request.namespace);
         }
-        let response = match network_request.send().await
-        {
+        let response = match network_request.send().await {
             Ok(response) => response,
             Err(_) => {
                 persist_indeterminate(registry, operation_sha256).await?;
