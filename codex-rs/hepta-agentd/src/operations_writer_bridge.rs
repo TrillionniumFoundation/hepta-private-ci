@@ -153,7 +153,10 @@ impl AgentdOperationCoordinator {
             payload_digest: sha_digest(lease.envelope().payload_digest)?,
             payload: lease.payload().to_vec(),
         };
-        let receipt = match self.writer.apply_cross_owner_operation(&apply).await {
+        let receipt =
+            match ProductionDurableWriter::apply_cross_owner_operation(self.writer.as_ref(), &apply)
+                .await
+            {
             Ok(receipt) => receipt,
             Err(error) => {
                 let reason = destination_error_digest(&error);
@@ -203,10 +206,13 @@ impl AgentdOperationCoordinator {
 
         let semantic = sha_digest(record.semantic_digest)?;
         let payload = sha_digest(record.intent.payload_digest)?;
-        let observation = self
-            .writer
-            .observe_cross_owner_operation(operation_id.as_str(), &semantic, &payload)
-            .await;
+        let observation = ProductionDurableWriter::observe_cross_owner_operation(
+            self.writer.as_ref(),
+            operation_id.as_str(),
+            &semantic,
+            &payload,
+        )
+        .await;
         let (outcome, evidence) = match observation {
             Ok(Some(receipt)) => (
                 ReconciliationOutcome::Applied,
@@ -292,8 +298,8 @@ impl AgentdOperationCoordinator {
         &self,
         lease: &DispatchLease,
     ) -> Result<(), AgentdOperationCoordinatorError> {
-        if lease.envelope().owner_id != self.source_owner
-            || lease.envelope().destination != self.destination
+        if lease.envelope().owner_id.as_str() != self.source_owner.as_str()
+            || lease.envelope().destination.as_str() != self.destination.as_str()
             || lease.envelope().owner_generation != self.current_generation()?
             || lease.envelope().authority_epoch != self.current_authority_epoch()?
         {
