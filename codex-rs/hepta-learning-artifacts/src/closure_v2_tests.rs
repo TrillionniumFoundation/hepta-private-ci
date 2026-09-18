@@ -43,6 +43,19 @@ fn manifest(dataset: Digest32) -> LearningArtifactManifestV2 {
     }
 }
 
+fn withdrawal_binding(scope: &str) -> DatasetWithdrawalRegistryBindingV1 {
+    DatasetWithdrawalRegistryBindingV1 {
+        registry_id: id("dataset-withdrawals"),
+        scope_digest: digest(scope),
+        authority_id: id("dataset-owner"),
+    }
+}
+
+fn withdrawal_registry(scope: &str) -> DatasetWithdrawalRegistry {
+    DatasetWithdrawalRegistry::new(withdrawal_binding(scope))
+        .expect("valid withdrawal registry binding")
+}
+
 fn notice(dataset: Digest32) -> DatasetWithdrawalNoticeV1 {
     DatasetWithdrawalNoticeV1 {
         notice_id: id("withdrawal-1"),
@@ -73,7 +86,7 @@ fn art_01_manifest_v2_normalizes_complete_lineage() {
 #[test]
 fn art_02_persistent_withdrawal_blocks_future_admission_and_replays() {
     let dataset = digest("dataset");
-    let mut registry = DatasetWithdrawalRegistry::new();
+    let mut registry = withdrawal_registry("scope-a");
     let first = match registry.append(notice(dataset)) {
         Ok(receipt) => receipt,
         Err(error) => panic!("valid withdrawal failed: {error}"),
@@ -92,6 +105,29 @@ fn art_02_persistent_withdrawal_blocks_future_admission_and_replays() {
     };
     assert!(restored.is_withdrawn(dataset));
     assert_eq!(restored.snapshot(), snapshot);
+}
+
+#[test]
+fn art_02_withdrawal_binding_rejects_wrong_authority_and_cross_scope_replay() {
+    let dataset = digest("dataset");
+    let mut registry = withdrawal_registry("scope-a");
+    let mut wrong_authority = notice(dataset);
+    wrong_authority.authority_id = id("other-owner");
+    assert_eq!(
+        registry.append(wrong_authority),
+        Err(ArtifactClosureError::WithdrawalAuthorityMismatch)
+    );
+
+    let mut source = withdrawal_registry("scope-a");
+    source
+        .append(notice(dataset))
+        .expect("source withdrawal appends");
+    let mut snapshot = source.snapshot();
+    snapshot.binding = withdrawal_binding("scope-b");
+    assert!(matches!(
+        DatasetWithdrawalRegistry::from_snapshot(snapshot),
+        Err(ArtifactClosureError::WithdrawalSnapshotMismatch)
+    ));
 }
 
 #[test]

@@ -22,11 +22,17 @@ promoted to create-only authority. The implementation retains an exclusive
 advisory lock while checking the new file is still empty, writing and calling
 `sync_all`.
 
-Creation of the capability precedes semantic validation. A validation rejection
-may leave a zero-length orphan. The host reconciles or separately removes that
-orphan and must not reuse the path. Bytes appearing between atomic creation and
-the guarded write return `Indeterminate`; lock contention returns `Busy`; a
-write or sync error is also `Indeterminate`.
+Creation of the capability precedes semantic validation. The capability retains
+the created path and, on Unix, the created inode identity until a durable write
+commits. Dropping an uncommitted empty capability removes only that same empty
+inode. Write/sync failure first attempts to truncate and sync before cleanup;
+nonempty or identity-drifted files remain untouched for host reconciliation.
+Bytes appearing between atomic creation and the guarded write return
+`Indeterminate`; lock contention returns `Busy`.
+
+`create_under(root, relative)` rejects absolute paths, `..` traversal and an
+existing parent that canonicalizes outside the root. It reduces accidental scope
+escape, but does not make parent traversal race-proof against an adversarial host.
 
 ## Reader capability and locks
 

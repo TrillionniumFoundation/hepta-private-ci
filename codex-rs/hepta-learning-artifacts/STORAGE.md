@@ -63,18 +63,26 @@ pilot cap; this is not a high-frequency journal or hard-real-time controller.
 ## Failure and retry semantics
 
 Validation occurs after the caller creates the opaque capability but before any
-artifact bytes are written. Invalid binding, ineligible artifact or payload
-mismatch therefore leaves a zero-length orphan for host reconciliation. It does
-not authorize reusing that path: a second `create` must return
-`AlreadyExists`.
+artifact bytes are written. An uncommitted empty Unix staging file is now owned
+by the capability: dropping it after invalid binding, ineligible artifact,
+payload mismatch or another pre-write rejection removes the same empty inode
+when it can still be identified safely. On write/sync failure the writer
+best-effort truncates and syncs before that cleanup. Nonempty, replaced or
+otherwise indeterminate files are never blindly removed and remain host
+reconciliation work.
 
 After successful atomic creation, a nonzero length observed before the guarded
 write indicates interference and returns `Indeterminate`. Lock contention
 returns `Busy` without this writer writing bytes. A write or synchronization
-failure is `Indeterminate`; the caller must reconcile the exact target and
-expected digest. It must never truncate, overwrite, silently adopt or retry
-through the same path. Removal of a proven orphan is a separately authorized
-host operation.
+failure is `Indeterminate` unless the empty staging object can be safely
+reclaimed. The caller must never overwrite, silently adopt or retry through an
+existing path.
+
+`CreateOnlyArtifactFile::create_under(root, relative)` additionally rejects
+absolute paths, parent traversal and parent symlink escape after canonicalizing
+the existing parent. It is defense in depth, not a substitute for a
+race-resistant dirfd/`openat2`-style host boundary when parent directories are
+adversarial.
 
 ## Host transaction and trust boundary
 
@@ -85,12 +93,14 @@ any runtime use: a valid old snapshot plus its old receipt can still predate a
 deletion. This module cannot infer the latest state from the suspect file. Never
 use an older snapshot to make a revoked predecessor appear eligible for rollback.
 
-Create payload -> sync -> create canonical registry snapshot -> sync -> durably
-publish the receipt/witness -> independent evaluation/decision -> separately
-owned next-run selection. Cross-store atomicity requires a host transaction or
-outbox reconciliation; two synced files are not an atomic multi-store transaction.
-A crash before witness publication may leave an orphan candidate, not a selected
-artifact.
+The current multi-snapshot publication protocol is specified in
+[`PUBLICATION_TRANSACTION.md`](PUBLICATION_TRANSACTION.md). The crate now
+provides durable scoped withdrawal and lifecycle snapshots plus a typed
+`ArtifactPublicationCommitV1` that binds admission and all durable frontiers.
+The host still owns the one final atomic current-pointer replacement. Before
+that replacement every file is staging and must be invisible to current readers.
+A crash before pointer publication may leave unreachable staging objects but
+cannot expose a mixed generation.
 
 `create_new` protects the final path component from an existence-check race; it
 does not authenticate ancestor traversal, retain a path-to-inode binding after
