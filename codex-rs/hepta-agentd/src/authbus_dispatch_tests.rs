@@ -11,12 +11,15 @@ use std::sync::atomic::Ordering;
 use codex_app_server_protocol::QueuedSubmission;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_evidence::AuthBusDeliveryState;
+use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -91,13 +94,24 @@ impl Fixture {
             trust_file,
         };
         fixture.trust(/*revoked*/ false);
+        let checkpoint = (
+            1,
+            Digest32::of_bytes(b"authbus-dispatch-test-checkpoint"),
+        );
+        let home =
+            AbsolutePathBuf::from_absolute_path(&fixture.state.identity().home_root).unwrap();
+        let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
+            .await
+            .unwrap();
+        evidence
+            .initialize_authbus_restore_checkpoint(checkpoint.0, checkpoint.1)
+            .await
+            .unwrap();
+        drop(evidence);
         let host = TextIngress::open(
             fixture.state.identity(),
             fixture.trust_file.clone(),
-            (
-                1,
-                Digest32::of_bytes(b"authbus-dispatch-test-checkpoint"),
-            ),
+            checkpoint,
         )
         .await
         .unwrap();

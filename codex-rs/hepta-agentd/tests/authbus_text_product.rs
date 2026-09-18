@@ -28,6 +28,10 @@ use codex_hepta_agentd::AuthBusTextState;
 use codex_hepta_agentd::AuthBusTextStatus;
 use codex_hepta_agentd::authbus_text_claims;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_evidence::HeptaEvidenceStore;
+use codex_hepta_types::Digest32;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
@@ -73,7 +77,14 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &[],
         /*revoked*/ false,
     )?;
-    let restore_checkpoint = format!("1:{}", "11".repeat(32));
+    let checkpoint_digest = Digest32::from_array([0x11; 32]);
+    let home = AbsolutePathBuf::from_absolute_path(agent.layout.home_root())?;
+    let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home)).await?;
+    evidence
+        .initialize_authbus_restore_checkpoint(1, checkpoint_digest)
+        .await?;
+    drop(evidence);
+    let restore_checkpoint = format!("1:{checkpoint_digest}");
     fleet.start_with_authbus_trust_file(&agent, &trust_file, &restore_checkpoint)?;
     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     let ingress = control.session_ingress().await?;

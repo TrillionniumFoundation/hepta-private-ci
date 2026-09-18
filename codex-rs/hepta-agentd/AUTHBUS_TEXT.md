@@ -50,14 +50,23 @@ permits startup but no text admission; use the normal session ingress to create
 a thread, then install its ID.
 
 The restore checkpoint is deliberately **not** stored in this trust JSON or inferred
-from the EvidenceStore. Whenever AuthBus trust is configured, Agentd also requires
-`--authbus-restore-checkpoint generation:digest`; configuring only one of the two
-fails startup. The supervisor/operator must retain that witness outside the Agent
-home SQLite backup lineage. Agentd binds/verifies it when the AuthBus host opens,
-so restoring an older database against a newer external witness fails closed.
-Advance the EvidenceStore checkpoint first, atomically publish/retain the matching
-external witness, and treat any crash between those steps as fail-closed until an
-operator reconciles the pair.
+from the EvidenceStore. Before enabling AuthBus on a new lineage, an explicit
+provisioning step must call
+`HeptaEvidenceStore::initialize_authbus_restore_checkpoint(generation, digest)`
+once and durably publish the identical witness outside the Agent-home/SQLite
+backup lineage. Normal Agentd startup is **verify-only**: whenever AuthBus trust
+is configured it also requires
+`--authbus-restore-checkpoint generation:digest`, and it refuses a missing
+checkpoint row instead of initializing one. This prevents a deleted or
+pre-checkpoint database from masquerading as a fresh install.
+
+The supervisor/operator must retain the witness independently. Restoring an
+older database against a newer external witness fails closed. To advance it,
+update the EvidenceStore checkpoint under its monotonic transition, publish and
+durably retain the matching external witness, then restart/reconcile the host as
+required. A crash between DB advancement and external witness publication is
+fail-closed and requires operator reconciliation; it must never be repaired by
+silently reinitializing the database checkpoint.
 
 Replace the complete file atomically while
 preserving its permissions. The daemon reloads it for admission and dispatch
