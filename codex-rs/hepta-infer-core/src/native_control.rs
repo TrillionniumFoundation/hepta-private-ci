@@ -335,8 +335,11 @@ impl DurableInferenceControl {
             .records
             .get(request_id)
             .ok_or(Error::RequestNotFound)?;
-        let expected =
-            native_final_use_binding(&record.request, &dispatch.model_provider, &dispatch.context_digest)?;
+        let expected = native_final_use_binding(
+            &record.request,
+            &dispatch.model_provider,
+            &dispatch.context_digest,
+        )?;
         if verified.binding() != &expected {
             return Err(Error::Conflict);
         }
