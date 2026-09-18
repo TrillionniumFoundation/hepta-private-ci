@@ -23,6 +23,8 @@ pub struct CodexOperationIntent {
     pub method_id: StableId,
     pub payload_digest: Digest32,
     pub lease_payload_digest: Digest32,
+    /// Exact serialized additional-context snapshot supplied to App Server.
+    pub context_digest: Digest32,
     /// Binds this request to the exact owner-local App Server transport/session.
     pub connection_digest: Digest32,
     pub session_generation: u64,
@@ -107,6 +109,7 @@ pub struct CodexAdapterReceipt {
     pub request_digest: Digest32,
     pub status: AdapterStatus,
     pub response_digest: Option<Digest32>,
+    pub context_digest: Digest32,
     pub connection_digest: Digest32,
     pub session_generation: u64,
     pub protocol_version: u32,
@@ -145,6 +148,9 @@ pub fn adapt(
 ) -> Result<CodexAdapterReceipt, Error> {
     if intent.payload_digest.is_zero() || intent.lease_payload_digest.is_zero() {
         return Err(Error::EmptyDigest("payload"));
+    }
+    if intent.context_digest.is_zero() {
+        return Err(Error::EmptyDigest("context"));
     }
     if intent.connection_digest.is_zero() {
         return Err(Error::EmptyDigest("connection"));
@@ -207,6 +213,7 @@ pub fn adapt(
         request_digest,
         status,
         response_digest,
+        context_digest: intent.context_digest,
         connection_digest: intent.connection_digest,
         session_generation: intent.session_generation,
         protocol_version: intent.protocol_version,
@@ -231,6 +238,7 @@ fn request_digest(intent: &CodexOperationIntent) -> Digest32 {
     push_id(&mut bytes, &intent.method_id);
     bytes.extend_from_slice(intent.payload_digest.as_array());
     bytes.extend_from_slice(intent.lease_payload_digest.as_array());
+    bytes.extend_from_slice(intent.context_digest.as_array());
     bytes.extend_from_slice(intent.connection_digest.as_array());
     bytes.extend_from_slice(&intent.session_generation.to_be_bytes());
     bytes.extend_from_slice(&intent.protocol_version.to_be_bytes());
