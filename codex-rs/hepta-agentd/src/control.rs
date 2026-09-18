@@ -111,7 +111,7 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     } else {
         let request_id = request.request_id;
         let spawn_generation = request.spawn_generation;
-        let request_timeout = if matches!(request.method, crate::AgentdMethod::BrowserServo { .. }) {
+        let request_timeout = if matches!(&request.method, crate::AgentdMethod::BrowserServo { .. }) {
             BROWSER_CONTROL_TIMEOUT
         } else {
             IO_TIMEOUT
