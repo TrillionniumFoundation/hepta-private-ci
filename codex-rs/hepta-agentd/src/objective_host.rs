@@ -70,6 +70,8 @@ pub fn start_intelligence_run_v1(
                 body_digest: body_digest.to_string(),
                 artifact_set_digest: envelope.run_start.artifact_set_digest.to_string(),
                 authority_epoch: envelope.run_start.authority_epoch,
+                generation: envelope.run_start.generation,
+                fence_digest: envelope.run_start.fence_digest.to_string(),
                 deadline_ms,
             },
         )
