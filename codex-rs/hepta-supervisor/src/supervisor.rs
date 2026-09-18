@@ -987,8 +987,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             write_intent(record.layout.run_root(), &terminal_intent)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.signed_intent = Some(terminal_intent.clone());
-            let next_control_revision = supervisor.next_control_revision(agent_id)?;
-            supervisor.set_control_revision(agent_id, next_control_revision)?;
+            let next_control_revision = Self::next_control_revision_for_slot(slot)?;
+            Self::set_control_revision_for_slot(slot, next_control_revision)?;
 
             Ok(ProductionMutationReceipt {
                 grant_sha256: terminal_intent.grant_sha256,
