@@ -98,15 +98,21 @@ same source commit/tree and to an actually published immutable assignment genera
 semantic digest; verification also requires the package to have been assigned in
 that generation and the stored assignment frontier to match the same envelope and
 source identity. A signed arbitrary generation string cannot satisfy a predecessor.
-Encoded semantic records also have a 256 KiB bound; hitting a byte bound may reject input below the
-item-count limit. Graph validation is iterative, so valid deep DAGs do not depend
-on Python's recursion limit. Base scheduling applies verified completed predecessors, active lease exclusion,
-intra-batch path exclusion, stable priority and envelope capacity. The higher
-orchestration layer then matches required skills, worker capacity, CI units and
-review-role slots and orders admitted work by expected value minus architecture
-debt and rollback cost. A generation binds the exact source/envelope/active-lease
-frontier; the orchestration plan additionally binds the authenticated completion
-frontier. A changed frontier requires a new generation ID. An assignment is still
+Completion observation cannot predate the referenced generation and its
+freshness window cannot outlive the owning work envelope. Encoded semantic records
+also have a 256 KiB bound; hitting a byte bound may reject input below the item-count
+limit. Graph validation is iterative, so valid deep DAGs do not depend on Python's
+recursion limit. Canonical resource-aware scheduling runs under one `BEGIN IMMEDIATE`
+owner transaction: it freezes the active-lease frontier, removes completed or
+dependency-blocked work, ranks ready packages by expected value minus architecture
+debt and rollback cost (priority is a deterministic tie-breaker), then admits only
+packages with an eligible worker, remaining worker/CI/reviewer capacity and no path
+conflict. Infeasible work does not consume the assignment limit. The exact final
+assigned/blocked set—not a coarser preliminary schedule—is written to
+`assignment_generations` in the same transaction as its frontier and audit event.
+The generation semantic digest binds normalized package/worker/capacity inputs,
+completion frontier, assignments, integration order and merge queue. A changed
+frontier or planning input requires a new generation ID. An assignment is still
 a proposal; workers must acquire the exact local lease, and multi-host production
 writes must additionally present a signed distributed fence matching epoch/token,
 paths, source and revocation frontier. Fence verification re-reads the current
