@@ -221,3 +221,215 @@ fn envelope() -> ObjectiveSourceEnvelopeV1 {
             risk: ObjectiveRiskV1 {
                 risk_class: ObjectiveRiskClassV1::Low,
                 abstention_rule: "ask".to_string(),
+                rollback_class: ObjectiveRollbackClassV1::Reversible,
+                compensation_required: false,
+            },
+            provenance: ObjectiveProvenanceV1 {
+                source_digest,
+                normalization_profile_digest: digest("normalization-v1"),
+            },
+        },
+        source_trust_class: ObjectiveSourceTrustV1::Principal,
+        locale: "en-US".to_string(),
+        observed_at: "2026-09-08T10:00:00Z".to_string(),
+        deadline: Some("2026-09-08T10:05:00Z".to_string()),
+        input_schema_digest: digest("schema-v1"),
+    };
+    envelope.intent_digest =
+        canonical_objective_intent_digest_v1(&envelope).expect("canonical intent");
+    envelope
+}
+
+fn request(run_id: &str) -> ObjectiveProductRequestV1 {
+    let profile = profile();
+    let envelope = envelope();
+    let context = ObjectiveAdmissionContextV1 {
+        revision: Revision::new(7).expect("revision"),
+        now_unix_micros: NOW_MICROS,
+        selected_profile_digest: profile.digest().expect("profile digest"),
+        source_authentication: ObjectiveSourceAuthenticationV1::Principal {
+            principal_scope_digest: envelope.principal_scope_digest,
+            source_digest: envelope.structured_intent.provenance.source_digest,
+        },
+    };
+    ObjectiveProductRequestV1 {
+        envelope,
+        profile,
+        context,
+        run: RunStartBindingsV1 {
+            run_id: id(run_id),
+            preference_state_digest: digest("preference-state"),
+            model_tuple_digest: digest("model-tuple"),
+            prompt_registry_digest: digest("prompt-registry"),
+            artifact_set_digest: digest("artifact-set"),
+            authority_epoch: 11,
+            generation: 13,
+            fence_digest: digest("authority-fence"),
+        },
+    }
+}
+
+#[test]
+fn product_caller_atomically_publishes_and_recovers_objective_and_run_snapshot() {
+    let host = NamedTempFile::new().expect("host file");
+    let binding = digest("objective-publication-store");
+    let mut caller =
+        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+            .expect("create");
+
+    let receipt = caller
+        .admit_compile_publish(request("run.001"))
+        .expect("publish");
+    assert_eq!(
+        receipt.disposition,
+        ObjectivePublicationDispositionV1::Appended
+    );
+    assert!(!receipt.authority.grants_any());
+    assert_eq!(
+        receipt.publication.run_start.objective_digest,
+        receipt.publication.objective.objective.semantic_digest
+    );
+    assert_eq!(
+        receipt.publication.run_start.hard_constraint_digest,
+        receipt.publication.objective.objective.hard_constraint_digest
+    );
+    assert!(!receipt.publication.run_start.digest().is_zero());
+
+    let expected = receipt.publication.clone();
+    let anchor = caller.anchor().expect("anchor");
+    drop(caller);
+
+    let recovered = ObjectiveProductCallerV1::recover(
+        host.reopen().expect("reader"),
+        binding,
+        64,
+        ObjectivePublicationRecoveryV1::Acknowledged(anchor),
+    )
+    .expect("recover");
+    assert_eq!(recovered.records().expect("records"), &[expected.clone()]);
+    assert_eq!(
+        recovered
+            .publication_for_run(&id("run.001"))
+            .expect("lookup"),
+        Some(&expected)
+    );
+}
+
+#[test]
+fn exact_retry_is_idempotent_and_does_not_append_a_second_frame() {
+    let host = NamedTempFile::new().expect("host file");
+    let binding = digest("objective-idempotent-store");
+    let mut caller =
+        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+            .expect("create");
+    let request = request("run.retry");
+
+    let first = caller
+        .admit_compile_publish(request.clone())
+        .expect("first publish");
+    let second = caller
+        .admit_compile_publish(request)
+        .expect("replay publish");
+    assert_eq!(first.publication, second.publication);
+    assert_eq!(
+        second.disposition,
+        ObjectivePublicationDispositionV1::IdempotentReplay
+    );
+    assert_eq!(caller.records().expect("records").len(), 1);
+}
+
+#[test]
+fn same_objective_revision_with_new_run_is_allowed_when_semantics_match() {
+    let host = NamedTempFile::new().expect("host file");
+    let binding = digest("objective-multi-run-store");
+    let mut caller =
+        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+            .expect("create");
+
+    let first = caller
+        .admit_compile_publish(request("run.one"))
+        .expect("first");
+    let second = caller
+        .admit_compile_publish(request("run.two"))
+        .expect("second");
+    assert_eq!(
+        first.publication.objective.objective.semantic_digest,
+        second.publication.objective.objective.semantic_digest
+    );
+    assert_eq!(caller.records().expect("records").len(), 2);
+}
+
+#[test]
+fn reused_request_revision_with_different_semantics_is_a_durable_conflict() {
+    let host = NamedTempFile::new().expect("host file");
+    let binding = digest("objective-conflict-store");
+    let mut caller =
+        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+            .expect("create");
+
+    caller
+        .admit_compile_publish(request("run.first"))
+        .expect("first");
+    let mut changed = request("run.second");
+    changed.envelope.structured_intent.success_predicates[0].bound_q32 += 1;
+    changed.envelope.intent_digest =
+        canonical_objective_intent_digest_v1(&changed.envelope).expect("intent");
+
+    assert!(matches!(
+        caller.admit_compile_publish(changed),
+        Err(ObjectiveProductErrorV1::Store(
+            ObjectivePublicationStoreErrorV1::Conflict
+        ))
+    ));
+    assert_eq!(caller.records().expect("records").len(), 1);
+}
+
+#[test]
+fn invalid_run_binding_rejects_before_durable_publication() {
+    let host = NamedTempFile::new().expect("host file");
+    let binding = digest("objective-invalid-run-store");
+    let mut caller =
+        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+            .expect("create");
+    let mut invalid = request("run.invalid");
+    invalid.run.model_tuple_digest = Digest32::ZERO;
+
+    assert!(matches!(
+        caller.admit_compile_publish(invalid),
+        Err(ObjectiveProductErrorV1::InvalidRunBinding("model tuple"))
+    ));
+    assert!(caller.records().expect("records").is_empty());
+}
+
+#[test]
+fn acknowledged_recovery_trims_only_an_incomplete_unacknowledged_tail() {
+    let host = NamedTempFile::new().expect("host file");
+    let binding = digest("objective-recovery-store");
+    let mut caller =
+        ObjectiveProductCallerV1::create(host.reopen().expect("writer"), binding, 64)
+            .expect("create");
+    let expected = caller
+        .admit_compile_publish(request("run.recover"))
+        .expect("publish")
+        .publication;
+    let anchor = caller.anchor().expect("anchor");
+    drop(caller);
+
+    {
+        let mut file = OpenOptions::new()
+            .append(true)
+            .open(host.path())
+            .expect("append tail");
+        file.write_all(&[0, 0, 0]).expect("tail");
+        file.sync_all().expect("sync tail");
+    }
+
+    let recovered = ObjectiveProductCallerV1::recover(
+        host.reopen().expect("reader"),
+        binding,
+        64,
+        ObjectivePublicationRecoveryV1::Acknowledged(anchor),
+    )
+    .expect("recover");
+    assert_eq!(recovered.records().expect("records"), &[expected]);
+}
