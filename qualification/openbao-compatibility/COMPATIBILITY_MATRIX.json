@@ -104,9 +104,10 @@
       "layer": "api",
       "status": "partial",
       "blocking": true,
-      "summary": "The adapter now implements bounded dynamic lease issuance, renewal, revocation and non-replaying lookup for known lease handles. Durable lease-registry recovery, provider operation-id idempotency/status lookup for lost issuance responses, rotation qualification and product composition remain open.",
+      "summary": "The adapter now implements bounded dynamic issuance, renewal, revocation, non-replaying lookup and a private durable lease registry with operation fencing/reopen recovery. Provider operation-id idempotency/status lookup for an issuance whose response is lost, exact-pin service qualification, rotation qualification and product composition remain open.",
       "evidence": [
         "codex-rs/hepta-bao-adapter/src/lease.rs",
+        "codex-rs/hepta-bao-adapter/src/lease_registry.rs",
         "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
         "docs/modules/secrets.heptabao/TECHNICAL.md",
         "qualification/module-execution-dossiers/detail/secrets.heptabao.md",
@@ -114,9 +115,11 @@
         "external/HeptaBao/EXTERNAL_SOURCE.json"
       ],
       "requiredEvidence": [
-        "lease_registry",
-        "indeterminate_reconciliation",
-        "rotation_tests"
+        "provider_issue_idempotency_status_lookup",
+        "exact_pin_dynamic_lease_contract_tests",
+        "rotation_tests",
+        "named_product_caller",
+        "independent_acceptance"
       ]
     },
     {
