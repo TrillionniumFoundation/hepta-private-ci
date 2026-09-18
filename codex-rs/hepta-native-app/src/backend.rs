@@ -210,3 +210,128 @@ impl BackendPort for AgentdBackend {
         Ok(())
     }
 }
+
+
+#[cfg(all(test, unix))]
+mod tests {
+    use super::*;
+    use std::io::BufRead;
+    use std::io::BufReader;
+    use std::io::Write;
+    use std::os::unix::net::UnixListener;
+
+    use codex_hepta_agentd::AgentdCapabilitySet;
+    use codex_hepta_agentd::AgentdMethod;
+    use codex_hepta_agentd::AgentdPayload;
+    use codex_hepta_agentd::AgentdRequest;
+    use codex_hepta_agentd::AgentdResponse;
+    use codex_hepta_agentd::EventBatch;
+    use codex_hepta_agentd::HealthSnapshot;
+    use codex_hepta_agentd::LifecycleSnapshot;
+    use codex_hepta_agentd::SessionIngress;
+    use codex_hepta_agentd::SessionTransport;
+    use codex_hepta_fleet::AgentLifecycle;
+
+    const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+
+    #[test]
+    fn real_agentd_wire_contract_composes_native_backend() -> Result<(), NativeError> {
+        let temp = tempfile::tempdir()
+            .map_err(|error| NativeError::Backend(format!("create temp dir: {error}")))?;
+        let socket = temp.path().join("agentd.sock");
+        let app_server = temp.path().join("app-server.sock");
+        let workspace = temp.path().join("workspace");
+        let home_root = temp.path().join("home");
+        let run_root = temp.path().join("run");
+        for directory in [&workspace, &home_root, &run_root] {
+            std::fs::create_dir(directory)
+                .map_err(|error| NativeError::Backend(format!("create test root: {error}")))?;
+        }
+
+        let listener = UnixListener::bind(&socket)
+            .map_err(|error| NativeError::Backend(format!("bind Agentd fixture: {error}")))?;
+        let agent_id =
+            AgentId::parse(AGENT_ID).map_err(|error| NativeError::Backend(error.to_string()))?;
+        let server_agent = agent_id.clone();
+        let server_workspace = workspace.clone();
+        let server_home = home_root.clone();
+        let server_run = run_root.clone();
+        let server_app = app_server.clone();
+        let server = std::thread::spawn(move || -> Result<(), String> {
+            for _ in 0..7 {
+                let (stream, _) = listener.accept().map_err(|error| error.to_string())?;
+                let mut reader = BufReader::new(stream);
+                let mut bytes = Vec::new();
+                reader
+                    .read_until(b'\n', &mut bytes)
+                    .map_err(|error| error.to_string())?;
+                let request: AgentdRequest =
+                    serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
+                let payload = match request.method {
+                    AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
+                        promotion_ready: true,
+                        ready: true,
+                        fenced: false,
+                        lifecycle: AgentLifecycle::Running,
+                        process_id: 4242,
+                        workspace: server_workspace.clone(),
+                        home_root: server_home.clone(),
+                        run_root: server_run.clone(),
+                    }),
+                    AgentdMethod::Lifecycle => AgentdPayload::Lifecycle(LifecycleSnapshot {
+                        lifecycle: AgentLifecycle::Running,
+                        app_server_ready: true,
+                        fenced: false,
+                    }),
+                    AgentdMethod::SessionIngress => AgentdPayload::SessionIngress(SessionIngress {
+                        socket_path: server_app.clone(),
+                        transport: SessionTransport::CodexAppServerWebsocketOverUds,
+                    }),
+                    AgentdMethod::Events { .. } => AgentdPayload::Events(EventBatch {
+                        events: Vec::new(),
+                        gap: false,
+                        next_cursor: 6,
+                        latest_cursor: 5,
+                    }),
+                    AgentdMethod::Capabilities => {
+                        AgentdPayload::Capabilities(AgentdCapabilitySet::empty())
+                    }
+                    other => {
+                        return Err(format!("unexpected native backend request: {other:?}"));
+                    }
+                };
+                let response = AgentdResponse {
+                    schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                    request_id: request.request_id,
+                    agent_id: server_agent.clone(),
+                    spawn_generation: 7,
+                    current_generation: 7,
+                    payload,
+                };
+                let mut response_bytes =
+                    serde_json::to_vec(&response).map_err(|error| error.to_string())?;
+                response_bytes.push(b'\n');
+                reader
+                    .into_inner()
+                    .write_all(&response_bytes)
+                    .map_err(|error| error.to_string())?;
+            }
+            Ok(())
+        });
+
+        let mut backend = AgentdBackend::new(socket.clone(), agent_id, 7)?;
+        let manifest = backend.endpoint_manifest();
+        let session = backend.connect(&manifest)?;
+        assert_eq!(session.fence.generation, 7);
+        let view = backend.read_view(&session)?;
+        assert_eq!(view.revision, 6);
+        assert_eq!(view.generation, 7);
+        assert!(view.modules.is_empty());
+        assert!(view.summary.contains("\"ready\": \"true\""));
+        server
+            .join()
+            .map_err(|_| NativeError::Backend("Agentd fixture panicked".to_string()))?
+            .map_err(NativeError::Backend)?;
+        Ok(())
+    }
+}
