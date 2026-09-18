@@ -348,6 +348,9 @@ where
             execution.runtime_receipt.tokenizer_digest,
             execution.runtime_receipt.preprocessor_digest,
             execution.runtime_receipt.device_identity_digest,
+            execution.runtime_binary_digest,
+            execution.sbom_digest,
+            execution.license_digest,
         ] {
             require_lineage(&mut self.lineage, digest)?;
         }
