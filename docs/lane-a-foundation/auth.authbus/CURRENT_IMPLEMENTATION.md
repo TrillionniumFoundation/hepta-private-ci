@@ -28,6 +28,25 @@ The legacy `PreverifiedAuthEnvelope` / `ReplayWindow` API still accepts already
 verified facts and records sequences only in process memory. It does not verify
 signatures or become durable through the addition of the signed API.
 
+The current source candidate also supplies durable control state through the
+existing `HeptaEvidenceStore`. `install_authbus_policy` stores immutable policy
+versions and a monotonic head; `authorize_authbus` binds principal, action,
+resource, scope, audience, exact payload digest and expected policy revision.
+`install_authbus_quota` owns integer capacity/reserved/consumed state.
+`reserve_authbus_quota` rechecks the current policy head and quota revision
+inside one immediate write transaction before holding capacity. Reservations
+transition through Active, Settled, Cancelled, Expired and Quarantined; expiry
+and quarantine keep quota held until explicit reconciliation proves no effect or
+supplies observed cost.
+
+The qualification provider seam
+`dispatch_provider_effect_with_authbus_qualification` performs authorize then
+reserve before entering the existing durable provider-effect boundary. Provider
+Completed does not itself settle quota: `reconcile_authbus_provider_effect`
+requires separate `ObservedCostEvidence`. Rejected/no-dispatch evidence can
+release the hold; unknown/accepted outcomes remain held. This seam is not a
+production provider caller.
+
 ## Public symbols and source bindings
 
 - `IssuerRegistration`, `SignedMessageClaims::signing_bytes`,
@@ -50,10 +69,15 @@ authority.
 
 ## Target-only design
 
-Host trust provisioning and key lifecycle management, external replay-store
-rollback protection, authorization policy, quota registry, reservation,
-cancellation, expiry settlement and observed-cost settlement remain outside this
-implemented admission slice.
+The following remain outside the repository-controlled source closure: an
+independently governed trust root/key ceremony, an independently retained
+rollback checkpoint or monotonic hardware/remote anchor, a production effect
+caller, real provider/operator consent, target-host capacity acceptance and
+operator promotion/release. The repository now contains managed issuer
+enrollment/revocation/rotation/retirement, a rollback hash-chain plus external
+checkpoint verification API, durable policy/quota/reservation control and the
+qualification effect composition. Those source capabilities do not self-close
+the external gates.
 
 ## Known limits and non-claims
 
@@ -78,9 +102,6 @@ presence.
 
 ## Integration prerequisites
 
-The host must supply trusted registration and current revocation, use the durable
-admission API where replay must survive restart, and govern clock/backup recovery.
-Effect-specific policy, quota and the final-use token remain separate checks.
-No effect adapter may consume `VerificationReceipt` as a grant. See
+The host must supply protected trust configuration and current revocation, use the durable admission API where replay must survive restart, retain the current rollback checkpoint independently of the SQLite backup, and govern trusted time/restore. Agentd reconciles its trust file into the managed issuer registry. Effect adapters must use an authorization decision plus reservation and still perform their final-use authority check; no effect adapter may consume `VerificationReceipt` as a grant. See
 [`SIGNED_ADMISSION.md`](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md) and the
 separate legacy [`PREVERIFIED_REPLAY_V1.md`](PREVERIFIED_REPLAY_V1.md) contract.
