@@ -57,6 +57,7 @@ pub(super) struct LeaseStore {
     sequence: u64,
     tail_sha256: [u8; 32],
     state: StoreState,
+    failed: bool,
 }
 
 impl fmt::Debug for LeaseStore {
@@ -115,6 +116,7 @@ impl LeaseStore {
             sequence,
             tail_sha256,
             state,
+            failed: false,
         };
 
         if !journal_preexisted {
@@ -159,6 +161,9 @@ impl LeaseStore {
     }
 
     pub(super) fn append(&mut self, record: LeaseJournalRecord) -> Result<(), BaoLeaseError> {
+        if self.failed {
+            return Err(BaoLeaseError::StateUnavailable);
+        }
         if self.sequence >= MAX_RECORDS {
             return Err(BaoLeaseError::StateCapacityExceeded);
         }
@@ -202,13 +207,16 @@ impl LeaseStore {
             return Err(BaoLeaseError::StateCapacityExceeded);
         }
 
-        self.journal
+        if self
+            .journal
             .write_all(&bytes)
             .and_then(|()| self.journal.sync_all())
-            .map_err(|_| BaoLeaseError::StateUnavailable)?;
-        self.root
-            .sync_all()
-            .map_err(|_| BaoLeaseError::StateUnavailable)?;
+            .is_err()
+            || self.root.sync_all().is_err()
+        {
+            self.failed = true;
+            return Err(BaoLeaseError::StateUnavailable);
+        }
 
         self.sequence = sequence;
         self.tail_sha256 = frame_sha256;
