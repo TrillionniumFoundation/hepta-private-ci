@@ -11,6 +11,7 @@ use std::fmt;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 use crate::ArtifactClosureError;
 use crate::DatasetWithdrawalRegistry;
@@ -19,8 +20,16 @@ use crate::ValidatedArtifactManifestV2;
 use crate::validate_artifact_manifest_v2;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WithdrawalRegistryScopeV1 {
+    pub registry_id: StableId,
+    pub authority_domain_id: StableId,
+    pub scope_id: StableId,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WithdrawalBoundArtifactAdmissionV3 {
     pub validated_manifest: ValidatedArtifactManifestV2,
+    pub withdrawal_scope: WithdrawalRegistryScopeV1,
     pub withdrawal_head_digest: Digest32,
     pub admitted_at: u64,
     pub admission_digest: Digest32,
@@ -29,6 +38,7 @@ pub struct WithdrawalBoundArtifactAdmissionV3 {
 
 pub fn admit_manifest_at_withdrawal_head_v3(
     registry: &DatasetWithdrawalRegistry,
+    withdrawal_scope: WithdrawalRegistryScopeV1,
     expected_withdrawal_head: Digest32,
     manifest: LearningArtifactManifestV2,
     now: u64,
@@ -38,9 +48,15 @@ pub fn admit_manifest_at_withdrawal_head_v3(
         return Err(ArtifactAdmissionError::WithdrawalHeadChanged);
     }
     let validated_manifest = registry.admit_manifest(manifest, now)?;
-    let admission_digest = digest_admission(validated_manifest.manifest_digest, observed_head, now);
+    let admission_digest = digest_admission(
+        validated_manifest.manifest_digest,
+        &withdrawal_scope,
+        observed_head,
+        now,
+    );
     Ok(WithdrawalBoundArtifactAdmissionV3 {
         validated_manifest,
+        withdrawal_scope,
         withdrawal_head_digest: observed_head,
         admitted_at: now,
         admission_digest,
@@ -50,11 +66,15 @@ pub fn admit_manifest_at_withdrawal_head_v3(
 
 pub fn verify_artifact_admission_v3(
     admission: &WithdrawalBoundArtifactAdmissionV3,
+    current_scope: &WithdrawalRegistryScopeV1,
     current_withdrawal_head: Digest32,
     now: u64,
 ) -> Result<(), ArtifactAdmissionError> {
     if admission.authority.grants_any() || admission.validated_manifest.authority.grants_any() {
         return Err(ArtifactAdmissionError::AuthorityGrant);
+    }
+    if &admission.withdrawal_scope != current_scope {
+        return Err(ArtifactAdmissionError::WithdrawalScopeChanged);
     }
     if admission.withdrawal_head_digest != current_withdrawal_head {
         return Err(ArtifactAdmissionError::WithdrawalHeadChanged);
@@ -69,6 +89,7 @@ pub fn verify_artifact_admission_v3(
     }
     let expected = digest_admission(
         admission.validated_manifest.manifest_digest,
+        &admission.withdrawal_scope,
         admission.withdrawal_head_digest,
         admission.admitted_at,
     );
@@ -81,27 +102,44 @@ pub fn verify_artifact_admission_v3(
 pub fn validate_artifact_publication_v3(
     admission: &WithdrawalBoundArtifactAdmissionV3,
     registry: &DatasetWithdrawalRegistry,
+    current_scope: &WithdrawalRegistryScopeV1,
     now: u64,
 ) -> Result<(), ArtifactAdmissionError> {
-    verify_artifact_admission_v3(admission, registry.snapshot().head_digest, now)
+    verify_artifact_admission_v3(
+        admission,
+        current_scope,
+        registry.snapshot().head_digest,
+        now,
+    )
 }
 
 fn digest_admission(
     manifest_digest: Digest32,
+    withdrawal_scope: &WithdrawalRegistryScopeV1,
     withdrawal_head_digest: Digest32,
     admitted_at: u64,
 ) -> Digest32 {
     let mut bytes = b"hepta.learning-artifacts.withdrawal-bound-admission.v3".to_vec();
+    append_stable_id(&mut bytes, &withdrawal_scope.registry_id);
+    append_stable_id(&mut bytes, &withdrawal_scope.authority_domain_id);
+    append_stable_id(&mut bytes, &withdrawal_scope.scope_id);
     bytes.extend_from_slice(manifest_digest.as_array());
     bytes.extend_from_slice(withdrawal_head_digest.as_array());
     bytes.extend_from_slice(&admitted_at.to_be_bytes());
     Digest32::of_bytes(&bytes)
 }
 
+fn append_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
+    let value = value.as_str().as_bytes();
+    bytes.extend_from_slice(&(value.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(value);
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ArtifactAdmissionError {
     Manifest(ArtifactClosureError),
     WithdrawalHeadChanged,
+    WithdrawalScopeChanged,
     AuthorityGrant,
     AdmissionTimeWindow,
     ManifestDigestMismatch,
@@ -119,6 +157,7 @@ impl StdError for ArtifactAdmissionError {
         match self {
             Self::Manifest(error) => Some(error),
             Self::WithdrawalHeadChanged
+            | Self::WithdrawalScopeChanged
             | Self::AuthorityGrant
             | Self::AdmissionTimeWindow
             | Self::ManifestDigestMismatch
@@ -151,6 +190,14 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
+    fn scope(value: &str) -> WithdrawalRegistryScopeV1 {
+        WithdrawalRegistryScopeV1 {
+            registry_id: id("withdrawal-registry"),
+            authority_domain_id: id("learning-dataset-authority"),
+            scope_id: id(value),
+        }
+    }
+
     fn manifest(dataset: Digest32) -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("artifact-v3"),
@@ -181,11 +228,35 @@ mod tests {
         let registry = DatasetWithdrawalRegistry::new();
         let head = registry.snapshot().head_digest;
         let admission =
-            admit_manifest_at_withdrawal_head_v3(&registry, head, manifest(digest("dataset")), 20)
+            admit_manifest_at_withdrawal_head_v3(
+                &registry,
+                scope("tenant-a"),
+                head,
+                manifest(digest("dataset")),
+                20,
+            )
                 .expect("admission succeeds");
-        validate_artifact_publication_v3(&admission, &registry, 20)
+        validate_artifact_publication_v3(&admission, &registry, &scope("tenant-a"), 20)
             .expect("unchanged head remains valid");
         assert!(!admission.authority.grants_any());
+    }
+
+    #[test]
+    fn art_05_cross_scope_head_collision_is_rejected() {
+        let registry = DatasetWithdrawalRegistry::new();
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            scope("tenant-a"),
+            registry.snapshot().head_digest,
+            manifest(digest("dataset")),
+            20,
+        )
+        .expect("admission succeeds");
+
+        assert_eq!(
+            validate_artifact_publication_v3(&admission, &registry, &scope("tenant-b"), 20),
+            Err(ArtifactAdmissionError::WithdrawalScopeChanged)
+        );
     }
 
     #[test]
@@ -194,6 +265,7 @@ mod tests {
         let mut registry = DatasetWithdrawalRegistry::new();
         let admission = admit_manifest_at_withdrawal_head_v3(
             &registry,
+            scope("tenant-a"),
             registry.snapshot().head_digest,
             manifest(dataset),
             20,
@@ -212,7 +284,7 @@ mod tests {
             })
             .expect("withdrawal appends");
         assert_eq!(
-            validate_artifact_publication_v3(&admission, &registry, 21),
+            validate_artifact_publication_v3(&admission, &registry, &scope("tenant-a"), 21),
             Err(ArtifactAdmissionError::WithdrawalHeadChanged)
         );
     }
