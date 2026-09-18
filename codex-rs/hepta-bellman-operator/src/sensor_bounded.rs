@@ -99,7 +99,9 @@ mod tests {
 
     #[test]
     fn exact_sensor_budget_accepts_small_reference_fixture() {
-        assert!(estimate_coordinate_work(64, 16, 8).expect("estimate") < MAX_SENSOR_COORDINATE_WORK);
+        assert!(
+            estimate_coordinate_work(64, 16, 8).expect("estimate") < MAX_SENSOR_COORDINATE_WORK
+        );
     }
 
     #[test]
