@@ -515,7 +515,7 @@ fn decode_head_witness(
     let parse_digest =
         |value: &str| Digest32::from_str(value).map_err(|_| ArtifactStorageError::Corrupt);
     let parse_id =
-        |value: &str| StableId::new(value.to_owned()).map_err(|_| ArtifactStorageError::Corrupt);
+        |value: &str| StableId::new(value).map_err(|_| ArtifactStorageError::Corrupt);
     let parse_u64 = |value: &str| {
         value
             .parse::<u64>()
