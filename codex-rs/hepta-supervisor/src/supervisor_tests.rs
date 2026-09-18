@@ -818,6 +818,41 @@ fn stable_recovery_window_replenishes_fault_restart_budget() -> Result<(), Super
     Ok(())
 }
 
+#[cfg(unix)]
+#[test]
+fn stop_cancels_pending_fault_restart_without_relaunch() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    supervisor.preflight_stop_or_kill(&fleet.first)?;
+    supervisor.stop(&fleet.first, now)?;
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Stopped
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(1)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    Ok(())
+}
+
 #[test]
 fn recovery_adopts_one_orphan_and_rejects_another() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
