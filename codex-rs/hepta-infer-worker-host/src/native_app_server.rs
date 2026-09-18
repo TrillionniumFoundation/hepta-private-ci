@@ -50,7 +50,6 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
-use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_protocol::user_input::user_input_payload_sha256;
@@ -369,7 +368,7 @@ impl AppServerModelDriver {
                 if record
                     .turn_id
                     .as_deref()
-                    .is_some_and(|known| known != turn_id)
+                    .is_some_and(|known| known != turn_id.as_str())
                 {
                     return Err("provider reconciliation returned a different turn id".into());
                 }
