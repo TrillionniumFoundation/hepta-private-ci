@@ -11,7 +11,7 @@ This matrix is source-level acceptance guidance for the composed Codex App Serve
 | Terminal notification with wrong thread | reject correlation | none | unchanged | adapter negative test |
 | Terminal notification with wrong turn | reject correlation | none | unchanged | adapter negative test |
 | Payload digest differs from authority-bound payload digest | reject request | none | no dispatch | adapter negative test |
-| No non-constructible final-use capability from `kernel.authority`, or capability is not bound to the exact final `TurnStart` payload | production dispatch must be denied | none | no dispatch | **repository-controlled blocker: native caller wiring not yet implemented** |
+| No non-constructible final-use capability from `kernel.authority` authenticating the persisted exact final `TurnStartParams` digest | production dispatch must be denied | none | no dispatch | **repository-controlled blocker: native caller wiring not yet implemented** |
 | Missing/zero owner generation | reject request | none | no dispatch | adapter negative test |
 | Protocol version other than App Server v2 | reject request | none | no dispatch | adapter negative test |
 | App Server transport overload JSON-RPC `-32001` before handler admission | `Overloaded` | `SafeToRetry` with a new admitted request | release | typed JSON-RPC error from the bounded transport queue |
