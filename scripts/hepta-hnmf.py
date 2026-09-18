@@ -51,7 +51,7 @@ PROTOCOLS = [
     "OutcomeSignalV1",
     "ReplaySelectionReceiptV1",
     "PlasticityBatchV1",
-    "TopologyProposalV1",
+    "CognitiveTopologyProposalV1",
     "ForgetPropagationReceiptV1",
 ]
 
@@ -96,6 +96,13 @@ REQUIRED_FILES = [
     "qualification/hnmf-reference/Cargo.lock",
     "qualification/hnmf-reference/README.md",
     "qualification/hnmf-reference/src/lib.rs",
+    "qualification/hnmf-contract-reference/Cargo.toml",
+    "qualification/hnmf-contract-reference/src/lib.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf_v1/mod.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf_v1/span.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf_v1/event.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf_v1/graph.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf_v1/learning.rs",
     ".github/workflows/hnmf-qualification.yml",
 ]
 
@@ -315,6 +322,47 @@ def verify() -> int:
         "unsafe" not in rust.replace("#![forbid(unsafe_code)]", ""), "unsafe code token"
     )
 
+
+    canonical_rust = "\n".join(
+        (ROOT / path).read_text(encoding="utf-8")
+        for path in [
+            "codex-rs/hepta-cognitive-types/src/hnmf_v1/mod.rs",
+            "codex-rs/hepta-cognitive-types/src/hnmf_v1/span.rs",
+            "codex-rs/hepta-cognitive-types/src/hnmf_v1/event.rs",
+            "codex-rs/hepta-cognitive-types/src/hnmf_v1/graph.rs",
+            "codex-rs/hepta-cognitive-types/src/hnmf_v1/learning.rs",
+        ]
+    )
+    for token in [
+        "pub struct ModalitySpanRefV1",
+        "pub struct MemoryEventV1",
+        "pub struct CrossModalBindingV1",
+        "pub struct EngramNodeV1",
+        "pub struct SynapseV1",
+        "pub struct MemoryCueV1",
+        "pub struct RecallPacketV1",
+        "pub struct OutcomeSignalV1",
+        "pub struct ReplaySelectionReceiptV1",
+        "pub struct PlasticityBatchV1",
+        "pub struct CognitiveTopologyProposalV1",
+        "pub struct ForgetPropagationReceiptV1",
+        "trait CanonicalJsonV1",
+        "deny_unknown_fields",
+        "schema_version",
+    ]:
+        need(token in canonical_rust, f"canonical production token {token}")
+    contract_reference = (
+        ROOT / "qualification/hnmf-contract-reference/src/lib.rs"
+    ).read_text(encoding="utf-8")
+    need(
+        "pub use codex_hepta_cognitive_types::hnmf_v1" in contract_reference,
+        "contract reference must re-export production canonical contracts",
+    )
+    need(
+        "pub struct MemoryEvent" not in contract_reference,
+        "contract reference must not define a second MemoryEvent",
+    )
+
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
     )
@@ -323,6 +371,8 @@ def verify() -> int:
         "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
         "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
         "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
+        "cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check",
+        "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types",
     ]:
         need(command in workflow, f"workflow command {command}")
 
