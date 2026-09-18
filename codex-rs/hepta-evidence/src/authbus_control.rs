@@ -326,7 +326,8 @@ impl HeptaEvidenceStore {
         // Preserve idempotency before enforcing admission capacity. A retry of an
         // already-held operation must return the same reservation even when that
         // reservation itself fills the principal's active-reservation budget.
-        if let Some(existing) = load_reservation_by_operation_tx(&mut tx, &request.operation_id).await?
+        if let Some(existing) =
+            load_reservation_by_operation_tx(&mut tx, &request.operation_id).await?
         {
             if reservation_matches_request(&existing, request) {
                 tx.commit().await.map_err(classify_sqlx_error)?;
