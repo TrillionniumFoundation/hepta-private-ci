@@ -127,6 +127,10 @@ Source states are deliberately truthful: a module may be `existing_bound`, `exis
 
 The module registries expose two separate boolean facts for every module: `source_root_present` records only that a declared source root exists in the exact candidate tree, while `production_implementation` is true only after a named product caller and executable product tests are evidenced. A present source root therefore cannot be read as a production implementation. The two facts are projected identically through `MODULES.json`, `SOURCE_BINDINGS.json` and `MODULE_DOCS.json` and are validated against `docs/readiness/STATUS_MODEL.json`.
 
+`MODULES.json` is the hand-maintained source for module identity, lifecycle, roots, source status and bootstrap ownership. The duplicated source/status fields in `SOURCE_BINDINGS.json` and `MODULE_DOCS.json` are generated views; run `python3 scripts/hepta-module-docs.py sync-views` after changing the canonical registry, and CI checks the generated projection. Developers must not hand-copy those facts across registries.
+
+Ordinary work packages are bounded by semantic owner scope, authority delta and testable behavior, not by a maximum changed-file count. Changed-path counts are informational only. Qualification paths may still bound wall-clock time, parallelism and target resources when those resources are actually exercised.
+
 ## 5B. Adaptive algorithm closed world
 
 The implementation-level adaptive document set is globally governed, not an independent prose island. `docs/learning/ALGORITHM_SPECS.json` binds the six specifications, exact Git blob identities, paper claim anchors, canonical contracts and protocol schemas, data-authority domains, quantitative experiments, artifact lifecycle, work package `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`, and both read-only CI workflows.
