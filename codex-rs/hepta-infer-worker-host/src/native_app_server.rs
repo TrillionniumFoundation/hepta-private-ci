@@ -37,7 +37,6 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_codex_adapter::AdapterStatus;
-use codex_hepta_codex_adapter::AdmissionFailure;
 use codex_hepta_codex_adapter::CodexOperationIntent;
 use codex_hepta_codex_adapter::DispatchedCodexOperation;
 use codex_hepta_codex_adapter::ReconcileOutcome;
@@ -312,19 +311,26 @@ impl AppServerModelDriver {
             TurnStartOutcome::Started(dispatched) => dispatched,
             TurnStartOutcome::Indeterminate { reason } => {
                 match reconcile_unknown_turn(&client, &intent).await {
-                    ReconcileOutcome::Recovered(dispatched) => dispatched,
-                    ReconcileOutcome::Missing => {
+                    Ok(ReconcileOutcome::Recovered(dispatched)) => dispatched,
+                    Ok(ReconcileOutcome::Missing) => {
                         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                         return Ok(indeterminate_output(
                             &started,
                             format!("{reason}; thread/read found no durable client binding"),
                         ));
                     }
-                    ReconcileOutcome::Quarantined { reason: reconcile_reason } => {
+                    Ok(ReconcileOutcome::Quarantined { reason: reconcile_reason }) => {
                         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                         return Ok(indeterminate_output(
                             &started,
                             format!("{reason}; reconciliation quarantined: {reconcile_reason}"),
+                        ));
+                    }
+                    Err(reconcile_reason) => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Ok(indeterminate_output(
+                            &started,
+                            format!("{reason}; reconciliation unavailable: {reconcile_reason}"),
                         ));
                     }
                 }
@@ -447,14 +453,46 @@ impl AppServerModelDriver {
                     }
                     continue;
                 },
-                event = timeout_at(deadline, client.next_event()) => event
+                event = timeout_at(deadline, client.next_event_with_terminal_witness()) => event
                     .map_err(|_| "deadline elapsed".to_string())?
                     .ok_or_else(|| "provider event stream ended".to_string())?,
             };
+            let (event, witness) = event;
+            if let Some(witness) = witness.as_ref()
+                && witness.thread_id() == output.thread_id
+                && witness.turn_id() == output.turn_id
+            {
+                let receipt = adapt_codex_terminal(
+                    unix_now_ms().map_err(|error| error.to_string())?,
+                    dispatched,
+                    Some(witness),
+                )
+                .map_err(|error| format!("terminal witness rejected: {error}"))?;
+                output.status = match receipt.status {
+                    AdapterStatus::Succeeded => NativeRunStatus::Completed,
+                    AdapterStatus::Failed => NativeRunStatus::Failed,
+                    AdapterStatus::Interrupted => NativeRunStatus::Interrupted,
+                    AdapterStatus::Indeterminate => {
+                        return Err("terminal witness produced an indeterminate receipt".to_string());
+                    }
+                };
+                if let AppServerEvent::ServerNotification(notification) = &event
+                    && let ServerNotification::TurnCompleted(completed) = notification.as_ref()
+                    && let Some(error) = &completed.turn.error
+                {
+                    output.stop_reason =
+                        Some(error.message.chars().take(1024).collect());
+                }
+                output.terminal_observed = true;
+                return Ok(());
+            }
             match event {
                 AppServerEvent::ServerNotification(notification) => {
                     if observe_notification(output, *notification)? {
-                        return Ok(());
+                        return Err(
+                            "matching terminal notification arrived without trusted witness"
+                                .to_string(),
+                        );
                     }
                 }
                 AppServerEvent::ServerRequest(request) => {
@@ -480,6 +518,80 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+async fn reconcile_unknown_turn(
+    client: &RemoteAppServerClient,
+    intent: &CodexOperationIntent,
+) -> std::result::Result<ReconcileOutcome, String> {
+    let response = timeout(
+        RPC_TIMEOUT,
+        client.request_typed::<ThreadReadResponse>(ClientRequest::ThreadRead {
+            request_id: RequestId::Integer(20),
+            params: ThreadReadParams {
+                thread_id: intent.thread_id.as_str().to_string(),
+                include_turns: true,
+            },
+        }),
+    )
+    .await
+    .map_err(|_| "thread/read reconciliation timed out".to_string())?
+    .map_err(|error| format!("thread/read reconciliation failed: {error}"))?;
+    Ok(reconcile_thread_read(intent, &response))
+}
+
+fn indeterminate_output(started: &ThreadStartResponse, reason: String) -> NativeRunOutput {
+    NativeRunOutput {
+        thread_id: started.thread.id.clone(),
+        turn_id: String::new(),
+        model: started.model.clone(),
+        model_provider: started.model_provider.clone(),
+        status: NativeRunStatus::Indeterminate,
+        output: String::new(),
+        observed_output_tokens: None,
+        terminal_observed: false,
+        owner_authority: NativeOwnerAuthority::Unverified,
+        stop_reason: Some(reason.chars().take(1024).collect()),
+    }
+}
+
+fn unix_now_ms() -> Result<u64> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)?
+        .as_millis();
+    u64::try_from(millis).map_err(|_| "system clock exceeds u64 milliseconds".into())
+}
+
+fn unix_deadline_ms(now_ms: u64, duration: Duration) -> Result<u64> {
+    let delta = u64::try_from(duration.as_millis())
+        .map_err(|_| "native timeout exceeds u64 milliseconds")?;
+    now_ms
+        .checked_add(delta)
+        .ok_or_else(|| "native deadline overflow".into())
+}
+
+fn stable_operation_id(request_id: &str) -> Result<StableId> {
+    StableId::new(format!("operation.{}", control::digest(request_id.as_bytes())))
+        .map_err(Into::into)
+}
+
+fn codex_scope_digest(
+    config: &NativeWorkerConfig,
+    thread_id: &str,
+    model_provider: &str,
+    params: &TurnStartParams,
+) -> Result<Digest32> {
+    let bytes = serde_json::to_vec(&(
+        "hepta.codex.turn.scope.v1",
+        config.agent_id.to_string(),
+        config.generation,
+        thread_id,
+        model_provider,
+        &config.model,
+        &params.approval_policy,
+        &params.sandbox_policy,
+    ))?;
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 async fn verify_owner_health(
