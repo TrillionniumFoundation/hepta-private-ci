@@ -150,7 +150,10 @@ fn bound_solver_result_exposes_receipts_without_requiring_state_on_failure() {
         FixedQ32::from_raw(1_i64 << 28),
         must(canonical_iteration_context_digest(&context)),
     ));
-    assert!(matches!(result, PreferenceSolveResult::Unavailable { .. }));
+    assert!(matches!(
+        &result,
+        PreferenceSolveResult::Unavailable { .. }
+    ));
     assert!(result.converged_state().is_none());
     assert!(!result.receipts().is_empty());
 }
