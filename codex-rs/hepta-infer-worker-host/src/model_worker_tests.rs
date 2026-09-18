@@ -123,7 +123,13 @@ fn loads_runs_and_unloads_exact_model_tuple() {
 #[test]
 fn rejects_changed_tokenizer_model_or_payload_tuple() {
     let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+        InferenceWorker::new(
+            100,
+            "worker.1".to_string(),
+            3,
+            VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+            Driver::default(),
+        )
             .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let mut changed = request();
