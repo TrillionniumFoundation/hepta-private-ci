@@ -76,6 +76,7 @@ pub struct ReleaseSelectionBinding {
     pub target_manifest_sha256: Sha256Digest,
     pub target_agentd_sha256: Sha256Digest,
     pub target_matrixd_sha256: Option<Sha256Digest>,
+    pub compatibility_receipt_sha256: Sha256Digest,
     pub compatibility_sha256: Sha256Digest,
     pub compatibility_accepted: bool,
     pub revocation_frontier: u64,
@@ -93,6 +94,7 @@ impl ReleaseSelectionBinding {
         target_manifest_sha256: Sha256Digest,
         target_agentd_sha256: Sha256Digest,
         target_matrixd_sha256: Option<Sha256Digest>,
+        compatibility_receipt_sha256: Sha256Digest,
         revocation_frontier: u64,
     ) -> Result<Self, ProductionAuthorityError> {
         if revocation_frontier == 0 {
@@ -107,6 +109,7 @@ impl ReleaseSelectionBinding {
             target_manifest_sha256,
             target_agentd_sha256,
             target_matrixd_sha256,
+            compatibility_receipt_sha256,
             compatibility_sha256: Sha256Digest::for_bytes(b"pending"),
             compatibility_accepted: true,
             revocation_frontier,
@@ -122,6 +125,7 @@ impl ReleaseSelectionBinding {
             (&self.source_agentd_sha256, "source agentd"),
             (&self.target_manifest_sha256, "target release manifest"),
             (&self.target_agentd_sha256, "target agentd"),
+            (&self.compatibility_receipt_sha256, "compatibility receipt"),
             (&self.compatibility_sha256, "release compatibility"),
         ] {
             parse_digest(digest, label)?;
@@ -156,6 +160,10 @@ impl ReleaseSelectionBinding {
         }
         frame_optional_digest(&mut hasher, self.source_matrixd_sha256.as_ref());
         frame_optional_digest(&mut hasher, self.target_matrixd_sha256.as_ref());
+        frame(
+            &mut hasher,
+            self.compatibility_receipt_sha256.as_str().as_bytes(),
+        );
         frame(&mut hasher, &self.revocation_frontier.to_be_bytes());
         frame(&mut hasher, &[u8::from(self.compatibility_accepted)]);
         Sha256Digest::from_sha256_output(hasher.finalize())
@@ -797,6 +805,7 @@ impl H7H89ProductionGrant {
             self.release_selection.source_agentd_sha256.as_str().as_bytes(),
             self.release_selection.target_manifest_sha256.as_str().as_bytes(),
             self.release_selection.target_agentd_sha256.as_str().as_bytes(),
+            self.release_selection.compatibility_receipt_sha256.as_str().as_bytes(),
             self.release_selection.compatibility_sha256.as_str().as_bytes(),
             self.signer_id.as_bytes(),
         ] {
