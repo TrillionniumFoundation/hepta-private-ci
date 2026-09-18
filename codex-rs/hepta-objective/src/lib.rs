@@ -23,7 +23,21 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
-pub use compiler::compile;
+/// Qualification-only compatibility entrypoint for already normalized legacy envelopes.
+///
+/// This bypasses authenticated source admission by design and is therefore not
+/// available unless the consumer explicitly enables `legacy-objective-compile`.
+/// Product callers must use `admit_and_compile_objective_v1`.
+#[cfg(feature = "legacy-objective-compile")]
+pub fn compile_prevalidated_legacy_objective(
+    source: model::ObjectiveSourceEnvelope,
+) -> Result<
+    Result<model::ObjectiveCompileReceipt, model::ObjectiveConflictReceipt>,
+    error::ObjectiveError,
+> {
+    compiler::compile(source)
+}
+
 pub use compiler::validate_compiled_objective_v1;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;

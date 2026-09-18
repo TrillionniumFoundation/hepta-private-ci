@@ -1,4 +1,6 @@
+use std::hint::black_box;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -501,4 +503,65 @@ fn negative_closure_terminates_cycles_and_is_order_invariant() {
             })
         );
     }
+}
+
+
+#[test]
+#[ignore = "run only on a named target host through hepta-objective-target-measure.py"]
+fn measurement_conflict_extraction_v1() {
+    let mut atoms = vec![
+        atom("a", "x", interval(0, 1)),
+        atom("b", "x", interval(2, 3)),
+    ];
+    atoms.extend((2..256).map(|index| {
+        atom(
+            &format!("irrelevant-{index:03}"),
+            "x",
+            interval(-5, 5),
+        )
+    }));
+    let samples = std::env::var("HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .filter(|value| (1..=10_000).contains(value))
+        .unwrap_or(64);
+    let mut timings = Vec::with_capacity(samples);
+    let registered = scalar_registry();
+
+    for _ in 0..samples {
+        let input = atoms.clone();
+        let started = Instant::now();
+        let receipt = check_feasibility_v1(
+            &registered,
+            input,
+            OracleBudgetV1 {
+                max_calls: 257,
+                wall_time: Duration::MAX,
+            },
+        );
+        timings.push(started.elapsed().as_nanos());
+        assert!(matches!(
+            receipt.outcome,
+            FeasibilityOutcomeV1::Infeasible { .. }
+        ));
+        assert_eq!(receipt.oracle_calls, 257);
+        black_box(receipt);
+    }
+
+    timings.sort_unstable();
+    let pick = |percent: usize| {
+        let index = (timings.len() - 1) * percent / 100;
+        timings[index]
+    };
+    println!(
+        "OBJECTIVE_MEASUREMENT={}",
+        serde_json::json!({
+            "schema": "hepta.objective-target-measurement.v1",
+            "path": "maximum_conflict_extraction",
+            "samples": samples,
+            "constraintAtoms": atoms.len(),
+            "oracleCallsPerSample": 257,
+            "latencyNanoseconds": {"p50": pick(50), "p95": pick(95), "p99": pick(99)}
+        })
+    );
 }

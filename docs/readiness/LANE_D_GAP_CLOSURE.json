@@ -285,6 +285,83 @@
         "docs/readiness/NDU_SYSTEM_EXECUTION.md",
         "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
       ]
+    },
+    {
+      "id": "LANE-D-OBJ-CALLER-029",
+      "severity": "P0",
+      "title": "Objective compiler lacked a named authenticated caller that durably publishes objective and run-start semantics before runtime admission",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-agentd/src/objective_runtime.rs",
+        "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+        "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-API-030",
+      "severity": "P0",
+      "title": "The public raw scalar compile API could bypass authenticated source admission",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-objective/src/lib.rs",
+        "codex-rs/hepta-objective/src/compiler.rs",
+        "codex-rs/hepta-objective/Cargo.toml",
+        "codex-rs/hepta-shadow-qualification/src/value_learning_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-SEMANTICS-031",
+      "severity": "P1",
+      "title": "Source V1 syntax and direct typed feasibility grammar were documented as one support surface despite different representability",
+      "state": "closed",
+      "closure": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+        "codex-rs/hepta-objective/src/feasibility_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-CI-032",
+      "severity": "P1",
+      "title": "Objective qualification documentation attributed package evidence to the wrong workflow and did not bind caller changes",
+      "state": "closed",
+      "closure": [
+        ".github/workflows/hepta-objective-admission.yml",
+        ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+        "docs/modules/objective.compiler/TECHNICAL.md"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-LIFECYCLE-033",
+      "severity": "P2",
+      "title": "Objective work-package lifecycle text lagged the implemented source state",
+      "state": "closed",
+      "closure": [
+        "docs/delivery/WORK_PACKAGES.json",
+        "docs/modules/objective.compiler/TECHNICAL.md"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-DETERMINISM-034",
+      "severity": "P2",
+      "title": "Feasibility documentation did not distinguish deterministic semantic solving from wall-clock availability exhaustion",
+      "state": "closed",
+      "closure": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "codex-rs/hepta-objective/src/scalar_adapter.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-MEASURE-035",
+      "severity": "P2",
+      "title": "Objective target-host measurement had no exact-source executable harness or structured evidence format",
+      "state": "closed",
+      "closure": [
+        "scripts/hepta-objective-target-measure.py",
+        "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+        "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+        "codex-rs/hepta-objective/src/feasibility_tests.rs"
+      ]
     }
   ],
   "externalGates": [
