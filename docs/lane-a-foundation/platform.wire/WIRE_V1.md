@@ -2,8 +2,10 @@
 
 ## Current executable contract
 
-`platform.wire` implements exactly one immutable, transport-neutral HPTA
-envelope version. It does not negotiate versions.
+HPTA V1 is an immutable, transport-neutral envelope version. This document
+describes only the frozen V1 frame; it does not negotiate inside the frame.
+Version/capability selection across V1 and V2 is performed by the separate HPTN
+contract in `NEGOTIATION_V1.md`.
 
 | Offset | Width | Field | Encoding and invariant |
 | ---: | ---: | --- | --- |
