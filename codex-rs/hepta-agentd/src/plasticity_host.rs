@@ -296,7 +296,7 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
     ) -> Result<(), AgentdPlasticityHostErrorV1> {
         let admission = &request.admission;
         let mut frontier: Option<Digest32> = None;
-        for (kind, digest, parameter_id) in [
+        for (kind, digest, layer_id, parameter_id) in [
             (
                 PlasticityOwnerEvidenceKindV1::UpdateRule,
                 admission.update_rule_digest,
@@ -322,7 +322,8 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
                 None,
             ),
         ] {
-            let receipt = self.resolve_one(request, kind, digest, parameter_id, now)?;
+            let receipt =
+                self.resolve_one(request, kind, digest, layer_id, parameter_id, now)?;
             bind_frontier(&mut frontier, &receipt)?;
         }
         for signal in &request.generator_profile.signals {
