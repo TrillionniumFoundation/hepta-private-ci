@@ -69,47 +69,71 @@
     },
     {
       "module": "platform.wire",
-      "profile": "stateless_codec",
+      "profile": "versioned_protocol_codec",
       "formalGuide": "docs/modules/platform.wire/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
-      "currentSpecification": "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
+      "currentSpecification": "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json",
+      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json",
       "states": {
         "source": "implemented",
-        "implementation": "fixed_v1_codec",
+        "implementation": "versioned_protocol_codec",
         "durability": "none",
-        "qualification": "boundary_tests_and_frozen_vector_present",
+        "qualification": "boundary_property_cross_runtime_tests_present",
         "activation": "library_only",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "fixed HPTA version-1 envelope encode/decode",
-        "bounded identities and one-mebibyte payload",
-        "payload digest verification before owned copy"
+        "immutable HPTA V1 envelope encode/decode with bounded identities and payload",
+        "HPTA V2 full-frame digest binds metadata and payload",
+        "fail-closed version and capability negotiation with downgrade prevention",
+        "bounded schema admission and typed payload serialization",
+        "incremental bounded V1/V2 stream decode with live cross-runtime conformance"
       ],
       "targetOnlyCapabilities": [
-        "version negotiation",
-        "streaming decoder",
-        "multi-version compatibility adapter",
-        "authenticated complete-envelope digest"
+        "authenticated transport/session binding or independent frame signature/MAC",
+        "externally governed schema registry publication and revocation",
+        "product-specific production caller composition and rollout"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-wire/src/envelope.rs",
           "mustContain": [
-            "const MAGIC: [u8; 4] = *b\"HPTA\";",
             "const WIRE_VERSION: u16 = 1;",
             "pub const MAX_WIRE_PAYLOAD_BYTES: usize = 1_048_576;",
-            "const MAX_ID_BYTES: usize = 128;",
             "let payload = &encoded[producer_end..payload_end];"
           ]
         },
         {
-          "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
+          "path": "codex-rs/hepta-wire/src/v2.rs",
           "mustContain": [
-            "every_truncation_rejects_without_reconstructing_an_envelope",
-            "v1_frame_matches_frozen_bytes_not_only_its_own_encoder"
+            "const WIRE_VERSION_V2: u16 = 2;",
+            "const FRAME_DIGEST_DOMAIN: &[u8] = b\"HPTA-WIRE-V2\\\\0\";",
+            "pub struct WireEnvelopeV2",
+            "FrameDigestMismatch"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/lib.rs",
+          "mustContain": [
+            "pub use negotiation::negotiate;",
+            "pub use schema::SchemaRegistry;",
+            "pub use stream::WireStreamDecoder;",
+            "pub use v2::WireEnvelopeV2;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/property_tests.rs",
+          "mustContain": [
+            "generated_valid_envelopes_round_trip_and_stream_exactly",
+            "arbitrary_byte_inputs_never_panic_or_expand_stream_buffer_past_bound"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/tests/cross_runtime.rs",
+          "mustContain": [
+            "rust_python_live_tcp_v2_loads_and_binds_metadata_and_payload",
+            "frame digest mismatch"
           ]
         }
       ]
