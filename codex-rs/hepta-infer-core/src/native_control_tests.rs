@@ -363,3 +363,63 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+
+#[test]
+fn terminal_history_compacts_to_archive_and_does_not_consume_active_capacity() {
+    let path = path("compaction-cycle");
+    let mut control = DurableInferenceControl::open(&path, 2).unwrap();
+
+    start(&mut control, "r1");
+    control
+        .settle_native("r1", output(NativeRunStatus::Completed, Some(11)))
+        .unwrap();
+    start(&mut control, "r2");
+    control
+        .settle_native("r2", output(NativeRunStatus::Failed, Some(7)))
+        .unwrap();
+
+    // The third admission crosses the configured record count. Both released
+    // records are archived/tombstoned and therefore do not consume active
+    // capacity.
+    control.reserve_native(request("r3"), 1).unwrap();
+    assert!(control.native_record("r1").is_none());
+    assert!(control.native_record("r2").is_none());
+    let tombstone = control.native_archived_tombstone("r1").unwrap().clone();
+    assert_eq!(tombstone.final_state, NativeReservationState::Released);
+    assert_eq!(tombstone.archive_digest.len(), 64);
+
+    let mut archive_name = path.file_name().unwrap().to_os_string();
+    archive_name.push(".archive.");
+    archive_name.push(&tombstone.archive_digest);
+    let archive_path = path.with_file_name(archive_name);
+    assert!(archive_path.is_file());
+    assert!(!std::fs::read(&archive_path).unwrap().is_empty());
+
+    assert_eq!(
+        control.reserve_native(request("r1"), 1),
+        Err(Error::ArchivedRequest)
+    );
+    let mut changed = request("r1");
+    changed.worker_generation += 1;
+    assert_eq!(control.reserve_native(changed, 1), Err(Error::Conflict));
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 2).unwrap();
+    assert!(reopened.native_archived_tombstone("r1").is_some());
+    assert_eq!(
+        reopened.reserve_native(request("r1"), 1),
+        Err(Error::ArchivedRequest)
+    );
+    assert_eq!(
+        reopened.native_record("r3").unwrap().state,
+        NativeReservationState::Reserved
+    );
+    drop(reopened);
+
+    std::fs::remove_file(&path).unwrap();
+    std::fs::remove_file(archive_path).unwrap();
+    let mut lock_name = path.file_name().unwrap().to_os_string();
+    lock_name.push(".lock");
+    let _ = std::fs::remove_file(path.with_file_name(lock_name));
+}
