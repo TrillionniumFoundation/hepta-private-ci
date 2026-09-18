@@ -1,9 +1,4 @@
-"""Deterministic engineering scheduling and integration eligibility.
-
-This module coordinates bounded work envelopes. It deliberately exposes no API
-for merging a pull request, modifying runtime authority, deploying, promoting,
-or releasing a candidate.
-"""
+"""Legacy compatibility scheduler for pre-v2 Lane G callers.\n\nCanonical production-facing composition lives in control_engineering_v2.\nThis module is retained only for historical fixtures and source compatibility;\nits caller-supplied boolean integration evidence is not an authenticated product\nboundary and must not be used by new callers. It exposes no merge, runtime,\ndeployment, promotion or release authority.\n"""\n\nLEGACY_COMPATIBILITY_ONLY = True
 
 from __future__ import annotations
 
