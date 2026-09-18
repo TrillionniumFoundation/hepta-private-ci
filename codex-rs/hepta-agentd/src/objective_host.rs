@@ -56,7 +56,6 @@ pub fn start_intelligence_run_v1(
 ) -> Result<RunReceipt, ObjectiveHostError> {
     envelope.validate().map_err(ObjectiveHostError::Envelope)?;
     let deadline_micros = envelope
-        .objective_admission
         .deadline_unix_micros
         .ok_or(ObjectiveHostError::DeadlineMissing)?;
     let deadline_ms = deadline_micros / 1_000;
@@ -66,7 +65,7 @@ pub fn start_intelligence_run_v1(
             now_ms,
             RunSnapshot {
                 run_id: envelope.run_start.run_id.to_string(),
-                request_digest: envelope.objective_admission.admitted_source_digest.to_string(),
+                request_digest: envelope.admitted_source_digest.to_string(),
                 objective_digest: envelope.run_start.objective_digest.to_string(),
                 body_digest: body_digest.to_string(),
                 artifact_set_digest: envelope.run_start.artifact_set_digest.to_string(),
