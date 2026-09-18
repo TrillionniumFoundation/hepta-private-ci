@@ -19,6 +19,7 @@ fn intent() -> CodexOperationIntent {
         method_id: id("method:1"),
         payload_digest: digest(b"payload"),
         lease_payload_digest: digest(b"payload"),
+        context_digest: digest(b"context"),
         connection_digest: digest(b"connection"),
         session_generation: 7,
         protocol_version: 2,
