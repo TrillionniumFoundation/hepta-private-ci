@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 use codex_hepta_contracts::GovernanceMode;
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_evidence::AppendDisposition;
 use codex_hepta_evidence::EvidenceCandidateV1;
 use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceDispositionV1;
@@ -184,13 +183,11 @@ async fn governance_product_host_composes_authenticated_writer_reader_and_termin
         EvidenceClaimClassV1::SourceExecution,
         b"source passed",
     );
-    assert_eq!(
-        state
-            .append_qualification_receipt(&source, &ci)
-            .await
-            .expect("append source"),
-        AppendDisposition::Inserted
-    );
+    let source_id = state
+        .append_qualification_receipt(&source, &ci)
+        .await
+        .expect("append source");
+    assert_eq!(source_id.as_str(), "qe:product-source:1");
 
     let (observer_signing, observer) = issuer(
         &state,
