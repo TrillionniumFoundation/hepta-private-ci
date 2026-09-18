@@ -175,10 +175,7 @@ async fn product_v2_scope_failure_is_explicit_failed_coverage_not_empty_success(
         .with_federation_sources(consumer_id.clone(), vec![owner_layout]);
     let wrong_access = FederationConsumerAccess::new(consumer_id, workspace("runtime-v2-wrong"));
     let (batch, coverage) = runtime
-        .retrieve_federated(
-            &wrong_access,
-            &RetrievalRequest::new("anything", 150),
-        )
+        .retrieve_federated(&wrong_access, &RetrievalRequest::new("anything", 150))
         .await
         .expect("scope mismatch is represented as failed coverage");
     assert!(batch.candidates.is_empty());
