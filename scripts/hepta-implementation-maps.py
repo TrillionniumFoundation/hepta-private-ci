@@ -342,6 +342,24 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+            tests = op.get("tests")
+            if not isinstance(tests, list):
+                failures.append(f"{mid}: operation tests")
+                tests = []
+            for test in tests:
+                if not isinstance(test, str) or not (ROOT / test).is_file():
+                    failures.append(f"{mid}: missing operation test {test}")
+            if "product_composed" in str(op.get("state", "")) and not tests:
+                failures.append(f"{mid}: composed operation lacks test identity")
+        caller_state = row.get("productCallerState", "not_composed")
+        if caller_state != "not_composed":
+            callsites = row.get("productCallsites")
+            if not isinstance(callsites, list) or not callsites:
+                failures.append(f"{mid}: composed module lacks product callsite")
+            else:
+                for callsite in callsites:
+                    if not isinstance(callsite, str) or not (ROOT / callsite).is_file():
+                        failures.append(f"{mid}: missing product callsite {callsite}")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")

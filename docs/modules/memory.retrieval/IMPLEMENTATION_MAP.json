@@ -18,20 +18,40 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "composed_bounded_owner_v2_unqualified",
   "productionWriterState": "not_established",
   "operations": [
+    {
+      "operation": "compile_cue",
+      "nativeSymbol": "compile_cue",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_cue",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
     {
       "operation": "retrieve_v2",
       "nativeSymbol": "retrieve_v2",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "product_composed_unqualified",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-memory::CognitiveStore::observe_memory_retrieval"
+      ]
     },
     {
       "operation": "build_candidate_union",
@@ -39,7 +59,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_candidate_union",
       "mappingClass": "owner_native",
@@ -51,7 +73,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
@@ -59,8 +83,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Generation-bound recall still requires a host-supplied complete Lane C generation vector plus native vector/procedural/contradiction providers before that richer path can replace the bounded owner-V2 composition.",
+    "RET-04 longitudinal/no-intervention utility baselines and independent target-host qualification remain evidence work; repository tests must not self-promote productionImplementation, activation or release."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -78,5 +102,8 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-retrieval"
+  ],
+  "productCallsites": [
+    "codex-rs/hepta-agentd/src/cognitive_context.rs"
   ]
 }

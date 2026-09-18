@@ -46,7 +46,9 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); observed identifiers include `RetrievalReceiptV2`, `retrieve_v2`, `binding_digest_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); observed identifiers include `RetrievalReceiptV2`, `retrieve_v2`, `binding_digest_v2`. The generation-bound source additionally exports `compile_cue`, `build_candidate_union` and `recall`.
+
+The bounded owner-generated V2 path now has a named product caller at [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs): Agentd observes the canonical SQLite owner's bounded generator, intersects exact revisions with the coherent Lane C read, binds the complete owner observation through `retrieve_v2`, optionally applies the externally selected learned ranker as a secondary permutation, and revalidates the exact ranked attachment set plus owner cut before publication. This composition does not imply that the richer generation-bound/HNMF target is product-composed or independently qualified. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) for that remaining boundary.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -145,13 +147,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. The native retrieval and generation-bound entrypoints now enforce the target hot-path candidate/result ceilings of 512 candidates and 16 results. The 4096-node / 32768-synapse / four-settling-step HNMF ceilings remain target-only because that graph-settling execution is not yet implemented or product-composed. Capacity constants are not latency measurements.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Embed retrieval against an authorized coherent read cut. The current host intersects SQLite search with an admitted bounded prefix and reports omitted_records; it does not promise complete recall outside that prefix. Revalidate source revisions before context delivery; missing support and revoked top results require omission or abstention.
+Embed retrieval against an authorized coherent read cut. The current Agentd product path uses one canonical precedence: SQLite owner generation/RRF -> exact Lane C admission -> `memory.retrieval::retrieve_v2` full-input binding and bounded ordering -> optional `PinnedCognitiveRanker` permutation -> exact memory/source/KG revalidation -> context budget/planning -> final owner-cut and learned-artifact revalidation. The owner observation binds channel identities, generator limit signals, candidate identities and aggregate scores; V2 binds that observation into the ranked request. The host still does not promise recall beyond bounded owner-generator/channel limits or the Lane C admitted prefix.
 
 Current operating and state-format references:
 
@@ -164,8 +166,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named case: `channel_completion_order_cannot_change_union_or_recall`.
+- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named cases include `channel_completion_order_cannot_change_union_or_recall`, `compile_cue_validates_and_binds_the_exact_snapshot`, `generation_bound_limits_match_the_hot_path_contract` and `low_ranked_ood_candidate_cannot_poison_the_selection_frontier`.
+- [codex-rs/hepta-memory-retrieval/src/v2_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/v2_tests.rs); validates complete input/omission binding and canonical permutations.
 - [codex-rs/hepta-memory-retrieval/src/lib_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/lib_tests.rs); named case: `ranking_is_deterministic_and_explainable`.
+- [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); product-owner composition and a post-ranking tombstone race fail closed before delivery.
+- [codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs); verifies learned secondary ranking remains before the response byte/result cut.
 
 In `codex-rs`, run `just test -p codex-hepta-memory-retrieval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) separately labels target acceptance designs.
 
@@ -183,13 +188,13 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+The bounded owner-generated V2 read now has a named Agentd caller, but this source composition remains unqualified and does not flip activation. Generation-bound recall still lacks the complete host generation vector and several real owner channels. Activation additionally requires current exact-candidate execution evidence, target-host qualification and the existing external acceptance gates; shadow and qualification callers are not production acceptance.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. The bounded owner-V2 subset now has a named caller; the generation-bound target remains only source-implemented. Qualification still requires current exact-candidate evidence, including product execution. Acceptance, selection, promotion and release remain separate externally governed states.
 
 For `memory.retrieval`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
