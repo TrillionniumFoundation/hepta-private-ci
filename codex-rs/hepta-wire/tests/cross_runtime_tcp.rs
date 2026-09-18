@@ -18,8 +18,6 @@ use codex_hepta_wire::WireReadError;
 use codex_hepta_wire::WireVersion;
 use codex_hepta_wire::negotiate;
 use codex_hepta_wire::read_frame_for;
-use serde::Deserialize;
-use serde::Serialize;
 use std::error::Error;
 use std::net::TcpListener;
 use std::process::Command;
@@ -73,8 +71,7 @@ with socket.create_connection((host, port), timeout=5) as sock:
     sock.sendall(tampered)
 "#;
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 struct IntegrationPayload {
     objective: String,
     authority: String,
@@ -93,6 +90,28 @@ impl IntegrationCodec {
     }
 }
 
+fn parse_integration_payload(payload: &[u8]) -> Result<IntegrationPayload, PayloadCodecError> {
+    let text =
+        std::str::from_utf8(payload).map_err(|error| PayloadCodecError::new(error.to_string()))?;
+    const PREFIX: &str = r#"{"objective":"ndu","authority":"deny_all","step":"#;
+    let Some(step) = text
+        .strip_prefix(PREFIX)
+        .and_then(|rest| rest.strip_suffix('}'))
+    else {
+        return Err(PayloadCodecError::new(
+            "payload is not the registered canonical integration schema",
+        ));
+    };
+    let step = step
+        .parse::<u64>()
+        .map_err(|error| PayloadCodecError::new(error.to_string()))?;
+    Ok(IntegrationPayload {
+        objective: "ndu".to_string(),
+        authority: "deny_all".to_string(),
+        step,
+    })
+}
+
 impl PayloadCodec for IntegrationCodec {
     type Value = IntegrationPayload;
 
@@ -101,16 +120,25 @@ impl PayloadCodec for IntegrationCodec {
     }
 
     fn encode(&self, value: &Self::Value) -> Result<Vec<u8>, PayloadCodecError> {
-        serde_json::to_vec(value).map_err(|error| PayloadCodecError::new(error.to_string()))
+        if value.objective != "ndu" || value.authority != "deny_all" {
+            return Err(PayloadCodecError::new(
+                "typed value is outside the registered integration schema",
+            ));
+        }
+        Ok(format!(
+            r#"{{"objective":"ndu","authority":"deny_all","step":{}}}"#,
+            value.step
+        )
+        .into_bytes())
     }
 
     fn decode(&self, payload: &[u8]) -> Result<Self::Value, PayloadCodecError> {
-        serde_json::from_slice(payload).map_err(|error| PayloadCodecError::new(error.to_string()))
+        parse_integration_payload(payload)
     }
 }
 
 fn validate_integration_payload(payload: &[u8]) -> Result<(), SchemaValidationError> {
-    serde_json::from_slice::<IntegrationPayload>(payload)
+    parse_integration_payload(payload)
         .map(|_| ())
         .map_err(|error| SchemaValidationError::new(error.to_string()))
 }
