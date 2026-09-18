@@ -166,7 +166,6 @@ fn generator_completeness_changes_product_receipt() {
     );
 }
 
-
 #[test]
 fn bound_reached_changes_product_receipt_without_claiming_omissions() {
     let cue = cue();
