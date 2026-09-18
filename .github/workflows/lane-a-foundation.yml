@@ -57,6 +57,17 @@ jobs:
         shell: bash
         run: scripts/run_lane_a_native_qualification.sh
 
+      - name: Run exact-head AuthBus Agentd product proof
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/lane-a-authbus-product-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output ../.hepta-evidence/lane-a-authbus-agentd-product.json -- \
+            cargo test --locked -p codex-hepta-agentd --test authbus_text_product
+
       - name: Write exact-source and native receipts
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -120,6 +131,17 @@ jobs:
       - name: Run Lane A native tests and strict lint on merge candidate
         shell: bash
         run: scripts/run_lane_a_native_qualification.sh
+
+      - name: Run merge-candidate AuthBus Agentd product proof
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/lane-a-authbus-product-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output ../.hepta-evidence/lane-a-authbus-agentd-product.json -- \
+            cargo test --locked -p codex-hepta-agentd --test authbus_text_product
 
       - name: Write synthetic-merge receipts
         env:
