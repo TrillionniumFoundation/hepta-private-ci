@@ -9,6 +9,8 @@ wishes happened.
 - Issuance response received: persist the opaque handle before callback entry.
 - Final-use blocks delivery after issuance: return `DeliveryBlocked` with the
   handle so the trusted host can revoke/reconcile.
+- Consumer enters but reports failure/uncertainty: return
+  `ConsumerIndeterminate` with the known handle and metadata.
 - Registry commit fails after provider issuance: return `RegistryBlocked` with
   the known handle; do not issue a replacement.
 - Ambiguous renew/revoke of a known handle: use non-replaying lease lookup.
