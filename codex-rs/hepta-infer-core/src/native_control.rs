@@ -108,6 +108,14 @@ pub struct NativeDispatch {
     pub model_provider: String,
     /// Exact serialized additional context, including its owner snapshot.
     pub context_digest: String,
+    /// runtime.codex correlation persisted before turn/start. Historical
+    /// records may omit these fields and remain fail-closed for reconciliation.
+    #[serde(default)]
+    pub codex_session_id: Option<String>,
+    #[serde(default)]
+    pub codex_deadline_ms: Option<u64>,
+    #[serde(default)]
+    pub codex_request_digest: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -398,6 +406,21 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                match (
+                    dispatch.codex_session_id.as_deref(),
+                    dispatch.codex_deadline_ms,
+                    dispatch.codex_request_digest.as_deref(),
+                ) {
+                    (Some(session_id), Some(deadline_ms), Some(request_digest)) => {
+                        validate_identity(session_id, "Codex session")?;
+                        if deadline_ms == 0 {
+                            return Err(Error::InvalidIdentity("Codex deadline"));
+                        }
+                        validate_digest(request_digest, "Codex request digest")?;
+                    }
+                    (None, None, None) => {}
+                    _ => return Err(Error::InvalidIdentity("incomplete Codex dispatch binding")),
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -449,8 +472,19 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
             .turn_id
             .as_ref()
             .is_some_and(|turn| turn != &output.turn_id)
+        || matches!(
+            (
+                dispatch.codex_request_digest.as_deref(),
+                output.codex_request_digest.as_deref(),
+            ),
+            (Some(expected), Some(actual)) if expected != actual
+        )
     {
         return Err(Error::AssignmentMismatch);
+    }
+    if record.turn_id.is_none() && !output.turn_id.is_empty() {
+        validate_identity(&output.turn_id, "reconciled native turn")?;
+        record.turn_id = Some(output.turn_id.clone());
     }
     if output.output.len() > 1024 * 1024
         || output
