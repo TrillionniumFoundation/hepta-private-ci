@@ -20,6 +20,7 @@ pub(super) struct Fixture {
     pub dataset: DatasetSnapshotReceiptV3,
     pub bundle: IndependentEvaluationBundleV1,
     pub roles: Vec<MetricRoleContractV2>,
+    pub durable_holdout: DurableHoldoutUseV1,
     pub evidence: SignedEvaluationEvidenceV1,
     pub candidate_evidence: SignedLearningEvidenceV1,
     pub intuition: CalibratedDecisionRequestV1,
@@ -126,7 +127,11 @@ impl Fixture {
             roles.clone(),
         )
         .unwrap();
-        let holdout_use = FinalHoldoutRegistry::new().consume(&plan).unwrap();
+        let file = tempfile::tempfile().unwrap();
+        let mut holdout =
+            DurableFinalHoldoutJournalV1::create(file, digest("evaluated-shadow-holdout")).unwrap();
+        let durable_holdout = holdout.consume_proven(holdout.anchor(), &plan).unwrap();
+        let holdout_use = durable_holdout.receipt().clone();
         let bundle = IndependentEvaluationBundleV1 {
             evaluation_id: id("evaluation"),
             candidate_id: id("policy"),
@@ -260,21 +265,28 @@ impl Fixture {
             &principals[1],
             &keys[1],
             LearningEvidenceRoleV1::Evaluator,
-            &evaluation_signing_payload_v2(&bundle, &roles).unwrap(),
+            &durable_evaluation_signing_payload_v3(&bundle, &roles, &durable_holdout).unwrap(),
         );
         let candidate_evidence = sign(
             &verifier,
             &principals[1],
             &keys[1],
             LearningEvidenceRoleV1::Evaluator,
-            &evaluated_candidate_signing_payload_v1(&bundle, &roles, &bytes, /*generation*/ 1)
-                .unwrap(),
+            &evaluated_candidate_signing_payload_v2(
+                &bundle,
+                &roles,
+                &durable_holdout,
+                &bytes,
+                /*generation*/ 1,
+            )
+            .unwrap(),
         );
         Self {
             run,
             dataset,
             bundle,
             roles,
+            durable_holdout,
             evidence: SignedEvaluationEvidenceV1 {
                 generator_plan,
                 evaluator_bundle,
@@ -292,27 +304,34 @@ impl Fixture {
             &self.bundle.evaluator,
             &key,
             LearningEvidenceRoleV1::Evaluator,
-            &evaluation_signing_payload_v2(&self.bundle, &self.roles).unwrap(),
+            &durable_evaluation_signing_payload_v3(
+                &self.bundle,
+                &self.roles,
+                &self.durable_holdout,
+            )
+            .unwrap(),
         );
         self.candidate_evidence = sign(
             &self.verifier,
             &self.bundle.evaluator,
             &key,
             LearningEvidenceRoleV1::Evaluator,
-            &evaluated_candidate_signing_payload_v1(
+            &evaluated_candidate_signing_payload_v2(
                 &self.bundle,
                 &self.roles,
+                &self.durable_holdout,
                 &self.bytes,
                 self.run.snapshot.learning_artifact_generation,
             )
             .unwrap(),
         );
     }
-    pub fn request(&self) -> EvaluatedShadowRequestV1<'_> {
-        EvaluatedShadowRequestV1 {
+    pub fn request(&self) -> EvaluatedShadowRequestV2<'_> {
+        EvaluatedShadowRequestV2 {
             run: self.run.clone(),
             evaluation: self.bundle.clone(),
             metric_roles: self.roles.clone(),
+            durable_holdout: &self.durable_holdout,
             evaluation_evidence: &self.evidence,
             candidate_bytes: &self.bytes,
             candidate_evidence: &self.candidate_evidence,
