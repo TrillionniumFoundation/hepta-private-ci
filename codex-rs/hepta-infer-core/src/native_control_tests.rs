@@ -215,7 +215,9 @@ fn journal_compaction_preserves_exact_state_and_bounds_archives() {
     }
     let expected = control.native_record("r1").unwrap().clone();
     let before = std::fs::metadata(&path).unwrap().len();
-    let receipt = control.compact_native_journal(/*retain_archives*/ 2).unwrap();
+    let receipt = control
+        .compact_native_journal(/*retain_archives*/ 2)
+        .unwrap();
     assert_eq!(receipt.before_bytes, before);
     assert!(receipt.after_bytes < receipt.before_bytes);
     assert_eq!(receipt.archive_sha256.len(), 64);
@@ -429,7 +431,9 @@ fn authorized_quota_blocks_before_dispatch_and_refines_only_from_observed_usage(
         Err(Error::CapacityExceeded),
         "reserved concurrency must block a second active request"
     );
-    control.dispatch_native("r1", authorized_dispatch()).unwrap();
+    control
+        .dispatch_native("r1", authorized_dispatch())
+        .unwrap();
     control.native_started("r1", "turn-1".to_string()).unwrap();
     let mut terminal = output(NativeRunStatus::Completed, Some(4));
     terminal.final_use_authority = NativeFinalUseAuthority::Claimed {
@@ -471,7 +475,9 @@ fn authorized_dispatch_requires_exact_provider_and_final_use_witness() {
         control.dispatch_native("r1", wrong_provider),
         Err(Error::AssignmentMismatch)
     );
-    control.dispatch_native("r1", authorized_dispatch()).unwrap();
+    control
+        .dispatch_native("r1", authorized_dispatch())
+        .unwrap();
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
@@ -481,14 +487,11 @@ fn authorized_economic_budget_remains_consumed_after_possible_provider_effect() 
     let path = path("authorized-budget");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     let mut first = authorized_request("r1", 5);
-    first
-        .admission
-        .as_mut()
-        .unwrap()
-        .quota
-        .reserved_day_budget = 1;
+    first.admission.as_mut().unwrap().quota.reserved_day_budget = 1;
     control.reserve_native(first, 4).unwrap();
-    control.dispatch_native("r1", authorized_dispatch()).unwrap();
+    control
+        .dispatch_native("r1", authorized_dispatch())
+        .unwrap();
     control.native_started("r1", "turn-1".to_string()).unwrap();
     let mut terminal = output(NativeRunStatus::Completed, Some(1));
     terminal.final_use_authority = NativeFinalUseAuthority::Claimed {
@@ -498,12 +501,7 @@ fn authorized_economic_budget_remains_consumed_after_possible_provider_effect() 
     control.settle_native("r1", terminal).unwrap();
 
     let mut second = authorized_request("r2", 1);
-    second
-        .admission
-        .as_mut()
-        .unwrap()
-        .quota
-        .reserved_day_budget = 1;
+    second.admission.as_mut().unwrap().quota.reserved_day_budget = 1;
     assert_eq!(
         control.reserve_native(second, 4),
         Err(Error::CapacityExceeded),
