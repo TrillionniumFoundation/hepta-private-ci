@@ -33,6 +33,7 @@ const MANDATORY_GROUPS_DOMAIN: &[u8] = b"hepta.context-mandatory-groups.proof-v2
 const CANDIDATE_PROOF_SET_DOMAIN: &[u8] = b"hepta.context-candidate-proof-set.proof-v2.1";
 const SELECTED_BINDING_DOMAIN: &[u8] = b"hepta.context-selected-binding.proof-v2.1";
 const COMPILATION_RECEIPT_DOMAIN: &[u8] = b"hepta.context-compilation-receipt.proof-v2.1";
+const PAYLOAD_PLACEMENT_DOMAIN: &[u8] = b"hepta.context-payload-placement.proof-v2.1";
 const REALIZATION_DOMAIN: &[u8] = b"hepta.context-realization.proof-v2.1";
 const SERIALIZATION_DOMAIN: &[u8] = b"hepta.context-serialization.proof-v2.1";
 const REVALIDATION_DOMAIN: &[u8] = b"hepta.context-revalidation.proof-v2.1";
@@ -1100,6 +1101,65 @@ impl ContextPayloadItemV2 {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextPayloadPlacementV2 {
+    item_id: StableId,
+    start: usize,
+    end: usize,
+}
+
+impl ContextPayloadPlacementV2 {
+    #[must_use]
+    pub fn new(item_id: StableId, start: usize, end: usize) -> Self {
+        Self {
+            item_id,
+            start,
+            end,
+        }
+    }
+
+    #[must_use]
+    pub fn item_id(&self) -> &StableId {
+        &self.item_id
+    }
+
+    #[must_use]
+    pub const fn start(&self) -> usize {
+        self.start
+    }
+
+    #[must_use]
+    pub const fn end(&self) -> usize {
+        self.end
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextSerializedPayloadV2 {
+    payload: Vec<u8>,
+    placements: Vec<ContextPayloadPlacementV2>,
+}
+
+impl ContextSerializedPayloadV2 {
+    #[must_use]
+    pub fn new(payload: Vec<u8>, placements: Vec<ContextPayloadPlacementV2>) -> Self {
+        Self {
+            payload,
+            placements,
+        }
+    }
+
+    #[must_use]
+    pub fn payload(&self) -> &[u8] {
+        &self.payload
+    }
+
+    #[must_use]
+    pub fn placements(&self) -> &[ContextPayloadPlacementV2] {
+        &self.placements
+    }
+}
+
 pub trait ContextSerializerV2 {
     fn serializer_digest(&self) -> Digest32;
 
@@ -1107,7 +1167,7 @@ pub trait ContextSerializerV2 {
         &self,
         profile: &ContextModelProfileV2,
         ordered_items: &[ContextPayloadItemV2],
-    ) -> Result<Vec<u8>, String>;
+    ) -> Result<ContextSerializedPayloadV2, String>;
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1118,6 +1178,7 @@ pub struct ContextSerializationReceiptV2 {
     model_profile_digest: Digest32,
     serializer_digest: Digest32,
     selected_item_ids: Vec<StableId>,
+    placement_digest: Digest32,
     realization_digest: Digest32,
     payload_digest: Digest32,
     serialized_token_count: u64,
@@ -1130,6 +1191,8 @@ impl ContextSerializationReceiptV2 {
         &self,
         compiled: &CompiledContextV2,
         payload: &[u8],
+        realized_items: &[ContextPayloadItemV2],
+        placements: &[ContextPayloadPlacementV2],
     ) -> Result<(), ContextCompilerV2Error> {
         compiled.validate()?;
         for (name, digest) in [
@@ -1137,6 +1200,7 @@ impl ContextSerializationReceiptV2 {
             ("selected_binding", self.selected_binding_digest),
             ("model_profile", self.model_profile_digest),
             ("serializer", self.serializer_digest),
+            ("placement", self.placement_digest),
             ("realization", self.realization_digest),
             ("payload", self.payload_digest),
             ("serialization_receipt", self.receipt_digest),
@@ -1148,14 +1212,21 @@ impl ContextSerializationReceiptV2 {
             || self.model_profile_digest != compiled.receipt.model_profile_digest
             || self.serializer_digest != compiled.model_profile.serializer_digest
             || self.selected_item_ids != compiled.receipt.selected_item_ids
+            || self.payload_digest != Digest32::of_bytes(payload)
+        {
+            return Err(ContextCompilerV2Error::SerializationMismatch);
+        }
+        validate_realized_payload(compiled, realized_items, payload, placements)?;
+        let placement_digest = compute_payload_placement_digest(payload, placements)?;
+        if self.placement_digest != placement_digest
             || self.realization_digest
                 != compute_realization_digest(
                     &compiled.selected_candidates,
                     self.serializer_digest,
+                    placement_digest,
                 )
-            || self.payload_digest != Digest32::of_bytes(payload)
         {
-            return Err(ContextCompilerV2Error::SerializationMismatch);
+            return Err(ContextCompilerV2Error::SerializationRealizationMismatch);
         }
         if self.serialized_token_count == 0
             || self.serialized_token_count > compiled.receipt.token_upper_bound
@@ -1188,6 +1259,11 @@ impl ContextSerializationReceiptV2 {
     }
 
     #[must_use]
+    pub const fn placement_digest(&self) -> Digest32 {
+        self.placement_digest
+    }
+
+    #[must_use]
     pub const fn serialized_token_count(&self) -> u64 {
         self.serialized_token_count
     }
@@ -1216,6 +1292,7 @@ impl ContextSerializationReceiptV2 {
             push_digest(&mut bytes, digest);
         }
         push_ids(&mut bytes, &self.selected_item_ids);
+        push_digest(&mut bytes, self.placement_digest);
         push_digest(&mut bytes, self.realization_digest);
         push_digest(&mut bytes, self.payload_digest);
         push_u64(&mut bytes, self.serialized_token_count);
@@ -1227,11 +1304,18 @@ impl ContextSerializationReceiptV2 {
 pub struct SerializedContextV2 {
     receipt: ContextSerializationReceiptV2,
     payload: Vec<u8>,
+    realized_items: Vec<ContextPayloadItemV2>,
+    placements: Vec<ContextPayloadPlacementV2>,
 }
 
 impl SerializedContextV2 {
     pub fn validate_for(&self, compiled: &CompiledContextV2) -> Result<(), ContextCompilerV2Error> {
-        self.receipt.validate_for(compiled, &self.payload)
+        self.receipt.validate_for(
+            compiled,
+            &self.payload,
+            &self.realized_items,
+            &self.placements,
+        )
     }
 
     #[must_use]
@@ -1268,12 +1352,16 @@ pub fn serialize_context_v2(
     }
 
     let ordered_items = bind_payload_items(compiled, payload_items)?;
-    let payload = serializer
+    let serialized_payload = serializer
         .serialize(&compiled.model_profile, &ordered_items)
         .map_err(ContextCompilerV2Error::SerializationFailure)?;
+    let payload = serialized_payload.payload;
+    let placements = serialized_payload.placements;
     if payload.is_empty() {
         return Err(ContextCompilerV2Error::EmptySerializedPayload);
     }
+    validate_realized_payload(compiled, &ordered_items, &payload, &placements)?;
+    let placement_digest = compute_payload_placement_digest(&payload, &placements)?;
     let serialized_token_count = tokenizer
         .count_tokens(&payload)
         .map_err(ContextCompilerV2Error::TokenizerFailure)?;
@@ -1294,9 +1382,11 @@ pub fn serialize_context_v2(
         model_profile_digest: compiled.receipt.model_profile_digest,
         serializer_digest,
         selected_item_ids: compiled.receipt.selected_item_ids.clone(),
+        placement_digest,
         realization_digest: compute_realization_digest(
             &compiled.selected_candidates,
             serializer_digest,
+            placement_digest,
         ),
         payload_digest: Digest32::of_bytes(&payload),
         serialized_token_count,
@@ -1304,7 +1394,12 @@ pub fn serialize_context_v2(
         authority: AuthorityPosture::DENY_ALL,
     };
     receipt.receipt_digest = receipt.compute_receipt_digest();
-    let serialized = SerializedContextV2 { receipt, payload };
+    let serialized = SerializedContextV2 {
+        receipt,
+        payload,
+        realized_items: ordered_items,
+        placements,
+    };
     serialized.validate_for(compiled)?;
     Ok(serialized)
 }
@@ -1807,17 +1902,82 @@ fn compute_selected_binding_digest(candidates: &[ContextCandidateV2]) -> Digest3
     Digest32::of_bytes(&bytes)
 }
 
+fn validate_realized_payload(
+    compiled: &CompiledContextV2,
+    realized_items: &[ContextPayloadItemV2],
+    payload: &[u8],
+    placements: &[ContextPayloadPlacementV2],
+) -> Result<(), ContextCompilerV2Error> {
+    if realized_items.len() != compiled.selected_candidates.len()
+        || placements.len() != realized_items.len()
+    {
+        return Err(ContextCompilerV2Error::PayloadPlacementSetMismatch);
+    }
+
+    let mut previous_end = 0_usize;
+    for ((candidate, item), placement) in compiled
+        .selected_candidates
+        .iter()
+        .zip(realized_items)
+        .zip(placements)
+    {
+        if candidate.item_id != item.item_id
+            || placement.item_id != item.item_id
+            || Digest32::of_bytes(&item.content) != candidate.content_digest
+            || placement.start > placement.end
+            || placement.end > payload.len()
+            || placement.start < previous_end
+            || payload.get(placement.start..placement.end) != Some(item.content.as_slice())
+        {
+            return Err(ContextCompilerV2Error::SerializationRealizationMismatch);
+        }
+        previous_end = placement.end;
+    }
+    Ok(())
+}
+
+fn compute_payload_placement_digest(
+    payload: &[u8],
+    placements: &[ContextPayloadPlacementV2],
+) -> Result<Digest32, ContextCompilerV2Error> {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(PAYLOAD_PLACEMENT_DOMAIN);
+    push_len(&mut bytes, placements.len());
+    for placement in placements {
+        if placement.start > placement.end || placement.end > payload.len() {
+            return Err(ContextCompilerV2Error::SerializationRealizationMismatch);
+        }
+        push_id(&mut bytes, &placement.item_id);
+        push_u64(
+            &mut bytes,
+            u64::try_from(placement.start).map_err(|_| ContextCompilerV2Error::Arithmetic)?,
+        );
+        push_u64(
+            &mut bytes,
+            u64::try_from(placement.end).map_err(|_| ContextCompilerV2Error::Arithmetic)?,
+        );
+        let fragment = payload
+            .get(placement.start..placement.end)
+            .ok_or(ContextCompilerV2Error::SerializationRealizationMismatch)?;
+        push_digest(&mut bytes, Digest32::of_bytes(fragment));
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
 fn compute_realization_digest(
     candidates: &[ContextCandidateV2],
     serializer_digest: Digest32,
+    placement_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(REALIZATION_DOMAIN);
     push_digest(&mut bytes, serializer_digest);
+    push_digest(&mut bytes, placement_digest);
     push_len(&mut bytes, candidates.len());
     for candidate in candidates {
         push_id(&mut bytes, &candidate.item_id);
         push_digest(&mut bytes, candidate.content_digest);
+        push_digest(&mut bytes, candidate.admission.proof_digest);
     }
     Digest32::of_bytes(&bytes)
 }
@@ -1882,6 +2042,8 @@ pub enum ContextCompilerV2Error {
         token_budget: u64,
     },
     SerializationMismatch,
+    PayloadPlacementSetMismatch,
+    SerializationRealizationMismatch,
     AttachmentMismatch,
     DeliveryMismatch,
     DeliveryAdapterFailure(String),
@@ -1890,6 +2052,7 @@ pub enum ContextCompilerV2Error {
     InvalidDeliveryDisposition,
     InvalidObservationTime,
     AuthorityGranted,
+    Arithmetic,
 }
 
 impl fmt::Display for ContextCompilerV2Error {
