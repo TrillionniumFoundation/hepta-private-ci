@@ -86,3 +86,5 @@ jobs:
 
       - name: Test deterministic runtime reference
         run: cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types
