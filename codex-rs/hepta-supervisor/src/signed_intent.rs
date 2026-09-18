@@ -24,7 +24,10 @@ use crate::H7H89ProductionTransition;
 
 pub const SIGNED_INTENT_SCHEMA_VERSION: u32 = 1;
 pub const SIGNED_INTENT_FILE: &str = "supervisor-signed-intent.json";
+pub const SIGNED_INTENT_RECOVERY_SCHEMA_VERSION: u32 = 1;
+pub const SIGNED_INTENT_RECOVERY_FILE: &str = "supervisor-signed-intent-recovery.json";
 const INTENT_DOMAIN: &[u8] = b"hepta-supervisor:signed-intent:v1";
+const RECOVERY_DOMAIN: &[u8] = b"hepta-supervisor:signed-intent-recovery:v1";
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -34,6 +37,10 @@ pub enum SignedIntentStatus {
     Queued,
     Committed,
     RecoveryRequired,
+    /// Explicit operator terminalization after fencing the ambiguous effect.
+    /// This does not assert that the source release remained active; it only
+    /// records that the signed grant must not be resumed or inferred complete.
+    Aborted,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -50,6 +57,21 @@ pub struct SignedSupervisorIntent {
     pub authority_epoch: u64,
     pub status: SignedIntentStatus,
     pub intent_sha256: Sha256Digest,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SignedIntentRecoveryAction {
+    Abort,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct SignedIntentRecoveryDirective {
+    pub schema_version: u32,
+    pub intent_sha256: Sha256Digest,
+    pub action: SignedIntentRecoveryAction,
+    pub directive_sha256: Sha256Digest,
 }
 
 #[derive(Debug, Error)]
@@ -156,6 +178,46 @@ impl SignedSupervisorIntent {
     }
 }
 
+impl SignedIntentRecoveryDirective {
+    pub fn abort(intent_sha256: Sha256Digest) -> Result<Self, SignedIntentError> {
+        let mut directive = Self {
+            schema_version: SIGNED_INTENT_RECOVERY_SCHEMA_VERSION,
+            intent_sha256,
+            action: SignedIntentRecoveryAction::Abort,
+            directive_sha256: Sha256Digest::for_bytes(b"pending"),
+        };
+        directive.directive_sha256 = directive.compute_digest()?;
+        directive.validate()?;
+        Ok(directive)
+    }
+
+    pub fn validate(&self) -> Result<(), SignedIntentError> {
+        if self.schema_version != SIGNED_INTENT_RECOVERY_SCHEMA_VERSION
+            || Sha256Digest::parse(self.intent_sha256.as_str().to_string()).is_err()
+            || Sha256Digest::parse(self.directive_sha256.as_str().to_string()).is_err()
+        {
+            return Err(SignedIntentError::Invalid(
+                "signed intent recovery directive is malformed".to_string(),
+            ));
+        }
+        if self.directive_sha256 != self.compute_digest()? {
+            return Err(SignedIntentError::DigestMismatch);
+        }
+        Ok(())
+    }
+
+    fn compute_digest(&self) -> Result<Sha256Digest, SignedIntentError> {
+        let payload = serde_json::to_vec(&(
+            self.schema_version,
+            &self.intent_sha256,
+            self.action,
+        ))?;
+        Ok(Sha256Digest::from_sha256_output(Sha256::digest(
+            [RECOVERY_DOMAIN, payload.as_slice()].concat(),
+        )))
+    }
+}
+
 pub fn read_intent(run_root: &Path) -> Result<Option<SignedSupervisorIntent>, SignedIntentError> {
     let path = run_root.join(SIGNED_INTENT_FILE);
     let bytes = match std::fs::read(path) {
@@ -166,6 +228,20 @@ pub fn read_intent(run_root: &Path) -> Result<Option<SignedSupervisorIntent>, Si
     let intent: SignedSupervisorIntent = serde_json::from_slice(&bytes)?;
     intent.validate()?;
     Ok(Some(intent))
+}
+
+pub fn read_recovery_directive(
+    run_root: &Path,
+) -> Result<Option<SignedIntentRecoveryDirective>, SignedIntentError> {
+    let path = run_root.join(SIGNED_INTENT_RECOVERY_FILE);
+    let bytes = match std::fs::read(path) {
+        Ok(bytes) => bytes,
+        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error.into()),
+    };
+    let directive: SignedIntentRecoveryDirective = serde_json::from_slice(&bytes)?;
+    directive.validate()?;
+    Ok(Some(directive))
 }
 
 /// Atomically publishes one intent after synchronizing its file. Unix fsyncs
@@ -189,15 +265,34 @@ pub fn write_intent(
             "another signed supervisor intent is unresolved".to_string(),
         ));
     }
+    write_atomic_json(run_root, SIGNED_INTENT_FILE, intent)
+}
+
+/// Publishes an explicit operator recovery directive bound to one exact intent
+/// digest. The directive never asserts successful completion; the only
+/// repository-controlled recovery action is fail-closed abort.
+pub fn write_recovery_directive(
+    run_root: &Path,
+    directive: &SignedIntentRecoveryDirective,
+) -> Result<(), SignedIntentError> {
+    directive.validate()?;
+    write_atomic_json(run_root, SIGNED_INTENT_RECOVERY_FILE, directive)
+}
+
+fn write_atomic_json<T: Serialize>(
+    run_root: &Path,
+    file_name: &str,
+    value: &T,
+) -> Result<(), SignedIntentError> {
     std::fs::create_dir_all(run_root)?;
     let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
     let nanos = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)
         .map_err(|_| SignedIntentError::Invalid("system clock before epoch".to_string()))?
         .as_nanos();
-    let temp = run_root.join(format!(".{SIGNED_INTENT_FILE}.{nanos}.{sequence}.tmp"));
-    let final_path = run_root.join(SIGNED_INTENT_FILE);
-    let bytes = serde_json::to_vec(intent)?;
+    let temp = run_root.join(format!(".{file_name}.{nanos}.{sequence}.tmp"));
+    let final_path = run_root.join(file_name);
+    let bytes = serde_json::to_vec(value)?;
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -247,13 +342,28 @@ mod tests {
             write_intent(dir.path(), &other),
             Err(SignedIntentError::Invalid(message)) if message.contains("unresolved")
         ));
-        let committed = SignedSupervisorIntent {
-            status: SignedIntentStatus::Committed,
-            ..first
-        };
-        let mut committed = committed;
-        committed.intent_sha256 = committed.compute_digest()?;
+        let committed = first.with_status(SignedIntentStatus::Committed)?;
         write_intent(dir.path(), &committed).expect("terminal replacement");
+        Ok(())
+    }
+
+    #[test]
+    fn abort_directive_is_bound_to_exact_intent_digest() -> Result<(), SignedIntentError> {
+        let dir = tempfile::tempdir().expect("temp");
+        let intent = SignedSupervisorIntent::new(
+            Sha256Digest::for_bytes(b"grant"),
+            "agent",
+            H7H89ProductionTransition::Upgrade,
+            "v1",
+            "v2",
+            0,
+            1,
+            1,
+            SignedIntentStatus::RecoveryRequired,
+        )?;
+        let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())?;
+        write_recovery_directive(dir.path(), &directive)?;
+        assert_eq!(read_recovery_directive(dir.path())?, Some(directive));
         Ok(())
     }
 }
