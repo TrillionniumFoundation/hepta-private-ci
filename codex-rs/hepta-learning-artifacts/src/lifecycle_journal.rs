@@ -18,7 +18,6 @@ use crate::ArtifactLifecycleEventV1;
 use crate::ArtifactLifecycleStateV1;
 use crate::validate_artifact_lifecycle_transition;
 
-
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LifecycleActorRoleV2 {
     Producer,
