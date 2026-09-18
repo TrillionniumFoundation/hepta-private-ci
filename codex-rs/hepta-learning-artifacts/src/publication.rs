@@ -14,7 +14,7 @@ use codex_hepta_types::{Digest32, StableId};
 
 use crate::{
     ArtifactAdmissionError, ArtifactEvent, ArtifactManifest, ArtifactRegistry,
-    ArtifactRegistryError, DatasetWithdrawalRegistry, RegistrySnapshotReceipt,
+    ArtifactRegistryError, DatasetWithdrawalRegistry, ProvenanceModeV1, RegistrySnapshotReceipt,
     WithdrawalBoundArtifactAdmissionV3, validate_artifact_publication_v3,
 };
 
@@ -71,6 +71,7 @@ pub enum ArtifactPublicationError {
     Registry(ArtifactRegistryError),
     RegistryHeadChanged,
     UnsupportedMultiPredecessor,
+    UnsupportedMultiDataset,
     RollbackProjectionMismatch,
     SnapshotReceiptMismatch,
 }
@@ -88,6 +89,7 @@ impl StdError for ArtifactPublicationError {
             Self::Registry(error) => Some(error),
             Self::RegistryHeadChanged
             | Self::UnsupportedMultiPredecessor
+            | Self::UnsupportedMultiDataset
             | Self::RollbackProjectionMismatch
             | Self::SnapshotReceiptMismatch => None,
         }
@@ -134,6 +136,15 @@ pub fn prepare_artifact_publication_v3(
     if v2.rollback_predecessor.is_some() && v2.rollback_predecessor != predecessor_id {
         return Err(ArtifactPublicationError::RollbackProjectionMismatch);
     }
+    let support_digest = match v2.provenance_mode {
+        ProvenanceModeV1::DatasetDerived => {
+            let [dataset_digest] = v2.source_dataset_digests.as_slice() else {
+                return Err(ArtifactPublicationError::UnsupportedMultiDataset);
+            };
+            *dataset_digest
+        }
+        ProvenanceModeV1::DatasetIndependent => admission.validated_manifest.manifest_digest,
+    };
 
     let manifest = ArtifactManifest {
         artifact_id: v2.artifact_id.clone(),
@@ -142,7 +153,7 @@ pub fn prepare_artifact_publication_v3(
         predecessor_id,
         content_digest: v2.bytes_digest,
         objective_digest: v2.objective_class_digest,
-        support_digest: admission.validated_manifest.manifest_digest,
+        support_digest,
         producer_id: v2.producer_id.clone(),
         compatibility_digest: v2.compatibility_digest,
         encoded_size_bytes: v2.encoded_size_bytes,
@@ -230,10 +241,10 @@ mod tests {
 
     use super::*;
     use crate::{
-        ArtifactKind, CreateOnlyArtifactFile, DatasetWithdrawalNoticeV1,
-        LearningArtifactManifestV2, ProvenanceModeV1, WithdrawalRegistryBindingV1,
-        admit_manifest_at_withdrawal_head_v3, read_registry_snapshot,
-        write_registry_snapshot,
+        ArtifactKind, CreateOnlyArtifactFile, DatasetRevocationRequest,
+        DatasetWithdrawalNoticeV1, LearningArtifactManifestV2, ProvenanceModeV1,
+        WithdrawalRegistryBindingV1, admit_manifest_at_withdrawal_head_v3,
+        prepare_dataset_revocation, read_registry_snapshot, write_registry_snapshot,
     };
 
     fn id(value: &str) -> StableId {
@@ -327,6 +338,80 @@ mod tests {
             prepared.transaction().resulting_registry_head_digest
         );
         remove_file(path).expect("remove test file");
+    }
+
+    #[test]
+    fn art_07_publication_preserves_single_dataset_revocation_binding() {
+        let dataset = digest("dataset");
+        let withdrawal = withdrawal_registry("scope-a");
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawal,
+            withdrawal.snapshot().head_digest,
+            manifest(dataset),
+            20,
+        )
+        .expect("admission");
+        let current = ArtifactRegistry::new();
+        let prepared = prepare_artifact_publication_v3(
+            &current,
+            Digest32::ZERO,
+            &withdrawal,
+            &admission,
+            id("register-v3"),
+            20,
+        )
+        .expect("prepare");
+
+        assert_eq!(
+            prepared
+                .registry()
+                .manifest(&id("artifact-v3-publication"))
+                .expect("registered manifest")
+                .support_digest,
+            dataset
+        );
+        let revocation = prepare_dataset_revocation(
+            prepared.registry(),
+            prepared.registry().snapshot().head_digest,
+            &DatasetRevocationRequest {
+                operation_id: id("revoke-dataset"),
+                dataset_digest: dataset,
+                source_revocation_digest: digest("source-revocation"),
+                evaluator_id: id("independent-evaluator"),
+            },
+        )
+        .expect("legacy durable registry can still identify the direct dataset target");
+        assert_eq!(
+            revocation.summary().direct_artifacts,
+            vec![id("artifact-v3-publication")]
+        );
+    }
+
+    #[test]
+    fn art_07_publication_rejects_lossy_multi_dataset_projection() {
+        let withdrawal = withdrawal_registry("scope-a");
+        let mut candidate = manifest(digest("dataset-a"));
+        candidate.source_dataset_digests.push(digest("dataset-b"));
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawal,
+            withdrawal.snapshot().head_digest,
+            candidate,
+            20,
+        )
+        .expect("multi-dataset V2 admission is valid");
+        let current = ArtifactRegistry::new();
+        assert_eq!(
+            prepare_artifact_publication_v3(
+                &current,
+                Digest32::ZERO,
+                &withdrawal,
+                &admission,
+                id("register-v3"),
+                20,
+            )
+            .unwrap_err(),
+            ArtifactPublicationError::UnsupportedMultiDataset
+        );
     }
 
     #[test]
