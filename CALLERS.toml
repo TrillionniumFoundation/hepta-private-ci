@@ -265,6 +265,58 @@ definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "drop(state)"]
 product_callers = []
 caller_markers = []
 
+[[boundary]]
+id = "self_evolution_adoption"
+symbol = "SelfEvolutionRuntimeV1::adopt_self_evolution"
+call_pattern = "\\.\\s*adopt_self_evolution\\s*\\("
+definition_path = "codex-rs/hepta-control-plane/src/self_evolution.rs"
+definition_markers = ["pub fn adopt_self_evolution(", "SelectionAuthority", "PredecessorMismatch", "GenerationMismatch"]
+product_callers = ["codex-rs/hepta-agentd/src/self_evolution_host.rs"]
+caller_markers = ["select_self_evolution_v1", "self.runtime.adopt_self_evolution(&selection)", "LearningEvidenceVerifierV1"]
+
+[[boundary]]
+id = "self_evolution_rollback"
+symbol = "SelfEvolutionRuntimeV1::rollback_self_evolution"
+call_pattern = "\\.\\s*rollback_self_evolution\\s*\\("
+definition_path = "codex-rs/hepta-control-plane/src/self_evolution.rs"
+definition_markers = ["pub fn rollback_self_evolution(", "regression_evidence_digest", "restored_generation"]
+product_callers = ["codex-rs/hepta-agentd/src/self_evolution_host.rs"]
+caller_markers = ["VerifiedLearningEvidenceV1", "self.runtime.rollback_self_evolution(", "EvidenceBinding"]
+
+[[boundary]]
+id = "self_evolution_confirmation"
+symbol = "SelfEvolutionRuntimeV1::confirm_self_evolution"
+call_pattern = "\\.\\s*confirm_self_evolution\\s*\\("
+definition_path = "codex-rs/hepta-control-plane/src/self_evolution.rs"
+definition_markers = ["pub fn confirm_self_evolution(", "selection_digest", "NoRollbackCheckpoint"]
+product_callers = ["codex-rs/hepta-agentd/src/self_evolution_host.rs"]
+caller_markers = ["VerifiedLearningEvidenceV1", "self.runtime.confirm_self_evolution(", "EvidenceBinding"]
+
+[[boundary]]
+id = "final_use_dispatch"
+symbol = "dispatch_final_use"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn dispatch_final_use", "HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH", "with_dispatch_boundary"]
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
+caller_markers = ["dispatch_final_use", "BrowserServoError"]
+
+[[boundary]]
+id = "final_use_dispatch_raw"
+symbol = "FinalUseAuthority::with_dispatch_boundary"
+call_pattern = "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\("
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn with_dispatch_boundary", "validate_live", "dispatch_boundary"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "authority_lease_prune"
+symbol = "AuthorityLeaseRegistry::prune_expired_leases"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn prune_expired_leases(", "MAX_AUTHORITY_PRUNE_BATCH", "expires_at_unix_ms"]
+product_callers = []
+caller_markers = []
+
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
 required = ["run_supervisord_with_grant_verifier", "H7H89ProductionGrantVerifier", "run_supervisord"]
@@ -272,7 +324,12 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
+required = ["ProductionCognitiveStore::open", "open_writer", "ProductionAuthorityVerifier"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-cognitive-store/src/production.rs"
+required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier", "open_with_recovery"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
@@ -313,108 +370,3 @@ external_effect = false
 self_issued_acceptance = false
 promotion = false
 release = false
-[[boundary]]
-id = "self_evolution_adoption"
-symbol = "SelfEvolutionRuntimeV1::adopt_self_evolution"
-call_pattern = "\\.\\s*adopt_self_evolution\\s*\\("
-definition_path = "codex-rs/hepta-control-plane/src/self_evolution.rs"
-definition_markers = ["pub fn adopt_self_evolution(", "SelectionAuthority", "PredecessorMismatch", "GenerationMismatch"]
-product_callers = ["codex-rs/hepta-agentd/src/self_evolution_host.rs"]
-caller_markers = ["select_self_evolution_v1", "self.runtime.adopt_self_evolution(&selection)", "LearningEvidenceVerifierV1"]
-
-[[boundary]]
-id = "self_evolution_rollback"
-symbol = "SelfEvolutionRuntimeV1::rollback_self_evolution"
-call_pattern = "\\.\\s*rollback_self_evolution\\s*\\("
-definition_path = "codex-rs/hepta-control-plane/src/self_evolution.rs"
-definition_markers = ["pub fn rollback_self_evolution(", "regression_evidence_digest", "restored_generation"]
-product_callers = ["codex-rs/hepta-agentd/src/self_evolution_host.rs"]
-caller_markers = ["VerifiedLearningEvidenceV1", "self.runtime.rollback_self_evolution(", "EvidenceBinding"]
-
-[[boundary]]
-id = "self_evolution_confirmation"
-symbol = "SelfEvolutionRuntimeV1::confirm_self_evolution"
-call_pattern = "\\.\\s*confirm_self_evolution\\s*\\("
-definition_path = "codex-rs/hepta-control-plane/src/self_evolution.rs"
-definition_markers = ["pub fn confirm_self_evolution(", "selection_digest", "NoRollbackCheckpoint"]
-product_callers = ["codex-rs/hepta-agentd/src/self_evolution_host.rs"]
-caller_markers = ["VerifiedLearningEvidenceV1", "self.runtime.confirm_self_evolution(", "EvidenceBinding"]
-
-[[protected_file]]
-path = "codex-rs/hepta-supervisor/src/main.rs"
-required = ["run_supervisord_with_grant_verifier", "H7H89ProductionGrantVerifier", "run_supervisord"]
-forbidden = ["H7H89ProductionGrantVerifier::default"]
-
-[[protected_file]]
-path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionCognitiveStore::open", "open_writer", "ProductionAuthorityVerifier"]
-forbidden = ["AllowVerifier", "permit_all"]
-
-[[protected_file]]
-path = "codex-rs/hepta-cognitive-store/src/production.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier", "open_with_recovery"]
-forbidden = ["AllowVerifier", "permit_all"]
-
-[[protected_file]]
-path = "codex-rs/model-provider/src/provider_effect.rs"
-required = ["impl ProviderEffectAdapter for HttpProviderEffectAdapter"]
-forbidden = ["impl Default for HttpProviderEffectAdapter"]
-
-[[protected_file]]
-path = "codex-rs/hepta-contracts/src/final_use.rs"
-required = ["pub fn open_state_dir(", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn claim(", "pub fn with_verified_use", "verify_strict", "validate_live"]
-forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
-
-[[protected_file]]
-path = "codex-rs/hepta-contracts/src/final_use_control.rs"
-required = ["pub struct FinalUseApprovalVerifier", "pub struct FinalUseRevocationFeedVerifier", "verify_strict", "update_revocations"]
-forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for FinalUseRevocationFeedVerifier", "permit_all"]
-
-[[protected_file]]
-path = "codex-rs/hepta-contracts/src/authority_lease.rs"
-required = ["pub struct AuthorityLeaseRegistry", "pub fn open_state_dir(", "pub fn verify_use(", "pub fn revoke(", "AntiRollbackViolation", "pub fn advance_epoch("]
-forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
-
-[[protected_file]]
-path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
-required = ["pub async fn consume_kv_v2", "claim_final_use(authority, grant, &binding)", "deliver_final_use(authority, verified, &binding"]
-forbidden = ["impl Default for BaoClient", ".claim(grant, &binding)", ".with_verified_use(verified"]
-
-[[protected_file]]
-path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
-required = ["pub struct RegisteredBaoConsumer", "pub struct BaoFinalUseHost", "pub fn apply_revocation_update", "pub async fn consume_kv_v2", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
-forbidden = ["impl Default for BaoFinalUseHost", "permit_all"]
-
-[authority]
-runtime_authority = false
-production_caller = false
-production_writer = false
-external_effect = false
-self_issued_acceptance = false
-promotion = false
-release = false
-[[boundary]]
-id = "final_use_dispatch"
-symbol = "dispatch_final_use"
-definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub fn dispatch_final_use", "HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH", "with_dispatch_boundary"]
-product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
-caller_markers = ["dispatch_final_use", "BrowserServoError"]
-
-[[boundary]]
-id = "final_use_dispatch_raw"
-symbol = "FinalUseAuthority::with_dispatch_boundary"
-call_pattern = "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\("
-definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub fn with_dispatch_boundary", "validate_live", "dispatch_boundary"]
-product_callers = []
-caller_markers = []
-
-[[boundary]]
-id = "authority_lease_prune"
-symbol = "AuthorityLeaseRegistry::prune_expired_leases"
-definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
-definition_markers = ["pub fn prune_expired_leases(", "MAX_AUTHORITY_PRUNE_BATCH", "expires_at_unix_ms"]
-product_callers = []
-caller_markers = []
-
