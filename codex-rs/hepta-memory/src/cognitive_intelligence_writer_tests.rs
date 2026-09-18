@@ -90,6 +90,26 @@ async fn product_writer_atomically_remembers_corrects_forgets_and_blocks_resurre
     assert_eq!(first.projection.generation.get(), 1);
     assert_eq!(first.projection.node_count, 2);
     assert_eq!(first.projection.edge_count, 1);
+    let first_generation_digest: String = sqlx::query_scalar(
+        "SELECT generation_digest
+         FROM kg_projection_v2_publications
+         WHERE projection_scope = 'agent_private' AND generation = 1",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .expect("first V2 generation digest");
+    assert_eq!(first_generation_digest.len(), 64);
+    assert_eq!(
+        sqlx::query_scalar::<_, Option<i64>>(
+            "SELECT predecessor_generation
+             FROM kg_projection_v2_publications
+             WHERE projection_scope = 'agent_private' AND generation = 1",
+        )
+        .fetch_one(&store.pool)
+        .await
+        .expect("first V2 predecessor"),
+        None
+    );
 
     let corrected_content = "Ada contributes to the Bernoulli algorithm.";
     let corrected = store
@@ -107,6 +127,28 @@ async fn product_writer_atomically_remembers_corrects_forgets_and_blocks_resurre
     assert_eq!(corrected.memory.id.revision, 2);
     assert_eq!(corrected.projection.node_count, 2);
     assert_eq!(corrected.projection.edge_count, 1);
+    let corrected_v2 = sqlx::query(
+        "SELECT predecessor_generation, predecessor_digest, generation_digest
+         FROM kg_projection_v2_publications
+         WHERE projection_scope = 'agent_private' AND generation = 2",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .expect("corrected V2 publication");
+    assert_eq!(
+        sqlx::Row::try_get::<i64, _>(&corrected_v2, "predecessor_generation")
+            .expect("corrected predecessor generation"),
+        1
+    );
+    assert_eq!(
+        sqlx::Row::try_get::<String, _>(&corrected_v2, "predecessor_digest")
+            .expect("corrected predecessor digest"),
+        first_generation_digest
+    );
+    let corrected_generation_digest =
+        sqlx::Row::try_get::<String, _>(&corrected_v2, "generation_digest")
+            .expect("corrected generation digest");
+    assert_ne!(corrected_generation_digest, first_generation_digest);
     assert_eq!(
         sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM kg_revision_fact_sets")
             .fetch_one(&store.pool)
@@ -160,6 +202,40 @@ async fn product_writer_atomically_remembers_corrects_forgets_and_blocks_resurre
     assert_eq!(forgotten.projection.relation_count, 0);
     assert_eq!(forgotten.projection.node_count, 0);
     assert_eq!(forgotten.projection.edge_count, 0);
+    let forgotten_v2 = sqlx::query(
+        "SELECT predecessor_generation, predecessor_digest, generation_digest,
+                node_count, edge_count
+         FROM kg_projection_v2_publications
+         WHERE projection_scope = 'agent_private' AND generation = 3",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .expect("forgotten V2 publication");
+    assert_eq!(
+        sqlx::Row::try_get::<i64, _>(&forgotten_v2, "predecessor_generation")
+            .expect("forgotten predecessor generation"),
+        2
+    );
+    assert_eq!(
+        sqlx::Row::try_get::<String, _>(&forgotten_v2, "predecessor_digest")
+            .expect("forgotten predecessor digest"),
+        corrected_generation_digest
+    );
+    assert_eq!(
+        sqlx::Row::try_get::<i64, _>(&forgotten_v2, "node_count")
+            .expect("forgotten V2 node count"),
+        0
+    );
+    assert_eq!(
+        sqlx::Row::try_get::<i64, _>(&forgotten_v2, "edge_count")
+            .expect("forgotten V2 edge count"),
+        0
+    );
+    assert_ne!(
+        sqlx::Row::try_get::<String, _>(&forgotten_v2, "generation_digest")
+            .expect("forgotten generation digest"),
+        corrected_generation_digest
+    );
     assert_eq!(
         sqlx::query_scalar::<_, i64>(
             "SELECT COUNT(*) FROM kg_nodes n JOIN kg_projection p
@@ -567,6 +643,18 @@ async fn projection_and_fact_receipts_survive_clean_reopen() {
             .expect("durable fact set"),
         1
     );
+    let v2_digest: String = sqlx::query_scalar(
+        "SELECT v.generation_digest
+         FROM kg_projection p
+         JOIN kg_projection_v2_publications v
+           ON v.projection_scope = p.projection_scope
+          AND v.generation = p.generation
+         WHERE p.projection_scope = 'agent_private'",
+    )
+    .fetch_one(&reopened.pool)
+    .await
+    .expect("durable V2 generation digest");
+    assert_eq!(v2_digest.len(), 64);
 }
 
 #[tokio::test]
