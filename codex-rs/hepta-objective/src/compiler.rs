@@ -234,9 +234,7 @@ fn validate_soft_preferences(source: &ObjectiveSourceEnvelope) -> Result<(), Obj
 ///
 /// This independently recomputes canonical ordering and both native digests.
 /// It grants no runtime/effect authority.
-pub fn validate_compiled_objective_v1(
-    objective: &ObjectiveFunction,
-) -> Result<(), ObjectiveError> {
+pub fn validate_compiled_objective_v1(objective: &ObjectiveFunction) -> Result<(), ObjectiveError> {
     let abstain = abstain_id()?;
     let caller_actions = objective
         .legal_actions
