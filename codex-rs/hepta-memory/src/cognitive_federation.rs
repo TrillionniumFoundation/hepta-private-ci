@@ -251,11 +251,13 @@ pub struct FederatedRetrievalCoverage {
     pub requested_sources: u32,
     pub completed_sources: u32,
     pub failed_sources: u32,
+    pub discovery_failures: u32,
 }
 
 impl FederatedRetrievalCoverage {
     pub fn is_partial(&self) -> bool {
         self.failed_sources > 0
+            || self.discovery_failures > 0
             || self.completed_sources.saturating_add(self.failed_sources) < self.requested_sources
     }
 }
@@ -699,6 +701,7 @@ impl FederatedMemoryReader {
                 requested_sources: 1,
                 completed_sources: 1,
                 failed_sources: 0,
+                discovery_failures: 0,
             },
         })
     }
@@ -803,6 +806,11 @@ impl FederatedMemoryReader {
     }
 }
 
+struct CurrentFederationReaders {
+    readers: Vec<FederatedMemoryReader>,
+    discovery_failures: u32,
+}
+
 #[derive(Clone)]
 pub struct FederatedRecallSet {
     consumer_agent_id: AgentId,
@@ -876,8 +884,12 @@ impl FederatedRecallSet {
                 "memory federation caller does not match the reader set consumer".to_string(),
             ));
         }
-        let readers = self.current_readers(request.now_unix_seconds()).await;
-        let requested_sources = u32::try_from(readers.len()).unwrap_or(u32::MAX);
+        let current = self
+            .current_readers_with_coverage(request.now_unix_seconds())
+            .await;
+        let requested_sources = u32::try_from(current.readers.len()).unwrap_or(u32::MAX);
+        let discovery_failures = current.discovery_failures;
+        let readers = current.readers;
         let mut completed_sources = 0u32;
         let mut failed_sources = 0u32;
         let mut candidates = Vec::new();
@@ -922,6 +934,7 @@ impl FederatedRecallSet {
                 requested_sources,
                 completed_sources,
                 failed_sources,
+                discovery_failures,
             },
         })
     }
@@ -945,13 +958,28 @@ impl FederatedRecallSet {
     }
 
     async fn current_readers(&self, now_unix_seconds: i64) -> Vec<FederatedMemoryReader> {
+        self.current_readers_with_coverage(now_unix_seconds)
+            .await
+            .readers
+    }
+
+    async fn current_readers_with_coverage(
+        &self,
+        now_unix_seconds: i64,
+    ) -> CurrentFederationReaders {
         let mut readers = self.readers.clone();
-        let dynamic = tokio::time::timeout(
+        let (dynamic, discovery_failures) = match tokio::time::timeout(
             FEDERATION_REFRESH_TIMEOUT,
             self.discover_dynamic_readers(now_unix_seconds),
         )
         .await
-        .unwrap_or_default();
+        {
+            Ok(observation) => observation,
+            Err(_) => (
+                Vec::new(),
+                u32::try_from(self.owner_layouts.len()).unwrap_or(u32::MAX),
+            ),
+        };
         readers.extend(dynamic);
         readers.sort_by(|left, right| {
             left.capability
@@ -961,23 +989,34 @@ impl FederatedRecallSet {
         });
         readers.dedup_by(|left, right| left.capability.id == right.capability.id);
         readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
-        readers
+        CurrentFederationReaders {
+            readers,
+            discovery_failures,
+        }
     }
 
-    async fn discover_dynamic_readers(&self, now_unix_seconds: i64) -> Vec<FederatedMemoryReader> {
+    async fn discover_dynamic_readers(
+        &self,
+        now_unix_seconds: i64,
+    ) -> (Vec<FederatedMemoryReader>, u32) {
         let mut readers = Vec::new();
+        let mut discovery_failures = 0u32;
         for owner_layout in &self.owner_layouts {
             if readers.len() == MAX_FEDERATION_SOURCES_PER_AGENT {
                 break;
             }
-            let Ok(discovered) = FederatedMemoryReader::discover(
+            let discovered = match FederatedMemoryReader::discover(
                 owner_layout,
                 &self.consumer_agent_id,
                 now_unix_seconds,
             )
             .await
-            else {
-                continue;
+            {
+                Ok(discovered) => discovered,
+                Err(_) => {
+                    discovery_failures = discovery_failures.saturating_add(1);
+                    continue;
+                }
             };
             readers.extend(
                 discovered
@@ -985,7 +1024,7 @@ impl FederatedRecallSet {
                     .take(MAX_FEDERATION_SOURCES_PER_AGENT - readers.len()),
             );
         }
-        readers
+        (readers, discovery_failures)
     }
 }
 
