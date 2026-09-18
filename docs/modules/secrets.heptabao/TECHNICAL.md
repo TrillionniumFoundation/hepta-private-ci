@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); observed identifiers include `BaoToken`, `BaoReadRequest`, `BaoSecretReceipt`, `BaoClient`, `binding`, `consume_kv_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) for the implemented subset and remaining product work.
+The executable adapter is split between [https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs) for exact-version KV v2 consumption and [lease_lifecycle.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs) for provider-native dynamic lease issue/renew/revoke/reconcile. Durable lease metadata and transition rules live in [secret_lease.rs](../../../codex-rs/hepta-contracts/src/secret_lease.rs) and the SQLite CAS owner in [secret_lease_store.rs](../../../codex-rs/hepta-evidence/src/secret_lease_store.rs). This remains a source navigation binding, not production activation or acceptance. Read [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md) for executable truth and [SECRET_LEASE_DESIGN.md](SECRET_LEASE_DESIGN.md) for the lifecycle contract.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -135,13 +135,13 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md).
+The executable state owners and transaction boundaries are specified in [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md), [SECRET_LEASE_DESIGN.md](SECRET_LEASE_DESIGN.md) and [HA_AND_STORAGE.md](HA_AND_STORAGE.md). Lease mutation serialization is owned by `SecretLeaseStore` compare-and-swap, not an in-process mutex. The current SQLite implementation coordinates handles/processes sharing one database; it does not claim multi-host consensus. FinalUse filesystem state remains single-active per private state directory.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use [FAILURE_RECOVERY.md](FAILURE_RECOVERY.md) for the executable crash/timeout matrix. Lease intents become durable before provider mutation. Ambiguous issuance/renew/revoke outcomes enter a quarantine state and are never converted into blind retries. Generic issuance that loses the response before a provider lease ID is observed requires provider-specific or operator reconciliation; source code must not invent evidence that the credential was or was not created.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -151,22 +151,27 @@ Owned threat entries:
 
 - `secret_value_in_receipt`
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Raw credentials never enter general logs, learning datasets, prompt factors, lifecycle records or cross-module receipts. Dynamic value SHA-256 fingerprints are deliberately not persisted because low-entropy values can be enumerable. The trusted synchronous consumer callback is a privileged host capability rather than a sandbox. Application-owned buffers are zeroized on drop, but TLS/HTTP/parser/allocator internals may create temporary plaintext copies. See [SECURITY_INVARIANTS.md](SECURITY_INVARIANTS.md).
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs) and the linked implementation components.
+[CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md) and [HA_AND_STORAGE.md](HA_AND_STORAGE.md) specify current limits. FinalUse schema 2 appends fixed-width nonce claims instead of rewriting the complete replay set and no longer has the former 16,384-claim logical ceiling. Revoked grant IDs remain separately bounded, and a long authority epoch still consumes memory/disk. Dynamic request/response field and body limits are enforced by the adapter. These are implementation bounds, not throughput measurements or a distributed-HA claim.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Use the host-enrolled BaoClient consumer behind a registered trusted callback. The current integration supports the KV v2 read contract in the adapter README; the lease/renew/revoke design is a separate target. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
+Use the host-enrolled `BaoClient` behind a registered trusted callback. The current integration supports both exact-version KV v2 reads and provider-native dynamic lease issue/renew/revoke/reconcile. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain ambiguous provider/consumer outcomes without blind retry. A distributed deployment must additionally supply a strongly consistent lease-state backend; the checked-in SQLite implementation is not a multi-host consensus service.
 
 Current operating and state-format references:
 
+- [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md).
+- [SECRET_LEASE_DESIGN.md](SECRET_LEASE_DESIGN.md).
+- [FAILURE_RECOVERY.md](FAILURE_RECOVERY.md).
+- [HA_AND_STORAGE.md](HA_AND_STORAGE.md).
+- [SECURITY_INVARIANTS.md](SECURITY_INVARIANTS.md).
 - [codex-rs/hepta-bao-adapter/README.md](../../../codex-rs/hepta-bao-adapter/README.md).
 - [codex-rs/hepta-contracts/FINAL_USE.md](../../../codex-rs/hepta-contracts/FINAL_USE.md).
 - [external/HeptaBao/README.md](../../../external/HeptaBao/README.md).
@@ -177,10 +182,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs); named case: `real_tls_read_uses_headers_exact_version_and_secret_only_consumer`.
-- [codex-rs/hepta-bao-adapter/src/lib_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lib_tests.rs); named case: `exact_reference_returns_only_opaque_digest`.
+- [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs); exact-version KV v2 TLS/final-use cases.
+- [codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs); duplicate-issuance winner and ambiguous-response recovery cases.
+- [codex-rs/hepta-contracts/src/final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs); nonce-journal durability/migration/revocation cases.
+- [codex-rs/hepta-evidence/src/secret_lease_store_tests.rs](../../../codex-rs/hepta-evidence/src/secret_lease_store_tests.rs); exact-idempotent create and multi-handle CAS cases.
 
-In `codex-rs`, run `just test -p codex-hepta-bao-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) separately labels target acceptance designs.
+In `codex-rs`, run `cargo test --locked -p codex-hepta-contracts -p codex-hepta-bao-adapter -p codex-hepta-evidence`. The command is a test invocation, not a stored result. The dedicated exact-candidate workflow emits a commit/tree/source-digest receipt only after its checks pass.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
