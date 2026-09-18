@@ -25,7 +25,10 @@ deploys or releases a candidate.
 
 New external/product qualification integrations MUST use one of the two
 production-required entrypoints. Compatibility surfaces MUST NOT be used to
-claim production qualification.
+claim production qualification. Upstream effect-bearing consumers must preserve
+that boundary: the default `codex-hepta-intelligence` public surface exposes
+`run_evaluated_shadow_v2`; pre-durable `run_evaluated_shadow_v1` is exported only
+under the explicit `trusted-evaluated-shadow-v1` compatibility feature.
 
 ## Required production chain
 
