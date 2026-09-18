@@ -122,15 +122,8 @@ impl ArtifactLifecycleJournalV2 {
         if expected_head_digest != self.head_digest {
             return Err(ArtifactLifecycleJournalError::HeadMismatch);
         }
-        validate_actor(&actor, now)?;
-        if event.actor_id != actor.actor_id
-            || event.actor_credential_digest != actor.credential_digest
-            || event.authority_epoch != actor.authority_epoch
-            || event.occurred_at < actor.verified_at
-            || event.occurred_at > actor.expires_at
-        {
-            return Err(ArtifactLifecycleJournalError::ActorBindingMismatch);
-        }
+        validate_actor_current(&actor, now)?;
+        validate_actor_event_binding(&actor, &event)?;
         let event_digest = validate_artifact_lifecycle_transition(producer_id, &event)?;
         if let Some(existing_digest) = self.event_digests.get(&event.event_id) {
             if *existing_digest != event_digest {
@@ -206,48 +199,114 @@ impl ArtifactLifecycleJournalV2 {
 
     pub fn from_snapshot(
         snapshot: ArtifactLifecycleJournalSnapshotV2,
-        now: u64,
+        _now: u64,
     ) -> Result<Self, ArtifactLifecycleJournalError> {
         let expected_head = snapshot.head_digest;
         let mut journal = Self::new();
         for expected in snapshot.records {
-            if expected.predecessor_head_digest != journal.head_digest {
-                return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
-            }
-            let receipt = journal.append(
-                journal.head_digest,
-                &expected.producer_id,
-                expected.actor.clone(),
-                expected.event.clone(),
-                now,
-            )?;
-            let actual = journal
-                .records
-                .last()
-                .ok_or(ArtifactLifecycleJournalError::InternalInvariant)?;
-            if receipt.disposition != LifecycleAppendDispositionV2::Appended || actual != &expected
-            {
-                return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
-            }
+            journal.replay_record(expected)?;
         }
         if journal.head_digest != expected_head {
             return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
         }
         Ok(journal)
     }
+
+    fn replay_record(
+        &mut self,
+        expected: ArtifactLifecycleJournalRecordV2,
+    ) -> Result<(), ArtifactLifecycleJournalError> {
+        if expected.predecessor_head_digest != self.head_digest {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+        validate_actor_replay(&expected.actor)?;
+        validate_actor_event_binding(&expected.actor, &expected.event)?;
+
+        let event_digest =
+            validate_artifact_lifecycle_transition(&expected.producer_id, &expected.event)?;
+        if event_digest != expected.event_digest {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+        if self.event_digests.contains_key(&expected.event.event_id) {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+        if self.records.len() >= MAX_LIFECYCLE_RECORDS {
+            return Err(ArtifactLifecycleJournalError::RecordLimit);
+        }
+
+        let current = self
+            .states
+            .get(&expected.event.artifact_id)
+            .copied()
+            .unwrap_or(ArtifactLifecycleStateV1::Proposed);
+        if current != expected.event.prior_state
+            || !role_allows(expected.actor.role, &expected.producer_id, &expected.event)
+        {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+
+        let sequence = u64::try_from(self.records.len())
+            .map_err(|_| ArtifactLifecycleJournalError::Arithmetic)?
+            .checked_add(1)
+            .ok_or(ArtifactLifecycleJournalError::Arithmetic)?;
+        if sequence != expected.sequence {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+        let chain_digest = digest_chain(
+            sequence,
+            expected.predecessor_head_digest,
+            expected.event_digest,
+        );
+        if chain_digest != expected.chain_digest {
+            return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
+        }
+
+        self.states.insert(
+            expected.event.artifact_id.clone(),
+            expected.event.next_state,
+        );
+        self.event_digests
+            .insert(expected.event.event_id.clone(), expected.event_digest);
+        self.head_digest = expected.chain_digest;
+        self.records.push(expected);
+        Ok(())
+    }
 }
 
-fn validate_actor(
+fn validate_actor_replay(
     actor: &LifecycleActorEvidenceV2,
-    now: u64,
 ) -> Result<(), ArtifactLifecycleJournalError> {
     if actor.credential_digest.is_zero()
         || actor.authority_epoch == 0
         || actor.verified_at > actor.expires_at
-        || now < actor.verified_at
-        || now > actor.expires_at
     {
         return Err(ArtifactLifecycleJournalError::InvalidActorEvidence);
+    }
+    Ok(())
+}
+
+fn validate_actor_current(
+    actor: &LifecycleActorEvidenceV2,
+    now: u64,
+) -> Result<(), ArtifactLifecycleJournalError> {
+    validate_actor_replay(actor)?;
+    if now < actor.verified_at || now > actor.expires_at {
+        return Err(ArtifactLifecycleJournalError::InvalidActorEvidence);
+    }
+    Ok(())
+}
+
+fn validate_actor_event_binding(
+    actor: &LifecycleActorEvidenceV2,
+    event: &ArtifactLifecycleEventV1,
+) -> Result<(), ArtifactLifecycleJournalError> {
+    if event.actor_id != actor.actor_id
+        || event.actor_credential_digest != actor.credential_digest
+        || event.authority_epoch != actor.authority_epoch
+        || event.occurred_at < actor.verified_at
+        || event.occurred_at > actor.expires_at
+    {
+        return Err(ArtifactLifecycleJournalError::ActorBindingMismatch);
     }
     Ok(())
 }
@@ -394,6 +453,53 @@ mod tests {
             authority_epoch: actor.authority_epoch,
             occurred_at,
         }
+    }
+
+    #[test]
+    fn art_06_snapshot_replay_survives_historical_actor_expiry() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        journal
+            .append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    20,
+                ),
+                20,
+            )
+            .expect("historical append succeeds while credential is current");
+
+        let snapshot = journal.snapshot();
+        let mut reopened =
+            ArtifactLifecycleJournalV2::from_snapshot(snapshot, 101).expect("historical replay");
+        assert_eq!(reopened.head_digest(), journal.head_digest());
+
+        assert_eq!(
+            reopened.append(
+                reopened.head_digest(),
+                &producer_id,
+                producer.clone(),
+                event(
+                    "late-replay",
+                    &id("artifact-late"),
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    100,
+                ),
+                101,
+            ),
+            Err(ArtifactLifecycleJournalError::InvalidActorEvidence)
+        );
     }
 
     #[test]

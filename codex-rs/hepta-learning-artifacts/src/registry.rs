@@ -17,7 +17,8 @@ use crate::RegistryAppendReceipt;
 use crate::StateChange;
 
 const MAX_ARTIFACT_BYTES: u64 = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 1_000_000;
+// Keep the in-memory authority within the create-only durable snapshot envelope.
+const MAX_RECORDS: usize = 4_096;
 const EVENT_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.event.v1";
 const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-artifact.chain.v1";
 

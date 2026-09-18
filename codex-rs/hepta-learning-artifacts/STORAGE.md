@@ -28,6 +28,10 @@ write_registry_snapshot(CreateOnlyArtifactFile, &ArtifactRegistry, Digest32)
 write_candidate_payload(CreateOnlyArtifactFile, &ArtifactRegistry, &StableId, &[u8])
 write_registry_head_witness(CreateOnlyArtifactFile, &RegistryHeadWitnessV1, &RegistryHeadRequirementV1, Digest32)
 read_registry_head_witness(File, RegistryHeadWitnessReceipt, &RegistryHeadRequirementV1)
+write_dataset_withdrawal_snapshot(CreateOnlyArtifactFile, &DatasetWithdrawalRegistry, Digest32)
+read_dataset_withdrawal_snapshot(File, JournalSnapshotReceiptV1)
+write_lifecycle_journal_snapshot(CreateOnlyArtifactFile, &ArtifactLifecycleJournalV2, Digest32)
+read_lifecycle_journal_snapshot(File, JournalSnapshotReceiptV1, now)
 ```
 
 `write_registry_snapshot` writes one new empty target and syncs it before
@@ -73,8 +77,11 @@ write indicates interference and returns `Indeterminate`. Lock contention
 returns `Busy` without this writer writing bytes. A write or synchronization
 failure is `Indeterminate`; the caller must reconcile the exact target and
 expected digest. It must never truncate, overwrite, silently adopt or retry
-through the same path. Removal of a proven orphan is a separately authorized
-host operation.
+through the same path. Removal of a proven orphan is a separately authorized host operation. An orphan
+reconciler must start from authenticated committed-generation receipts, treat every
+unreferenced create-only file as a candidate for review rather than proof of garbage,
+apply an age/grace bound, and delete only inside the host-authorized storage root.
+The crate intentionally exposes no recursive-delete or "clean directory" primitive.
 
 ## Host transaction and trust boundary
 
@@ -85,17 +92,26 @@ any runtime use: a valid old snapshot plus its old receipt can still predate a
 deletion. This module cannot infer the latest state from the suspect file. Never
 use an older snapshot to make a revoked predecessor appear eligible for rollback.
 
-Create payload -> sync -> create canonical registry snapshot -> sync -> durably
-publish the receipt/witness -> independent evaluation/decision -> separately
-owned next-run selection. Cross-store atomicity requires a host transaction or
-outbox reconciliation; two synced files are not an atomic multi-store transaction.
-A crash before witness publication may leave an orphan candidate, not a selected
-artifact.
+The V2/V3 publication sequence is:
+
+1. validate withdrawal-bound admission against the exact registry/domain/scope;
+2. prepare an `ArtifactPublicationIntentV1` against the candidate V1 registry head;
+3. create/sync the candidate payload and retain the digest returned by `write_candidate_payload`;
+4. create/sync the canonical registry snapshot and retain its `RegistrySnapshotReceipt`;
+5. finalize with the exact payload digest, current withdrawal head/scope and snapshot receipt;
+6. only after receiving `ArtifactPublicationCommitV1` may the host atomically publish its CURRENT pointer or equivalent current-generation selector.
+
+Finalization fails if the payload sync digest, withdrawal frontier/scope or durable snapshot head differs from the prepared intent. Two synced files alone are not a committed generation. A crash before commit may leave orphan files; a crash after commit must recover/publish the same authenticated commit identity rather than infer a new commit from file presence.
 
 `create_new` protects the final path component from an existence-check race; it
 does not authenticate ancestor traversal, retain a path-to-inode binding after
-return, synchronize the parent directory or isolate hostile writers. The host
-owns trusted parent traversal, containing-directory sync, encryption,
+return, synchronize the parent directory or isolate hostile writers. Host path
+containment is therefore a hard precondition: resolve or open the authorized root
+first, reject absolute/parent-escaping relative names, reject unexpected symlink or
+reparse-point traversal, and keep the final create under that authenticated root.
+On platforms that support directory-relative no-follow opens, hosts should prefer
+that mechanism over string-prefix checks. The host owns trusted parent traversal,
+containing-directory sync, encryption,
 quota/retention, revocation freshness, physical erasure, backup deletion,
 independent witness storage and selection/rollback. File locks fence cooperative
 independently opened handles, not hostile writers or cloned/inherited handles.

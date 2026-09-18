@@ -11,14 +11,17 @@ mod dataset_revocation;
 mod error;
 mod iteration;
 mod iteration_ledger;
+mod journal_storage;
 mod lifecycle_journal;
 mod model;
 mod pinned;
+mod publication;
 mod registry;
 mod storage;
 
 pub use admission_v3::ArtifactAdmissionError;
 pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
+pub use admission_v3::WithdrawalRegistryScopeV1;
 pub use admission_v3::admit_manifest_at_withdrawal_head_v3;
 pub use admission_v3::validate_artifact_publication_v3;
 pub use admission_v3::verify_artifact_admission_v3;
@@ -54,6 +57,12 @@ pub use iteration_ledger::{
     IterationEvidenceKindV1, IterationEvidenceV1, IterationLedgerError, IterationLedgerEventV1,
     IterationLedgerSnapshotV1, IterationLedgerV1, MAX_ITERATION_EVENTS,
 };
+pub use journal_storage::JournalSnapshotReceiptV1;
+pub use journal_storage::JournalStorageError;
+pub use journal_storage::read_dataset_withdrawal_snapshot;
+pub use journal_storage::read_lifecycle_journal_snapshot;
+pub use journal_storage::write_dataset_withdrawal_snapshot;
+pub use journal_storage::write_lifecycle_journal_snapshot;
 pub use lifecycle_journal::ArtifactLifecycleJournalError;
 pub use lifecycle_journal::ArtifactLifecycleJournalReceiptV2;
 pub use lifecycle_journal::ArtifactLifecycleJournalRecordV2;
@@ -77,6 +86,11 @@ pub use pinned::PinnedCandidateLoadError;
 pub use pinned::PinnedCandidateSpec;
 pub use pinned::RevalidatingCandidate;
 pub use pinned::load_pinned_candidate;
+pub use publication::ArtifactPublicationCommitV1;
+pub use publication::ArtifactPublicationError;
+pub use publication::ArtifactPublicationIntentV1;
+pub use publication::finalize_artifact_publication_v1;
+pub use publication::prepare_artifact_publication_v1;
 pub use registry::ArtifactRegistry;
 pub use storage::ArtifactStorageError;
 pub use storage::CreateOnlyArtifactFile;
