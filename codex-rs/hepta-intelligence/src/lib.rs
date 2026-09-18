@@ -20,6 +20,7 @@ pub use production_objective::ProductionObjectiveError;
 pub use production_objective::ProductionObjectiveStartReceiptV1;
 pub use production_objective::ProductionRunBindingsV1;
 pub use production_objective::prepare_intelligence_run_v1;
+pub use production_objective::recover_intelligence_host_envelope_v1;
 
 mod capability_snapshot;
 
