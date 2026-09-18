@@ -1435,6 +1435,7 @@ mod tests {
         let old = AuthorityLeaseFrontier {
             authority_epoch: frontier.authority_epoch,
             store_revision: frontier.store_revision + 1,
+            state_sha256: frontier.state_sha256,
         };
         assert_eq!(
             AuthorityLeaseRegistry::open_state_dir(
