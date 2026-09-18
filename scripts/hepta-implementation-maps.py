@@ -285,7 +285,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "boundPackageRoots": bound_roots,
             "effectiveSourceRoots": effective_roots,
             "sourceFreshnessPolicy": "bound_root_tree_pins_match_current_head",
-        "sourceRootTrees": current_source_root_trees(effective_roots),
+            "sourceRootTrees": current_source_root_trees(effective_roots),
             "resolvedRoots": resolve_source_roots(ROOT, module),
             "sourceRootPresent": all((ROOT / x).exists() for x in effective_roots),
             "productionImplementation": bool(
