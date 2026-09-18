@@ -19,21 +19,57 @@
           "value": {
             "type": "array",
             "items": [
-              {"type": "i64", "value": -2},
-              {"type": "u128", "value": "3"}
+              {
+                "type": "i64",
+                "value": -2
+              },
+              {
+                "type": "u128",
+                "value": "3"
+              }
             ]
           }
         },
-        {"name": "payload", "value": {"type": "bytes", "hex": "000102ff"}},
-        {"name": "enabled", "value": {"type": "bool", "value": true}},
-        {"name": "subject", "value": {"type": "stable_id", "value": "module:alpha-1"}},
+        {
+          "name": "payload",
+          "value": {
+            "type": "bytes",
+            "hex": "000102ff"
+          }
+        },
+        {
+          "name": "enabled",
+          "value": {
+            "type": "bool",
+            "value": true
+          }
+        },
+        {
+          "name": "subject",
+          "value": {
+            "type": "stable_id",
+            "value": "module:alpha-1"
+          }
+        },
         {
           "name": "labels",
           "value": {
             "type": "map",
             "entries": [
-              {"key": "z", "value": {"type": "text", "value": "last"}},
-              {"key": "a", "value": {"type": "u64", "value": "1"}}
+              {
+                "key": "z",
+                "value": {
+                  "type": "text",
+                  "value": "last"
+                }
+              },
+              {
+                "key": "a",
+                "value": {
+                  "type": "u64",
+                  "value": "1"
+                }
+              }
             ]
           }
         },
@@ -48,6 +84,72 @@
       "encodedLength": 265,
       "encodingHex": "485054430001002868657074612e706c6174666f726d2e74797065732e63616e6f6e6963616c2d6469676573742e76310020706c6174666f726d2e74797065733a63616e6f6e6963616c2d6669787475726500000001000000060007656e61626c65640101000865766964656e636507be5df7bbbf50c940858b5b6a58a01308df2144a5a8461207f1ac5cb53066b3a400066c6162656c730a0000000200016102000000000000000100017a06000000046c61737400077061796c6f61640500000004000102ff00077375626a65637408000e6d6f64756c653a616c7068612d31000777656967687473090000000204fffffffffffffffe0300000000000000000000000000000003",
       "sha256": "d2b04b7011cdef013c9f01053b8ed70a8a924db7632714e9840bcfea17d72736"
+    },
+    {
+      "id": "integer-boundaries-and-empty-containers-v1",
+      "typeId": "platform.types:canonical-boundaries",
+      "schemaVersion": 1,
+      "fields": [
+        {
+          "name": "u64_max",
+          "value": {
+            "type": "u64",
+            "value": "18446744073709551615"
+          }
+        },
+        {
+          "name": "u128_max",
+          "value": {
+            "type": "u128",
+            "value": "340282366920938463463374607431768211455"
+          }
+        },
+        {
+          "name": "i64_min",
+          "value": {
+            "type": "i64",
+            "value": "-9223372036854775808"
+          }
+        },
+        {
+          "name": "unicode",
+          "value": {
+            "type": "text",
+            "value": "hépta/雪"
+          }
+        },
+        {
+          "name": "empty_text",
+          "value": {
+            "type": "text",
+            "value": ""
+          }
+        },
+        {
+          "name": "empty_bytes",
+          "value": {
+            "type": "bytes",
+            "hex": ""
+          }
+        },
+        {
+          "name": "empty_array",
+          "value": {
+            "type": "array",
+            "items": []
+          }
+        },
+        {
+          "name": "empty_map",
+          "value": {
+            "type": "map",
+            "entries": []
+          }
+        }
+      ],
+      "encodedLength": 249,
+      "encodingHex": "485054430001002868657074612e706c6174666f726d2e74797065732e63616e6f6e6963616c2d6469676573742e76310023706c6174666f726d2e74797065733a63616e6f6e6963616c2d626f756e6461726965730000000100000008000b656d7074795f61727261790900000000000b656d7074795f627974657305000000000009656d7074795f6d61700a00000000000a656d7074795f74657874060000000000076936345f6d696e0480000000000000000008753132385f6d617803ffffffffffffffffffffffffffffffff00077536345f6d617802ffffffffffffffff0007756e69636f6465060000000a68c3a97074612fe99baa",
+      "sha256": "4f3da3cd80d24cd86b151388b296773054be8a1a81cbe0a281f057647c655b36"
     }
   ]
 }
