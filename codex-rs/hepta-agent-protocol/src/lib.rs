@@ -11,6 +11,7 @@ pub use authbus::AuthBusTextStatus;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::ObjectiveRunAdmission;
+pub use authbus::ObjectiveStartOutcome;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
 pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;
