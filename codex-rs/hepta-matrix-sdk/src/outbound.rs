@@ -159,6 +159,10 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + MatrixOutboundObs
         if account_terminal(&mut stats, &prepared) {
             continue;
         }
+        let prior_external_uncertainty = matches!(
+            prepared.state,
+            MatrixDispatchState::Dispatched | MatrixDispatchState::Indeterminate
+        );
 
         // If a previous transport call already returned an event id, reconcile
         // that exact accepted event before permitting another network send.
@@ -367,22 +371,53 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + MatrixOutboundObs
                 }
             }
             Err(MatrixTransportError::Permanent) => {
-                match store
-                    .record_matrix_transport_rejection(
-                        &record.stable_txn_id,
-                        record.attempts,
-                        now_ms,
-                    )
-                    .await
-                {
-                    Ok(receipt) if account_terminal(&mut stats, &receipt) => {}
-                    Ok(_) => return Err(OutboxDispatchError::Store),
-                    Err(MatrixDurableError::Conflict) => {
-                        if !account_current_terminal(store, &record, &mut stats).await? {
-                            return Err(OutboxDispatchError::Store);
+                if prior_external_uncertainty {
+                    // A later definitive rejection cannot prove that an earlier
+                    // timeout/dispatched attempt failed to cross the external
+                    // boundary. Preserve uncertainty and keep reconciling the
+                    // same stable transaction instead of manufacturing failure.
+                    let next_attempt_at_ms = now_ms
+                        .checked_add(retry_delay_ms(config, record.attempts)?)
+                        .ok_or(OutboxDispatchError::Invalid)?;
+                    match store
+                        .record_matrix_transport_indeterminate_and_retry(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                            next_attempt_at_ms,
+                        )
+                        .await
+                    {
+                        Ok(receipt) if account_terminal(&mut stats, &receipt) => {}
+                        Ok(_) => {
+                            stats.retry_scheduled += 1;
+                            stats.indeterminate_held += 1;
                         }
+                        Err(MatrixDurableError::Conflict) => {
+                            if !account_current_terminal(store, &record, &mut stats).await? {
+                                return Err(OutboxDispatchError::Store);
+                            }
+                        }
+                        Err(error) => return Err(store_error(error)),
                     }
-                    Err(error) => return Err(store_error(error)),
+                } else {
+                    match store
+                        .record_matrix_transport_rejection(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                        )
+                        .await
+                    {
+                        Ok(receipt) if account_terminal(&mut stats, &receipt) => {}
+                        Ok(_) => return Err(OutboxDispatchError::Store),
+                        Err(MatrixDurableError::Conflict) => {
+                            if !account_current_terminal(store, &record, &mut stats).await? {
+                                return Err(OutboxDispatchError::Store);
+                            }
+                        }
+                        Err(error) => return Err(store_error(error)),
+                    }
                 }
             }
         }
