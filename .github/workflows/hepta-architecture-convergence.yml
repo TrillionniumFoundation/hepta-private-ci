@@ -84,6 +84,14 @@ jobs:
           cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core concurrent_handles_share_budget_without_holding_the_lock_during_execution
           cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core compaction_archives_full_history_and_preserves_indeterminate_fences
 
+      - name: Selected-artifact adoption and explicit rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval closure
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
+
       - name: Objective and prompt policy convergence
         shell: bash
         run: |
