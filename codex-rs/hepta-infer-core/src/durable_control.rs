@@ -196,6 +196,7 @@ pub struct DurableInferenceControl {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct JournalReplayStats {
     pub full_replays: u64,
+    pub incremental_replays: u64,
     pub replayed_bytes: u64,
     pub unchanged_reuses: u64,
 }
@@ -328,6 +329,7 @@ impl DurableInferenceControl {
             archive_stamp,
             replay_stats: JournalReplayStats {
                 full_replays: 1,
+                incremental_replays: 0,
                 replayed_bytes: journal_bytes,
                 unchanged_reuses: 0,
             },
@@ -482,6 +484,93 @@ impl DurableInferenceControl {
             return Ok(lock_file);
         }
 
+        // Cooperating writers only append while holding the stable sidecar
+        // fence. If the active inode is unchanged and only its length grew,
+        // replay just the appended suffix. Same-size edits, truncation and
+        // compaction (inode replacement) deliberately fall back to full replay.
+        if let (Some(cached), Some(current)) = (self.cached_stamp, current_stamp)
+            && cached.device == current.device
+            && cached.inode == current.inode
+            && cached.mode == current.mode
+            && current.length > cached.length
+            && cached.length == self.journal_bytes
+        {
+            if current.length > MAX_JOURNAL_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
+            if let Some(digest) = &self.archive_digest {
+                self.archive_stamp = verify_compaction_archive(&self.path, Some(digest))?;
+            }
+
+            let mut records = self.records.clone();
+            let mut native = self.native.clone();
+            let mut reader = BufReader::new(current_file.try_clone()?);
+            reader.seek(SeekFrom::Start(cached.length))?;
+            let mut replayed = 0_u64;
+            let mut line = Vec::new();
+            let mut append_only = true;
+            loop {
+                line.clear();
+                let remaining = current.length.saturating_sub(cached.length + replayed) + 1;
+                let limit = remaining.min(MAX_JOURNAL_LINE_BYTES as u64 + 1);
+                let count = (&mut reader).take(limit).read_until(b'\n', &mut line)?;
+                if count == 0 {
+                    break;
+                }
+                replayed = replayed
+                    .checked_add(count as u64)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                if count > MAX_JOURNAL_LINE_BYTES || cached.length + replayed > current.length {
+                    return Err(Error::CapacityExceeded);
+                }
+                if line.pop() != Some(b'\n') {
+                    return Err(Error::CorruptJournal("incomplete appended line"));
+                }
+                if line.last() == Some(&b'\r') {
+                    line.pop();
+                }
+                let line =
+                    std::str::from_utf8(&line).map_err(|_| Error::CorruptJournal("utf8"))?;
+                if line.is_empty() {
+                    continue;
+                }
+                // Checkpoints/compaction headers are generation publication,
+                // never normal append traffic. A cooperating compactor uses
+                // atomic replacement and therefore changes the inode.
+                if line.starts_with(COMPACTION_PREFIX)
+                    || line.starts_with(LEGACY_CHECKPOINT_PREFIX)
+                    || line.starts_with(native::CHECKPOINT_PREFIX)
+                {
+                    append_only = false;
+                    break;
+                }
+                if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                    native.replay(json)?;
+                } else {
+                    apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+                }
+                if records.len() + native.records.len() > self.capacity {
+                    return Err(Error::CapacityExceeded);
+                }
+            }
+
+            if append_only && cached.length + replayed == current.length {
+                if records.keys().any(|id| native.records.contains_key(id)) {
+                    return Err(Error::Conflict);
+                }
+                self.records = records;
+                self.native = native;
+                self.journal_bytes = current.length;
+                self.file = current_file;
+                self.cached_stamp = current_stamp;
+                self.replay_stats.incremental_replays =
+                    self.replay_stats.incremental_replays.saturating_add(1);
+                self.replay_stats.replayed_bytes =
+                    self.replay_stats.replayed_bytes.saturating_add(replayed);
+                return Ok(lock_file);
+            }
+        }
+
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(current_file.try_clone()?);
@@ -559,11 +648,6 @@ impl DurableInferenceControl {
         Ok(lock_file)
     }
 
-    /// Rewrite the active journal to one canonical checkpoint per current
-    /// request while preserving the complete pre-compaction event stream in a
-    /// content-addressed sibling archive. Indeterminate/in-flight records stay
-    /// in the compacted active journal, so compaction never makes them
-    /// replayable or releases their capacity.
     /// Move released native runs out of the hot replay set while preserving
     /// exact idempotence identity in owner-only per-request archives. The full
     /// pre-compaction event stream is still retained by the content-addressed
@@ -696,6 +780,11 @@ impl DurableInferenceControl {
         Ok(())
     }
 
+    /// Rewrite the active journal to one canonical checkpoint per current
+    /// request while preserving the complete pre-compaction event stream in a
+    /// content-addressed sibling archive. Indeterminate/in-flight records stay
+    /// in the compacted active journal, so compaction never makes them
+    /// replayable or releases their capacity.
     pub fn compact_with_archive(&mut self) -> Result<PathBuf, Error> {
         let _writer_fence = self.reload_locked()?;
         let native_state = self.native.clone();
