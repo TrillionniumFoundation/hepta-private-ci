@@ -22,10 +22,10 @@ class ExternalEvidenceTests(unittest.TestCase):
         self.now = 100
         self.trust = HmacTrustStore(
             {
-                ("audit_anchor_authority", "audit-key"): b"audit",
-                ("key_custody_authority", "custody-key"): b"custody",
-                ("deployment_authority", "deploy-key"): b"deploy",
-                ("independent_review_authority", "review-key"): b"review",
+                ("external_audit_anchor_authority", "audit-key"): b"audit",
+                ("external_key_custody_authority", "custody-key"): b"custody",
+                ("external_deployment_authority", "deploy-key"): b"deploy",
+                ("independent_evaluator", "review-key"): b"review",
             }
         )
 
@@ -41,7 +41,7 @@ class ExternalEvidenceTests(unittest.TestCase):
                 "1" * 64,
                 9,
                 "2" * 64,
-                "audit_anchor_authority",
+                "external_audit_anchor_authority",
                 "audit-key",
                 90,
                 1000,
@@ -64,7 +64,7 @@ class ExternalEvidenceTests(unittest.TestCase):
                 "key-1",
                 ("source_authority", "engineering_evidence_binder"),
                 "3" * 64,
-                "key_custody_authority",
+                "external_key_custody_authority",
                 "custody-key",
                 90,
                 1000,
@@ -89,7 +89,7 @@ class ExternalEvidenceTests(unittest.TestCase):
         receipt = ExternalFactReceipt(
             "deployment_observed",
             "4" * 64,
-            "deployment_authority",
+            "external_deployment_authority",
             "deploy-key",
             90,
             1000,
@@ -115,7 +115,7 @@ class ExternalEvidenceTests(unittest.TestCase):
             ExternalFactReceipt(
                 "independent_review_accepted",
                 "4" * 64,
-                "deployment_authority",
+                "external_deployment_authority",
                 "deploy-key",
                 90,
                 1000,
@@ -151,7 +151,7 @@ class ExternalEvidenceTests(unittest.TestCase):
                         "1" * 64,
                         last["sequence"],
                         last["eventDigest"],
-                        "audit_anchor_authority",
+                        "external_audit_anchor_authority",
                         "audit-key",
                         90,
                         1000,
@@ -184,7 +184,7 @@ class ExternalEvidenceTests(unittest.TestCase):
                 "source-signing-key",
                 ("source_authority",),
                 "3" * 64,
-                "key_custody_authority",
+                "external_key_custody_authority",
                 "custody-key",
                 90,
                 1000,
@@ -196,7 +196,7 @@ class ExternalEvidenceTests(unittest.TestCase):
                 "binder-signing-key",
                 ("engineering_evidence_binder",),
                 "3" * 64,
-                "key_custody_authority",
+                "external_key_custody_authority",
                 "custody-key",
                 90,
                 1000,
