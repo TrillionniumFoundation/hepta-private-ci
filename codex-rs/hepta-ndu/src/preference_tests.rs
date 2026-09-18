@@ -64,7 +64,11 @@ fn damped_preference_update_emits_context_bound_solver_receipts() {
     assert_eq!(termination.predecessor_digest, predecessor);
     assert_eq!(termination.context_digest(), context);
     assert!(!receipts.is_empty());
-    assert!(receipts.iter().all(|receipt| receipt.context_digest() == context));
+    assert!(
+        receipts
+            .iter()
+            .all(|receipt| receipt.context_digest() == context)
+    );
     assert!(terminal.revision.get() > 1);
     assert!(terminal.values[0].value <= FixedQ32::ONE);
     assert_eq!(
@@ -81,7 +85,10 @@ fn damped_preference_update_emits_context_bound_solver_receipts() {
     );
 }
 
-fn predecessor_maximum(receipts: &[super::NduSolverIterationReceipt], initial_residual: i64) -> i64 {
+fn predecessor_maximum(
+    receipts: &[super::NduSolverIterationReceipt],
+    initial_residual: i64,
+) -> i64 {
     receipts
         .iter()
         .map(|receipt| receipt.residual_raw)
@@ -129,10 +136,7 @@ fn preference_dimension_and_value_bounds_fail_at_the_api_boundary() {
         must_err(PreferenceState::genesis(
             id("out-of-range"),
             SubjectClass::Agent,
-            vec![axis(
-                "quality",
-                FixedQ32::from_raw(FixedQ32::ONE.raw() + 1),
-            )],
+            vec![axis("quality", FixedQ32::from_raw(FixedQ32::ONE.raw() + 1),)],
         )),
         NduError::PreferenceValueOutOfRange("quality".to_string())
     );
