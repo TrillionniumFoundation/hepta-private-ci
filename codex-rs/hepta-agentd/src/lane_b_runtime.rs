@@ -41,6 +41,11 @@ pub struct RunSnapshot {
     pub objective_digest: String,
     pub body_digest: String,
     pub artifact_set_digest: String,
+    /// Present only for runs admitted from intelligence.control. The three
+    /// intelligence bindings are all-or-none and remain immutable for the run.
+    pub intelligence_envelope_digest: Option<String>,
+    pub expected_context_digest: Option<String>,
+    pub expected_context_receipt_digest: Option<String>,
     pub authority_epoch: u64,
     pub deadline_ms: u64,
 }
@@ -169,6 +174,16 @@ impl AgentRunCoordinator {
             || attachment.objective_digest != record.snapshot.objective_digest
             || attachment.body_digest != record.snapshot.body_digest
             || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
+            || record
+                .snapshot
+                .expected_context_digest
+                .as_deref()
+                .is_some_and(|expected| expected != attachment.context_digest)
+            || record
+                .snapshot
+                .expected_context_receipt_digest
+                .as_deref()
+                .is_some_and(|expected| expected != attachment.compilation_receipt_digest)
         {
             return Err(AgentRunError::MixedSnapshot);
         }
@@ -195,11 +210,35 @@ impl AgentRunCoordinator {
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentRunError> {
+        self.mark_dispatched_bound(run_id, expected_revision, None)
+    }
+
+    /// Dispatch an intelligence-bound run only when the exact admitted host
+    /// envelope is presented again. Legacy runs use `mark_dispatched`.
+    pub fn mark_dispatched_with_intelligence_envelope(
+        &mut self,
+        run_id: &str,
+        expected_revision: u64,
+        envelope_digest: &str,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_digest(envelope_digest, "intelligence envelope")?;
+        self.mark_dispatched_bound(run_id, expected_revision, Some(envelope_digest))
+    }
+
+    fn mark_dispatched_bound(
+        &mut self,
+        run_id: &str,
+        expected_revision: u64,
+        envelope_digest: Option<&str>,
+    ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
+        if record.snapshot.intelligence_envelope_digest.as_deref() != envelope_digest {
+            return Err(AgentRunError::MixedSnapshot);
+        }
         if record.phase == RunPhase::Dispatched {
             return Ok(receipt(record, /*idempotent*/ true));
         }
@@ -324,6 +363,19 @@ fn validate_snapshot(now_ms: u64, value: &RunSnapshot) -> Result<(), AgentRunErr
         (&value.artifact_set_digest, "artifact set"),
     ] {
         validate_digest(digest, field)?;
+    }
+    match (
+        value.intelligence_envelope_digest.as_deref(),
+        value.expected_context_digest.as_deref(),
+        value.expected_context_receipt_digest.as_deref(),
+    ) {
+        (None, None, None) => {}
+        (Some(envelope), Some(context), Some(receipt)) => {
+            validate_digest(envelope, "intelligence envelope")?;
+            validate_digest(context, "expected context")?;
+            validate_digest(receipt, "expected context receipt")?;
+        }
+        _ => return Err(AgentRunError::MixedSnapshot),
     }
     if value.authority_epoch == 0 {
         return Err(AgentRunError::InvalidGeneration);
