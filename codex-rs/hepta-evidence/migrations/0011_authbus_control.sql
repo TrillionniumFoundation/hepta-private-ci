@@ -7,6 +7,7 @@ CREATE TABLE authbus_policy_versions (
     action TEXT NOT NULL,
     resource_digest BLOB NOT NULL CHECK(length(resource_digest) = 32),
     scope_digest BLOB NOT NULL CHECK(length(scope_digest) = 32),
+    audience TEXT NOT NULL,
     quota_key TEXT NOT NULL,
     max_reservation BLOB NOT NULL CHECK(length(max_reservation) = 8),
     enabled INTEGER NOT NULL CHECK(enabled IN (0, 1)),
@@ -62,6 +63,7 @@ CREATE TABLE authbus_quota_reservations (
     state TEXT NOT NULL CHECK(state IN ('active', 'settled', 'cancelled', 'expired', 'quarantined')),
     expires_at_ms BLOB NOT NULL CHECK(length(expires_at_ms) = 8),
     policy_digest BLOB NOT NULL CHECK(length(policy_digest) = 32),
+    authorization_digest BLOB NOT NULL CHECK(length(authorization_digest) = 32),
     quota_revision_at_reserve BLOB NOT NULL CHECK(length(quota_revision_at_reserve) = 8),
     observed_cost BLOB CHECK(observed_cost IS NULL OR length(observed_cost) = 8),
     terminal_evidence BLOB CHECK(terminal_evidence IS NULL OR length(terminal_evidence) = 32),
@@ -88,6 +90,7 @@ WHEN OLD.reservation_id != NEW.reservation_id
     OR OLD.amount != NEW.amount
     OR OLD.expires_at_ms != NEW.expires_at_ms
     OR OLD.policy_digest != NEW.policy_digest
+    OR OLD.authorization_digest != NEW.authorization_digest
     OR OLD.quota_revision_at_reserve != NEW.quota_revision_at_reserve
     OR NEW.updated_at_ms < OLD.updated_at_ms
     OR OLD.state IN ('settled', 'cancelled')
