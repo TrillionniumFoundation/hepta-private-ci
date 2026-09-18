@@ -348,6 +348,7 @@ This generated projection binds `intelligence.control` to the current canonical 
 - `SupportAuditReceiptV1`
 
 **Typed protocols:**
+- `IntelligenceHostEnvelopeV1`
 - `LearningArtifactManifestV1`
 - `LegalActionCandidateSetV1`
 - `NduCoefficientManifestV1`
