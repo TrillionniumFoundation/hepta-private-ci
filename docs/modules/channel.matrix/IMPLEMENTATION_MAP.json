@@ -48,7 +48,7 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub async fn prepare_send(",
+        "symbol": "pub fn prepare_send(",
         "buildTarget": "codex-hepta-matrixd::send_observer"
       },
       "delegatedCallees": [],
@@ -61,7 +61,7 @@
       ],
       "sourceSemantics": "Binds operation, room/session generation, payload, authority/grant identity when supplied, and the canonical Matrix stable transaction identity into MatrixDurableStore before dispatch.",
       "operation": "prepare_send",
-      "nativeSymbol": "pub async fn prepare_send(",
+      "nativeSymbol": "pub fn prepare_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
       "sourcePathExists": true
     },
@@ -71,7 +71,7 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub async fn observe_send(",
+        "symbol": "pub fn observe_send(",
         "buildTarget": "codex-hepta-matrixd::send_observer"
       },
       "delegatedCallees": [],
@@ -84,7 +84,7 @@
       ],
       "sourceSemantics": "Settles terminal success only from trusted homeserver event evidence, preserves unknown effects as indeterminate across restart, archives terminal rows out of the unresolved working set, and retains redaction evidence separately.",
       "operation": "observe_send",
-      "nativeSymbol": "pub async fn observe_send(",
+      "nativeSymbol": "pub fn observe_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
       "sourcePathExists": true
     }
