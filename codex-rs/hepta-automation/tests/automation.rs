@@ -256,7 +256,7 @@ fn draft(id: &str, schedule: AutomationSchedule, due: u64) -> AutomationTaskDraf
 }
 
 #[tokio::test]
-async fn one_shot_periodic_disable_and_cancel_are_durable() {
+async fn queue_admission_is_non_terminal_and_forbid_overlap_blocks_progression() {
     let fixture = FleetFixture::new(1);
     let store = AutomationStore::open(&fixture.layouts[0])
         .await
@@ -283,8 +283,22 @@ async fn one_shot_periodic_disable_and_cancel_are_durable() {
     ));
     assert_eq!(
         store.task(one.task_id).await.expect("read").unwrap().state,
-        AutomationTaskState::Completed
+        AutomationTaskState::Enabled
     );
+    let one_occurrence = store
+        .occurrence(one.task_id, 1)
+        .await
+        .expect("occurrence read")
+        .expect("occurrence");
+    assert_eq!(one_occurrence.lifecycle_state, "queue_admitted");
+    assert_eq!(
+        scheduler.tick(11).await.expect("overlap gate"),
+        AutomationTick::Idle
+    );
+    store
+        .cancel_task(one.task_id, 12)
+        .await
+        .expect("cancel one-shot");
 
     let periodic = draft(
         "019153a4-3088-7000-a56a-9b1964f75002",
@@ -300,21 +314,18 @@ async fn one_shot_periodic_disable_and_cancel_are_durable() {
             .expect("read")
             .unwrap()
             .next_run_at_ms,
-        Some(5_020)
+        Some(20)
     );
-    store
-        .set_enabled(periodic.task_id, false, None, 21)
+    let periodic_occurrence = store
+        .occurrence(periodic.task_id, 1)
         .await
-        .expect("disable");
+        .expect("occurrence read")
+        .expect("occurrence");
+    assert_eq!(periodic_occurrence.lifecycle_state, "queue_admitted");
     assert_eq!(
-        scheduler.tick(9_000).await.expect("disabled tick"),
+        scheduler.tick(9_000).await.expect("forbid overlap"),
         AutomationTick::Idle
     );
-    store
-        .set_enabled(periodic.task_id, true, Some(10_000), 22)
-        .await
-        .expect("enable");
-    scheduler.tick(10_000).await.expect("resumed tick");
     store
         .cancel_task(periodic.task_id, 23)
         .await
@@ -328,7 +339,7 @@ async fn one_shot_periodic_disable_and_cancel_are_durable() {
             .state,
         AutomationTaskState::Cancelled
     );
-    assert_eq!(queue.admissions().await.len(), 3);
+    assert_eq!(queue.admissions().await.len(), 2);
 }
 
 #[tokio::test]
