@@ -753,9 +753,7 @@ where
         builder.turn_input_contributor(cognitive.clone());
         builder.tool_contributor(cognitive.clone());
         if has_federation {
-            let federated = Arc::new(FederatedCognitiveExtension::from_runtime(
-                cognitive_runtime,
-            ));
+            let federated = Arc::new(FederatedCognitiveExtension::from_runtime(cognitive_runtime));
             builder.turn_input_contributor(federated.clone());
             builder.ephemeral_model_input_contributor(Arc::new(
                 CombinedCognitiveEphemeralContributor::new(cognitive, federated),
