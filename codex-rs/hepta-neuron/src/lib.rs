@@ -17,6 +17,7 @@ use codex_hepta_types::StableId;
 
 mod journal;
 mod journal_lock;
+mod journal_witness;
 mod plasticity;
 mod protocol;
 mod runtime;
@@ -26,6 +27,7 @@ pub use journal::JournalAnchor;
 pub use journal::JournalError;
 pub use journal::JournalScope;
 pub use journal::SparseJournal;
+pub use journal_witness::*;
 pub use plasticity::*;
 pub use protocol::*;
 pub use runtime::*;
@@ -35,6 +37,7 @@ pub use sparse::SparseConfig;
 pub use sparse::SparseError;
 pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
+pub use sparse::rollover_seed;
 pub use sparse::sparse_tick;
 
 const MAX_FEATURES: usize = 4_096;

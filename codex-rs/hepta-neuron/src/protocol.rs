@@ -335,11 +335,7 @@ impl NeuronTickInputV1 {
         if self.monotonic_time_micros == 0 {
             return Err(ProtocolError::InvalidClock);
         }
-        if self.logical_sequence == 1 {
-            if !self.checkpoint_digest.is_zero() {
-                return Err(ProtocolError::InvalidCheckpointBinding);
-            }
-        } else if self.checkpoint_digest.is_zero() {
+        if self.logical_sequence > 1 && self.checkpoint_digest.is_zero() {
             return Err(ProtocolError::InvalidCheckpointBinding);
         }
         for (name, digest) in [

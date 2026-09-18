@@ -22,6 +22,7 @@ use crate::SparseTick;
 use crate::sparse_tick;
 
 const MAGIC: &[u8; 8] = b"HPTNSJ01";
+const SEEDED_MAGIC: &[u8; 8] = b"HPTNSJ02";
 const HEADER: usize = 136;
 const MAX_RECORDS: usize = 1024;
 
@@ -101,7 +102,14 @@ impl SparseJournal {
         scope: JournalScope,
         max_records: usize,
     ) -> Result<Self, JournalError> {
-        Self::open_with_policy(file, config, scope, max_records, RecoveryPolicy::Unanchored)
+        Self::open_with_policy(
+            file,
+            config,
+            scope,
+            max_records,
+            RecoveryPolicy::Unanchored,
+            None,
+        )
     }
 
     /// Recover at least the externally acknowledged checkpoint. A missing or
@@ -120,6 +128,42 @@ impl SparseJournal {
             scope,
             max_records,
             RecoveryPolicy::Require(anchor),
+            None,
+        )
+    }
+
+    pub fn open_seeded(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        seed: SparseCheckpoint,
+    ) -> Result<Self, JournalError> {
+        Self::open_with_policy(
+            file,
+            config,
+            scope,
+            max_records,
+            RecoveryPolicy::Unanchored,
+            Some(seed),
+        )
+    }
+
+    pub fn open_seeded_anchored(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        seed: SparseCheckpoint,
+        anchor: JournalAnchor,
+    ) -> Result<Self, JournalError> {
+        Self::open_with_policy(
+            file,
+            config,
+            scope,
+            max_records,
+            RecoveryPolicy::Require(anchor),
+            Some(seed),
         )
     }
 
@@ -129,6 +173,7 @@ impl SparseJournal {
         scope: JournalScope,
         max_records: usize,
         policy: RecoveryPolicy,
+        seed: Option<SparseCheckpoint>,
     ) -> Result<Self, JournalError> {
         if !(1..=MAX_RECORDS).contains(&max_records) {
             return Err(JournalError::InvalidLimit);
@@ -144,9 +189,32 @@ impl SparseJournal {
         if scope.scope_digest.is_zero() || scope.objective_digest.is_zero() {
             return Err(JournalError::ContextMismatch);
         }
+        if let Some(value) = seed.as_ref()
+            && (!value.is_rollover_seed()
+                || !value.verify_integrity()
+                || value.config_digest() != config_digest
+                || value.scope_digest() != scope.scope_digest
+                || value.objective_digest() != scope.objective_digest)
+        {
+            return Err(JournalError::ContextMismatch);
+        }
         let mut file = LockedFile::acquire(file)?;
-        let mut header = MAGIC.to_vec();
-        for digest in [config_digest, scope.scope_digest, scope.objective_digest] {
+        let mut header = if seed.is_some() {
+            SEEDED_MAGIC.to_vec()
+        } else {
+            MAGIC.to_vec()
+        };
+        let header_config_digest = seed.as_ref().map_or(config_digest, |value| {
+            let mut bytes = b"hepta.neuron.seeded-journal-context.v1".to_vec();
+            bytes.extend_from_slice(config_digest.as_array());
+            bytes.extend_from_slice(value.digest().as_array());
+            Digest32::of_bytes(&bytes)
+        });
+        for digest in [
+            header_config_digest,
+            scope.scope_digest,
+            scope.objective_digest,
+        ] {
             header.extend_from_slice(digest.as_array());
         }
         let checksum = Digest32::of_bytes(&header);
@@ -186,7 +254,7 @@ impl SparseJournal {
             scope,
             max_records,
             entries: Vec::new(),
-            current: None,
+            current: seed,
             poisoned: false,
         };
         let available = length.saturating_sub(HEADER as u64) as usize;

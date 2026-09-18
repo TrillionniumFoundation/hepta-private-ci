@@ -206,6 +206,30 @@ impl SparseCheckpoint {
         self.input
     }
 
+    pub fn config_digest(&self) -> Digest32 {
+        self.config
+    }
+
+    pub fn scope_digest(&self) -> Digest32 {
+        self.scope
+    }
+
+    pub fn objective_digest(&self) -> Digest32 {
+        self.objective
+    }
+
+    pub fn body_digest(&self) -> Digest32 {
+        self.body
+    }
+
+    pub fn verify_integrity(&self) -> bool {
+        self.calculate_digest() == self.digest
+    }
+
+    pub fn is_rollover_seed(&self) -> bool {
+        self.sequence == 0 && !self.predecessor.is_zero()
+    }
+
     fn calculate_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.neuron.sparse-checkpoint.q24.v1".to_vec();
         for value in [
@@ -233,6 +257,48 @@ impl SparseCheckpoint {
         }
         Digest32::of_bytes(&bytes)
     }
+}
+
+
+pub fn rollover_seed(
+    previous: &SparseCheckpoint,
+    previous_config: &SparseConfig,
+    next_config: &SparseConfig,
+) -> Result<SparseCheckpoint, SparseError> {
+    if !previous.verify_integrity() || previous.config != previous_config.digest()? {
+        return Err(SparseError::InvalidCheckpoint);
+    }
+    let next_generation = previous_config
+        .generation
+        .next()
+        .map_err(|_| SparseError::InvalidConfig)?;
+    let mut expected = previous_config.clone();
+    expected.generation = next_generation;
+    if &expected != next_config {
+        return Err(SparseError::ConfigDrift);
+    }
+    let next_config_digest = next_config.digest()?;
+    let mut input = b"hepta.neuron.rollover-seed.v1".to_vec();
+    input.extend_from_slice(previous.digest.as_array());
+    input.extend_from_slice(next_config_digest.as_array());
+    let mut seed = SparseCheckpoint {
+        config: next_config_digest,
+        scope: previous.scope,
+        objective: previous.objective,
+        body: previous.body,
+        sequence: 0,
+        monotonic_micros: previous.monotonic_micros,
+        predecessor: previous.digest,
+        input: Digest32::of_bytes(&input),
+        temporal: previous.temporal.clone(),
+        activation: previous.activation.clone(),
+        activity: previous.activity.clone(),
+        threshold: previous.threshold.clone(),
+        eligibility: previous.eligibility.clone(),
+        digest: Digest32::ZERO,
+    };
+    seed.digest = seed.calculate_digest();
+    Ok(seed)
 }
 
 /// Compute a complete successor without mutating the selected config or prior state.
