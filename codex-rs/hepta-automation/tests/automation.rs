@@ -6,6 +6,7 @@ use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationFuture;
 use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationSchedule;
+use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationScheduler;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTaskDraft;
@@ -303,7 +304,8 @@ async fn one_shot_periodic_disable_and_cancel_are_durable() {
         "019153a4-3088-7000-a56a-9b1964f75002",
         AutomationSchedule::FixedInterval { interval_ms: 5_000 },
         20,
-    );
+    )
+    .with_overlap_policy(AutomationOverlapPolicy::Allow);
     store.create_task(&periodic).await.expect("periodic");
     scheduler.tick(20).await.expect("periodic tick");
     assert_eq!(
@@ -1315,7 +1317,7 @@ async fn disabling_an_inflight_lease_never_resurrects_the_task() {
             103,
         )
         .await
-        .expect("finish admitted occurrence");
+        .expect("record admitted occurrence");
     assert_eq!(submitted.state, AutomationTaskState::Disabled);
     assert_eq!(submitted.next_run_at_ms, None);
     let resumed = store
