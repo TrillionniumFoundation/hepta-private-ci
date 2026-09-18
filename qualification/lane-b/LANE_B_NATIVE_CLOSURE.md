@@ -105,7 +105,6 @@ The actual Agent-fenced App Server client supplies matching turn observations th
 Remaining repository implementation gaps:
 
 - Compose a named non-CLI production caller that obtains current quota/resource evidence and signed final-use grants from their owners; the explicit native worker CLI is a source/qualification host and does not activate the product.
-- Implement the full target multi-worker schedule(reservation, eligible_worker_snapshot) deterministic feasible ranking when a product actually supplies multiple enrolled workers; the native App Server route currently binds one exact provider/resource and hepta-inferd remains an authority-free exact-binding planner.
 
 External evidence gates:
 
