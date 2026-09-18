@@ -161,8 +161,10 @@ pub async fn run_supervisord(
 
 /// Production entry point for a daemon whose trust root was pinned by an
 /// external authority/configuration ceremony.  The verifier is intentionally
-/// a parameter: the daemon never reads a public key from a mutation request
-/// and the legacy entry point keeps signed mutations disabled.
+/// a parameter: the daemon never reads a public key from a mutation request.
+/// While this verifier is configured, unsigned Upgrade/Rollback RPCs are
+/// rejected so local-control methods cannot bypass the signed transition path;
+/// the legacy entry point keeps signed mutations disabled.
 /// After the feature gate, non-Unix hosts return an unsupported-platform I/O
 /// error before accessing fleet state.
 pub async fn run_supervisord_with_grant_verifier(
@@ -511,6 +513,14 @@ async fn handle_request<D: ProcessDriver>(
             .await
         }
         SupervisordMethod::Upgrade { fence, release_id } => {
+            if state.production_grant_verifier.is_some() {
+                let actual = agent_status(&state, &fence.agent_id).await.ok();
+                return error_payload(
+                    "production_authority_required",
+                    "production-configured supervisord requires SignedUpgrade for release changes",
+                    actual,
+                );
+            }
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
@@ -527,6 +537,14 @@ async fn handle_request<D: ProcessDriver>(
             handle_mutation(state, SupervisordMutation::Upgrade, fence, Some(target)).await
         }
         SupervisordMethod::Rollback { fence } => {
+            if state.production_grant_verifier.is_some() {
+                let actual = agent_status(&state, &fence.agent_id).await.ok();
+                return error_payload(
+                    "production_authority_required",
+                    "production-configured supervisord requires SignedRollback for release changes",
+                    actual,
+                );
+            }
             handle_mutation(
                 state,
                 SupervisordMutation::Rollback,
