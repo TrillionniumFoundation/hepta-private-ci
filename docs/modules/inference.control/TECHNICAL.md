@@ -2,7 +2,7 @@
 
 Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
 
-The native App Server worker now calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and actual observed settlement. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This does not close economic quota, local weights/device or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
+The native App Server worker now calls the same durable control owner for cross-bound quota/resource admission, request/token/concurrency/economic-budget holds, persisted final-use dispatch identity, cancellation intent and actual observed settlement. Physical `turn/start` consumes a kernel-owned signed final-use grant bound to the exact provider payload. Restart never replays a possibly dispatched request: the host performs read-only matching-thread reconciliation, and bounded native journal compaction retains a private content-addressed predecessor archive. These source mechanisms do not prove actual provider billing, physical device capacity, product activation or independent deployment acceptance. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements, recovery and retention semantics.
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
@@ -52,7 +52,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-infer-core/src/lib.rs](../../../codex-rs/hepta-infer-core/src/lib.rs); observed identifiers include `InferenceLedger`, `InferenceRequest`, `RequestRecord`, `submit`, `reserve`, `complete`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-infer-core/src/lib.rs](../../../codex-rs/hepta-infer-core/src/lib.rs). `InferenceLedger` is the small non-durable/reference state machine and does not dispatch a provider. Hosted provider execution must use the canonical durable owner in `durable_control::DurableInferenceControl` and its native ports; the physical App Server adapter lives in the delegated `inference.worker` root. This source navigation binding is not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -150,7 +150,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.control.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md). The native host's implemented reconciler is deliberately read-only and cannot recreate a consumed/non-serializable final-use token after process loss. A source library or fixture still cannot stand in for deployed provider billing/device observations or independent acceptance.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -166,13 +166,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-infer-core/src/lib.rs](../../../codex-rs/hepta-infer-core/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. The native path now enforces per-reservation request count, conservative output-token holds, active concurrency and owner-defined economic budget units before provider dispatch. Those budget units are signed into the final-use request binding but are not a provider billing receipt or hardware measurement. Current journal and payload limits belong to the durable control/native worker implementation and the linked operating guide.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-The native worker opens DurableInferenceControl with an absolute private journal, stable request ID and explicit in-flight budget. A possibly dispatched record remains held/indeterminate after restart. Keep native-v1 records with a compatible binary; archival and authenticated post-crash provider reconciliation are not implemented by deleting the journal.
+The native worker opens DurableInferenceControl with an absolute private journal, stable request ID, explicit local in-flight limit, quota/resource evidence, output-token/economic holds and a kernel-owned final-use authority store. A possibly dispatched record is never replayed after restart. The host first attempts read-only exact-thread reconciliation; a matching persisted terminal can settle effect truth and release local concurrency, while missing usage and final-use authority remain conservative. Native journal high-water handling atomically compacts current native state, preserves legacy records byte-for-byte and retains a bounded private predecessor archive. Deleting the journal, changing the request ID or fabricating zero usage is never a recovery procedure.
 
 Current operating and state-format references:
 
@@ -186,8 +186,11 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-infer-core/src/durable_control_tests.rs](../../../codex-rs/hepta-infer-core/src/durable_control_tests.rs); named case: `reopens_exact_committed_state`.
 - [codex-rs/hepta-infer-core/src/lib_tests.rs](../../../codex-rs/hepta-infer-core/src/lib_tests.rs); named case: `request_lifecycle_is_fenced_and_authority_free`.
+- [codex-rs/hepta-infer-core/src/native_control_tests.rs](../../../codex-rs/hepta-infer-core/src/native_control_tests.rs); quota/token/concurrency/economic holds, final-use witness fencing, recovery and compaction.
+- [codex-rs/hepta-infer-worker-host/src/native_policy_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_policy_tests.rs); quota/resource cross-binding and budget rejection.
+- [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs); no-replay/reopen behavior around the real App Server adapter.
 
-In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-inferd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
