@@ -106,9 +106,11 @@ impl AgentRunCoordinator {
             {
                 return Err(AgentRunError::InvalidCancellationAckTimeout);
             }
-            if record.phase == RunPhase::Cancelling
-                && record.cancellation_ack_deadline_ms.is_none()
-            {
+            if record.phase == RunPhase::Cancelling {
+                if record.cancellation_ack_deadline_ms.is_none() {
+                    return Err(AgentRunError::InvalidCancellationAckTimeout);
+                }
+            } else if record.cancellation_ack_deadline_ms.is_some() {
                 return Err(AgentRunError::InvalidCancellationAckTimeout);
             }
         }
@@ -304,6 +306,7 @@ impl AgentRunCoordinator {
                     .is_some_and(|deadline| deadline <= now_ms)
                 {
                     record.phase = RunPhase::Indeterminate;
+                    record.cancellation_ack_deadline_ms = None;
                     advance_revision(record)?;
                     expired.push(receipt(record, /* idempotent */ false));
                 }
@@ -373,6 +376,7 @@ impl AgentRunCoordinator {
             return Err(AgentRunError::TerminalObservationRequired);
         }
         record.phase = phase;
+        record.cancellation_ack_deadline_ms = None;
         advance_revision(record)?;
         Ok(receipt(record, /* idempotent */ false))
     }
@@ -430,6 +434,7 @@ impl AgentRunCoordinator {
                 }
                 RunPhase::Dispatched | RunPhase::Cancelling => {
                     record.phase = RunPhase::Indeterminate;
+                    record.cancellation_ack_deadline_ms = None;
                     if record.cancel_reason.is_none() {
                         record.cancel_reason = Some(after_dispatch_reason.to_string());
                     }
