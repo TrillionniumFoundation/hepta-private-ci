@@ -184,8 +184,10 @@ def build_product_receipt(
         "eligibleForIndependentReview": False,
         "runtimeAuthority": False,
         "mergeAuthority": False,
+        "activationAuthority": False,
         "promotionAuthority": False,
         "releaseAuthority": False,
+        "externalEffectAuthority": False,
     }
 
     if mode == "source-head":
