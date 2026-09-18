@@ -49,7 +49,10 @@ fn complete_negative_matrix_qualifies_without_authority() {
 fn missing_case_is_rejected() {
     let mut value = cases();
     value.pop();
-    assert_eq!(qualify(value, provenance()), Err(Error::MissingRequiredCase));
+    assert_eq!(
+        qualify(value, provenance()),
+        Err(Error::MissingRequiredCase)
+    );
 }
 
 #[test]
