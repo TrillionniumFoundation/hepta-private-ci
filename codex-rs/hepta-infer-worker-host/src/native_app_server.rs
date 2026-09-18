@@ -761,13 +761,13 @@ fn persisted_output(
             text.push_str(value);
         }
     }
+    let terminal_observed = turn.status != TurnStatus::InProgress;
     let status = match turn.status {
         TurnStatus::Completed => NativeRunStatus::Completed,
         TurnStatus::Failed => NativeRunStatus::Failed,
         TurnStatus::Interrupted => NativeRunStatus::Interrupted,
         TurnStatus::InProgress => NativeRunStatus::Indeterminate,
     };
-    let terminal_observed = turn.status != TurnStatus::InProgress;
     Ok(NativeRunOutput {
         thread_id: dispatch.thread_id.clone(),
         turn_id: turn.id,
