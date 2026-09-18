@@ -1495,6 +1495,16 @@ mod tests {
                 .map(|event| event.kind),
             Some(LifecycleEventKind::Imported)
         );
+        assert_eq!(
+            durable.registry().factor_protocol_v1(&id("factor:1")),
+            Err(crate::ProtocolCodecError::MissingAuthoritativeLineage)
+        );
+        assert_eq!(
+            durable
+                .registry()
+                .realization_protocol_v1(&id("realization:legacy")),
+            Err(crate::ProtocolCodecError::MissingAuthoritativeLineage)
+        );
         drop(durable);
         let reopened =
             DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen migrated registry");
