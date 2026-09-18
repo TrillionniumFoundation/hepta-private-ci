@@ -8,6 +8,7 @@
 #![forbid(unsafe_code)]
 
 mod causal_v2;
+mod checkpoint;
 mod dataset_receipt_v3;
 mod durable;
 mod durable_codec;
@@ -40,6 +41,12 @@ pub use causal_v2::freeze_dataset;
 pub use causal_v2::validate_authenticated_outcome;
 pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
+pub use checkpoint::LedgerCheckpointError;
+pub use checkpoint::LedgerIndexCheckpointV1;
+pub use checkpoint::LedgerIndexEntryV1;
+pub use checkpoint::OutcomeHeadIndexV1;
+pub use checkpoint::build_ledger_index_checkpoint;
+pub use checkpoint::verify_ledger_index_checkpoint;
 pub use dataset_receipt_v3::DatasetReceiptError;
 pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
 pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
