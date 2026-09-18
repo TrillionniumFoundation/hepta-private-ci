@@ -39,25 +39,50 @@ fn message(sequence: u64) -> (IssuerRegistration, SignedMessage) {
 }
 
 #[tokio::test]
-async fn external_restore_checkpoint_detects_old_database_generation() {
+async fn external_restore_checkpoint_detects_a_real_old_database_restore() {
     let temp = TempDir::new().unwrap();
-    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let sqlite = config(&temp);
+    let database = temp.path().join("hepta_evidence_2.sqlite");
+    let backup = temp.path().join("authbus-old-backup.sqlite");
     let first = Digest32::of_bytes(b"checkpoint-one");
     let second = Digest32::of_bytes(b"checkpoint-two");
+
+    let store = HeptaEvidenceStore::open(&sqlite).await.unwrap();
     store
         .initialize_authbus_restore_checkpoint(1, first)
         .await
         .unwrap();
-    store
+    sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+        .execute(&store.pool)
+        .await
+        .unwrap();
+    store.pool.close().await;
+    std::fs::copy(&database, &backup).unwrap();
+
+    let current = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    current
         .advance_authbus_restore_checkpoint(1, 2, second)
         .await
         .unwrap();
+    sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+        .execute(&current.pool)
+        .await
+        .unwrap();
+    current.pool.close().await;
+
+    let wal = database.with_file_name("hepta_evidence_2.sqlite-wal");
+    let shm = database.with_file_name("hepta_evidence_2.sqlite-shm");
+    let _ = std::fs::remove_file(wal);
+    let _ = std::fs::remove_file(shm);
+    std::fs::copy(&backup, &database).unwrap();
+
+    let restored = HeptaEvidenceStore::open(&sqlite).await.unwrap();
     assert!(matches!(
-        store.verify_authbus_restore_checkpoint(1, first).await,
+        restored.verify_authbus_restore_checkpoint(2, second).await,
         Err(AuthBusControlError::RollbackDetected)
     ));
-    store
-        .verify_authbus_restore_checkpoint(2, second)
+    restored
+        .verify_authbus_restore_checkpoint(1, first)
         .await
         .unwrap();
 }
