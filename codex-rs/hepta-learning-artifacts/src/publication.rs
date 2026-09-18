@@ -762,7 +762,10 @@ mod tests {
         else {
             panic!("publication must register");
         };
-        assert_eq!(first_manifest.support_digest, second_manifest.support_digest);
+        assert_eq!(
+            first_manifest.support_digest,
+            second_manifest.support_digest
+        );
     }
 
     #[test]
