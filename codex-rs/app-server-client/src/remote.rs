@@ -211,6 +211,44 @@ pub struct RemoteAppServerRequestHandle {
     command_tx: mpsc::Sender<RemoteClientCommand>,
 }
 
+pub struct RemotePendingRequest {
+    method: String,
+    response_rx: oneshot::Receiver<IoResult<RequestResult>>,
+}
+
+impl RemotePendingRequest {
+    /// Wait for the response to a request that has already been admitted to the
+    /// remote client worker queue. Transport loss after admission must be
+    /// reconciled by the effect owner; it is not proof the request did not run.
+    pub async fn wait(self) -> IoResult<RequestResult> {
+        self.response_rx.await.map_err(|_| {
+            IoError::new(
+                ErrorKind::BrokenPipe,
+                "remote app-server request channel is closed after admission",
+            )
+        })?
+    }
+
+    pub async fn wait_typed<T>(self) -> Result<T, TypedRequestError>
+    where
+        T: DeserializeOwned,
+    {
+        let method = self.method;
+        let response = self.wait().await.map_err(|source| TypedRequestError::Transport {
+            method: method.clone(),
+            source,
+        })?;
+        let result = response.map_err(|source| TypedRequestError::Server {
+            method: method.clone(),
+            source,
+        })?;
+        serde_json::from_value(result).map_err(|source| TypedRequestError::Deserialize {
+            method,
+            source,
+        })
+    }
+}
+
 impl RemoteAppServerRequestHandle {
     /// Resolves one server-initiated request received on this connection.
     ///
@@ -833,6 +871,39 @@ impl RemoteAppServerClient {
 }
 
 impl RemoteAppServerRequestHandle {
+    /// Synchronously admit one request to the bounded remote-client command
+    /// queue without awaiting capacity.
+    ///
+    /// This is the final synchronous seam used by revocation-fenced effect
+    /// adapters: success means only that the request entered this connection's
+    /// worker queue. A full queue is reported before admission; every transport
+    /// or server failure after this method succeeds is post-admission evidence
+    /// and must not be treated as a safe replay signal.
+    pub fn try_begin_request(&self, request: ClientRequest) -> IoResult<RemotePendingRequest> {
+        let method = request.method_name().to_string();
+        let request = jsonrpc_request_from_client_request(request);
+        let (response_tx, response_rx) = oneshot::channel();
+        self.command_tx
+            .try_send(RemoteClientCommand::Request {
+                request: Box::new(request),
+                response_tx,
+            })
+            .map_err(|error| match error {
+                mpsc::error::TrySendError::Full(_) => IoError::new(
+                    ErrorKind::WouldBlock,
+                    "remote app-server request queue is full before admission",
+                ),
+                mpsc::error::TrySendError::Closed(_) => IoError::new(
+                    ErrorKind::BrokenPipe,
+                    "remote app-server worker channel is closed before admission",
+                ),
+            })?;
+        Ok(RemotePendingRequest {
+            method,
+            response_rx,
+        })
+    }
+
     pub async fn request(&self, request: ClientRequest) -> IoResult<RequestResult> {
         self.request_json_rpc(jsonrpc_request_from_client_request(request))
             .await
