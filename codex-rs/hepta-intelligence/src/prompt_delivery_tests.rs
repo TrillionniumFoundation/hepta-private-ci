@@ -36,6 +36,9 @@ fn admitted_registry(
         factor_id: id("factor:verify"),
         proposer_id: id("proposer:1"),
         semantic_version: id("v1"),
+        semantic_purpose: "verify before mutating".to_owned(),
+        authority_class: "registered_prompt_factor".to_owned(),
+        eligible_objective_dimensions: vec![id("dimension:truth")],
         content_digest: digest("factor:verify"),
         source: FactorSource::GovernedInternal,
         lifecycle: Lifecycle::Draft,
@@ -91,6 +94,8 @@ fn admitted_registry(
         .expect("admit factor through final-use authority");
 
     let tuple = PromptModelTupleV2 {
+        model_id: id("model:hepta-test"),
+        model_version: "2026-09-18".to_owned(),
         model_digest: digest("model"),
         tokenizer_digest: digest("tokenizer"),
         template_digest: digest("template"),
@@ -101,6 +106,8 @@ fn admitted_registry(
     let binding = PromptRealizationBindingV2 {
         realization_id: id("realization:verify"),
         factor_id: factor.factor_id.clone(),
+        model_id: tuple.model_id.clone(),
+        model_version: tuple.model_version.clone(),
         model_digest: tuple.model_digest,
         tokenizer_digest: tuple.tokenizer_digest,
         template_digest: tuple.template_digest,
