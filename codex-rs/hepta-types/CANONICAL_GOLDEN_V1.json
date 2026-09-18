@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.platform-types.canonical-golden-v1",
+  "schemaVersion": 1,
+  "encoding": {
+    "domainAscii": "hepta.canonical-digest.v1\\u0000",
+    "integerEndian": "big",
+    "lengthWidthBits": 32,
+    "mapOrdering": "utf8-byte-lexicographic",
+    "arrayOrdering": "semantic"
+  },
+  "vectors": [
+    {
+      "id": "mixed-fields-v1",
+      "typeId": "schema:platform.types.vector",
+      "schemaVersion": 1,
+      "fields": {
+        "alpha": {"type": "u64", "value": "42"},
+        "items": {"type": "array", "value": [{"type": "i64", "value": "-1"}, {"type": "i64", "value": "0"}, {"type": "i64", "value": "1"}]},
+        "meta": {"type": "map", "value": {"a": {"type": "bool", "value": true}, "b": {"type": "bytes", "hex": "00ff"}}},
+        "zeta": {"type": "text", "value": "hepta"}
+      },
+      "canonicalHex": "68657074612e63616e6f6e6963616c2d6469676573742e7631000000001c736368656d613a706c6174666f726d2e74797065732e766563746f72000000010000000400000005616c70686102000000000000002a000000056974656d73070000000303ffffffffffffffff030000000000000000030000000000000001000000046d6574610800000002000000016101010000000162040000000200ff000000047a65746105000000056865707461",
+      "sha256": "7f72e578b85d2d80e30a0b073846998c1581976538036880b4ec01e28458b9d5",
+      "requiredImplementations": ["rust", "python", "typescript"]
+    }
+  ]
+}
