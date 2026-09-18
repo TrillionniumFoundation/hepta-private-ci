@@ -59,21 +59,24 @@ impl SqliteConfig {
             fn retained_bytes(
                 object: &super::RetainedObject,
                 maximum: u64,
+                allow_empty: bool,
             ) -> Result<Vec<u8>, SqliteRecoveryError> {
                 let size = object
                     .descriptor
                     .metadata()
                     .map_err(super::indeterminate)?
                     .len();
-                if size == 0 || size > maximum {
+                if (!allow_empty && size == 0) || size > maximum {
                     return Err(SqliteRecoveryError::Unavailable);
                 }
                 let size = usize::try_from(size).map_err(|_| SqliteRecoveryError::Unavailable)?;
                 let mut bytes = vec![0; size];
-                object
-                    .descriptor
-                    .read_exact_at(&mut bytes, 0)
-                    .map_err(super::indeterminate)?;
+                if !bytes.is_empty() {
+                    object
+                        .descriptor
+                        .read_exact_at(&mut bytes, 0)
+                        .map_err(super::indeterminate)?;
+                }
                 Ok(bytes)
             }
 
@@ -83,12 +86,12 @@ impl SqliteConfig {
                 match object {
                     RetainedOptionalObject::Absent(_) => Ok(None),
                     RetainedOptionalObject::Present(object) => {
-                        retained_bytes(object, MAX_SIDECAR_BYTES).map(Some)
+                        retained_bytes(object, MAX_SIDECAR_BYTES, true).map(Some)
                     }
                 }
             }
 
-            let database = retained_bytes(&guard.inner.database, MAX_DATABASE_BYTES)?;
+            let database = retained_bytes(&guard.inner.database, MAX_DATABASE_BYTES, false)?;
             let wal = optional_bytes(&guard.inner.sidecars[0])?;
             // sidecars[1] is SHM and is intentionally not copied.
             let journal = optional_bytes(&guard.inner.sidecars[2])?;
