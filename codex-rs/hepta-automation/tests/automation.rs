@@ -892,6 +892,19 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         .execute(&mut *rewind)
         .await
         .expect("drop v2 table");
+    // Remove the v4 kernel.operations destination-owned dedupe schema as well.
+    sqlx::query("DROP TRIGGER destination_operation_dedupe_no_update")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop destination dedupe update trigger");
+    sqlx::query("DROP TRIGGER destination_operation_dedupe_no_delete")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop destination dedupe delete trigger");
+    sqlx::query("DROP TABLE destination_operation_dedupe")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop destination operation dedupe table");
     // The current opener also applies the qualification-only TaskFlow
     // migration. Remove that schema and rewind its migration ledger so this
     // test still exercises a genuine v1 -> latest upgrade path.
@@ -990,7 +1003,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
             .fetch_one(&pool)
             .await
             .expect("read migrated schema version");
-    assert_eq!(schema, 3);
+    assert_eq!(schema, 4);
     let outcomes: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE task_id = ?")
             .bind(task.task_id.to_string())
