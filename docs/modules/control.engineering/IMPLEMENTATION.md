@@ -45,7 +45,7 @@ must provide the separate owner authorization required by its own contract.
 | `control_plane.py` | SQLite schema, transactions, envelopes, leases, base scheduling and audit anchor head | Public facade, orchestrator and CLI |
 | `orchestration.py` | Exact source admission, signed completion receipts, skills/capacity scheduling, integration order and merge-queue proposals | Product caller and public package |
 | `candidate.py` | Deterministic single/multi-file/rename grammar, exact Git materialization and immutable oracle paths | Public facade and CLI |
-| `sandbox_control.py` | <=8 process-local sandbox admission and <=2 infrastructure-only retries | Mutation testing and production qualification |
+| `sandbox_control.py` | <=8 host-wide POSIX sandbox admission (process-local fallback on non-POSIX fixtures) and <=2 infrastructure-only retries | Mutation testing and production qualification |
 | `mutation_testing.py` | Baseline-pass / mutant-kill evaluator gate | Qualification |
 | `evidence.py` | Exact Git objects, source/merge execution receipts, pluggable signing port and independent identities | Candidate evidence binder |
 | `hardening.py` | Active-state frontier and authenticated evidence/consent primitives | Store, closure and seal |
@@ -56,11 +56,14 @@ must provide the separate owner authorization required by its own contract.
 | `cli.py` | Bounded JSON ingress and local operations | `python -m control_engineering_v2`, installed CLI |
 
 There are no import-time store patches or alternate clone sandbox owners. The
-public package, direct facade and historical public `hardened_*` aliases use the
-current authenticated composition. Lower-layer composition helpers do not replace
-that public boundary. SQLite file access and the Python process are trusted owner
-boundaries: this library does not isolate a caller that can directly rewrite its
-connection, modules or database.
+public package and historical public `hardened_*` aliases use the current
+authenticated composition. The historical direct-facade wrappers
+`issue_work_envelope` and `schedule_ready_packages` fail closed unless a caller
+explicitly sets `compatibility_only=True`; they are retained only for local legacy
+fixtures and are not supported product admission paths. Lower-layer store helpers
+do not replace the authenticated orchestration boundary. SQLite file access and
+the Python process are trusted owner boundaries: this library does not isolate a
+caller that can directly rewrite its connection, modules or database.
 
 ## Durable state and migration
 
