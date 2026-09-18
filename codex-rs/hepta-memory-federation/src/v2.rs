@@ -328,6 +328,7 @@ pub struct FederationAuthorityObservationV2 {
     pub query_binding_digest: Digest32,
     pub lease_epoch: u64,
     pub observed_unix_ms: u64,
+    pub authority_expires_unix_ms: u64,
     pub state: FederationAuthorityStateV2,
 }
 
@@ -350,6 +351,14 @@ impl FederationAuthorityObservationV2 {
         if self.observed_unix_ms == 0 {
             return Err(FederationV2Error::ZeroValue("authority_observed_at"));
         }
+        if self.authority_expires_unix_ms == 0 {
+            return Err(FederationV2Error::ZeroValue("authority_expiry"));
+        }
+        if matches!(self.state, FederationAuthorityStateV2::Current)
+            && self.observed_unix_ms >= self.authority_expires_unix_ms
+        {
+            return Err(FederationV2Error::AuthorityExpired);
+        }
         Ok(())
     }
 
@@ -360,6 +369,7 @@ impl FederationAuthorityObservationV2 {
         push_digest(&mut bytes, self.query_binding_digest);
         push_u64(&mut bytes, self.lease_epoch);
         push_u64(&mut bytes, self.observed_unix_ms);
+        push_u64(&mut bytes, self.authority_expires_unix_ms);
         bytes.push(authority_state_code(self.state));
         Digest32::of_bytes(&bytes)
     }
@@ -559,6 +569,7 @@ where
             preflight_authority.state,
         ));
     }
+    ensure_lease_within_live_authority(&preflight_authority, lease)?;
 
     let query_binding_digest = query.binding_digest();
     let transport_result = send_with_control(transport, control, &query, lease).await?;
@@ -600,6 +611,12 @@ where
                 lease,
                 &response,
             )?;
+            if matches!(
+                authority_observation.state,
+                FederationAuthorityStateV2::Current
+            ) {
+                ensure_lease_within_live_authority(&authority_observation, lease)?;
+            }
 
             let stale_generation = response.generation_vector_digest
                 != query.generation_vector_digest
@@ -652,7 +669,8 @@ where
                 expires_unix_ms: response
                     .expires_unix_ms
                     .min(lease.expires_unix_ms)
-                    .min(query.deadline_unix_ms),
+                    .min(query.deadline_unix_ms)
+                    .min(authority_observation.authority_expires_unix_ms),
                 items,
                 coverage: FederatedCoverageV2 {
                     requested_peers: 1,
@@ -732,6 +750,16 @@ fn ensure_authority_horizon(
     }
     if observed_unix_ms >= lease.expires_unix_ms {
         return Err(FederationV2Error::LeaseExpired);
+    }
+    Ok(())
+}
+
+fn ensure_lease_within_live_authority(
+    observation: &FederationAuthorityObservationV2,
+    lease: &FederatedLeaseV2,
+) -> Result<(), FederationV2Error> {
+    if lease.expires_unix_ms > observation.authority_expires_unix_ms {
+        return Err(FederationV2Error::LeaseAuthorityHorizonExceeded);
     }
     Ok(())
 }
@@ -822,6 +850,8 @@ pub enum FederationV2Error {
     InvalidCoverage,
     StaleEvidenceExposed,
     AuthorityObservationRegressed,
+    AuthorityExpired,
+    LeaseAuthorityHorizonExceeded,
     AuthorityNotCurrent(FederationAuthorityStateV2),
     AuthorityGranted,
     AuthorityRevalidationFailed,
