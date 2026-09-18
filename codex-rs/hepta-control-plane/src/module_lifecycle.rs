@@ -146,27 +146,21 @@ impl ModuleLifecycleBarrierV1 {
         Ok(())
     }
 
-    /// Exact-predecessor rollback only. Skipping generations would make the
-    /// migration and writer-fence receipt meaningless.
+    /// Roll back state content through a new fenced generation. Generation
+    /// numbers never rewind: reviving the predecessor generation would make
+    /// stale writer handles valid again. The rollback therefore uses the same
+    /// complete handoff proof as a forward cutover and advances once more.
     pub fn rollback_stateful_successor(
         &mut self,
-        receipt: &WriterHandoffReceiptV1,
+        rollback_receipt: &WriterHandoffReceiptV1,
     ) -> Result<(), ModuleLifecycleError> {
         if self.kind != ModuleLifecycleKindV1::StatefulWriter
             || self.phase != ModuleLifecyclePhaseV1::Active
         {
             return Err(ModuleLifecycleError::InvalidPhase);
         }
-        if receipt.module_id != self.module_id
-            || receipt.candidate_generation != self.generation
-            || receipt.predecessor_generation.next().ok() != Some(self.generation)
-        {
-            return Err(ModuleLifecycleError::InvalidGeneration);
-        }
-        if !receipt.rollback_viable {
-            return Err(ModuleLifecycleError::RollbackUnavailable);
-        }
-        self.generation = receipt.predecessor_generation;
+        self.validate_handoff(rollback_receipt)?;
+        self.generation = rollback_receipt.candidate_generation;
         Ok(())
     }
 
@@ -195,15 +189,17 @@ impl ModuleLifecycleBarrierV1 {
         if !observation.fallback_ready {
             return Err(ModuleLifecycleError::FallbackUnavailable);
         }
+        // Stopping admission is only the first half of retirement. Existing
+        // work must drain for every module kind before the route disappears.
+        if observation.outstanding_operations != 0 {
+            return Err(ModuleLifecycleError::OutstandingOperations);
+        }
         if self.kind == ModuleLifecycleKindV1::StatefulWriter
             && !observation.state_handed_off_or_tombstoned
         {
             return Err(ModuleLifecycleError::StateHandoffMissing);
         }
         if self.kind == ModuleLifecycleKindV1::Effectful {
-            if observation.outstanding_operations != 0 {
-                return Err(ModuleLifecycleError::OutstandingOperations);
-            }
             if observation.indeterminate_operations != 0 {
                 return Err(ModuleLifecycleError::IndeterminateOperations);
             }
@@ -301,8 +297,41 @@ mod tests {
         let receipt = good_handoff();
         lifecycle.adopt_stateful_successor(&receipt).unwrap();
         assert_eq!(lifecycle.generation(), generation(8));
-        lifecycle.rollback_stateful_successor(&receipt).unwrap();
-        assert_eq!(lifecycle.generation(), generation(7));
+
+        let rollback = WriterHandoffReceiptV1 {
+            module_id: id(),
+            predecessor_generation: generation(8),
+            candidate_generation: generation(9),
+            migration_digest: Digest32::of_bytes(b"rollback-migration"),
+            old_writer_fenced: true,
+            outbox_drained: true,
+            consumer_cutover: true,
+            new_writer_ready: true,
+            rollback_viable: true,
+        };
+        lifecycle.rollback_stateful_successor(&rollback).unwrap();
+        assert_eq!(lifecycle.generation(), generation(9));
+    }
+
+    #[test]
+    fn stateless_retirement_waits_for_in_flight_work_to_drain() {
+        let mut lifecycle = ModuleLifecycleBarrierV1::active(
+            id(),
+            ModuleLifecycleKindV1::Stateless,
+            generation(3),
+        );
+        lifecycle.begin_retirement().unwrap();
+        let busy = RetirementObservationV1 {
+            routes_admitting: false,
+            outstanding_operations: 1,
+            indeterminate_operations: 0,
+            fallback_ready: true,
+            state_handed_off_or_tombstoned: false,
+        };
+        assert_eq!(
+            lifecycle.retire(&busy),
+            Err(ModuleLifecycleError::OutstandingOperations)
+        );
     }
 
     #[test]
