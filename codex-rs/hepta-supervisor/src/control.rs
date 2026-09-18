@@ -78,6 +78,16 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(), SupervisorError> {
         slot.restart_pending = false;
+        if slot
+            .runtime
+            .as_ref()
+            .is_some_and(|runtime| !runtime.lease_persisted)
+        {
+            // A child without a durably published lease is quarantined and
+            // must stay on the hard-kill path. An operator Stop may strengthen
+            // cleanup, but must never downgrade it to graceful termination.
+            return self.kill_slot(agent_id, slot);
+        }
         if self.cancel_scheduled_restart_without_runtime(agent_id, slot)? {
             return Ok(());
         }
