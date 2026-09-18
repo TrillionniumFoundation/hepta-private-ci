@@ -525,6 +525,7 @@ pub struct PromptPortfolioReceiptV1 {
 pub struct SelectedPromptPortfolioV1 {
     pub receipt: PromptPortfolioReceiptV1,
     pub selected: Vec<PromptCandidateBindingV1>,
+    pub objective_digest: Digest32,
     pub state_digest: Digest32,
     pub model_tuple: PromptModelTupleV2,
     pub model_tuple_digest: Digest32,
@@ -797,6 +798,7 @@ pub fn select_portfolio_v1(
             authority: AuthorityPosture::DENY_ALL,
         },
         selected: selected_bindings,
+        objective_digest: priced.candidates.receipt.objective_digest,
         state_digest: priced.candidates.receipt.state_digest,
         model_tuple: priced.candidates.model_tuple.clone(),
         model_tuple_digest: priced.candidates.model_tuple.digest(),
