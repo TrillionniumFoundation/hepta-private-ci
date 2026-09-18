@@ -17,19 +17,21 @@
     "codex-rs/hepta-cognitive-store"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "explicit_agentd_host_composed_not_default_activated",
+  "productionWriterState": "authority_gated_durable_writer_established_recovery_writer_backend_pending",
   "operations": [
     {
-      "operation": "cognitivestore",
-      "nativeSymbol": "CognitiveStore",
-      "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "admitted_cognitive_store_v2",
+      "nativeSymbol": "AdmittedCognitiveStoreV2",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "state": "source_implemented_semantic_oracle",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivestore",
+      "designOperation": "append_event_append_correction_forget_open_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -37,30 +39,73 @@
       "operation": "cognitivestore",
       "nativeSymbol": "CognitiveStore",
       "sourcePath": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "durable_owner_implemented",
+      "authority": "owner_scoped_local_store",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "cognitivestore",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
+      "operation": "production_durable_writer",
+      "nativeSymbol": "ProductionDurableWriter",
+      "sourcePath": "codex-rs/hepta-memory/src/production_writer.rs",
+      "state": "explicit_product_host_composed_not_default_activated",
+      "authority": "external_verified_lease_required",
+      "tests": [
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authoritative_production_writer",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ]
+    },
+    {
       "operation": "lane_c_snapshot",
       "nativeSymbol": "lane_c_snapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "product_read_path_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "lane_c_snapshot",
+      "designOperation": "open_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/cognitive_context.rs",
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
+      ]
+    },
+    {
+      "operation": "open_with_recovery_writer",
+      "nativeSymbol": "open_with_recovery_writer",
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "state": "current_writer_fence_bound_descriptor_writer_backend_unavailable",
+      "authority": "external_current_writer_fence_required",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "descriptor_safe_recovery",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Implement the qualified descriptor-backed, non-reconnecting SQLite writer backend consumed by open_with_recovery_writer; ordinary path reopen remains forbidden as recovery.",
+    "Execute and retain exact-head plus deterministic synthetic-merge receipts for this candidate.",
+    "Run the ignored PERF-DURABLE retained-size profile on the selected target host and retain the measurements.",
+    "Physical authoritative retention beyond bounded paging still requires an archive/retired-intent design that preserves ancestry, tombstone frontiers and idempotency identity."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -70,7 +115,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
