@@ -242,7 +242,7 @@ where
         scope: RuntimeScopeBindingV1,
         max_records: usize,
         executor: E,
-        witness: W,
+        mut witness: W,
         mut lineage: L,
         calibration_policy: CalibrationPolicyV1,
         calibration_artifact: Option<NeuronCalibrationArtifactV1>,
