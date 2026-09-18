@@ -120,6 +120,7 @@ CREATE TABLE authbus_trust_heads (
     revision BLOB NOT NULL CHECK (length(revision) = 8),
     key_epoch BLOB NOT NULL CHECK (length(key_epoch) = 8),
     verifying_key_digest BLOB NOT NULL CHECK (length(verifying_key_digest) = 32),
+    registration_digest BLOB NOT NULL CHECK (length(registration_digest) = 32),
     revoked INTEGER NOT NULL CHECK (revoked IN (0, 1)),
     updated_at_ms INTEGER NOT NULL CHECK (updated_at_ms >= 0)
 ) WITHOUT ROWID;
