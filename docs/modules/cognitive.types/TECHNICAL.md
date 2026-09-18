@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs); observed identifiers include `MemoryRecord`, `CognitiveSnapshot`, `build_snapshot`, `validate_integrity`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) for the implemented subset and remaining product work.
+The registered crate root is [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs). Legacy bounded record/snapshot identifiers include `MemoryRecord`, `CognitiveSnapshot`, `build_snapshot`, and `validate_integrity`; Lane C shared identity contracts remain in [src/lane_c.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c.rs). The production HNMF V1 canonical contract family now lives under [src/hnmf/](../../../codex-rs/hepta-cognitive-types/src/hnmf/mod.rs): event/span, engram/synapse, cue/recall, replay/outcome, plasticity/topology, forget propagation, and the canonical JSON wire envelope. This source implementation does not itself prove product composition, current-candidate qualification, activation, or release. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.types.md#8-current-native-implementation) alongside the module-specific design for remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -97,7 +97,20 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-None.
+- `ModalitySpanRefV1`
+- `MemoryEventV1`
+- `CrossModalBindingV1`
+- `EngramNodeV1`
+- `SynapseV1`
+- `MemoryCueV1`
+- `RecallPacketV1`
+- `OutcomeSignalV1`
+- `ReplaySelectionReceiptV1`
+- `PlasticityBatchV1`
+- `TopologyProposalV1`
+- `ForgetPropagationReceiptV1`
+
+The HNMF wire profile is `canonical_json_v1`: UTF-8 JSON with no insignificant whitespace, a mandatory `schema` + `schemaVersion=1` + `payload` envelope, strict unknown-field and unknown-enum rejection, lower-hex digests, deterministic collection ordering, `omit_when_none` optional fields, per-protocol encoded-byte ceilings, and byte-for-byte reserialization equality on admission. The checked-in golden vector and conformance evidence are part of the contract boundary: span/event/cross-modal binding share one two-sided production/reference fixture, all twelve production protocols pass strict canonical-wire round trips, and non-isomorphic runtime contracts use the deterministic HNMF semantic reference rather than claiming identical wire DTOs. This is a Hepta canonical JSON profile, not a claim of RFC 8785/JCS equivalence.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -163,6 +176,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs); named case: `generation_vector_digest_binds_every_generation`.
 - [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs); named case: `snapshot_is_canonical_and_authority_free`.
+- [codex-rs/hepta-cognitive-types/src/hnmf/tests.rs](../../../codex-rs/hepta-cognitive-types/src/hnmf/tests.rs); covers canonical wire round trips, unknown fields/enums, golden bytes, revocation/lifecycle conflicts, and next-snapshot-only proposals.
+- [codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs](../../../codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs); drives the same checked-in span/event/cross-modal fixture through production and the structurally homologous contract reference. The deterministic runtime reference remains the semantic oracle for non-isomorphic engram/recall/replay/plasticity/forget behavior.
 
 In `codex-rs`, run `just test -p codex-hepta-cognitive-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) separately labels target acceptance designs.
 
@@ -189,6 +204,8 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `cognitive.types`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+
+The static completion stages are recorded in `IMPLEMENTATION_MAP.json` as `spec`, `reference`, `native`, `wire`, `composed`, `qualified`, and `activated`. Native and wire source implementation can be complete while composition remains absent; `qualified` deliberately requires a fresh exact-candidate receipt and is never inferred from this document.
 
 ### Work-package execution envelopes
 

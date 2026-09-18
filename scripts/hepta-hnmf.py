@@ -55,6 +55,36 @@ PROTOCOLS = [
     "ForgetPropagationReceiptV1",
 ]
 
+PROTOCOL_NATIVE_PATHS = {
+    "ModalitySpanRefV1": "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "MemoryEventV1": "codex-rs/hepta-cognitive-types/src/hnmf/event.rs",
+    "CrossModalBindingV1": "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "EngramNodeV1": "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "SynapseV1": "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "MemoryCueV1": "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "RecallPacketV1": "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "OutcomeSignalV1": "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "ReplaySelectionReceiptV1": "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "PlasticityBatchV1": "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "TopologyProposalV1": "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "ForgetPropagationReceiptV1": "codex-rs/hepta-cognitive-types/src/hnmf/forget.rs",
+}
+
+PROTOCOL_WIRE_SCHEMAS = {
+    "ModalitySpanRefV1": "hepta.hnmf.modality-span-ref.v1",
+    "MemoryEventV1": "hepta.hnmf.memory-event.v1",
+    "CrossModalBindingV1": "hepta.hnmf.cross-modal-binding.v1",
+    "EngramNodeV1": "hepta.hnmf.engram-node.v1",
+    "SynapseV1": "hepta.hnmf.synapse.v1",
+    "MemoryCueV1": "hepta.hnmf.memory-cue.v1",
+    "RecallPacketV1": "hepta.hnmf.recall-packet.v1",
+    "OutcomeSignalV1": "hepta.hnmf.outcome-signal.v1",
+    "ReplaySelectionReceiptV1": "hepta.hnmf.replay-selection-receipt.v1",
+    "PlasticityBatchV1": "hepta.hnmf.plasticity-batch.v1",
+    "TopologyProposalV1": "hepta.hnmf.topology-proposal.v1",
+    "ForgetPropagationReceiptV1": "hepta.hnmf.forget-propagation-receipt.v1",
+}
+
 WORK_PACKAGES = [
     "HNM-0-MULTIMODAL-CONTRACTS",
     "HNM-1-IMMUTABLE-EVENT-LEDGER",
@@ -96,6 +126,19 @@ REQUIRED_FILES = [
     "qualification/hnmf-reference/Cargo.lock",
     "qualification/hnmf-reference/README.md",
     "qualification/hnmf-reference/src/lib.rs",
+    "codex-rs/hepta-cognitive-types/Cargo.toml",
+    "codex-rs/hepta-cognitive-types/src/hnmf/mod.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/wire.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/event.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/forget.rs",
+    "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
+    "codex-rs/hepta-cognitive-types/tests/data/hnmf_conformance_v1.json",
+    "codex-rs/hepta-cognitive-types/tests/data/modality_span_v1.canonical.json",
     ".github/workflows/hnmf-qualification.yml",
 ]
 
@@ -203,6 +246,147 @@ def verify() -> int:
     need(
         [item.get("id") for item in spec.get("protocols", [])] == PROTOCOLS,
         "protocol closure",
+    )
+    protocol_rows = {item["id"]: item for item in spec["protocols"]}
+    two_sided_protocols = {
+        "ModalitySpanRefV1",
+        "MemoryEventV1",
+        "CrossModalBindingV1",
+    }
+    for protocol in PROTOCOLS:
+        row = protocol_rows[protocol]
+        native_path = PROTOCOL_NATIVE_PATHS[protocol]
+        need(row.get("nativeRustType") == protocol, f"{protocol}: native Rust type")
+        need(row.get("nativeRustPath") == native_path, f"{protocol}: native Rust path")
+        need((ROOT / native_path).is_file(), f"{protocol}: native Rust path exists")
+        need(
+            protocol in (ROOT / native_path).read_text(encoding="utf-8"),
+            f"{protocol}: native Rust symbol",
+        )
+        need(
+            row.get("wireSchemaId") == PROTOCOL_WIRE_SCHEMAS[protocol],
+            f"{protocol}: wire schema id",
+        )
+        need(row.get("wireSchemaVersion") == 1, f"{protocol}: wire schema version")
+        need(row.get("wireEncoding") == "canonical_json_v1", f"{protocol}: wire encoding")
+        need(row.get("unknownFieldPolicy") == "reject", f"{protocol}: unknown fields")
+        need(row.get("unknownEnumPolicy") == "reject", f"{protocol}: unknown enums")
+        need(
+            row.get("canonicalBytePolicy") == "exact_reserialization_match",
+            f"{protocol}: canonical bytes",
+        )
+        if protocol in two_sided_protocols:
+            need(
+                row.get("productionConformanceTest")
+                == "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
+                f"{protocol}: two-sided conformance test",
+            )
+            need(
+                row.get("conformanceClass") == "two_sided_shared_fixture",
+                f"{protocol}: two-sided conformance class",
+            )
+            need(
+                row.get("referenceOracle") == "qualification/hnmf-contract-reference",
+                f"{protocol}: contract reference oracle",
+            )
+        else:
+            need(
+                row.get("productionConformanceTest")
+                == "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+                f"{protocol}: production wire conformance test",
+            )
+            need(
+                row.get("conformanceClass")
+                == "production_strict_wire_with_runtime_semantic_oracle",
+                f"{protocol}: runtime semantic conformance class",
+            )
+            need(
+                row.get("referenceOracle") == "qualification/hnmf-reference/src/lib.rs",
+                f"{protocol}: runtime semantic oracle",
+            )
+
+    need(
+        protocol_rows["ModalitySpanRefV1"].get("requiredFields")
+        == [
+            "spanId",
+            "modality",
+            "assetSha256",
+            "range",
+            "preprocessorManifestSha256",
+            "uncertaintyPpm",
+            "privacyClass",
+        ],
+        "modality span wire fields",
+    )
+    need(
+        protocol_rows["CrossModalBindingV1"].get("requiredFields")
+        == [
+            "bindingId",
+            "eventId",
+            "spanIds",
+            "alignmentKind",
+            "confidencePpm",
+            "producerManifestSha256",
+        ],
+        "cross-modal binding wire fields",
+    )
+    native_binding = spec.get("nativeContractBinding", {})
+    need(native_binding.get("module") == "cognitive.types", "native contract owner")
+    need(
+        native_binding.get("sourceRoot")
+        == "codex-rs/hepta-cognitive-types/src/hnmf",
+        "native contract source root",
+    )
+    need(
+        native_binding.get("canonicalWireEncoding") == "canonical_json_v1",
+        "native canonical wire",
+    )
+    need(native_binding.get("wireSchemaVersion") == 1, "native wire schema version")
+    need(native_binding.get("unknownFieldPolicy") == "reject", "native unknown fields")
+    need(native_binding.get("unknownEnumPolicy") == "reject", "native unknown enums")
+    need(
+        native_binding.get("nonCanonicalBytesPolicy") == "reject",
+        "native non-canonical bytes",
+    )
+    need(
+        native_binding.get("optionalFieldPolicy") == "omit_when_none",
+        "native optional-field policy",
+    )
+    need(
+        native_binding.get("goldenVector")
+        == "codex-rs/hepta-cognitive-types/tests/data/modality_span_v1.canonical.json",
+        "native wire golden vector",
+    )
+    need(native_binding.get("productionActivationClaimed") is False, "native activation claim")
+    need(
+        native_binding.get("contractReferenceOracle")
+        == "qualification/hnmf-contract-reference",
+        "native contract reference oracle",
+    )
+    need(
+        native_binding.get("runtimeSemanticOracle")
+        == "qualification/hnmf-reference",
+        "native runtime semantic oracle",
+    )
+    conformance_evidence = spec.get("conformanceEvidence", {})
+    need(
+        conformance_evidence.get("sharedFixture")
+        == "codex-rs/hepta-cognitive-types/tests/data/hnmf_conformance_v1.json",
+        "shared conformance fixture",
+    )
+    need(
+        set(conformance_evidence.get("twoSidedWireSemanticProtocols", []))
+        == two_sided_protocols,
+        "two-sided conformance protocol scope",
+    )
+    need(
+        conformance_evidence.get("fullProductionWireRoundTripProtocols") == PROTOCOLS,
+        "full production wire round-trip scope",
+    )
+    need(
+        conformance_evidence.get("deterministicRuntimeSemanticOracle")
+        == "qualification/hnmf-reference/src/lib.rs",
+        "deterministic runtime semantic oracle",
     )
     need(
         [item.get("id") for item in spec.get("workPackages", [])] == WORK_PACKAGES,
@@ -315,6 +499,64 @@ def verify() -> int:
         "unsafe" not in rust.replace("#![forbid(unsafe_code)]", ""), "unsafe code token"
     )
 
+
+    production_root = ROOT / "codex-rs/hepta-cognitive-types/src/hnmf"
+    production_source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted(production_root.glob("*.rs"))
+        if path.name != "tests.rs"
+    )
+    for protocol in PROTOCOLS:
+        need(protocol in production_source, f"production protocol {protocol}")
+    for token in [
+        "pub trait CanonicalJsonV1",
+        "deny_unknown_fields",
+        "pub fn try_new",
+        "MemoryVerificationStateV1",
+        "RetentionPolicyV1",
+        "current_snapshot_immutable",
+        "production_activation_allowed",
+    ]:
+        need(token in production_source, f"production HNMF token {token}")
+    hnmf_tests = (
+        ROOT / "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs"
+    ).read_text(encoding="utf-8")
+    need(
+        'include_bytes!("../../tests/data/modality_span_v1.canonical.json")' in hnmf_tests,
+        "production canonical JSON golden vector assertion",
+    )
+    for test_name in [
+        "canonical_json_rejects_missing_required_payload_fields",
+        "canonical_json_rejects_reordered_envelope_keys",
+        "canonical_json_and_collection_bounds_fail_closed",
+        "canonical_set_order_is_insertion_independent",
+        "canonical_json_omits_absent_optionals_and_rejects_explicit_null",
+        "every_canonical_protocol_round_trips_strictly",
+    ]:
+        need(test_name in hnmf_tests, f"production HNMF boundary test {test_name}")
+    conformance = (
+        ROOT / "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+    ).read_text(encoding="utf-8")
+    for token in [
+        'include_bytes!("data/hnmf_conformance_v1.json")',
+        "shared_fixture_is_valid_in_production",
+        "shared_fixture_rejects_modality_range_mismatch_in_production",
+        "shared_fixture_modality_closed_world_in_production",
+        "shared_fixture_cross_modal_binding_is_valid_in_production",
+    ]:
+        need(token in conformance, f"production conformance {token}")
+    reference_conformance = (
+        ROOT / "qualification/hnmf-contract-reference/src/tests.rs"
+    ).read_text(encoding="utf-8")
+    for token in [
+        'include_str!("../../../codex-rs/hepta-cognitive-types/tests/data/hnmf_conformance_v1.json")',
+        "shared_fixture_is_valid_in_reference",
+        "shared_fixture_rejects_modality_range_mismatch_in_reference",
+        "shared_fixture_modality_closed_world_in_reference",
+        "shared_fixture_cross_modal_binding_is_valid_in_reference",
+    ]:
+        need(token in reference_conformance, f"reference conformance {token}")
+
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
     )
@@ -323,6 +565,9 @@ def verify() -> int:
         "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
         "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
         "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
+        "cargo check --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types --all-targets --locked",
+        "cargo clippy --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types --all-targets --locked -- -D warnings",
+        "cargo test --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types --locked",
     ]:
         need(command in workflow, f"workflow command {command}")
 

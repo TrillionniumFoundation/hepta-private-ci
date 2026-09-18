@@ -18,6 +18,47 @@ from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
 
+HNMF_PROTOCOL_SOURCES = {
+    "ModalitySpanRefV1": "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "MemoryEventV1": "codex-rs/hepta-cognitive-types/src/hnmf/event.rs",
+    "CrossModalBindingV1": "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "EngramNodeV1": "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "SynapseV1": "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "MemoryCueV1": "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "RecallPacketV1": "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "OutcomeSignalV1": "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "ReplaySelectionReceiptV1": "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "PlasticityBatchV1": "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "TopologyProposalV1": "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "ForgetPropagationReceiptV1": "codex-rs/hepta-cognitive-types/src/hnmf/forget.rs",
+}
+
+HNMF_PROTOCOL_CONSUMERS = {
+    "ModalitySpanRefV1": ["cognitive.store", "context.compiler"],
+    "MemoryEventV1": ["cognitive.store", "cognitive.read", "memory.retrieval", "knowledge.graph", "learning.ledger"],
+    "CrossModalBindingV1": ["cognitive.store", "knowledge.graph"],
+    "EngramNodeV1": ["memory.retrieval", "neuron.runtime", "learning.artifacts"],
+    "SynapseV1": ["memory.retrieval", "neuron.runtime", "learning.artifacts", "learning.plasticity"],
+    "MemoryCueV1": ["memory.retrieval"],
+    "RecallPacketV1": ["memory.retrieval", "context.compiler", "intuition.policy"],
+    "OutcomeSignalV1": ["learning.ledger", "learning.operator", "learning.plasticity"],
+    "ReplaySelectionReceiptV1": ["compact.engine", "learning.ledger"],
+    "PlasticityBatchV1": ["learning.plasticity", "learning.artifacts"],
+    "TopologyProposalV1": ["learning.plasticity", "learning.artifacts"],
+    "ForgetPropagationReceiptV1": ["cognitive.store", "knowledge.graph", "learning.artifacts"],
+}
+
+COGNITIVE_TYPES_COMPLETION_STAGES = {
+    "spec": "specified",
+    "reference": "closed_reference",
+    "native": "source_implemented",
+    "wire": "source_implemented",
+    "composed": "not_composed",
+    "qualified": "requires_current_exact_candidate_evidence",
+    "activated": "inactive",
+}
+
+
 
 def current_source_base() -> dict[str, str]:
     """Return the immutable source identity used by generated maps."""
@@ -43,7 +84,68 @@ def lane_by_module():
     }
 
 
+def cognitive_type_operations():
+    paths = [
+        "codex-rs/hepta-cognitive-types/src/lib.rs",
+        "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+        *sorted(set(HNMF_PROTOCOL_SOURCES.values())),
+        "codex-rs/hepta-cognitive-types/src/hnmf/mod.rs",
+        "codex-rs/hepta-cognitive-types/src/hnmf/wire.rs",
+    ]
+    entries = []
+    seen = set()
+    for source in paths:
+        path = ROOT / source
+        text = path.read_text(encoding="utf-8")
+        for symbol in re.findall(
+            r"^pub\s+(?:struct|enum|trait|fn)\s+([A-Za-z][A-Za-z0-9_]*)",
+            text,
+            flags=re.M,
+        ):
+            identity = (source, symbol)
+            if identity in seen:
+                continue
+            seen.add(identity)
+            if "/hnmf/" in source:
+                tests = [
+                    "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+                    "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
+                ]
+                contract_class = (
+                    "hnmf_protocol"
+                    if symbol in HNMF_PROTOCOL_SOURCES
+                    else "hnmf_support"
+                )
+            elif source.endswith("lane_c.rs"):
+                tests = ["codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"]
+                contract_class = "lane_c_shared"
+            else:
+                tests = ["codex-rs/hepta-cognitive-types/src/lib_tests.rs"]
+                contract_class = "legacy_cognitive"
+            entries.append(
+                {
+                    "operation": re.sub(
+                        r"[^a-zA-Z0-9]+", "_", symbol
+                    ).strip("_").lower(),
+                    "nativeSymbol": symbol,
+                    "sourcePath": source,
+                    "state": "source_implemented_not_product_composed",
+                    "authority": "none",
+                    "tests": tests,
+                    "sourcePathExists": path.is_file(),
+                    "mappingClass": "owner_native",
+                    "delegatedCallees": [],
+                    "protocolId": symbol if symbol in HNMF_PROTOCOL_SOURCES else None,
+                    "contractClass": contract_class,
+                    "downstreamConsumers": HNMF_PROTOCOL_CONSUMERS.get(symbol, []),
+                }
+            )
+    return entries
+
+
 def parse_entrypoints(module: str):
+    if module == "cognitive.types":
+        return cognitive_type_operations()
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
     match = re.search(r"\*\*Implemented entrypoints:\*\*\s*(.*)", text)
@@ -103,6 +205,14 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "productCallerState": "not_composed",
         "productionWriterState": "not_established",
         "operations": operations,
+        **(
+            {
+                "completionStages": dict(COGNITIVE_TYPES_COMPLETION_STAGES),
+                "publicSurfaceInventoryGenerated": True,
+            }
+            if mid == "cognitive.types"
+            else {}
+        ),
         "repositoryControlledGaps": [
             "Bind every operation to an authenticated consumer callsite and owner store.",
             "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
@@ -122,6 +232,27 @@ def map_for(module: dict, source_base: dict, lanes: dict):
             "independentAcceptance": False,
             "activation": False,
             "release": False,
+            **(
+                {
+                    "nativePublicSurfaceMappingComplete": all(
+                        op["sourcePathExists"] and op["nativeSymbol"]
+                        for op in operations
+                    ),
+                    "targetContractMappingComplete": {
+                        op.get("protocolId")
+                        for op in operations
+                        if op.get("protocolId")
+                    }
+                    == set(HNMF_PROTOCOL_SOURCES),
+                    "wireContractMappingComplete": all(
+                        f"impl CanonicalJsonV1 for {protocol}"
+                        in (ROOT / source).read_text(encoding="utf-8")
+                        for protocol, source in HNMF_PROTOCOL_SOURCES.items()
+                    ),
+                }
+                if mid == "cognitive.types"
+                else {}
+            ),
         },
     }
 
@@ -161,6 +292,8 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         source = op.get("sourcePath")
         op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
         operations.append(op)
+    if module["id"] == "cognitive.types":
+        operations = cognitive_type_operations()
     if not operations:
         operations = [
             {
@@ -203,6 +336,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     boundary = migrated.get("claimBoundary") or migrated.get("completion")
     if not isinstance(boundary, dict):
         boundary = {}
+    if module["id"] == "cognitive.types":
+        migrated["completionStages"] = dict(COGNITIVE_TYPES_COMPLETION_STAGES)
+        migrated["publicSurfaceInventoryGenerated"] = True
     migrated["claimBoundary"] = {
         **boundary,
         "nativeSourceMappingComplete": all(
@@ -215,6 +351,27 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         "independentAcceptance": bool(boundary.get("independentAcceptance", False)),
         "activation": bool(boundary.get("activation", False)),
         "release": bool(boundary.get("release", False)),
+        **(
+            {
+                "nativePublicSurfaceMappingComplete": all(
+                    bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+                    for op in operations
+                ),
+                "targetContractMappingComplete": {
+                    op.get("protocolId")
+                    for op in operations
+                    if op.get("protocolId")
+                }
+                == set(HNMF_PROTOCOL_SOURCES),
+                "wireContractMappingComplete": all(
+                    f"impl CanonicalJsonV1 for {protocol}"
+                    in (ROOT / source).read_text(encoding="utf-8")
+                    for protocol, source in HNMF_PROTOCOL_SOURCES.items()
+                ),
+            }
+            if module["id"] == "cognitive.types"
+            else {}
+        ),
     }
     migrated.setdefault(
         "repositoryControlledGaps",
@@ -329,6 +486,40 @@ def verify():
         except (ValueError, OSError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")
+        if mid == "cognitive.types":
+            if row.get("completionStages") != COGNITIVE_TYPES_COMPLETION_STAGES:
+                failures.append(f"{mid}: completion stages")
+            if row.get("publicSurfaceInventoryGenerated") is not True:
+                failures.append(f"{mid}: generated public surface inventory")
+            expected_symbols = {
+                op["nativeSymbol"] for op in cognitive_type_operations()
+            }
+            mapped_symbols = {
+                op.get("nativeSymbol") for op in (ops or []) if op.get("nativeSymbol")
+            }
+            if mapped_symbols != expected_symbols:
+                failures.append(f"{mid}: public surface inventory")
+            boundary = row.get("claimBoundary") or {}
+            expected_native_complete = all(
+                bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+                for op in cognitive_type_operations()
+            )
+            expected_target_complete = {
+                op.get("protocolId")
+                for op in cognitive_type_operations()
+                if op.get("protocolId")
+            } == set(HNMF_PROTOCOL_SOURCES)
+            expected_wire_complete = all(
+                f"impl CanonicalJsonV1 for {protocol}"
+                in (ROOT / source).read_text(encoding="utf-8")
+                for protocol, source in HNMF_PROTOCOL_SOURCES.items()
+            )
+            if boundary.get("nativePublicSurfaceMappingComplete") != expected_native_complete:
+                failures.append(f"{mid}: native public surface mapping")
+            if boundary.get("targetContractMappingComplete") != expected_target_complete:
+                failures.append(f"{mid}: target contract mapping")
+            if boundary.get("wireContractMappingComplete") != expected_wire_complete:
+                failures.append(f"{mid}: wire contract mapping")
         if not isinstance(ops, list) or not ops:
             failures.append(f"{mid}: operations")
             continue
