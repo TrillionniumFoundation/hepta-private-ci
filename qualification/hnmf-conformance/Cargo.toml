@@ -12,6 +12,7 @@ doctest = false
 [dependencies]
 production = { package = "codex-hepta-cognitive-types", path = "../../codex-rs/hepta-cognitive-types" }
 reference = { package = "hepta-hnmf-contract-reference", path = "../hnmf-contract-reference" }
+runtime_reference = { package = "hepta-hnmf-reference", path = "../hnmf-reference" }
 
 [workspace]
 
