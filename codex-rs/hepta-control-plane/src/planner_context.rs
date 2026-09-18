@@ -11,7 +11,7 @@ use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::RequiredOrganSet;
 use codex_hepta_ndu::UtilityContribution;
 use codex_hepta_ndu::UtilityProfile;
-use codex_hepta_ndu::legacy_evaluation_policy;
+use codex_hepta_ndu::compatibility_evaluation_policy;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -82,6 +82,10 @@ pub fn plan_observed_context(
     let objective_digest = Digest32::of_bytes(&objective);
     let profile = UtilityProfile {
         profile_id: id("verified-context-delivery-v1")?,
+        axis_registry_digest: Digest32::of_bytes(b"verified-context-delivery-axis-registry-v1"),
+        normalization_manifest_digest: Digest32::of_bytes(
+            b"verified-context-delivery-normalization-v1",
+        ),
         dimensions: vec![(count_axis.clone(), AxisDirection::Maximize)],
         risk_ceilings: vec![],
         resource_ceilings: vec![AxisLimit {
@@ -93,7 +97,7 @@ pub fn plan_observed_context(
         },
     };
     let mut input = NduPlanningInputV1 {
-        policy: legacy_evaluation_policy(&profile).map_err(E::Ndu)?,
+        policy: compatibility_evaluation_policy(&profile).map_err(E::Ndu)?,
         profile,
         scalarization: None,
         contributions: ContributionSet {
