@@ -153,10 +153,11 @@ impl ObjectiveIngressHost {
 
     pub(crate) fn process_delivery(
         &self,
-        identity: &AgentdIdentity,
+        agentd: &AgentdState,
         delivery: &AuthBusDelivery,
         now_ms: u64,
     ) -> Result<Digest32, AgentdError> {
+        let identity = agentd.identity();
         let body: AuthBusObjectiveBody = serde_json::from_slice(&delivery.payload)
             .map_err(|_| objective_invalid("stored Objective payload is not canonical JSON"))?;
         let canonical = objective_payload(identity, &body)?;
@@ -226,8 +227,38 @@ impl ObjectiveIngressHost {
         match result {
             codex_hepta_intelligence::ProductionObjectiveDispositionV1::Published(receipt) => {
                 reconcile_witness(&state.ledger, &mut state.witness)?;
-                start_intelligence_run_v1(&mut state.coordinator, now_ms, &receipt.host_envelope)
-                    .map_err(|error| objective_invalid(&error.to_string()))?;
+                // The durable publication may outlive an authority/generation
+                // change. Revalidate the host and signed issuer after both
+                // ledger and independent witness fsync, immediately before
+                // exposing the ephemeral runtime admission.
+                authbus_ingress::require_ready(agentd)?;
+                let authbus = authbus_ingress::attached(agentd)?;
+                let trust = authbus.trust(agentd)?;
+                let issuer = trust.issuer()?;
+                if issuer.revoked || !self.permits_issuer(&issuer.issuer_id) {
+                    return Err(objective_invalid(
+                        "issuer changed after durable RunStart publication",
+                    ));
+                }
+                delivery
+                    .message
+                    .authenticate(
+                        &issuer,
+                        self.scope,
+                        Digest32::of_bytes(&delivery.payload),
+                        authbus_ingress::now_ms()?,
+                    )
+                    .map_err(|error| {
+                        objective_invalid(&format!(
+                            "post-publication signature revalidation: {error}"
+                        ))
+                    })?;
+                start_intelligence_run_v1(
+                    &mut state.coordinator,
+                    authbus_ingress::now_ms()?,
+                    &receipt.host_envelope,
+                )
+                .map_err(|error| objective_invalid(&error.to_string()))?;
                 Ok(receipt.host_envelope.envelope_digest)
             }
             codex_hepta_intelligence::ProductionObjectiveDispositionV1::Conflict {
@@ -405,12 +436,26 @@ fn predecessor_for_record(
     let records = ledger
         .records()
         .map_err(|error| objective_invalid(&format!("learning ledger: {error}")))?;
-    if let Some(existing) = records.iter().find(|record| record.event.record_id() == record_id) {
+    if let Some(existing) = records
+        .iter()
+        .find(|record| event_record_id(&record.event) == record_id)
+    {
         return Ok(existing.predecessor_chain_digest);
     }
     Ok(records
         .last()
         .map_or(Digest32::ZERO, |record| record.chain_digest))
+}
+
+
+fn event_record_id(event: &LedgerEvent) -> &StableId {
+    match event {
+        LedgerEvent::RunStart(value) => &value.record_id,
+        LedgerEvent::Decision(value) => &value.record_id,
+        LedgerEvent::Outcome(value) => &value.record_id,
+        LedgerEvent::Credit(value) => &value.record_id,
+        LedgerEvent::Revocation(value) => &value.record_id,
+    }
 }
 
 fn reconcile_witness(
