@@ -217,3 +217,87 @@ fn failed_single_record_preparation_preserves_all_other_records_and_bytes() {
     assert_eq!(control.native_record("r99"), Some(&last));
     control.reserve_native(request("r100"), 2).unwrap();
 }
+
+
+fn peak_rss_kib() -> Option<u64> {
+    let status = fs::read_to_string("/proc/self/status").ok()?;
+    status.lines().find_map(|line| {
+        let value = line.strip_prefix("VmHWM:")?;
+        value.split_whitespace().next()?.parse().ok()
+    })
+}
+
+#[test]
+#[ignore = "explicit retained scalability measurement"]
+fn history_growth_emits_update_recovery_memory_and_disk_curve() {
+    use std::time::Instant;
+
+    for scale in [64_usize, 256, 1_024] {
+        let fixture = Fixture::new();
+        let mut control = DurableInferenceControl::open(fixture.path(), scale + 8).unwrap();
+        let mut tail_update_micros = Vec::new();
+
+        for index in 0..scale {
+            let id = format!("curve-{index}");
+            let started = Instant::now();
+            control.reserve_native(request(&id), 1).unwrap();
+            control
+                .stop_native_before_dispatch(&id, "curve terminal".to_string())
+                .unwrap();
+            if index + 64 >= scale {
+                tail_update_micros.push(started.elapsed().as_micros() as u64);
+            }
+        }
+
+        tail_update_micros.sort_unstable();
+        let p95_index = ((tail_update_micros.len() * 95).div_ceil(100)).saturating_sub(1);
+        let update_p95_micros = tail_update_micros[p95_index];
+        let steady_stats = control.replay_stats();
+        assert_eq!(steady_stats.full_replays, 1);
+        assert!(steady_stats.unchanged_reuses >= (scale * 2) as u64);
+        let journal_before_bytes = fs::metadata(fixture.path()).unwrap().len();
+        drop(control);
+
+        let recovery_started = Instant::now();
+        let mut reopened = DurableInferenceControl::open(fixture.path(), scale + 8).unwrap();
+        let recovery_micros = recovery_started.elapsed().as_micros() as u64;
+        assert_eq!(
+            reopened.native_record("curve-0").unwrap().state,
+            NativeReservationState::Released
+        );
+        assert_eq!(
+            reopened
+                .native_record(&format!("curve-{}", scale - 1))
+                .unwrap()
+                .state,
+            NativeReservationState::Released
+        );
+
+        let archive = reopened.compact_with_archive().unwrap();
+        let active_after_compaction_bytes = fs::metadata(fixture.path()).unwrap().len();
+        let archive_bytes = fs::metadata(&archive).unwrap().len();
+        let before_duplicate = active_after_compaction_bytes;
+        let duplicate = reopened.reserve_native(request("curve-0"), 1).unwrap();
+        assert_eq!(duplicate.state, NativeReservationState::Released);
+        assert_eq!(fs::metadata(fixture.path()).unwrap().len(), before_duplicate);
+        drop(reopened);
+
+        let compacted_recovery_started = Instant::now();
+        let compacted = DurableInferenceControl::open(fixture.path(), scale + 8).unwrap();
+        let compacted_recovery_micros = compacted_recovery_started.elapsed().as_micros() as u64;
+        assert_eq!(
+            compacted.native_record("curve-0").unwrap().state,
+            NativeReservationState::Released
+        );
+
+        println!(
+            "HEPTA_INFERENCE_SCALE scale={scale} update_p95_us={update_p95_micros} \
+             recovery_us={recovery_micros} compacted_recovery_us={compacted_recovery_micros} \
+             peak_rss_kib={} journal_before_bytes={journal_before_bytes} \
+             active_after_compaction_bytes={active_after_compaction_bytes} \
+             archive_bytes={archive_bytes} total_after_compaction_bytes={}",
+            peak_rss_kib().unwrap_or(0),
+            active_after_compaction_bytes + archive_bytes,
+        );
+    }
+}
