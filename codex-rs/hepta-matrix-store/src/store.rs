@@ -58,6 +58,8 @@ use crate::RoomThreadBindingDraft;
 use crate::model::MAX_PAGE_ITEMS;
 use crate::model::MAX_PAYLOAD_BYTES;
 
+#[path = "dispatch_ledger.rs"]
+mod dispatch_ledger;
 #[path = "sync_observation.rs"]
 mod sync_observation;
 #[path = "sync_v2.rs"]
@@ -65,6 +67,8 @@ mod sync_v2;
 #[path = "sync_v2_tombstone.rs"]
 mod sync_v2_tombstone;
 
+pub use dispatch_ledger::MatrixDispatchRecord;
+pub use dispatch_ledger::MatrixDispatchState;
 pub use sync_observation::MatrixSyncUnchangedRequestV1;
 pub use sync_observation::MatrixSyncUnchangedResultV1;
 
@@ -140,6 +144,7 @@ impl MatrixDurableStore {
         .await
         .map_err(unavailable)?;
         verify_store(&pool, &owner_agent_id).await?;
+        dispatch_ledger::reconcile_terminal_outbox(&pool).await?;
         Ok(Self {
             pool,
             owner_agent_id,
@@ -1676,6 +1681,13 @@ impl MatrixDurableStore {
                 .attempts
                 .checked_add(1)
                 .ok_or(MatrixDurableError::Invalid)?;
+            dispatch_ledger::record_outbox_claim_tx(
+                &mut transaction,
+                &record,
+                attempts,
+                now_ms,
+            )
+            .await?;
             let updated = sqlx::query(
                 "UPDATE outbox_messages
                  SET state = 'in_flight', attempts = ?, lease_until_ms = ?, updated_at_ms = ?
@@ -3650,7 +3662,15 @@ async fn verify_store(
             ('outbox_messages_by_room_active', 'index'),
             ('matrix_visible_inbox_events_v2', 'view'),
             ('matrix_actionable_inbox_dispatches_v2', 'view'),
-            ('matrix_sendable_outbox_v2', 'view')
+            ('matrix_sendable_outbox_v2', 'view'),
+            ('matrix_dispatch_ledger', 'table'),
+            ('matrix_dispatch_unresolved', 'index'),
+            ('matrix_dispatch_terminal_event', 'index'),
+            ('matrix_dispatch_ledger_no_delete', 'trigger'),
+            ('matrix_dispatch_observations', 'table'),
+            ('matrix_dispatch_observations_by_txn', 'index'),
+            ('matrix_dispatch_observations_no_update', 'trigger'),
+            ('matrix_dispatch_observations_no_delete', 'trigger')
          )
          SELECT COUNT(*) FROM required
          JOIN sqlite_schema USING (name) WHERE sqlite_schema.type = required.type",
@@ -3658,7 +3678,7 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 31 {
+    if required_objects != 39 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
