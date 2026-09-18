@@ -339,7 +339,7 @@ async fn renew_and_revoke_are_operation_bound_and_return_metadata_only() {
         "team/one".into(),
         "revoke_1".into(),
         lease_id.into(),
-        br#"{"lease":"revoke"}"#.to_vec(),
+        b"provider-revoke-canary".to_vec(),
     )
     .unwrap();
     let revoke_binding = revoke_client.lease_revoke_binding(&revoke).unwrap();
@@ -351,7 +351,7 @@ async fn renew_and_revoke_are_operation_bound_and_return_metadata_only() {
         .unwrap();
     assert_eq!(revoked.lease.state, BaoLeaseState::Revoked);
     assert_eq!(revoked.lease.generation, 3);
-    assert!(!serde_json::to_string(&revoked).unwrap().contains("revoke"));
+    assert!(!serde_json::to_string(&revoked).unwrap().contains("provider-revoke-canary"));
     let revoke_observed = revoke_task.await.unwrap().unwrap();
     assert!(
         revoke_observed
