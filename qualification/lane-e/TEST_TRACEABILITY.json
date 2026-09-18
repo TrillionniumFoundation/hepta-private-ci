@@ -238,6 +238,10 @@
         {
           "source": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
           "function": "lost_commit_acknowledgement_poison_fences_handle"
+        },
+        {
+          "source": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
+          "function": "pending_reservation_reconciles_before_or_after_journal_sync"
         }
       ],
       "status": "native_test_mapped"
@@ -324,7 +328,8 @@
       "id": "LANE-E-E2E-01",
       "source": "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
       "function": "lane_e_causal_candidate_chain_is_digest_bound_and_deny_all",
-      "status": "native_test_mapped"
+      "status": "native_test_mapped",
+      "requirement": "Cross-crate candidate qualification binds ledger/outcome/artifact evidence to preregistered metric roles, a durable fenced final-holdout receipt, signature-verified generator/evaluator identities and a DENY_ALL eligibility decision."
     }
   ],
   "productBoundaryCases": [
