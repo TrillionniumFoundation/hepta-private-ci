@@ -24,9 +24,9 @@ use codex_hepta_objective::ObjectiveAdmissionReceiptV1;
 use codex_hepta_objective::ObjectiveCompileReceipt;
 use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
 use codex_hepta_objective::ObjectiveSourceJsonError;
-use codex_hepta_objective::decode_source_envelope_json_v1;
 use codex_hepta_objective::admit_objective_v1;
 use codex_hepta_objective::compile_admitted_objective_v1;
+use codex_hepta_objective::decode_source_envelope_json_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -264,9 +264,9 @@ impl ObjectiveProductCallerV1 {
         let admitted = admit_objective_v1(&request.envelope, &request.profile, &request.context)?;
         let admission = admitted.receipt().clone();
         let outcome = compile_admitted_objective_v1(admitted)?;
-        let objective = outcome
-            .compile_result
-            .map_err(|conflict| ObjectiveProductErrorV1::ObjectiveConflict(conflict.conflict_digest))?;
+        let objective = outcome.compile_result.map_err(|conflict| {
+            ObjectiveProductErrorV1::ObjectiveConflict(conflict.conflict_digest)
+        })?;
         let run_start = RunStartSnapshotV1 {
             run_id: request.run.run_id,
             objective_digest: objective.objective.semantic_digest,
@@ -279,8 +279,7 @@ impl ObjectiveProductCallerV1 {
             generation: request.run.generation,
             fence_digest: request.run.fence_digest,
         };
-        let (publication, disposition) =
-            self.store.publish(admission, objective, run_start)?;
+        let (publication, disposition) = self.store.publish(admission, objective, run_start)?;
         Ok(ObjectiveProductReceiptV1 {
             publication,
             disposition,
@@ -288,9 +287,7 @@ impl ObjectiveProductCallerV1 {
         })
     }
 
-    pub fn records(
-        &self,
-    ) -> Result<&[ObjectivePublicationV1], ObjectivePublicationStoreErrorV1> {
+    pub fn records(&self) -> Result<&[ObjectivePublicationV1], ObjectivePublicationStoreErrorV1> {
         self.store.records()
     }
 
@@ -402,7 +399,8 @@ impl DurableObjectivePublicationStoreV1 {
                     != objective.objective.semantic_digest
                     || existing.admission.intent_digest != admission.intent_digest
                     || existing.admission.profile_digest != admission.profile_digest
-                    || existing.admission.admitted_source_digest != admission.admitted_source_digest)
+                    || existing.admission.admitted_source_digest
+                        != admission.admitted_source_digest)
             {
                 return Err(ObjectivePublicationStoreErrorV1::Conflict);
             }
@@ -505,7 +503,9 @@ fn validate_run_bindings(run: &RunStartBindingsV1) -> Result<(), ObjectiveProduc
         }
     }
     if run.authority_epoch == 0 {
-        return Err(ObjectiveProductErrorV1::InvalidRunBinding("authority epoch"));
+        return Err(ObjectiveProductErrorV1::InvalidRunBinding(
+            "authority epoch",
+        ));
     }
     if run.generation == 0 {
         return Err(ObjectiveProductErrorV1::InvalidRunBinding("generation"));
@@ -660,11 +660,7 @@ fn replay(
         let chain_digest = digest_from_slice(&trailer[32..])?;
         if publication_digest != Digest32::of_bytes(&payload)
             || chain_digest
-                != publication_chain_digest(
-                    sequence,
-                    predecessor_chain_digest,
-                    publication_digest,
-                )
+                != publication_chain_digest(sequence, predecessor_chain_digest, publication_digest)
         {
             return Err(ObjectivePublicationStoreErrorV1::Corrupt);
         }
@@ -760,7 +756,9 @@ impl LockedFile {
         match file.try_lock() {
             Ok(()) => Ok(Self(file)),
             Err(TryLockError::WouldBlock) => Err(ObjectivePublicationStoreErrorV1::Busy),
-            Err(TryLockError::Error(error)) => Err(ObjectivePublicationStoreErrorV1::Io(error.kind())),
+            Err(TryLockError::Error(error)) => {
+                Err(ObjectivePublicationStoreErrorV1::Io(error.kind()))
+            }
         }
     }
 }
