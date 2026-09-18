@@ -218,16 +218,12 @@ pub struct CompactionLossReportV2 {
 
 impl CompactionLossReportV2 {
     pub fn validate(&self) -> Result<(), QualifiedCompactionError> {
-        if self
-            .live_source_heads
-            .checked_add(self.deleted_records)
+        if self.live_source_heads.checked_add(self.deleted_records)
             != Some(self.source_current_heads)
         {
             return Err(QualifiedCompactionError::InvalidLossAccounting);
         }
-        if self
-            .retained_records
-            .checked_add(self.omitted_live_records)
+        if self.retained_records.checked_add(self.omitted_live_records)
             != Some(self.live_source_heads)
             || self.retained_bytes.checked_add(self.omitted_live_bytes)
                 != Some(self.live_source_bytes)
@@ -486,8 +482,7 @@ pub fn build_qualified_candidate(
         .iter()
         .filter(|input| protected.contains(&input.record.record_id))
         .count();
-    let maximum_records =
-        usize::try_from(policy.maximum_retained_records).unwrap_or(usize::MAX);
+    let maximum_records = usize::try_from(policy.maximum_retained_records).unwrap_or(usize::MAX);
 
     let mut retained_inputs = Vec::new();
     let mut omitted_inputs = Vec::new();
@@ -626,7 +621,10 @@ pub fn prove_compaction(
             "evaluator_implementation",
             qualification.evaluator_implementation_digest,
         ),
-        ("evaluation_artifact", qualification.evaluation_artifact_digest),
+        (
+            "evaluation_artifact",
+            qualification.evaluation_artifact_digest,
+        ),
         ("attestation", qualification.attestation_digest),
         (
             "attestation_signature",
