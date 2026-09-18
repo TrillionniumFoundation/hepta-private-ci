@@ -60,6 +60,7 @@ pub enum SignalFallbackReasonV1 {
     DeadActivation,
     DenseActivation,
     ProjectionLimit,
+    ResourceEnvelopeExceeded,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
