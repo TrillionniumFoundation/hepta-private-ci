@@ -81,6 +81,7 @@ pub struct ParameterPlasticityProductReceiptV1 {
     pub registry: DurableProposalAppendReceiptV1,
     pub generator_authentication_digest: Digest32,
     pub admission_authentication_digest: Digest32,
+    pub host_evidence_verification_digest: Digest32,
     pub evaluation_digest: Digest32,
     pub committed_registry_anchor: DurableRegistryAnchorV1,
     pub composition_digest: Digest32,
@@ -323,6 +324,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     use ParameterPlasticityProductErrorV1 as E;
 
     writer.require_healthy()?;
+    let host_evidence_verification_digest = request.host_evidence_verification_digest;
     verify_mutation_grammar_manifest_v1(&request.mutation_grammar)?;
     verify_generator_profile_against_mutation_grammar_v1(
         &request.generator_profile,
@@ -379,8 +381,9 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     }
 
     let mut evaluator_id: Option<StableId> = None;
-    let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v1\0".to_vec();
-    evaluation_binding.extend_from_slice(request.host_evidence_verification_digest.as_array());
+    let mut evaluation_binding =
+        b"hepta.intelligence.plasticity-evaluations-and-host-evidence.v1\0".to_vec();
+    evaluation_binding.extend_from_slice(host_evidence_verification_digest.as_array());
     for candidate in update_candidates {
         let candidate_id = candidate.candidate_id.clone();
         let CandidateEvaluationAdmissionV1 {
@@ -499,8 +502,10 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         committed_registry_anchor.frame_digest,
         request.mutation_grammar.manifest_digest,
         request.generated.generator_digest,
+        host_evidence_verification_digest,
         generator_authentication_digest,
         admission_authentication_digest,
+        host_evidence_verification_digest,
         evaluation_digest,
     ] {
         composition.extend_from_slice(digest.as_array());
