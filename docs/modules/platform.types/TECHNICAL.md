@@ -552,11 +552,13 @@ The following additional work packages are source-planning envelopes introduced 
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
 
-| Operation | Native symbol | Source path | Tests |
+| Operation | Native symbol | Source path | Source tests |
 |---|---|---|---|
-| `rescale_signal` | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `pending` |
-| `stableid` | `StableId` | `codex-rs/hepta-types/src/identity.rs` | `pending` |
+| `rescale_signal` | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `numeric_conversion_tests.rs` |
+| `validate_id` | `validate_id`, `IdProfileV1` | `codex-rs/hepta-types/src/identity.rs` | `identity_tests.rs` |
+| `canonical_digest` | `canonical_digest_v1` | `codex-rs/hepta-types/src/canonical.rs` | `canonical_tests.rs`, `CANONICAL_GOLDEN_V1.json` |
+| `definition_registry` | `DefinitionRegistryV1` | `codex-rs/hepta-types/src/registry.rs` | `registry_tests.rs` |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`; source-test identities do not replace exact-head or merge-candidate execution receipts.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
