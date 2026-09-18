@@ -394,6 +394,14 @@ async fn retrieve_federated_product(
                         if readers.len() >= MAX_FEDERATION_SOURCES_PER_AGENT {
                             break;
                         }
+                        if reader
+                            .capability()
+                            .scope()
+                            .consumer_workspace_sha256()
+                            != access.workspace_sha256()
+                        {
+                            continue;
+                        }
                         readers.push((owner_layout.clone(), reader));
                     }
                 }
