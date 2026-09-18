@@ -294,9 +294,10 @@ async fn actual_process_crash_after_dispatch_never_blindly_reclaims_and_can_reco
             &store,
             &request.scope,
             &request.operation_id,
-            generation(3),
+            generation(4),
         )
         .await
-        .expect("reconcile");
+        .expect("new-generation reconcile takeover");
+    assert_eq!(settled.owner_generation, generation(4));
     assert_eq!(settled.state, DurableOperationState::Applied);
 }
