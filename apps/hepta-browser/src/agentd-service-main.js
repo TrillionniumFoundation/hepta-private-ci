@@ -11,7 +11,7 @@ import { FileBrowserOperationJournal } from "./journal.js";
 import { BrowserProfileHost } from "./runtime.js";
 import {
   LinuxBubblewrapLauncher,
-  SubprocessBrowserDriver,
+  PooledSubprocessBrowserDriver,
 } from "./worker-driver.js";
 
 function required(name) {
@@ -52,12 +52,22 @@ if (process.platform !== "linux") {
 
 const channel = new AgentdBrowserChannel({ input: process.stdin, output: process.stdout });
 const authority = new ParentFinalUseAuthority(channel);
-const driver = new SubprocessBrowserDriver({
+const maxProfiles = optionalPositiveInteger("HEPTA_BROWSER_MAX_PROFILES", 16);
+const driver = new PooledSubprocessBrowserDriver({
   workerPath: requiredAbsolutePath("HEPTA_BROWSER_WORKER_PATH"),
   workerDigest: requiredDigest("HEPTA_BROWSER_WORKER_SHA256"),
   profileRoot: requiredAbsolutePath("HEPTA_BROWSER_PROFILE_ROOT"),
+  maxProfiles,
   launcher: new LinuxBubblewrapLauncher({
     bwrapPath: process.env.HEPTA_BROWSER_BWRAP_PATH ?? "/usr/bin/bwrap",
+    prlimitPath: process.env.HEPTA_BROWSER_PRLIMIT_PATH ?? "/usr/bin/prlimit",
+    maxAddressSpaceBytes: optionalPositiveInteger(
+      "HEPTA_BROWSER_MAX_ADDRESS_SPACE_BYTES",
+      8 * 1024 * 1024 * 1024,
+    ),
+    maxCpuSeconds: optionalPositiveInteger("HEPTA_BROWSER_MAX_CPU_SECONDS", 300),
+    maxOpenFiles: optionalPositiveInteger("HEPTA_BROWSER_MAX_OPEN_FILES", 4096),
+    maxProcesses: optionalPositiveInteger("HEPTA_BROWSER_MAX_PROCESSES", 256),
   }),
 });
 const journal = new FileBrowserOperationJournal(
@@ -68,6 +78,7 @@ const host = new BrowserProfileHost({
   authority,
   journal,
   driverCallTimeoutMs: optionalPositiveInteger("HEPTA_BROWSER_DRIVER_TIMEOUT_MS", 30_000),
+  maxOpenProfiles: maxProfiles,
 });
 const service = new BrowserAgentdService({ host, channel, authority });
 
