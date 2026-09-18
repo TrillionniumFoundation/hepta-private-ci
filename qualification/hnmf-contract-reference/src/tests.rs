@@ -279,7 +279,8 @@ fn shared_fixture_is_valid_in_reference() {
             start: 0,
             end: fixture_u64("rangeEnd"),
         },
-        preprocessor_manifest_sha256: Digest32::parse(fixture_string("preprocessorSha256")).unwrap(),
+        preprocessor_manifest_sha256:
+            Digest32::parse(fixture_string("preprocessorSha256")).unwrap(),
         feature_blob_sha256: None,
         symbolic_projection_sha256: None,
         uncertainty_ppm: 25_000,
@@ -324,7 +325,8 @@ fn shared_fixture_rejects_modality_range_mismatch_in_reference() {
             start: 0,
             end: fixture_u64("rangeEnd"),
         },
-        preprocessor_manifest_sha256: Digest32::parse(fixture_string("preprocessorSha256")).unwrap(),
+        preprocessor_manifest_sha256:
+            Digest32::parse(fixture_string("preprocessorSha256")).unwrap(),
         feature_blob_sha256: None,
         symbolic_projection_sha256: None,
         uncertainty_ppm: 0,
