@@ -5,11 +5,14 @@
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
+  "sourceBaseRole": "mapping_generation_base_not_current_qualification_head",
+  "qualificationIdentityPolicy": "resolve_exact_pr_head_and_ordered_parent_synthetic_merge_in_ci",
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
   "owner": "learning-platform",
   "deputy": "cognitive-platform",
   "technicalGuide": "docs/modules/learning.ledger/TECHNICAL.md",
+  "productionClosureGuide": "codex-rs/hepta-learning-ledger/PRODUCTION_CLOSURE.md",
   "declaredRoots": [
     "codex-rs/hepta-learning-ledger"
   ],
@@ -19,7 +22,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionWriterState": "repo_guarded_boundary_implemented_product_owner_not_established",
   "operations": [
     {
       "operation": "durableledger",
@@ -27,11 +30,46 @@
       "sourcePath": "codex-rs/hepta-learning-ledger/src/durable.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants"
+      ],
       "sourcePathExists": true,
       "designOperation": "durableledger",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "ledgerwitnessstore",
+      "nativeSymbol": "LedgerWitnessStore",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "state": "source_implemented_product_placement_external",
+      "authority": "none",
+      "tests": [
+        "witness_persists_exact_monotonic_frontier_and_reopens",
+        "witness_rejects_gap_and_same_sequence_digest_drift"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "independent_acknowledgement_witness",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "witnessedlearningjournal",
+      "nativeSymbol": "WitnessedLearningJournal",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/witnessed.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "witnessed_append_persists_anchor_before_success",
+        "exact_retry_repairs_one_committed_frame_ahead_of_witness"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "durable_append_then_witness_then_acknowledge",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "DurableLearningJournal::append",
+        "LedgerWitnessStore::persist"
+      ]
     },
     {
       "operation": "learningevidenceverifierv1",
@@ -39,25 +77,50 @@
       "sourcePath": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "signed evidence tests"
+      ],
       "sourcePathExists": true,
       "designOperation": "learningevidenceverifierv1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "ledgerderiveddatasetfreeze",
+      "nativeSymbol": "freeze_dataset_receipt_from_ledger_v3",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/dataset_receipt_v3.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "ledger_06_dataset_membership_is_derived_from_active_ledger"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "derive_dataset_membership_from_authoritative_ledger",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "LearningLedger::from_snapshot",
+        "freeze_dataset_receipt_v3"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind the guarded write boundary and signed-evidence admission to a named authenticated product callsite and owner store.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "named product execution and target-host qualification",
+    "independent witness placement and durable-directory ownership",
+    "current production trust-root distribution and revocation operation",
+    "physical erasure/model-unlearning evidence where claimed",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "repoGuardedWriterBoundaryImplemented": true,
+    "repoWitnessStoreImplemented": true,
+    "ledgerDerivedDatasetMembershipImplemented": true,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
