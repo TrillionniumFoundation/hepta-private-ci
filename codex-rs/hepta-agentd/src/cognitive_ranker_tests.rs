@@ -2,6 +2,11 @@ use std::fs::File;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
+use std::time::Duration;
 
 use codex_hepta_bellman_operator::TabularOperatorPlanV1;
 use codex_hepta_bellman_operator::TabularOperatorSampleV1;
@@ -38,10 +43,34 @@ fn item(name: &str) -> CognitiveContextItem {
     }
 }
 
-struct View(Mutex<Option<(PathBuf, RegistrySnapshotReceipt)>>);
+struct ViewGate {
+    calls: AtomicUsize,
+    block_on_call: usize,
+    entered: Sender<()>,
+    release: Mutex<Receiver<()>>,
+}
+
+struct View {
+    current: Mutex<Option<(PathBuf, RegistrySnapshotReceipt)>>,
+    gate: Option<ViewGate>,
+}
+
 impl CurrentCognitiveRegistry for View {
     fn current(&self) -> Result<(File, RegistrySnapshotReceipt), String> {
-        let view = self.0.lock().unwrap();
+        if let Some(gate) = &self.gate
+            && gate.calls.fetch_add(1, Ordering::SeqCst) == gate.block_on_call
+        {
+            gate.entered.send(()).map_err(|error| error.to_string())?;
+            gate.release
+                .lock()
+                .map_err(|_| "current-view gate lock poisoned".to_string())?
+                .recv()
+                .map_err(|error| error.to_string())?;
+        }
+        let view = self
+            .current
+            .lock()
+            .map_err(|_| "current-view lock poisoned".to_string())?;
         let (path, receipt) = view.as_ref().ok_or("independent witness unavailable")?;
         Ok((
             File::open(path).map_err(|error| error.to_string())?,
@@ -58,6 +87,14 @@ struct Fixture {
 }
 
 fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
+    fixture_with_gate(items, scores, None)
+}
+
+fn fixture_with_gate(
+    items: &[CognitiveContextItem],
+    scores: &[i64],
+    gate: Option<ViewGate>,
+) -> Fixture {
     let directory = tempfile::tempdir().unwrap();
     let sensor = cognitive_sensor_id("lemon").unwrap();
     let actions: Vec<_> = items
@@ -138,7 +175,10 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         hash("fixture-host-binding"),
     )
     .unwrap();
-    let view = Arc::new(View(Mutex::new(Some((snapshot.clone(), registry_receipt)))));
+    let view = Arc::new(View {
+        current: Mutex::new(Some((snapshot.clone(), registry_receipt))),
+        gate,
+    });
     let ranker = Arc::new(
         PinnedCognitiveRanker::load(
             owner(),
@@ -204,7 +244,7 @@ fn missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback() 
     for revoked in [false, true] {
         let mut items = vec![item("one"), item("two")];
         let mut fixture = fixture(&items, &[0, 10]);
-        let original_view = fixture.view.0.lock().unwrap().clone();
+        let original_view = fixture.view.current.lock().unwrap().clone();
         if revoked {
             fixture
                 .registry
@@ -222,9 +262,9 @@ fn missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback() 
                 hash("fixture-host-binding"),
             )
             .unwrap();
-            *fixture.view.0.lock().unwrap() = Some((path, receipt));
+            *fixture.view.current.lock().unwrap() = Some((path, receipt));
         } else {
-            *fixture.view.0.lock().unwrap() = None;
+            *fixture.view.current.lock().unwrap() = None;
         }
         let original = items.clone();
         assert!(
@@ -234,7 +274,7 @@ fn missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback() 
                 .is_err()
         );
         assert_eq!(items, original);
-        *fixture.view.0.lock().unwrap() = original_view;
+        *fixture.view.current.lock().unwrap() = original_view;
         assert!(
             fixture
                 .ranker
@@ -338,6 +378,157 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
             .await
             .unwrap();
     assert_eq!(after.items, vec![baseline.items[0].clone()]);
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn lifecycle_revocation_during_context_read_fails_closed_before_control_delivery() {
+    use codex_hepta_fleet::AgentLifecycle;
+    use codex_hepta_fleet::AgentManifest;
+    use codex_hepta_fleet::FleetRegistry;
+    use codex_hepta_fleet::ResourceBudget;
+    use codex_hepta_fleet::WorkspaceBinding;
+    use codex_hepta_memory::CognitiveAccess;
+    use codex_hepta_memory::CognitiveScope;
+    use codex_hepta_memory::CognitiveStore;
+    use codex_hepta_memory::LedgerSourceKind;
+    use codex_hepta_memory::MemoryDraft;
+    use codex_hepta_memory::MemoryLifecycleState;
+    use codex_hepta_memory::MemoryRevisionDraft;
+    use codex_hepta_memory::MemoryVerification;
+    use codex_hepta_memory::SourceDraft;
+    use codex_hepta_paths::HeptaFleetRoot;
+
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().canonicalize().unwrap();
+    let fleet_path = root.join("fleet");
+    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).unwrap();
+    let lifecycle = FleetRegistry::initialize(fleet_root.clone()).unwrap();
+    let workspace = root.join("workspace");
+    std::fs::create_dir(&workspace).unwrap();
+    let record = lifecycle
+        .register(
+            AgentManifest::new(
+                owner(),
+                WorkspaceBinding::new(workspace.clone(), &fleet_root).unwrap(),
+                ResourceBudget::local_default(),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+    lifecycle
+        .compare_and_transition(&owner(), 0, AgentLifecycle::Starting)
+        .unwrap();
+    let config = crate::AgentdConfig::load(
+        fleet_path,
+        owner(),
+        1,
+        record.layout.home_root().to_path_buf(),
+        record.layout.run_root().to_path_buf(),
+        record.layout.home_root().to_path_buf(),
+        workspace,
+    )
+    .unwrap();
+    let store = Arc::new(CognitiveStore::open(&record.layout).await.unwrap());
+    let access = CognitiveAccess::agent_private(owner());
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope: scope.clone(),
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "lifecycle-race-source".to_string(),
+                content: b"verified lemon lifecycle evidence".to_vec(),
+                observed_at_unix_seconds: 100,
+            },
+        )
+        .await
+        .unwrap();
+    for name in ["alpha", "beta"] {
+        store
+            .remember_memory(
+                &access,
+                &MemoryDraft {
+                    stable_key: format!("lifecycle-{name}"),
+                    revision: MemoryRevisionDraft {
+                        scope: scope.clone(),
+                        content: format!("verified lemon lifecycle {name}"),
+                        verification: MemoryVerification::Verified,
+                        lifecycle: MemoryLifecycleState::Active,
+                        valid_from_unix_seconds: 100,
+                        valid_to_unix_seconds: None,
+                        citations: vec![citation.clone()],
+                    },
+                },
+            )
+            .await
+            .unwrap();
+    }
+    let baseline =
+        crate::cognitive_context::read(&store, &owner(), 1, 2, "lemon", 4, None)
+            .await
+            .unwrap();
+
+    let (entered_tx, entered_rx) = std::sync::mpsc::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let fixture = fixture_with_gate(
+        &baseline.items,
+        &[0, 10],
+        Some(ViewGate {
+            calls: AtomicUsize::new(0),
+            block_on_call: 1,
+            entered: entered_tx,
+            release: Mutex::new(release_rx),
+        }),
+    );
+    let config = config
+        .with_cognitive_ranker(Arc::clone(&fixture.ranker))
+        .unwrap();
+    let attached_ranker = config.cognitive_ranker().unwrap();
+    let (identity, registry, _writer_lock) = config.into_parts();
+    let state = Arc::new(crate::AgentdState::new(identity, registry, 16).unwrap());
+    state.attach_cognitive_store(Arc::clone(&store)).unwrap();
+    assert!(state.cognitive_ranker.set(attached_ranker).is_ok());
+    lifecycle
+        .compare_and_transition(&owner(), 1, AgentLifecycle::Running)
+        .unwrap();
+    state.refresh_generation().unwrap();
+    state.mark_app_server_ready().unwrap();
+
+    let read_state = Arc::clone(&state);
+    let read_task = tokio::spawn(async move {
+        read_state
+            .response(
+                700,
+                1,
+                crate::AgentdMethod::CognitiveContext {
+                    query: "lemon".to_string(),
+                    limit: 1,
+                },
+            )
+            .await
+    });
+
+    let entered = tokio::task::spawn_blocking(move || {
+        entered_rx.recv_timeout(Duration::from_secs(5))
+    })
+    .await
+    .unwrap();
+    if let Err(error) = entered {
+        drop(release_tx.send(()));
+        panic!("wait for authoritative read gate: {error}");
+    }
+
+    lifecycle
+        .compare_and_transition(&owner(), 2, AgentLifecycle::Draining)
+        .unwrap();
+    release_tx.send(()).unwrap();
+
+    let result = read_task.await.unwrap();
+    assert!(
+        result.is_err(),
+        "lifecycle revocation during the authoritative read must fail closed before delivery"
+    );
 }
 
 /// Exercises the actual control socket and lifecycle transition. This is not a
@@ -527,7 +718,7 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         hash("fixture-host-binding"),
     )
     .unwrap();
-    *fixture.view.0.lock().unwrap() = Some((revoked, receipt));
+    *fixture.view.current.lock().unwrap() = Some((revoked, receipt));
     for _ in 0..2 {
         assert!(
             client
