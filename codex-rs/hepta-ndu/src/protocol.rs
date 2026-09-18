@@ -39,14 +39,33 @@ pub struct NduIterationReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+/// Canonical digest that must be supplied to the solver before it emits a
+/// protocol-publishable local receipt.
+pub fn canonical_iteration_context_digest(
+    context: &NduIterationContextV1,
+) -> Result<Digest32, NduError> {
+    require_digest(context.objective_digest, "objective")?;
+    require_digest(context.event_digest, "event")?;
+    require_digest(context.coefficient_digest, "coefficient")?;
+    let mut bytes = b"hepta.ndu.iteration-context.v1".to_vec();
+    push_id(&mut bytes, &context.subject_id);
+    bytes.push(context.subject_class.tag());
+    bytes.extend_from_slice(context.objective_digest.as_array());
+    bytes.extend_from_slice(&context.generation.get().to_be_bytes());
+    bytes.extend_from_slice(context.event_digest.as_array());
+    bytes.extend_from_slice(context.coefficient_digest.as_array());
+    Ok(Digest32::of_bytes(&bytes))
+}
+
 pub fn bind_solver_iteration_receipt_v1(
     context: &NduIterationContextV1,
     receipt: &NduSolverIterationReceipt,
 ) -> Result<NduIterationReceiptV1, NduError> {
-    require_digest(context.objective_digest, "objective")?;
-    require_digest(context.event_digest, "event")?;
-    require_digest(context.coefficient_digest, "coefficient")?;
+    let expected_context_digest = canonical_iteration_context_digest(context)?;
     require_digest(receipt.state_digest, "state")?;
+    if receipt.context_digest != expected_context_digest {
+        return Err(NduError::ProtocolContextMismatch);
+    }
 
     let receipt_digest = digest_receipt(context, receipt);
     Ok(NduIterationReceiptV1 {
