@@ -189,6 +189,9 @@ pub struct ProductionRecoveryDecision {
     pub grant_sha256: Sha256Digest,
     pub intent_sha256: Sha256Digest,
     pub observed_release: String,
+    pub observed_manifest_sha256: Sha256Digest,
+    pub observed_agentd_sha256: Sha256Digest,
+    pub observed_matrixd_sha256: Option<Sha256Digest>,
     pub outcome: ProductionRecoveryOutcome,
     pub expected_control_revision: u64,
     pub expected_lifecycle_generation: u64,
@@ -218,6 +221,11 @@ impl ProductionRecoveryDecision {
         AgentId::parse(self.agent_id.clone())
             .map_err(|_| ProductionAuthorityError::RecoveryBinding)?;
         validate_release(&self.observed_release)?;
+        parse_digest(&self.observed_manifest_sha256, "recovery observed manifest")?;
+        parse_digest(&self.observed_agentd_sha256, "recovery observed agentd")?;
+        if let Some(digest) = self.observed_matrixd_sha256.as_ref() {
+            parse_digest(digest, "recovery observed matrixd")?;
+        }
         validate_identifier(&self.signer_id, "recovery signer id")?;
         validate_window(self.issued_at_unix_seconds, self.expires_at_unix_seconds)?;
         parse_digest(&self.grant_sha256, "recovery grant")?;
@@ -242,11 +250,14 @@ impl ProductionRecoveryDecision {
             self.grant_sha256.as_str().as_bytes(),
             self.intent_sha256.as_str().as_bytes(),
             self.observed_release.as_bytes(),
+            self.observed_manifest_sha256.as_str().as_bytes(),
+            self.observed_agentd_sha256.as_str().as_bytes(),
             self.outcome.as_str().as_bytes(),
             self.signer_id.as_bytes(),
         ] {
             frame(&mut hasher, value);
         }
+        frame_optional_digest(&mut hasher, self.observed_matrixd_sha256.as_ref());
         for value in [
             self.expected_control_revision,
             self.expected_lifecycle_generation,
@@ -424,6 +435,9 @@ impl H7H89ProductionGrantSigner {
         grant_sha256: Sha256Digest,
         intent_sha256: Sha256Digest,
         observed_release: impl Into<String>,
+        observed_manifest_sha256: Sha256Digest,
+        observed_agentd_sha256: Sha256Digest,
+        observed_matrixd_sha256: Option<Sha256Digest>,
         outcome: ProductionRecoveryOutcome,
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
@@ -433,6 +447,11 @@ impl H7H89ProductionGrantSigner {
     ) -> Result<ProductionRecoveryDecision, ProductionAuthorityError> {
         let observed_release = observed_release.into();
         validate_release(&observed_release)?;
+        parse_digest(&observed_manifest_sha256, "recovery observed manifest")?;
+        parse_digest(&observed_agentd_sha256, "recovery observed agentd")?;
+        if let Some(digest) = observed_matrixd_sha256.as_ref() {
+            parse_digest(digest, "recovery observed matrixd")?;
+        }
         if expected_lifecycle_generation == 0 || authority_epoch == 0 {
             return Err(ProductionAuthorityError::RecoveryBinding);
         }
@@ -446,6 +465,9 @@ impl H7H89ProductionGrantSigner {
             grant_sha256,
             intent_sha256,
             observed_release,
+            observed_manifest_sha256,
+            observed_agentd_sha256,
+            observed_matrixd_sha256,
             outcome,
             expected_control_revision,
             expected_lifecycle_generation,
@@ -624,6 +646,9 @@ impl H7H89ProductionGrantVerifier {
         grant_sha256: &Sha256Digest,
         intent_sha256: &Sha256Digest,
         observed_release: &str,
+        observed_manifest_sha256: &Sha256Digest,
+        observed_agentd_sha256: &Sha256Digest,
+        observed_matrixd_sha256: Option<&Sha256Digest>,
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         expected_authority_epoch: u64,
@@ -634,6 +659,9 @@ impl H7H89ProductionGrantVerifier {
             || &decision.grant_sha256 != grant_sha256
             || &decision.intent_sha256 != intent_sha256
             || decision.observed_release != observed_release
+            || &decision.observed_manifest_sha256 != observed_manifest_sha256
+            || &decision.observed_agentd_sha256 != observed_agentd_sha256
+            || decision.observed_matrixd_sha256.as_ref() != observed_matrixd_sha256
         {
             return Err(ProductionAuthorityError::RecoveryBinding);
         }
