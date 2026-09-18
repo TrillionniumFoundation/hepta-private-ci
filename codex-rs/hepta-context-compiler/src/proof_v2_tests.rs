@@ -8,6 +8,34 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+#[derive(Clone)]
+struct TestAdmissionVerifier {
+    accept: bool,
+}
+
+impl ContextAdmissionVerifierV2 for TestAdmissionVerifier {
+    fn verifier_digest(&self) -> Digest32 {
+        digest("admission-verifier")
+    }
+
+    fn verify_snapshot(
+        &self,
+        evidence: &ContextAdmissionSnapshotEvidenceV2,
+    ) -> Result<Digest32, String> {
+        if !self.accept {
+            return Err("untrusted snapshot".to_string());
+        }
+        Ok(Digest32::of_bytes(
+            [
+                evidence.issuer_digest.as_array().as_slice(),
+                evidence.witness_digest.as_array().as_slice(),
+            ]
+            .concat()
+            .as_slice(),
+        ))
+    }
+}
+
 struct ByteTokenizer {
     identity: Digest32,
 }
@@ -119,13 +147,16 @@ fn snapshot(
     observed_unix_ms: u64,
     frontier: &str,
 ) -> ContextAdmissionSnapshotV2 {
-    ContextAdmissionSnapshotV2::new(
-        digest("admission-issuer"),
-        digest(&format!("source-snapshot:{observed_unix_ms}")),
-        digest(frontier),
-        digest(&format!("witness:{observed_unix_ms}:{frontier}")),
-        observed_unix_ms,
-        records,
+    verify_admission_snapshot_v2(
+        ContextAdmissionSnapshotEvidenceV2 {
+            issuer_digest: digest("admission-issuer"),
+            source_snapshot_digest: digest(&format!("source-snapshot:{observed_unix_ms}")),
+            revocation_frontier_digest: digest(frontier),
+            witness_digest: digest(&format!("witness:{observed_unix_ms}:{frontier}")),
+            observed_unix_ms,
+            records,
+        },
+        &TestAdmissionVerifier { accept: true },
     )
     .unwrap_or_else(|error| panic!("valid snapshot: {error}"))
 }
@@ -274,6 +305,27 @@ fn deterministic_selection_preserves_verified_trusted_floor() {
     assert_eq!(
         left.receipt.omitted_item_ids,
         vec![evidence_b.item_id().clone()]
+    );
+}
+
+#[test]
+fn unauthenticated_admission_snapshot_cannot_create_typed_proof() {
+    let evidence = ContextAdmissionSnapshotEvidenceV2 {
+        issuer_digest: digest("admission-issuer"),
+        source_snapshot_digest: digest("source-snapshot"),
+        revocation_frontier_digest: digest("frontier"),
+        witness_digest: digest("witness"),
+        observed_unix_ms: 10,
+        records: Vec::new(),
+    };
+    assert_eq!(
+        verify_admission_snapshot_v2(
+            evidence,
+            &TestAdmissionVerifier { accept: false },
+        ),
+        Err(ContextCompilerV2Error::AdmissionVerificationFailure(
+            "untrusted snapshot".to_string()
+        ))
     );
 }
 
