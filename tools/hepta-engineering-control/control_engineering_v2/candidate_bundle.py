@@ -133,6 +133,25 @@ def _declared_paths(operations: tuple[PatchOperation, ...]) -> tuple[str, ...]:
     return tuple(sorted(values))
 
 
+def _repository_changed_paths(
+    before: _candidate.TreeManifest,
+    after: _candidate.TreeManifest,
+) -> tuple[str, ...]:
+    """Return Git-representable paths while retaining full manifest checks.
+
+    Git does not version directories. Parent directories created to materialize
+    an admitted file therefore do not consume a changed-file slot, while the
+    complete manifest still detects later directory drift by the check set.
+    """
+    changed = _candidate._changed_paths(before, after)
+    result: list[str] = []
+    for path in changed:
+        entry = after.get(path) or before.get(path)
+        if entry is not None and entry[0] != "directory":
+            result.append(path)
+    return tuple(result)
+
+
 def generate_candidate_bundle(
     envelope: _candidate.CandidateEnvelope,
     operations: Iterable[PatchOperation],
@@ -159,7 +178,7 @@ def _apply_rename(workspace: Path, operation: PatchOperation) -> None:
     if target.exists() or target.is_symlink():
         raise EngineeringError("add_target_exists")
     if operation.expected_text:
-        digest = hashlib.sha256(source.read_bytes()).hexdigest()
+        digest = _candidate._hash_file(source)
         if digest != operation.expected_text:
             raise EngineeringError("rename_precondition_failed")
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -259,7 +278,7 @@ def sandbox_candidate_bundle(
         base_manifest = _candidate._tree_manifest(workspace)
         _apply_operations(workspace, operations)
         candidate_manifest = _candidate._tree_manifest(workspace)
-        changed = _candidate._changed_paths(base_manifest, candidate_manifest)
+        changed = _repository_changed_paths(base_manifest, candidate_manifest)
         if changed != bundle.changed_paths:
             raise EngineeringError("candidate_changed_paths_mismatch")
         if len(changed) > envelope.maximum_changed_files:
