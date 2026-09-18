@@ -170,18 +170,14 @@ A homeserver event observation settles send terminality; App Server turn complet
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `admit_event` | `owner_native` | `codex-rs/hepta-matrixd/src/runtime.rs` — `pub async fn process_event(` |
-| `prepare_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn prepare_send(` |
-| `observe_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn observe_send(` |
-
-Remaining repository implementation gaps:
-
-- Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender.
+| `prepare_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub async fn prepare_send(` |
+| `observe_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub async fn observe_send(` |
 
 External evidence gates:
 
 - real enrolled homeserver/user/device/encryption identity
-- live sync and send transport callsites
-- rate-limit/reconnect/redaction/restore target qualification
+- live final-use authority/grant caller and revocation integration
+- exact-candidate real Synapse rate-limit/reconnect/redaction/restore qualification
 
 ## 10. `browser.servo`
 
