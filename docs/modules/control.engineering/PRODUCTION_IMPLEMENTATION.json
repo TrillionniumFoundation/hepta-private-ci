@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.module-production-implementation-evidence.v1",
+  "schemaVersion": 1,
+  "module": "control.engineering",
+  "productCaller": {
+    "kind": "github_actions",
+    "path": ".github/workflows/hepta-consolidated-source.yml",
+    "job": "engineering-product-gate",
+    "pythonModule": "control_engineering_v2.product_gate",
+    "upstreamRequiredJobs": [
+      "engineering-sandbox",
+      "qualification"
+    ]
+  },
+  "implementationEntrypoints": [
+    {
+      "path": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
+      "symbol": "build_product_receipt"
+    },
+    {
+      "path": "tools/hepta-engineering-control/hepta_engineering_control.py",
+      "symbol": "schedule"
+    },
+    {
+      "path": "tools/hepta-engineering-control/hepta_engineering_control.py",
+      "symbol": "decide_integration"
+    }
+  ],
+  "productTests": [
+    "tools/hepta-engineering-control/test_product_gate.py",
+    "tools/hepta-engineering-control/test_hepta_engineering_control.py",
+    "tools/hepta-engineering-control/test_integration_identity.py"
+  ],
+  "runtimeRequirements": {
+    "operatingSystem": "linux",
+    "strongSandboxJob": "engineering-sandbox",
+    "bubblewrapRequired": true
+  },
+  "authorityBoundary": {
+    "runtimeAuthority": false,
+    "mergeAuthority": false,
+    "promotionAuthority": false,
+    "releaseAuthority": false,
+    "independentAcceptance": false,
+    "activation": false
+  },
+  "interpretation": "production_implementation means a real repository CI caller plus executable product tests; it does not imply independent acceptance, deployment, promotion, or release"
+}
