@@ -4,7 +4,10 @@ use std::fmt;
 use std::str::FromStr;
 
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::PreverifiedAuthEnvelope;
+use codex_hepta_authbus::ReplayWindow;
 use codex_hepta_authbus::SignedMessage;
+use codex_hepta_authbus::TrustedReplayContext;
 use codex_hepta_fleet::lease_ledger::LeaseLedger;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -166,6 +169,9 @@ pub fn owner_summary_payload_digest_v1(summary: &OwnerSummaryV1) -> Digest32 {
 
 /// Verify an owner-signed summary before admitting it to global planning.
 ///
+/// The caller-owned replay window consumes the admitted sequence after
+/// cryptographic verification. Durable replay persistence remains an AuthBus
+/// host responsibility; control.runtime does not become that state owner.
 /// AuthBus signature expiry is wall-clock policy at ingress. The summary's
 /// observation/expiry values remain in the caller's separate monotonic planner
 /// domain and are revalidated by collect_snapshot/prepare_plan.
@@ -173,6 +179,7 @@ pub fn authenticate_owner_summary_v1(
     mut summary: OwnerSummaryV1,
     signed: &SignedMessage,
     issuer: &IssuerRegistration,
+    replay: &mut ReplayWindow,
     now_unix_ms: u64,
 ) -> Result<AdmittedOwnerSummaryV1, GlobalPlaneError> {
     if signed.claims.subject_id != summary.owner_id {
@@ -185,8 +192,27 @@ pub fn authenticate_owner_summary_v1(
     if authenticated.claims().subject_id != summary.owner_id {
         return Err(GlobalPlaneError::InvalidOwnerBinding);
     }
+    let replay_receipt = replay.verify(
+        TrustedReplayContext {
+            issuer_id: issuer.issuer_id.clone(),
+            key_epoch: issuer.key_epoch,
+            now_ms: now_unix_ms,
+            revoked: issuer.revoked,
+        },
+        PreverifiedAuthEnvelope {
+            message_id: signed.claims.message_id.clone(),
+            subject_id: signed.claims.subject_id.clone(),
+            scope_digest: signed.claims.scope_digest,
+            payload_digest: signed.claims.payload_digest,
+            signature_digest: Digest32::of_bytes(&signed.signature),
+            sequence: signed.claims.sequence,
+            expires_at_ms: signed.claims.expires_at_ms,
+        },
+        expected_scope,
+        expected_payload,
+    )?;
 
-    let admission_digest = authenticated.receipt().envelope_digest;
+    let admission_digest = replay_receipt.envelope_digest;
     summary.support_digest = bind_admission_support(summary.support_digest, admission_digest);
     Ok(AdmittedOwnerSummaryV1 {
         summary,
