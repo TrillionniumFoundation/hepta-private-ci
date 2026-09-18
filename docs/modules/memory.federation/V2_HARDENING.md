@@ -85,7 +85,7 @@ For each physical federated recall:
 7. rediscover the current owner capability after I/O;
 8. admit evidence only if the final live authority observation is current;
 9. aggregate explicit requested/completed/failed/truncated coverage;
-10. revalidate each attached memory again at physical model-request assembly.
+10. revalidate each attached memory again at physical model-request assembly under the same bounded product read horizon; timeout or owner unavailability drops the federated proposal fail-closed.
 
 The product adapter is read-only. It does not enroll peers, mint capability grants, mutate remote memory, inherit owner credentials or retry unknown operations.
 
@@ -108,7 +108,7 @@ truncated_items
 
 A failed peer is not converted into a successful empty result. Partial coverage remains visible in the prepared federated attachment, in the combined local+federated model-input payload, and in the source-binding digest supplied to the model-input proposal.
 
-A successfully observed owner layout with no active grant remains only an enrollment candidate and does not consume a requested-peer slot. If the owner capability store cannot be observed at all, enrollment status is indeterminate rather than equivalent to "no grant": the product caller reserves a bounded failed slot from the same <=16 peer budget. Likewise, a terminal transport whose post-I/O authority becomes revoked or generation-stale contributes failed aggregate coverage even though the transport itself completed.
+A successfully observed owner layout with no active grant remains only an enrollment candidate and does not consume a requested-peer slot. An active grant is enrolled only when its consumer-workspace digest exactly matches the requesting `FederationConsumerAccess`; a grant for another workspace never becomes a queried peer and no transport attempt is made. If the owner capability store cannot be observed at all, enrollment status is indeterminate rather than equivalent to "no grant": the product caller reserves a bounded failed slot from the same <=16 peer budget. Likewise, a terminal transport whose post-I/O authority becomes revoked or generation-stale contributes failed aggregate coverage even though the transport itself completed.
 
 ## 8. Verification matrix
 
@@ -129,18 +129,24 @@ The focused V2 suite includes adversarial cases for:
 - duplicate remote record identity;
 - result digest binding the post-I/O authority observation;
 - owner capability discovery failure remaining explicit bounded failed coverage;
+- wrong-workspace grants never entering queried coverage or transport dispatch;
 - revoked/stale terminal attempts contributing failed aggregate coverage;
 - combined local+federated model input preserving the federation coverage vector;
+- bounded fail-closed physical-send revalidation;
 - cancellation receipts carrying no success assumption.
 
 Required product qualification additionally includes Agentd composition, owner capability grant/revoke behavior, extension attachment coverage binding, exact-head tests, merge-candidate tests and target-host execution evidence.
 
-## 9. Remaining external gates
+## 9. Frontier semantics and remaining external gates
+
+The current in-process product adapter sets `RemoteFederatedResponseV2.observed_frontier` from the durable capability revision observed for that owner/capability. This is a non-zero monotone capability observation used for provenance; it is **not** a claim that one coherent remote memory-ledger snapshot frontier was acquired. Admissible items remain bound independently by exact owner, record identity/revision, content/support/validity digests, capability generation/revision, preflight/post-I/O authority observation, and final physical-send memory revalidation.
+
+A future multi-process or multi-host transport that needs a coherent remote data cut must carry and authenticate the real owner data frontier/snapshot witness rather than reinterpret the capability revision as that frontier.
 
 This hardening wave does not by itself establish:
 
 - independent semantic/security acceptance;
-- multi-host network federation or a remote credential exchange protocol;
+- multi-host network federation, authenticated remote credential exchange, or a coherent remote data-frontier protocol;
 - deployment canary or operator acceptance;
 - promotion/release authority.
 
