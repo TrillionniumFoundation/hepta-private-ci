@@ -1254,13 +1254,34 @@ impl ContextSerializationReceiptV2 {
     }
 
     #[must_use]
+    pub const fn model_profile_digest(&self) -> Digest32 {
+        self.model_profile_digest
+    }
+
+    #[must_use]
+    pub const fn serializer_digest(&self) -> Digest32 {
+        self.serializer_digest
+    }
+
+    #[must_use]
+    pub fn selected_item_ids(&self) -> &[StableId] {
+        &self.selected_item_ids
+    }
+
+    #[must_use]
     pub const fn payload_digest(&self) -> Digest32 {
         self.payload_digest
     }
 
+
     #[must_use]
     pub const fn placement_digest(&self) -> Digest32 {
         self.placement_digest
+    }
+
+    #[must_use]
+    pub const fn realization_digest(&self) -> Digest32 {
+        self.realization_digest
     }
 
     #[must_use]
@@ -1502,6 +1523,41 @@ impl ContextAttachmentV2 {
     }
 
     #[must_use]
+    pub const fn serialization_receipt_digest(&self) -> Digest32 {
+        self.serialization_receipt_digest
+    }
+
+    #[must_use]
+    pub const fn admission_snapshot_digest(&self) -> Digest32 {
+        self.admission_snapshot_digest
+    }
+
+    #[must_use]
+    pub const fn revocation_frontier_digest(&self) -> Digest32 {
+        self.revocation_frontier_digest
+    }
+
+    #[must_use]
+    pub const fn admission_verifier_digest(&self) -> Digest32 {
+        self.admission_verifier_digest
+    }
+
+    #[must_use]
+    pub const fn admission_verification_digest(&self) -> Digest32 {
+        self.admission_verification_digest
+    }
+
+    #[must_use]
+    pub const fn serialized_token_count(&self) -> u64 {
+        self.serialized_token_count
+    }
+
+    #[must_use]
+    pub fn selected_item_ids(&self) -> &[StableId] {
+        &self.selected_item_ids
+    }
+
+    #[must_use]
     pub const fn payload_digest(&self) -> Digest32 {
         self.payload_digest
     }
@@ -1686,6 +1742,41 @@ impl ContextDeliveryReceiptV2 {
         bytes.push(delivery_disposition_code(self.disposition));
         push_u64(&mut bytes, self.observed_unix_ms);
         Digest32::of_bytes(&bytes)
+    }
+
+    #[must_use]
+    pub fn attempt_id(&self) -> &StableId {
+        &self.attempt_id
+    }
+
+    #[must_use]
+    pub const fn adapter_digest(&self) -> Digest32 {
+        self.adapter_digest
+    }
+
+    #[must_use]
+    pub const fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+
+    #[must_use]
+    pub fn provider_request_id(&self) -> Option<&StableId> {
+        self.provider_request_id.as_ref()
+    }
+
+    #[must_use]
+    pub const fn provider_ack_digest(&self) -> Option<Digest32> {
+        self.provider_ack_digest
+    }
+
+    #[must_use]
+    pub const fn terminal_observed(&self) -> bool {
+        self.terminal_observed
+    }
+
+    #[must_use]
+    pub const fn observed_unix_ms(&self) -> u64 {
+        self.observed_unix_ms
     }
 
     #[must_use]
