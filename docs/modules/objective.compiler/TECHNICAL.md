@@ -44,7 +44,7 @@ None.
 
 `existing_bound` is a source-location fact. It means the declared source root exists and is bound to this module; it does **not** itself prove focused tests, all-target compilation, strict lint, exact-head qualification or synthetic-merge qualification for the current candidate. Those are run-specific evidence and must be read from the exact candidate's qualification workflows.
 
-The current source candidate contains a strict JSON decoder, structural/aggregate bounds, authenticated/profile-bound admission, a general feasibility solver, a V1 feasibility gate, deterministic native compilation, typed conflict/abstain outcomes and deny-all receipts. It does not by itself activate `objective.compiler`, establish the canonical `ObjectiveFunctionV1` wire projection, create a production caller or owner store, persist `RunStartSnapshotV1`, issue independent acceptance, select/promote a candidate or authorize release.
+The current source candidate contains a strict JSON decoder, structural/aggregate bounds, authenticated/profile-bound admission, a general feasibility solver, a V1 feasibility gate, deterministic native compilation, typed conflict/abstain outcomes and deny-all receipts. The canonical readiness source bounds are aligned with those enforced limits, and `docs/contracts/PROTOCOL_SCHEMAS.json` remains the authoritative V1 field set. The candidate does not by itself activate `objective.compiler`, establish the canonical `ObjectiveFunctionV1` wire projection, create a production caller or owner store, persist `RunStartSnapshotV1`, issue independent acceptance, select/promote a candidate or authorize release.
 
 ## 3. Boundary, responsibilities and non-goals
 
