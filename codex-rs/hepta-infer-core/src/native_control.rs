@@ -413,16 +413,23 @@ impl NativeJournal {
                 match (
                     dispatch.codex_session_id.as_deref(),
                     dispatch.codex_deadline_ms,
+                    dispatch.codex_payload_digest.as_deref(),
                     dispatch.codex_request_digest.as_deref(),
                 ) {
-                    (Some(session_id), Some(deadline_ms), Some(request_digest)) => {
+                    (
+                        Some(session_id),
+                        Some(deadline_ms),
+                        Some(payload_digest),
+                        Some(request_digest),
+                    ) => {
                         validate_identity(session_id, "Codex session")?;
                         if deadline_ms == 0 {
                             return Err(Error::InvalidIdentity("Codex deadline"));
                         }
+                        validate_digest(payload_digest, "Codex payload digest")?;
                         validate_digest(request_digest, "Codex request digest")?;
                     }
-                    (None, None, None) => {}
+                    (None, None, None, None) => {}
                     _ => return Err(Error::InvalidIdentity("incomplete Codex dispatch binding")),
                 }
                 record.dispatch = Some(dispatch);
