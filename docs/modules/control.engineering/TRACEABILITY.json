@@ -193,9 +193,12 @@
       "designOperation": "control_sandbox_capacity",
       "nativeModule": "control_engineering_v2.execution_control",
       "nativeSymbol": "HostSandboxLimiter",
-      "ownerSymbol": "execute_with_infrastructure_retries",
+      "ownerSymbol": "facade.execute_candidate_sandbox / facade.execute_candidate_bundle_sandbox",
       "tests": [
-        "FullOrchestrationClosureTests.test_host_sandbox_limiter_caps_parallelism"
+        "FullOrchestrationClosureTests.test_host_sandbox_limiter_caps_parallelism",
+        "ControlledSandboxFacadeTests.test_strong_candidate_path_enforces_host_slot_and_two_infra_retries",
+        "ControlledSandboxFacadeTests.test_semantic_failure_never_retries",
+        "ControlledSandboxFacadeTests.test_bundle_uses_the_same_controlled_execution_path"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "eight host sandboxes and two infra retries at most"
@@ -264,6 +267,7 @@
     "tools/hepta-engineering-control/test_lane_g_seal.py",
     "tools/hepta-engineering-control/test_consolidated_engineering.py",
     "tools/hepta-engineering-control/test_production_readiness.py",
-    "tools/hepta-engineering-control/test_full_orchestration_closure.py"
+    "tools/hepta-engineering-control/test_full_orchestration_closure.py",
+    "tools/hepta-engineering-control/test_controlled_sandbox_facade.py"
   ]
 }
