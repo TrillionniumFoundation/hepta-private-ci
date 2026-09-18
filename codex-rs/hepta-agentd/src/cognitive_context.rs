@@ -1,7 +1,6 @@
 //! Connect the canonical SQLite owner to the newer bounded cognitive read port.
 
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
+use std::time::Instant;
 
 use codex_hepta_cognitive_read::ReadRequest;
 use codex_hepta_cognitive_read::ReadRequestV2;
@@ -45,6 +44,27 @@ pub(crate) async fn read(
     query: &str,
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    read_with_monotonic_origin(
+        store,
+        owner,
+        body_generation,
+        query,
+        limit,
+        ranker,
+        Instant::now(),
+    )
+    .await
+}
+
+pub(crate) async fn read_with_monotonic_origin(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    monotonic_origin: Instant,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
@@ -139,13 +159,8 @@ pub(crate) async fn read(
     }
     let encoded_context = serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let now_micros = u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
-            .as_micros(),
-    )
-    .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+    let now_micros = u64::try_from(monotonic_origin.elapsed().as_micros())
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
     let plan = plan_observed_context(ObservedContextV1 {
         owner_id: StableId::new(owner.as_str())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
