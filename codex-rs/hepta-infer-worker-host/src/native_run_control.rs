@@ -8,6 +8,7 @@ use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
+use super::NativeFinalUseRuntime;
 use super::NativeOwnerAuthority;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
@@ -21,15 +22,58 @@ pub struct NativeAdmission {
 }
 
 impl AppServerModelDriver {
-    /// Reserves before any provider call, journals dispatch before `turn/start`,
-    /// and commits real observations before returning them to the caller.
-    /// Reopening a possibly dispatched run never invokes a model again.
+    /// Production entrypoint. Exact final-use authority is mandatory before a
+    /// real App Server turn can enter the remote client queue.
+    pub async fn run_authorized(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        final_use: &NativeFinalUseRuntime,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_inner(
+            control,
+            admission,
+            prompt,
+            context_query,
+            Some(final_use),
+            cancellation,
+        )
+        .await
+    }
+
+    #[cfg(test)]
     pub async fn run(
         &self,
         control: &mut DurableInferenceControl,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_inner(
+            control,
+            admission,
+            prompt,
+            context_query,
+            None,
+            cancellation,
+        )
+        .await
+    }
+
+    /// Reserves before any provider call, journals dispatch before `turn/start`,
+    /// and commits real observations before returning them to the caller.
+    /// Reopening a possibly dispatched run never invokes a model again.
+    async fn run_inner(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        final_use: Option<&NativeFinalUseRuntime>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
@@ -82,7 +126,14 @@ impl AppServerModelDriver {
         }
         let request_id = record.request.request_id;
         match self
-            .run_once(control, &request_id, prompt, context_query, cancellation)
+            .run_once(
+                control,
+                &request_id,
+                prompt,
+                context_query,
+                final_use,
+                cancellation,
+            )
             .await
         {
             Ok(output) => {

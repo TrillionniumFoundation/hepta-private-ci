@@ -44,6 +44,7 @@ use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::Result as JsonRpcResult;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ServerRequest;
+use codex_app_server_protocol::TurnStatus;
 use codex_arg0::Arg0DispatchPaths;
 use codex_config::CloudConfigBundleLoader;
 use codex_config::LoaderOverrides;
@@ -67,6 +68,7 @@ pub use crate::remote::RemoteAppServerClient;
 pub use crate::remote::RemoteAppServerConnectArgs;
 pub use crate::remote::RemoteAppServerEndpoint;
 pub use crate::remote::RemoteAppServerRequestHandle;
+pub use crate::remote::RemotePendingRequest;
 
 /// Transitional access to core-only embedded app-server types.
 ///
@@ -100,6 +102,80 @@ pub enum AppServerEvent {
     ServerNotification(Box<ServerNotification>),
     ServerRequest(Box<ServerRequest>),
     Disconnected { message: String },
+}
+
+pub const APP_SERVER_V2_PROTOCOL_VERSION: u32 = 2;
+
+/// Terminal result derived from a real App Server v2 `turn/completed`
+/// notification received by a client connection.
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub enum TerminalTurnOutcome {
+    Completed,
+    Failed,
+    Interrupted,
+}
+
+/// Opaque evidence that a connected App Server emitted a terminal turn event.
+///
+/// The fields are intentionally private and there is no public constructor.
+/// External callers can retain or replay a witness they actually observed, but
+/// cannot manufacture a different witness through this crate's safe API.
+#[derive(Debug, Clone)]
+pub struct TerminalTurnWitness {
+    thread_id: String,
+    turn_id: String,
+    outcome: TerminalTurnOutcome,
+    protocol_version: u32,
+    observation_bytes: Vec<u8>,
+}
+
+impl TerminalTurnWitness {
+    pub fn thread_id(&self) -> &str {
+        &self.thread_id
+    }
+
+    pub fn turn_id(&self) -> &str {
+        &self.turn_id
+    }
+
+    pub fn outcome(&self) -> TerminalTurnOutcome {
+        self.outcome
+    }
+
+    pub fn protocol_version(&self) -> u32 {
+        self.protocol_version
+    }
+
+    /// Canonical JSON bytes of the typed `TurnCompletedNotification` used to
+    /// bind downstream receipts without exposing a caller-chosen digest.
+    pub fn observation_bytes(&self) -> &[u8] {
+        &self.observation_bytes
+    }
+}
+
+pub(crate) fn terminal_turn_witness_from_event(
+    event: &AppServerEvent,
+) -> Option<TerminalTurnWitness> {
+    let AppServerEvent::ServerNotification(notification) = event else {
+        return None;
+    };
+    let ServerNotification::TurnCompleted(notification) = notification.as_ref() else {
+        return None;
+    };
+    let outcome = match notification.turn.status {
+        TurnStatus::Completed => TerminalTurnOutcome::Completed,
+        TurnStatus::Failed => TerminalTurnOutcome::Failed,
+        TurnStatus::Interrupted => TerminalTurnOutcome::Interrupted,
+        TurnStatus::InProgress => return None,
+    };
+    let observation_bytes = serde_json::to_vec(notification).ok()?;
+    Some(TerminalTurnWitness {
+        thread_id: notification.thread_id.clone(),
+        turn_id: notification.turn.id.clone(),
+        outcome,
+        protocol_version: APP_SERVER_V2_PROTOCOL_VERSION,
+        observation_bytes,
+    })
 }
 
 impl From<InProcessServerEvent> for AppServerEvent {

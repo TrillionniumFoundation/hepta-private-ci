@@ -139,6 +139,10 @@ enum Event {
         request_id: String,
         reason: String,
     },
+    Unadmitted {
+        request_id: String,
+        reason: String,
+    },
     Observe {
         request_id: String,
         output: NativeRunOutput,
@@ -248,6 +252,23 @@ impl DurableInferenceControl {
         self.commit_native(
             request_id,
             Event::Stop {
+                request_id: request_id.to_string(),
+                reason,
+            },
+        )
+    }
+
+    /// Release a dispatch fence only when the concrete effect adapter proves
+    /// the request never entered the App Server client queue. This transition
+    /// is intentionally unavailable after a turn id exists.
+    pub fn stop_native_before_admission(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        self.commit_native(
+            request_id,
+            Event::Unadmitted {
                 request_id: request_id.to_string(),
                 reason,
             },
@@ -372,6 +393,7 @@ impl NativeJournal {
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
+            | Event::Unadmitted { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -406,6 +428,17 @@ impl NativeJournal {
             }
             Event::Stop { reason, .. } => {
                 if record.state != NativeReservationState::Reserved
+                    || reason.is_empty()
+                    || reason.len() > 4096
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                record.pre_dispatch_stop = Some(reason);
+                record.state = NativeReservationState::Released;
+            }
+            Event::Unadmitted { reason, .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || record.turn_id.is_some()
                     || reason.is_empty()
                     || reason.len() > 4096
                 {
