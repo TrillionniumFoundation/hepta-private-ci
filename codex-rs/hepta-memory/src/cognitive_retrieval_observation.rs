@@ -38,18 +38,26 @@ pub struct RetrievalChannelObservation {
     pub limit: RetrievalLimitObservation,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+pub struct RetrievalChannelRankObservation {
+    pub channel: RetrievalChannel,
+    pub rank: u32,
+}
+
 /// Digest-only source and scoring facts; raw memory/citation content is absent.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct ObservedRetrievalCandidate {
     pub revalidation: MemoryRevalidationBinding,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
+    pub channel_ranks: Vec<RetrievalChannelRankObservation>,
 }
 
 /// Created only by the owner read API from one SQLite read transaction.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RetrievalObservation {
     batch: RetrievalBatch,
+    ranked_candidates: Vec<RetrievalCandidate>,
     candidates: Vec<ObservedRetrievalCandidate>,
     channels: Vec<RetrievalChannelObservation>,
     observation_sha256: Sha256Digest,
@@ -58,6 +66,13 @@ pub struct RetrievalObservation {
 impl RetrievalObservation {
     pub fn batch(&self) -> &RetrievalBatch {
         &self.batch
+    }
+    /// Every eligible, revalidated output in owner ranking order before the
+    /// legacy top-four truncation. This is an owner-local materialization for
+    /// bounded downstream rankers; the digest-only evidence surface remains
+    /// candidates().
+    pub fn ranked_candidates(&self) -> &[RetrievalCandidate] {
+        &self.ranked_candidates
     }
     /// Every eligible, revalidated output of the bounded generator, ordered by
     /// memory identity, including those omitted from the legacy top-four batch.
@@ -95,7 +110,7 @@ impl CognitiveStore {
         let generated = self
             .generate_retrieval_tx(&mut transaction, access, request, &fts_query)
             .await?;
-        let mut candidates = self
+        let ranked_candidates = self
             .resolve_retrieval_tx(
                 &mut transaction,
                 access,
@@ -104,12 +119,13 @@ impl CognitiveStore {
                 4 * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             )
             .await?;
-        let mut observed = candidates
+        let mut observed = ranked_candidates
             .iter()
             .map(|candidate| ObservedRetrievalCandidate {
                 revalidation: candidate.revalidation.clone(),
                 reciprocal_rank_score: candidate.reciprocal_rank_score,
                 channels: candidate.channels.clone(),
+                channel_ranks: candidate.channel_ranks.clone(),
             })
             .collect::<Vec<_>>();
         observed.sort_by(|left, right| {
@@ -124,10 +140,13 @@ impl CognitiveStore {
                         .cmp(&right.revalidation.memory.revision)
                 })
         });
-        candidates.truncate(MAX_RETRIEVAL_RESULTS);
         let batch = RetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query.as_bytes()),
-            candidates,
+            candidates: ranked_candidates
+                .iter()
+                .take(MAX_RETRIEVAL_RESULTS)
+                .cloned()
+                .collect(),
         };
         let bytes = serde_json::to_vec(&(
             "hepta:cognitive:retrieval-observation:v1",
@@ -145,6 +164,7 @@ impl CognitiveStore {
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
         let observation = RetrievalObservation {
             batch,
+            ranked_candidates,
             candidates: observed,
             channels: generated.channels,
             observation_sha256: Sha256Digest::for_bytes(&bytes),
@@ -250,7 +270,12 @@ impl CognitiveStore {
             candidates.push(RetrievalCandidate {
                 memory: explanation.memory.clone(),
                 reciprocal_rank_score: rank.score,
-                channels: rank.channels.into_iter().collect(),
+                channels: rank.channels.iter().copied().collect(),
+                channel_ranks: rank
+                    .channel_ranks
+                    .into_iter()
+                    .map(|(channel, rank)| RetrievalChannelRankObservation { channel, rank })
+                    .collect(),
                 revalidation: binding_from_explanation(&explanation),
             });
         }
