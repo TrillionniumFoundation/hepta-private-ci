@@ -642,7 +642,7 @@ impl HeptaEvidenceStore {
         &self,
         head: &AuthBusTrustHead,
     ) -> Result<ControlWriteDisposition, AuthBusControlError> {
-        if head.revision == 0 || head.key_epoch == 0 || head.verifying_key_digest.is_zero() {
+        if head.revision == 0 || head.key_epoch == 0 || head.verifying_key_digest.is_zero() || head.registration_digest.is_zero() {
             return Err(AuthBusControlError::InvalidRequest(
                 "trust revision, epoch and key digest must be nonzero",
             ));
@@ -654,7 +654,7 @@ impl HeptaEvidenceStore {
             .await
             .map_err(classify_sqlx_error)?;
         let current = sqlx::query(
-            "SELECT revision, key_epoch, verifying_key_digest, revoked
+            "SELECT revision, key_epoch, verifying_key_digest, registration_digest, revoked
              FROM authbus_trust_heads WHERE issuer_id = ?",
         )
         .bind(head.issuer_id.as_str())
@@ -665,10 +665,12 @@ impl HeptaEvidenceStore {
             let revision = blob_u64(&row, "revision")?;
             let epoch = blob_u64(&row, "key_epoch")?;
             let key = blob_digest(&row, "verifying_key_digest")?;
+            let registration = blob_digest(&row, "registration_digest")?;
             let revoked = row.try_get::<i64, _>("revoked").map_err(classify_sqlx_error)? != 0;
             if revision == head.revision
                 && epoch == head.key_epoch
                 && key == head.verifying_key_digest
+                && registration == head.registration_digest
                 && revoked == head.revoked
             {
                 tx.commit().await.map_err(classify_sqlx_error)?;
@@ -676,6 +678,7 @@ impl HeptaEvidenceStore {
             }
             if head.revision <= revision
                 || head.key_epoch < epoch
+                || (head.revision == revision && registration != head.registration_digest)
                 || (head.key_epoch == epoch && key != head.verifying_key_digest)
                 || (head.key_epoch == epoch && revoked && !head.revoked)
             {
@@ -684,12 +687,13 @@ impl HeptaEvidenceStore {
         }
         sqlx::query(
             "INSERT INTO authbus_trust_heads
-             (issuer_id, revision, key_epoch, verifying_key_digest, revoked, updated_at_ms)
-             VALUES (?, ?, ?, ?, ?, ?)
+             (issuer_id, revision, key_epoch, verifying_key_digest, registration_digest, revoked, updated_at_ms)
+             VALUES (?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT(issuer_id) DO UPDATE SET
                revision = excluded.revision,
                key_epoch = excluded.key_epoch,
                verifying_key_digest = excluded.verifying_key_digest,
+               registration_digest = excluded.registration_digest,
                revoked = excluded.revoked,
                updated_at_ms = excluded.updated_at_ms",
         )
@@ -697,6 +701,7 @@ impl HeptaEvidenceStore {
         .bind(head.revision.to_be_bytes().as_slice())
         .bind(head.key_epoch.to_be_bytes().as_slice())
         .bind(head.verifying_key_digest.as_array().as_slice())
+        .bind(head.registration_digest.as_array().as_slice())
         .bind(if head.revoked { 1_i64 } else { 0_i64 })
         .bind(now)
         .execute(&mut *tx)
