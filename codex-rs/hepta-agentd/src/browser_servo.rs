@@ -179,7 +179,8 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         if call.method.requires_final_use() {
             if first.kind != "authority_challenge" || first.request_id != request_id {
                 return Err(BrowserServoError::Protocol(
-                    "effect Browser call did not begin with the matching authority challenge".into(),
+                    "effect Browser call did not begin with the matching authority challenge"
+                        .into(),
                 ));
             }
             let invocation = call.final_use.as_ref().ok_or_else(|| {
@@ -204,7 +205,9 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         let request_digest_text = payload
             .get("requestDigest")
             .and_then(Value::as_str)
-            .ok_or_else(|| BrowserServoError::Protocol("authority challenge lacks requestDigest".into()))?;
+            .ok_or_else(|| {
+                BrowserServoError::Protocol("authority challenge lacks requestDigest".into())
+            })?;
         let request_digest = parse_hex_32(request_digest_text, "requestDigest")?;
         let authority_epoch = positive_u64(
             payload.get("authorityEpoch"),
@@ -287,7 +290,9 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
                 .get("error")
                 .and_then(Value::as_str)
                 .unwrap_or("Browser service rejected request");
-            Err(BrowserServoError::Rejected(message.chars().take(512).collect()))
+            Err(BrowserServoError::Rejected(
+                message.chars().take(512).collect(),
+            ))
         }
         _ => Err(BrowserServoError::Protocol(
             "Browser response has invalid ok field".into(),
@@ -326,10 +331,10 @@ fn send_frame<T: BrowserServoTransport>(
         "payloadDigest": hex_lower(&payload_digest),
         "payload": payload,
     });
-    state.next_outgoing_sequence = state
-        .next_outgoing_sequence
-        .checked_add(1)
-        .ok_or_else(|| BrowserServoError::Unavailable("Browser output sequence exhausted".into()))?;
+    state.next_outgoing_sequence =
+        state.next_outgoing_sequence.checked_add(1).ok_or_else(|| {
+            BrowserServoError::Unavailable("Browser output sequence exhausted".into())
+        })?;
     let body = canonical_json(&frame)?.into_bytes();
     if body.is_empty() || body.len() > MAX_FRAME_BYTES {
         return Err(BrowserServoError::Protocol(
@@ -404,7 +409,10 @@ fn receive_frame<T: BrowserServoTransport>(
         .get("kind")
         .and_then(Value::as_str)
         .ok_or_else(|| BrowserServoError::Protocol("Browser frame kind is missing".into()))?;
-    if !matches!(kind, "response" | "authority_challenge" | "dispatch_boundary") {
+    if !matches!(
+        kind,
+        "response" | "authority_challenge" | "dispatch_boundary"
+    ) {
         return Err(BrowserServoError::Protocol(
             "Browser emitted an unregistered frame kind".into(),
         ));
@@ -461,15 +469,20 @@ fn write_canonical(
     match value {
         Value::Null => output.push_str("null"),
         Value::Bool(value) => output.push_str(if *value { "true" } else { "false" }),
-        Value::String(value) => output.push_str(
-            &serde_json::to_string(value)
-                .map_err(|_| BrowserServoError::Protocol("Browser string encoding failed".into()))?,
-        ),
+        Value::String(value) => {
+            output.push_str(&serde_json::to_string(value).map_err(|_| {
+                BrowserServoError::Protocol("Browser string encoding failed".into())
+            })?)
+        }
         Value::Number(number) => {
             let valid = number
                 .as_u64()
                 .map(|value| value <= JS_SAFE_INTEGER)
-                .or_else(|| number.as_i64().map(|value| value.unsigned_abs() <= JS_SAFE_INTEGER))
+                .or_else(|| {
+                    number
+                        .as_i64()
+                        .map(|value| value.unsigned_abs() <= JS_SAFE_INTEGER)
+                })
                 .unwrap_or(false);
             if !valid {
                 return Err(BrowserServoError::Protocol(
@@ -512,9 +525,9 @@ fn require_plain_object<'a>(
     value: &'a Value,
     name: &str,
 ) -> Result<&'a Map<String, Value>, BrowserServoError> {
-    value.as_object().ok_or_else(|| {
-        BrowserServoError::Invalid(format!("{name} must be a JSON object"))
-    })
+    value
+        .as_object()
+        .ok_or_else(|| BrowserServoError::Invalid(format!("{name} must be a JSON object")))
 }
 
 fn positive_u64(value: Option<&Value>, name: &str) -> Result<u64, BrowserServoError> {
@@ -540,7 +553,11 @@ fn stable_id(value: &str, name: &str) -> Result<(), BrowserServoError> {
 }
 
 fn parse_hex_32(value: &str, name: &str) -> Result<[u8; 32], BrowserServoError> {
-    if value.len() != 64 || !value.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase()) {
+    if value.len() != 64
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+    {
         return Err(BrowserServoError::Protocol(format!(
             "{name} must be lowercase SHA-256 hex"
         )));
@@ -897,7 +914,11 @@ mod tests {
     }
 
     fn inbound_frame(sequence: u64, kind: &str, request_id: &str, payload: Value) -> Vec<u8> {
-        let payload_digest = sha256_bytes(canonical_json(&payload).expect("canonical payload").as_bytes());
+        let payload_digest = sha256_bytes(
+            canonical_json(&payload)
+                .expect("canonical payload")
+                .as_bytes(),
+        );
         let frame = json!({
             "schema": PROTOCOL_SCHEMA,
             "protocolVersion": PROTOCOL_VERSION,
@@ -907,7 +928,9 @@ mod tests {
             "payloadDigest": hex_lower(&payload_digest),
             "payload": payload,
         });
-        let body = canonical_json(&frame).expect("canonical frame").into_bytes();
+        let body = canonical_json(&frame)
+            .expect("canonical frame")
+            .into_bytes();
         let mut bytes = Vec::with_capacity(body.len() + 4);
         bytes.extend_from_slice(&(body.len() as u32).to_be_bytes());
         bytes.extend_from_slice(&body);
@@ -921,11 +944,8 @@ mod tests {
         let invocation = harness.invocation.clone();
         let call = thread::spawn(move || {
             port.call(
-                BrowserServoCall::effect(
-                    json!({"operationId":"operation.1"}),
-                    invocation,
-                )
-                .expect("effect call"),
+                BrowserServoCall::effect(json!({"operationId":"operation.1"}), invocation)
+                    .expect("effect call"),
             )
         });
 
@@ -948,7 +968,10 @@ mod tests {
 
         let enter = decode_outbound(&harness.outbound.recv().expect("authority enter"));
         assert_eq!(enter["kind"], "authority_enter");
-        assert_eq!(enter["payload"]["requestDigest"], hex_lower(&harness.request_digest));
+        assert_eq!(
+            enter["payload"]["requestDigest"],
+            hex_lower(&harness.request_digest)
+        );
         let witness = enter["payload"]["witnessDigest"]
             .as_str()
             .expect("witness")
@@ -1011,11 +1034,8 @@ mod tests {
         let invocation = harness.invocation.clone();
         let call = thread::spawn(move || {
             port.call(
-                BrowserServoCall::effect(
-                    json!({"operationId":"operation.2"}),
-                    invocation,
-                )
-                .expect("effect call"),
+                BrowserServoCall::effect(json!({"operationId":"operation.2"}), invocation)
+                    .expect("effect call"),
             )
         });
         let _request = harness.outbound.recv().expect("request");

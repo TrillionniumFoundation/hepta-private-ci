@@ -112,7 +112,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --all -- --check
+          # Keep this lane scoped to its three owners. Formatting each package
+          # separately also avoids Windows command-line expansion of --all.
+          for package in codex-hepta-objective codex-hepta-ndu codex-hepta-control-plane; do
+            cargo fmt --package "$package" -- --check
+          done
 
       - name: Compile Lane D packages
         working-directory: codex-rs

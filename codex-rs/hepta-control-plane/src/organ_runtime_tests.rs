@@ -920,7 +920,6 @@ fn repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fence
     host.stop_all().expect("the final generation drains");
 }
 
-
 #[cfg(unix)]
 #[derive(Debug)]
 struct StatefulAcceptanceOwner {
@@ -945,7 +944,10 @@ impl StatefulAcceptanceOwner {
 
     fn record(&mut self, delta: u64) {
         assert!(!self.retired);
-        self.value = self.value.checked_add(delta).expect("bounded fixture history");
+        self.value = self
+            .value
+            .checked_add(delta)
+            .expect("bounded fixture history");
     }
 
     fn decode(snapshot: &[u8]) -> Result<(u64, u64, bool), OrganMigrationError> {
@@ -991,7 +993,9 @@ impl OrganStateMigrationV1 for StatefulAcceptanceOwner {
         self.retired = retired;
         if self.fail_candidate == Some(candidate) {
             self.value = self.value.saturating_add(1_000_000);
-            return Err(OrganMigrationError::Callback(id("stateful.migration.failed")));
+            return Err(OrganMigrationError::Callback(id(
+                "stateful.migration.failed",
+            )));
         }
         if self.retire_candidate == Some(candidate) {
             self.retired = true;
@@ -1163,8 +1167,13 @@ async fn stateful_feature_history_replace_failure_retire_preserves_effect_idempo
         payload_digest: Digest32::of_bytes(b"state-value-256"),
         owner_generation: generation(9),
     };
-    let store = DurableOperationStore::open(&path).await.expect("operation store");
-    let prepared = store.prepare_intent(&operation).await.expect("prepare effect");
+    let store = DurableOperationStore::open(&path)
+        .await
+        .expect("operation store");
+    let prepared = store
+        .prepare_intent(&operation)
+        .await
+        .expect("prepare effect");
     assert_eq!(prepared.disposition, PrepareDisposition::Inserted);
     assert_eq!(
         store
@@ -1236,7 +1245,9 @@ async fn stateful_feature_history_replace_failure_retire_preserves_effect_idempo
     );
     store.close().await;
 
-    let reopened = DurableOperationStore::open(&path).await.expect("reopen after unknown effect");
+    let reopened = DurableOperationStore::open(&path)
+        .await
+        .expect("reopen after unknown effect");
     assert!(
         reopened
             .claim_next(
@@ -1276,7 +1287,10 @@ async fn stateful_feature_history_replace_failure_retire_preserves_effect_idempo
     let metrics = reopened.backlog_metrics().await.expect("backlog metrics");
     assert_eq!(metrics.active_operations, 0);
     assert_eq!(metrics.terminal_operations, 1);
-    assert_eq!(reopened.prune_terminal(u64::MAX, 1).await.expect("prune"), 1);
+    assert_eq!(
+        reopened.prune_terminal(u64::MAX, 1).await.expect("prune"),
+        1
+    );
     assert!(matches!(
         reopened.prepare_intent(&operation).await,
         Err(DurableOperationError::Retired(_))
@@ -1298,7 +1312,8 @@ async fn stateful_feature_history_replace_failure_retire_preserves_effect_idempo
     let retired_handlers: Vec<Box<dyn TrustedReadOnlyOrganV1>> = ["source", "target.b"]
         .into_iter()
         .map(|name| {
-            Box::new(FixtureOrgan::new(name, Arc::clone(&events))) as Box<dyn TrustedReadOnlyOrganV1>
+            Box::new(FixtureOrgan::new(name, Arc::clone(&events)))
+                as Box<dyn TrustedReadOnlyOrganV1>
         })
         .collect();
     state.retire_candidate = Some(generation(10));

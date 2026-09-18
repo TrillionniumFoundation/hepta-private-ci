@@ -156,7 +156,9 @@ impl AgentdClient {
             AgentdPayload::CognitiveContextFinalized {
                 snapshot_digest,
                 read_digest,
-            } if snapshot_digest == expected_snapshot_digest && read_digest == expected_read_digest => {
+            } if snapshot_digest == expected_snapshot_digest
+                && read_digest == expected_read_digest =>
+            {
                 Ok(())
             }
             AgentdPayload::CognitiveContextFinalized { .. } => Err(AgentdError::Protocol(
