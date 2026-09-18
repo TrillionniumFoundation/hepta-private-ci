@@ -22,6 +22,9 @@ fn factor() -> PromptFactor {
         factor_id: id("factor:1"),
         proposer_id: id("proposer:1"),
         semantic_version: id("v1"),
+        semantic_purpose: "verify before mutating".to_owned(),
+        authority_class: "registered_prompt_factor".to_owned(),
+        eligible_objective_dimensions: vec![id("dimension:truth")],
         content_digest: digest("factor"),
         source: FactorSource::GovernedInternal,
         lifecycle: Lifecycle::Draft,
@@ -30,6 +33,8 @@ fn factor() -> PromptFactor {
 
 fn model_tuple() -> PromptModelTupleV2 {
     PromptModelTupleV2 {
+        model_id: id("model:hepta-test"),
+        model_version: "2026-09-18".to_owned(),
         model_digest: digest("model"),
         tokenizer_digest: digest("tokenizer"),
         template_digest: digest("template"),
@@ -43,6 +48,8 @@ fn binding() -> PromptRealizationBindingV2 {
     PromptRealizationBindingV2 {
         realization_id: id("realization:1"),
         factor_id: id("factor:1"),
+        model_id: id("model:hepta-test"),
+        model_version: "2026-09-18".to_owned(),
         model_digest: digest("model"),
         tokenizer_digest: digest("tokenizer"),
         template_digest: digest("template"),
