@@ -24,6 +24,7 @@ use crate::lease::write_lease;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
+use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 use crate::runtime::is_live_lifecycle;
@@ -196,14 +197,33 @@ impl<D: ProcessDriver> Supervisor<D> {
             identity: spawned.identity.clone(),
         };
         if let Err(error) = write_lease(record.layout.run_root(), &lease) {
-            let _ = spawned.process.kill();
-            self.transition_without_runtime(
-                agent_id,
-                slot,
-                starting.generation,
-                AgentLifecycle::Failed,
-            )?;
-            return Err(error);
+            // Spawn succeeded, so dropping the only process handle would make
+            // the child untracked if the first emergency kill also failed.
+            // Keep it quarantined in-memory until exit is actually observed.
+            let kill_error = spawned.process.kill().err();
+            slot.runtime = Some(AgentRuntime {
+                process: spawned.process,
+                identity: spawned.identity,
+                spawn_generation: starting.generation,
+                release_id: lease.release_id,
+                generation: starting.generation,
+                phase: RuntimePhase::Killing,
+                healthy: false,
+                fenced: false,
+                lease_persisted: false,
+            });
+            slot.event(starting.generation, SupervisorEventKind::Spawned);
+            if kill_error.is_none() {
+                slot.event(starting.generation, SupervisorEventKind::KillRequested);
+                return Err(error);
+            }
+            let kill_error = kill_error.expect("checked above");
+            return Err(SupervisorError::Driver {
+                agent_id: agent_id.clone(),
+                message: bounded_message(format!(
+                    "process lease persistence failed ({error}); emergency kill failed ({kill_error})"
+                )),
+            });
         }
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
@@ -218,6 +238,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             },
             healthy: false,
             fenced: false,
+            lease_persisted: true,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
         Ok(())
@@ -311,6 +332,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     phase,
                     healthy: false,
                     fenced: false,
+                    lease_persisted: true,
                 });
                 slot.event(
                     record.lifecycle.generation,
