@@ -762,7 +762,7 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
         let step = sqlx::query(
-            "SELECT event_kind, receipt_digest, final_outcome
+            "SELECT event_kind, receipt_digest, observation, final_outcome
              FROM taskflow_step_outbox
              WHERE owner_agent_id = ? AND run_id = ? AND step_id = 'codex_turn'
                AND attempt = ?
@@ -781,13 +781,25 @@ impl AutomationStore {
         let step_receipt: Option<String> = step
             .try_get("receipt_digest")
             .map_err(|_| AutomationError::Corrupt)?;
+        let step_observation: Option<String> = step
+            .try_get("observation")
+            .map_err(|_| AutomationError::Corrupt)?;
         let step_outcome: Option<String> = step
             .try_get("final_outcome")
             .map_err(|_| AutomationError::Corrupt)?;
-        if step_event != "reconciled"
-            || step_receipt.as_deref() != Some(receipt_digest.as_str())
-            || step_outcome.as_deref() != Some(expected_terminal)
-        {
+        let terminal_step_matches = match step_event.as_str() {
+            "reconciled" => {
+                step_outcome.as_deref() == Some(expected_terminal)
+                    && step_observation.is_none()
+            }
+            "recorded" => {
+                matches!(expected_terminal, "succeeded" | "failed")
+                    && step_observation.as_deref() == Some(expected_terminal)
+                    && step_outcome.is_none()
+            }
+            _ => false,
+        };
+        if step_receipt.as_deref() != Some(receipt_digest.as_str()) || !terminal_step_matches {
             return Err(AutomationError::Conflict);
         }
 
