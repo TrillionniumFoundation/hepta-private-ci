@@ -29,10 +29,12 @@ Plane `presentation`, kind `native`, state model `ephemeral` and architecture ro
 Declared exclusive target roots:
 
 - `apps/hepta-native`
+- `codex-rs/hepta-native-app`
 
 Existing declared roots at this exact source snapshot:
 
 - `apps/hepta-native`
+- `codex-rs/hepta-native-app`
 
 Non-authoritative implementation evidence roots:
 
@@ -46,7 +48,9 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js); observed identifiers include `buildNativeIntent`, `observeNativeOutcome`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) for the implemented subset and remaining product work.
+The selected Rust desktop host is [codex-rs/hepta-native-app](../../../codex-rs/hepta-native-app/README.md). Its production entrypoints are `hepta-native` and the narrow `hepta-native-updater`; `AgentdBackend` composes the existing Agentd UDS contract and `NativeShellRuntime` owns only presentation/session/effect-journal state. The older [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js) and `shell-runtime.js` remain compatibility/contract fixtures while callers migrate; they are no longer the selected product-host implementation.
+
+Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) for the exact implemented subset and remaining external qualification work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -71,10 +75,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `native shell`
-- `generated protocol client`
-- `lifecycle and update controller`
-- `accessibility adapter`
+- `eframe/egui native shell` with AccessKit semantics
+- `AgentdBackend` over the existing bounded JSON-over-UDS client
+- `NativeShellRuntime` session/view/operation state machine
+- `KeyringOperationStore` durable Pending/Indeterminate journal
+- `SecurePlatformAdapter` consuming kernel `FinalUseAuthority`
+- `SignedUpdater` plus the post-exit `hepta-native-updater` helper
+- accessibility, keyboard, HiDPI and locale presentation adapters
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -119,7 +126,9 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. The selected Rust host keys every effect by `(session_id, session_generation, operation_id)`, persists `Pending` before adapter entry, fences reuse across sessions, and reconciles `Pending/Indeterminate` records without redispatch. Exact duplicate terminal identities return their receipt; a changed payload under the same identity conflicts.
+
+Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -137,6 +146,8 @@ None.
 
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
+The Rust OS-effect adapter consumes the canonical `codex_hepta_contracts::FinalUseAuthority`: an externally signed `SignedFinalUseGrant` is checked against an exact session/action/resource/revision/payload binding, converted to a single-use `VerifiedUseToken`, and consumed immediately around one adapter call. The UI and adapter hold no signing private key and cannot mint the token they consume. The secure operation journal stores bounded identity/resource metadata and payload digests, not clipboard text or notification bodies.
+
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
@@ -147,7 +158,9 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Native-shell adapter library around injected backend, OS-permission and updater ports. It is not yet a selected packaged OS application. Framework/platform matrix, signing/notarization/keychain and real updater trust roots remain required implementation/deployment work; no empty wrapper command establishes those capabilities.
+The selected host is a Rust `eframe/egui 0.36.2` desktop application with AccessKit semantics. Linux is the Tier-1 implementation for the complete FinalUse-bound effect path and signed portable-binary updater; macOS is Tier-1 for the shell/effect path while notarized `.app` replacement remains a release gate; Windows 11 is a read-only preview until the kernel `FinalUseAuthority` durable state owner has a hardened Windows implementation. The Windows gate must not be bypassed in this presentation module.
+
+Code-signing identities, macOS notarization, Windows Authenticode/MSIX identities, packaged screen-reader acceptance and operator release decisions remain external evidence. Source code cannot self-certify those facts.
 
 Current operating and state-format references:
 
@@ -159,10 +172,13 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [apps/hepta-native/test/native.test.js](../../../apps/hepta-native/test/native.test.js); named case: `native intent requires exact payload binding`.
-- [apps/hepta-native/test/shell-runtime.test.js](../../../apps/hepta-native/test/shell-runtime.test.js); named case: `executes a final-payload-bound platform request`.
+- [codex-rs/hepta-native-app/src/runtime.rs](../../../codex-rs/hepta-native-app/src/runtime.rs): retry without duplicate dispatch, restart reconciliation without replay, cross-session fencing, coherent-view digest drift.
+- [codex-rs/hepta-native-app/src/backend.rs](../../../codex-rs/hepta-native-app/src/backend.rs): real bounded Agentd JSON-over-UDS composition across health, ingress, capabilities, lifecycle and events.
+- [codex-rs/hepta-native-app/src/platform.rs](../../../codex-rs/hepta-native-app/src/platform.rs): missing FinalUse authority rejects before OS effect.
+- [codex-rs/hepta-native-app/src/update.rs](../../../codex-rs/hepta-native-app/src/update.rs): signed-manifest tamper rejection and failed post-update-probe predecessor restoration.
+- [apps/hepta-native/test/native.test.js](../../../apps/hepta-native/test/native.test.js) and [shell-runtime.test.js](../../../apps/hepta-native/test/shell-runtime.test.js) remain compatibility-boundary tests.
 
-From the repository root, run `node --test apps/hepta-native/test/native.test.js apps/hepta-native/test/shell-runtime.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
+From `codex-rs`, run `cargo test -p codex-hepta-native-app`, `cargo check -p codex-hepta-native-app --all-targets`, and `cargo clippy -p codex-hepta-native-app --all-targets -- -D warnings`. The commands are invocations, not stored pass receipts. Inspect exact-candidate CI for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -175,7 +191,7 @@ Applicable work packages:
 
 The bootstrap package is `UI-NATIVE-1-SHELL`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target roots exist, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. The Rust binary now supplies a named product caller, but production/deployment completion remains false until the current candidate passes the platform qualification workflow and the external signing/accessibility gates applicable to that platform.
 
 ## 14. Activation, compatibility and retirement
 
@@ -197,6 +213,7 @@ For `ui.native`, this document grants no runtime, production, model, provider, t
 - Owner/deputy: `ui-platform` / `accessibility`.
 - Allowed write paths:
 - `apps/hepta-native/**`
+- `codex-rs/hepta-native-app/**`
 - Development predecessors:
 - `P0.8B-READINESS`
 - `UI-V5`
@@ -267,5 +284,6 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 The bootstrap source-location obligation for `ui.native` is implemented by work package `UI-NATIVE-1-SHELL` in:
 
 - `apps/hepta-native`
+- `codex-rs/hepta-native-app`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
