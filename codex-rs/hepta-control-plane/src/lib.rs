@@ -49,6 +49,7 @@ pub use global_plane::FleetEssentialFloorsV1;
 pub use global_plane::FleetOwnerAdmissionV1;
 pub use global_plane::GlobalControlPlanV1;
 pub use global_plane::GlobalPlaneError;
+pub use global_plane::admit_durable_owner_summary_v1;
 pub use global_plane::admit_fleet_allocation_owner_v1;
 pub use global_plane::authenticate_owner_summary_v1;
 pub use global_plane::compose_global_plan_with_fleet_v1;
