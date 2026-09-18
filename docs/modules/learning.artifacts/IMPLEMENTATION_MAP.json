@@ -5,6 +5,8 @@
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
+  "moduleSourceCommit": "ab6ca237d427635fc233b187765173bbf56ebd0a",
+  "moduleSourceCommitMeaning": "latest code-complete learning.artifacts implementation reviewed by this map; sourceBase remains the repository-wide v3 map catalog baseline",
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
   "owner": "learning-platform",
@@ -22,54 +24,266 @@
   "productionWriterState": "not_established",
   "operations": [
     {
-      "operation": "load_pinned_candidate",
+      "operation": "artifact_registry_append_replay",
+      "nativeSymbol": "ArtifactRegistry::{append,from_snapshot}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "artifact_registry_append_replay",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "registry_snapshot_durable_io",
+      "nativeSymbol": "{write_registry_snapshot,read_registry_snapshot}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/storage_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "registry_snapshot_durable_io",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "candidate_payload_durable_io",
+      "nativeSymbol": "{write_candidate_payload,read_candidate_payload}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/storage_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "candidate_payload_durable_io",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "registry_head_witness_io",
+      "nativeSymbol": "{write_registry_head_witness,read_registry_head_witness}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/storage_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "registry_head_witness_io",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "pinned_candidate_load",
       "nativeSymbol": "load_pinned_candidate",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "load_pinned_candidate",
+      "designOperation": "pinned_candidate_load",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "write_candidate_payload",
-      "nativeSymbol": "write_candidate_payload",
-      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "operation": "manifest_v2_validation",
+      "nativeSymbol": "validate_artifact_manifest_v2",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "write_candidate_payload",
+      "designOperation": "manifest_v2_validation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "admit_manifest_at_withdrawal_head_v3",
-      "nativeSymbol": "admit_manifest_at_withdrawal_head_v3",
+      "operation": "scoped_dataset_withdrawal_registry",
+      "nativeSymbol": "DatasetWithdrawalRegistry::{new,append,admit_manifest,from_snapshot}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "scoped_dataset_withdrawal_registry",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "withdrawal_bound_admission_v3",
+      "nativeSymbol": "{admit_manifest_at_withdrawal_head_v3,verify_artifact_admission_v3,validate_artifact_publication_v3}",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_v3.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "admit_manifest_at_withdrawal_head_v3",
+      "designOperation": "withdrawal_bound_admission_v3",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lifecycle_transition_validation",
+      "nativeSymbol": "validate_artifact_lifecycle_transition",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lifecycle_transition_validation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lifecycle_append_and_historical_replay",
+      "nativeSymbol": "ArtifactLifecycleJournalV2::{append,from_snapshot}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lifecycle_append_and_historical_replay",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "withdrawal_snapshot_durable_io",
+      "nativeSymbol": "{write_dataset_withdrawal_snapshot,read_dataset_withdrawal_snapshot}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/durable_aux.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/durable_aux.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "withdrawal_snapshot_durable_io",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lifecycle_snapshot_durable_io",
+      "nativeSymbol": "{write_artifact_lifecycle_snapshot,read_artifact_lifecycle_snapshot}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/durable_aux.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/durable_aux.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lifecycle_snapshot_durable_io",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "artifact_publication_transaction",
+      "nativeSymbol": "{prepare_artifact_publication_v1,verify_artifact_publication_commit_v1,write_artifact_publication_commit,read_artifact_publication_commit}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/publication.rs",
+        "codex-rs/hepta-shadow-qualification/tests/lane_e_api_contract.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "artifact_publication_transaction",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "dataset_revocation_preparation",
+      "nativeSymbol": "prepare_dataset_revocation",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/dataset_revocation.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "dataset_revocation_preparation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "iteration_transition_contract",
+      "nativeSymbol": "validate_iteration_transition",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/iteration.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/iteration.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "iteration_transition_contract",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "iteration_evidence_ledger",
+      "nativeSymbol": "IterationLedgerV1::{new,append_candidate,transition,from_snapshot}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "iteration_evidence_ledger",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "create_only_storage_hardening",
+      "nativeSymbol": "CreateOnlyArtifactFile::{create,create_under}",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/storage_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "create_only_storage_hardening",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose the typed publication commit into an authenticated product host current-pointer/store transaction.",
+    "Keep exact-head and actual-base synthetic-merge qualification green before changing the production claim boundary.",
+    "Add target-host directory durability, race-resistant directory capability, staged-object reconciliation metrics and operator/admin surfaces."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic and security review",
+    "product execution and target-host filesystem/object-store qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "durableRegistryImplemented": true,
+    "scopedWithdrawalImplemented": true,
+    "durableWithdrawalImplemented": true,
+    "lifecycleJournalImplemented": true,
+    "durableLifecycleImplemented": true,
+    "withdrawalBoundAdmissionImplemented": true,
+    "publicationCommitContractImplemented": true,
+    "governedIterationBookkeepingImplemented": true,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
