@@ -217,7 +217,9 @@ impl PromptRegistry {
             .realizations
             .get(realization_id)
             .is_some_and(|realization| realization.active);
-        let compatible = binding.model_digest == model_tuple.model_digest
+        let compatible = binding.model_id == model_tuple.model_id
+            && binding.model_version == model_tuple.model_version
+            && binding.model_digest == model_tuple.model_digest
             && binding.tokenizer_digest == model_tuple.tokenizer_digest
             && binding.template_digest == model_tuple.template_digest
             && binding.tool_schema_digest == model_tuple.tool_schema_digest
