@@ -174,25 +174,6 @@ impl DurableInferenceControl {
                 return Err(Error::InvalidIdentity("native journal must be owner-only"));
             }
         }
-        if self
-            .native
-            .maximum_in_flight
-            .is_some_and(|limit| limit != maximum_in_flight)
-            || self.records.contains_key(&request.request_id)
-        {
-            return Err(Error::Conflict);
-        }
-        if let Some(record) = self.native.records.get(&request.request_id) {
-            return if record.request == request {
-                Ok(record.clone())
-            } else {
-                Err(Error::Conflict)
-            };
-        }
-        if self.records.len() + self.native.records.len() >= self.capacity {
-            return Err(Error::CapacityExceeded);
-        }
-        self.ensure_native_dispatch_space()?;
         let id = request.request_id.clone();
         self.commit_native(
             &id,
@@ -209,7 +190,6 @@ impl DurableInferenceControl {
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<NativeRunRecord, Error> {
-        self.ensure_native_dispatch_space()?;
         self.commit_native(
             request_id,
             Event::Dispatch {
@@ -235,14 +215,6 @@ impl DurableInferenceControl {
 
     /// This records intent only: an interrupt acknowledgement never frees a slot.
     pub fn cancel_native(&mut self, request_id: &str) -> Result<NativeRunRecord, Error> {
-        let record = self
-            .native
-            .records
-            .get(request_id)
-            .ok_or(Error::RequestNotFound)?;
-        if record.cancel_requested {
-            return Ok(record.clone());
-        }
         self.commit_native(
             request_id,
             Event::Cancel {
@@ -256,14 +228,6 @@ impl DurableInferenceControl {
         request_id: &str,
         reason: String,
     ) -> Result<NativeRunRecord, Error> {
-        let record = self
-            .native
-            .records
-            .get(request_id)
-            .ok_or(Error::RequestNotFound)?;
-        if record.state != NativeReservationState::Reserved {
-            return Err(Error::InvalidTransition);
-        }
         self.commit_native(
             request_id,
             Event::Stop {
@@ -282,14 +246,6 @@ impl DurableInferenceControl {
         request_id: &str,
         reason: String,
     ) -> Result<NativeRunRecord, Error> {
-        let record = self
-            .native
-            .records
-            .get(request_id)
-            .ok_or(Error::RequestNotFound)?;
-        if record.state != NativeReservationState::Dispatching || record.turn_id.is_some() {
-            return Err(Error::InvalidTransition);
-        }
         self.commit_native(
             request_id,
             Event::Stop {
@@ -307,14 +263,6 @@ impl DurableInferenceControl {
         request_id: &str,
         output: NativeRunOutput,
     ) -> Result<NativeRunRecord, Error> {
-        let record = self
-            .native
-            .records
-            .get(request_id)
-            .ok_or(Error::RequestNotFound)?;
-        if record.observation.as_ref() == Some(&output) {
-            return Ok(record.clone());
-        }
         self.commit_native(
             request_id,
             Event::Observe {
@@ -341,10 +289,8 @@ impl DurableInferenceControl {
 
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
         let _writer_fence = self.reload_locked()?;
-        if matches!(event, Event::Reserve { .. })
-            && self.records.len() + self.native.records.len() >= self.capacity
-        {
-            return Err(Error::CapacityExceeded);
+        if let Some(existing) = self.validate_latest_native_event(&event)? {
+            return Ok(existing);
         }
         self.ensure_native_dispatch_space()?;
         let mut next = self.native.clone();
@@ -358,6 +304,88 @@ impl DurableInferenceControl {
             .get(request_id)
             .cloned()
             .ok_or(Error::RequestNotFound)
+    }
+
+    fn validate_latest_native_event(&self, event: &Event) -> Result<Option<NativeRunRecord>, Error> {
+        match event {
+            Event::Reserve {
+                request,
+                maximum_in_flight,
+            } => {
+                if !(1..=256).contains(maximum_in_flight) {
+                    return Err(Error::CapacityExceeded);
+                }
+                if self.records.contains_key(&request.request_id)
+                    || self
+                        .native
+                        .maximum_in_flight
+                        .is_some_and(|limit| limit != *maximum_in_flight)
+                {
+                    return Err(Error::Conflict);
+                }
+                if let Some(record) = self.native.records.get(&request.request_id) {
+                    return if record.request == *request {
+                        Ok(Some(record.clone()))
+                    } else {
+                        Err(Error::Conflict)
+                    };
+                }
+                if self.records.len() + self.native.records.len() >= self.capacity {
+                    return Err(Error::CapacityExceeded);
+                }
+            }
+            Event::Dispatch { request_id, dispatch } => {
+                if let Some(record) = self.native.records.get(request_id) {
+                    if record.state == NativeReservationState::Dispatching
+                        && record.dispatch.as_ref() == Some(dispatch)
+                    {
+                        return Ok(Some(record.clone()));
+                    }
+                }
+            }
+            Event::Started { request_id, turn_id } => {
+                if let Some(record) = self.native.records.get(request_id) {
+                    if record.state == NativeReservationState::Running
+                        && record.turn_id.as_ref() == Some(turn_id)
+                    {
+                        return Ok(Some(record.clone()));
+                    }
+                }
+            }
+            Event::Cancel { request_id } => {
+                let record = self
+                    .native
+                    .records
+                    .get(request_id)
+                    .ok_or(Error::RequestNotFound)?;
+                if record.cancel_requested {
+                    return Ok(Some(record.clone()));
+                }
+            }
+            Event::Stop { request_id, reason } => {
+                let record = self
+                    .native
+                    .records
+                    .get(request_id)
+                    .ok_or(Error::RequestNotFound)?;
+                if record.state == NativeReservationState::Released
+                    && record.pre_dispatch_stop.as_ref() == Some(reason)
+                {
+                    return Ok(Some(record.clone()));
+                }
+            }
+            Event::Observe { request_id, output } => {
+                let record = self
+                    .native
+                    .records
+                    .get(request_id)
+                    .ok_or(Error::RequestNotFound)?;
+                if record.observation.as_ref() == Some(output) {
+                    return Ok(Some(record.clone()));
+                }
+            }
+        }
+        Ok(None)
     }
 }
 
