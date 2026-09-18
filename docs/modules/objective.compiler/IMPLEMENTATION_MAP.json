@@ -292,7 +292,7 @@
     "callerPath": "codex-rs/hepta-intelligence/src/production_objective.rs",
     "durableOwner": "learning.ledger",
     "durableEvent": "RunStartPublicationV1",
-    "runtimeConsumer": "codex_hepta_agentd::start_intelligence_run_v1",
+    "runtimeConsumer": "codex_hepta_agentd::start_published_intelligence_run_v1",
     "runtimeConsumerPath": "codex-rs/hepta-agentd/src/objective_host.rs",
     "authority": "deny_all",
     "state": "candidate_implemented_pending_exact_head_qualification",
@@ -300,7 +300,8 @@
       "generation": "RunStartSnapshotV1.generation == RuntimeComposition.agentd_generation",
       "authorityEpoch": "RunStartSnapshotV1.authority_epoch == RuntimeComposition.authority_epoch",
       "fence": "RunStartSnapshotV1.fence_digest == RuntimeComposition.fence_digest"
-    }
+    },
+    "publicRuntimeHandoff": "ProductionObjectiveStartReceiptV1 (opaque; raw IntelligenceHostEnvelopeV1 is not an Agentd public start surface)"
   },
   "measurementQualification": {
     "workflow": ".github/workflows/hepta-objective-product-composition.yml",
