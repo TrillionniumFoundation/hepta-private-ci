@@ -7,11 +7,14 @@ use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
+use codex_app_server_client::APP_SERVER_V2_PROTOCOL_VERSION;
 use codex_app_server_protocol::AdditionalContextEntry;
 use codex_app_server_protocol::AdditionalContextKind;
 use codex_app_server_protocol::AskForApproval;
@@ -20,6 +23,8 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::ThreadReadParams;
+use codex_app_server_protocol::ThreadReadResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
@@ -31,14 +36,32 @@ use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
+use codex_hepta_codex_adapter::AdapterStatus;
+use codex_hepta_codex_adapter::AdmissionFailure;
+use codex_hepta_codex_adapter::CodexOperationIntent;
+use codex_hepta_codex_adapter::DispatchedCodexOperation;
+use codex_hepta_codex_adapter::ReconcileOutcome;
+use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
+use codex_hepta_codex_adapter::TurnStartOutcome;
+use codex_hepta_codex_adapter::adapt as adapt_codex_terminal;
+use codex_hepta_codex_adapter::admit_verified_turn;
+use codex_hepta_codex_adapter::final_use_binding;
+use codex_hepta_codex_adapter::reconcile_thread_read;
+use codex_hepta_codex_adapter::turn_input_digest;
+use codex_hepta_codex_adapter::turn_start_payload_digest;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
+#[path = "final_use_channel.rs"]
+mod final_use_channel;
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
@@ -62,6 +85,23 @@ pub struct NativeWorkerConfig {
     pub generation: u64,
     pub model: String,
     pub timeout: Duration,
+}
+
+pub struct NativeFinalUseRuntime {
+    pub authority_socket: PathBuf,
+    pub authority: FinalUseAuthority,
+}
+
+impl NativeFinalUseRuntime {
+    pub fn new(authority_socket: PathBuf, authority: FinalUseAuthority) -> Result<Self> {
+        if !authority_socket.is_absolute() {
+            return Err("final-use authority socket must be absolute".into());
+        }
+        Ok(Self {
+            authority_socket,
+            authority,
+        })
+    }
 }
 
 /// A real provider client. Each new request uses a fresh ephemeral thread
@@ -93,6 +133,7 @@ impl AppServerModelDriver {
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
+        final_use: Option<&NativeFinalUseRuntime>,
         cancellation: &CancellationToken,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
