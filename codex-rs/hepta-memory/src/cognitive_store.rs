@@ -1115,7 +1115,7 @@ async fn verify_current_projection_contents(
         let v2_receipt = sqlx::query(
             "SELECT source_snapshot_sha256, generation_digest,
                     predecessor_generation, predecessor_generation_digest,
-                    publication_digest
+                    disposition, publication_digest
              FROM kg_projection_v2_generation_receipts
              WHERE projection_scope = ? AND generation = ?",
         )
@@ -1193,12 +1193,25 @@ async fn verify_current_projection_contents(
                 .map_err(unavailable)?
                 .parse::<Digest32>()
                 .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            let disposition = match v2_receipt
+                .try_get::<String, _>("disposition")
+                .map_err(unavailable)?
+                .as_str()
+            {
+                "published" => KnowledgePublicationDispositionV2::Published,
+                "unchanged" => KnowledgePublicationDispositionV2::Unchanged,
+                _ => {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "invalid KG V2 publication disposition".to_string(),
+                    ));
+                }
+            };
             KnowledgePublicationReceiptV2 {
                 generation: generation_value,
                 predecessor_generation,
                 predecessor_digest,
                 generation_digest: stored_generation_digest,
-                disposition: KnowledgePublicationDispositionV2::Published,
+                disposition,
                 publication_digest,
                 authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
             }
