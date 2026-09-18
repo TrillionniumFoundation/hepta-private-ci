@@ -578,7 +578,10 @@ pub fn recall(
     let (disposition, selections, omitted_count) = match reason {
         Some(reason) => (RecallDispositionV1::Abstained(reason), Vec::new(), 0),
         None => {
-            let omitted_count = union.entries.len().saturating_sub(deliverable_entries.len());
+            let omitted_count = union
+                .entries
+                .len()
+                .saturating_sub(deliverable_entries.len());
             let selections = deliverable_entries
                 .iter()
                 .map(|entry| RecallSelectionV1 {

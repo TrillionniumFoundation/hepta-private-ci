@@ -223,9 +223,7 @@ fn request_binding_digest(request: &OwnerRankRequestV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn canonical_evidence_channels(
-    channels: &[OwnerEvidenceChannelV1],
-) -> Vec<OwnerEvidenceChannelV1> {
+fn canonical_evidence_channels(channels: &[OwnerEvidenceChannelV1]) -> Vec<OwnerEvidenceChannelV1> {
     let mut channels = channels.to_vec();
     channels.sort();
     channels
