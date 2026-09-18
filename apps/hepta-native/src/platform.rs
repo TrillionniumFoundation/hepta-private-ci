@@ -83,35 +83,12 @@ pub trait PlatformAdapter: Send {
     }
 }
 
-#[derive(Default)]
-pub struct SystemPlatformAdapter {
-    clipboard: Option<arboard::Clipboard>,
-}
-
-impl std::fmt::Debug for SystemPlatformAdapter {
-    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        formatter
-            .debug_struct("SystemPlatformAdapter")
-            .field("clipboard", &self.clipboard.as_ref().map(|_| "[OPEN]"))
-            .finish()
-    }
-}
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SystemPlatformAdapter;
 
 impl SystemPlatformAdapter {
     pub fn new() -> Self {
-        Self::default()
-    }
-
-    fn clipboard(&mut self) -> Result<&mut arboard::Clipboard, PlatformError> {
-        if self.clipboard.is_none() {
-            self.clipboard = Some(
-                arboard::Clipboard::new()
-                    .map_err(|error| PlatformError::Adapter(error.to_string()))?,
-            );
-        }
-        self.clipboard
-            .as_mut()
-            .ok_or_else(|| PlatformError::Adapter("clipboard unavailable".to_string()))
+        Self
     }
 }
 
@@ -125,7 +102,9 @@ impl PlatformAdapter for SystemPlatformAdapter {
         validate_payload(&action, payload)?;
         match (action, payload) {
             (PlatformAction::CopyText, PlatformPayload::Text { text }) => {
-                self.clipboard()?
+                let mut clipboard = arboard::Clipboard::new()
+                    .map_err(|error| PlatformError::Adapter(error.to_string()))?;
+                clipboard
                     .set_text(text.clone())
                     .map_err(|error| PlatformError::Adapter(error.to_string()))?;
                 Ok(PlatformObservation::succeeded("clipboard-write-observed"))
