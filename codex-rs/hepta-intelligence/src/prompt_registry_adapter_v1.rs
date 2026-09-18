@@ -183,6 +183,7 @@ fn adapt_binding(
     }
     let admission_digest = registry
         .registry()
+        .map_err(|_| PromptRegistryAdapterErrorV1::OwnerRejected)?
         .admission_event_digest(&binding.factor_id)
         .ok_or_else(|| {
             PromptRegistryAdapterErrorV1::MissingAdmissionLineage(binding.factor_id.to_string())
