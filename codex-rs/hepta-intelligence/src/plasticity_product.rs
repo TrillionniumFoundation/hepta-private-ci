@@ -414,10 +414,17 @@ pub fn propose_authenticated_parameter_plasticity_v1(
             return Err(E::Registry(error));
         }
     };
-    let committed_registry_anchor = writer
-        .registry
-        .current_anchor()?
-        .ok_or(E::Registry(DurableProposalRegistryError::Corrupt))?;
+    let committed_registry_anchor = match writer.registry.current_anchor() {
+        Ok(Some(anchor)) => anchor,
+        Ok(None) => {
+            writer.state = PlasticityWriterStateV1::Poisoned;
+            return Err(E::Registry(DurableProposalRegistryError::Corrupt));
+        }
+        Err(error) => {
+            writer.state = PlasticityWriterStateV1::Poisoned;
+            return Err(E::Registry(error));
+        }
+    };
     if !anchor_committer.persist_anchor(
         writer.registry_scope_digest,
         writer.writer_fence,

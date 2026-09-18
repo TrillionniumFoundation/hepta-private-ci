@@ -390,10 +390,11 @@ pub fn propose_agentd_topology_plasticity_v1(
             writer.state = if matches!(
                 error,
                 TopologyPlasticityProductErrorV1::Registry(
-                    DurableTopologyRegistryErrorV1::Indeterminate
+                    DurableTopologyRegistryErrorV1::Corrupt
+                        | DurableTopologyRegistryErrorV1::Indeterminate
                         | DurableTopologyRegistryErrorV1::Poisoned
                         | DurableTopologyRegistryErrorV1::Io(_)
-                )
+                ) | TopologyPlasticityProductErrorV1::MissingAnchor
             ) {
                 AgentdTopologyWriterStateV1::Poisoned
             } else {
