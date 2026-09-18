@@ -125,7 +125,15 @@ pub fn topology_generation_signing_payload_v1(
     push_len(&mut bytes, changes.len());
     for change in changes {
         push_id(&mut bytes, &change.module_id);
-        bytes.push(change.operation as u8);
+        bytes.push(match change.operation {
+            codex_hepta_plasticity::TopologyOperationV2::Add => 0,
+            codex_hepta_plasticity::TopologyOperationV2::Remove => 1,
+            codex_hepta_plasticity::TopologyOperationV2::Replace => 2,
+            codex_hepta_plasticity::TopologyOperationV2::Split => 3,
+            codex_hepta_plasticity::TopologyOperationV2::Merge => 4,
+            codex_hepta_plasticity::TopologyOperationV2::Rewire => 5,
+            codex_hepta_plasticity::TopologyOperationV2::Retire => 6,
+        });
         push_optional_digest(&mut bytes, change.predecessor_digest);
         push_optional_digest(&mut bytes, change.candidate_digest);
         for digest in [

@@ -132,6 +132,7 @@ pub struct DurableTopologyProposalRegistryV1 {
     maximum_records: usize,
     by_slot: BTreeMap<TopologySlotV1, GovernedTopologyProposalV1>,
     by_id: BTreeMap<StableId, TopologySlotV1>,
+    receipts: BTreeMap<StableId, DurableTopologyAppendReceiptV1>,
     frame_digests: Vec<Digest32>,
     poisoned: bool,
 }
@@ -228,6 +229,7 @@ impl DurableTopologyProposalRegistryV1 {
             maximum_records,
             by_slot: BTreeMap::new(),
             by_id: BTreeMap::new(),
+            receipts: BTreeMap::new(),
             frame_digests: Vec::new(),
             poisoned: false,
         };
@@ -270,7 +272,23 @@ impl DurableTopologyProposalRegistryV1 {
             {
                 return Err(DurableTopologyRegistryErrorV1::Corrupt);
             }
+            let proposal_id = decoded.record.proposal.proposal_id.clone();
+            let proposal_digest = decoded.record.proposal.proposal_digest;
+            let admission_digest = decoded.record.admission_digest;
             if store.insert_memory(decoded.record)? != AppendDisposition::Inserted {
+                return Err(DurableTopologyRegistryErrorV1::Corrupt);
+            }
+            let replay_receipt = DurableTopologyAppendReceiptV1 {
+                sequence: decoded.sequence,
+                proposal_id: proposal_id.clone(),
+                proposal_digest,
+                admission_digest,
+                frame_digest: decoded.frame_digest,
+                predecessor_frame_digest: decoded.predecessor_frame_digest,
+                disposition: AppendDisposition::Inserted,
+                authority: AuthorityPosture::DENY_ALL,
+            };
+            if store.receipts.insert(proposal_id, replay_receipt).is_some() {
                 return Err(DurableTopologyRegistryErrorV1::Corrupt);
             }
             store.frame_digests.push(decoded.frame_digest);
@@ -321,29 +339,13 @@ impl DurableTopologyProposalRegistryV1 {
             && let Some(existing) = self.by_slot.get(slot)
             && existing == &record
         {
-            let index = self
-                .by_slot
-                .keys()
-                .position(|candidate| candidate == slot)
+            let mut receipt = self
+                .receipts
+                .get(&record.proposal.proposal_id)
+                .cloned()
                 .ok_or(DurableTopologyRegistryErrorV1::Corrupt)?;
-            let frame_digest = *self
-                .frame_digests
-                .get(index)
-                .ok_or(DurableTopologyRegistryErrorV1::Corrupt)?;
-            return Ok(DurableTopologyAppendReceiptV1 {
-                sequence: index as u64 + 1,
-                proposal_id: record.proposal.proposal_id,
-                proposal_digest: record.proposal.proposal_digest,
-                admission_digest: record.admission_digest,
-                frame_digest,
-                predecessor_frame_digest: if index == 0 {
-                    Digest32::ZERO
-                } else {
-                    self.frame_digests[index - 1]
-                },
-                disposition: AppendDisposition::Unchanged,
-                authority: AuthorityPosture::DENY_ALL,
-            });
+            receipt.disposition = AppendDisposition::Unchanged;
+            return Ok(receipt);
         }
         let current = self
             .frame_digests
@@ -379,20 +381,22 @@ impl DurableTopologyProposalRegistryV1 {
             .and_then(|_| self.file.write_all(&frame))
             .and_then(|_| self.file.sync_data())
             .map_err(|_| DurableTopologyRegistryErrorV1::Indeterminate)?;
-        self.by_slot = candidate_slots;
-        self.by_id = candidate_ids;
-        self.frame_digests.push(frame_digest);
-        self.poisoned = false;
-        Ok(DurableTopologyAppendReceiptV1 {
+        let receipt = DurableTopologyAppendReceiptV1 {
             sequence,
-            proposal_id: record.proposal.proposal_id,
+            proposal_id: record.proposal.proposal_id.clone(),
             proposal_digest: record.proposal.proposal_digest,
             admission_digest: record.admission_digest,
             frame_digest,
             predecessor_frame_digest: expected_predecessor_frame_digest,
             disposition: AppendDisposition::Inserted,
             authority: AuthorityPosture::DENY_ALL,
-        })
+        };
+        self.by_slot = candidate_slots;
+        self.by_id = candidate_ids;
+        self.receipts.insert(receipt.proposal_id.clone(), receipt.clone());
+        self.frame_digests.push(frame_digest);
+        self.poisoned = false;
+        Ok(receipt)
     }
 
     pub fn current_anchor(
