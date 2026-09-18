@@ -193,10 +193,10 @@ fn open_store(path: &Path) -> Result<NduProjectionFileStoreV1, NduProjectionStor
     }
     match lock_file.try_lock() {
         Ok(()) => {}
-        Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+        Err(std::fs::TryLockError::WouldBlock) => {
             return Err(NduProjectionStoreError::WriterBusy);
         }
-        Err(_) => return Err(NduProjectionStoreError::Io),
+        Err(std::fs::TryLockError::Error(_)) => return Err(NduProjectionStoreError::Io),
     }
 
     if let Ok(metadata) = std::fs::symlink_metadata(&temp_path) {
