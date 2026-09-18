@@ -248,6 +248,11 @@ def verify() -> int:
         "protocol closure",
     )
     protocol_rows = {item["id"]: item for item in spec["protocols"]}
+    two_sided_protocols = {
+        "ModalitySpanRefV1",
+        "MemoryEventV1",
+        "CrossModalBindingV1",
+    }
     for protocol in PROTOCOLS:
         row = protocol_rows[protocol]
         native_path = PROTOCOL_NATIVE_PATHS[protocol]
@@ -270,6 +275,35 @@ def verify() -> int:
             row.get("canonicalBytePolicy") == "exact_reserialization_match",
             f"{protocol}: canonical bytes",
         )
+        if protocol in two_sided_protocols:
+            need(
+                row.get("productionConformanceTest")
+                == "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
+                f"{protocol}: two-sided conformance test",
+            )
+            need(
+                row.get("conformanceClass") == "two_sided_shared_fixture",
+                f"{protocol}: two-sided conformance class",
+            )
+            need(
+                row.get("referenceOracle") == "qualification/hnmf-contract-reference",
+                f"{protocol}: contract reference oracle",
+            )
+        else:
+            need(
+                row.get("productionConformanceTest")
+                == "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs",
+                f"{protocol}: production wire conformance test",
+            )
+            need(
+                row.get("conformanceClass")
+                == "production_strict_wire_with_runtime_semantic_oracle",
+                f"{protocol}: runtime semantic conformance class",
+            )
+            need(
+                row.get("referenceOracle") == "qualification/hnmf-reference/src/lib.rs",
+                f"{protocol}: runtime semantic oracle",
+            )
 
     need(
         protocol_rows["ModalitySpanRefV1"].get("requiredFields")
@@ -324,6 +358,36 @@ def verify() -> int:
         "native wire golden vector",
     )
     need(native_binding.get("productionActivationClaimed") is False, "native activation claim")
+    need(
+        native_binding.get("contractReferenceOracle")
+        == "qualification/hnmf-contract-reference",
+        "native contract reference oracle",
+    )
+    need(
+        native_binding.get("runtimeSemanticOracle")
+        == "qualification/hnmf-reference",
+        "native runtime semantic oracle",
+    )
+    conformance_evidence = spec.get("conformanceEvidence", {})
+    need(
+        conformance_evidence.get("sharedFixture")
+        == "codex-rs/hepta-cognitive-types/tests/data/hnmf_conformance_v1.json",
+        "shared conformance fixture",
+    )
+    need(
+        set(conformance_evidence.get("twoSidedWireSemanticProtocols", []))
+        == two_sided_protocols,
+        "two-sided conformance protocol scope",
+    )
+    need(
+        conformance_evidence.get("fullProductionWireRoundTripProtocols") == PROTOCOLS,
+        "full production wire round-trip scope",
+    )
+    need(
+        conformance_evidence.get("deterministicRuntimeSemanticOracle")
+        == "qualification/hnmf-reference/src/lib.rs",
+        "deterministic runtime semantic oracle",
+    )
     need(
         [item.get("id") for item in spec.get("workPackages", [])] == WORK_PACKAGES,
         "work-package closure",
