@@ -40,7 +40,9 @@ fn required_metadata_binding_prevents_v1_downgrade() -> Result<(), Box<dyn Error
     let local = NegotiationOffer::current();
     let remote = NegotiationOffer::new(
         vec![1],
-        WireCapabilities::SCHEMA_ADMISSION.union(WireCapabilities::STREAM_DECODING),
+        WireCapabilities::METADATA_BOUND_DIGEST
+            .union(WireCapabilities::SCHEMA_ADMISSION)
+            .union(WireCapabilities::STREAM_DECODING),
     )?;
     assert!(matches!(
         negotiate(
