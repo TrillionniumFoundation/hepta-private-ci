@@ -472,7 +472,7 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         input: &CompositionPortInputV3,
     ) -> Result<CompositionPortReceiptV3, PortFailureV1> {
         let objective_digest = self.objective_digest(input)?;
-        let (selected, propensity, intuition_digest) = {
+        let (selected, propensity, intuition_digest, requires_evaluation) = {
             let intuition = self.intuition.as_ref().ok_or_else(|| {
                 native_failure(
                     input,
@@ -480,42 +480,62 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
                     "intuition-not-decided",
                 )
             })?;
-            let selected = match &intuition.disposition {
-                CalibratedDispositionV1::Selected(candidate) => candidate.clone(),
-                CalibratedDispositionV1::Abstained(_) | CalibratedDispositionV1::SlowPath(_) => {
-                    return Err(native_failure(
-                        input,
-                        PortFailureClassV1::Rejected,
-                        "non-selected-decision",
-                    ));
+            let (selected, propensity, requires_evaluation) = match &intuition.disposition {
+                CalibratedDispositionV1::Selected(candidate) => {
+                    let propensity = intuition
+                        .propensities
+                        .iter()
+                        .find(|row| row.candidate_id == *candidate)
+                        .map(|row| row.probability);
+                    (candidate.clone(), propensity, true)
                 }
+                CalibratedDispositionV1::Abstained(_) => (
+                    StableId::new("abstain").map_err(|_| {
+                        native_failure(input, PortFailureClassV1::Rejected, "abstain-id")
+                    })?,
+                    Some(intuition.abstain_probability),
+                    false,
+                ),
+                CalibratedDispositionV1::SlowPath(_) => (
+                    StableId::new("shadow:slow-path").map_err(|_| {
+                        native_failure(input, PortFailureClassV1::Rejected, "slow-path-id")
+                    })?,
+                    Some(intuition.slow_path_probability),
+                    false,
+                ),
             };
-            let propensity = intuition
-                .propensities
-                .iter()
-                .find(|row| row.candidate_id == selected)
-                .map(|row| row.probability)
-                .filter(|value| value.raw() > 0)
+            let propensity = propensity.filter(|value| value.raw() > 0).ok_or_else(|| {
+                native_failure(
+                    input,
+                    PortFailureClassV1::Rejected,
+                    "missing-propensity",
+                )
+            })?;
+            (
+                selected,
+                propensity,
+                intuition.receipt_digest,
+                requires_evaluation,
+            )
+        };
+        let evaluation_digest = if requires_evaluation {
+            self.evaluation
+                .as_ref()
                 .ok_or_else(|| {
                     native_failure(
                         input,
                         PortFailureClassV1::Rejected,
-                        "missing-propensity",
+                        "evaluation-not-admitted",
                     )
-                })?;
-            (selected, propensity, intuition.receipt_digest)
+                })?
+                .evidence_digest
+        } else {
+            let mut bytes = b"hepta.intelligence.no-dispatch-evaluation.v3\0".to_vec();
+            bytes.extend_from_slice(input.predecessor_digest.as_array());
+            bytes.extend_from_slice(intuition_digest.as_array());
+            bytes.extend_from_slice(self.candidate_set.digest().as_array());
+            Digest32::of_bytes(&bytes)
         };
-        let evaluation_digest = self
-            .evaluation
-            .as_ref()
-            .ok_or_else(|| {
-                native_failure(
-                    input,
-                    PortFailureClassV1::Rejected,
-                    "evaluation-not-admitted",
-                )
-            })?
-            .evidence_digest;
         let (episode_id, policy_id, expected_head) = {
             let inputs = self.inputs_mut(input, "missing-ledger-input")?;
             (
