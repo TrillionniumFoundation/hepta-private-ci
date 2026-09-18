@@ -189,3 +189,77 @@ fn overload_is_the_only_backoff_safe_transport_rejection() {
     assert_eq!(receipt.status, AdapterStatus::Rejected);
     assert_eq!(receipt.retry, RetryDisposition::Never);
 }
+
+#[test]
+fn protocol_and_generation_mismatch_fail_closed() {
+    let observed = AppServerObservation::from_turn_completed(
+        id(APP_SERVER_V2_PROTOCOL_ID),
+        8,
+        12,
+        &terminal(TurnStatus::Completed),
+    )
+    .expect("well-formed observation");
+    assert_eq!(
+        adapt(1_000, intent(), Some(observed)),
+        Err(Error::CorrelationMismatch("generation"))
+    );
+
+    let observed = AppServerObservation::from_turn_completed(
+        id("codex.app-server.v3"),
+        7,
+        13,
+        &terminal(TurnStatus::Completed),
+    )
+    .expect("well-formed observation");
+    assert_eq!(
+        adapt(1_000, intent(), Some(observed)),
+        Err(Error::CorrelationMismatch("protocol"))
+    );
+}
+
+#[test]
+fn timeout_unavailable_and_quarantine_never_become_success() {
+    let cases = [
+        (
+            AppServerObservation::timed_out(
+                id("thread:1"),
+                Some(id("turn:1")),
+                id(APP_SERVER_V2_PROTOCOL_ID),
+                7,
+                20,
+            )
+            .unwrap(),
+            AdapterStatus::TimedOut,
+        ),
+        (
+            AppServerObservation::unavailable(
+                id("thread:1"),
+                Some(id("turn:1")),
+                id(APP_SERVER_V2_PROTOCOL_ID),
+                7,
+                21,
+            )
+            .unwrap(),
+            AdapterStatus::Unavailable,
+        ),
+        (
+            AppServerObservation::quarantined(
+                id("thread:1"),
+                Some(id("turn:1")),
+                id(APP_SERVER_V2_PROTOCOL_ID),
+                7,
+                22,
+            )
+            .unwrap(),
+            AdapterStatus::Quarantined,
+        ),
+    ];
+
+    for (observation, expected) in cases {
+        let receipt = adapt(1_000, intent(), Some(observation)).unwrap();
+        assert_eq!(receipt.status, expected);
+        assert_eq!(receipt.retry, RetryDisposition::ReconcileBeforeRetry);
+        assert_eq!(receipt.terminal_outcome, None);
+        assert!(!receipt.authority.grants_any());
+    }
+}
