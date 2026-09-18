@@ -104,6 +104,23 @@ impl fmt::Display for SparseError {
 }
 impl StdError for SparseError {}
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct SparseAblationV1 {
+    pub no_temporal_state: bool,
+    pub no_inhibition: bool,
+    pub no_homeostasis: bool,
+    pub no_eligibility: bool,
+}
+
+impl SparseAblationV1 {
+    pub const NONE: Self = Self {
+        no_temporal_state: false,
+        no_inhibition: false,
+        no_homeostasis: false,
+        no_eligibility: false,
+    };
+}
+
 impl SparseConfig {
     /// Bounded production mechanism profile; no small-fixture ratio exception.
     pub fn digest(&self) -> Result<Digest32, SparseError> {
@@ -308,6 +325,16 @@ pub fn sparse_tick(
     input: &SparseTick,
     previous: Option<&SparseCheckpoint>,
 ) -> Result<(SparseCheckpoint, SparseSignalReceipt), SparseError> {
+    sparse_tick_ablated(config, input, previous, SparseAblationV1::NONE)
+}
+
+/// Qualification-only lesion runner. Product callers use `sparse_tick`.
+pub fn sparse_tick_ablated(
+    config: &SparseConfig,
+    input: &SparseTick,
+    previous: Option<&SparseCheckpoint>,
+    ablation: SparseAblationV1,
+) -> Result<(SparseCheckpoint, SparseSignalReceipt), SparseError> {
     let config_digest = config.digest()?;
     if [
         input.scope_digest,
@@ -383,16 +410,22 @@ pub fn sparse_tick(
         digest: Digest32::ZERO,
     };
     let mut inhibition = vec![0_i64; config.width];
-    if let Some(prior) = previous {
-        for edge in &config.inhibition {
-            inhibition[edge.target] += mul(edge.weight_q24, prior.activation[edge.source]);
+    if !ablation.no_inhibition {
+        if let Some(prior) = previous {
+            for edge in &config.inhibition {
+                inhibition[edge.target] += mul(edge.weight_q24, prior.activation[edge.source]);
+            }
         }
     }
     let mut scores = Vec::with_capacity(config.width);
     let mut projections = 0_u32;
     for (index, drive) in input.drive_q24.iter().enumerate() {
         let old_h = previous.map_or(0, |p| p.temporal[index]);
-        let raw_h = mul(config.temporal_decay_q24, old_h) + drive;
+        let raw_h = if ablation.no_temporal_state {
+            *drive
+        } else {
+            mul(config.temporal_decay_q24, old_h) + drive
+        };
         next.temporal[index] = raw_h.clamp(-H, H);
         projections += u32::from(raw_h != next.temporal[index]);
         next.threshold[index] = previous.map_or(
@@ -414,18 +447,27 @@ pub fn sparse_tick(
     for (index, drive) in input.drive_q24.iter().enumerate() {
         let active = if next.activation[index] > 0 { Q } else { 0 };
         let old_rate = previous.map_or(0, |p| p.activity[index]);
-        next.activity[index] =
-            mul(config.activity_decay_q24, old_rate) + mul(Q - config.activity_decay_q24, active);
-        let raw_theta = next.threshold[index]
-            + mul(
-                config.threshold_rate_q24,
-                next.activity[index] - config.target_activity_q24,
-            );
-        next.threshold[index] = raw_theta.clamp(config.threshold_min_q24, config.threshold_max_q24);
-        projections += u32::from(raw_theta != next.threshold[index]);
-        let old_e = previous.map_or(0, |p| p.eligibility[index]);
-        next.eligibility[index] =
-            mul(config.eligibility_decay_q24, old_e) + mul(*drive, next.activation[index]);
+        if ablation.no_homeostasis {
+            next.activity[index] = old_rate;
+        } else {
+            next.activity[index] =
+                mul(config.activity_decay_q24, old_rate) + mul(Q - config.activity_decay_q24, active);
+            let raw_theta = next.threshold[index]
+                + mul(
+                    config.threshold_rate_q24,
+                    next.activity[index] - config.target_activity_q24,
+                );
+            next.threshold[index] =
+                raw_theta.clamp(config.threshold_min_q24, config.threshold_max_q24);
+            projections += u32::from(raw_theta != next.threshold[index]);
+        }
+        if ablation.no_eligibility {
+            next.eligibility[index] = 0;
+        } else {
+            let old_e = previous.map_or(0, |p| p.eligibility[index]);
+            next.eligibility[index] =
+                mul(config.eligibility_decay_q24, old_e) + mul(*drive, next.activation[index]);
+        }
     }
     let norm: i64 = next.eligibility.iter().map(|v| v.abs()).sum();
     if norm > ELIGIBILITY_L1 {
