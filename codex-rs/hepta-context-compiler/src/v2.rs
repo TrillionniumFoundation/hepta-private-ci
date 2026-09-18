@@ -873,15 +873,38 @@ pub fn compile_v2(
     Ok(compiled)
 }
 
+#[derive(Clone, Eq, PartialEq)]
+pub struct ContextMaterializedItemV2 {
+    pub item_id: StableId,
+    pub content: Vec<u8>,
+}
+
+impl fmt::Debug for ContextMaterializedItemV2 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("ContextMaterializedItemV2")
+            .field("item_id", &self.item_id)
+            .field("content_digest", &Digest32::of_bytes(&self.content))
+            .field("content_bytes", &self.content.len())
+            .finish()
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextSerializationReceiptV2 {
     pub serialization_id: StableId,
     pub compilation_receipt_digest: Digest32,
     pub context_digest: Digest32,
     pub model_profile_digest: Digest32,
+    pub serializer_digest: Digest32,
+    pub template_digest: Digest32,
+    pub tool_schema_digest: Digest32,
+    pub tokenizer_digest: Digest32,
     pub selected_item_ids: Vec<StableId>,
+    pub materialization_digest: Digest32,
     pub payload_digest: Digest32,
     pub serialized_token_count: u64,
+    pub serialized_at_unix_ms: u64,
     pub receipt_digest: Digest32,
     pub authority: AuthorityPosture,
 }
@@ -893,6 +916,11 @@ impl ContextSerializationReceiptV2 {
             ("compilation_receipt", self.compilation_receipt_digest),
             ("context", self.context_digest),
             ("model_profile", self.model_profile_digest),
+            ("serializer", self.serializer_digest),
+            ("template", self.template_digest),
+            ("tool_schema", self.tool_schema_digest),
+            ("tokenizer", self.tokenizer_digest),
+            ("materialization", self.materialization_digest),
             ("payload", self.payload_digest),
             ("serialization_receipt", self.receipt_digest),
         ] {
@@ -901,10 +929,24 @@ impl ContextSerializationReceiptV2 {
         if self.compilation_receipt_digest != compiled.receipt.receipt_digest
             || self.context_digest != compiled.receipt.context_digest
             || self.model_profile_digest != compiled.receipt.model_profile_digest
+            || self.serializer_digest != compiled.model_profile.serializer_digest
+            || self.template_digest != compiled.model_profile.template_digest
+            || self.tool_schema_digest != compiled.model_profile.tool_schema_digest
+            || self.tokenizer_digest != compiled.model_profile.tokenizer_digest
             || self.selected_item_ids != compiled.receipt.selected_item_ids
-            || self.serialized_token_count != compiled.receipt.used_tokens
         {
             return Err(ContextCompilerV2Error::SerializationMismatch);
+        }
+        if self.serialized_token_count == 0
+            || self.serialized_token_count > compiled.receipt.token_upper_bound
+        {
+            return Err(ContextCompilerV2Error::SerializedTokenBudgetExceeded {
+                serialized_tokens: self.serialized_token_count,
+                token_budget: compiled.receipt.token_upper_bound,
+            });
+        }
+        if self.serialized_at_unix_ms < compiled.receipt.compiled_at_unix_ms {
+            return Err(ContextCompilerV2Error::InvalidSerializationTime);
         }
         if self.authority.grants_any() {
             return Err(ContextCompilerV2Error::AuthorityGranted);
@@ -922,68 +964,248 @@ impl ContextSerializationReceiptV2 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(SERIALIZATION_DOMAIN);
         push_id(&mut bytes, &self.serialization_id);
-        push_digest(&mut bytes, self.compilation_receipt_digest);
-        push_digest(&mut bytes, self.context_digest);
-        push_digest(&mut bytes, self.model_profile_digest);
+        for digest in [
+            self.compilation_receipt_digest,
+            self.context_digest,
+            self.model_profile_digest,
+            self.serializer_digest,
+            self.template_digest,
+            self.tool_schema_digest,
+            self.tokenizer_digest,
+        ] {
+            push_digest(&mut bytes, digest);
+        }
         push_ids(&mut bytes, &self.selected_item_ids);
+        push_digest(&mut bytes, self.materialization_digest);
         push_digest(&mut bytes, self.payload_digest);
         push_u64(&mut bytes, self.serialized_token_count);
+        push_u64(&mut bytes, self.serialized_at_unix_ms);
         Digest32::of_bytes(&bytes)
     }
 }
 
-pub fn record_serialization(
+#[derive(Clone, Eq, PartialEq)]
+pub struct SerializedContextV2 {
+    receipt: ContextSerializationReceiptV2,
+    payload: Vec<u8>,
+}
+
+impl fmt::Debug for SerializedContextV2 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("SerializedContextV2")
+            .field("receipt", &self.receipt)
+            .field("payload_digest", &Digest32::of_bytes(&self.payload))
+            .field("payload_bytes", &self.payload.len())
+            .finish()
+    }
+}
+
+impl SerializedContextV2 {
+    #[must_use]
+    pub fn receipt(&self) -> &ContextSerializationReceiptV2 {
+        &self.receipt
+    }
+
+    #[must_use]
+    pub fn payload(&self) -> &[u8] {
+        &self.payload
+    }
+
+    pub fn validate_with(
+        &self,
+        compiled: &CompiledContextV2,
+        tokenizer: &impl ExactContextTokenizerV2,
+    ) -> Result<(), ContextCompilerV2Error> {
+        self.receipt.validate_for(compiled)?;
+        if self.payload.is_empty() || self.payload.len() > MAX_CONTEXT_SERIALIZED_BYTES_V2 {
+            return Err(ContextCompilerV2Error::InvalidSerializedPayloadBytes);
+        }
+        if Digest32::of_bytes(&self.payload) != self.receipt.payload_digest {
+            return Err(ContextCompilerV2Error::DigestMismatch("serialized_payload"));
+        }
+        if tokenizer.tokenizer_digest() != compiled.model_profile.tokenizer_digest {
+            return Err(ContextCompilerV2Error::SerializationTokenizerMismatch);
+        }
+        let token_count = tokenizer
+            .count_tokens(&self.payload)
+            .map_err(ContextCompilerV2Error::TokenizerFailure)?;
+        if token_count != self.receipt.serialized_token_count {
+            return Err(ContextCompilerV2Error::SerializationTokenCountMismatch);
+        }
+        Ok(())
+    }
+}
+
+pub fn serialize_context_exact(
     compiled: &CompiledContextV2,
     serialization_id: StableId,
-    payload_digest: Digest32,
-) -> Result<ContextSerializationReceiptV2, ContextCompilerV2Error> {
+    items: Vec<ContextMaterializedItemV2>,
+    serializer: &impl ContextSerializerV2,
+    tokenizer: &impl ExactContextTokenizerV2,
+    serialized_at_unix_ms: u64,
+) -> Result<SerializedContextV2, ContextCompilerV2Error> {
     compiled.validate()?;
-    ensure_digest("payload", payload_digest)?;
+    if serializer.serializer_digest() != compiled.model_profile.serializer_digest
+        || serializer.template_digest() != compiled.model_profile.template_digest
+        || serializer.tool_schema_digest() != compiled.model_profile.tool_schema_digest
+    {
+        return Err(ContextCompilerV2Error::SerializerProfileMismatch);
+    }
+    if tokenizer.tokenizer_digest() != compiled.model_profile.tokenizer_digest {
+        return Err(ContextCompilerV2Error::SerializationTokenizerMismatch);
+    }
+    if serialized_at_unix_ms < compiled.receipt.compiled_at_unix_ms {
+        return Err(ContextCompilerV2Error::InvalidSerializationTime);
+    }
+    let materialization_digest = validate_materialization(compiled, &items)?;
+    let payload = serializer
+        .serialize(compiled, &items)
+        .map_err(ContextCompilerV2Error::SerializerFailure)?;
+    if payload.is_empty() || payload.len() > MAX_CONTEXT_SERIALIZED_BYTES_V2 {
+        return Err(ContextCompilerV2Error::InvalidSerializedPayloadBytes);
+    }
+    let serialized_token_count = tokenizer
+        .count_tokens(&payload)
+        .map_err(ContextCompilerV2Error::TokenizerFailure)?;
+    if serialized_token_count == 0 || serialized_token_count > compiled.receipt.token_upper_bound {
+        return Err(ContextCompilerV2Error::SerializedTokenBudgetExceeded {
+            serialized_tokens: serialized_token_count,
+            token_budget: compiled.receipt.token_upper_bound,
+        });
+    }
+    let payload_digest = Digest32::of_bytes(&payload);
     let mut receipt = ContextSerializationReceiptV2 {
         serialization_id,
         compilation_receipt_digest: compiled.receipt.receipt_digest,
         context_digest: compiled.receipt.context_digest,
         model_profile_digest: compiled.receipt.model_profile_digest,
+        serializer_digest: serializer.serializer_digest(),
+        template_digest: serializer.template_digest(),
+        tool_schema_digest: serializer.tool_schema_digest(),
+        tokenizer_digest: tokenizer.tokenizer_digest(),
         selected_item_ids: compiled.receipt.selected_item_ids.clone(),
+        materialization_digest,
         payload_digest,
-        serialized_token_count: compiled.receipt.used_tokens,
+        serialized_token_count,
+        serialized_at_unix_ms,
         receipt_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };
     receipt.receipt_digest = receipt.compute_receipt_digest();
-    receipt.validate_for(compiled)?;
-    Ok(receipt)
+    let serialized = SerializedContextV2 { receipt, payload };
+    serialized.validate_with(compiled, tokenizer)?;
+    Ok(serialized)
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct ContextAttachmentV2 {
-    pub attachment_id: StableId,
-    pub compilation_receipt_digest: Digest32,
-    pub serialization_receipt_digest: Digest32,
-    pub generation_vector_digest: Digest32,
-    pub model_profile_digest: Digest32,
-    pub payload_digest: Digest32,
-    pub selected_item_ids: Vec<StableId>,
-    pub attachment_digest: Digest32,
-    pub authority: AuthorityPosture,
+    attachment_id: StableId,
+    compilation_receipt_digest: Digest32,
+    serialization_receipt_digest: Digest32,
+    generation_vector_digest: Digest32,
+    model_profile_digest: Digest32,
+    provider_id_digest: Digest32,
+    provider_model_digest: Digest32,
+    admission_verifier_digest: Digest32,
+    admission_snapshot_digest: Digest32,
+    revocation_frontier_digest: Digest32,
+    payload_digest: Digest32,
+    serialized_token_count: u64,
+    selected_item_ids: Vec<StableId>,
+    attached_at_unix_ms: u64,
+    attachment_digest: Digest32,
+    authority: AuthorityPosture,
+    payload: Vec<u8>,
+}
+
+impl fmt::Debug for ContextAttachmentV2 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("ContextAttachmentV2")
+            .field("attachment_id", &self.attachment_id)
+            .field("payload_digest", &self.payload_digest)
+            .field("payload_bytes", &self.payload.len())
+            .field("serialized_token_count", &self.serialized_token_count)
+            .field("attachment_digest", &self.attachment_digest)
+            .finish()
+    }
 }
 
 impl ContextAttachmentV2 {
+    #[must_use]
+    pub fn attachment_digest(&self) -> Digest32 {
+        self.attachment_digest
+    }
+
+    #[must_use]
+    pub fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+
+    #[must_use]
+    pub fn payload(&self) -> &[u8] {
+        &self.payload
+    }
+
+    #[must_use]
+    pub fn model_profile_digest(&self) -> Digest32 {
+        self.model_profile_digest
+    }
+
+    #[must_use]
+    pub fn admission_snapshot_digest(&self) -> Digest32 {
+        self.admission_snapshot_digest
+    }
+
+    #[must_use]
+    pub fn revocation_frontier_digest(&self) -> Digest32 {
+        self.revocation_frontier_digest
+    }
+
+    #[must_use]
+    pub fn attached_at_unix_ms(&self) -> u64 {
+        self.attached_at_unix_ms
+    }
+
     pub fn validate(
         &self,
         compiled: &CompiledContextV2,
-        serialization: &ContextSerializationReceiptV2,
+        serialized: &SerializedContextV2,
     ) -> Result<(), ContextCompilerV2Error> {
         compiled.validate()?;
-        serialization.validate_for(compiled)?;
+        serialized.receipt.validate_for(compiled)?;
+        for (name, digest) in [
+            ("attachment_compilation", self.compilation_receipt_digest),
+            ("attachment_serialization", self.serialization_receipt_digest),
+            ("attachment_generation", self.generation_vector_digest),
+            ("attachment_model_profile", self.model_profile_digest),
+            ("attachment_provider_id", self.provider_id_digest),
+            ("attachment_provider_model", self.provider_model_digest),
+            ("attachment_admission_verifier", self.admission_verifier_digest),
+            ("attachment_admission_snapshot", self.admission_snapshot_digest),
+            ("attachment_revocation_frontier", self.revocation_frontier_digest),
+            ("attachment_payload", self.payload_digest),
+            ("attachment", self.attachment_digest),
+        ] {
+            ensure_digest(name, digest)?;
+        }
         if self.compilation_receipt_digest != compiled.receipt.receipt_digest
-            || self.serialization_receipt_digest != serialization.receipt_digest
+            || self.serialization_receipt_digest != serialized.receipt.receipt_digest
             || self.generation_vector_digest != compiled.receipt.generation_vector_digest
             || self.model_profile_digest != compiled.receipt.model_profile_digest
-            || self.payload_digest != serialization.payload_digest
+            || self.provider_id_digest != compiled.model_profile.provider_id_digest
+            || self.provider_model_digest != compiled.model_profile.provider_model_digest
+            || self.payload_digest != serialized.receipt.payload_digest
+            || self.serialized_token_count != serialized.receipt.serialized_token_count
             || self.selected_item_ids != compiled.receipt.selected_item_ids
+            || self.payload != serialized.payload
+            || Digest32::of_bytes(&self.payload) != self.payload_digest
         {
             return Err(ContextCompilerV2Error::AttachmentMismatch);
+        }
+        if self.attached_at_unix_ms < serialized.receipt.serialized_at_unix_ms {
+            return Err(ContextCompilerV2Error::InvalidAttachmentTime);
         }
         if self.authority.grants_any() {
             return Err(ContextCompilerV2Error::AuthorityGranted);
@@ -999,35 +1221,81 @@ impl ContextAttachmentV2 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(ATTACHMENT_DOMAIN);
         push_id(&mut bytes, &self.attachment_id);
-        push_digest(&mut bytes, self.compilation_receipt_digest);
-        push_digest(&mut bytes, self.serialization_receipt_digest);
-        push_digest(&mut bytes, self.generation_vector_digest);
-        push_digest(&mut bytes, self.model_profile_digest);
-        push_digest(&mut bytes, self.payload_digest);
+        for digest in [
+            self.compilation_receipt_digest,
+            self.serialization_receipt_digest,
+            self.generation_vector_digest,
+            self.model_profile_digest,
+            self.provider_id_digest,
+            self.provider_model_digest,
+            self.admission_verifier_digest,
+            self.admission_snapshot_digest,
+            self.revocation_frontier_digest,
+            self.payload_digest,
+        ] {
+            push_digest(&mut bytes, digest);
+        }
+        push_u64(&mut bytes, self.serialized_token_count);
         push_ids(&mut bytes, &self.selected_item_ids);
+        push_u64(&mut bytes, self.attached_at_unix_ms);
         Digest32::of_bytes(&bytes)
     }
 }
 
 pub fn build_attachment(
     compiled: &CompiledContextV2,
-    serialization: &ContextSerializationReceiptV2,
+    serialized: &SerializedContextV2,
     attachment_id: StableId,
+    current_admission_snapshot: &impl ContextAdmissionSnapshotVerifierV2,
+    tokenizer: &impl ExactContextTokenizerV2,
+    attached_at_unix_ms: u64,
 ) -> Result<ContextAttachmentV2, ContextCompilerV2Error> {
-    serialization.validate_for(compiled)?;
+    serialized.validate_with(compiled, tokenizer)?;
+    if attached_at_unix_ms < serialized.receipt.serialized_at_unix_ms {
+        return Err(ContextCompilerV2Error::InvalidAttachmentTime);
+    }
+    let current_verifier_digest = current_admission_snapshot.verifier_digest();
+    let current_snapshot_digest = current_admission_snapshot.snapshot_digest();
+    let current_revocation_frontier_digest =
+        current_admission_snapshot.revocation_frontier_digest();
+    for (name, digest) in [
+        ("current_admission_verifier", current_verifier_digest),
+        ("current_admission_snapshot", current_snapshot_digest),
+        ("current_revocation_frontier", current_revocation_frontier_digest),
+    ] {
+        ensure_digest(name, digest)?;
+    }
+    if current_verifier_digest != compiled.receipt.admission_verifier_digest {
+        return Err(ContextCompilerV2Error::AdmissionVerifierChanged);
+    }
+    for candidate in &compiled.selected_candidates {
+        revalidate_candidate_admission(
+            candidate,
+            current_admission_snapshot,
+            attached_at_unix_ms,
+        )?;
+    }
     let mut attachment = ContextAttachmentV2 {
         attachment_id,
         compilation_receipt_digest: compiled.receipt.receipt_digest,
-        serialization_receipt_digest: serialization.receipt_digest,
+        serialization_receipt_digest: serialized.receipt.receipt_digest,
         generation_vector_digest: compiled.receipt.generation_vector_digest,
         model_profile_digest: compiled.receipt.model_profile_digest,
-        payload_digest: serialization.payload_digest,
+        provider_id_digest: compiled.model_profile.provider_id_digest,
+        provider_model_digest: compiled.model_profile.provider_model_digest,
+        admission_verifier_digest: current_verifier_digest,
+        admission_snapshot_digest: current_snapshot_digest,
+        revocation_frontier_digest: current_revocation_frontier_digest,
+        payload_digest: serialized.receipt.payload_digest,
+        serialized_token_count: serialized.receipt.serialized_token_count,
         selected_item_ids: compiled.receipt.selected_item_ids.clone(),
+        attached_at_unix_ms,
         attachment_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
+        payload: serialized.payload.clone(),
     };
     attachment.attachment_digest = attachment.compute_attachment_digest();
-    attachment.validate(compiled, serialization)?;
+    attachment.validate(compiled, serialized)?;
     Ok(attachment)
 }
 
@@ -1035,24 +1303,51 @@ pub fn build_attachment(
 pub enum ContextDeliveryDispositionV2 {
     Delivered,
     Rejected,
+    NotDispatched,
     Indeterminate,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextDeliveryObservationV2 {
-    pub observation_id: StableId,
-    pub attachment_digest: Digest32,
-    pub expected_payload_digest: Digest32,
-    pub observed_payload_digest: Option<Digest32>,
-    pub model_profile_digest: Digest32,
-    pub terminal_observed: bool,
-    pub disposition: ContextDeliveryDispositionV2,
-    pub observed_unix_ms: u64,
-    pub observation_digest: Digest32,
-    pub authority: AuthorityPosture,
+    observation_id: StableId,
+    attachment_digest: Digest32,
+    expected_payload_digest: Digest32,
+    provider_input_witness_digest: Digest32,
+    provider_id_digest: Digest32,
+    provider_model_digest: Digest32,
+    provider_request_binding_digest: Digest32,
+    provider_attempt_digest: Digest32,
+    provider_receipt_digest: Digest32,
+    provider_terminal_digest: Digest32,
+    provider_evidence_verifier_digest: Digest32,
+    provider_evidence_digest: Digest32,
+    provider_recorded_at_unix_ms: u64,
+    model_profile_digest: Digest32,
+    terminal_observed: bool,
+    disposition: ContextDeliveryDispositionV2,
+    observed_unix_ms: u64,
+    observation_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
+pub type ContextDeliveryReceiptV2 = ContextDeliveryObservationV2;
+
 impl ContextDeliveryObservationV2 {
+    #[must_use]
+    pub fn disposition(&self) -> ContextDeliveryDispositionV2 {
+        self.disposition
+    }
+
+    #[must_use]
+    pub fn observation_digest(&self) -> Digest32 {
+        self.observation_digest
+    }
+
+    #[must_use]
+    pub fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
     pub fn validate_for(
         &self,
         attachment: &ContextAttachmentV2,
@@ -1060,6 +1355,18 @@ impl ContextDeliveryObservationV2 {
         for (name, digest) in [
             ("attachment", self.attachment_digest),
             ("expected_payload", self.expected_payload_digest),
+            ("provider_input_witness", self.provider_input_witness_digest),
+            ("provider_id", self.provider_id_digest),
+            ("provider_model", self.provider_model_digest),
+            ("provider_request_binding", self.provider_request_binding_digest),
+            ("provider_attempt", self.provider_attempt_digest),
+            ("provider_receipt", self.provider_receipt_digest),
+            ("provider_terminal", self.provider_terminal_digest),
+            (
+                "provider_evidence_verifier",
+                self.provider_evidence_verifier_digest,
+            ),
+            ("provider_evidence", self.provider_evidence_digest),
             ("model_profile", self.model_profile_digest),
             ("delivery_observation", self.observation_digest),
         ] {
@@ -1067,19 +1374,16 @@ impl ContextDeliveryObservationV2 {
         }
         if self.attachment_digest != attachment.attachment_digest
             || self.expected_payload_digest != attachment.payload_digest
+            || self.provider_id_digest != attachment.provider_id_digest
+            || self.provider_model_digest != attachment.provider_model_digest
             || self.model_profile_digest != attachment.model_profile_digest
         {
             return Err(ContextCompilerV2Error::DeliveryMismatch);
         }
         match self.disposition {
-            ContextDeliveryDispositionV2::Delivered => {
-                if !self.terminal_observed
-                    || self.observed_payload_digest != Some(self.expected_payload_digest)
-                {
-                    return Err(ContextCompilerV2Error::DeliveryMismatch);
-                }
-            }
-            ContextDeliveryDispositionV2::Rejected => {
+            ContextDeliveryDispositionV2::Delivered
+            | ContextDeliveryDispositionV2::Rejected
+            | ContextDeliveryDispositionV2::NotDispatched => {
                 if !self.terminal_observed {
                     return Err(ContextCompilerV2Error::MissingTerminalObservation);
                 }
@@ -1090,7 +1394,9 @@ impl ContextDeliveryObservationV2 {
                 }
             }
         }
-        if self.observed_unix_ms == 0 {
+        if self.provider_recorded_at_unix_ms < attachment.attached_at_unix_ms
+            || self.observed_unix_ms < self.provider_recorded_at_unix_ms
+        {
             return Err(ContextCompilerV2Error::InvalidObservationTime);
         }
         if self.authority.grants_any() {
@@ -1109,16 +1415,23 @@ impl ContextDeliveryObservationV2 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(DELIVERY_DOMAIN);
         push_id(&mut bytes, &self.observation_id);
-        push_digest(&mut bytes, self.attachment_digest);
-        push_digest(&mut bytes, self.expected_payload_digest);
-        match self.observed_payload_digest {
-            Some(digest) => {
-                bytes.push(1);
-                push_digest(&mut bytes, digest);
-            }
-            None => bytes.push(0),
+        for digest in [
+            self.attachment_digest,
+            self.expected_payload_digest,
+            self.provider_input_witness_digest,
+            self.provider_id_digest,
+            self.provider_model_digest,
+            self.provider_request_binding_digest,
+            self.provider_attempt_digest,
+            self.provider_receipt_digest,
+            self.provider_terminal_digest,
+            self.provider_evidence_verifier_digest,
+            self.provider_evidence_digest,
+            self.model_profile_digest,
+        ] {
+            push_digest(&mut bytes, digest);
         }
-        push_digest(&mut bytes, self.model_profile_digest);
+        push_u64(&mut bytes, self.provider_recorded_at_unix_ms);
         bytes.push(u8::from(self.terminal_observed));
         bytes.push(delivery_disposition_code(self.disposition));
         push_u64(&mut bytes, self.observed_unix_ms);
@@ -1129,19 +1442,105 @@ impl ContextDeliveryObservationV2 {
 pub fn observe_delivery(
     attachment: &ContextAttachmentV2,
     observation_id: StableId,
-    observed_payload_digest: Option<Digest32>,
-    terminal_observed: bool,
-    disposition: ContextDeliveryDispositionV2,
+    provider_receipt: &ProviderInvocationReceipt,
+    delivery_verifier: &impl ContextProviderDeliveryVerifierV2,
     observed_unix_ms: u64,
 ) -> Result<ContextDeliveryObservationV2, ContextCompilerV2Error> {
-    if let Some(digest) = observed_payload_digest {
-        ensure_digest("observed_payload", digest)?;
+    provider_receipt
+        .validate()
+        .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?;
+
+    let provider_evidence_verifier_digest = delivery_verifier.verifier_digest();
+    ensure_digest(
+        "provider_evidence_verifier",
+        provider_evidence_verifier_digest,
+    )?;
+    let delivery_evidence = delivery_verifier
+        .verify_delivery(provider_receipt)
+        .map_err(ContextCompilerV2Error::ProviderEvidenceInvalid)?;
+    ensure_digest("provider_evidence", delivery_evidence.evidence_digest)?;
+    if delivery_evidence.recorded_at_unix_ms < attachment.attached_at_unix_ms
+        || observed_unix_ms < delivery_evidence.recorded_at_unix_ms
+    {
+        return Err(ContextCompilerV2Error::InvalidObservationTime);
     }
+
+    let Some(provider_input) = provider_receipt.intent.binding.ephemeral_input_sha256.as_ref()
+    else {
+        return Err(ContextCompilerV2Error::MissingProviderInputBinding);
+    };
+    let Some(provider_input_witness) = provider_receipt
+        .intent
+        .binding
+        .ephemeral_input_witness_sha256
+        .as_ref()
+    else {
+        return Err(ContextCompilerV2Error::MissingProviderInputWitness);
+    };
+    let expected_payload_digest = attachment.payload_digest.to_string();
+    if provider_input.as_str() != expected_payload_digest {
+        return Err(ContextCompilerV2Error::DeliveryMismatch);
+    }
+
+    let provider_id_digest =
+        Digest32::of_bytes(provider_receipt.intent.binding.provider_id.as_bytes());
+    let provider_model_digest =
+        Digest32::of_bytes(provider_receipt.intent.binding.model.as_bytes());
+    if provider_id_digest != attachment.provider_id_digest
+        || provider_model_digest != attachment.provider_model_digest
+    {
+        return Err(ContextCompilerV2Error::ProviderModelProfileMismatch);
+    }
+
+    let provider_input_witness_digest = provider_input_witness
+        .as_str()
+        .parse::<Digest32>()
+        .map_err(|_| {
+            ContextCompilerV2Error::ProviderReceiptInvalid(
+                "provider input witness is not canonical sha256".to_string(),
+            )
+        })?;
+    let provider_request_binding_digest =
+        Digest32::of_bytes(provider_receipt.request_binding_id.as_str().as_bytes());
+    let provider_attempt_digest =
+        Digest32::of_bytes(provider_receipt.attempt_id.as_str().as_bytes());
+    let provider_receipt_digest = Digest32::of_bytes(
+        &provider_receipt
+            .canonical_wire_bytes()
+            .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?,
+    );
+    let provider_terminal_digest = Digest32::of_bytes(
+        &provider_receipt
+            .terminal
+            .canonical_wire_bytes()
+            .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?,
+    );
+    let (terminal_observed, disposition) = match &provider_receipt.terminal {
+        ProviderTerminal::Completed { .. } | ProviderTerminal::CompletedUnary { .. } => {
+            (true, ContextDeliveryDispositionV2::Delivered)
+        }
+        ProviderTerminal::Rejected { .. } => (true, ContextDeliveryDispositionV2::Rejected),
+        ProviderTerminal::NotDispatched { .. } => {
+            (true, ContextDeliveryDispositionV2::NotDispatched)
+        }
+        ProviderTerminal::Indeterminate { .. } => {
+            (false, ContextDeliveryDispositionV2::Indeterminate)
+        }
+    };
     let mut observation = ContextDeliveryObservationV2 {
         observation_id,
         attachment_digest: attachment.attachment_digest,
         expected_payload_digest: attachment.payload_digest,
-        observed_payload_digest,
+        provider_input_witness_digest,
+        provider_id_digest,
+        provider_model_digest,
+        provider_request_binding_digest,
+        provider_attempt_digest,
+        provider_receipt_digest,
+        provider_terminal_digest,
+        provider_evidence_verifier_digest,
+        provider_evidence_digest: delivery_evidence.evidence_digest,
+        provider_recorded_at_unix_ms: delivery_evidence.recorded_at_unix_ms,
         model_profile_digest: attachment.model_profile_digest,
         terminal_observed,
         disposition,
