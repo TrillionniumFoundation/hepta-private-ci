@@ -24,11 +24,13 @@ interpreted as the Hölder/operator qualification profile.
 | admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
-| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
-| predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
+| fit complete simplest-sufficient operator | `fit_tabular_operator` / `fit_tabular_operator_strict_v2` | `src/learned.rs`, `src/learned_strict.rs` | implemented; duplicate evidence rejected |
+| encode/load pinned learned operator | `encode_tabular_payload_v1` / `LoadedTabularOperatorV1::from_pinned_payload` | `src/loaded.rs` | implemented; preferred prediction path |
+| predict loaded learned cell | `LoadedTabularOperatorV1::predict` | `src/loaded.rs` | implemented |
 | admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
-| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
-| predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
+| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented; duplicate evidence rejected |
+| encode/load pinned world model | `encode_world_model_payload_v1` / `LoadedTabularWorldModelV1::from_pinned_payload` | `src/world_model_loaded.rs` | implemented; preferred prediction path |
+| predict loaded transition distribution | `LoadedTabularWorldModelV1::predict` | `src/world_model_loaded.rs` | implemented |
 
 ## Applicability and sensor core
 
@@ -54,11 +56,15 @@ canonical action ID. This reference is the oracle for any later learned model.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
-requires a configurable positive minimum sample count for every grid cell. The
-artifact stores each cell's mean, minimum, maximum, sample count and evidence
-digest. Caller order cannot change the result. `predict_tabular_operator`
-returns only an explicitly fitted cell; an unknown sensor or action is OOD. Its
-output is marked both learned and synthetic and retains `DENY_ALL` authority.
+requires a configurable positive minimum sample count for every grid cell. Both
+sample IDs and underlying evidence digests must be unique, so relabelling the
+same evidence cannot increase a cell count. The artifact stores each cell's
+mean, minimum, maximum, sample count and evidence digest. Caller order cannot
+change the result. Public raw prediction functions are deprecated compatibility
+surfaces: they structurally validate caller-owned values but cannot establish
+independent provenance. Composed prediction uses `LoadedTabularOperatorV1`
+admitted from immutable bytes plus a host-held pin. Unknown cells remain OOD;
+outputs are learned, synthetic and `DENY_ALL`.
 
 This profile deliberately implements the simplest sufficient learner. A neural
 or low-rank tensor candidate is not required merely because the architecture
@@ -84,11 +90,17 @@ profile.
 ## World-model baseline
 
 `fit_transition_model` builds a deterministic action-conditioned tabular model
-from an immutable dataset. For every supported `(state, action)` it records the
+from an immutable dataset. It rejects duplicate sample IDs and duplicate
+underlying evidence digests before any outcome sum, branch count or transition
+frequency is accumulated. For every supported `(state, action)` it records the
 mean bounded outcome and a branch distribution whose Q32 probabilities sum
-exactly to one. `predict_transition` rejects unsupported pairs rather than
-extrapolating and marks every prediction synthetic with deny-all authority.
-Synthetic predictions cannot become independent factual outcomes.
+exactly to one. `encode_world_model_payload_v1` plus
+`LoadedTabularWorldModelV1::from_pinned_payload` authenticates payload, model
+and dataset identities, then validates canonical estimates, counts and exact
+probability sums once before repeated binary-search prediction. The raw
+`predict_transition` API remains deprecated compatibility only. Unsupported
+pairs abstain, every prediction is synthetic and deny-all, and model predictions
+cannot become independent factual outcomes.
 
 ## Host and external obligations
 
@@ -113,7 +125,10 @@ Focused tests live in:
 - `src/lib_tests.rs`;
 - `src/reference_tests.rs`;
 - `src/learned_tests.rs`;
-- `src/world_model_tests.rs`.
+- `src/learned_strict.rs` (embedded strict-admission tests);
+- `src/loaded_tests.rs`;
+- `src/world_model_tests.rs`;
+- `src/world_model_loaded_tests.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
