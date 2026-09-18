@@ -181,22 +181,17 @@ where
             artifact.validate()?;
         }
         let sparse_config = config.to_sparse_config(&native)?;
-        let journal_scope = JournalScope {
-            scope_digest: scope.scope_digest,
-            objective_digest: Digest32::ZERO,
-        };
-        // The objective is tick-bound and may not be known until the first call.
-        // SparseJournal requires a frozen objective, so callers must bind the
-        // runtime scope to one objective before opening.
-        if scope.scope_digest.is_zero() || scope.body_digest.is_zero() {
+        if scope.scope_digest.is_zero()
+            || scope.objective_digest.is_zero()
+            || scope.body_digest.is_zero()
+        {
             return Err(RuntimeError::Protocol(ProtocolError::InvalidInput(
                 "runtime scope",
             )));
         }
-        let objective_digest = scope_objective_digest(&scope);
         let journal_scope = JournalScope {
             scope_digest: scope.scope_digest,
-            objective_digest,
+            objective_digest: scope.objective_digest,
         };
         let witness_anchor = witness.current_anchor()?;
         let journal = match witness_anchor {
@@ -256,12 +251,6 @@ where
 
         let previous = self.journal.current()?.cloned();
         input.validate_for(&self.config, &self.scope, previous.as_ref())?;
-        if input.objective_digest != scope_objective_digest(&self.scope) {
-            return Err(RuntimeError::Protocol(ProtocolError::InvalidInput(
-                "objective scope",
-            )));
-        }
-
         let model_request = FrozenModelRequestV1 {
             tick_id: input.tick_id.clone(),
             subject_id: input.subject_id.clone(),
@@ -417,7 +406,7 @@ where
         }
         let journal_scope = JournalScope {
             scope_digest: scope.scope_digest,
-            objective_digest: scope_objective_digest(&scope),
+            objective_digest: scope.objective_digest,
         };
         let journal = SparseJournal::open_anchored_with_genesis(
             file,
@@ -485,6 +474,7 @@ pub fn witness_context_digest(
     let mut bytes = b"hepta.neuron.recovery-witness-context.v1".to_vec();
     bytes.extend_from_slice(config_digest.as_array());
     bytes.extend_from_slice(scope.scope_digest.as_array());
+    bytes.extend_from_slice(scope.objective_digest.as_array());
     bytes.extend_from_slice(scope.body_digest.as_array());
     let raw = scope.subject_id.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
@@ -515,14 +505,3 @@ fn require_lineage<L: LineagePolicy>(
     }
 }
 
-// Current product profile freezes one objective per journal chain. The canonical
-// tick still carries the objective and is checked against this binding.
-fn scope_objective_digest(scope: &RuntimeScopeBindingV1) -> Digest32 {
-    let mut bytes = b"hepta.neuron.scope-objective.v1".to_vec();
-    bytes.extend_from_slice(scope.scope_digest.as_array());
-    bytes.extend_from_slice(scope.body_digest.as_array());
-    let raw = scope.subject_id.as_str().as_bytes();
-    bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
-    bytes.extend_from_slice(raw);
-    Digest32::of_bytes(&bytes)
-}
