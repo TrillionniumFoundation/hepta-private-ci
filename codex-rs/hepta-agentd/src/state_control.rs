@@ -70,8 +70,7 @@ impl AgentdState {
                     );
                 }
                 AgentdPayload::Capabilities(
-                    crate::AgentdCapabilitySet::new(capabilities)
-                        .map_err(AgentdError::Protocol)?,
+                    crate::AgentdCapabilitySet::new(capabilities).map_err(AgentdError::Protocol)?,
                 )
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
