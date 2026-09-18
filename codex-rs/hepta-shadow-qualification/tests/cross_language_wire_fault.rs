@@ -62,7 +62,7 @@ fn encode_hex(bytes: &[u8]) -> String {
 }
 
 fn run_python(frame: &[u8]) -> std::process::Output {
-    let mut child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
+    let child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
         .args(["-c", PYTHON_PARSER])
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -80,7 +80,7 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
     let producer = must(StableId::new("hepta-shadow-qualification"));
     let generation = must(Generation::new(7));
     let payload = br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec();
-    let envelope = WireEnvelope::new(
+    let envelope = must(WireEnvelope::new(
         schema.clone(),
         producer.clone(),
         generation,
