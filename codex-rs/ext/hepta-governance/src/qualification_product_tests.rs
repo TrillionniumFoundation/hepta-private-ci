@@ -102,6 +102,43 @@ fn signed_receipt(
 }
 
 #[tokio::test]
+async fn governance_product_host_without_pinned_authority_rejects_issuer_authentication() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = Arc::new(
+        HeptaEvidenceStore::open(&sqlite_config(&temp))
+            .await
+            .expect("open evidence"),
+    );
+    let state = GovernanceState::enabled(GovernanceMode::Enforce, Ok(store));
+    let root_signing = SigningKey::from_bytes(&[30; 32]);
+    let signing = SigningKey::from_bytes(&[29; 32]);
+    let certificate = EvidenceIssuerCertificateV1 {
+        schema_version: 1,
+        root_id: "root:untrusted-request".to_string(),
+        principal_id: "principal:request".to_string(),
+        key_id: "key:request".to_string(),
+        role: EvidenceIssuerRoleV1::CiExecutor,
+        verifying_key: signing.verifying_key().to_bytes(),
+        not_before_unix_ms: 1_000,
+        expires_unix_ms: 100_000,
+    };
+    let signed = SignedEvidenceIssuerCertificateV1 {
+        signature: root_signing
+            .sign(&certificate.signing_bytes().expect("certificate bytes"))
+            .to_bytes()
+            .to_vec(),
+        certificate,
+    };
+    let error = state
+        .authenticate_qualification_issuer(signed, 10_000)
+        .expect_err("request-supplied roots must not authenticate a product issuer");
+    assert!(matches!(
+        error,
+        codex_hepta_evidence::EvidenceError::Unavailable(_)
+    ));
+}
+
+#[tokio::test]
 async fn governance_product_host_composes_authenticated_writer_reader_and_terminal_observer() {
     let temp = TempDir::new().expect("temp dir");
     let store = Arc::new(
