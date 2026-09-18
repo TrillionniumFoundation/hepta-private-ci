@@ -1,6 +1,58 @@
 import { ERROR_CODES, fail, requireRecord, stableId, utf8Bytes } from "./protocol.js";
 
 const MAX_BOOTSTRAP_BYTES = 16 * 1024;
+const UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
+
+async function boundedBootstrapText(response) {
+  const contentLength = Number(response.headers?.get?.("content-length"));
+  if (Number.isFinite(contentLength) && contentLength > MAX_BOOTSTRAP_BYTES) {
+    fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap exceeds byte limit");
+  }
+  if (response.body && typeof response.body.getReader === "function") {
+    const reader = response.body.getReader();
+    const chunks = [];
+    let total = 0;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (!(value instanceof Uint8Array)) {
+          fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap body is not byte data");
+        }
+        total += value.byteLength;
+        if (total > MAX_BOOTSTRAP_BYTES) {
+          try { await reader.cancel(); } catch {}
+          fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap exceeds byte limit");
+        }
+        chunks.push(value);
+      }
+    } catch (error) {
+      if (error?.code) throw error;
+      fail(ERROR_CODES.BACKEND_UNAVAILABLE, "control bootstrap response body failed");
+    }
+    const bytes = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    try {
+      return UTF8_DECODER.decode(bytes);
+    } catch {
+      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap is not valid UTF-8");
+    }
+  }
+  let encoded;
+  try {
+    encoded = await response.text();
+  } catch {
+    fail(ERROR_CODES.BACKEND_UNAVAILABLE, "control bootstrap response body failed");
+  }
+  if (utf8Bytes(encoded) > MAX_BOOTSTRAP_BYTES) {
+    fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap exceeds byte limit");
+  }
+  return encoded;
+}
 
 function isLoopback(hostname) {
   return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
@@ -49,13 +101,11 @@ export async function loadBrowserBootstrap({
     fail(ERROR_CODES.BACKEND_UNAVAILABLE, `control bootstrap returned HTTP ${response.status}`);
   }
   const contentType = response.headers?.get?.("content-type") ?? "";
-  if (!contentType.toLowerCase().startsWith("application/json")) {
+  const mediaType = contentType.split(";", 1)[0].trim().toLowerCase();
+  if (mediaType !== "application/json") {
     fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap response is not JSON");
   }
-  const encoded = await response.text();
-  if (utf8Bytes(encoded) > MAX_BOOTSTRAP_BYTES) {
-    fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap exceeds byte limit");
-  }
+  const encoded = await boundedBootstrapText(response);
   let config;
   try { config = JSON.parse(encoded); } catch { fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap is invalid JSON"); }
   requireRecord(config, "control bootstrap");
