@@ -10,6 +10,7 @@ import {
 } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 
+import { GrantScopedEgressBroker } from "./egress-broker.js";
 import {
   WorkerFrameDecoder,
   buildWorkerFrame,
@@ -600,6 +601,8 @@ export class SubprocessBrowserDriver {
   #generation = null;
   #processId = null;
   #persistedReconciler = null;
+  #egressBroker = null;
+  #allowPrivateNetworkForTests = false;
 
   constructor({
     workerPath,
@@ -607,6 +610,7 @@ export class SubprocessBrowserDriver {
     profileRoot,
     launcher,
     persistedReconciler = null,
+    allowPrivateNetworkForTests = false,
   }) {
     if (!isAbsolute(workerPath)) throw new TypeError("workerPath must be absolute");
     if (!isAbsolute(profileRoot)) throw new TypeError("profileRoot must be absolute");
@@ -634,6 +638,9 @@ export class SubprocessBrowserDriver {
     if (typeof launcher.spawn !== "function") {
       throw new TypeError("launcher.spawn must be a function");
     }
+    if (typeof allowPrivateNetworkForTests !== "boolean") {
+      throw new TypeError("allowPrivateNetworkForTests must be boolean");
+    }
     if (
       persistedReconciler !== null &&
       typeof persistedReconciler !== "function"
@@ -645,6 +652,7 @@ export class SubprocessBrowserDriver {
     this.#profileRoot = profileRoot;
     this.#launcher = launcher;
     this.#persistedReconciler = persistedReconciler;
+    this.#allowPrivateNetworkForTests = allowPrivateNetworkForTests;
   }
 
   async start(input, { signal } = {}) {
@@ -664,6 +672,12 @@ export class SubprocessBrowserDriver {
         `${profileId}.${generation}.${randomUUID()}`,
       );
       await mkdir(this.#profileDir, { mode: 0o700 });
+      this.#egressBroker = new GrantScopedEgressBroker({
+        socketPath: join(this.#profileDir, ".hepta-egress.sock"),
+        allowedOrigins: input.allowedOrigins,
+        allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
+      });
+      await this.#egressBroker.start();
       // Ownership metadata must not be writable through the sandbox's profile
       // bind. Keep it in the host-private profile root and expose only its
       // digest to the worker/session boundary.
@@ -827,6 +841,8 @@ export class SubprocessBrowserDriver {
 
   async contain(input) {
     this.#requireSession(input);
+    await this.#egressBroker?.close();
+    this.#egressBroker = null;
     this.#client?.close();
     this.#child?.kill?.("SIGKILL");
     this.#client = null;
@@ -951,6 +967,8 @@ export class SubprocessBrowserDriver {
   }
 
   async #cleanupProfile() {
+    await this.#egressBroker?.close();
+    this.#egressBroker = null;
     const profileDir = this.#profileDir;
     const profileOwnerPath = this.#profileOwnerPath;
     const verifiedWorkerPath = this.#verifiedWorkerPath;
