@@ -210,6 +210,13 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
+Status axes are intentionally separate and must not be collapsed into one label:
+
+- `PIM-0-PROMPT-INTERVENTION-CONTRACTS` is `source_implemented` in the canonical work-package registry.
+- `PIM-1-PROMPT-FACTOR-REGISTRY` remains `planned` at the package/DAG level because its declared development predecessor `MEM-1-STORE` is still open; this does not erase the source-level durable registry slice already present in this candidate.
+- `PIM-3-FACTOR-EVOLUTION` remains `planned`; split/merge/evolution and causal-ablation deliverables are not claimed by the registry source implemented here.
+- `productionImplementation`, runtime activation, product execution, independent acceptance, promotion and release remain false/open until their separate gates are satisfied.
+
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. The current source tree contains a named source-level caller in `hepta-intelligence::compile_prompt_registry_v2`; it carries selected registry bytes through context compilation, serialization and attachment receipts, but it does not establish a running product host, model dispatch or terminal provider observation. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `prompt.registry`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
@@ -218,7 +225,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
