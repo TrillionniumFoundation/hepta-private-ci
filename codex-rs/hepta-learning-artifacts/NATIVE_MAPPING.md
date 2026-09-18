@@ -109,9 +109,12 @@ bounded create-only distribution channel with independent receipt and
 requirement revalidation; it does not discover the latest file or prove that a
 self-consistent stale snapshot is current.
 
-The stable V1 durable registry represents one predecessor. The V3 publication
-bridge rejects a V2 multi-predecessor manifest instead of dropping lineage; a
-future multi-predecessor durable format must be versioned explicitly. All
+The stable V1 durable registry represents one predecessor and one support digest.
+The V3 publication bridge rejects a V2 multi-predecessor manifest instead of
+dropping lineage. Dataset-derived publication is likewise bridged only for one
+source dataset so the V1 support digest remains the exact dataset digest used by
+legacy `prepare_dataset_revocation`; multi-dataset publication fails closed until
+a versioned durable format can represent every source explicitly. All
 crate-owned durable histories share the 4096-record ceiling so accepted in-memory
 state does not grow past the snapshot formats' representable bound.
 
