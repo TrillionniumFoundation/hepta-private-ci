@@ -8,7 +8,9 @@ use hepta_native::model::EndpointManifest;
 use hepta_native::platform::PlatformPolicy;
 use hepta_native::platform::SystemPlatformAdapter;
 use hepta_native::runtime::NativeShellRuntime;
+use hepta_native::security::SignedEndpointManifestV1;
 use hepta_native::security::TrustedKeySet;
+use hepta_native::session_store::GatewayCredentialStore;
 use hepta_native::ui::HeptaNativeApp;
 
 fn main() {
@@ -31,18 +33,21 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     let config = AppConfig::parse(&raw_args)?;
     std::fs::create_dir_all(&config.state_dir)?;
-    let manifest: EndpointManifest =
+    let trusted_keys = TrustedKeySet::from_path(&config.trusted_keys)?;
+    let signed_manifest: SignedEndpointManifestV1 =
         serde_json::from_slice(&std::fs::read(&config.endpoint_manifest)?)?;
-    manifest.validate()?;
+    let verified_endpoint = signed_manifest.verify(&trusted_keys)?;
+    let manifest: EndpointManifest = verified_endpoint.manifest;
     let address: SocketAddr = manifest.address.parse()?;
-    let backend = LoopbackGatewayBackend::new(address)?;
+    let bearer_token =
+        GatewayCredentialStore::default().load(&verified_endpoint.gateway_credential_account)?;
+    let backend = LoopbackGatewayBackend::new(address, bearer_token)?;
     let policy = PlatformPolicy::new(
         config.allowed_roots,
         config.allow_clipboard,
         config.allow_notifications,
     )?;
     let platform = SystemPlatformAdapter::new(policy);
-    let trusted_keys = TrustedKeySet::from_path(&config.trusted_keys)?;
     let journal = OperationJournal::open(config.state_dir.join("operation-journal.json"))?;
     let runtime = NativeShellRuntime::new(
         Box::new(backend),
