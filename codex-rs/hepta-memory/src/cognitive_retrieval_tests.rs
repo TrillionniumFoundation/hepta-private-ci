@@ -456,7 +456,12 @@ async fn shared_canonical_entity_keeps_surviving_support_after_peer_correction_a
     let initial_digest = initial
         .candidates
         .first()
-        .and_then(|candidate| candidate.revalidation.kg_projection_generation_digest.clone())
+        .and_then(|candidate| {
+            candidate
+                .revalidation
+                .kg_projection_generation_digest
+                .clone()
+        })
         .expect("initial retrieval is bound to a V2 generation digest");
     for memory in [&first, &second] {
         let candidate = initial
@@ -467,7 +472,10 @@ async fn shared_canonical_entity_keeps_surviving_support_after_peer_correction_a
         assert!(candidate.channels.contains(&RetrievalChannel::EntityFts));
         assert!(candidate.channels.contains(&RetrievalChannel::GraphOneHop));
         assert_eq!(
-            candidate.revalidation.kg_projection_generation_digest.as_ref(),
+            candidate
+                .revalidation
+                .kg_projection_generation_digest
+                .as_ref(),
             Some(&initial_digest)
         );
     }
