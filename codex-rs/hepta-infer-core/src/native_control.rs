@@ -343,6 +343,13 @@ impl DurableInferenceControl {
         self.native.records.get(request_id)
     }
 
+    pub fn native_archived_tombstone(
+        &self,
+        request_id: &str,
+    ) -> Option<&NativeArchivedTombstone> {
+        self.native.tombstones.get(request_id)
+    }
+
     fn ensure_native_dispatch_space(&mut self) -> Result<(), Error> {
         // This exclusive owner serializes active calls. Leave room for bounded
         // dispatch/cancel metadata and the next maximal observed output before
