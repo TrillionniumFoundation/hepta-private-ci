@@ -78,7 +78,8 @@ impl PlannerJournalStoreV1 {
         let directory = prepare_directory(root)?;
         let initialized = entry_exists(&directory, LOCK_FILE)?;
         let lock = open_private(&directory, LOCK_FILE, Access::Create)?;
-        lock.try_lock().map_err(|_| PlannerStoreError::StateLocked)?;
+        lock.try_lock()
+            .map_err(|_| PlannerStoreError::StateLocked)?;
 
         let has_state = entry_exists(&directory, STATE_FILE)?;
         let (journal, migrated) = if has_state {
@@ -150,7 +151,8 @@ fn write_state(directory: &File, bytes: &[u8]) -> Result<(), PlannerStoreError> 
         return Err(PlannerStoreError::CorruptState);
     }
     let mut file = open_private(directory, NEXT_FILE, Access::Create)?;
-    file.set_len(0).map_err(|_| PlannerStoreError::Unavailable)?;
+    file.set_len(0)
+        .map_err(|_| PlannerStoreError::Unavailable)?;
     file.write_all(bytes)
         .and_then(|()| file.sync_all())
         .map_err(|_| PlannerStoreError::Unavailable)?;
