@@ -143,6 +143,21 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Verify Cargo lock resolution and print exact resolver drift
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if cargo metadata --locked --format-version=1 >/dev/null; then
+            exit 0
+          fi
+          locked_status=$?
+          echo "::error::Cargo.lock differs from the exact candidate manifests"
+          cargo metadata --offline --format-version=1 >/dev/null
+          git diff -- Cargo.lock
+          git checkout -- Cargo.lock
+          exit "$locked_status"
+
       - name: Inference owner regressions and streaming digest
         run: |
           set -euo pipefail
