@@ -3,6 +3,13 @@ use std::collections::BTreeSet;
 use std::future::Future;
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::KnowledgeEdgeIdentityV2;
+use codex_hepta_kg::KnowledgeRelationQueryV2;
+use codex_hepta_kg::MAX_KNOWLEDGE_EDGES_V2;
+use codex_hepta_kg::durable_relation_kind_v2;
+use codex_hepta_kg::query_relations;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use serde::Serialize;
 use sqlx::Row;
 use sqlx::Sqlite;
@@ -157,6 +164,7 @@ struct AggregatedRank {
 }
 
 struct EntitySeed {
+    scope: CognitiveScope,
     projection_scope: String,
     generation: i64,
     canonical_entity_id: String,
@@ -617,7 +625,26 @@ impl CognitiveStore {
                     )) {
                         return Ok(None);
                     }
+                    let scope = if projection_scope == "agent_private" {
+                        CognitiveScope::AgentPrivate
+                    } else {
+                        let workspace_sha256 = access.workspace_sha256().ok_or_else(|| {
+                            CognitiveStoreError::Corrupt(
+                                "workspace KG projection is not bound to caller workspace".to_string(),
+                            )
+                        })?;
+                        let scope = CognitiveScope::WorkspacePrivate {
+                            workspace_sha256: workspace_sha256.clone(),
+                        };
+                        if scope.projection_key() != projection_scope {
+                            return Err(CognitiveStoreError::Corrupt(
+                                "KG projection scope differs from caller workspace".to_string(),
+                            ));
+                        }
+                        scope
+                    };
                     Ok(Some(EntitySeed {
+                        scope,
                         projection_scope,
                         generation,
                         canonical_entity_id,
@@ -653,6 +680,64 @@ impl CognitiveStore {
                 continue;
             }
             let remaining = MAX_RETRIEVAL_CHANNEL_CANDIDATES - result.len();
+            let generation = self
+                .load_durable_generation_tx(
+                    transaction,
+                    &seed.scope,
+                    &seed.projection_scope,
+                    seed.generation,
+                )
+                .await?;
+            let seed_node_rows = sqlx::query(
+                "SELECT node_id
+                 FROM kg_projection_node_entities
+                 WHERE projection_scope = ? AND generation = ?
+                   AND canonical_entity_id = ?
+                 ORDER BY node_id",
+            )
+            .bind(&seed.projection_scope)
+            .bind(seed.generation)
+            .bind(&seed.canonical_entity_id)
+            .fetch_all(&mut **transaction)
+            .await
+            .map_err(unavailable)?;
+            let seed_node_ids = seed_node_rows
+                .into_iter()
+                .map(|row| {
+                    let node_id: String = row.try_get("node_id").map_err(unavailable)?;
+                    StableId::new(node_id)
+                        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let query_seed = format!(
+                "{}:{}:{}",
+                seed.projection_scope, seed.generation, seed.canonical_entity_id
+            );
+            let query_id = StableId::new(format!(
+                "kg-query:v2:{}",
+                Digest32::of_bytes(query_seed.as_bytes())
+            ))
+            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            let relation_result = query_relations(
+                &generation,
+                KnowledgeRelationQueryV2 {
+                    query_id,
+                    generation_digest: generation.generation_digest,
+                    seed_node_ids,
+                    relation_kinds: Vec::new(),
+                    maximum_edges: u32::try_from(MAX_KNOWLEDGE_EDGES_V2).map_err(|_| {
+                        CognitiveStoreError::Corrupt(
+                            "knowledge graph edge limit exceeds u32".to_string(),
+                        )
+                    })?,
+                },
+            )
+            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            let visible_edges = relation_result
+                .edges
+                .into_iter()
+                .map(|edge| edge.identity)
+                .collect::<BTreeSet<_>>();
             let rows = sqlx::query(
                 "WITH canonical_support_nodes AS (
                      SELECT node_id
@@ -660,7 +745,8 @@ impl CognitiveStore {
                      WHERE projection_scope = ? AND generation = ?
                        AND canonical_entity_id = ?
                  )
-                 SELECT DISTINCT e.edge_id, e.memory_id AS edge_memory_id,
+                 SELECT DISTINCT e.edge_id, e.from_node_id, e.to_node_id, e.relation,
+                        e.memory_id AS edge_memory_id,
                         e.memory_revision AS edge_memory_revision,
                         n.node_id, n.memory_id AS node_memory_id,
                         n.memory_revision AS node_memory_revision
@@ -716,6 +802,23 @@ impl CognitiveStore {
                 limit = RetrievalLimitObservation::LimitReached;
             }
             for row in rows {
+                let from_node_id: String = row.try_get("from_node_id").map_err(unavailable)?;
+                let to_node_id: String = row.try_get("to_node_id").map_err(unavailable)?;
+                let relation: String = row.try_get("relation").map_err(unavailable)?;
+                let identity = KnowledgeEdgeIdentityV2 {
+                    source_node_id: StableId::new(from_node_id)
+                        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?,
+                    relation: durable_relation_kind_v2(&relation)
+                        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?,
+                    target_node_id: StableId::new(to_node_id)
+                        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?,
+                };
+                if !visible_edges.contains(&identity) {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "SQLite graph query exposed an edge absent from canonical V2 query semantics"
+                            .to_string(),
+                    ));
+                }
                 for key in [
                     decode_memory_key(&row, "edge_memory_id", "edge_memory_revision")?,
                     decode_memory_key(&row, "node_memory_id", "node_memory_revision")?,
@@ -752,6 +855,7 @@ impl CognitiveStore {
             .map(
                 |(scope, generation, canonical_entity_id, memory)| -> Result<_, CognitiveStoreError> {
                     Ok(EntitySeed {
+                        scope: scope.clone(),
                         projection_scope: scope.projection_key(),
                         generation: to_i64(generation.get(), "projection generation")?,
                         canonical_entity_id: canonical_entity_id.clone(),
