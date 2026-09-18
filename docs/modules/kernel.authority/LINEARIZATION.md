@@ -18,6 +18,11 @@ A revocation or replacement committed before that point denies entry. A change
 committed after that point is ordered after entry and does not retroactively
 undo an already-entered synchronous effect.
 
+Pruning is also ordered through the same owner state. Expired unrevoked lease
+payloads may be removed, but their last revision is retained as a compact
+retired-id lineage. Reissue of the same lease id must advance from that revision;
+pruning never creates a new revision-1 identity.
+
 ## FinalUse delivery
 
 `claim_final_use` validates issuer signature and exact binding, persists the
