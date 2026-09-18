@@ -652,7 +652,7 @@ pub enum AutomationProviderObservation {
 }
 
 impl AutomationProviderObservation {
-    fn as_str(self) -> &'static str {
+    pub(crate) fn as_str(self) -> &'static str {
         match self {
             Self::Succeeded => "succeeded",
             Self::Failed => "failed",
