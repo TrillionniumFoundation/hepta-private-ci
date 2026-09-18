@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+pub(crate) const MAX_DURABLE_RECORDS: usize = 4_096;
+
 mod admission_v3;
 mod closure_v2;
 mod dataset_revocation;
