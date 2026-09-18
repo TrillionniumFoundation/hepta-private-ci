@@ -97,6 +97,7 @@ mod tests {
             schema_version: FLEET_ALLOCATION_STORE_SCHEMA_VERSION,
             revision: 7,
             predecessor_revision: Some(6),
+            predecessor_state_digest: Some(Sha256Digest::for_bytes(b"predecessor")),
             writer_epoch: 9,
             committed_at_ms: 100,
             ledger: LeaseLedger::new(),

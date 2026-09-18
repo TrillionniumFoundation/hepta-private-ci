@@ -29,6 +29,7 @@ pub struct FleetAllocationStateV1 {
     pub schema_version: u32,
     pub revision: u64,
     pub predecessor_revision: Option<u64>,
+    pub predecessor_state_digest: Option<Sha256Digest>,
     pub writer_epoch: u64,
     pub committed_at_ms: u64,
     pub ledger: LeaseLedger,
@@ -39,6 +40,7 @@ impl FleetAllocationStateV1 {
     fn build(
         revision: u64,
         predecessor_revision: Option<u64>,
+        predecessor_state_digest: Option<Sha256Digest>,
         writer_epoch: u64,
         committed_at_ms: u64,
         ledger: LeaseLedger,
@@ -51,6 +53,7 @@ impl FleetAllocationStateV1 {
         let state_digest = digest_state(
             revision,
             predecessor_revision,
+            predecessor_state_digest.as_ref(),
             writer_epoch,
             committed_at_ms,
             &ledger,
@@ -59,6 +62,7 @@ impl FleetAllocationStateV1 {
             schema_version: FLEET_ALLOCATION_STORE_SCHEMA_VERSION,
             revision,
             predecessor_revision,
+            predecessor_state_digest,
             writer_epoch,
             committed_at_ms,
             ledger,
@@ -71,6 +75,12 @@ impl FleetAllocationStateV1 {
             || self.revision == 0
             || self.writer_epoch == 0
             || self.predecessor_revision.is_some_and(|value| value >= self.revision)
+            || (self.revision == 1
+                && (self.predecessor_revision.is_some()
+                    || self.predecessor_state_digest.is_some()))
+            || (self.revision > 1
+                && (self.predecessor_revision.is_none()
+                    || self.predecessor_state_digest.is_none()))
         {
             return Err(FleetAllocationStoreError::InvalidState(
                 "invalid allocation state identity".to_string(),
@@ -79,6 +89,7 @@ impl FleetAllocationStateV1 {
         let expected = digest_state(
             self.revision,
             self.predecessor_revision,
+            self.predecessor_state_digest.as_ref(),
             self.writer_epoch,
             self.committed_at_ms,
             &self.ledger,
@@ -122,6 +133,7 @@ impl FleetAllocationStore {
         let current = FleetAllocationStateV1::build(
             1,
             None,
+            None,
             writer_epoch,
             now_ms,
             LeaseLedger::new(),
@@ -150,9 +162,11 @@ impl FleetAllocationStore {
         let revision = expected_revision
             .checked_add(1)
             .ok_or_else(|| FleetAllocationStoreError::InvalidState("revision overflow".to_string()))?;
+        let predecessor_state_digest = self.current.state_digest.clone();
         let next = FleetAllocationStateV1::build(
             revision,
             Some(expected_revision),
+            Some(predecessor_state_digest),
             writer_epoch,
             now_ms,
             ledger,
@@ -196,6 +210,7 @@ pub enum FleetAllocationStoreError {
 fn digest_state(
     revision: u64,
     predecessor_revision: Option<u64>,
+    predecessor_state_digest: Option<&Sha256Digest>,
     writer_epoch: u64,
     committed_at_ms: u64,
     ledger: &LeaseLedger,
@@ -204,6 +219,7 @@ fn digest_state(
         "hepta.runtime-fleet.allocation-state.v1",
         revision,
         predecessor_revision,
+        predecessor_state_digest,
         writer_epoch,
         committed_at_ms,
         ledger,
@@ -235,29 +251,37 @@ fn load_latest(root: &Path) -> Result<Option<FleetAllocationStateV1>, FleetAlloc
         revisions.push((revision, entry.path()));
     }
     revisions.sort_by_key(|(revision, _)| *revision);
-    let Some((revision, path)) = revisions.last() else {
+    if revisions.is_empty() {
         return Ok(None);
-    };
-    let state = read_state(path)?;
-    if state.revision != *revision {
-        return Err(FleetAllocationStoreError::InvalidState(
-            "allocation state revision differs from filename".to_string(),
-        ));
     }
-    state.validate()?;
-    if revisions.len() >= 2 {
-        let prior_revision = revisions[revisions.len() - 2].0;
-        if state.predecessor_revision != Some(prior_revision) {
+
+    // Validate every retained generation, not only the head. The newest
+    // generation binds its predecessor digest, so a modified or deleted
+    // retained predecessor must fail reopen instead of silently becoming
+    // unverifiable history.
+    let mut states = Vec::with_capacity(revisions.len());
+    for (revision, path) in &revisions {
+        let state = read_state(path)?;
+        if state.revision != *revision {
             return Err(FleetAllocationStoreError::InvalidState(
-                "latest allocation state predecessor is not contiguous".to_string(),
+                "allocation state revision differs from filename".to_string(),
             ));
         }
-    } else if state.revision == 1 && state.predecessor_revision.is_some() {
-        return Err(FleetAllocationStoreError::InvalidState(
-            "initial allocation state has a predecessor".to_string(),
-        ));
+        state.validate()?;
+        states.push(state);
     }
-    Ok(Some(state))
+    for pair in states.windows(2) {
+        let predecessor = &pair[0];
+        let current = &pair[1];
+        if current.predecessor_revision != Some(predecessor.revision)
+            || current.predecessor_state_digest.as_ref() != Some(&predecessor.state_digest)
+        {
+            return Err(FleetAllocationStoreError::InvalidState(
+                "allocation state predecessor lineage mismatch".to_string(),
+            ));
+        }
+    }
+    Ok(states.pop())
 }
 
 fn read_state(path: &Path) -> Result<FleetAllocationStateV1, FleetAllocationStoreError> {
@@ -428,6 +452,35 @@ mod tests {
                 current: 2
             })
         ));
+    }
+
+    #[test]
+    fn tampered_retained_predecessor_fails_reopen() {
+        let temp = tempfile::tempdir().expect("temp");
+        let state_root = temp.path().join("state");
+        std::fs::create_dir(&state_root).expect("state root");
+        let mut store =
+            FleetAllocationStore::open_or_initialize(&state_root, 7, 100).expect("store");
+        store
+            .commit(1, 7, 200, LeaseLedger::new())
+            .expect("revision two");
+        store
+            .commit(2, 7, 300, LeaseLedger::new())
+            .expect("revision three");
+        drop(store);
+
+        let path = state_path(&state_root.join(STATE_DIRECTORY), 2);
+        let mut predecessor: FleetAllocationStateV1 =
+            serde_json::from_slice(&std::fs::read(&path).expect("read predecessor"))
+                .expect("decode predecessor");
+        predecessor.committed_at_ms += 1;
+        std::fs::write(
+            path,
+            serde_json::to_vec(&predecessor).expect("encode tampered predecessor"),
+        )
+        .expect("tamper predecessor");
+
+        assert!(FleetAllocationStore::open_or_initialize(&state_root, 9, 400).is_err());
     }
 
     #[test]
