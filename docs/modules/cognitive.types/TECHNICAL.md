@@ -268,7 +268,9 @@ surface includes `ModalitySpanRefV1`, `CrossModalBindingV1`,
 
 HNMF V1 value fields are private. Callers construct canonical values with
 `try_new`-style validating constructors; canonical JSON decoding re-runs the
-same validation before a value is returned. This makes invalid canonical HNMF
+same validation before a value is returned. Direct generic
+`serde_json::from_*::<T>` calls are not a supported contract-construction
+boundary; untrusted wire bytes must use `decode_canonical_json`. This makes invalid canonical HNMF
 states non-constructible through the public API. The older
 `MemoryRecord`/`CognitiveSnapshot` compatibility surface remains public-field
 based for existing downstream callers and therefore still requires explicit
@@ -292,7 +294,10 @@ Wire rules are closed:
   or alternate key order is not canonical;
 - the HNMF registry `maximumEncodedBytes` limit applies to the full canonical
   envelope;
-- the canonical digest is SHA-256 over the exact canonical envelope bytes.
+- the canonical digest is SHA-256 over the exact canonical envelope bytes;
+- fixed byte/digest golden vectors are registered in
+  `codex-rs/hepta-cognitive-types/testdata/hnmf-wire-v1/MANIFEST.json` and
+  exercised by production tests.
 
 `canonical_json_bytes`, `decode_canonical_json` and
 `canonical_json_digest` are the normative Rust entry points. Proto/CBOR are
