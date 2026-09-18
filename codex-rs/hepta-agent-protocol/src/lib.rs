@@ -93,6 +93,7 @@ pub struct MemoryFederationCapabilitySnapshot {
 }
 
 pub const MAX_RUN_CANCEL_REASON_BYTES: usize = 512;
+pub const MAX_RUN_EXECUTION_ID_BYTES: usize = 256;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -131,6 +132,151 @@ pub struct ContextAttachment {
     pub deadline_ms: u64,
     pub context_digest: String,
     pub compilation_receipt_digest: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunDispatchBinding {
+    pub run_id: String,
+    pub context_digest: String,
+    pub thread_id: String,
+    pub provider_request_digest: String,
+    pub binding_digest: String,
+}
+
+impl RunDispatchBinding {
+    pub fn new(
+        run_id: impl Into<String>,
+        context_digest: impl Into<String>,
+        thread_id: impl Into<String>,
+        provider_request_digest: impl Into<String>,
+    ) -> Result<Self, String> {
+        let mut value = Self {
+            run_id: run_id.into(),
+            context_digest: context_digest.into(),
+            thread_id: thread_id.into(),
+            provider_request_digest: provider_request_digest.into(),
+            binding_digest: String::new(),
+        };
+        value.binding_digest = value.compute_digest();
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        validate_run_protocol_id(&self.run_id, "run id", 128)?;
+        validate_run_protocol_id(&self.thread_id, "Codex thread id", MAX_RUN_EXECUTION_ID_BYTES)?;
+        validate_run_protocol_digest(&self.context_digest, "context digest")?;
+        validate_run_protocol_digest(&self.provider_request_digest, "provider request digest")?;
+        validate_run_protocol_digest(&self.binding_digest, "dispatch binding digest")?;
+        if self.binding_digest != self.compute_digest() {
+            return Err("dispatch binding digest mismatch".to_string());
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn compute_digest(&self) -> String {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(b"hepta.agentd.run-dispatch-binding.v1");
+        push_run_protocol_text(&mut bytes, &self.run_id);
+        push_run_protocol_text(&mut bytes, &self.context_digest);
+        push_run_protocol_text(&mut bytes, &self.thread_id);
+        push_run_protocol_text(&mut bytes, &self.provider_request_digest);
+        Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunTerminalObservation {
+    pub run_id: String,
+    pub dispatch_binding_digest: String,
+    pub thread_id: String,
+    pub turn_id: String,
+    pub phase: RunPhase,
+    pub observation_digest: String,
+}
+
+impl RunTerminalObservation {
+    pub fn new(
+        run_id: impl Into<String>,
+        dispatch_binding_digest: impl Into<String>,
+        thread_id: impl Into<String>,
+        turn_id: impl Into<String>,
+        phase: RunPhase,
+    ) -> Result<Self, String> {
+        let mut value = Self {
+            run_id: run_id.into(),
+            dispatch_binding_digest: dispatch_binding_digest.into(),
+            thread_id: thread_id.into(),
+            turn_id: turn_id.into(),
+            phase,
+            observation_digest: String::new(),
+        };
+        value.observation_digest = value.compute_digest();
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), String> {
+        validate_run_protocol_id(&self.run_id, "run id", 128)?;
+        validate_run_protocol_id(&self.thread_id, "Codex thread id", MAX_RUN_EXECUTION_ID_BYTES)?;
+        validate_run_protocol_id(&self.turn_id, "Codex turn id", MAX_RUN_EXECUTION_ID_BYTES)?;
+        validate_run_protocol_digest(&self.dispatch_binding_digest, "dispatch binding digest")?;
+        validate_run_protocol_digest(&self.observation_digest, "terminal observation digest")?;
+        if !matches!(self.phase, RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed) {
+            return Err("terminal observation must carry a terminal run phase".to_string());
+        }
+        if self.observation_digest != self.compute_digest() {
+            return Err("terminal observation digest mismatch".to_string());
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn compute_digest(&self) -> String {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(b"hepta.agentd.run-terminal-observation.v1");
+        push_run_protocol_text(&mut bytes, &self.run_id);
+        push_run_protocol_text(&mut bytes, &self.dispatch_binding_digest);
+        push_run_protocol_text(&mut bytes, &self.thread_id);
+        push_run_protocol_text(&mut bytes, &self.turn_id);
+        bytes.push(match self.phase {
+            RunPhase::Cancelled => 0,
+            RunPhase::Succeeded => 1,
+            RunPhase::Failed => 2,
+            RunPhase::Admitted
+            | RunPhase::ContextAttached
+            | RunPhase::Dispatched
+            | RunPhase::Cancelling
+            | RunPhase::Indeterminate => u8::MAX,
+        });
+        Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    }
+}
+
+fn validate_run_protocol_id(value: &str, label: &str, maximum: usize) -> Result<(), String> {
+    if value.is_empty()
+        || value.len() > maximum
+        || !value.bytes().all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
+    {
+        return Err(format!("{label} is invalid"));
+    }
+    Ok(())
+}
+
+fn validate_run_protocol_digest(value: &str, label: &str) -> Result<(), String> {
+    Sha256Digest::parse(value.to_string()).map_err(|_| format!("{label} is invalid"))?;
+    if value.bytes().all(|byte| byte == b'0') {
+        return Err(format!("{label} must not be the zero digest"));
+    }
+    Ok(())
+}
+
+fn push_run_protocol_text(bytes: &mut Vec<u8>, value: &str) {
+    bytes.extend_from_slice(&(value.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -231,6 +377,7 @@ impl AgentdRequest {
         spawn_generation: u64,
         run_id: String,
         expected_revision: u64,
+        binding: RunDispatchBinding,
     ) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -239,6 +386,7 @@ impl AgentdRequest {
             method: AgentdMethod::RunMarkDispatched {
                 run_id,
                 expected_revision,
+                binding,
             },
         }
     }
@@ -268,7 +416,7 @@ impl AgentdRequest {
         run_id: String,
         expected_revision: u64,
         phase: RunPhase,
-        terminal_observed: bool,
+        observation: Option<RunTerminalObservation>,
     ) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -278,7 +426,7 @@ impl AgentdRequest {
                 run_id,
                 expected_revision,
                 phase,
-                terminal_observed,
+                observation,
             },
         }
     }
@@ -447,6 +595,7 @@ pub enum AgentdMethod {
     RunMarkDispatched {
         run_id: String,
         expected_revision: u64,
+        binding: RunDispatchBinding,
     },
     RunCancel {
         run_id: String,
@@ -457,7 +606,7 @@ pub enum AgentdMethod {
         run_id: String,
         expected_revision: u64,
         phase: RunPhase,
-        terminal_observed: bool,
+        observation: Option<RunTerminalObservation>,
     },
     RunStatus {
         run_id: String,

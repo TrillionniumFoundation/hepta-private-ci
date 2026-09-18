@@ -3,9 +3,11 @@ use std::collections::BTreeMap;
 use codex_hepta_agent_protocol::CancellationDisposition;
 use codex_hepta_agent_protocol::ContextAttachment;
 use codex_hepta_agent_protocol::MAX_RUN_CANCEL_REASON_BYTES;
+use codex_hepta_agent_protocol::RunDispatchBinding;
 use codex_hepta_agent_protocol::RunPhase;
 use codex_hepta_agent_protocol::RunReceipt;
 use codex_hepta_agent_protocol::RunSnapshot;
+use codex_hepta_agent_protocol::RunTerminalObservation;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -39,7 +41,10 @@ pub enum AgentRunError {
     StaleRevision,
     MixedSnapshot,
     ContextRequired,
+    DispatchBindingRequired,
+    InvalidDispatchBinding,
     TerminalObservationRequired,
+    InvalidTerminalObservation,
     DeadlineExceeded,
     ArithmeticOverflow,
 }
@@ -51,6 +56,8 @@ struct RunRecord {
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    dispatch_binding: Option<RunDispatchBinding>,
+    terminal_observation: Option<RunTerminalObservation>,
     cancel_reason: Option<String>,
     cancellation_ack_deadline_ms: Option<u64>,
 }
@@ -97,6 +104,27 @@ impl AgentRunCoordinator {
             if let Some(receipt_digest) = &record.compilation_receipt_digest {
                 validate_digest(receipt_digest, "compilation receipt")?;
             }
+            if let Some(binding) = &record.dispatch_binding {
+                binding.validate().map_err(|_| AgentRunError::InvalidDispatchBinding)?;
+                if binding.run_id != record.snapshot.run_id
+                    || record.context_digest.as_deref() != Some(binding.context_digest.as_str())
+                {
+                    return Err(AgentRunError::InvalidDispatchBinding);
+                }
+            }
+            if let Some(observation) = &record.terminal_observation {
+                observation.validate().map_err(|_| AgentRunError::InvalidTerminalObservation)?;
+                let Some(binding) = &record.dispatch_binding else {
+                    return Err(AgentRunError::DispatchBindingRequired);
+                };
+                if observation.run_id != record.snapshot.run_id
+                    || observation.dispatch_binding_digest != binding.binding_digest
+                    || observation.thread_id != binding.thread_id
+                    || observation.phase != record.phase
+                {
+                    return Err(AgentRunError::InvalidTerminalObservation);
+                }
+            }
             if let Some(reason) = &record.cancel_reason {
                 validate_cancel_reason(reason)?;
             }
@@ -104,18 +132,28 @@ impl AgentRunCoordinator {
             if has_context != record.compilation_receipt_digest.is_some() {
                 return Err(AgentRunError::InvalidTransition);
             }
+            let has_dispatch = record.dispatch_binding.is_some();
+            let has_terminal_observation = record.terminal_observation.is_some();
             match record.phase {
-                RunPhase::Admitted if has_context => {
+                RunPhase::Admitted if has_context || has_dispatch || has_terminal_observation => {
                     return Err(AgentRunError::InvalidTransition);
                 }
                 RunPhase::ContextAttached
-                | RunPhase::Dispatched
-                | RunPhase::Cancelling
-                | RunPhase::Succeeded
-                | RunPhase::Failed
-                | RunPhase::Indeterminate
-                    if !has_context =>
+                    if !has_context || has_dispatch || has_terminal_observation =>
                 {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                RunPhase::Dispatched | RunPhase::Cancelling | RunPhase::Indeterminate
+                    if !has_context || !has_dispatch || has_terminal_observation =>
+                {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                RunPhase::Succeeded | RunPhase::Failed
+                    if !has_context || !has_dispatch || !has_terminal_observation =>
+                {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                RunPhase::Cancelled if has_dispatch != has_terminal_observation => {
                     return Err(AgentRunError::InvalidTransition);
                 }
                 _ => {}
@@ -197,6 +235,8 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            dispatch_binding: None,
+            terminal_observation: None,
             cancel_reason: None,
             cancellation_ack_deadline_ms: None,
         };
@@ -249,20 +289,31 @@ impl AgentRunCoordinator {
         now_ms: u64,
         run_id: &str,
         expected_revision: u64,
+        binding: RunDispatchBinding,
     ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
+        binding.validate().map_err(|_| AgentRunError::InvalidDispatchBinding)?;
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
+        if binding.run_id != record.snapshot.run_id
+            || record.context_digest.as_deref() != Some(binding.context_digest.as_str())
+        {
+            return Err(AgentRunError::InvalidDispatchBinding);
+        }
         if record.phase == RunPhase::Dispatched {
-            return Ok(receipt(record, /* idempotent */ true));
+            if record.dispatch_binding.as_ref() == Some(&binding) {
+                return Ok(receipt(record, /* idempotent */ true));
+            }
+            return Err(AgentRunError::Conflict);
         }
         require_revision(record, expected_revision)?;
         require_before_deadline(record, now_ms)?;
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
+        record.dispatch_binding = Some(binding);
         record.phase = RunPhase::Dispatched;
         advance_revision(record)?;
         Ok(receipt(record, /* idempotent */ false))
@@ -374,33 +425,50 @@ impl AgentRunCoordinator {
         run_id: &str,
         expected_revision: u64,
         phase: RunPhase,
-        terminal_observed: bool,
+        observation: Option<RunTerminalObservation>,
     ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
+        if let Some(observation) = &observation {
+            observation.validate().map_err(|_| AgentRunError::InvalidTerminalObservation)?;
+        }
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
         if record.phase == phase
-            && ((terminal_observed && is_terminal_observed(phase))
-                || (!terminal_observed && phase == RunPhase::Indeterminate))
+            && ((phase == RunPhase::Indeterminate && observation.is_none())
+                || (is_terminal_observed(phase)
+                    && record.terminal_observation.as_ref() == observation.as_ref()))
         {
             return Ok(receipt(record, /* idempotent */ true));
         }
         require_revision(record, expected_revision)?;
-        // An unknown external outcome consumes capacity until its owner reports
-        // a terminal observation. It must be reconcilable without redispatch.
         if !matches!(
             record.phase,
             RunPhase::Dispatched | RunPhase::Cancelling | RunPhase::Indeterminate
         ) {
             return Err(AgentRunError::InvalidTransition);
         }
-        if terminal_observed {
-            if !is_terminal_observed(phase) {
+        if is_terminal_observed(phase) {
+            let Some(observation) = observation else {
                 return Err(AgentRunError::TerminalObservationRequired);
+            };
+            let Some(binding) = &record.dispatch_binding else {
+                return Err(AgentRunError::DispatchBindingRequired);
+            };
+            if observation.phase != phase
+                || observation.run_id != record.snapshot.run_id
+                || observation.dispatch_binding_digest != binding.binding_digest
+                || observation.thread_id != binding.thread_id
+            {
+                return Err(AgentRunError::InvalidTerminalObservation);
             }
-        } else if phase != RunPhase::Indeterminate {
+            record.terminal_observation = Some(observation);
+        } else if phase == RunPhase::Indeterminate {
+            if observation.is_some() {
+                return Err(AgentRunError::InvalidTerminalObservation);
+            }
+        } else {
             return Err(AgentRunError::TerminalObservationRequired);
         }
         record.phase = phase;
