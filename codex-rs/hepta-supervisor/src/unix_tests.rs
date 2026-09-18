@@ -12,6 +12,7 @@ use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_agent_protocol::ReadinessSnapshot;
 use codex_hepta_contracts::AgentId;
@@ -20,11 +21,13 @@ use codex_hepta_fleet::ReleaseId;
 use codex_hepta_matrix_protocol::MAX_MATRIXD_CONTROL_FRAME_BYTES;
 use pretty_assertions::assert_eq;
 
+use super::AgentDrainRequestIdentity;
 use super::AgentHealthProbeIdentity;
 use super::MatrixHealthProbeIdentity;
 use super::UnixProcessDriver;
 use super::query_agent_health_once;
 use super::query_matrix_health_once;
+use super::request_agent_drain;
 use crate::AdoptSpec;
 use crate::Adoption;
 use crate::AgentCommand;
@@ -262,6 +265,57 @@ fn health_probe_requires_exact_agent_generation_pid_and_roots() {
     let running = running_health_response(&identity, 7, 8, 41);
     assert!(serve_and_probe(&identity, 5, running.clone()));
     assert!(serve_and_probe(&identity, 6, running));
+}
+
+#[test]
+fn agent_drain_requires_exact_draining_generation_ack() {
+    let temp = tempfile::tempdir().expect("temporary directory");
+    let socket = temp.path().join("agentd-drain.sock");
+    let agent_id =
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("valid agent id");
+    let identity = AgentDrainRequestIdentity {
+        agent_id: agent_id.clone(),
+        spawn_generation: 7,
+        control_socket: socket.clone(),
+    };
+
+    for (current_generation, accepted) in [(9_u64, true), (8_u64, false)] {
+        remove_socket(&socket);
+        let listener = UnixListener::bind(&socket).expect("bind drain socket");
+        let response_agent = agent_id.clone();
+        let worker = std::thread::spawn(move || {
+            let (stream, _) = listener.accept().expect("accept drain request");
+            let mut reader = BufReader::new(stream);
+            let mut request_bytes = Vec::new();
+            reader
+                .read_until(b'\n', &mut request_bytes)
+                .expect("read drain request");
+            let request: AgentdRequest =
+                serde_json::from_slice(&request_bytes).expect("typed drain request");
+            assert!(matches!(
+                request.method,
+                codex_hepta_agent_protocol::AgentdMethod::Drain
+            ));
+            let response = AgentdResponse {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: request.request_id,
+                agent_id: response_agent,
+                spawn_generation: 7,
+                current_generation,
+                payload: AgentdPayload::Drain(DrainSnapshot {
+                    admission_stopped: true,
+                    drain_accepted: true,
+                }),
+            };
+            let mut stream = reader.into_inner();
+            serde_json::to_writer(&mut stream, &response).expect("write drain response");
+            stream.write_all(b"\n").expect("terminate drain response");
+        });
+
+        assert_eq!(request_agent_drain(&identity).is_ok(), accepted);
+        worker.join().expect("drain server joins");
+    }
+    remove_socket(&socket);
 }
 
 #[test]
