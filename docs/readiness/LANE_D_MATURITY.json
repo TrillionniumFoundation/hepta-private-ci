@@ -318,6 +318,14 @@
             "examples/control_runtime_probe.rs",
             ".github/workflows/hepta-control-runtime-closure.yml"
           ]
+        },
+        "durableGlobalPublication": {
+          "state": "candidate_implemented_product_host_pending",
+          "evidence": [
+            "plan_global_and_record_v1",
+            "durable_global_plan_commits_selection_before_returning",
+            "PlannerJournalStoreV1"
+          ]
         }
       }
     }
