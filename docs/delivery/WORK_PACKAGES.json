@@ -1353,7 +1353,8 @@
         "LearningArtifactManifestV1",
         "ModulePort::context.compiler::intelligence.control",
         "ModulePort::intuition.policy::intelligence.control",
-        "ModulePort::learning.eval::intelligence.control"
+        "ModulePort::learning.eval::intelligence.control",
+        "ModulePort::prompt.registry::intelligence.control"
       ],
       "producesContracts": [
         "IntelligenceHostEnvelopeV1",
@@ -1414,6 +1415,7 @@
           "utility.ndu",
           "neuron.runtime",
           "intuition.policy",
+          "prompt.registry",
           "prompt.optimizer",
           "context.compiler",
           "learning.eval"
@@ -1426,7 +1428,8 @@
           "LearningArtifactManifestV1",
           "ModulePort::context.compiler::intelligence.control",
           "ModulePort::intuition.policy::intelligence.control",
-          "ModulePort::learning.eval::intelligence.control"
+          "ModulePort::learning.eval::intelligence.control",
+          "ModulePort::prompt.registry::intelligence.control"
         ],
         "contractOutputs": [
           "IntelligenceHostEnvelopeV1",
@@ -3310,6 +3313,7 @@
         "DomainRead::prompt_factor_lifecycleV1",
         "DomainRead::prompt_factor_registryV1",
         "DomainRead::prompt_realization_registryV1",
+        "ModulePort::prompt.registry::intelligence.control",
         "ModulePort::prompt.registry::knowledge.graph",
         "ModulePort::prompt.registry::prompt.optimizer",
         "PromptFactorV1",
@@ -3387,6 +3391,7 @@
           "DomainRead::prompt_factor_lifecycleV1",
           "DomainRead::prompt_factor_registryV1",
           "DomainRead::prompt_realization_registryV1",
+          "ModulePort::prompt.registry::intelligence.control",
           "ModulePort::prompt.registry::knowledge.graph",
           "ModulePort::prompt.registry::prompt.optimizer",
           "PromptFactorV1",
@@ -4034,6 +4039,7 @@
         "DomainRead::prompt_factor_lifecycleV1",
         "DomainRead::prompt_factor_registryV1",
         "DomainRead::prompt_realization_registryV1",
+        "ModulePort::prompt.registry::intelligence.control",
         "ModulePort::prompt.registry::knowledge.graph",
         "ModulePort::prompt.registry::prompt.optimizer",
         "PromptFactorV1",
@@ -4111,6 +4117,7 @@
           "DomainRead::prompt_factor_lifecycleV1",
           "DomainRead::prompt_factor_registryV1",
           "DomainRead::prompt_realization_registryV1",
+          "ModulePort::prompt.registry::intelligence.control",
           "ModulePort::prompt.registry::knowledge.graph",
           "ModulePort::prompt.registry::prompt.optimizer",
           "PromptFactorV1",
@@ -6077,7 +6084,8 @@
         "LearningArtifactManifestV1",
         "ModulePort::context.compiler::intelligence.control",
         "ModulePort::intuition.policy::intelligence.control",
-        "ModulePort::learning.eval::intelligence.control"
+        "ModulePort::learning.eval::intelligence.control",
+        "ModulePort::prompt.registry::intelligence.control"
       ],
       "producesContracts": [
         "IntelligenceHostEnvelopeV1",
@@ -6150,6 +6158,7 @@
           "utility.ndu",
           "neuron.runtime",
           "intuition.policy",
+          "prompt.registry",
           "prompt.optimizer",
           "context.compiler",
           "learning.eval"
@@ -6162,7 +6171,8 @@
           "LearningArtifactManifestV1",
           "ModulePort::context.compiler::intelligence.control",
           "ModulePort::intuition.policy::intelligence.control",
-          "ModulePort::learning.eval::intelligence.control"
+          "ModulePort::learning.eval::intelligence.control",
+          "ModulePort::prompt.registry::intelligence.control"
         ],
         "contractOutputs": [
           "IntelligenceHostEnvelopeV1",
@@ -7401,6 +7411,7 @@
         "DomainRead::prompt_factor_lifecycleV1",
         "DomainRead::prompt_factor_registryV1",
         "DomainRead::prompt_realization_registryV1",
+        "ModulePort::prompt.registry::intelligence.control",
         "ModulePort::prompt.registry::knowledge.graph",
         "ModulePort::prompt.registry::prompt.optimizer",
         "PromptFactorV1",
@@ -7488,6 +7499,7 @@
           "DomainRead::prompt_factor_lifecycleV1",
           "DomainRead::prompt_factor_registryV1",
           "DomainRead::prompt_realization_registryV1",
+          "ModulePort::prompt.registry::intelligence.control",
           "ModulePort::prompt.registry::knowledge.graph",
           "ModulePort::prompt.registry::prompt.optimizer",
           "PromptFactorV1",
@@ -8815,7 +8827,8 @@
         "LearningArtifactManifestV1",
         "ModulePort::context.compiler::intelligence.control",
         "ModulePort::intuition.policy::intelligence.control",
-        "ModulePort::learning.eval::intelligence.control"
+        "ModulePort::learning.eval::intelligence.control",
+        "ModulePort::prompt.registry::intelligence.control"
       ],
       "producesContracts": [
         "IntelligenceHostEnvelopeV1",
@@ -8864,6 +8877,7 @@
           "utility.ndu",
           "neuron.runtime",
           "intuition.policy",
+          "prompt.registry",
           "prompt.optimizer",
           "context.compiler",
           "learning.eval"
@@ -8876,7 +8890,8 @@
           "LearningArtifactManifestV1",
           "ModulePort::context.compiler::intelligence.control",
           "ModulePort::intuition.policy::intelligence.control",
-          "ModulePort::learning.eval::intelligence.control"
+          "ModulePort::learning.eval::intelligence.control",
+          "ModulePort::prompt.registry::intelligence.control"
         ],
         "contractOutputs": [
           "IntelligenceHostEnvelopeV1",
