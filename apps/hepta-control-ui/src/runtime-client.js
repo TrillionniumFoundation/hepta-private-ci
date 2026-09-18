@@ -98,6 +98,7 @@ export class RuntimeClient {
   #connectAttempt = 0;
   #closing = false;
   #closePromise = null;
+  #reconciliationPaused = false;
   #activeIo = 0;
   #drainWaiters = [];
   #session = null;
@@ -185,6 +186,7 @@ export class RuntimeClient {
     }
 
     this.#cancelReconciliationTimer();
+    this.#reconciliationPaused = false;
     this.#session = {
       endpointId,
       protocolVersion,
@@ -371,6 +373,7 @@ export class RuntimeClient {
   }
 
   pauseReconciliation() {
+    this.#reconciliationPaused = true;
     this.#cancelReconciliationTimer();
   }
 
@@ -805,7 +808,12 @@ export class RuntimeClient {
   }
 
   #scheduleReconciliation() {
-    if (this.#closing || !this.#session || !this.#setTimer) return;
+    if (
+      this.#closing ||
+      this.#reconciliationPaused ||
+      !this.#session ||
+      !this.#setTimer
+    ) return;
     let due = null;
     const now = this.#now();
     let recoveryChanged = false;
