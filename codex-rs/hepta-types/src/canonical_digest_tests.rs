@@ -121,3 +121,73 @@ fn canonical_encoding_is_bounded() {
         Err(CanonicalDigestError::SizeLimit)
     );
 }
+
+
+#[test]
+fn canonical_field_collection_and_depth_limits_reject() {
+    let type_id = checked(validate_id("platform.types:limits", IdProfileV1::Stable));
+
+    let many_fields: Vec<_> = (0..=MAX_FIELDS_V1)
+        .map(|index| {
+            let name = Box::leak(format!("f{index}").into_boxed_str());
+            CanonicalFieldV1::new(name, CanonicalValueV1::U64(index as u64))
+        })
+        .collect();
+    assert_eq!(
+        canonical_digest_v1(&type_id, 1, &many_fields),
+        Err(CanonicalDigestError::TooManyFields)
+    );
+
+    let many_items = vec![CanonicalValueV1::Bool(false); MAX_COLLECTION_ITEMS_V1 + 1];
+    let array_field = [CanonicalFieldV1::new(
+        "items",
+        CanonicalValueV1::Array(&many_items),
+    )];
+    assert_eq!(
+        canonical_digest_v1(&type_id, 1, &array_field),
+        Err(CanonicalDigestError::TooManyCollectionItems)
+    );
+
+    fn nested(depth: usize) -> CanonicalValueV1<'static> {
+        if depth == 0 {
+            return CanonicalValueV1::Bool(true);
+        }
+        let child = Box::leak(Box::new([nested(depth - 1)]));
+        CanonicalValueV1::Array(child)
+    }
+    let too_deep = [CanonicalFieldV1::new(
+        "nested",
+        nested(MAX_NESTING_DEPTH_V1 + 1),
+    )];
+    assert_eq!(
+        canonical_digest_v1(&type_id, 1, &too_deep),
+        Err(CanonicalDigestError::NestingDepth)
+    );
+}
+
+#[test]
+fn canonical_order_is_invariant_across_deterministic_permutations() {
+    let type_id = checked(validate_id("platform.types:order", IdProfileV1::Stable));
+    let base = [
+        CanonicalFieldV1::new("delta", CanonicalValueV1::U64(4)),
+        CanonicalFieldV1::new("alpha", CanonicalValueV1::U64(1)),
+        CanonicalFieldV1::new("charlie", CanonicalValueV1::U64(3)),
+        CanonicalFieldV1::new("bravo", CanonicalValueV1::U64(2)),
+    ];
+    let expected = checked(canonical_digest_v1(&type_id, 1, &base));
+
+    for shift in 0..base.len() {
+        let mut rotated = base;
+        rotated.rotate_left(shift);
+        assert_eq!(
+            checked(canonical_digest_v1(&type_id, 1, &rotated)),
+            expected
+        );
+
+        rotated.swap(0, rotated.len() - 1);
+        assert_eq!(
+            checked(canonical_digest_v1(&type_id, 1, &rotated)),
+            expected
+        );
+    }
+}
