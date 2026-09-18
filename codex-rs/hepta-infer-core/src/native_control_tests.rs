@@ -366,6 +366,28 @@ fn late_completed_releases_slot_without_erasing_authority_loss() {
 }
 
 #[test]
+fn unverified_dispatch_cannot_install_a_fabricated_final_use_witness() {
+    let path = path("fake-dispatch-witness");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let mut forged = dispatch();
+    forged.final_use_witness = Some(NativeFinalUseWitness {
+        signer_id: "fake-signer".to_string(),
+        authority_epoch: 7,
+        grant_id: "fake-grant".to_string(),
+        expires_at_unix_ms: 9,
+        binding_digest: "c".repeat(64),
+    });
+    assert_eq!(control.dispatch_native("r1", forged), Err(Error::Conflict));
+    assert_eq!(
+        control.native_record("r1").unwrap().state,
+        NativeReservationState::Reserved
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn caller_cannot_claim_final_use_success_without_a_durable_dispatch_witness() {
     let path = path("fake-final-use");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
