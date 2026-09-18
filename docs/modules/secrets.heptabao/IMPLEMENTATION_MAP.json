@@ -28,8 +28,10 @@
       "nativeSymbol": "consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel.authority",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2",
       "mappingClass": "owner_native",
@@ -41,7 +43,9 @@
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "binding",
       "mappingClass": "owner_native",
@@ -216,7 +220,8 @@
   "repositoryControlledGaps": [
     "Bind every dynamic lease operation to an authenticated production consumer callsite.",
     "Qualify request/renew/revoke/lookup and registry recovery against the pinned external HeptaBao service.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
+    "Provide a strongly consistent active-active replay/revocation and lease-registry backend before enabling multi-writer HA."
   ],
   "externalEvidenceGates": [
     "HeptaBao/provider stable operation-id idempotency plus status lookup is required before automatic reconciliation of an issuance whose response is lost",
