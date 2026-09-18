@@ -117,9 +117,13 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         ..OutboxDispatchStats::default()
     };
     for record in records {
-        let context = transport
-            .dispatch_context(&record)
-            .map_err(|_| OutboxDispatchError::Invalid)?;
+        let context = match transport.dispatch_context(&record) {
+            Ok(context) => context,
+            Err(_) => {
+                mark_permanent_or_observed(store, &record, now_ms, &mut stats).await?;
+                continue;
+            }
+        };
         let operation_id = format!("matrix-send-{}", record.stable_txn_id.as_str());
         let payload_digest = Sha256Digest::for_bytes(&record.payload).as_str().to_string();
         let intent = SendIntent {
@@ -142,8 +146,19 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             .prepare_send(now_ms, &intent)
             .await
             .map_err(dispatch_error)?;
-        if prepared.state.is_terminal() {
-            continue;
+        match prepared.state {
+            SendState::Succeeded | SendState::Redacted => {
+                stats.sent += 1;
+                continue;
+            }
+            SendState::Failed => {
+                mark_permanent_or_observed(store, &record, now_ms, &mut stats).await?;
+                continue;
+            }
+            SendState::Prepared
+            | SendState::Dispatched
+            | SendState::Accepted
+            | SendState::Indeterminate => {}
         }
 
         let attempt_digest = dispatch_observation_digest(

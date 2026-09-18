@@ -3,6 +3,7 @@ use std::fs;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_protocol::MatrixTransactionId;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixServerEventObservation;
 use codex_hepta_paths::HeptaAgentLayout;
@@ -276,6 +277,34 @@ async fn redaction_preserves_original_send_evidence_and_is_immutable() -> TestRe
             .await,
         Err(Error::OperationConflict)
     );
+    assert_eq!(fixture.store.unresolved_send_count().await?, 0);
+    fixture.store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn preexisting_server_observation_reconciles_before_any_retry() -> TestResult {
+    let fixture = Fixture::new().await?;
+    let transaction_id = MatrixTransactionId::parse("hepta-v1-0123456789abcdef")?;
+    let event_id = MatrixEventId::parse("$preobserved:example.org")?;
+    fixture
+        .store
+        .observe_server_event(&MatrixServerEventObservation {
+            event_id: event_id.clone(),
+            transaction_id: Some(transaction_id.clone()),
+            room_id: codex_hepta_matrix_protocol::MatrixRoomId::parse("!room:example.org")?,
+            session_generation: 3,
+            observation_digest: "6".repeat(64),
+            observed_at_ms: 150,
+        })
+        .await?;
+
+    let mut pending = intent();
+    pending.transaction_id = transaction_id.as_str().to_string();
+    let reconciled = fixture.observer.prepare_send(200, pending).await?;
+    assert_eq!(reconciled.state, SendState::Succeeded);
+    assert_eq!(reconciled.server_event_id.as_deref(), Some(event_id.as_str()));
+    assert_eq!(reconciled.send_observation_digest, Some("6".repeat(64)));
     assert_eq!(fixture.store.unresolved_send_count().await?, 0);
     fixture.store.close().await;
     Ok(())

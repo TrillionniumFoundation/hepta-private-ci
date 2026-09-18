@@ -61,18 +61,6 @@ pub enum SendState {
 }
 
 impl SendState {
-    fn as_str(self) -> &'static str {
-        match self {
-            Self::Prepared => "prepared",
-            Self::Dispatched => "dispatched",
-            Self::Accepted => "accepted",
-            Self::Indeterminate => "indeterminate",
-            Self::Succeeded => "succeeded",
-            Self::Failed => "failed",
-            Self::Redacted => "redacted",
-        }
-    }
-
     fn parse(value: &str) -> Option<Self> {
         match value {
             "prepared" => Some(Self::Prepared),
@@ -257,7 +245,8 @@ impl MatrixDurableStore {
         .await?;
         sqlx::query(
             "UPDATE matrix_dispatch_ledger
-             SET state = 'dispatched', transport_observation_digest = ?, updated_at_ms = MAX(updated_at_ms, ?)
+             SET state = CASE WHEN state = 'accepted' THEN 'accepted' ELSE 'dispatched' END,
+                 transport_observation_digest = ?, updated_at_ms = MAX(updated_at_ms, ?)
              WHERE operation_id = ?",
         )
         .bind(observation_digest)
@@ -308,6 +297,16 @@ impl MatrixDurableStore {
             && existing != operation_id
         {
             return Err(MatrixDispatchError::OperationConflict);
+        }
+        let prior_accepted: Option<String> = sqlx::query_scalar(
+            "SELECT accepted_event_id FROM matrix_dispatch_ledger WHERE operation_id = ?",
+        )
+        .bind(operation_id)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(store_error)?;
+        if prior_accepted.as_deref().is_some_and(|prior| prior != event_id.as_str()) {
+            return Err(MatrixDispatchError::ObservationMismatch);
         }
         append_observation_tx(
             &mut transaction,
@@ -376,7 +375,8 @@ impl MatrixDurableStore {
         .await?;
         sqlx::query(
             "UPDATE matrix_dispatch_ledger
-             SET state = 'indeterminate', transport_observation_digest = ?,
+             SET state = CASE WHEN state = 'accepted' THEN 'accepted' ELSE 'indeterminate' END,
+                 transport_observation_digest = ?,
                  updated_at_ms = MAX(updated_at_ms, ?)
              WHERE operation_id = ?",
         )
@@ -453,7 +453,8 @@ impl MatrixDurableStore {
             .await?;
             sqlx::query(
                 "UPDATE matrix_dispatch_ledger
-                 SET state = 'indeterminate', transport_observation_digest = ?,
+                 SET state = CASE WHEN state = 'accepted' THEN 'accepted' ELSE 'indeterminate' END,
+                     transport_observation_digest = ?,
                      updated_at_ms = MAX(updated_at_ms, ?)
                  WHERE operation_id = ?",
             )
@@ -542,14 +543,22 @@ impl MatrixDurableStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(store_error)?;
-        let operation_id = sqlx::query_scalar::<_, String>(
-            "SELECT operation_id FROM matrix_dispatch_ledger WHERE server_event_id = ?",
+        let row = sqlx::query(
+            "SELECT operation_id, state, redaction_observation_digest
+             FROM matrix_dispatch_ledger WHERE server_event_id = ?",
         )
         .bind(server_event_id)
         .fetch_optional(&mut *transaction)
         .await
         .map_err(store_error)?
         .ok_or(MatrixDispatchError::SendNotFound)?;
+        let operation_id: String = row.try_get("operation_id").map_err(store_error)?;
+        let state: String = row.try_get("state").map_err(store_error)?;
+        let existing_redaction: Option<String> = row
+            .try_get("redaction_observation_digest")
+            .map_err(store_error)?;
+        let replay = state == "redacted"
+            && existing_redaction.as_deref() == Some(redaction_digest);
         apply_send_redaction_tx(
             &mut transaction,
             server_event_id,
@@ -558,10 +567,11 @@ impl MatrixDurableStore {
         )
         .await
         .map_err(durable_dispatch_error)?;
-        let receipt = load_record_tx(&mut transaction, &operation_id)
+        let mut receipt = load_record_tx(&mut transaction, &operation_id)
             .await?
             .ok_or(MatrixDispatchError::SendNotFound)?
             .receipt;
+        receipt.idempotent = replay;
         transaction.commit().await.map_err(store_error)?;
         Ok(receipt)
     }
@@ -600,6 +610,19 @@ pub(crate) async fn record_server_event_observation_tx(
         || observation.observed_at_ms > i64::MAX as u64
     {
         return Err(MatrixDurableError::Invalid);
+    }
+    if let Some(transaction_id) = &observation.transaction_id {
+        if let Some(prior_event_id) = sqlx::query_scalar::<_, String>(
+            "SELECT event_id FROM matrix_server_event_observations WHERE stable_txn_id = ?",
+        )
+        .bind(transaction_id.as_str())
+        .fetch_optional(&mut **transaction)
+        .await
+        .map_err(unavailable)?
+            && prior_event_id != observation.event_id.as_str()
+        {
+            return Err(MatrixDurableError::Conflict);
+        }
     }
     let inserted = sqlx::query(
         "INSERT INTO matrix_server_event_observations (
@@ -805,7 +828,9 @@ async fn settle_succeeded_fields_durable_tx(
     let send_digest: Option<String> = row.try_get("send_observation_digest").map_err(unavailable)?;
 
     if state == "redacted" {
-        if server_event_id.as_deref() == Some(event_id) {
+        if server_event_id.as_deref() == Some(event_id)
+            && send_digest.as_deref() == Some(digest)
+        {
             return Ok(());
         }
         return Err(MatrixDurableError::Conflict);
