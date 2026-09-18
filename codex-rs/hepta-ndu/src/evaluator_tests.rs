@@ -8,9 +8,8 @@ use pretty_assertions::assert_eq;
 
 use super::canonical_evaluation_policy_digest;
 use super::canonical_scalarization_digest;
-use super::evaluate_candidates;
 use super::evaluate_candidates_with_policy;
-use super::legacy_evaluation_policy;
+use super::compatibility_evaluation_policy;
 use crate::AggregationOperator;
 use crate::AxisDirection;
 use crate::AxisLimit;
@@ -43,6 +42,15 @@ fn id(value: &str) -> StableId {
 
 fn q32(value: i64) -> FixedQ32 {
     FixedQ32::from_raw(value << 32)
+}
+
+fn evaluate_candidates(
+    set: ContributionSet,
+    profile: UtilityProfile,
+    scalarization: Option<ScalarizationProfile>,
+) -> Result<crate::NduEvaluationReceipt, crate::NduError> {
+    let policy = compatibility_evaluation_policy(&profile)?;
+    Ok(evaluate_candidates_with_policy(set, profile, scalarization, policy)?.base)
 }
 
 fn contribution_from(
@@ -96,6 +104,8 @@ fn contribution(candidate: &str, success: i64, latency: i64) -> UtilityContribut
 fn profile() -> UtilityProfile {
     UtilityProfile {
         profile_id: id("utility-v1"),
+        axis_registry_digest: Digest32::of_bytes(b"utility-v1-axis-registry"),
+        normalization_manifest_digest: Digest32::of_bytes(b"utility-v1-normalization"),
         dimensions: vec![
             (id("success"), AxisDirection::Maximize),
             (id("latency"), AxisDirection::Minimize),
@@ -251,7 +261,7 @@ fn scalarization_digest_is_computed_from_canonical_inputs() {
 fn policy_selects_axis_specific_aggregation_instead_of_implicit_sum() {
     let mut profile = profile();
     profile.required_organs.organ_ids.push(id("observer"));
-    let mut policy = must(legacy_evaluation_policy(&profile));
+    let mut policy = must(compatibility_evaluation_policy(&profile));
     policy
         .utility_rules
         .iter_mut()
@@ -290,7 +300,7 @@ fn policy_selects_axis_specific_aggregation_instead_of_implicit_sum() {
 fn require_equal_aggregation_rejects_conflicting_owners() {
     let mut profile = profile();
     profile.required_organs.organ_ids.push(id("observer"));
-    let mut policy = must(legacy_evaluation_policy(&profile));
+    let mut policy = must(compatibility_evaluation_policy(&profile));
     policy
         .utility_rules
         .iter_mut()
@@ -328,7 +338,7 @@ fn pareto_tolerance_is_digest_bound_and_changes_dominance() {
     ));
     assert_eq!(exact.pareto_frontier.len(), 1);
 
-    let mut policy = must(legacy_evaluation_policy(&profile));
+    let mut policy = must(compatibility_evaluation_policy(&profile));
     policy
         .pareto_absolute_tolerances
         .iter_mut()
@@ -352,7 +362,7 @@ fn pareto_tolerance_is_digest_bound_and_changes_dominance() {
 #[test]
 fn policy_digest_is_permutation_invariant() {
     let profile = profile();
-    let first = must(legacy_evaluation_policy(&profile));
+    let first = must(compatibility_evaluation_policy(&profile));
     let mut reordered = first.clone();
     reordered.utility_rules.reverse();
     reordered.risk_rules.reverse();

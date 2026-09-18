@@ -56,6 +56,10 @@ pub struct RequiredOrganSet {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct UtilityProfile {
     pub profile_id: StableId,
+    /// Immutable registry binding axis identities to units, scales and directions.
+    pub axis_registry_digest: Digest32,
+    /// Immutable normalization/clipping/scaling manifest for all profile axes.
+    pub normalization_manifest_digest: Digest32,
     pub dimensions: Vec<(StableId, AxisDirection)>,
     pub risk_ceilings: Vec<AxisLimit>,
     pub resource_ceilings: Vec<AxisLimit>,
@@ -153,7 +157,7 @@ impl EvaluationDisposition {
 }
 
 /// Legacy deterministic evaluation receipt. Its aggregation semantics are the
-/// explicit compatibility policy returned by `legacy_evaluation_policy`.
+/// explicit compatibility policy supplied to `evaluate_candidates_with_policy`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduEvaluationReceipt {
     pub objective_digest: Digest32,

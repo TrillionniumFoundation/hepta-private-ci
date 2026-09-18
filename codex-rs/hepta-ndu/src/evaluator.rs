@@ -62,17 +62,6 @@ struct ValidatedEvaluationPolicy {
     tolerances: BTreeMap<StableId, FixedQ32>,
 }
 
-/// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
-/// Pareto semantics are now materialized as a digestible policy.
-pub fn evaluate_candidates(
-    set: ContributionSet,
-    profile: UtilityProfile,
-    scalarization: Option<ScalarizationProfile>,
-) -> Result<NduEvaluationReceipt, NduError> {
-    let policy = legacy_evaluation_policy(&profile)?;
-    Ok(evaluate_candidates_with_policy(set, profile, scalarization, policy)?.base)
-}
-
 /// Applies hard feasibility, complete profile-bound aggregation, tolerant
 /// Pareto filtering and optional registered scalarization. Any recommendation
 /// remains advisory and carries no selection or effect authority.
@@ -195,8 +184,11 @@ pub fn evaluate_candidates_with_policy(
     })
 }
 
-/// Returns the exact compatibility policy used by `evaluate_candidates`.
-pub fn legacy_evaluation_policy(profile: &UtilityProfile) -> Result<EvaluationPolicyV1, NduError> {
+/// Returns the explicit digest-bound compatibility policy for integrations that
+/// intentionally retain the former sum/sum/sum/max, zero-tolerance semantics.
+pub fn compatibility_evaluation_policy(
+    profile: &UtilityProfile,
+) -> Result<EvaluationPolicyV1, NduError> {
     Ok(EvaluationPolicyV1 {
         policy_id: stable_id("legacy-sum-max-zero-tolerance-v1")?,
         utility_rules: profile
@@ -302,6 +294,12 @@ fn validate_contribution_envelope(set: &ContributionSet) -> Result<(), NduError>
 }
 
 fn validate_profile(profile: &mut UtilityProfile) -> Result<(), NduError> {
+    if profile.axis_registry_digest.is_zero() {
+        return Err(NduError::EmptyProfileDigest("axis_registry"));
+    }
+    if profile.normalization_manifest_digest.is_zero() {
+        return Err(NduError::EmptyProfileDigest("normalization_manifest"));
+    }
     if profile.dimensions.is_empty()
         || profile.dimensions.len() > MAX_UTILITY_DIMENSIONS
         || profile.risk_ceilings.len() > MAX_RISK_RESOURCE_DIMENSIONS

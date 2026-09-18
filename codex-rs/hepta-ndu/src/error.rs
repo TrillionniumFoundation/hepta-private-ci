@@ -7,9 +7,12 @@ pub enum NduError {
     ContributionLimitExceeded,
     CandidateLimitExceeded,
     DimensionLimitExceeded,
+    PreferenceDimensionLimitExceeded,
     RequiredOrganLimitExceeded,
     EmptyObjectiveDigest,
+    EmptyProfileDigest(&'static str),
     EmptyProtocolDigest(&'static str),
+    ProtocolContextMismatch,
     EmptySupportDigest { candidate: String, organ: String },
     MixedObjective,
     MixedGeneration,
@@ -29,8 +32,11 @@ pub enum NduError {
     IncompleteScalarization,
     InvalidWeight(String),
     InvalidEta,
+    PreferenceValueOutOfRange(String),
     DimensionMismatch,
     StateDigestMismatch,
+    InvalidHierarchyParent { subject: String },
+    ConflictingHierarchyArtifact { subject: String },
     SimultaneousHierarchyUpdate(u64),
     Arithmetic,
 }
@@ -43,9 +49,12 @@ impl NduError {
             | Self::ContributionLimitExceeded
             | Self::CandidateLimitExceeded
             | Self::DimensionLimitExceeded
+            | Self::PreferenceDimensionLimitExceeded
             | Self::RequiredOrganLimitExceeded => "NDU-E001",
             Self::EmptyObjectiveDigest
+            | Self::EmptyProfileDigest(_)
             | Self::EmptyProtocolDigest(_)
+            | Self::ProtocolContextMismatch
             | Self::EmptySupportDigest { .. }
             | Self::MixedObjective
             | Self::MixedGeneration => "NDU-E002",
@@ -64,8 +73,13 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
-            Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::InvalidEta
+            | Self::PreferenceValueOutOfRange(_)
+            | Self::DimensionMismatch
+            | Self::StateDigestMismatch => "NDU-E008",
+            Self::InvalidHierarchyParent { .. }
+            | Self::ConflictingHierarchyArtifact { .. }
+            | Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
         }
     }
@@ -80,12 +94,21 @@ impl fmt::Display for NduError {
             }
             Self::CandidateLimitExceeded => formatter.write_str("candidate limit exceeds 128"),
             Self::DimensionLimitExceeded => formatter.write_str("dimension limit exceeded"),
+            Self::PreferenceDimensionLimitExceeded => {
+                formatter.write_str("preference dimension must be in the closed interval [1, 64]")
+            }
             Self::RequiredOrganLimitExceeded => {
                 formatter.write_str("required organ set exceeds 32 entries")
             }
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
+            Self::EmptyProfileDigest(field) => {
+                write!(formatter, "profile digest must not be zero: {field}")
+            }
             Self::EmptyProtocolDigest(field) => {
                 write!(formatter, "protocol digest must not be zero: {field}")
+            }
+            Self::ProtocolContextMismatch => {
+                formatter.write_str("solver receipt context does not match publication context")
             }
             Self::EmptySupportDigest { candidate, organ } => write!(
                 formatter,
@@ -146,11 +169,21 @@ impl fmt::Display for NduError {
             Self::InvalidEta => {
                 formatter.write_str("eta must be in the closed interval [1/16, 1/4]")
             }
+            Self::PreferenceValueOutOfRange(axis) => {
+                write!(formatter, "preference value must be in [-1, 1]: {axis}")
+            }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::InvalidHierarchyParent { subject } => {
+                write!(formatter, "invalid direct parent binding for hierarchy subject {subject}")
+            }
+            Self::ConflictingHierarchyArtifact { subject } => write!(
+                formatter,
+                "hierarchy subject {subject} selects conflicting artifacts in one generation"
+            ),
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
-                "multiple hierarchy levels update in generation {generation}"
+                "a direct parent and child update in generation {generation}"
             ),
             Self::Arithmetic => formatter.write_str("deterministic Q32 arithmetic failed"),
         }

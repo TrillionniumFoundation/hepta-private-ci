@@ -14,17 +14,22 @@ The module owns utility and preference calculations but has no effect, capabilit
 Implemented operations include:
 
 ```text
-evaluate_candidates(set, profile, scalarization)
 evaluate_candidates_with_policy(set, profile, scalarization, policy)
+compatibility_evaluation_policy(profile)
 canonical_evaluation_policy_digest(profile, policy)
 solve_preference_target(initial, target, eta)
+solve_preference_target_with_context_digest(initial, target, eta, context_digest)
+canonical_iteration_context_digest(context)
 bind_solver_iteration_receipt_v1(context, local_step)
 evaluate_recursive_utility(path)
 solve_backward_regression(conditional_moments, covariance_profile)
+convert_q32_to_q24(values, profile and units digests)
+admit_stochastic_profile_v1(evidence, covariance_profile)
 NduProjectionJournalV1::{append_projection, select_projection, revoke_projection, reopen}
+NduDurableProjectionJournalV1::{create, recover, append_projection, select_projection, revoke_projection}
 ```
 
-The legacy evaluator is retained as a compatibility entry with an explicit `legacy-sum-max-zero-tolerance-v1` policy. New integrations use `EvaluationPolicyV1` and `NduEvaluationReceiptV2`, whose digest binds utility, risk, resource and uncertainty aggregation plus per-axis Pareto tolerance.
+The legacy evaluator entrypoint is removed. The former semantics remain available only as the explicit `compatibility_evaluation_policy` (`legacy-sum-max-zero-tolerance-v1`) supplied to `evaluate_candidates_with_policy`. `UtilityProfile` digest v2 additionally binds axis/unit/scale registry and normalization manifests. New integrations use `EvaluationPolicyV1` and `NduEvaluationReceiptV2`, whose digest binds utility, risk, resource and uncertainty aggregation plus per-axis Pareto tolerance.
 
 ## 3. State, receipts and authority separation
 
@@ -32,9 +37,9 @@ The legacy evaluator is retained as a compatibility entry with an explicit `lega
 
 They are deliberately not named `NduConvergenceCertificateV1`. That canonical certificate remains owned by `learning.eval` and additionally requires independent evaluator identity, conservation, stability and spectral-radius evidence. A local solver cannot certify itself for activation.
 
-`bind_solver_iteration_receipt_v1` publishes an owner-local canonical-context receipt only after binding subject, objective, body generation, event, coefficient, revision, residual, projection count and state digest. The output carries `AuthorityPosture::DENY_ALL`.
+`canonical_iteration_context_digest` is computed before protocol-bound solving and copied into each local receipt. `bind_solver_iteration_receipt_v1` rejects zero/unbound or differently bound context before publication, preventing a local step from being rebound to another subject/objective/generation/event/coefficient tuple. The output carries `AuthorityPosture::DENY_ALL`.
 
-`NduProjectionJournalV1` is a bounded durability reference, not a production writer. It provides append-only hash-chain entries, semantic idempotency, selected-projection reconstruction, exact reopen, truncation/tamper detection and revocation non-resurrection. Production composition still requires a selected store, migration, fsync profile, retention and backup/restore evidence.
+`NduProjectionJournalV1` remains a bounded in-memory/reference journal. Revocation lookup is now scoped by objective + subject + payload. `NduDurableProjectionJournalV1` is a source-implemented writer candidate using a host-authorized locked regular file, fixed canonical frames, write + `sync_all` before memory publication, poison-on-indeterminate-I/O recovery and an independently retained chain anchor that detects wholesale self-consistent rewrites. Host selection, containing-directory durability, schema migration, retention and backup/restore evidence remain separate.
 
 ## 4. Aggregation, Pareto and solver semantics
 
@@ -90,4 +95,4 @@ This candidate grants no model, tool, network, filesystem, secret, Matrix, fleet
 - **State and recovery:** The deterministic Q32 evaluator and native f64 shadow regression are distinct profiles. Regression solves centered Z Sigma = B (rate convention Z Q = B/dt) using scaled Cholesky and bounded diagnostics. Projection journal bytes are an owner-local reference, not activated production storage.
 - **Source tests:** [codex-rs/hepta-ndu/src/covariance_tests.rs](../../../codex-rs/hepta-ndu/src/covariance_tests.rs), [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs), [codex-rs/hepta-ndu/src/projection_journal_tests.rs](../../../codex-rs/hepta-ndu/src/projection_journal_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-ndu/COVARIANCE_REGRESSION.md](../../../codex-rs/hepta-ndu/COVARIANCE_REGRESSION.md), [docs/readiness/NDU_SYSTEM_EXECUTION.md](../../../docs/readiness/NDU_SYSTEM_EXECUTION.md).
-- **Remaining work:** The conditional numeric solver is already implemented; remaining work is production coefficient/profile and consumer admission, coordinate/Q24 conversion evidence, conditional identification and independent FBSDE/convergence qualification.
+- **Remaining work:** Coordinate/Q24 conversion evidence, stochastic profile admission and independent convergence certificate issuance/validation are source-implemented. Remaining evidence gates are real conditional identification and well-posedness evidence, named-host durable-writer selection plus directory/migration/retention/backup qualification, exact-head/synthetic-merge qualification, external wire admission where required, and activation/release.

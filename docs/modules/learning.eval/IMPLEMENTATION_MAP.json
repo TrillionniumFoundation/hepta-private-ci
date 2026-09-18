@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "171e9fa8d08797f6ad8bab7b56884963c350c631",
+    "tree": "c08bd4109dd1ae065aac6572f378864fc2b5e31b"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.eval",
@@ -32,6 +32,59 @@
       "designOperation": "evaluate_temporal_holdout",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "issue_ndu_convergence_certificate_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::issue_ndu_convergence_certificate_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+      "inputs": [
+        "NduConvergenceEvidenceV1",
+        "NduConvergencePolicyV1"
+      ],
+      "outputs": [
+        "NduConvergenceCertificateV1"
+      ],
+      "state": "source_implemented_independent_certificate_owner",
+      "authority": "deny_all",
+      "nonClaim": "certificate acceptance is evidence-gated and does not activate an artifact",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "self_evaluation_is_rejected_before_certificate_issue"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "spectral_radius_at_or_above_boundary_is_rejected"
+        }
+      ],
+      "designOperation": "issue_ndu_convergence_certificate_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "validate_ndu_convergence_certificate_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::validate_ndu_convergence_certificate_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+      "inputs": [
+        "NduConvergenceCertificateV1",
+        "current NduConvergenceExpectationV1"
+      ],
+      "outputs": [
+        "validated convergence certificate digest"
+      ],
+      "state": "source_implemented_current_context_admission",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "stale_or_foreign_context_cannot_reuse_an_accepted_certificate"
+        }
+      ],
+      "designOperation": "validate_ndu_convergence_certificate_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -50,9 +103,17 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "nduConvergenceCertificateOwnerImplemented": true
   },
   "sourceRoot": [
     "codex-rs/hepta-intelligence-eval"
-  ]
+  ],
+  "completion": {
+    "independentNduConvergenceCertificate": "source_implemented",
+    "qualificationComposition": "source_implemented_in_shadow_qualification",
+    "externalIndependentEvidence": "required",
+    "activation": "not_established",
+    "release": "not_established"
+  }
 }

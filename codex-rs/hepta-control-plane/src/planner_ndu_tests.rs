@@ -3,7 +3,7 @@ use codex_hepta_ndu::AxisValue;
 use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::RequiredOrganSet;
 use codex_hepta_ndu::UtilityContribution;
-use codex_hepta_ndu::legacy_evaluation_policy;
+use codex_hepta_ndu::compatibility_evaluation_policy;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
@@ -63,6 +63,8 @@ fn fixture() -> (
     .expect("coherent snapshot");
     let profile = UtilityProfile {
         profile_id: id("available-context"),
+        axis_registry_digest: digest("available-context-axis-registry"),
+        normalization_manifest_digest: digest("available-context-normalization"),
         dimensions: vec![(id("coverage"), AxisDirection::Maximize)],
         risk_ceilings: vec![],
         resource_ceilings: vec![],
@@ -71,7 +73,7 @@ fn fixture() -> (
         },
     };
     let input = NduPlanningInputV1 {
-        policy: legacy_evaluation_policy(&profile).expect("valid policy"),
+        policy: compatibility_evaluation_policy(&profile).expect("valid policy"),
         profile,
         scalarization: None,
         contributions: ContributionSet {
