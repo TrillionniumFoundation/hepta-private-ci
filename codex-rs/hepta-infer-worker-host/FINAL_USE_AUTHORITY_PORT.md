@@ -31,8 +31,10 @@ binding, time, epoch and revocation state and returns the one-entry
 ## Protected host configuration
 
 `hepta-infer-worker --profile native-app-server` requires
-`--final-use-authority-config ABSOLUTE_JSON`. The file must be an absolute,
-owner-only, regular, non-symlink file. Unknown fields are rejected.
+`--final-use-authority-config ABSOLUTE_JSON`. The file must be absolute, regular and non-symlink. It must be owned by root or
+the worker's effective UID and must not be group/world writable; this permits a
+root-owned read-only production trust file without giving the worker account
+write access. Unknown fields are rejected.
 
 Example shape:
 
