@@ -206,7 +206,10 @@ impl FleetRevocationCoordinator {
         self.status()
     }
 
-    pub fn node_state(&self, node_id: &str) -> Result<FleetNodeRevocationState, FleetRevocationError> {
+    pub fn node_state(
+        &self,
+        node_id: &str,
+    ) -> Result<FleetNodeRevocationState, FleetRevocationError> {
         let current = self
             .current
             .as_ref()
