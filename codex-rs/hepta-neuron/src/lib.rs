@@ -17,19 +17,35 @@ use codex_hepta_types::StableId;
 
 mod journal;
 mod journal_lock;
+mod journal_witness;
+mod plasticity;
+mod protocol;
+mod qualification;
+mod rebuild;
+mod runtime;
 mod sparse;
 
 pub use journal::JournalAnchor;
 pub use journal::JournalError;
 pub use journal::JournalScope;
 pub use journal::SparseJournal;
+pub use journal_witness::*;
+pub use plasticity::*;
+pub use protocol::*;
+pub use qualification::*;
+pub use rebuild::*;
+pub use runtime::*;
 pub use sparse::InhibitoryEdge;
+pub use sparse::SparseAblationV1;
 pub use sparse::SparseCheckpoint;
 pub use sparse::SparseConfig;
 pub use sparse::SparseError;
 pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
+pub use sparse::rollover_seed;
+pub use sparse::segment_seed;
 pub use sparse::sparse_tick;
+pub use sparse::sparse_tick_ablated;
 
 const MAX_FEATURES: usize = 4_096;
 
