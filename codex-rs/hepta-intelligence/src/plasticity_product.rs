@@ -393,7 +393,22 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         return Err(E::UnexpectedEvaluation(unexpected.to_string()));
     }
     let evaluator_id = evaluator_id.ok_or(E::NoUpdateCandidate)?;
-    let evaluation_digest = Digest32::of_bytes(&evaluation_binding);
+    let candidate_evaluation_digest = Digest32::of_bytes(&evaluation_binding);
+    let generator_authentication_digest = attestation_digest(&request.generator_attestation);
+    let admission_authentication_digest = attestation_digest(&request.admission_attestation);
+    let mut governed_evaluation =
+        b"hepta.intelligence.plasticity-governed-admission.v1\0".to_vec();
+    for digest in [
+        candidate_evaluation_digest,
+        generator_authentication_digest,
+        admission_authentication_digest,
+        request.admission.owner_evidence_set_digest,
+        request.generated.generator_digest,
+        verifier.trust_digest(),
+    ] {
+        governed_evaluation.extend_from_slice(digest.as_array());
+    }
+    let evaluation_digest = Digest32::of_bytes(&governed_evaluation);
 
     let proposal = propose_v2(ParameterProposalRequestV2 {
         proposal_id: request.proposal_id,
@@ -455,8 +470,6 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     }
     writer.state = PlasticityWriterStateV1::Healthy;
 
-    let generator_authentication_digest = attestation_digest(&request.generator_attestation);
-    let admission_authentication_digest = attestation_digest(&request.admission_attestation);
     let mut composition = b"hepta.intelligence.plasticity-composition.v1\0".to_vec();
     for digest in [
         proposal.proposal_digest,
