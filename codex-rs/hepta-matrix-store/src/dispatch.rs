@@ -448,8 +448,7 @@ impl MatrixDurableStore {
         if matches!(
             existing.state,
             MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
-        ) || existing.accepted_event_id.is_some()
-        {
+        ) {
             return Err(MatrixDurableError::Conflict);
         }
         insert_observation_tx(
@@ -465,6 +464,31 @@ impl MatrixDurableStore {
         if existing.state == MatrixDispatchState::Failed {
             transaction.commit().await.map_err(unavailable)?;
             return Ok(existing);
+        }
+        if existing.accepted_event_id.is_some() {
+            // A prior request already crossed the transport boundary. A later
+            // permanent rejection of a retry cannot prove the original event
+            // was absent, so preserve Accepted until homeserver reconciliation.
+            sqlx::query(
+                "UPDATE matrix_dispatch_ledger
+                 SET state = 'accepted', transport_observation_sha256 = ?,
+                     updated_at_ms = ?
+                 WHERE stable_txn_id = ?",
+            )
+            .bind(&digest)
+            .bind(to_i64(now_ms)?)
+            .bind(txn_id.as_str())
+            .execute(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            let record = MatrixDispatchRecord {
+                state: MatrixDispatchState::Accepted,
+                transport_observation_digest: Some(digest),
+                updated_at_ms: now_ms,
+                ..existing
+            };
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(record);
         }
         sqlx::query(
             "UPDATE matrix_dispatch_ledger
