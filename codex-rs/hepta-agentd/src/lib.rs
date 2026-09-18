@@ -40,6 +40,8 @@ pub use codex_hepta_agent_protocol::AuthBusTextStatus;
 pub use codex_hepta_agent_protocol::AuthBusObjectiveBody;
 pub use codex_hepta_agent_protocol::AuthBusObjectiveIngress;
 pub use codex_hepta_agent_protocol::ObjectiveRunAdmission;
+pub use codex_hepta_agent_protocol::ObjectiveStartOutcome;
+pub use codex_hepta_agent_protocol::AgentdCapability;
 pub use codex_hepta_agent_protocol::CognitiveContextItem;
 pub use codex_hepta_agent_protocol::CognitiveContextPlan;
 pub use codex_hepta_agent_protocol::CognitiveContextSnapshot;
