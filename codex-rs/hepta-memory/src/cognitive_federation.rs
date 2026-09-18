@@ -600,7 +600,6 @@ impl CognitiveStore {
     }
 }
 
-
 struct RequestFederationClock {
     base_unix_ms: u64,
     started: Instant,
@@ -678,12 +677,11 @@ fn capability_generation_digest(capability: &FederationCapability) -> Digest32 {
 }
 
 fn unix_seconds_to_millis(value: i64) -> Result<u64, CognitiveStoreError> {
-    let seconds = u64::try_from(value).map_err(|_| {
-        CognitiveStoreError::Invalid("negative federation expiry".to_string())
-    })?;
-    seconds.checked_mul(1_000).ok_or_else(|| {
-        CognitiveStoreError::Invalid("federation expiry overflow".to_string())
-    })
+    let seconds = u64::try_from(value)
+        .map_err(|_| CognitiveStoreError::Invalid("negative federation expiry".to_string()))?;
+    seconds
+        .checked_mul(1_000)
+        .ok_or_else(|| CognitiveStoreError::Invalid("federation expiry overflow".to_string()))
 }
 
 fn unix_seconds_to_millis_v2(value: i64) -> Result<u64, FederationV2Error> {
@@ -773,10 +771,9 @@ fn canonical_evidence_items(
         .map(|candidate| {
             let source_owner_id = StableId::new(candidate.source_agent_id.as_str().to_string())
                 .map_err(|_| FederationV2Error::TransportRejected)?;
-            let record_id = StableId::new(
-                candidate.candidate.memory.id.memory_id.as_str().to_string(),
-            )
-            .map_err(|_| FederationV2Error::TransportRejected)?;
+            let record_id =
+                StableId::new(candidate.candidate.memory.id.memory_id.as_str().to_string())
+                    .map_err(|_| FederationV2Error::TransportRejected)?;
             let record_revision = Revision::new(candidate.candidate.memory.id.revision)
                 .map_err(|_| FederationV2Error::TransportRejected)?;
             let record_digest = candidate
@@ -916,8 +913,7 @@ impl FederationTransportV2 for NativeFederationTransport<'_> {
                 .memory_frontier()
                 .await
                 .map_err(|_| FederationV2Error::TransportRejected)?;
-            let maximum_results = usize::try_from(query.maximum_results)
-                .unwrap_or(usize::MAX);
+            let maximum_results = usize::try_from(query.maximum_results).unwrap_or(usize::MAX);
             let completeness = if items.is_empty() {
                 FederatedCompletenessV2::Empty
             } else if items.len() >= maximum_results {
@@ -1023,8 +1019,7 @@ impl FederatedMemoryReader {
         request: &RetrievalRequest,
     ) -> Result<FederatedRetrievalBatch, CognitiveStoreError> {
         let clock = RequestFederationClock::new(request.now_unix_seconds())?;
-        let (query, lease) =
-            build_canonical_query_and_lease(&self.capability, request, &clock)?;
+        let (query, lease) = build_canonical_query_and_lease(&self.capability, request, &clock)?;
         let transport = NativeFederationTransport {
             reader: self,
             access,
@@ -1069,8 +1064,7 @@ impl FederatedMemoryReader {
             ));
         }
         let batch = transport.take_batch()?;
-        let expected_items =
-            canonical_evidence_items(&batch).map_err(map_federation_v2_error)?;
+        let expected_items = canonical_evidence_items(&batch).map_err(map_federation_v2_error)?;
         if result.items != expected_items {
             return Err(CognitiveStoreError::Corrupt(
                 "canonical federation result does not match the native batch".to_string(),
