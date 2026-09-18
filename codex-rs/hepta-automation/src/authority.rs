@@ -144,7 +144,7 @@ pub struct ProviderDispatchReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
-#[serde(tag = "kind", rename_all = "snake_case")]
+#[serde(tag = "kind", content = "value", rename_all = "snake_case")]
 pub enum ProviderDispatchOutcome {
     Observed(ProviderDispatchReceipt),
     /// The provider may have accepted or completed the effect, but the caller
