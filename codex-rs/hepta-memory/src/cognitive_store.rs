@@ -26,6 +26,7 @@ use crate::cognitive_kg_store::MAX_SCOPE_NODES;
 use crate::cognitive_kg_store::ProjectionEdge;
 use crate::cognitive_kg_store::ProjectionHead;
 use crate::cognitive_kg_store::ProjectionNode;
+use crate::cognitive_kg_store::build_kernel_generation;
 use crate::cognitive_kg_store::input_heads_digest;
 use crate::cognitive_kg_store::output_digest;
 use crate::cognitive_model::COGNITIVE_SCHEMA_VERSION;
@@ -782,7 +783,8 @@ async fn verify_current_projection_contents(
     let mut transaction = pool.begin().await.map_err(unavailable)?;
     let current_rows = sqlx::query(
         "SELECT p.projection_scope, p.generation,
-                r.input_heads_sha256, r.output_sha256
+                r.input_heads_sha256, r.output_sha256,
+                r.kernel_generation_sha256
          FROM kg_projection p
          JOIN kg_projection_generation_receipts r
            ON r.projection_scope = p.projection_scope
@@ -1105,6 +1107,23 @@ async fn verify_current_projection_contents(
             return Err(CognitiveStoreError::Corrupt(format!(
                 "KG current projection `{projection_scope}` output digest failed canonical recomputation"
             )));
+        }
+        let stored_kernel: Option<String> = current
+            .try_get("kernel_generation_sha256")
+            .map_err(unavailable)?;
+        if let Some(stored_kernel) = stored_kernel {
+            let expected_kernel = build_kernel_generation(
+                &projection_scope,
+                generation,
+                &expected_input,
+                &expected_nodes,
+                &expected_edges,
+            )?;
+            if expected_kernel.generation_digest.to_string() != stored_kernel {
+                return Err(CognitiveStoreError::Corrupt(format!(
+                    "KG current projection `{projection_scope}` canonical kernel digest failed recomputation"
+                )));
+            }
         }
     }
     transaction.commit().await.map_err(unavailable)?;
