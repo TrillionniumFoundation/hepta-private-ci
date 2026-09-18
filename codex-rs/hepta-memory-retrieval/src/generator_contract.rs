@@ -120,14 +120,11 @@ fn validate_and_bind_batches(
 > {
     cue.validate()?;
     policy.validate()?;
-    if usize::try_from(policy.maximum_results).unwrap_or(usize::MAX)
-        > HNMF_MAX_RETURNED_EVENTS
-    {
+    if usize::try_from(policy.maximum_results).unwrap_or(usize::MAX) > HNMF_MAX_RETURNED_EVENTS {
         return Err(GeneratorContractErrorV1::ResultProfileLimitExceeded);
     }
     if policy.channel_weights.iter().any(|row| {
-        usize::try_from(row.maximum_candidates).unwrap_or(usize::MAX)
-            > HNMF_MAX_CANDIDATE_EVENTS
+        usize::try_from(row.maximum_candidates).unwrap_or(usize::MAX) > HNMF_MAX_CANDIDATE_EVENTS
     }) {
         return Err(GeneratorContractErrorV1::CandidateProfileLimitExceeded);
     }
@@ -276,10 +273,7 @@ pub fn recall_from_batches(
     })
 }
 
-fn push_id(
-    bytes: &mut Vec<u8>,
-    value: &StableId,
-) -> Result<(), GeneratorContractErrorV1> {
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), GeneratorContractErrorV1> {
     let raw = value.as_str().as_bytes();
     push_len(bytes, raw.len())?;
     bytes.extend_from_slice(raw);
