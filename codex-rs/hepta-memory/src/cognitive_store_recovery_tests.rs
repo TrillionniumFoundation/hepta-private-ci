@@ -340,7 +340,6 @@ enum IdentityAttack {
     Symlink,
     Hardlink,
     Mode,
-    RenameReplacement,
 }
 
 #[cfg(unix)]
@@ -351,7 +350,6 @@ async fn hostile_file_identities_fail_closed_without_additional_mutation() {
         IdentityAttack::Symlink,
         IdentityAttack::Hardlink,
         IdentityAttack::Mode,
-        IdentityAttack::RenameReplacement,
     ];
     for attack in attacks {
         let temp = TempDir::new().expect("temp dir");
@@ -361,29 +359,55 @@ async fn hostile_file_identities_fail_closed_without_additional_mutation() {
         let database = store.path().to_path_buf();
         let root = database.parent().expect("cognitive root").to_path_buf();
         store.pool.close().await;
+        drop(store);
         install_identity_attack(&database, attack);
         let attacked = capture_recovery_tree(&root);
+        let authority = recovery_authority(&owner);
 
         let failure = recovery_failure(
             CognitiveStore::open_with_recovery(
                 &layout(&temp, &owner),
                 CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+                &authority,
+                &RecoveryVerifier,
             )
             .await,
         );
-        match attack {
-            IdentityAttack::RenameReplacement => {
-                assert!(matches!(failure, CognitiveRecoveryError::Unavailable(_)));
-            }
-            IdentityAttack::Missing
-            | IdentityAttack::Symlink
-            | IdentityAttack::Hardlink
-            | IdentityAttack::Mode => {
-                assert!(matches!(failure, CognitiveRecoveryError::Indeterminate(_)));
-            }
-        }
+        assert!(matches!(failure, CognitiveRecoveryError::Indeterminate(_)));
         assert_eq!(capture_recovery_tree(&root), attacked);
     }
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn byte_identical_rename_replacement_can_recover_only_with_current_witness() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(951);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
+    let database = store.path().to_path_buf();
+    store.pool.close().await;
+    drop(store);
+
+    let retained = database.with_extension("retained");
+    std::fs::rename(&database, &retained).expect("retain original database");
+    std::fs::copy(&retained, &database).expect("install byte-identical replacement");
+    std::fs::set_permissions(&database, std::fs::Permissions::from_mode(0o600))
+        .expect("protect replacement");
+
+    let authority = recovery_authority(&owner);
+    let recovered = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+        &authority,
+        &RecoveryVerifier,
+    )
+    .await
+    .expect("content-authenticated descriptor recovery");
+    assert_eq!(
+        recovered.recovery_anchor().await.expect("recovered anchor"),
+        anchor
+    );
 }
 
 #[tokio::test]
@@ -434,18 +458,25 @@ async fn corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io() {
             .expect("inject physical FTS segment damage");
     assert!(damaged.rows_affected() > 0);
     assert!(store.recovery_anchor().await.is_err());
-    let root = store.path().parent().expect("cognitive root").to_path_buf();
+    let database = store.path().to_path_buf();
     store.pool.close().await;
-    let before = capture_recovery_tree(&root);
-    let message = recovery_failure_message(
+    drop(store);
+    let before = std::fs::read(&database).expect("read damaged source");
+    let authority = recovery_authority(&owner);
+    let failure = recovery_failure(
         CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
             CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &authority,
+            &RecoveryVerifier,
         )
         .await,
     );
-    assert!(message.contains("recovery is unavailable"));
-    assert_eq!(capture_recovery_tree(&root), before);
+    assert!(matches!(failure, CognitiveRecoveryError::Indeterminate(_)));
+    assert_eq!(
+        std::fs::read(&database).expect("re-read damaged source"),
+        before
+    );
 }
 
 fn recovery_failure(
@@ -454,13 +485,6 @@ fn recovery_failure(
     match result {
         Err(error) => error,
         Ok(_) => panic!("fail-closed recovery unexpectedly returned a store"),
-    }
-}
-
-fn recovery_failure_message(result: Result<CognitiveStore, CognitiveRecoveryError>) -> String {
-    match recovery_failure(result) {
-        CognitiveRecoveryError::Unavailable(message) => message,
-        error => panic!("fail-closed recovery returned the wrong error class: {error}"),
     }
 }
 
@@ -483,13 +507,6 @@ fn install_identity_attack(database: &Path, attack: IdentityAttack) {
         IdentityAttack::Mode => {
             std::fs::set_permissions(database, std::fs::Permissions::from_mode(0o640))
                 .expect("widen database mode");
-        }
-        IdentityAttack::RenameReplacement => {
-            let retained = database.with_extension("retained");
-            std::fs::rename(database, &retained).expect("retain original database");
-            std::fs::copy(&retained, database).expect("install byte-identical replacement");
-            std::fs::set_permissions(database, std::fs::Permissions::from_mode(0o600))
-                .expect("protect replacement");
         }
     }
 }
