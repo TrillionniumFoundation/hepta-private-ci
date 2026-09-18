@@ -59,9 +59,15 @@ outbox row.
 
 ## Atomic prepare transaction
 
+`prepare_intent` receives the exact bounded payload bytes together with the
+semantic intent. It rejects an empty/oversize payload or any byte sequence whose
+SHA-256 does not equal `payload_digest` before mutation. The source outbox
+persists those exact bytes (maximum 1 MiB), so a restarted dispatcher does not
+depend on caller memory or payload reconstruction.
+
 `prepare_intent` executes under one `BEGIN IMMEDIATE` transaction:
 
-1. validate every semantic digest and bounded identity;
+1. validate every semantic digest, bounded identity and exact payload binding;
 2. check an existing operation for exact semantic replay or conflict;
 3. enforce the bounded active-operation ceiling;
 4. insert `operation_ledger`;
@@ -75,7 +81,8 @@ An injected failure during the second insert must roll back both rows.
 
 ## Lease, attempts and fencing
 
-Only a `pending` operation can be claimed for dispatch. A claim records:
+Only a `pending` operation can be claimed for dispatch. A claim reloads the exact persisted payload bytes, verifies their stored digest,
+and carries those bytes in the in-process `DispatchLease`. A claim records:
 
 - worker ID;
 - lease expiry;
@@ -221,6 +228,7 @@ not silently delete authoritative operation identities.
 V1 native ceilings:
 
 - active operations: 100,000;
+- exact durable payload: 1,048,576 bytes;
 - claim batch: 256;
 - delivery attempts: 16;
 - lease duration: 60 seconds;
@@ -235,6 +243,8 @@ fsync cost, contention and backlog SLOs require target-host measurement.
 The native source must pass, at minimum:
 
 - prepare failure between ledger and outbox inserts leaves neither row;
+- payload/digest drift rejects before mutation;
+- exact payload bytes survive close/reopen and are restored by claim;
 - exact prepare replay survives close/reopen;
 - semantic drift conflicts;
 - two handles cannot hold the same live lease;
