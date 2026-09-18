@@ -518,6 +518,8 @@ mod tests {
                 revision: 2,
                 revoked_grant_ids: BTreeSet::from([grant.grant.grant_id.clone()]),
             },
+            1_000,
+            31_000,
         );
         let signature = distributor
             .sign(&update.signing_bytes().unwrap())
@@ -529,16 +531,101 @@ mod tests {
             distributor.verifying_key().to_bytes(),
         )
         .unwrap();
-        assert_eq!(verifier.apply(&authority, &signed), Ok(()));
+        let receipt = verifier.apply(&authority, &signed, 2_000).unwrap();
+        assert_eq!(receipt.trust_key_id, "single-key");
+        assert_eq!(receipt.valid_until_unix_ms, 31_000);
         assert_eq!(
             authority.with_verified_use(token, &grant.grant.binding, || ()),
             Err(FinalUseError::Revoked)
         );
         assert_eq!(
-            verifier.apply(&authority, &signed),
+            verifier.apply(&authority, &signed, 2_001),
             Err(FinalUseControlError::Authority(
                 FinalUseError::StaleRevocationHead
             ))
+        );
+    }
+
+    #[test]
+    fn revocation_feed_freshness_fails_closed() {
+        let (authority, grant, _directory, _approver, distributor) = fixture();
+        let update = FinalUseRevocationUpdate::new(
+            "revocation-distributor".into(),
+            FinalUseRevocations {
+                authority_epoch: 11,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from([grant.grant.grant_id.clone()]),
+            },
+            1_000,
+            2_000,
+        );
+        let signed = SignedFinalUseRevocationUpdate {
+            signature: distributor
+                .sign(&update.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            update,
+        };
+        let verifier = FinalUseRevocationFeedVerifier::new(
+            "revocation-distributor".into(),
+            distributor.verifying_key().to_bytes(),
+        )
+        .unwrap();
+        assert_eq!(
+            verifier.apply(&authority, &signed, 999),
+            Err(FinalUseControlError::RevocationFeedNotYetValid)
+        );
+        assert_eq!(
+            verifier.apply(&authority, &signed, 2_000),
+            Err(FinalUseControlError::RevocationFeedStale)
+        );
+    }
+
+    #[test]
+    fn approval_key_ring_enforces_epoch_windows_and_reports_selected_key() {
+        let (_authority, grant, _directory, approver, _distributor) = fixture();
+        let next = SigningKey::from_bytes(&[44; 32]);
+        let verifier = FinalUseApprovalVerifier::new_with_keys(
+            "operator-approver".into(),
+            vec![
+                FinalUseTrustKey {
+                    key_id: "old".into(),
+                    verifying_key: approver.verifying_key().to_bytes(),
+                    not_before_authority_epoch: 1,
+                    not_after_authority_epoch: 11,
+                },
+                FinalUseTrustKey {
+                    key_id: "next".into(),
+                    verifying_key: next.verifying_key().to_bytes(),
+                    not_before_authority_epoch: 11,
+                    not_after_authority_epoch: 20,
+                },
+            ],
+        )
+        .unwrap();
+        let approval = FinalUseApproval::for_grant("operator-approver".into(), &grant.grant)
+            .unwrap();
+        let old_signed = SignedFinalUseApproval {
+            signature: approver
+                .sign(&approval.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            approval: approval.clone(),
+        };
+        assert_eq!(
+            verifier.verify_with_key_id(&grant, &old_signed),
+            Ok("old")
+        );
+        let next_signed = SignedFinalUseApproval {
+            signature: next
+                .sign(&approval.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            approval,
+        };
+        assert_eq!(
+            verifier.verify_with_key_id(&grant, &next_signed),
+            Ok("next")
         );
     }
 
@@ -552,6 +639,8 @@ mod tests {
                 revision: 2,
                 revoked_grant_ids: BTreeSet::from([grant.grant.grant_id.clone()]),
             },
+            1_000,
+            31_000,
         );
         let attacker = SigningKey::from_bytes(&[91; 32]);
         let signed = SignedFinalUseRevocationUpdate {
@@ -567,7 +656,7 @@ mod tests {
         )
         .unwrap();
         assert_eq!(
-            verifier.apply(&authority, &signed),
+            verifier.apply(&authority, &signed, 2_000),
             Err(FinalUseControlError::InvalidSignature)
         );
         assert!(authority.claim(&grant, &grant.grant.binding).is_ok());
