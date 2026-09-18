@@ -27,6 +27,7 @@ pub struct CalibrationBinV1 {
 pub struct NeuronCalibrationArtifactV1 {
     pub artifact_digest: Digest32,
     pub config_digest: Digest32,
+    pub policy_digest: Digest32,
     pub model_identity_digest: Digest32,
     pub generation: Generation,
     pub valid_from_sequence: u64,
@@ -87,12 +88,30 @@ impl fmt::Display for CalibrationError {
 
 impl StdError for CalibrationError {}
 
+impl CalibrationPolicyV1 {
+    pub fn digest(&self) -> Result<Digest32, CalibrationError> {
+        validate_policy(*self)?;
+        let mut bytes = b"hepta.neuron.calibration-policy.v1".to_vec();
+        for value in [
+            self.maximum_ece_ppm,
+            self.maximum_ood_false_acceptance_ppm,
+            self.minimum_confidence_ppm,
+            self.saturation_limit,
+            self.maximum_active_fraction_ppm,
+        ] {
+            bytes.extend_from_slice(&value.to_be_bytes());
+        }
+        Ok(Digest32::of_bytes(&bytes))
+    }
+}
+
 impl NeuronCalibrationArtifactV1 {
     pub fn calculate_digest(&self) -> Result<Digest32, CalibrationError> {
         validate_artifact_shape(self)?;
         let mut bytes = b"hepta.neuron.calibration-artifact.v1".to_vec();
         for digest in [
             self.config_digest,
+            self.policy_digest,
             self.model_identity_digest,
             self.subgroup_audit_digest,
             self.detector_digest,
@@ -169,6 +188,7 @@ pub fn apply_calibration(
     };
     artifact.validate()?;
     if artifact.config_digest != config_digest
+        || artifact.policy_digest != policy.digest()?
         || artifact.model_identity_digest != model_identity_digest
         || artifact.generation != generation
     {
@@ -242,6 +262,7 @@ fn validate_policy(policy: CalibrationPolicyV1) -> Result<(), CalibrationError> 
 fn validate_artifact_shape(artifact: &NeuronCalibrationArtifactV1) -> Result<(), CalibrationError> {
     for (name, digest) in [
         ("config", artifact.config_digest),
+        ("policy", artifact.policy_digest),
         ("model runtime", artifact.model_identity_digest),
         ("subgroup audit", artifact.subgroup_audit_digest),
         ("detector", artifact.detector_digest),
