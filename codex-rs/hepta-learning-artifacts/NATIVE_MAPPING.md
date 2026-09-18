@@ -36,6 +36,15 @@ or filesystem namespace. Those capabilities remain host-owned.
 | deny future admission from withdrawn dataset | `DatasetWithdrawalRegistry::admit_manifest` | `src/closure_v2.rs` | implemented |
 | validate latest-head/anti-rollback evidence | `validate_registry_head_witness` | `src/closure_v2.rs` | implemented |
 | validate lifecycle transition | `validate_artifact_lifecycle_transition` | `src/closure_v2.rs` | implemented |
+| bind withdrawal registry namespace | `DatasetWithdrawalRegistry::new_scoped`, `DatasetWithdrawalDomainV1::binding_digest` | `src/closure_v2.rs` | implemented |
+| bind V3 admission to withdrawal domain + head | `admit_manifest_at_withdrawal_head_v3`, `validate_artifact_publication_v3` | `src/admission_v3.rs` | implemented |
+| append/replay lifecycle journal | `ArtifactLifecycleJournalV2::append`, `ArtifactLifecycleJournalV2::from_snapshot` | `src/lifecycle_journal.rs` | implemented |
+| persist/reopen withdrawal frontier | `write_dataset_withdrawal_snapshot`, `read_dataset_withdrawal_snapshot` | `src/storage.rs` | implemented |
+| persist/reopen lifecycle journal | `write_lifecycle_journal_snapshot`, `read_lifecycle_journal_snapshot` | `src/storage.rs` | implemented |
+| prepare/recover publication transaction | `prepare_artifact_publication_v1`, `recover_artifact_publication_v1` | `src/publication.rs` | implemented |
+| governed iteration transition | `validate_iteration_transition` | `src/iteration.rs` | implemented |
+| governed iteration evidence ledger | `IterationLedgerV1::append_candidate`, `IterationLedgerV1::transition`, `IterationLedgerV1::from_snapshot` | `src/iteration_ledger.rs` | implemented |
+| contained create/orphan reconciliation | `CreateOnlyArtifactFile::create_in`, `remove_zero_length_orphan_in` | `src/storage.rs` | implemented |
 
 `LearningArtifactManifestV2` explicitly binds:
 
@@ -52,8 +61,11 @@ modes. A dataset-derived manifest without a source dataset, or a
 dataset-independent manifest containing one, fails.
 
 `DatasetWithdrawalRegistry` is append-only, digest-chained and replayable from a
-snapshot. It closes the snapshot-local invalidation gap by rejecting every later
-manifest that references a previously withdrawn dataset. Exact notice retries
+snapshot. A production V3 registry is scoped by `DatasetWithdrawalDomainV1`;
+the domain digest participates in the chain and admission receipt, so identical
+heads from different registry/scope/authority domains are not interchangeable.
+It closes the snapshot-local invalidation gap by rejecting every later manifest
+that references a previously withdrawn dataset. Exact notice retries
 are idempotent; changed semantics under a reused notice ID conflict.
 
 `RegistryHeadWitnessV1` binds registry identity, generation, predecessor head,
@@ -114,3 +126,14 @@ Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
 test functions and CI jobs are registered in
 `../../qualification/lane-e/TEST_TRACEABILITY.json`.
+
+
+## Current source blockers
+
+Source implementation does not close every qualification boundary. Historical
+`ArtifactLifecycleJournalV2::from_snapshot` still reuses the caller's replay
+time when validating actor evidence, so a credential that was valid for the
+historical event can fail a later restart after expiry. Product composition must
+also supply the authenticated writer fence, current-witness service, parent
+directory durability and target-OS containment/power-loss qualification. These
+remain explicit gaps rather than inferred runtime authority.
