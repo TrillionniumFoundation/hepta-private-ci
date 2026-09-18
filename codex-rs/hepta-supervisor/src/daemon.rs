@@ -691,6 +691,76 @@ fn unix_seconds_now() -> u64 {
 }
 
 #[cfg(unix)]
+fn unix_millis_now() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .ok()
+        .and_then(|duration| u64::try_from(duration.as_millis()).ok())
+        .unwrap_or(0)
+}
+
+#[cfg(unix)]
+async fn maintain_fleet_allocations<D: ProcessDriver>(state: &Arc<DaemonState<D>>) {
+    let active_agents = {
+        let supervisor = state.supervisor.lock().await;
+        supervisor
+            .agent_ids()
+            .into_iter()
+            .filter(|agent_id| {
+                supervisor
+                    .snapshot(agent_id)
+                    .is_some_and(|snapshot| snapshot.active)
+            })
+            .collect::<Vec<_>>()
+    };
+    let active_principals = active_agents
+        .iter()
+        .map(ToString::to_string)
+        .collect::<Vec<_>>();
+    let result = {
+        let mut allocator = state.fleet_allocator.lock().await;
+        allocator
+            .maintain(&active_principals, unix_millis_now())
+    };
+    let (denied, maintenance_failed) = match result {
+        Ok(report) => {
+            let missing = report
+                .missing_principals
+                .into_iter()
+                .collect::<std::collections::BTreeSet<_>>();
+            (
+                active_agents
+                    .into_iter()
+                    .filter(|agent_id| missing.contains(agent_id.as_str()))
+                    .collect::<Vec<_>>(),
+                false,
+            )
+        }
+        Err(_) => (active_agents, true),
+    };
+    if denied.is_empty() && !maintenance_failed {
+        return;
+    }
+
+    let mut faults = usize::from(maintenance_failed);
+    if !denied.is_empty() {
+        let mut supervisor = state.supervisor.lock().await;
+        for agent_id in denied {
+            if supervisor
+                .snapshot(&agent_id)
+                .is_some_and(|snapshot| snapshot.active)
+            {
+                let _ = supervisor.kill(&agent_id);
+                faults = faults.saturating_add(1);
+            }
+        }
+    }
+    state
+        .observed_faults
+        .fetch_add(faults as u64, Ordering::Relaxed);
+}
+
+#[cfg(unix)]
 async fn handle_mutation<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     operation: SupervisordMutation,
