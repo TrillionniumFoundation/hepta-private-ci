@@ -9,6 +9,8 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod effect_executor;
 
+mod authority;
+mod causal_chain;
 mod model;
 mod scheduler;
 mod store;
@@ -16,9 +18,24 @@ mod taskflow;
 mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;
-#[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_step;
 
+pub use authority::AutomationEffectProvider;
+pub use authority::EffectFuture;
+pub use authority::FinalUseAuthorityDecision;
+pub use authority::FinalUseAuthorityRequest;
+pub use authority::FinalUseAuthorityVerifier;
+pub use authority::ProviderDispatchReceipt;
+pub use authority::ProviderDispatchRequest;
+pub use authority::VerifiedFinalUseAuthority;
+pub use authority::verify_final_use_authority;
+pub use causal_chain::AutomationMissedRunPolicy;
+pub use causal_chain::AutomationOccurrence;
+pub use causal_chain::AutomationOccurrenceState;
+pub use causal_chain::AutomationOverlapPolicy;
+pub use causal_chain::AutomationProviderObservation;
+pub use causal_chain::AutomationScheduleContract;
+pub use causal_chain::deterministic_occurrence_id;
 pub use model::AutomationAdmission;
 pub use model::AutomationDispatchUncertainty;
 pub use model::AutomationError;
@@ -81,23 +98,14 @@ pub use taskflow_kernel::TaskFlowFrontier;
 pub use taskflow_kernel::TaskFlowReplayReport;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TaskFlowStructuralPreview;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_EFFECTS;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandResult;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandStatus;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepObservation;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepReceipt;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 3;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 4;
