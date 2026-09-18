@@ -270,3 +270,32 @@ fn low_ranked_tail_risk_cannot_poison_the_returnable_population() {
     assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
     assert_eq!(packet.selections.len(), 2);
 }
+
+#[test]
+fn ret04_baseline_profiles_are_digest_distinct() {
+    let full = policy();
+    let lexical_only = RetrievalPolicyV1 {
+        policy_id: id("policy:lexical-only"),
+        channel_weights: vec![RetrievalChannelWeightV1 {
+            channel: RetrievalChannelV1::Lexical,
+            weight: FixedQ32::ONE,
+            maximum_candidates: 16,
+        }],
+        maximum_results: 8,
+        minimum_total_score: FixedQ32::ZERO,
+        maximum_ood: ProbabilityQ32::ONE,
+        minimum_distinct_channels: 1,
+        abstain_on_contradiction: false,
+    };
+    lexical_only
+        .validate()
+        .unwrap_or_else(|error| panic!("lexical baseline validates: {error}"));
+    assert_ne!(full.digest(), lexical_only.digest());
+
+    let lexical = candidate(record(1), RetrievalChannelV1::Lexical, 1);
+    let first = recall(&cue(), &lexical_only, vec![lexical.clone()])
+        .unwrap_or_else(|error| panic!("lexical baseline recalls: {error}"));
+    let second = recall(&cue(), &lexical_only, vec![lexical])
+        .unwrap_or_else(|error| panic!("lexical baseline is deterministic: {error}"));
+    assert_eq!(first, second);
+}
