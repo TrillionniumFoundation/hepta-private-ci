@@ -72,6 +72,16 @@ pub struct TabularOperatorArtifactV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TabularArtifactPinV1 {
+    pub artifact_digest: Digest32,
+    pub objective_digest: Digest32,
+    pub dataset_digest: Digest32,
+    pub sensor_core_digest: Digest32,
+    pub training_profile_digest: Digest32,
+    pub generation: Generation,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TabularOperatorPredictionV1 {
     pub artifact_id: StableId,
     pub sensor_id: StableId,
@@ -89,6 +99,7 @@ pub enum LearnedOperatorError {
     InvalidGrid,
     DuplicateIdentity(String),
     DuplicateEvidence,
+    ArtifactBinding,
     SampleLimit,
     UnknownSensor(String),
     UnknownAction(String),
@@ -304,9 +315,24 @@ pub fn fit_tabular_operator(
 /// on non-canonical or malformed public artifacts before lookup.
 pub fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
+    pin: &TabularArtifactPinV1,
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, LearnedOperatorError> {
+    if pin.artifact_digest.is_zero()
+        || pin.objective_digest.is_zero()
+        || pin.dataset_digest.is_zero()
+        || pin.sensor_core_digest.is_zero()
+        || pin.training_profile_digest.is_zero()
+        || artifact.artifact_digest != pin.artifact_digest
+        || artifact.objective_digest != pin.objective_digest
+        || artifact.dataset_digest != pin.dataset_digest
+        || artifact.sensor_core_digest != pin.sensor_core_digest
+        || artifact.training_profile_digest != pin.training_profile_digest
+        || artifact.generation != pin.generation
+    {
+        return Err(LearnedOperatorError::ArtifactBinding);
+    }
     validate_prediction_artifact(artifact)?;
     let index = artifact
         .cells
