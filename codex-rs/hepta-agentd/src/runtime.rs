@@ -43,6 +43,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    let replay_checkpoint_file = config
+        .authbus_replay_checkpoint_file()
+        .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -66,7 +69,12 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     }
     if let Some(path) = trust_file {
         state.refresh_generation()?;
-        let host = crate::authbus_ingress::TextIngress::open(&identity, path).await?;
+        let host = crate::authbus_ingress::TextIngress::open(
+            &identity,
+            path,
+            replay_checkpoint_file,
+        )
+        .await?;
         state.refresh_generation()?;
         state
             .authbus
