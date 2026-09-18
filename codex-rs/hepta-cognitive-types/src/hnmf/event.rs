@@ -22,7 +22,7 @@ use super::validate_text;
 use super::{CrossModalBindingV1, ModalitySpanRefV1};
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "kind", rename_all = "snake_case", rename_all_fields = "camelCase")]
+#[serde(\n    tag = "kind",\n    rename_all = "snake_case",\n    rename_all_fields = "camelCase",\n    deny_unknown_fields\n)]
 pub enum MemoryScopeV1 {
     AgentPrivate { agent_id: String },
     WorkspacePrivate {
@@ -215,7 +215,7 @@ impl ValidateHnmfV1 for RetentionPolicyV1 {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "kind", rename_all = "snake_case", rename_all_fields = "camelCase")]
+#[serde(\n    tag = "kind",\n    rename_all = "snake_case",\n    rename_all_fields = "camelCase",\n    deny_unknown_fields\n)]
 pub enum MemoryLifecycleV1 {
     Active,
     Superseded { by_event_id: EventIdV1 },
