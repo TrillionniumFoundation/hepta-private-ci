@@ -103,46 +103,48 @@ fn contribution(
 
 #[test]
 fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable() {
-    let compiled = must(must(compile_qualification_fixture(ObjectiveSourceEnvelope {
-        request_id: id("request-value-learning-1"),
-        principal_scope: id("principal:alpha"),
-        revision: must(Revision::new(1)),
-        source_trust: SourceTrust::PrincipalStructured,
-        source_digest: Digest32::of_bytes(b"structured-request"),
-        schema_digest: Digest32::of_bytes(b"objective-schema-v1"),
-        constraints: vec![Constraint {
-            id: id("privacy-ceiling"),
-            class: ConstraintClass::Constitutional,
-            axis: id("privacy-risk"),
-            relation: ConstraintRelation::AtMost,
-            bound: FixedQ32::ZERO,
-            evidence_source: id("constitution-v1"),
-        }],
-        success_predicates: vec![SuccessPredicate {
-            id: id("terminal-success"),
-            axis: id("success"),
-            relation: ConstraintRelation::AtLeast,
-            bound: FixedQ32::ONE,
-            evidence_source: id("independent-observer"),
-            terminality: PredicateTerminality::Terminal,
-        }],
-        allowed_actions: vec![
-            ActionClass {
-                id: id("policy-safe"),
-                confirmation: ConfirmationPolicy::NotRequired,
-            },
-            ActionClass {
-                id: id("policy-unsafe"),
-                confirmation: ConfirmationPolicy::NotRequired,
-            },
-        ],
-        forbidden_actions: Vec::new(),
-        soft_preferences: vec![SoftPreference {
-            dimension: id("success"),
-            direction: SoftDirection::Maximize,
-            weight: FixedQ32::ONE,
-        }],
-    })));
+    let compiled = must(must(compile_qualification_fixture(
+        ObjectiveSourceEnvelope {
+            request_id: id("request-value-learning-1"),
+            principal_scope: id("principal:alpha"),
+            revision: must(Revision::new(1)),
+            source_trust: SourceTrust::PrincipalStructured,
+            source_digest: Digest32::of_bytes(b"structured-request"),
+            schema_digest: Digest32::of_bytes(b"objective-schema-v1"),
+            constraints: vec![Constraint {
+                id: id("privacy-ceiling"),
+                class: ConstraintClass::Constitutional,
+                axis: id("privacy-risk"),
+                relation: ConstraintRelation::AtMost,
+                bound: FixedQ32::ZERO,
+                evidence_source: id("constitution-v1"),
+            }],
+            success_predicates: vec![SuccessPredicate {
+                id: id("terminal-success"),
+                axis: id("success"),
+                relation: ConstraintRelation::AtLeast,
+                bound: FixedQ32::ONE,
+                evidence_source: id("independent-observer"),
+                terminality: PredicateTerminality::Terminal,
+            }],
+            allowed_actions: vec![
+                ActionClass {
+                    id: id("policy-safe"),
+                    confirmation: ConfirmationPolicy::NotRequired,
+                },
+                ActionClass {
+                    id: id("policy-unsafe"),
+                    confirmation: ConfirmationPolicy::NotRequired,
+                },
+            ],
+            forbidden_actions: Vec::new(),
+            soft_preferences: vec![SoftPreference {
+                dimension: id("success"),
+                direction: SoftDirection::Maximize,
+                weight: FixedQ32::ONE,
+            }],
+        },
+    )));
     let objective_digest = compiled.objective.semantic_digest;
 
     let mut artifacts = ArtifactRegistry::new();
