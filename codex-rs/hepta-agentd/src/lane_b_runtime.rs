@@ -156,10 +156,7 @@ impl AgentRunCoordinator {
     ) -> Result<RunReceipt, AgentRunError> {
         validate_digest(&envelope_digest, "intelligence envelope")?;
         validate_digest(&expected_context_digest, "expected context")?;
-        validate_digest(
-            &expected_context_receipt_digest,
-            "expected context receipt",
-        )?;
+        validate_digest(&expected_context_receipt_digest, "expected context receipt")?;
         self.start_run_bound(
             now_ms,
             snapshot,
