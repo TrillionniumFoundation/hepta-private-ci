@@ -6,6 +6,7 @@
 //! uncommitted mutation.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fmt;
 use std::fs::File;
 use std::io::Read;
@@ -429,7 +430,10 @@ fn restore_v2(
     }
     let mut realizations = BTreeMap::new();
     for stored_realization in stored.realizations {
-        let realization = decode_realization(stored_realization)?;
+        let mut realization = decode_realization(stored_realization)?;
+        // Legacy V1 stored only a payload digest. Preserve the historical
+        // record, but do not let migration reactivate bytes that are absent.
+        realization.active = false;
         if realizations
             .insert(realization.realization_id.clone(), realization)
             .is_some()
@@ -613,6 +617,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
     {
         return Err(DurableRegistryError::Corrupt);
     }
+    let mut active_profiles = BTreeSet::new();
     for (realization_id, binding) in &registry.realization_bindings {
         let Some(realization) = registry.realizations.get(realization_id) else {
             return Err(DurableRegistryError::Corrupt);
@@ -624,8 +629,23 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
         {
             return Err(DurableRegistryError::Corrupt);
         }
-        if let Some(payload) = registry.realization_payloads.get(realization_id)
-            && Digest32::of_bytes(payload) != binding.payload_digest
+        match registry.realization_payloads.get(realization_id) {
+            Some(payload) if Digest32::of_bytes(payload) == binding.payload_digest => {}
+            Some(_) => return Err(DurableRegistryError::Corrupt),
+            None if realization.active => return Err(DurableRegistryError::Corrupt),
+            None => {}
+        }
+        if realization.active
+            && !active_profiles.insert((
+                binding.factor_id.clone(),
+                binding.model_digest,
+                binding.tokenizer_digest,
+                binding.template_digest,
+                binding.tool_schema_digest,
+                binding.context_profile_digest,
+                binding.locale_id.clone(),
+                binding.role,
+            ))
         {
             return Err(DurableRegistryError::Corrupt);
         }
