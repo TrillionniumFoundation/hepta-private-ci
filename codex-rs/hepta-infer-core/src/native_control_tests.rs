@@ -21,12 +21,12 @@ fn request(id: &str) -> NativeRequest {
     }
 }
 
-fn dispatch() -> NativeDispatch {
+fn dispatch(id: &str) -> NativeDispatch {
     NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
-        client_user_message_id: Some("r1".to_string()),
+        client_user_message_id: Some(id.to_string()),
         input_payload_sha256: Some("c".repeat(64)),
     }
 }
@@ -48,7 +48,7 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
 
 fn start(control: &mut DurableInferenceControl, id: &str) {
     control.reserve_native(request(id), 1).unwrap();
-    control.dispatch_native(id, dispatch()).unwrap();
+    control.dispatch_native(id, dispatch(id)).unwrap();
     control.native_started(id, "turn-1".to_string()).unwrap();
 }
 
@@ -69,13 +69,13 @@ fn duplicate_reopen_preserves_exact_binding_and_reserves_only_once() {
         control.reserve_native(request("r2"), 1),
         Err(Error::CapacityExceeded)
     );
-    control.dispatch_native("r1", dispatch()).unwrap();
+    control.dispatch_native("r1", dispatch("r1")).unwrap();
     let expected = control.native_record("r1").unwrap().clone();
     drop(control);
     let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
     assert_eq!(reopened.reserve_native(request("r1"), 1).unwrap(), expected);
     assert_eq!(
-        reopened.dispatch_native("r1", dispatch()),
+        reopened.dispatch_native("r1", dispatch("r1")),
         Err(Error::InvalidTransition)
     );
     assert_eq!(
@@ -184,7 +184,7 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
     assert_eq!(stopped.state, NativeReservationState::Released);
     assert_eq!(stopped.observation, None);
     assert_eq!(
-        control.dispatch_native("r1", dispatch()),
+        control.dispatch_native("r1", dispatch(id)),
         Err(Error::InvalidTransition)
     );
     start(&mut control, "r2");
@@ -372,7 +372,7 @@ fn exact_reconciliation_can_release_dispatch_intent_without_inventing_terminalit
     let path = path("reconciled-missing");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("r1"), 1).unwrap();
-    control.dispatch_native("r1", dispatch()).unwrap();
+    control.dispatch_native("r1", dispatch(id)).unwrap();
     let released = control
         .reconcile_native_no_admission(
             "r1",
@@ -396,7 +396,7 @@ fn recovered_turn_identity_is_idempotent_and_cannot_drift() {
     let path = path("recovered-turn");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request("r1"), 1).unwrap();
-    control.dispatch_native("r1", dispatch()).unwrap();
+    control.dispatch_native("r1", dispatch(id)).unwrap();
 
     let started = control
         .native_started("r1", "turn-recovered".to_string())
