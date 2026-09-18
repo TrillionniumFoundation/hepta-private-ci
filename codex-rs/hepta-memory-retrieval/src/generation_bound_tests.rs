@@ -319,3 +319,43 @@ fn below_floor_top_k_candidate_is_omitted_and_cannot_poison_recall() {
     assert_eq!(packet.selections[0].record_id, id("memory:1"));
     assert_eq!(packet.omitted_count, 1);
 }
+
+#[test]
+fn lexical_only_ablation_has_distinct_policy_union_and_packet_identity() {
+    let cue = cue();
+    let first = record(1);
+
+    let mut lexical_policy = policy();
+    lexical_policy.policy_id = id("policy:lexical-only");
+    lexical_policy.channel_weights = vec![RetrievalChannelWeightV1 {
+        channel: RetrievalChannelV1::Lexical,
+        weight: FixedQ32::from_raw(1_i64 << 31),
+        maximum_candidates: 16,
+    }];
+    lexical_policy.minimum_distinct_channels = 1;
+    let lexical_candidate = candidate(first.clone(), RetrievalChannelV1::Lexical, 1);
+    let lexical = recall(&cue, &lexical_policy, vec![lexical_candidate.clone()])
+        .unwrap_or_else(|error| panic!("lexical baseline: {error}"));
+
+    let mut multi_policy = lexical_policy.clone();
+    multi_policy.policy_id = id("policy:lexical-entity");
+    multi_policy.channel_weights.push(RetrievalChannelWeightV1 {
+        channel: RetrievalChannelV1::Entity,
+        weight: FixedQ32::from_raw(1_i64 << 31),
+        maximum_candidates: 16,
+    });
+    let entity_candidate = candidate(first, RetrievalChannelV1::Entity, 1);
+    let multi = recall(
+        &cue,
+        &multi_policy,
+        vec![lexical_candidate, entity_candidate],
+    )
+    .unwrap_or_else(|error| panic!("multi-channel baseline: {error}"));
+
+    assert_eq!(lexical.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(multi.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(lexical.selections[0].record_id, multi.selections[0].record_id);
+    assert_ne!(lexical.policy_digest, multi.policy_digest);
+    assert_ne!(lexical.candidate_union_digest, multi.candidate_union_digest);
+    assert_ne!(lexical.packet_digest, multi.packet_digest);
+}
