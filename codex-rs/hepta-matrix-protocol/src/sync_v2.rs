@@ -8,6 +8,7 @@ use std::collections::BTreeSet;
 use crate::MatrixEventId;
 use crate::MatrixProtocolError;
 use crate::MatrixRoomId;
+use crate::MatrixTransactionId;
 use crate::MatrixUserId;
 
 /// Version of the owner-local typed persistence seam.
