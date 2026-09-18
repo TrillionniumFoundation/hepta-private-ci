@@ -13,7 +13,10 @@ use codex_hepta_types::StableId;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = env::args().collect::<Vec<_>>();
     if args.len() != 5 {
-        return Err("usage: authbus-p1-3-native <source-sha> <source-tree> <runner-id> <receipt-path>".into());
+        return Err(
+            "usage: authbus-p1-3-native <source-sha> <source-tree> <runner-id> <receipt-path>"
+                .into(),
+        );
     }
     let source_sha = args[1].clone();
     let source_tree = args[2].clone();
