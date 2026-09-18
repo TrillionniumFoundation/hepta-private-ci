@@ -251,7 +251,8 @@ fn escaping_contents() -> Vec<String> {
 async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
     let (_directory, store, owner, items) = stored_candidates(escaping_contents()).await;
     let baseline = read(
-        &store, &owner, /*body_generation*/ 1, /*authority_epoch*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
+        &store, &owner, /*body_generation*/ 1, /*authority_epoch*/ 1, "lemon",
+        /*limit*/ 4, /*ranker*/ None,
     )
     .await
     .unwrap();
@@ -331,7 +332,8 @@ async fn oversized_learned_winner_does_not_consume_the_only_result_slot() {
 async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention() {
     let (_directory, store, owner, items) = stored_candidates(escaping_contents()).await;
     let baseline = read(
-        &store, &owner, /*body_generation*/ 1, /*authority_epoch*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
+        &store, &owner, /*body_generation*/ 1, /*authority_epoch*/ 1, "lemon",
+        /*limit*/ 4, /*ranker*/ None,
     )
     .await
     .unwrap();
