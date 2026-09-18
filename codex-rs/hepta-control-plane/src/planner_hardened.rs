@@ -77,8 +77,8 @@ pub fn canonical_resource_profile_digest(
     bytes.extend_from_slice(&count.to_be_bytes());
     for reservation in normalized {
         let axis = reservation.axis.as_str().as_bytes();
-        let axis_len = u32::try_from(axis.len())
-            .map_err(|_| PlannerHardeningError::InvalidResourceProfile)?;
+        let axis_len =
+            u32::try_from(axis.len()).map_err(|_| PlannerHardeningError::InvalidResourceProfile)?;
         bytes.extend_from_slice(&axis_len.to_be_bytes());
         bytes.extend_from_slice(axis);
         bytes.extend_from_slice(&reservation.endowment.raw().to_be_bytes());
