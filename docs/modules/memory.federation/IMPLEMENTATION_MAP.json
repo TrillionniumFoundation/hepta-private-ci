@@ -57,7 +57,7 @@
   "repositoryControlledGaps": [
     "Obtain exact-head and deterministic synthetic-merge qualification for PR #693 before changing the claim boundary.",
     "Qualify any non-local or network FederationTransportV2 implementation with authenticated peer identity, cancellation safety, deadline enforcement and target-host evidence.",
-    "Keep product attachment coverage bound through model-input delivery and preserve revocation revalidation at the final attachment boundary."
+    "Preserve requested/completed/failed/discovery-failure federation coverage through v2 model-input delivery and final revocation revalidation."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -78,14 +78,14 @@
   ],
   "candidateAttestation": {
     "baseCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
-    "codeCandidateCommit": "7e730df638124b68ee7de133bdc49c045d095a9f",
+    "codeCandidateCommit": "8f8d75ad8eb57d7b40275b41c376592a13714ac6",
     "pullRequest": 693,
     "branch": "fix/memory-federation-production-closure",
     "composition": [
       "codex-rs/hepta-memory/src/cognitive_federation.rs",
       "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
     ],
-    "status": "candidate_pending_exact_head_ci",
+    "status": "code_candidate_frozen_pending_exact_head_ci",
     "note": "sourceBase is the repository-wide generated-map baseline and must remain identical across all module maps; this field records the newer module-specific candidate without falsely changing the global audited baseline."
   }
 }
