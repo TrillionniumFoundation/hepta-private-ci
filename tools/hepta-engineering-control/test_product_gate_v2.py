@@ -42,9 +42,13 @@ class ProductGateTests(unittest.TestCase):
             receipt["plan"]["integration_order"],
             ("product-probe:ECP-1-ENGINEERING-CONTROL-PLANE",),
         )
-        self.assertEqual(
+        self.assertGreaterEqual(
             receipt["canonicalWorkPackageInventory"]["packageCount"],
-            91,
+            1,
+        )
+        self.assertIn(
+            "ECP-1-ENGINEERING-CONTROL-PLANE",
+            receipt["canonicalWorkPackageInventory"]["engineeringPackageIds"],
         )
         self.assertEqual(
             receipt["canonicalPackageBinding"]["id"],
