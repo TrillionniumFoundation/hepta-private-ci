@@ -74,6 +74,7 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/objective-test.json" -- cargo test --locked -p codex-hepta-objective
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/ledger-test.json" -- cargo test --locked -p codex-hepta-learning-ledger
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/intelligence-test.json" -- cargo test --locked -p codex-hepta-intelligence product_objective -- --nocapture
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/agentd-test.json" -- cargo test --locked -p codex-hepta-agentd
       - name: Strict lint product objective chain
         working-directory: codex-rs
         shell: bash
