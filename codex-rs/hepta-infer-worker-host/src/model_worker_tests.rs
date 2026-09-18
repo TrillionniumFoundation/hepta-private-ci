@@ -8,10 +8,15 @@ struct Driver {
 }
 
 impl ModelDriver for Driver {
-    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+    fn load(
+        &mut self,
+        manifest: &ModelManifest,
+        _grant: &ResourceGrant,
+    ) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
         Ok(DriverModelHandle {
             opaque_id: format!("handle.{}", manifest.model_id),
+            reserved_memory_bytes: 2_048,
             observed_memory_bytes: 1_024,
         })
     }
@@ -26,7 +31,7 @@ impl ModelDriver for Driver {
                 terminal_observed: false,
                 succeeded: false,
                 output_digest: None,
-                consumed_tokens: 4,
+                consumed_tokens: Some(4),
                 observed_memory_bytes: 1_024,
             });
         }
@@ -34,7 +39,7 @@ impl ModelDriver for Driver {
             terminal_observed: true,
             succeeded: !self.fail_terminal,
             output_digest: Some("9".repeat(64)),
-            consumed_tokens: 16,
+            consumed_tokens: Some(16),
             observed_memory_bytes: 1_024,
         })
     }
@@ -74,14 +79,17 @@ fn manifest() -> ModelManifest {
 }
 
 fn request() -> WorkerRequest {
+    let input = "hello local model".to_string();
+    let payload_digest = sha256(input.as_bytes());
     WorkerRequest {
         request_id: "request.1".to_string(),
         reservation_id: "reservation.1".to_string(),
         model_digest: "2".repeat(64),
-        payload_digest: "3".repeat(64),
+        input,
+        payload_digest: payload_digest.clone(),
         maximum_tokens: 64,
         deadline_ms: 9_000,
-        lease_payload_digest: "3".repeat(64),
+        lease_payload_digest: payload_digest,
         reservation_model_digest: "2".repeat(64),
         reservation_maximum_tokens: 64,
         cancelled: false,
@@ -91,7 +99,13 @@ fn request() -> WorkerRequest {
 #[test]
 fn loads_runs_and_unloads_exact_model_tuple() {
     let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+        InferenceWorker::new(
+            100,
+            "worker.1".to_string(),
+            3,
+            VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+            Driver::default(),
+        )
             .expect("worker");
     let loaded = worker.load_model(100, manifest()).expect("load");
     assert!(loaded.terminal_observed);
@@ -109,7 +123,13 @@ fn loads_runs_and_unloads_exact_model_tuple() {
 #[test]
 fn rejects_changed_tokenizer_model_or_payload_tuple() {
     let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+        InferenceWorker::new(
+            100,
+            "worker.1".to_string(),
+            3,
+            VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+            Driver::default(),
+        )
             .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let mut changed = request();
@@ -133,10 +153,62 @@ fn lost_driver_terminality_is_indeterminate() {
         ..Driver::default()
     };
     let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).expect("worker");
+        InferenceWorker::new(
+            100,
+            "worker.1".to_string(),
+            3,
+            VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+            driver,
+        ).expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let observed = worker.run(100, "model.1", request()).expect("run");
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
     assert!(!observed.terminal_observed);
     assert_eq!(observed.output_digest, None);
+}
+
+
+#[derive(Debug)]
+struct Verifier;
+
+impl ResourceGrantVerifier for Verifier {
+    fn verify(
+        &self,
+        _now_ms: u64,
+        _grant: &ResourceGrant,
+    ) -> Result<GrantVerification, Error> {
+        Ok(GrantVerification::Authenticated {
+            authority_id: "fleet.authority".to_string(),
+            evidence_digest: "a".repeat(64),
+        })
+    }
+}
+
+#[test]
+fn external_grants_require_explicit_verification_evidence() {
+    let verified = VerifiedResourceGrant::verify_with(100, grant(), &Verifier).unwrap();
+    assert!(matches!(
+        verified.verification(),
+        GrantVerification::Authenticated { authority_id, .. }
+            if authority_id == "fleet.authority"
+    ));
+}
+
+#[test]
+fn local_input_is_bound_to_the_lease_payload_digest() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+        Driver::default(),
+    )
+    .unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let mut changed = request();
+    changed.input.push('!');
+    assert_eq!(
+        worker.run(100, "model.1", changed),
+        Err(Error::PayloadMismatch)
+    );
 }
