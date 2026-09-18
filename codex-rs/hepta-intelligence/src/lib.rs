@@ -56,6 +56,12 @@ pub use composition_v3_control::NeverCancelledV3;
 pub use composition_v3_control::SystemCompositionClockV3;
 pub use composition_v3_runtime::run_composition_v3;
 
+mod observed_learning;
+
+pub use observed_learning::ObservedLearningErrorV1;
+pub use observed_learning::record_observed_credit_v1;
+pub use observed_learning::record_observed_outcome_v1;
+
 mod pipeline_v2;
 
 pub use pipeline_v2::LaneFRunRequestV2;
