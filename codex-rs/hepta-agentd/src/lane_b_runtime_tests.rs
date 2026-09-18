@@ -176,6 +176,13 @@ fn cancellation_preserves_dispatch_boundary_reason_and_idempotency() {
     assert_eq!(late.1.phase, RunPhase::Cancelling);
     assert_eq!(late.1.cancel_reason.as_deref(), Some("operator_requested"));
     assert_eq!(late.1.cancellation_ack_deadline_ms, Some(1_103));
+    let repeated_late = after
+        .cancel_run(u64::MAX, "run.1", 3, "operator_requested")
+        .expect("repeat dispatched cancel");
+    assert_eq!(repeated_late.0, CancellationDisposition::CancellingAfterDispatch);
+    assert!(repeated_late.1.idempotent);
+    assert_eq!(repeated_late.1.cancellation_ack_deadline_ms, Some(1_103));
+
     let terminal = after
         .observe_terminal("run.1", 4, RunPhase::Indeterminate, false)
         .expect("observe unknown terminality");
@@ -194,7 +201,12 @@ fn draining_rejects_new_admission_but_allows_idempotent_existing_retry() {
         .expect("admit run");
     coordinator.begin_drain();
     assert!(coordinator.is_draining());
-    assert!(coordinator.start_run(100, original).expect("retry").idempotent);
+    assert!(
+        coordinator
+            .start_run(10_001, original)
+            .expect("retry after original deadline")
+            .idempotent
+    );
 
     let mut new_run = snapshot();
     new_run.run_id = "run.2".to_string();
