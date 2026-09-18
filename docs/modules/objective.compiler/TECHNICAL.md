@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `objective.compiler`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Exact-head qualification is a per-candidate workflow fact, not a permanent property of this document. A named Agentd source composition now exists in `codex-rs/hepta-agentd/src/objective_runtime.rs`, but source composition does not activate `objective.compiler`, prove a deployed product caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -148,7 +148,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library; embed it at a request boundary and preserve its immutable objective/run snapshot in the owning caller. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+Stateless compiler/admission library. The current named product-source composition is `codex-rs/hepta-agentd/src/objective_runtime.rs::admit_publish_and_start_objective_run_v1`: it authenticates/admit-compiles first, writes one immutable objective + admission + `RunStartSnapshotV1` publication through the caller-owned `ObjectiveRunFileStore`, syncs and atomically renames that publication, and only then admits a non-abstain run into `AgentRunCoordinator`. Replaying identical semantics is idempotent; reusing one run identity with different semantics conflicts. `ExplicitAbstain` is durably published without creating dispatchable run state. This is source composition, not target-host activation or deployment evidence. No compiler daemon or objective-owned private database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
 
 Current operating and state-format references:
 
@@ -162,8 +162,11 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs); named case: `compilation_is_permutation_invariant`.
 - [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs); named case: `all_three_action_graphs_match_truth_table_and_have_minimal_conflicts`.
+- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs); product-source cases cover publish-before-run, idempotent replay, semantic-identity conflict and durable non-dispatch abstention.
 
-In `codex-rs`, run `just test -p codex-hepta-objective`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-objective` for the owner package and `cargo test --locked -p codex-hepta-agentd objective_runtime` for the caller composition. These commands are invocations, not stored results.
+
+Exact-source owner-package test/lint/format evidence is provided by `.github/workflows/hepta-objective-admission.yml`. Cross-platform Lane-D check/test/strict-Clippy evidence is provided by `.github/workflows/hepta-lane-d-semantic-conformance.yml`. `.github/workflows/hepta-consolidated-source.yml` remains repository-level integration/inventory evidence; it must not be cited as the direct objective package-test receipt unless that workflow's current package set actually includes `codex-hepta-objective`. Inspect the exact-candidate workflow records for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -180,7 +183,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Source composition now names Agentd as the caller boundary, but activation remains a separate transition: it must bind the deployed Agentd identity and registered ports, verify authority/configuration/resource/recovery behavior on the named host, and retain current exact-candidate evidence. Shadow and qualification callers are not deployment evidence. Source-complete and source-composed modules remain inactive until activation predecessors and evidence gates pass.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
@@ -194,7 +197,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-0-OBJECTIVE-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; exact-head qualification: `per_candidate_workflow`; product composition: `source_composed_not_activated`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -223,7 +226,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-1-OBJECTIVE-COMPILER`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; exact-head qualification: `per_candidate_workflow`; product composition: `source_composed_not_activated`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -279,4 +282,4 @@ The bootstrap source-location obligation for `objective.compiler` is implemented
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The owner package is checked directly by `.github/workflows/hepta-objective-admission.yml` (exact source binding, objective package tests, all-target strict Clippy, formatting and clean tracked state). Lane-D cross-platform semantics are checked by `.github/workflows/hepta-lane-d-semantic-conformance.yml` on Linux, macOS and Windows. `.github/workflows/hepta-consolidated-source.yml` supplies repository-level integration and inventory coverage; it is not the direct objective package-test receipt unless its current package list includes `codex-hepta-objective`. Workflow success is exact-candidate source evidence only. It grants no deployment, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
