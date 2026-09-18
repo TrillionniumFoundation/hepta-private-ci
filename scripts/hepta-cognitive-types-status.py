@@ -18,7 +18,7 @@ def render() -> str:
         "schema": "hepta.module-status.v1",
         "moduleId": implementation["moduleId"],
         "generatedFrom": "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
-        "observedCommit": implementation["sourceBase"]["observedCommit"],
+        "reviewBaselineCommit": implementation["sourceBase"]["reviewBaselineCommit"],
         "layers": implementation["statusLayers"],
         "claimBoundary": implementation["claimBoundary"],
     }
