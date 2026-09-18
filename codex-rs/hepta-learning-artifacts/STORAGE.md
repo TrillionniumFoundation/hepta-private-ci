@@ -105,9 +105,10 @@ deletion. This module cannot infer the latest state from the suspect file. Never
 use an older snapshot to make a revoked predecessor appear eligible for rollback.
 
 Create payload -> sync -> validate scoped withdrawal frontier -> prepare a V3
-publication transaction -> revalidate the registry and withdrawal heads under the
-writer fence -> create the canonical registry snapshot with that transaction
-digest as its binding -> sync -> durably publish the receipt/current-head witness
+publication transaction -> consume it through revalidation of the registry and
+withdrawal heads under the writer fence -> obtain a `RevalidatedArtifactPublicationV3`
+that alone exposes the staged registry/snapshot binding -> create the canonical
+registry snapshot with that transaction digest as its binding -> sync -> durably publish the receipt/current-head witness
 -> independent evaluation/decision -> separately owned next-run selection.
 Cross-store atomicity is a bounded saga; two synced files are not an atomic
 multi-store transaction. A crash before witness publication may leave an orphan
