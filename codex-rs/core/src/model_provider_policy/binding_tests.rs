@@ -42,12 +42,14 @@ fn retry_stable_binding_has_fresh_physical_attempt_identity() {
     let registry = ExtensionRegistryBuilder::<crate::config::Config>::new().build();
     let (session_store, thread_store, turn_store) = stores();
     let context = ModelProviderPolicyContext {
+        require_active_policy: false,
         registry: &registry,
         session_store: &session_store,
         thread_store: &thread_store,
         turn_store: &turn_store,
         thread_id: "thread-1".to_string(),
         turn_id: "turn-1".to_string(),
+        app_server_client_name: None,
         request_kind: ModelProviderRequestKind::Turn,
         ephemeral_input_cwd: None,
     };
@@ -100,12 +102,14 @@ fn routing_hint_is_physical_wire_semantics_not_logical_identity() {
     let registry = ExtensionRegistryBuilder::<crate::config::Config>::new().build();
     let (session_store, thread_store, turn_store) = stores();
     let context = ModelProviderPolicyContext {
+        require_active_policy: false,
         registry: &registry,
         session_store: &session_store,
         thread_store: &thread_store,
         turn_store: &turn_store,
         thread_id: "thread-1".to_string(),
         turn_id: "turn-1".to_string(),
+        app_server_client_name: None,
         request_kind: ModelProviderRequestKind::Turn,
         ephemeral_input_cwd: None,
     };
@@ -174,12 +178,14 @@ fn recovery_fingerprint_binds_deployment_and_typed_routing_without_binding_crede
     let registry = ExtensionRegistryBuilder::<crate::config::Config>::new().build();
     let (session_store, thread_store, turn_store) = stores();
     let context = ModelProviderPolicyContext {
+        require_active_policy: false,
         registry: &registry,
         session_store: &session_store,
         thread_store: &thread_store,
         turn_store: &turn_store,
         thread_id: "thread-1".to_string(),
         turn_id: "turn-1".to_string(),
+        app_server_client_name: None,
         request_kind: ModelProviderRequestKind::Turn,
         ephemeral_input_cwd: None,
     };
@@ -385,12 +391,14 @@ fn two_phase_attempt_keeps_base_identity_and_binds_effective_input() {
     let registry = ExtensionRegistryBuilder::<crate::config::Config>::new().build();
     let (session_store, thread_store, turn_store) = stores();
     let mut context = ModelProviderPolicyContext {
+        require_active_policy: false,
         registry: &registry,
         session_store: &session_store,
         thread_store: &thread_store,
         turn_store: &turn_store,
         thread_id: "thread-1".to_string(),
         turn_id: "turn-1".to_string(),
+        app_server_client_name: None,
         request_kind: ModelProviderRequestKind::Turn,
         ephemeral_input_cwd: None,
     };

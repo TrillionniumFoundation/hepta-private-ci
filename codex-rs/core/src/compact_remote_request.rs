@@ -77,12 +77,17 @@ pub(super) async fn run_remote_compact_attempt(
         CodexResponsesRequestKind::Compaction(compaction_metadata),
     );
     let provider_policy_context = ModelProviderPolicyContext {
+        require_active_policy: turn_context
+            .config
+            .features
+            .enabled(codex_features::Feature::HeptaGovernance),
         registry: sess.services.extensions.as_ref(),
         session_store: &sess.services.session_extension_data,
         thread_store: &sess.services.thread_extension_data,
         turn_store: turn_context.extension_data.as_ref(),
         thread_id: sess.thread_id().to_string(),
         turn_id: turn_context.sub_id.clone(),
+        app_server_client_name: turn_context.app_server_client_name.clone(),
         request_kind: ModelProviderRequestKind::Compaction,
         ephemeral_input_cwd: None,
     };

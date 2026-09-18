@@ -140,7 +140,7 @@ where
         git_attribution_base_url,
         http_client_factory,
     );
-    codex_hepta_governance::install(&mut builder, state_db.clone(), |config: &Config| {
+    codex_hepta_governance::install_enforced(&mut builder, state_db.clone(), |config: &Config| {
         config
             .features
             .enabled(codex_features::Feature::HeptaGovernance)

@@ -91,9 +91,9 @@ External evidence gates:
 
 ## 6. `inference.control`
 
-The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, local in-flight slot reservations, dispatch bindings and observations.
+The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, quota/resource/economic-budget holds, dispatch/final-use bindings, terminal observations and bounded native compaction archives.
 
-The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Missing tokens remain null; uncertain execution holds its local slot. This is not provider billing or signed remote-worker authority.
+The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Live dispatch consumes a signed final-use grant bound to the exact serialized turn. Post-crash recovery is read-only: a persisted matching Completed/Failed turn can establish terminality and release local capacity, but cannot recreate the non-serializable final-use token or retroactively report authorized success.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -102,23 +102,19 @@ The actual Agent-fenced App Server client supplies matching turn observations th
 | `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn cancel_native(` |
 | `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn settle_native(` |
 
-Remaining repository implementation gaps:
-
-- Connect economically meaningful quota and hardware-capacity authorities; the shipped native policy reserves only local in-flight run slots.
-- Implement authenticated recovery of actual provider terminal/usage observations after process loss; reopening a dispatched run conservatively holds capacity and never replays it.
-- Add bounded archival/retention under the same journal owner; the current 64 MiB journal rejects further appends without truncating acknowledged history.
-
 External evidence gates:
 
-- real provider deployment and crash/cancellation acceptance
-- real economic quota/capacity authority integration
+- activate the named hepta-infer-worker native-app-server entrypoint under the deployed Supervisor/Agentd composition with owner-issued current quota/resource evidence and signed final-use grants
+- real provider deployment, crash/cancellation/reconciliation acceptance and provider-side retention behavior
+- real economic billing reconciliation and measured device-capacity authority/qualification; source budget units and ResourceAdvertisement bindings do not prove provider charges or hardware availability
+- independently operated final-use signer/revocation service and product activation
 - authenticated remote-worker transport if a separate process is introduced
 
 ## 7. `inference.worker`
 
-Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.
+Owns live provider client handles and a persisted App Server recovery thread; persistent request/quota/final-use/observation facts remain in the inference.control journal. Artifact/cache owners retain model bytes and physical resource truth.
 
-The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.
+The hosted native-app-server profile observes live matching turn events and can read back a matching persisted Completed/Failed turn after process loss without replay. Reconciliation establishes provider effect truth only; it cannot recreate final-use authorization or prove physical weights/device behavior.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -129,13 +125,12 @@ The hosted native-app-server profile observes real matching turn events; the loc
 Remaining repository implementation gaps:
 
 - Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.
-- Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss.
 
 External evidence gates:
 
-- identified real weights/tokenizer/runtime/device
-- isolated deployed worker process and authenticated control channel
-- OOM/device-reset/load-kill target qualification
+- identified real weights/tokenizer/runtime/device and measured capacity
+- isolated deployed worker process, final-use signer/revocation service and authenticated control channel
+- real provider crash/reconciliation/cancellation plus OOM/device-reset/load-kill target qualification
 
 ## 8. `automation.taskflow`
 

@@ -81,6 +81,7 @@ fn input<'a>(
         request_binding_id,
         thread_id: "thread-1",
         turn_id: "turn-1",
+        app_server_client_name: None,
         request_kind: ModelProviderRequestKind::Turn,
         provider_id: "provider-fixture",
         provider_config_sha256: &digests.provider_config,
