@@ -301,6 +301,16 @@ pub fn final_use_admission_binding(
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
     push_id(&mut request, &factor.semantic_version);
+    push_text(&mut request, &factor.semantic_purpose);
+    push_text(&mut request, &factor.authority_class);
+    request.extend_from_slice(
+        &u32::try_from(factor.eligible_objective_dimensions.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
+    for dimension in &factor.eligible_objective_dimensions {
+        push_id(&mut request, dimension);
+    }
     request.extend_from_slice(factor.content_digest.as_array());
     Ok(FinalUseBinding {
         subject_id: reviewer_id.to_string(),
@@ -330,6 +340,16 @@ pub fn final_use_realization_binding(
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
     push_id(&mut request, &factor.semantic_version);
+    push_text(&mut request, &factor.semantic_purpose);
+    push_text(&mut request, &factor.authority_class);
+    request.extend_from_slice(
+        &u32::try_from(factor.eligible_objective_dimensions.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
+    for dimension in &factor.eligible_objective_dimensions {
+        push_id(&mut request, dimension);
+    }
     request.extend_from_slice(factor.content_digest.as_array());
     request.extend_from_slice(binding.digest().as_array());
     match supersedes_realization_id {
@@ -402,6 +422,16 @@ fn final_use_lifecycle_binding(
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
     push_id(&mut request, &factor.semantic_version);
+    push_text(&mut request, &factor.semantic_purpose);
+    push_text(&mut request, &factor.authority_class);
+    request.extend_from_slice(
+        &u32::try_from(factor.eligible_objective_dimensions.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
+    for dimension in &factor.eligible_objective_dimensions {
+        push_id(&mut request, dimension);
+    }
     request.extend_from_slice(factor.content_digest.as_array());
     request.push(match factor.lifecycle {
         crate::Lifecycle::Draft => 0,
@@ -428,7 +458,11 @@ fn final_use_lifecycle_binding(
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    let raw = value.as_str().as_bytes();
+    push_text(bytes, value.as_str());
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    let raw = value.as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
