@@ -270,15 +270,27 @@ async fn indeterminate_effect_reconciles_from_destination_dedup() {
         )
         .await
         .expect("destination dedup");
+    assert!(matches!(
+        source
+            .reconcile_from_destination(
+                &destination,
+                &request.scope,
+                &request.operation_id,
+                generation(2),
+            )
+            .await,
+        Err(DurableOperationError::StaleLease)
+    ));
     let terminal = source
         .reconcile_from_destination(
             &destination,
             &request.scope,
             &request.operation_id,
-            generation(3),
+            generation(4),
         )
         .await
-        .expect("reconcile");
+        .expect("higher-generation reconcile takeover");
+    assert_eq!(terminal.owner_generation, generation(4));
     assert_eq!(terminal.state, DurableOperationState::Applied);
     assert_eq!(terminal.terminal_evidence_digest, Some(evidence));
     let outbox = source
