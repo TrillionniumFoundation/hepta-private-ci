@@ -11,12 +11,9 @@ use crate::ConstraintRelation;
 use crate::ObjectiveAdmissionProfileV1;
 use crate::ObjectiveAdmissionReceiptV1;
 use crate::ObjectiveCompileReceipt;
-use crate::ObjectiveConstraintComparatorV1;
 use crate::ObjectivePredicateComparatorV1;
-use crate::ObjectiveRiskClassV1;
 use crate::ObjectiveRollbackClassV1;
 use crate::ObjectiveRunStartPublicationV1;
-use crate::ObjectiveSoftDirectionV1;
 use crate::ObjectiveSourceEnvelopeV1;
 use crate::RunStartSnapshotV1;
 
@@ -35,6 +32,7 @@ pub struct ObjectiveCanonicalArtifactsV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ObjectiveProtocolError {
     MissingActionMapping,
+    MissingConstitutionalConstraint,
     DeadlinePrecisionLoss,
     EncodedBytesExceeded { actual: usize, maximum: usize },
     Arithmetic,
@@ -46,6 +44,9 @@ impl fmt::Display for ObjectiveProtocolError {
         match self {
             Self::MissingActionMapping => {
                 formatter.write_str("canonical objective action mapping is missing")
+            }
+            Self::MissingConstitutionalConstraint => {
+                formatter.write_str("canonical objective constraint set requires a P0 constraint")
             }
             Self::DeadlinePrecisionLoss => {
                 formatter.write_str("canonical objective deadline loses sub-millisecond precision")
@@ -243,6 +244,9 @@ fn build_constraint_set(
             ConstraintClass::Environment => environment_constraints.push(wire),
             ConstraintClass::Task => {}
         }
+    }
+    if constitutional_constraints.is_empty() {
+        return Err(ObjectiveProtocolError::MissingConstitutionalConstraint);
     }
     for values in [
         &mut constitutional_constraints,

@@ -75,7 +75,7 @@ fn profile() -> ObjectiveAdmissionProfileV1 {
         constraints: vec![ObjectiveConstraintProfileV1 {
             source_constraint_id: "latency.ceiling".to_string(),
             expected_unit: "micros".to_string(),
-            class: codex_hepta_objective::ConstraintClass::Task,
+            class: codex_hepta_objective::ConstraintClass::Constitutional,
             axis: id("latency.micros"),
         }],
         predicates: vec![

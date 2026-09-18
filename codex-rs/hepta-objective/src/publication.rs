@@ -32,9 +32,9 @@ use crate::ObjectiveCanonicalArtifactsV1;
 use crate::ObjectiveProtocolError;
 use crate::admit_and_compile_objective_v1;
 use crate::build_canonical_objective_artifacts_v1;
-use crate::validate_canonical_publication_artifacts_v1;
+use crate::canonical_protocol::validate_canonical_publication_artifacts_v1;
 
-pub const MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES: usize = 256 * 1024;
+pub const MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES: usize = 1024 * 1024;
 const PUBLICATION_SCHEMA: &str = "hepta.objective-run-start-publication.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
