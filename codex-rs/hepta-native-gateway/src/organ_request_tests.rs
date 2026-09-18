@@ -61,3 +61,39 @@ async fn loopback_http_request_reaches_the_read_only_status_organ() -> Result<()
     );
     Ok(())
 }
+
+#[tokio::test]
+async fn loopback_http_request_reaches_the_hpta_v2_status_route() -> Result<()> {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let root = HeptaStateRoot::parse(std::env::temp_dir().join("hepta-http-wire-organ"))?;
+    let runtime = Arc::new(HeptaRuntime::from_adapter(
+        root,
+        Arc::new(RequestObservedAdapter(Arc::clone(&calls))),
+    ));
+    let listener = TcpListener::bind("127.0.0.1:0").await?;
+    let address = listener.local_addr()?;
+    let server = tokio::spawn(async move {
+        let (stream, _) = listener.accept().await?;
+        serve_connection(stream, runtime).await
+    });
+    let mut client = TcpStream::connect(address).await?;
+    client
+        .write_all(b"GET /api/hepta/runtime.hpta HTTP/1.1\r\nHost: localhost\r\n\r\n")
+        .await?;
+    let mut bytes = Vec::new();
+    tokio::time::timeout(RESPONSE_TIMEOUT, client.read_to_end(&mut bytes)).await??;
+    server.await??;
+
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    let body_start = bytes
+        .windows(4)
+        .position(|window| window == b"\r\n\r\n")
+        .context("HTTP framing")?
+        + 4;
+    let headers = std::str::from_utf8(&bytes[..body_start])?;
+    assert!(headers.starts_with("HTTP/1.1 200 OK\r\n"));
+    assert!(headers.contains("Content-Type: application/vnd.hepta.hpta\r\n"));
+    let body = &bytes[body_start..];
+    assert!(body.starts_with(b"HPTA\x00\x02"));
+    Ok(())
+}
