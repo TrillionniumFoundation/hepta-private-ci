@@ -305,9 +305,15 @@ V1 JSON semantics.
 `qualification/hnmf-conformance` is the production/reference compatibility
 gate. A single fixture definition is projected into both
 `codex-hepta-cognitive-types` and `hepta-hnmf-contract-reference`, and the
-test requires identical accept/reject outcomes. Initial fixtures cover valid
-agent-private text events, privacy mismatch, modality/range mismatch and
-same-modality cross-modal binding rejection.
+test requires identical accept/reject outcomes. The contract-reference fixtures cover valid agent-private text events, privacy
+mismatch, modality/range mismatch and same-modality cross-modal binding
+rejection. The deterministic-runtime oracle fixtures additionally cover engram
+support, synapse endpoint validity, cue seeds, outcome bounds, replay score
+bounds, plasticity no-self-activation, topology no-self-activation and forget
+rebuild requirements. `RecallPacketV1` remains covered by production tests and
+runtime recall tests; the deterministic runtime reference does not expose a
+standalone input validator for arbitrary recall packets, so conformance does not
+pretend that such an oracle exists.
 
 `.github/workflows/hnmf-qualification.yml` is path-bound to
 `codex-rs/hepta-cognitive-types/**` and runs formatting, all-target check,
