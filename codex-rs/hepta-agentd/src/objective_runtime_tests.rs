@@ -397,3 +397,84 @@ fn explicit_abstain_is_published_without_runtime_dispatch_state() {
             .authority_denied
     );
 }
+
+#[test]
+fn concurrent_different_semantics_for_one_run_are_create_only() {
+    use std::sync::Arc;
+    use std::sync::Barrier;
+
+    let directory = tempfile::tempdir().expect("tempdir");
+    let store = Arc::new(ObjectiveRunFileStore::open(directory.path()).expect("store"));
+    let profile = profile();
+    let envelope = envelope();
+    let context = context(&profile, &envelope);
+    let outcome = codex_hepta_objective::admit_and_compile_objective_v1(
+        &envelope,
+        &profile,
+        &context,
+    )
+    .expect("admission");
+    let objective = outcome.compile_result.expect("compiled objective");
+
+    let first_bindings = bindings("run.objective.concurrent");
+    let mut second_bindings = first_bindings.clone();
+    second_bindings.model_tuple_digest = digest("model.concurrent.changed");
+    let first_publication = super::stored_publication(
+        &outcome.receipt,
+        &objective,
+        &first_bindings,
+    );
+    let second_publication = super::stored_publication(
+        &outcome.receipt,
+        &objective,
+        &second_bindings,
+    );
+
+    let barrier = Arc::new(Barrier::new(3));
+    let first_store = Arc::clone(&store);
+    let first_barrier = Arc::clone(&barrier);
+    let first = std::thread::spawn(move || {
+        first_barrier.wait();
+        first_store.publish(&first_publication)
+    });
+    let second_store = Arc::clone(&store);
+    let second_barrier = Arc::clone(&barrier);
+    let second = std::thread::spawn(move || {
+        second_barrier.wait();
+        second_store.publish(&second_publication)
+    });
+    barrier.wait();
+
+    let results = [
+        first.join().expect("first publisher"),
+        second.join().expect("second publisher"),
+    ];
+    assert_eq!(
+        results
+            .iter()
+            .filter(|result| matches!(result, Ok(receipt) if !receipt.idempotent))
+            .count(),
+        1,
+        "exactly one distinct publication may create the run identity"
+    );
+    assert_eq!(
+        results
+            .iter()
+            .filter(|result| matches!(result, Err(ObjectivePublicationError::Conflict)))
+            .count(),
+        1,
+        "the losing semantic publication must fail closed rather than overwrite"
+    );
+
+    let (stored, _) = store
+        .load(&first_bindings.run_id)
+        .expect("load")
+        .expect("winner publication");
+    assert!(
+        stored.run_start_snapshot.model_tuple_digest
+            == first_bindings.model_tuple_digest.to_string()
+            || stored.run_start_snapshot.model_tuple_digest
+                == second_bindings.model_tuple_digest.to_string()
+    );
+}
+

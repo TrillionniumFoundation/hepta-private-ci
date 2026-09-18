@@ -7,6 +7,8 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_objective::CompileDisposition;
 use codex_hepta_objective::ConfirmationPolicy;
@@ -34,6 +36,7 @@ use crate::RunSnapshot;
 
 const MAX_PUBLICATION_BYTES: usize = 512 * 1024;
 const PUBLICATION_DOMAIN: &[u8] = b"hepta.agentd.objective-run-publication.v1";
+static NEXT_PUBLICATION_TEMP: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveRunBindingsV1 {
@@ -271,19 +274,22 @@ impl ObjectiveRunFileStore {
             return Err(ObjectivePublicationError::Conflict);
         }
 
-        let temp_path = final_path.with_extension(format!("tmp.{}", publication_digest));
-        {
-            let mut file = OpenOptions::new()
-                .create(true)
-                .truncate(true)
-                .write(true)
-                .open(&temp_path)?;
-            file.write_all(&encoded)?;
-            file.sync_all()?;
-        }
-        match fs::rename(&temp_path, &final_path) {
-            Ok(()) => {}
-            Err(error) if final_path.exists() => {
+        // Publish with create-only link semantics. POSIX rename replaces an
+        // existing destination, so a check-then-rename sequence would allow two
+        // concurrent publishers with the same run identity to overwrite one
+        // another. The temporary inode is fully synced first; hard_link is the
+        // single atomic no-replace operation for the final name.
+        let temp_path = write_publication_temp(&final_path, &encoded, publication_digest)?;
+        match fs::hard_link(&temp_path, &final_path) {
+            Ok(()) => {
+                // The final name now points at the already-synced inode. Temp
+                // cleanup is best effort: failing after publication would turn
+                // a committed publication into an ambiguous caller outcome.
+                let _ = fs::remove_file(&temp_path);
+            }
+            Err(error)
+                if error.kind() == std::io::ErrorKind::AlreadyExists || final_path.exists() =>
+            {
                 let _ = fs::remove_file(&temp_path);
                 let (current, current_digest) = self
                     .load(&run_id)?
@@ -297,7 +303,10 @@ impl ObjectiveRunFileStore {
                 }
                 return Err(ObjectivePublicationError::Conflict);
             }
-            Err(error) => return Err(ObjectivePublicationError::Io(error)),
+            Err(error) => {
+                let _ = fs::remove_file(&temp_path);
+                return Err(ObjectivePublicationError::Io(error));
+            }
         }
         sync_parent_directory(&self.directory)?;
 
@@ -344,6 +353,42 @@ impl ObjectiveRunFileStore {
         let key = Digest32::of_bytes(run_id.as_str().as_bytes());
         self.directory.join(format!("{key}.objective-run-v1.json"))
     }
+}
+
+fn write_publication_temp(
+    final_path: &Path,
+    encoded: &[u8],
+    publication_digest: Digest32,
+) -> Result<PathBuf, ObjectivePublicationError> {
+    for _ in 0..1_024 {
+        let nonce = NEXT_PUBLICATION_TEMP.fetch_add(1, Ordering::Relaxed);
+        let temp_path = final_path.with_extension(format!(
+            "tmp.{publication_digest}.{}.{}",
+            std::process::id(),
+            nonce
+        ));
+        let mut options = OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let mut file = match options.open(&temp_path) {
+            Ok(file) => file,
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(error) => return Err(ObjectivePublicationError::Io(error)),
+        };
+        if let Err(error) = file.write_all(encoded).and_then(|()| file.sync_all()) {
+            let _ = fs::remove_file(&temp_path);
+            return Err(ObjectivePublicationError::Io(error));
+        }
+        return Ok(temp_path);
+    }
+    Err(ObjectivePublicationError::Io(std::io::Error::new(
+        std::io::ErrorKind::AlreadyExists,
+        "could not allocate unique objective publication staging file",
+    )))
 }
 
 pub fn admit_publish_and_start_objective_run_v1(
