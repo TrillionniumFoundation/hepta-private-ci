@@ -263,3 +263,26 @@ fn timeout_unavailable_and_quarantine_never_become_success() {
         assert!(!receipt.authority.grants_any());
     }
 }
+
+#[test]
+fn internal_server_error_remains_indeterminate_not_rejected() {
+    let ambiguous = JSONRPCErrorError {
+        code: -32603,
+        message: "internal error after unknown processing point".to_string(),
+        data: None,
+    };
+    let observed = AppServerObservation::from_rpc_error(
+        id("thread:1"),
+        None,
+        id(APP_SERVER_V2_PROTOCOL_ID),
+        7,
+        30,
+        &ambiguous,
+    )
+    .unwrap();
+    let mut pre_turn = intent();
+    pre_turn.turn_id = None;
+    let receipt = adapt(1_000, pre_turn, Some(observed)).unwrap();
+    assert_eq!(receipt.status, AdapterStatus::Indeterminate);
+    assert_eq!(receipt.retry, RetryDisposition::ReconcileBeforeRetry);
+}
