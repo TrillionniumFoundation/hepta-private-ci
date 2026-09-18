@@ -8,6 +8,8 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fmt;
+#[cfg(test)]
+use std::cell::Cell;
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
@@ -52,6 +54,7 @@ const MIGRATION_REASON_DOMAIN: &[u8] = b"hepta.prompt-registry.migration.v1-v2";
 pub struct DurablePromptRegistry {
     registry: PromptRegistry,
     store: Store,
+    poisoned: bool,
 }
 
 impl fmt::Debug for DurablePromptRegistry {
@@ -76,11 +79,27 @@ impl DurablePromptRegistry {
             None => PromptRegistry::new(maximum_records).map_err(DurableRegistryError::Core)?,
         };
         store.persist(&registry)?;
-        Ok(Self { registry, store })
+        Ok(Self {
+            registry,
+            store,
+            poisoned: false,
+        })
     }
 
+    /// Returns the last in-process image. After an indeterminate durable commit
+    /// this image is diagnostic only; authoritative reads reject until reopen.
     pub fn registry(&self) -> &PromptRegistry {
         &self.registry
+    }
+
+    #[must_use]
+    pub const fn requires_reopen(&self) -> bool {
+        self.poisoned
+    }
+
+    #[cfg(test)]
+    fn fail_directory_sync_after_rename_once(&self) {
+        self.store.fail_directory_sync_after_rename_once.set(true);
     }
 
     pub fn register_factor(
@@ -291,6 +310,9 @@ impl DurablePromptRegistry {
         generation_vector_digest: Digest32,
         model_tuple: &PromptModelTupleV2,
     ) -> Result<PromptRegistrySnapshotV2, DurableRegistryError> {
+        if self.poisoned {
+            return Err(DurableRegistryError::ReopenRequired);
+        }
         self.registry
             .snapshot_v2(generation_vector_digest, model_tuple)
             .map_err(DurableRegistryError::Read)
@@ -305,6 +327,9 @@ impl DurablePromptRegistry {
         required_factor_ids: Vec<StableId>,
         maximum_results: u32,
     ) -> Result<crate::CompatibleRealizationSetV2, DurableRegistryError> {
+        if self.poisoned {
+            return Err(DurableRegistryError::ReopenRequired);
+        }
         self.registry
             .read_compatible_v2(
                 expected_snapshot,
@@ -325,6 +350,9 @@ impl DurablePromptRegistry {
         model_tuple: &PromptModelTupleV2,
         now_unix_ms: u64,
     ) -> Result<RealizationDeliveryV2, DurableRegistryError> {
+        if self.poisoned {
+            return Err(DurableRegistryError::ReopenRequired);
+        }
         self.registry
             .dereference_realization_v2(
                 realization_id,
@@ -340,11 +368,20 @@ impl DurablePromptRegistry {
         &mut self,
         mutation: impl FnOnce(&mut PromptRegistry) -> Result<RegistryReceipt, Error>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
+        if self.poisoned {
+            return Err(DurableRegistryError::ReopenRequired);
+        }
         let mut next = self.registry.clone();
         let receipt = mutation(&mut next).map_err(DurableRegistryError::Core)?;
         if receipt.disposition != crate::MutationDisposition::Unchanged {
-            self.store.persist(&next)?;
-            self.registry = next;
+            match self.store.persist(&next) {
+                Ok(()) => self.registry = next,
+                Err(DurableRegistryError::IndeterminateDurability) => {
+                    self.poisoned = true;
+                    return Err(DurableRegistryError::IndeterminateDurability);
+                }
+                Err(error) => return Err(error),
+            }
         }
         Ok(receipt)
     }
@@ -760,12 +797,117 @@ fn migrate_v1(
 fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
     if registry.revocation_frontier > registry.lifecycle_frontier
         || registry.lifecycle_frontier > registry.revision.get()
+        || registry.factors.len().saturating_add(registry.realizations.len())
+            > registry.maximum_records
     {
         return Err(DurableRegistryError::Corrupt);
     }
+    if registry.revision.get() > 1 && registry.lifecycle_frontier != registry.revision.get() {
+        return Err(DurableRegistryError::Corrupt);
+    }
+
+    // Replay factor lifecycle lineage instead of trusting the materialized
+    // lifecycle byte. Imported migration events may share one revision; native
+    // lifecycle mutations are strictly revision ordered.
+    let mut replayed = BTreeMap::<StableId, Lifecycle>::new();
+    let mut last_event_revision = 0_u64;
+    let mut last_native_revision = 0_u64;
+    let mut latest_revocation_revision = 0_u64;
+    for event in &registry.lifecycle_events {
+        let event_revision = event.revision.get();
+        if event_revision > registry.revision.get()
+            || event_revision < last_event_revision
+            || event.event_digest != event.compute_digest()
+            || !registry.factors.contains_key(&event.factor_id)
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        last_event_revision = event_revision;
+        if event.kind != LifecycleEventKind::Imported {
+            if event_revision <= last_native_revision {
+                return Err(DurableRegistryError::Corrupt);
+            }
+            last_native_revision = event_revision;
+        }
+
+        let prior = replayed.get(&event.factor_id).copied();
+        let next = match event.kind {
+            LifecycleEventKind::Registered => {
+                if prior.is_some() || event.from.is_some() || event.to != Lifecycle::Draft {
+                    return Err(DurableRegistryError::Corrupt);
+                }
+                Lifecycle::Draft
+            }
+            LifecycleEventKind::Imported => {
+                if prior.is_some() || event.from.is_some() {
+                    return Err(DurableRegistryError::Corrupt);
+                }
+                if event.to == Lifecycle::Revoked {
+                    latest_revocation_revision = latest_revocation_revision.max(event_revision);
+                }
+                event.to
+            }
+            LifecycleEventKind::Admitted => {
+                if prior != Some(Lifecycle::Draft)
+                    || event.from != Some(Lifecycle::Draft)
+                    || event.to != Lifecycle::Admitted
+                    || event.evidence_digest.is_zero()
+                {
+                    return Err(DurableRegistryError::Corrupt);
+                }
+                Lifecycle::Admitted
+            }
+            LifecycleEventKind::Retired => {
+                if prior != Some(Lifecycle::Admitted)
+                    || event.from != Some(Lifecycle::Admitted)
+                    || event.to != Lifecycle::Retired
+                    || event.reason_digest.is_some_and(Digest32::is_zero)
+                {
+                    return Err(DurableRegistryError::Corrupt);
+                }
+                Lifecycle::Retired
+            }
+            LifecycleEventKind::Revoked => {
+                let Some(prior) = prior else {
+                    return Err(DurableRegistryError::Corrupt);
+                };
+                if prior == Lifecycle::Revoked
+                    || event.from != Some(prior)
+                    || event.to != Lifecycle::Revoked
+                    || event.reason_digest.is_some_and(Digest32::is_zero)
+                    || event.cutoff_unix_ms == Some(0)
+                {
+                    return Err(DurableRegistryError::Corrupt);
+                }
+                latest_revocation_revision = latest_revocation_revision.max(event_revision);
+                Lifecycle::Revoked
+            }
+        };
+        replayed.insert(event.factor_id.clone(), next);
+    }
+    if replayed.len() != registry.factors.len()
+        || latest_revocation_revision != registry.revocation_frontier
+    {
+        return Err(DurableRegistryError::Corrupt);
+    }
+    for (factor_id, factor) in &registry.factors {
+        if replayed.get(factor_id) != Some(&factor.lifecycle)
+            || (factor.source == FactorSource::ExternalUntrusted
+                && factor.lifecycle == Lifecycle::Admitted)
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+    }
+
+    if registry.realizations.len() != registry.realization_bindings.len() {
+        return Err(DurableRegistryError::Corrupt);
+    }
     let mut active_profiles = BTreeSet::new();
-    for (realization_id, binding) in &registry.realization_bindings {
-        let Some(realization) = registry.realizations.get(realization_id) else {
+    for (realization_id, realization) in &registry.realizations {
+        let Some(binding) = registry.realization_bindings.get(realization_id) else {
+            return Err(DurableRegistryError::Corrupt);
+        };
+        let Some(factor) = registry.factors.get(&binding.factor_id) else {
             return Err(DurableRegistryError::Corrupt);
         };
         if realization.factor_id != binding.factor_id
@@ -781,21 +923,33 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
             None if realization.active => return Err(DurableRegistryError::Corrupt),
             None => {}
         }
-        if realization.active
-            && !active_profiles.insert((
-                binding.factor_id.clone(),
-                binding.model_digest,
-                binding.tokenizer_digest,
-                binding.template_digest,
-                binding.tool_schema_digest,
-                binding.context_profile_digest,
-                binding.locale_id.clone(),
-                binding.role,
-            ))
+        if realization.active {
+            if factor.source != FactorSource::GovernedInternal
+                || factor.lifecycle != Lifecycle::Admitted
+                || !active_profiles.insert((
+                    binding.factor_id.clone(),
+                    binding.model_digest,
+                    binding.tokenizer_digest,
+                    binding.template_digest,
+                    binding.tool_schema_digest,
+                    binding.context_profile_digest,
+                    binding.locale_id.clone(),
+                    binding.role,
+                ))
+            {
+                return Err(DurableRegistryError::Corrupt);
+            }
+        }
+    }
+    for realization_id in registry.realization_payloads.keys() {
+        if !registry.realizations.contains_key(realization_id)
+            || !registry.realization_bindings.contains_key(realization_id)
         {
             return Err(DurableRegistryError::Corrupt);
         }
     }
+
+    let mut seen_predecessors = BTreeSet::new();
     for (successor, predecessor) in &registry.realization_supersessions {
         let Some(successor_record) = registry.realizations.get(successor) else {
             return Err(DurableRegistryError::Corrupt);
@@ -803,8 +957,29 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
         let Some(predecessor_record) = registry.realizations.get(predecessor) else {
             return Err(DurableRegistryError::Corrupt);
         };
-        if successor_record.factor_id != predecessor_record.factor_id || predecessor_record.active {
+        let Some(successor_binding) = registry.realization_bindings.get(successor) else {
             return Err(DurableRegistryError::Corrupt);
+        };
+        let Some(predecessor_binding) = registry.realization_bindings.get(predecessor) else {
+            return Err(DurableRegistryError::Corrupt);
+        };
+        if successor == predecessor
+            || successor_record.factor_id != predecessor_record.factor_id
+            || predecessor_record.active
+            || !crate::v2::same_profile(successor_binding, predecessor_binding)
+            || !seen_predecessors.insert(predecessor.clone())
+        {
+            return Err(DurableRegistryError::Corrupt);
+        }
+    }
+    for start in registry.realization_supersessions.keys() {
+        let mut visited = BTreeSet::new();
+        let mut current = start;
+        while let Some(predecessor) = registry.realization_supersessions.get(current) {
+            if !visited.insert(current.clone()) {
+                return Err(DurableRegistryError::Corrupt);
+            }
+            current = predecessor;
         }
     }
     Ok(())
@@ -956,6 +1131,8 @@ enum StoredAny {
 struct Store {
     root: File,
     _lock: File,
+    #[cfg(test)]
+    fail_directory_sync_after_rename_once: Cell<bool>,
 }
 
 impl Store {
@@ -965,7 +1142,12 @@ impl Store {
         let lock = open_private(&root, "registry.lock", Access::Create)?;
         lock.try_lock()
             .map_err(|_| DurableRegistryError::StateLocked)?;
-        let store = Self { root, _lock: lock };
+        let store = Self {
+            root,
+            _lock: lock,
+            #[cfg(test)]
+            fail_directory_sync_after_rename_once: Cell::new(false),
+        };
         let has_state = entry_exists(&store.root, "registry.json")?;
         if !has_state {
             if initialized {
@@ -1012,9 +1194,17 @@ impl Store {
             .and_then(|()| file.sync_all())
             .map_err(|_| DurableRegistryError::Unavailable)?;
         replace_state(&self.root)?;
+        // After rename succeeds the durable outcome is unknown if directory
+        // fsync fails. The caller must poison this writer and reopen/reconcile;
+        // treating this as an ordinary pre-commit failure could overwrite a
+        // state that actually reached the filesystem.
+        #[cfg(test)]
+        if self.fail_directory_sync_after_rename_once.replace(false) {
+            return Err(DurableRegistryError::IndeterminateDurability);
+        }
         self.root
             .sync_all()
-            .map_err(|_| DurableRegistryError::Unavailable)
+            .map_err(|_| DurableRegistryError::IndeterminateDurability)
     }
 }
 
@@ -1139,6 +1329,12 @@ pub enum DurableRegistryError {
     Unavailable,
     UnsafeStateDirectory,
     StateLocked,
+    /// Rename may have succeeded but directory fsync failed; disk state is
+    /// unknown and the current writer is poisoned until reopened.
+    IndeterminateDurability,
+    /// This in-process image may be stale relative to disk after an
+    /// indeterminate commit and must not serve authoritative reads or writes.
+    ReopenRequired,
 }
 
 impl fmt::Display for DurableRegistryError {
@@ -1778,6 +1974,64 @@ mod tests {
         assert_eq!(persisted.actor_id, actor);
         assert_eq!(persisted.reason_digest, Some(reason));
         assert_eq!(persisted.cutoff_unix_ms, Some(cutoff));
+    }
+
+    #[test]
+    fn post_rename_sync_failure_poison_writer_until_reopen() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry-indeterminate");
+        let mut durable =
+            DurablePromptRegistry::open_state_dir(&root, 64).expect("initialize registry");
+        let factor = PromptFactor {
+            factor_id: id("factor:indeterminate"),
+            proposer_id: id("proposer:indeterminate"),
+            semantic_version: id("v1"),
+            content_digest: digest("factor:indeterminate"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+
+        durable.fail_directory_sync_after_rename_once();
+        assert!(matches!(
+            durable.register_factor(factor.clone()),
+            Err(DurableRegistryError::IndeterminateDurability)
+        ));
+        assert!(durable.requires_reopen());
+        assert!(durable.registry().factor(&factor.factor_id).is_none());
+        assert!(matches!(
+            durable.register_factor(PromptFactor {
+                factor_id: id("factor:must-not-write"),
+                proposer_id: id("proposer:must-not-write"),
+                semantic_version: id("v1"),
+                content_digest: digest("factor:must-not-write"),
+                source: FactorSource::GovernedInternal,
+                lifecycle: Lifecycle::Draft,
+            }),
+            Err(DurableRegistryError::ReopenRequired)
+        ));
+        assert!(matches!(
+            durable.snapshot_v2(
+                digest("generation-vector:poisoned"),
+                &PromptModelTupleV2 {
+                    model_digest: digest("model:poisoned"),
+                    tokenizer_digest: digest("tokenizer:poisoned"),
+                    template_digest: digest("template:poisoned"),
+                    tool_schema_digest: digest("tool-schema:poisoned"),
+                    context_profile_digest: digest("context-profile:poisoned"),
+                    locale_id: id("locale:en-US"),
+                },
+            ),
+            Err(DurableRegistryError::ReopenRequired)
+        ));
+
+        drop(durable);
+        let reopened =
+            DurablePromptRegistry::open_state_dir(&root, 64).expect("reconcile by reopen");
+        assert!(!reopened.requires_reopen());
+        assert_eq!(
+            reopened.registry().factor(&factor.factor_id),
+            Some(&factor)
+        );
     }
 
     #[test]
