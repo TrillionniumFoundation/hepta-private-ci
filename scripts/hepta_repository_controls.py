@@ -19,6 +19,7 @@ from typing import Any
 
 REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\Z")
 SHA = re.compile(r"[0-9a-f]{40}\Z")
+BLOCKING_CONTEXT = "CI required"
 EVALUATION_CONTEXT = "hepta-independent-evaluation"
 
 
@@ -67,7 +68,7 @@ def required_checks(protection: dict[str, Any], evaluator_app: int) -> dict[str,
     for name in contexts:
         require(isinstance(name, str) and bool(name), "Malformed legacy check context")
         result.setdefault(name, None)
-    require("blocking-ci" in result, "blocking-ci is not required by live protection")
+    require(BLOCKING_CONTEXT in result, f"{BLOCKING_CONTEXT} is not required by live protection")
     require(result.get(EVALUATION_CONTEXT) == evaluator_app,
             "Independent evaluation is not required from the exact trusted App")
     return result
