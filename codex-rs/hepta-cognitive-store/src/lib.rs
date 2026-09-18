@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+mod owner;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -18,6 +19,12 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
+pub use owner::AuthoritativeCognitiveStoreOwnerV1;
+pub use owner::CognitiveStoreOwnerDescriptorV1;
+pub use owner::DurableRecoveryProfileV1;
+pub use owner::DurableStoreProfileV1;
+pub use owner::DurableWriterFenceProfileV1;
+pub use owner::OwnerDescriptorError;
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
 pub use v2::CognitiveStoreV2Error;
