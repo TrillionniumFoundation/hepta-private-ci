@@ -117,10 +117,10 @@ impl AppServerObservation {
         notification: &TurnCompletedNotification,
     ) -> Result<Self, Error> {
         let request_digest = request_digest(intent)?;
-        let notification_thread =
-            StableId::new(notification.thread_id.clone()).map_err(|_| Error::InvalidIdentity("thread"))?;
-        let notification_turn =
-            StableId::new(notification.turn.id.clone()).map_err(|_| Error::InvalidIdentity("turn"))?;
+        let notification_thread = StableId::new(notification.thread_id.clone())
+            .map_err(|_| Error::InvalidIdentity("thread"))?;
+        let notification_turn = StableId::new(notification.turn.id.clone())
+            .map_err(|_| Error::InvalidIdentity("turn"))?;
         if notification_thread != intent.thread_id {
             return Err(Error::CorrelationMismatch("thread"));
         }
