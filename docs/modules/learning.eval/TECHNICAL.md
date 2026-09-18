@@ -16,6 +16,15 @@
 
 This stable document is the implementation guide for `learning.eval`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+### Production API authority
+
+The normative production-facing API/status and host trust boundary is
+[`codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md`](../../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md).
+Direct structural evaluators are trusted/qualification-only; external admission
+uses signed V2/V3, and durable host composition uses a writer-fenced holdout
+owner contract. The Lane E implementation matrix records source implementation
+separately from dynamic exact-head/synthetic-merge qualification evidence.
+
 ## 1. Identity, mission and ownership
 
 Perform support-aware causal and longitudinal evaluation independently from the production writer.
