@@ -262,6 +262,10 @@
         {
           "path": "codex-rs/hepta-memory/src/lib.rs",
           "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_model.rs",
+          "mode": "exclusive"
         }
       ]
     },
@@ -280,6 +284,10 @@
         {
           "path": "codex-rs/hepta-memory-retrieval",
           "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+          "mode": "exclusive"
         }
       ]
     },
@@ -297,6 +305,18 @@
       "rootBindings": [
         {
           "path": "codex-rs/hepta-kg",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/migrations/0011_kg_kernel_generation_digest.sql",
           "mode": "exclusive"
         }
       ]
