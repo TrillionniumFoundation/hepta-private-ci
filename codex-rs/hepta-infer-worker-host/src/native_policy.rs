@@ -101,11 +101,7 @@ impl NativeExecutionPolicy {
             || self.resource.generation != generation
             || self.quota.subject.generation != generation
             || self.quota.subject.agent != agent_id
-            || self
-                .resource
-                .subject
-                .as_ref()
-                .is_some_and(|subject| subject != &self.quota.subject)
+            || self.resource.subject.as_ref() != Some(&self.quota.subject)
         {
             return Err(NativePolicyError::Invalid("subject or generation mismatch"));
         }
@@ -129,6 +125,11 @@ impl NativeExecutionPolicy {
             .resource
             .digest()
             .map_err(|error| NativePolicyError::Contract(error.to_string()))?;
+        if self.quota.resource_sha256 != self.resource.resource_sha256
+            || self.resource.quota_sha256 != quota_digest
+        {
+            return Err(NativePolicyError::Invalid("quota/resource digest mismatch"));
+        }
 
         Ok(NativeAdmissionBinding {
             quota: NativeQuotaBinding {
