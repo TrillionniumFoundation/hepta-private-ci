@@ -722,14 +722,25 @@ async fn insert_v2_publication_tx(
         .map(|value| to_i64(value.get(), "KG predecessor generation"))
         .transpose()?;
     let predecessor_digest = publication.predecessor_digest.map(|value| value.to_string());
+    let sqlite_output_sha256: String = sqlx::query_scalar(
+        "SELECT output_sha256
+         FROM kg_projection_generation_receipts
+         WHERE projection_scope = ? AND generation = ?",
+    )
+    .bind(projection_scope)
+    .bind(to_i64(generation.generation.get(), "KG generation")?)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
 
     sqlx::query(
         "INSERT INTO kg_projection_v2_publications (
             projection_scope, generation, source_snapshot_digest,
             generation_vector_digest, graph_profile_digest,
             predecessor_generation, predecessor_digest, generation_digest,
-            publication_digest, node_count, edge_count, recorded_at_unix_seconds
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch())",
+            publication_digest, sqlite_output_sha256, node_count, edge_count,
+            recorded_at_unix_seconds
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, unixepoch())",
     )
     .bind(projection_scope)
     .bind(to_i64(generation.generation.get(), "KG generation")?)
@@ -740,6 +751,7 @@ async fn insert_v2_publication_tx(
     .bind(predecessor_digest)
     .bind(generation.generation_digest.to_string())
     .bind(publication.publication_digest.to_string())
+    .bind(sqlite_output_sha256)
     .bind(to_i64_len(generation.nodes.len(), "V2 projection node count")?)
     .bind(to_i64_len(generation.edges.len(), "V2 projection edge count")?)
     .execute(&mut **transaction)
