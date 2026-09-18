@@ -56,6 +56,10 @@ fn negotiated_v2() -> NegotiatedWire {
     negotiated
 }
 
+fn ingress_policy() -> CodexWireIngressPolicy {
+    CodexWireIngressPolicy::new(negotiated_v2(), id("runtime.agentd"), generation())
+}
+
 fn encode_intent(value: &CodexOperationIntent) -> (StableId, Vec<u8>) {
     let mut registry = SchemaRegistry::new();
     let Ok(codec) = register_wire_schema(&mut registry) else {
@@ -81,12 +85,12 @@ fn negotiated_v2_wire_intent_enters_existing_codex_adapter() {
     };
     let frame = WireFrame::V2(envelope);
 
-    let Ok(decoded) = decode_wire_intent(&frame, negotiated_v2()) else {
+    let Ok(decoded) = decode_wire_intent(&frame, &ingress_policy()) else {
         panic!("registered V2 runtime.codex intent must decode");
     };
     assert_eq!(decoded, value);
 
-    let Ok(receipt) = adapt_wire(1_000, &frame, negotiated_v2(), None) else {
+    let Ok(receipt) = adapt_wire(1_000, &frame, &ingress_policy(), None) else {
         panic!("wire intent must enter the existing adapter");
     };
     assert_eq!(receipt.status, AdapterStatus::Indeterminate);
@@ -108,12 +112,46 @@ fn negotiated_v2_wire_ingress_rejects_v1_downgrade() {
     let frame = WireFrame::V1(envelope);
 
     assert_eq!(
-        decode_wire_intent(&frame, negotiated_v2()),
+        decode_wire_intent(&frame, &ingress_policy()),
         Err(WireIngressError::VersionMismatch {
             expected: 2,
             observed: 1,
         })
     );
+}
+
+#[test]
+fn wire_ingress_rejects_wrong_producer_and_generation() {
+    let value = intent();
+    let (schema, payload) = encode_intent(&value);
+    let Ok(wrong_producer) = WireEnvelopeV2::new(
+        schema.clone(),
+        id("unexpected.producer"),
+        generation(),
+        payload.clone(),
+    ) else {
+        panic!("structurally valid V2 frame must construct");
+    };
+    assert!(matches!(
+        decode_wire_intent(&WireFrame::V2(wrong_producer), &ingress_policy()),
+        Err(WireIngressError::ProducerMismatch { .. })
+    ));
+
+    let Ok(other_generation) = Generation::new(2) else {
+        panic!("test generation must be valid");
+    };
+    let Ok(wrong_generation) = WireEnvelopeV2::new(
+        schema,
+        id("runtime.agentd"),
+        other_generation,
+        payload,
+    ) else {
+        panic!("structurally valid V2 frame must construct");
+    };
+    assert!(matches!(
+        decode_wire_intent(&WireFrame::V2(wrong_generation), &ingress_policy()),
+        Err(WireIngressError::GenerationMismatch { .. })
+    ));
 }
 
 #[test]
@@ -130,7 +168,7 @@ fn wire_ingress_rejects_wrong_schema_before_adapter_entry() {
     let frame = WireFrame::V2(envelope);
 
     assert!(matches!(
-        decode_wire_intent(&frame, negotiated_v2()),
+        decode_wire_intent(&frame, &ingress_policy()),
         Err(WireIngressError::Schema(
             SchemaError::CodecSchemaMismatch { .. }
         ))
@@ -153,7 +191,7 @@ fn wire_ingress_rejects_malformed_registered_payload() {
     let frame = WireFrame::V2(envelope);
 
     assert!(matches!(
-        decode_wire_intent(&frame, negotiated_v2()),
+        decode_wire_intent(&frame, &ingress_policy()),
         Err(WireIngressError::Schema(
             SchemaError::AdmissionRejected { .. }
         ))
