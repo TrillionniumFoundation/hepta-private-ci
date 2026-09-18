@@ -118,6 +118,28 @@ impl AutomationMissedRunPolicy {
         }
     }
 
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::Skip => "skip",
+            Self::BoundedCatchUp { .. } => "bounded_catch_up",
+        }
+    }
+
+    pub(crate) fn from_columns(
+        kind: &str,
+        max_catch_up_occurrences: u16,
+    ) -> Result<Self, AutomationError> {
+        let value = match kind {
+            "skip" if max_catch_up_occurrences == 1 => Self::Skip,
+            "bounded_catch_up" => Self::BoundedCatchUp {
+                max_occurrences: max_catch_up_occurrences,
+            },
+            _ => return Err(AutomationError::Corrupt),
+        };
+        value.validate().map_err(|_| AutomationError::Corrupt)?;
+        Ok(value)
+    }
+
     fn is_default(&self) -> bool {
         *self == Self::default()
     }
@@ -132,6 +154,21 @@ pub enum AutomationOverlapPolicy {
 }
 
 impl AutomationOverlapPolicy {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::Forbid => "forbid",
+            Self::Allow => "allow",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
+        match value {
+            "forbid" => Ok(Self::Forbid),
+            "allow" => Ok(Self::Allow),
+            _ => Err(AutomationError::Corrupt),
+        }
+    }
+
     fn is_default(&self) -> bool {
         *self == Self::default()
     }
