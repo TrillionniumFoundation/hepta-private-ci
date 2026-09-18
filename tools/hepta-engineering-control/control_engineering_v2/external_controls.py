@@ -21,6 +21,8 @@ from .control_plane import (
 )
 from .evidence import SignatureTrustStore
 
+MAX_KEY_CUSTODY_ROLES = 32
+
 
 @dataclass(frozen=True)
 class DistributedFenceReceipt:
@@ -100,6 +102,10 @@ def verify_distributed_fence(
         raise EngineeringError("invalid_time")
     if lease.state != "active":
         raise EngineeringError("distributed_fence_local_lease_inactive")
+    if lease.envelope_id != envelope.envelope_id:
+        raise EngineeringError("distributed_fence_envelope_mismatch")
+    if lease.expires_unix_ns <= now or envelope.expires_unix_ns <= now:
+        raise EngineeringError("distributed_fence_owner_state_stale")
     for value, label in (
         (receipt.cluster_id, "cluster_id"),
         (receipt.leader_id, "leader_id"),
@@ -126,6 +132,8 @@ def verify_distributed_fence(
         raise EngineeringError("distributed_fence_revocation_frontier")
     if not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now):
         raise EngineeringError("distributed_fence_stale")
+    if receipt.expires_unix_ns > min(lease.expires_unix_ns, envelope.expires_unix_ns):
+        raise EngineeringError("distributed_fence_window_exceeds_owner")
     if not trust_store.verify(
         receipt, receipt.issuer, receipt.signing_identity, receipt.signature
     ):
@@ -146,6 +154,14 @@ def verify_external_audit_anchor(
         raise EngineeringError("audit_anchor_issuer_role")
     anchor = store.audit_anchor()
     if (
+        type(anchor["sequence"]) is not int
+        or anchor["sequence"] <= 0
+        or anchor["eventDigest"] == "0" * 64
+    ):
+        raise EngineeringError("audit_anchor_empty")
+    if envelope.expires_unix_ns <= now:
+        raise EngineeringError("audit_anchor_envelope_stale")
+    if (
         type(receipt.sequence) is not int
         or receipt.sequence != anchor["sequence"]
         or receipt.event_digest != anchor["eventDigest"]
@@ -155,6 +171,8 @@ def verify_external_audit_anchor(
     checked_sha256(receipt.event_digest, "audit_event_digest")
     if not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now):
         raise EngineeringError("audit_anchor_stale")
+    if receipt.expires_unix_ns > envelope.expires_unix_ns:
+        raise EngineeringError("audit_anchor_window_exceeds_envelope")
     if not trust_store.verify(
         receipt, receipt.issuer, receipt.signing_identity, receipt.signature
     ):
@@ -179,6 +197,15 @@ def verify_external_key_custody(
     checked_id(receipt.key_id, "key_id")
     if receipt.issuer != "key_custody_authority":
         raise EngineeringError("key_custody_issuer_role")
+    if (
+        not isinstance(receipt.roles, tuple)
+        or not receipt.roles
+        or len(receipt.roles) > MAX_KEY_CUSTODY_ROLES
+        or len(set(receipt.roles)) != len(receipt.roles)
+    ):
+        raise EngineeringError("key_custody_roles")
+    for role in receipt.roles:
+        checked_id(role, "key_custody_role")
     if receipt.hardware_backed is not True or receipt.external_to_engineering is not True:
         raise EngineeringError("key_custody_boundary")
     if not set(required_roles).issubset(set(receipt.roles)):
