@@ -689,17 +689,15 @@ fn duration_ms(duration: Duration) -> Result<u64, AutomationError> {
 
 fn truncate_reason(reason: &str) -> String {
     const MAX_REASON_BYTES: usize = 240;
-    if reason.len() <= MAX_REASON_BYTES && !reason.bytes().any(|byte| byte < 0x20) {
-        return reason.to_string();
-    }
-    let filtered: String = reason
-        .chars()
-        .filter(|ch| !ch.is_control())
-        .collect();
+    let filtered: String = reason.chars().filter(|ch| !ch.is_control()).collect();
     if filtered.len() <= MAX_REASON_BYTES {
         return filtered;
     }
-    filtered.chars().take(MAX_REASON_BYTES).collect()
+    let mut end = MAX_REASON_BYTES;
+    while !filtered.is_char_boundary(end) {
+        end -= 1;
+    }
+    filtered[..end].to_string()
 }
 
 /// Applies the scheduler's fail-stop policy to one tick.  A `true` result
