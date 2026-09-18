@@ -81,6 +81,15 @@
             "MAX_PROFILE_ENCODED_BYTES",
             "oversized_profile_mapping_set_is_rejected"
           ]
+        },
+        "targetHostMeasurementHarness": {
+          "state": "source_implemented_external_observation_required",
+          "evidence": [
+            "scripts/hepta-objective-target-measure.py",
+            "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+            "measurement_ordinary_admission_compile_v1",
+            "measurement_conflict_extraction_v1"
+          ]
         }
       }
     },
