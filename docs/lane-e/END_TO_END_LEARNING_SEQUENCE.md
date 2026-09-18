@@ -79,8 +79,10 @@ host reserves a create-only artifact identity
   -> admission digest binds the complete V2 manifest, withdrawal scope/head and time
   -> V1 registry event is staged against the exact predecessor head
   -> publication transaction binds admission, withdrawal scope/head, event and
-     resulting registry head
+     resulting registry head; the prepared value cannot expose snapshot state
   -> both mutable frontiers are revalidated under the host writer fence
+  -> revalidation returns the only token that exposes the staged registry and
+     transaction-bound snapshot binding
   -> registry snapshot is durably published with the transaction digest as binding
   -> independent RegistryHeadWitnessV1 binds generation, predecessor head and
      authority epoch
