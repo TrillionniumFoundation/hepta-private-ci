@@ -94,15 +94,17 @@ fn failed_persistence_does_not_advance_in_memory_state() {
     fs::remove_file(&store_path).expect("remove store");
     fs::create_dir(&store_path).expect("replace store path with directory");
 
-    assert!(store
-        .append_projection(
-            NduProjectionKindV1::Utility,
-            digest("projection-id"),
-            objective,
-            subject,
-            digest("projection"),
-        )
-        .is_err());
+    assert!(
+        store
+            .append_projection(
+                NduProjectionKindV1::Utility,
+                digest("projection-id"),
+                objective,
+                subject,
+                digest("projection"),
+            )
+            .is_err()
+    );
     assert_eq!(store.checkpoint(), predecessor);
 
     drop(store);
