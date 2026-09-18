@@ -116,12 +116,13 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
-                let result = crate::cognitive_context::read(
+                let result = crate::cognitive_context::read_with_runtime(
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
                     &query,
                     limit,
+                    self.memory_retrieval_runtime.get(),
                     self.cognitive_ranker.get(),
                 )
                 .await;
@@ -147,6 +148,12 @@ impl AgentdState {
                         code: "cognitive_ranker_unavailable".to_string(),
                         message: "selected ranker is unavailable; explicit reload required"
                             .to_string(),
+                    },
+                    Err(CognitiveContextError::RetrievalUnavailable) => AgentdPayload::Error {
+                        code: "memory_retrieval_unavailable".to_string(),
+                        message:
+                            "selected memory retrieval runtime is unavailable; explicit reload required"
+                                .to_string(),
                     },
                 }
             }
