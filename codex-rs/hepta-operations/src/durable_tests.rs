@@ -424,7 +424,7 @@ async fn dispatch_lease_debug_never_contains_payload_bytes() {
     prepare(&store).await;
     let lease = claim(&store, 60_000).await;
     let rendered = format!("{lease:?}");
-    assert!(!rendered.contains("payload"));
+    assert!(!rendered.contains("[112, 97, 121, 108, 111, 97, 100]"));
     assert!(rendered.contains("payload_len"));
     assert_eq!(lease.payload(), b"payload");
 }
