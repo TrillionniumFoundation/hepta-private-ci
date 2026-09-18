@@ -131,8 +131,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "The native App Server caller does not yet consume kernel.authority's non-constructible VerifiedUseToken immediately before turn/start; CodexOperationIntent currently receives an equal caller-supplied lease_payload_digest rather than an authority-authenticated final-use capability.",
-    "The authority binding for model dispatch must cover the actual final TurnStart payload, including the runtime-selected model and compiled additional context, rather than only the pre-context native request digest."
+    "The native App Server caller does not yet consume kernel.authority's non-constructible VerifiedUseToken immediately before turn/start; CodexOperationIntent currently receives an equal caller-supplied lease_payload_digest rather than an authority-authenticated final-use capability. The caller now persists and binds the exact serialized final TurnStart payload digest; the remaining gap is authentication/consumption of that digest through kernel.authority."
   ],
   "externalEvidenceGates": [
     "authenticated target-host Agentd/App Server execution receipt",
