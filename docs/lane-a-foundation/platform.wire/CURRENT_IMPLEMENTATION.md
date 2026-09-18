@@ -19,8 +19,10 @@ transport-neutral protocol helpers.
   versions, payload bounds and schema validators. Admitted payloads may then be
   decoded by a matching typed PayloadCodec.
 - read_frame reads and validates the fixed 54-byte header before allocating the
-  advertised body. WireStreamDecoder caps buffered bytes at two maximum frames
-  and clears connection-local state on malformed or unsupported input.
+  advertised body. read_frame_for additionally enforces the negotiated version
+  before body allocation, so a V2 session cannot accept a V1 downgrade.
+  WireStreamDecoder caps buffered bytes at two maximum frames and can likewise
+  be constructed in negotiated mode.
 
 The library remains authority-free. Successful decode, negotiation, admission
 or typed loading is not authorization, dispatch acknowledgement or external
