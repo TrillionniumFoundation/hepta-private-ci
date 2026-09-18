@@ -17,8 +17,8 @@ use codex_hepta_types::Digest32;
 use crate::BoundModelExecutionV1;
 use crate::CalibratedSignalV1;
 use crate::CalibrationError;
-use crate::CalibrationPolicyV1;
 use crate::CalibrationObservationV1;
+use crate::CalibrationPolicyV1;
 use crate::FileRecoveryWitness;
 use crate::JournalAnchor;
 use crate::JournalError;
@@ -648,4 +648,3 @@ fn require_lineage<L: LineagePolicy>(
         false => Err(RuntimeError::RevokedLineage),
     }
 }
-

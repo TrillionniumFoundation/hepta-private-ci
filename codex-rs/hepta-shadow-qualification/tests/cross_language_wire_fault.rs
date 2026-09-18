@@ -85,10 +85,7 @@ fn run_python(frame: &[u8]) -> std::process::Output {
 #[test]
 fn rust_python_wire_roundtrip_and_payload_fault_reject() {
     let schema = checked(StableId::new("hepta.integration.v1"), "schema id");
-    let producer = checked(
-        StableId::new("hepta-shadow-qualification"),
-        "producer id",
-    );
+    let producer = checked(StableId::new("hepta-shadow-qualification"), "producer id");
     let generation = checked(Generation::new(7), "generation");
     let payload = br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec();
     let envelope = WireEnvelope::new(
@@ -102,7 +99,10 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
 
     let output = run_python(&frame);
     assert!(output.status.success(), "python parser failed: {output:?}");
-    let report: Value = checked(serde_json::from_slice(&output.stdout), "python JSON receipt");
+    let report: Value = checked(
+        serde_json::from_slice(&output.stdout),
+        "python JSON receipt",
+    );
     assert_eq!(report["schema"], schema.as_str());
     assert_eq!(report["producer"], producer.as_str());
     assert_eq!(report["generation"], generation.get());

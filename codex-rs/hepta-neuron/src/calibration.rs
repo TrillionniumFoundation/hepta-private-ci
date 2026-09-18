@@ -205,7 +205,9 @@ pub fn apply_calibration(
             PPM_ONE,
         ));
     }
-    if observation.sequence < artifact.valid_from_sequence || observation.sequence > artifact.expires_after_sequence {
+    if observation.sequence < artifact.valid_from_sequence
+        || observation.sequence > artifact.expires_after_sequence
+    {
         return Ok(fallback(
             Some(artifact),
             SignalFallbackReasonV1::CalibrationExpired,
@@ -221,7 +223,10 @@ pub fn apply_calibration(
             PPM_ONE,
         ));
     }
-    let ood_ppm = scaled_ood_ppm(observation.ood_score_q24, artifact.maximum_in_domain_ood_q24);
+    let ood_ppm = scaled_ood_ppm(
+        observation.ood_score_q24,
+        artifact.maximum_in_domain_ood_q24,
+    );
     if observation.ood_score_q24 > artifact.maximum_in_domain_ood_q24 {
         return Ok(fallback(
             Some(artifact),
