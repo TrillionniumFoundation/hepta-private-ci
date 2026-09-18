@@ -67,13 +67,13 @@ The implementation intentionally reuses:
 - the existing App Server `thread/queue/reconcile` stable-client-id primitive;
 - the kernel-owned durable `FinalUseAuthority` for external effect admission.
 
-No second scheduler, TaskFlow engine, queue writer, authority issuer or terminality oracle was introduced. Rollback must preserve the v8 automation schema records or use a binary that understands them; older binaries that only understand schema v3 must not be started against an upgraded owner store.
+No second scheduler, TaskFlow engine, queue writer, authority issuer or terminality oracle was introduced. Rollback must preserve the v9 automation schema records or use a binary that understands them; older binaries that only understand schema v3 must not be started against an upgraded owner store.
 
 Source implementation does not by itself authorize a concrete external provider, deployment, operator acceptance, canary, promotion or release.
 
 ## 8. Current native implementation
 
-- **Schedule/occurrence owner:** `codex-rs/hepta-automation/src/store.rs`, `src/lifecycle.rs`, migrations `0004`-`0008`. Schedule revision, deterministic occurrence identity, missed-run/overlap policy and append-only occurrence events are durable.
+- **Schedule/occurrence owner:** `codex-rs/hepta-automation/src/store.rs`, `src/lifecycle.rs`, migrations `0004`-`0009`. Schedule revision, deterministic occurrence identity, missed-run/overlap policy and append-only occurrence events are durable.
 - **Scheduler composition:** `codex-rs/hepta-automation/src/scheduler.rs` freezes occurrence/TaskFlow intent before App Server contact. The public legacy `AutomationTick::Submitted` now means durable Core queue admission only; it is not occurrence terminality.
 - **TaskFlow durable chain:** `src/automation_taskflow.rs`, `src/taskflow.rs`, `src/taskflow_step.rs`, `src/taskflow_recovery.rs`. Every materialized automation occurrence gets one deterministic TaskFlow run and versioned step-attempt chain; indeterminate effects are reconciled before terminal propagation.
 - **Stable queue recovery and terminal observer:** `codex-rs/hepta-agentd/src/automation.rs` uses `thread/queue/reconcile(AllowIfAbsent)` for first admission. `src/automation_recovery.rs` uses `ReconcileOnly` after lost acknowledgement and observes bounded persisted turn history before publishing terminality.
