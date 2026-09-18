@@ -98,6 +98,7 @@ impl FederationTransportV2 for PanicTransport {
 struct FixtureAuthority {
     state: FederationAuthorityStateV2,
     observed_unix_ms: u64,
+    authority_expires_unix_ms: u64,
 }
 
 impl FederationAuthorityV2 for FixtureAuthority {
@@ -110,6 +111,7 @@ impl FederationAuthorityV2 for FixtureAuthority {
             query_binding_digest: query.binding_digest(),
             lease_epoch: query.lease_epoch,
             observed_unix_ms: self.observed_unix_ms,
+            authority_expires_unix_ms: self.authority_expires_unix_ms,
             state: self.state,
         };
         Box::pin(async move { Ok(observation) })
@@ -148,6 +150,7 @@ impl FederationAuthorityV2 for SequencedAuthority {
             query_binding_digest: query.binding_digest(),
             lease_epoch: query.lease_epoch,
             observed_unix_ms: selected.observed_unix_ms,
+            authority_expires_unix_ms: selected.authority_expires_unix_ms,
             state: selected.state,
         };
         Box::pin(async move { Ok(observation) })
@@ -212,6 +215,7 @@ fn current_authority() -> FixtureAuthority {
     FixtureAuthority {
         state: FederationAuthorityStateV2::Current,
         observed_unix_ms: 20,
+        authority_expires_unix_ms: 90,
     }
 }
 
@@ -431,6 +435,7 @@ fn post_io_revocation_suppresses_remote_items() {
         FixtureAuthority {
             state: FederationAuthorityStateV2::Revoked,
             observed_unix_ms: 21,
+            authority_expires_unix_ms: 90,
         },
     );
     let control = FixtureControl::Pending;
@@ -469,6 +474,7 @@ fn post_io_generation_drift_suppresses_remote_items() {
         FixtureAuthority {
             state: FederationAuthorityStateV2::StaleGeneration,
             observed_unix_ms: 21,
+            authority_expires_unix_ms: 90,
         },
     );
     let control = FixtureControl::Pending;
@@ -491,6 +497,7 @@ fn preflight_revocation_blocks_transport_dispatch() {
     let authority = FixtureAuthority {
         state: FederationAuthorityStateV2::Revoked,
         observed_unix_ms: 20,
+        authority_expires_unix_ms: 90,
     };
     let control = FixtureControl::Pending;
     assert_eq!(
@@ -505,6 +512,53 @@ fn preflight_revocation_blocks_transport_dispatch() {
         Err(FederationV2Error::AuthorityNotCurrent(
             FederationAuthorityStateV2::Revoked,
         ))
+    );
+}
+
+#[test]
+fn preflight_rejects_lease_longer_than_live_authority() {
+    let query = query();
+    let mut widened_lease = lease(&query);
+    widened_lease.expires_unix_ms = 95;
+    let authority = current_authority();
+    let control = FixtureControl::Pending;
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::NonTerminal(
+            FederationTransportOutcomeV2::Unavailable,
+        )),
+    };
+    assert_eq!(
+        block_on(execute_once(
+            &transport,
+            &authority,
+            &control,
+            10,
+            query,
+            &widened_lease,
+        )),
+        Err(FederationV2Error::LeaseAuthorityHorizonExceeded)
+    );
+}
+
+#[test]
+fn current_authority_observation_cannot_be_expired() {
+    let query = query();
+    let authority = FixtureAuthority {
+        state: FederationAuthorityStateV2::Current,
+        observed_unix_ms: 91,
+        authority_expires_unix_ms: 90,
+    };
+    let control = FixtureControl::Pending;
+    assert_eq!(
+        block_on(execute_once(
+            &PanicTransport,
+            &authority,
+            &control,
+            10,
+            query.clone(),
+            &lease(&query),
+        )),
+        Err(FederationV2Error::AuthorityExpired)
     );
 }
 
@@ -563,6 +617,7 @@ fn post_io_observation_cannot_outlive_lease() {
         FixtureAuthority {
             state: FederationAuthorityStateV2::Current,
             observed_unix_ms: 95,
+            authority_expires_unix_ms: 200,
         },
     );
     let control = FixtureControl::Pending;
