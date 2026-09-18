@@ -13,11 +13,12 @@ use codex_hepta_context_compiler::ContextItem;
 use codex_hepta_context_compiler::ContextRole;
 use codex_hepta_context_compiler::compile as compile_context;
 use codex_hepta_intelligence::*;
-use codex_hepta_intelligence_eval::EvaluationDirection;
+use codex_hepta_intelligence_eval::Direction;
 use codex_hepta_intelligence_eval::EvaluationRequest;
-use codex_hepta_intelligence_eval::MetricDelta;
+use codex_hepta_intelligence_eval::MetricComparison;
 use codex_hepta_intelligence_eval::evaluate as evaluate_candidate;
 use codex_hepta_learning_ledger::CandidateSetCompleteness;
+use codex_hepta_learning_ledger::DurableLearningJournal;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::EpisodeDecision;
 use codex_hepta_learning_ledger::LedgerEvent;
@@ -30,7 +31,7 @@ use codex_hepta_ndu::UtilityContribution;
 use codex_hepta_ndu::UtilityProfile;
 use codex_hepta_ndu::evaluate_candidates;
 use codex_hepta_objective::ActionClass;
-use codex_hepta_objective::Comparator;
+use codex_hepta_objective::ConstraintRelation;
 use codex_hepta_objective::ObjectiveSourceEnvelope;
 use codex_hepta_objective::PredicateTerminality;
 use codex_hepta_objective::SoftDirection;
@@ -60,28 +61,28 @@ fn digest(value: &str) -> Digest32 {
 
 fn objective_envelope() -> ObjectiveSourceEnvelope {
     ObjectiveSourceEnvelope {
-        revision: Revision::new(1).expect("revision"),
+        request_id: id("request.v3.real"),
         principal_scope_digest: digest("principal"),
+        input_schema_digest: digest("objective-schema"),
         success_predicates: vec![SuccessPredicate {
             predicate_id: id("success"),
-            evidence_source: id("observer"),
-            comparator: Comparator::GreaterThanOrEqual,
+            relation: ConstraintRelation::GreaterThanOrEqual,
             threshold: FixedQ32::ONE,
-            terminality: PredicateTerminality::RequiredBeforeSuccess,
+            evidence_source: id("observer"),
+            terminality: PredicateTerminality::Terminal,
         }],
-        terminal_conditions: Vec::new(),
         hard_constraints: Vec::new(),
-        allowed_action_classes: vec![ActionClass {
+        allowed_actions: vec![ActionClass {
             action_id: id("action:prompt:1"),
             requires_confirmation: false,
         }],
-        forbidden_action_classes: Vec::new(),
+        forbidden_actions: Vec::new(),
         soft_preferences: vec![SoftPreference {
             dimension: id("quality"),
             direction: SoftDirection::Maximize,
             weight: FixedQ32::ONE,
         }],
-        source_trust: SourceTrust::Trusted,
+        source_trust: SourceTrust::PrincipalStructured,
         source_digest: digest("objective-source"),
     }
 }
@@ -272,24 +273,44 @@ impl LaneFCompositionPortsV3 for RealPorts {
             ContributionSet {
                 objective_digest: self.objective_digest,
                 generation,
-                contributions: vec![UtilityContribution {
-                    candidate_id: id("action:prompt:1"),
-                    organ_id: id("organ:planner"),
-                    objective_digest: self.objective_digest,
-                    generation,
-                    feasibility: FeasibilityPosture::Feasible,
-                    utility: vec![AxisValue {
-                        axis: id("quality"),
-                        value: FixedQ32::ONE,
-                    }],
-                    risk: Vec::new(),
-                    resource: Vec::new(),
-                    uncertainty: vec![AxisValue {
-                        axis: id("quality"),
-                        value: FixedQ32::ZERO,
-                    }],
-                    support_digest: digest("ndu-support"),
-                }],
+                contributions: vec![
+                    UtilityContribution {
+                        candidate_id: id("abstain"),
+                        organ_id: id("organ:planner"),
+                        objective_digest: self.objective_digest,
+                        generation,
+                        feasibility: FeasibilityPosture::Feasible,
+                        utility: vec![AxisValue {
+                            axis: id("quality"),
+                            value: FixedQ32::ZERO,
+                        }],
+                        risk: Vec::new(),
+                        resource: Vec::new(),
+                        uncertainty: vec![AxisValue {
+                            axis: id("quality"),
+                            value: FixedQ32::ZERO,
+                        }],
+                        support_digest: digest("ndu-abstain-support"),
+                    },
+                    UtilityContribution {
+                        candidate_id: id("action:prompt:1"),
+                        organ_id: id("organ:planner"),
+                        objective_digest: self.objective_digest,
+                        generation,
+                        feasibility: FeasibilityPosture::Feasible,
+                        utility: vec![AxisValue {
+                            axis: id("quality"),
+                            value: FixedQ32::ONE,
+                        }],
+                        risk: Vec::new(),
+                        resource: Vec::new(),
+                        uncertainty: vec![AxisValue {
+                            axis: id("quality"),
+                            value: FixedQ32::ZERO,
+                        }],
+                        support_digest: digest("ndu-support"),
+                    },
+                ],
             },
             UtilityProfile {
                 profile_id: id("utility.v3.real"),
@@ -319,18 +340,20 @@ impl LaneFCompositionPortsV3 for RealPorts {
         let utility = self.utility_digest.ok_or_else(|| Self::failure(input))?;
         let receipt = evaluate_candidate(EvaluationRequest {
             evaluation_id: id("evaluation.v3.real"),
-            candidate_artifact_digest: utility,
-            baseline_artifact_digest: digest("baseline"),
-            dataset_digest: digest("dataset"),
-            metrics: vec![MetricDelta {
+            evaluator_id: id("evaluator.independent"),
+            candidate_id: id("candidate.ndu"),
+            candidate_producer_id: id("utility.ndu"),
+            baseline_id: id("baseline"),
+            objective_digest: self.objective_digest,
+            comparisons: vec![MetricComparison {
                 metric_id: id("quality"),
-                baseline: FixedQ32::ZERO,
+                direction: Direction::Maximize,
                 candidate: FixedQ32::ONE,
-                direction: EvaluationDirection::HigherIsBetter,
-                support_digest: digest("eval-support"),
+                baseline: FixedQ32::ZERO,
+                minimum_delta: FixedQ32::ZERO,
+                hard: true,
+                support_digest: utility,
             }],
-            minimum_effect: FixedQ32::ZERO,
-            support_complete: true,
         })
         .map_err(|_| Self::failure(input))?;
         Ok(Self::receipt(
