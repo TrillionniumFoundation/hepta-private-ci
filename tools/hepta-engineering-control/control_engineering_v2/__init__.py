@@ -55,6 +55,11 @@ from .facade import (
     publish_audit_projection,
     schedule_ready_packages,
 )
+from .production import (
+    ProductionReadinessDecision,
+    ProductionReadinessFacts,
+    evaluate_production_readiness,
+)
 from .hardening import (
     AttestedSandboxParity,
     BoundEvidenceDecision,
@@ -104,6 +109,8 @@ __all__ = [
     "Mutation",
     "OwnerConsentAttestation",
     "OwnerConsentReceipt",
+    "ProductionReadinessDecision",
+    "ProductionReadinessFacts",
     "ReviewRequest",
     "SandboxParityAttestation",
     "SandboxParityReceipt",
@@ -124,6 +131,7 @@ __all__ = [
     "checked_id",
     "checked_sha256",
     "consent_payload_digest",
+    "evaluate_production_readiness",
     "execute_candidate_sandbox",
     "generate_candidate",
     "generate_candidates",
