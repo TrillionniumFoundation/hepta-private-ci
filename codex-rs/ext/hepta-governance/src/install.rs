@@ -15,6 +15,7 @@ use codex_hepta_contracts::PolicyPhase;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_state::StateRuntime;
 
+use crate::provider_final_use::ProviderFinalUseAuthorizerHost;
 use crate::state::GovernanceState;
 
 pub(crate) struct HeptaGovernanceExtension<F> {
@@ -22,6 +23,7 @@ pub(crate) struct HeptaGovernanceExtension<F> {
     pub(crate) mode: GovernanceMode,
     pub(crate) state_db: Option<Arc<StateRuntime>>,
     pub(crate) evidence: tokio::sync::OnceCell<Arc<HeptaEvidenceStore>>,
+    pub(crate) provider_final_use_authorizer: Option<ProviderFinalUseAuthorizerHost>,
 }
 
 impl<F> HeptaGovernanceExtension<F> {
@@ -138,6 +140,27 @@ pub fn install_enforced<C, F>(
     install_with_mode(registry, state_db, GovernanceMode::Enforce, enabled);
 }
 
+/// Install fail-closed governance with an embedding-owned final-use capability
+/// for the physical model-provider send. Generating attempts consume this
+/// capability only from the final dispatch fence.
+pub fn install_enforced_with_provider_final_use<C, F>(
+    registry: &mut ExtensionRegistryBuilder<C>,
+    state_db: Option<Arc<StateRuntime>>,
+    provider_final_use_authorizer: Option<ProviderFinalUseAuthorizerHost>,
+    enabled: F,
+) where
+    C: Sync + 'static,
+    F: Fn(&C) -> bool + Send + Sync + 'static,
+{
+    install_with_mode_and_provider_final_use(
+        registry,
+        state_db,
+        GovernanceMode::Enforce,
+        provider_final_use_authorizer,
+        enabled,
+    );
+}
+
 /// Install the governance extension with an explicit rollout mode.
 ///
 /// Qualification and compatibility tests may select shadow explicitly; product
@@ -151,11 +174,25 @@ pub fn install_with_mode<C, F>(
     C: Sync + 'static,
     F: Fn(&C) -> bool + Send + Sync + 'static,
 {
+    install_with_mode_and_provider_final_use(registry, state_db, mode, None, enabled);
+}
+
+fn install_with_mode_and_provider_final_use<C, F>(
+    registry: &mut ExtensionRegistryBuilder<C>,
+    state_db: Option<Arc<StateRuntime>>,
+    mode: GovernanceMode,
+    provider_final_use_authorizer: Option<ProviderFinalUseAuthorizerHost>,
+    enabled: F,
+) where
+    C: Sync + 'static,
+    F: Fn(&C) -> bool + Send + Sync + 'static,
+{
     let extension = Arc::new(HeptaGovernanceExtension {
         enabled,
         mode,
         state_db,
         evidence: tokio::sync::OnceCell::new(),
+        provider_final_use_authorizer,
     });
     registry.thread_lifecycle_contributor(extension.clone());
     registry.tool_policy_contributor(extension.clone());
