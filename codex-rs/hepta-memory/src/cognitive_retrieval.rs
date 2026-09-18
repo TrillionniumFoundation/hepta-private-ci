@@ -271,8 +271,8 @@ impl CognitiveStore {
         let kg_projection = self
             .projection_generation_for_scope_tx(transaction, &memory.scope)
             .await?;
-        let (kg_projection_generation, kg_projection_generation_digest) =
-            kg_projection.map_or((None, None), |(generation, digest)| {
+        let (kg_projection_generation, kg_projection_generation_digest) = kg_projection
+            .map_or((None, None), |(generation, digest)| {
                 (Some(generation), Some(digest))
             });
         let current_head: i64 =
@@ -490,9 +490,7 @@ impl CognitiveStore {
                 RevalidationDrift::KgProjectionGeneration,
             ));
         }
-        if explanation.kg_projection_generation_digest
-            != binding.kg_projection_generation_digest
-        {
+        if explanation.kg_projection_generation_digest != binding.kg_projection_generation_digest {
             return Ok(RevalidationStatus::Stale(
                 RevalidationDrift::KgProjectionDigest,
             ));
