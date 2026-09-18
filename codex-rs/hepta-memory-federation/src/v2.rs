@@ -459,6 +459,7 @@ impl FederatedResultV2 {
             }
         } else {
             if self.observed_frontier.is_none()
+                || self.observed_frontier == Some(0)
                 || self.remote_response_digest.is_none()
                 || self.authority_observation_digest.is_none()
                 || self.coverage.completed_peers != 1
@@ -466,7 +467,7 @@ impl FederatedResultV2 {
                 return Err(FederationV2Error::InvalidCoverage);
             }
             if matches!(self.completeness, FederatedCompletenessV2::Empty)
-                && !self.items.is_empty()
+                && (!self.items.is_empty() || self.coverage.truncated_items != 0)
             {
                 return Err(FederationV2Error::InvalidCompleteness);
             }
