@@ -25,9 +25,11 @@
       "operation": "decide_calibrated",
       "nativeSymbol": "decide_calibrated",
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "historical_replay_source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "decide_calibrated",
       "mappingClass": "owner_native",
@@ -37,7 +39,7 @@
       "operation": "decide_calibrated_v2",
       "nativeSymbol": "decide_calibrated_v2",
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_fail_closed_complete_set_not_product_composed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intuition/src/qualified_tests.rs::current_v2_rejects_any_omitted_candidate_bound"
@@ -51,7 +53,7 @@
       "operation": "decide_calibrated_v3",
       "nativeSymbol": "decide_calibrated_v3",
       "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_canonical_profile_not_product_composed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-intuition/src/qualified_tests.rs",
@@ -61,16 +63,45 @@
       "designOperation": "decide_calibrated",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "bind_scoring_commitment",
+      "nativeSymbol": "canonical_scoring_commitment_digest_v1",
+      "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
+      "state": "source_implemented_authenticated_by_consumer",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/qualified_tests.rs::scoring_commitment_detects_score_or_model_substitution",
+        "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "score_legal_set",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "bind_assignment_commitment",
+      "nativeSymbol": "canonical_assignment_evidence_payload_v1",
+      "sourcePath": "codex-rs/hepta-intuition/src/qualified.rs",
+      "state": "source_implemented_authenticated_by_consumer",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/qualified_tests.rs::assignment_commitment_binds_stream_sequence_and_draw",
+        "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "choose",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind CounterBased assignment to the eventual owner-supplied authenticated random-stream draw.",
-    "Compose stricter V3 risk profiles through a native V3 host port instead of the HighOnlySlowPath compatibility wrapper.",
-    "Run exact-head and deterministic synthetic-merge qualification before changing the claim boundary."
+    "Compose decide_authenticated_intuition_v2 through a named product/native V3 host port; the existing evaluated-shadow wrapper remains a HighOnlySlowPath compatibility adapter.",
+    "Obtain clean exact-source and deterministic synthetic-merge qualification for the canonical convergence candidate before changing any source claim."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "production-selected model calibration and target-host qualification",
+    "production-selected learned model/features, real calibration and target-host qualification",
+    "independent semantic review and causal/longitudinal evidence required by higher intuition claim levels",
     "product execution, operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
