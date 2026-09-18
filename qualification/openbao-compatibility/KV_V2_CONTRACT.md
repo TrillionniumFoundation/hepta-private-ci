@@ -25,15 +25,16 @@ grant and has no provider signing key.
 The implementation is bound to
 [`BaoClient::consume_kv_v2`](../../codex-rs/hepta-bao-adapter/src/https_consumer.rs)
 and the request shape is [`BaoReadRequest`](../../codex-rs/hepta-bao-adapter/src/https_consumer.rs).
-Only one string-valued field is delivered to the trusted callback. The receipt
-contains request, response and secret digests, version and byte count; it never
-contains secret bytes.
+Only one string-valued field is delivered to the host-registered trusted
+consumer. The receipt contains request identity, version, byte count and an
+internal-verification success flag; provider-body and secret-value fingerprints
+are not part of the public receipt, and secret bytes are never returned.
 
 ## Response and failure contract
 
 | Provider observation | Adapter result | Callback invoked |
 | --- | --- | --- |
-| `200` with matching metadata version and expected digest | `BaoSecretReceipt` | Yes, under the live revocation fence |
+| `200` with matching metadata version and expected digest | `BaoSecretReceipt` | Yes, through the host registry under the live revocation fence |
 | `401` or `403` | `ProviderDenied` | No |
 | `404` | `NotFound` | No |
 | Other status, invalid TLS, transport failure or timeout | fixed unavailable/timeout error | No |
@@ -42,16 +43,24 @@ contains secret bytes.
 | expected field digest differs | `SecretDigestMismatch` | No |
 | callback reports failure after entry | `ConsumerIndeterminate` | It was entered; the grant remains claimed |
 
-There is no automatic retry, write operation, metadata mutation, lease
-operation or type coercion. Response and decoded secret buffers are zeroized on
-drop; the transport remains bounded to a one MiB response.
+There is no automatic retry, KV write/metadata mutation or type coercion in
+this KV-v2 profile. Dynamic SecretLease operations are a separate typed profile
+documented in [DYNAMIC_LEASE_CONTRACT.md](DYNAMIC_LEASE_CONTRACT.md). Response
+and decoded secret buffers are zeroized on drop; this is application-buffer
+hygiene, not a claim that transport/allocator/kernel internals never hold
+temporary plaintext.
 
 ## Executable contract evidence
 
 The exact test source is
 [`https_consumer_tests.rs`](../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs).
-The current receipt records 153/153 passing adapter and contract tests in
-[`adapter-tests-20260912.json`](evidence/adapter-tests-20260912.json), including
+The dated 2026-09-12 receipt records 153/153 passing adapter and contract tests
+for that recorded candidate in
+[`adapter-tests-20260912.json`](evidence/adapter-tests-20260912.json). It is
+historical evidence, not proof of the current branch. The exact-head workflow
+[`heptabao-qualification.yml`](../../.github/workflows/heptabao-qualification.yml)
+now binds focused source checks to the tested commit SHA. The recorded fixture
+includes
 the following versioned API cases:
 
 - exact mount/path/version and token/namespace headers;
