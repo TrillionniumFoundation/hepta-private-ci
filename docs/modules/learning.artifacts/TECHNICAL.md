@@ -515,13 +515,16 @@ registry snapshot. Immediately before publication, while holding the host
 writer fence, the host revalidates both mutable frontiers. A changed registry
 head or withdrawal frontier fails closed.
 
-The stable V1 durable registry has one predecessor slot. A V2 manifest with
-multiple predecessors is therefore refused by this bridge instead of silently
-discarding lineage. For a representable V2 manifest, the V1
-`support_digest` is the complete validated V2 manifest digest, retaining a
-cryptographic commitment to all V2-only fields. A future durable
-multi-predecessor encoding requires a new versioned format rather than an
-in-place reinterpretation.
+The stable V1 durable registry has one predecessor slot and one `support_digest`
+slot. A V2 manifest with multiple predecessors is therefore refused instead of
+silently discarding lineage. A dataset-derived V2 manifest is losslessly bridged
+only when it references exactly one source dataset; that dataset digest remains
+the V1 `support_digest`, preserving the existing `prepare_dataset_revocation`
+lookup semantics. Dataset-independent artifacts use the complete validated V2
+manifest digest as their V1 support commitment. Multi-dataset V2 publication is
+refused by the stable V1 bridge until a versioned durable format can represent
+all source datasets explicitly. A future multi-predecessor or multi-dataset
+encoding requires a new versioned format rather than an in-place reinterpretation.
 
 Cross-file durability remains a bounded saga, not a claimed filesystem
 transaction: payload synchronization, registry snapshot creation and current
