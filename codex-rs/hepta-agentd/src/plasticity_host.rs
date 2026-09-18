@@ -83,6 +83,7 @@ pub enum PlasticityOwnerEvidenceKindV1 {
     ModulatorBroadcast,
     Eligibility,
     ParameterSignal,
+    MutationPolicy,
 }
 
 impl PlasticityOwnerEvidenceKindV1 {
@@ -94,6 +95,7 @@ impl PlasticityOwnerEvidenceKindV1 {
             Self::ModulatorBroadcast => 3,
             Self::Eligibility => 4,
             Self::ParameterSignal => 5,
+            Self::MutationPolicy => 6,
         }
     }
 }
@@ -495,13 +497,17 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
         return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch.into());
     }
 
-    let mut digests = Vec::with_capacity(5 + input.generator_profile.signals.len());
+    let mut digests = Vec::with_capacity(6 + input.generator_profile.signals.len());
     for (kind, evidence_digest) in [
         (PlasticityOwnerEvidenceKindV1::Dataset, input.dataset_digest),
         (PlasticityOwnerEvidenceKindV1::UpdateRule, input.update_rule_digest),
         (PlasticityOwnerEvidenceKindV1::Modulator, input.modulator_digest),
         (PlasticityOwnerEvidenceKindV1::ModulatorBroadcast, input.modulator_broadcast_digest),
         (PlasticityOwnerEvidenceKindV1::Eligibility, input.eligibility_digest),
+        (
+            PlasticityOwnerEvidenceKindV1::MutationPolicy,
+            input.generator_profile.mutation_policy.policy_digest,
+        ),
     ] {
         digests.push(verify_agentd_plasticity_owner_evidence_v1(
             resolver,
