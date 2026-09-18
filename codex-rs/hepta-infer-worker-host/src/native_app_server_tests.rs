@@ -91,6 +91,9 @@ fn only_the_bound_turn_can_complete_the_native_request() {
     );
     assert_eq!(output.status, NativeRunStatus::Interrupted);
     assert!(output.terminal_observed);
+    let boundary = output.codex_boundary.as_ref().unwrap();
+    assert_eq!(boundary.status, NativeRunStatus::Interrupted);
+    assert!(boundary.response_digest.is_some());
 }
 
 #[test]
@@ -323,4 +326,46 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(output.succeeded());
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
+}
+
+
+fn server_error(code: i64, message: &str) -> TypedRequestError {
+    TypedRequestError::Server {
+        method: "turn/start".to_string(),
+        source: JSONRPCErrorError {
+            code,
+            message: message.to_string(),
+            data: None,
+        },
+    }
+}
+
+#[test]
+fn only_proven_pre_admission_errors_release_as_rejection() {
+    let request_digest = Digest32::of_bytes(b"codex-request");
+
+    let overloaded = explicit_turn_start_rejection(
+        &server_error(-32001, "Server overloaded; retry later."),
+        request_digest,
+    )
+    .unwrap();
+    assert_eq!(overloaded.kind, NativeDispatchRejectionKind::Unavailable);
+    assert_eq!(overloaded.code, -32001);
+    assert_eq!(overloaded.codex_request_digest, request_digest.to_string());
+
+    let invalid = explicit_turn_start_rejection(
+        &server_error(-32602, "invalid params"),
+        request_digest,
+    )
+    .unwrap();
+    assert_eq!(invalid.kind, NativeDispatchRejectionKind::Rejected);
+
+    // Internal errors can occur after more work and therefore stay unknown.
+    assert!(
+        explicit_turn_start_rejection(
+            &server_error(-32603, "internal error"),
+            request_digest
+        )
+        .is_none()
+    );
 }
