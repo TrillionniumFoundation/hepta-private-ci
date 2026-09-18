@@ -71,7 +71,7 @@ rollback and any same-revision change to the complete trust projection. The proj
 digest covers issuer, key epoch/key, revoked state, thread allowlist and optional replay
 checkpoint.
 
-Agentd can load the expected replay checkpoint from `--authbus-replay-checkpoint-file`. The protected file must be outside the Agent home and run root and is verified on every admission/dispatch trust refresh as a rollback watermark. Normal replay growth after the checkpoint is allowed; restoring a database whose stored checkpoint predecessor is older than the independently retained expected checkpoint fails closed. A checkpoint stored only with the same backup/restore set as SQLite is not an independent anti-rollback oracle.
+Agentd requires the expected replay checkpoint through `--authbus-replay-checkpoint-file` whenever signed AuthBus trust is configured; trust-only or checkpoint-only startup fails closed. The protected file must be outside the Agent home and run root and is verified on every admission/dispatch trust refresh as a rollback watermark. Normal replay growth after the checkpoint is allowed; restoring a database whose stored checkpoint predecessor is older than the independently retained expected checkpoint fails closed. A checkpoint stored only with the same backup/restore set as SQLite is not an independent anti-rollback oracle.
 
 ## Public symbols and source bindings
 
