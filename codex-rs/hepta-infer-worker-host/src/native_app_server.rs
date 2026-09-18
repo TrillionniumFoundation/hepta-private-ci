@@ -49,8 +49,8 @@ use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
-use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
+use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_protocol::user_input::user_input_payload_sha256;
@@ -373,7 +373,11 @@ impl AppServerModelDriver {
         .await??;
         match reconciled.outcome {
             ThreadQueueReconcileOutcome::Persisted { turn_id } => {
-                if record.turn_id.as_deref().is_some_and(|known| known != turn_id) {
+                if record
+                    .turn_id
+                    .as_deref()
+                    .is_some_and(|known| known != turn_id)
+                {
                     return Err("provider reconciliation returned a different turn id".into());
                 }
                 if record.turn_id.is_none() {
@@ -435,12 +439,9 @@ impl AppServerModelDriver {
                 // A cold resume may replay persisted token-count events after the
                 // response. Drain only a bounded grace window and never infer zero.
                 self.drain_usage_replay(&mut client, &mut output).await;
-                let _ = verify_owner_health(
-                    &mut output,
-                    owner.health(),
-                    Instant::now() + RPC_TIMEOUT,
-                )
-                .await;
+                let _ =
+                    verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
+                        .await;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 Ok(output)
             }
@@ -456,9 +457,7 @@ impl AppServerModelDriver {
                         "provider proved no persisted turn after cancellation",
                     ));
                 }
-                let additional_context = self
-                    .additional_context(&owner, context_query)
-                    .await?;
+                let additional_context = self.additional_context(&owner, context_query).await?;
                 let context_digest = control::digest(&serde_json::to_vec(&additional_context)?);
                 if context_digest != dispatch.context_digest {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
@@ -625,12 +624,7 @@ impl AppServerModelDriver {
         }
         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
         if output.terminal_observed {
-            let _ = verify_owner_health(
-                output,
-                owner.health(),
-                Instant::now() + RPC_TIMEOUT,
-            )
-            .await;
+            let _ = verify_owner_health(output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
         }
         Ok(())
     }
