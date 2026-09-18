@@ -188,6 +188,22 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
     assert_eq!(first_v2.nodes.len(), 2);
     assert_eq!(first_v2.edges.len(), 1);
     assert_eq!(first_v2.edges[0].supports.len(), 1);
+    assert_ne!(
+        first_v2.nodes[0].supports[0].source_fact_digest,
+        first_v2.nodes[1].supports[0].source_fact_digest
+    );
+    assert_ne!(
+        first_v2.nodes[0].supports[0].source_fact_digest,
+        first_v2.edges[0].supports[0].source_fact_digest
+    );
+    assert_eq!(
+        first_v2.edges[0].supports[0].source_id.as_str(),
+        first.source.source_id.as_str()
+    );
+    assert_eq!(
+        first_v2.edges[0].supports[0].source_revision.get(),
+        first.source.revision
+    );
 
     let ada_canonical: String = sqlx::query_scalar(
         "SELECT canonical_entity_id FROM kg_revision_entities
