@@ -12,6 +12,7 @@ use std::fmt;
 use std::future::Future;
 use std::pin::Pin;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -633,27 +634,29 @@ where
     query.validate(now_unix_ms)?;
     lease.validate_for_query(now_unix_ms, &query)?;
     let query_binding_digest = query.binding_digest();
+    let attempt_started = Instant::now();
 
-    let pre_authority = authority.observe(&query, lease).await?;
+    let preliminary_cutoff = query.deadline_unix_ms.min(lease.expires_unix_ms);
+    let pre_authority = observe_authority_bounded(
+        authority,
+        cancellation,
+        &query,
+        lease,
+        now_unix_ms,
+        preliminary_cutoff,
+        attempt_started,
+    )
+    .await?;
     pre_authority.require_current(&query, lease)?;
-    let attempt_cutoff = query
-        .deadline_unix_ms
-        .min(lease.expires_unix_ms)
-        .min(pre_authority.expires_unix_ms);
-    let attempt_now = now_unix_ms.max(pre_authority.observed_at_unix_ms);
-    if attempt_now >= attempt_cutoff {
-        return Err(FederationV2Error::AuthorityExpired);
-    }
-    let remaining_ms = attempt_cutoff.saturating_sub(attempt_now).max(1);
+    let attempt_cutoff = preliminary_cutoff.min(pre_authority.expires_unix_ms);
+    let remaining = remaining_budget(now_unix_ms, attempt_cutoff, attempt_started)
+        .ok_or(FederationV2Error::AuthorityExpired)?;
 
     let transport_result = tokio::select! {
         _ = cancellation.cancelled(&query) => {
             FederationTransportResultV2::NonTerminal(FederationTransportOutcomeV2::Cancelled)
         }
-        bounded = tokio::time::timeout(
-            Duration::from_millis(remaining_ms),
-            transport.send_once(&query),
-        ) => {
+        bounded = tokio::time::timeout(remaining, transport.send_once(&query)) => {
             match bounded {
                 Ok(result) => result?,
                 Err(_) => FederationTransportResultV2::NonTerminal(
@@ -663,37 +666,54 @@ where
         }
     };
 
-    let post_authority = authority.observe(&query, lease).await?;
+    let post_authority = observe_authority_bounded(
+        authority,
+        cancellation,
+        &query,
+        lease,
+        now_unix_ms,
+        attempt_cutoff,
+        attempt_started,
+    )
+    .await?;
     let post_validity = post_authority.post_validity(&query, lease)?;
     let authority_observation_digest = post_authority.binding_digest();
-    let effective_authority_expiry = query
-        .deadline_unix_ms
-        .min(lease.expires_unix_ms)
-        .min(post_authority.expires_unix_ms);
+    let effective_authority_expiry = attempt_cutoff.min(post_authority.expires_unix_ms);
 
     let mut result = match transport_result {
-        FederationTransportResultV2::NonTerminal(_) => FederatedResultV2 {
-            query_id: query.query_id,
-            peer_id: query.peer_id,
-            query_binding_digest,
-            generation_vector_digest: query.generation_vector_digest,
-            observed_frontier: None,
-            expires_unix_ms: effective_authority_expiry,
-            items: Vec::new(),
-            coverage: FederatedCoverageV2 {
-                requested_peers: 1,
-                completed_peers: 0,
-                failed_peers: 1,
-                truncated_items: 0,
-            },
-            completeness: FederatedCompletenessV2::Indeterminate,
-            validity: FederatedValidityV2::Indeterminate,
-            remote_response_digest: None,
-            authority_observed_at_unix_ms: post_authority.observed_at_unix_ms,
-            authority_observation_digest,
-            result_digest: Digest32::ZERO,
-            authority: AuthorityPosture::DENY_ALL,
-        },
+        FederationTransportResultV2::NonTerminal(_) => {
+            let (completeness, validity) =
+                if matches!(post_validity, FederatedValidityV2::Valid) {
+                    (
+                        FederatedCompletenessV2::Indeterminate,
+                        FederatedValidityV2::Indeterminate,
+                    )
+                } else {
+                    (FederatedCompletenessV2::Partial, post_validity)
+                };
+            FederatedResultV2 {
+                query_id: query.query_id,
+                peer_id: query.peer_id,
+                query_binding_digest,
+                generation_vector_digest: query.generation_vector_digest,
+                observed_frontier: None,
+                expires_unix_ms: effective_authority_expiry,
+                items: Vec::new(),
+                coverage: FederatedCoverageV2 {
+                    requested_peers: 1,
+                    completed_peers: 0,
+                    failed_peers: 1,
+                    truncated_items: 0,
+                },
+                completeness,
+                validity,
+                remote_response_digest: None,
+                authority_observed_at_unix_ms: post_authority.observed_at_unix_ms,
+                authority_observation_digest,
+                result_digest: Digest32::ZERO,
+                authority: AuthorityPosture::DENY_ALL,
+            }
+        }
         FederationTransportResultV2::Terminal(response) => {
             response.validate_for_query(query_binding_digest)?;
             if response.peer_id != query.peer_id {
@@ -767,6 +787,44 @@ where
     Ok(result)
 }
 
+async fn observe_authority_bounded<A, C>(
+    authority: &A,
+    cancellation: &C,
+    query: &FederatedQueryV2,
+    lease: &FederatedLeaseV2,
+    now_unix_ms: u64,
+    cutoff_unix_ms: u64,
+    attempt_started: Instant,
+) -> Result<FederationAuthorityObservationV2, FederationV2Error>
+where
+    A: FederationAuthorityV2 + ?Sized,
+    C: FederationCancellationV2 + ?Sized,
+{
+    let remaining = remaining_budget(now_unix_ms, cutoff_unix_ms, attempt_started)
+        .ok_or(FederationV2Error::AuthorityExpired)?;
+    tokio::select! {
+        _ = cancellation.cancelled(query) => Err(FederationV2Error::OperationCancelled),
+        bounded = tokio::time::timeout(remaining, authority.observe(query, lease)) => {
+            match bounded {
+                Ok(result) => result,
+                Err(_) => Err(FederationV2Error::AuthorityUnavailable),
+            }
+        }
+    }
+}
+
+fn remaining_budget(
+    now_unix_ms: u64,
+    cutoff_unix_ms: u64,
+    attempt_started: Instant,
+) -> Option<Duration> {
+    let total_ms = cutoff_unix_ms.checked_sub(now_unix_ms)?;
+    if total_ms == 0 {
+        return None;
+    }
+    Duration::from_millis(total_ms).checked_sub(attempt_started.elapsed())
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederationCancellationRequestV2 {
     pub cancellation_id: StableId,
@@ -826,6 +884,7 @@ pub enum FederationV2Error {
     AuthorityRevoked,
     AuthorityExpired,
     AuthorityUnavailable,
+    OperationCancelled,
     IdentityMismatch(&'static str),
     DigestMismatch(&'static str),
     MissingTerminalObservation,
