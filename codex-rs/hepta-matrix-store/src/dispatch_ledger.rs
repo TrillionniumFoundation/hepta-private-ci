@@ -647,6 +647,23 @@ impl MatrixDurableStore {
             .map(|stored| stored.receipt))
     }
 
+    pub async fn matrix_dispatch_receipt_for_event(
+        &self,
+        event_id: &MatrixEventId,
+    ) -> Result<Option<MatrixDispatchReceipt>, MatrixDurableError> {
+        let row = sqlx::query(DISPATCH_SELECT_ACTIVE_BY_EVENT)
+            .bind(event_id.as_str())
+            .fetch_optional(self.sqlite_pool())
+            .await
+            .map_err(unavailable)?;
+        if let Some(row) = row {
+            return Ok(Some(stored_from_row(&row, false)?.receipt));
+        }
+        Ok(load_archive_by_event(self, event_id)
+            .await?
+            .map(|stored| stored.receipt))
+    }
+
     pub async fn unresolved_matrix_dispatch_count(&self) -> Result<usize, MatrixDurableError> {
         let count: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM matrix_dispatch_ledger
