@@ -41,7 +41,7 @@ pub enum AgentRunError {
     ArithmeticOverflow,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 struct RunRecord {
     snapshot: RunSnapshot,
     revision: u64,
@@ -56,7 +56,7 @@ struct RunRecord {
 /// This type owns only recoverable run admission metadata and immutable snapshot
 /// references. Codex remains the thread/turn execution owner, and product
 /// domain stores remain with their canonical modules.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct AgentRunCoordinator {
     composition: RuntimeComposition,
     runs: BTreeMap<String, RunRecord>,
