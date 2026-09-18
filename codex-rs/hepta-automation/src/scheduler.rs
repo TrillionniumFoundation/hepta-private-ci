@@ -133,9 +133,6 @@ where
             });
         }
         self.store.mark_submitted(&lease, &receipt, now_ms).await?;
-        self.store
-            .record_causal_queue_admission(&lease, &receipt, now_ms)
-            .await?;
         Ok(AutomationTick::Submitted {
             task_id: lease.task.task_id,
             occurrence: lease.occurrence,
