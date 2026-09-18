@@ -75,7 +75,10 @@ impl AutomationStore {
                 "automation occurrence and scheduler lease differ".to_string(),
             ));
         }
-        let current_fence = automation_fence(lease);
+        let step_attempt = self
+            .automation_occurrence_step_attempt(occurrence.task_id, occurrence.occurrence)
+            .await?;
+        let current_fence = automation_fence(lease, step_attempt)?;
         let definition = automation_definition()?;
         self.register_taskflow_definition(&definition, &current_fence, now_ms)
             .await?;
@@ -98,7 +101,8 @@ impl AutomationStore {
                 current_fence
             }
             TaskFlowRunState::Running
-                if run.generation == Some(lease.lease_generation)
+                if run.generation == Some(current_fence.generation)
+                    && run.owner_epoch == Some(current_fence.owner_epoch)
                     && run.owner_id.as_deref() == Some(expected_owner_id.as_str())
                     && run
                         .lease_expires_at_ms
@@ -163,9 +167,6 @@ impl AutomationStore {
             ));
         }
 
-        let step_attempt = self
-            .automation_occurrence_step_attempt(occurrence.task_id, occurrence.occurrence)
-            .await?;
         let payload_digest = Sha256Digest::for_bytes(lease.task.prompt.as_bytes());
         let intent_digest = automation_intent_digest(
             occurrence,
@@ -243,6 +244,88 @@ impl AutomationStore {
             intent_digest,
             payload_digest,
         })
+    }
+
+    /// Re-open the same durable TaskFlow run only after the queue owner has
+    /// supplied an exact proof that the previous stable dispatch identity is
+    /// absent. The old step attempt remains immutable evidence and can no
+    /// longer execute once the run lease is cleared/reclaimed.
+    pub(crate) async fn requeue_occurrence_taskflow_after_proven_absence(
+        &self,
+        occurrence: &AutomationOccurrence,
+        proof_digest: &Sha256Digest,
+        now_ms: u64,
+    ) -> Result<(), TaskFlowError> {
+        let step_attempt = self
+            .automation_occurrence_step_attempt(occurrence.task_id, occurrence.occurrence)
+            .await?;
+        let fence = self
+            .historical_automation_step_fence(&occurrence.taskflow_run_id, step_attempt)
+            .await?;
+        let command_id = format!(
+            "automation:run:requeue-absent:{}:{step_attempt}",
+            occurrence.occurrence_id
+        );
+        let run = self
+            .taskflow_run(&occurrence.taskflow_run_id)
+            .await?
+            .ok_or_else(|| TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string()))?;
+        if run.state == TaskFlowRunState::Queued {
+            let payload: Option<String> = sqlx::query_scalar(
+                "SELECT payload_json FROM taskflow_events
+                 WHERE owner_agent_id = ? AND run_id = ? AND command_id = ?",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(&occurrence.taskflow_run_id)
+            .bind(&command_id)
+            .fetch_optional(self.taskflow_pool())
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+            let Some(payload) = payload else {
+                return Err(TaskFlowError::Conflict(
+                    "queued automation run lacks provider-absence evidence".to_string(),
+                ));
+            };
+            let transition: TaskFlowTransition = serde_json::from_str(&payload)
+                .map_err(|_| TaskFlowError::Corrupt("provider-absence event payload".to_string()))?;
+            if !matches!(transition, TaskFlowTransition::RequeueProvenAbsent { .. }) {
+                return Err(TaskFlowError::Corrupt(
+                    "automation requeue command has the wrong transition".to_string(),
+                ));
+            }
+            return Ok(());
+        }
+        if run.state != TaskFlowRunState::Running {
+            return Err(TaskFlowError::Conflict(
+                "automation TaskFlow run is not eligible for absence requeue".to_string(),
+            ));
+        }
+        let step = self
+            .read_taskflow_step(
+                &occurrence.taskflow_run_id,
+                AUTOMATION_STEP_ID,
+                step_attempt,
+                &fence,
+            )
+            .await?
+            .ok_or_else(|| TaskFlowError::Conflict("automation TaskFlow step is missing".to_string()))?;
+        if step.state != TaskFlowStepState::Claimed {
+            return Err(TaskFlowError::Conflict(
+                "provider absence can requeue only an undisposed claimed step".to_string(),
+            ));
+        }
+        let command = TaskFlowCommand::new(
+            run.run_id.clone(),
+            command_id,
+            fence,
+            run.revision,
+            TaskFlowTransition::RequeueProvenAbsent {
+                proof_digest: proof_digest.clone(),
+            },
+            now_ms,
+        )?;
+        self.apply_taskflow_requeue_proven_absent(&command).await?;
+        Ok(())
     }
 
     /// Queue admission means the Codex-turn step may execute but is not yet
@@ -596,14 +679,30 @@ pub fn admission_receipt_digest(occurrence: &AutomationOccurrence) -> Sha256Dige
     Sha256Digest::for_bytes(&bytes)
 }
 
-fn automation_fence(lease: &AutomationLease) -> TaskFlowFence {
-    TaskFlowFence {
-        owner_agent_id: lease.task.owner_agent_id.clone(),
-        owner_id: format!("automation.scheduler:{}", lease.task.task_id),
-        owner_epoch: lease.lease_generation,
-        generation: lease.lease_generation,
-        fencing_token: lease.lease_token.clone(),
+const TASKFLOW_ATTEMPT_GENERATION_STRIDE: u64 = 1_000_000;
+
+fn automation_fence(
+    lease: &AutomationLease,
+    step_attempt: u32,
+) -> Result<TaskFlowFence, TaskFlowError> {
+    if step_attempt == 0 || u64::from(step_attempt) > TASKFLOW_ATTEMPT_GENERATION_STRIDE {
+        return Err(TaskFlowError::Invalid(
+            "automation TaskFlow step attempt is out of range".to_string(),
+        ));
     }
+    let generation = lease
+        .lease_generation
+        .checked_sub(1)
+        .and_then(|base| base.checked_mul(TASKFLOW_ATTEMPT_GENERATION_STRIDE))
+        .and_then(|base| base.checked_add(u64::from(step_attempt)))
+        .ok_or_else(|| TaskFlowError::Invalid("automation TaskFlow generation overflow".to_string()))?;
+    TaskFlowFence::new(
+        lease.task.owner_agent_id.clone(),
+        format!("automation.scheduler:{}", lease.task.task_id),
+        lease.lease_generation,
+        generation,
+        lease.lease_token.clone(),
+    )
 }
 
 fn automation_definition() -> Result<TaskFlowDefinition, TaskFlowError> {
