@@ -67,9 +67,9 @@ Responses additionally echo the original request kind and request payload digest
 
 ## 7. Resource/capacity model
 
-Current source ceilings include <=128 origins/profile, <=1024 admitted effect grants/profile, <=1024 nonterminal effects/profile, <=256 terminal operations retained in host memory, <=64 queued mutations per serialization key by default, <=1 MiB host observation request, <=256 KiB real worker semantic observation, <=1 MiB private worker frame, <=64 MiB file journal with compaction starting at 48 MiB, bounded typed-action fields and driver/authority deadlines.
+Current source ceilings include <=128 origins/profile, <=1024 admitted effect grants/profile, <=1024 nonterminal effects/profile, <=256 terminal operations retained in host memory, <=64 queued mutations per serialization key by default, <=16 live worker profiles by default, <=1 MiB host observation request, <=256 KiB real worker semantic observation, <=1 MiB private worker frame, <=64 MiB file journal with compaction starting at 48 MiB, bounded typed-action fields and driver/authority deadlines.
 
-The current worker is one Servo / one WebView per profile generation. The pilot <=16-tabs target is not claimed by this candidate and requires a later measured scheduler/profile.
+`PooledSubprocessBrowserDriver` provides the process-pool ceiling while preserving one Servo / one WebView per profile generation. Linux launches run under `prlimit` with default 8 GiB address-space, 300 CPU-second, 4096-FD and 256-process/thread ceilings. Contained workers retain their pool slot until profile cleanup. These are source ceilings, not target capacity measurements. The pilot <=16-tabs target remains unclaimed and requires a later measured scheduler/profile.
 
 ## 8. Current native implementation
 
