@@ -28,6 +28,7 @@ pub use admission_v3::admit_manifest_at_withdrawal_head_v3;
 pub use admission_v3::validate_artifact_publication_v3;
 pub use admission_v3::verify_artifact_admission_v3;
 pub use admission_v3::withdrawal_head_digest_v3;
+pub use admission_v3::withdrawal_authority_domain_digest_v1;
 pub use closure_v2::ArtifactClosureError;
 pub use closure_v2::ArtifactLifecycleEventV1;
 pub use closure_v2::ArtifactLifecycleStateV1;
