@@ -199,10 +199,15 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The V1 registry, scoped withdrawal registry, lifecycle journal and iteration
 ledger are independent in-memory state machines. They reject identity conflicts,
-stale heads, invalid transitions and capacity overflow before mutation. Current
-durable ceilings are intentionally aligned: registry, withdrawal and lifecycle
-state each cap at 4096 records so the in-memory state accepted by the crate is
-representable by its durable format.
+stale heads, invalid transitions and capacity overflow before mutation. Iteration
+evidence is also time-fenced: receipts for one candidate may not move backward
+in observed time, and positive progression through validation, evaluation,
+selection, promotion or release must be observed no later than the governing
+envelope expiry. Rejection, quarantine and supersession remain recordable after
+expiry so an expired candidate can still be terminally fenced. Current durable
+ceilings are intentionally aligned: registry, withdrawal and lifecycle state each
+cap at 4096 records so the in-memory state accepted by the crate is representable
+by its durable format.
 
 The create-only storage layer uses exclusive advisory locking for writes and
 shared advisory locking for bounded reads. Existing final path components are
