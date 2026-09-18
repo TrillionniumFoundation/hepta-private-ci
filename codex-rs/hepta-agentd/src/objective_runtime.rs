@@ -7,6 +7,8 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_objective::CompileDisposition;
 use codex_hepta_objective::ConfirmationPolicy;
@@ -34,6 +36,7 @@ use crate::RunSnapshot;
 
 const MAX_PUBLICATION_BYTES: usize = 512 * 1024;
 const PUBLICATION_DOMAIN: &[u8] = b"hepta.agentd.objective-run-publication.v1";
+static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveRunBindingsV1 {
@@ -271,18 +274,30 @@ impl ObjectiveRunFileStore {
             return Err(ObjectivePublicationError::Conflict);
         }
 
-        let temp_path = final_path.with_extension(format!("tmp.{}", publication_digest));
+        let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
+        let temp_path = final_path.with_extension(format!(
+            "tmp.{}.{}.{}",
+            publication_digest,
+            std::process::id(),
+            sequence
+        ));
         {
             let mut file = OpenOptions::new()
-                .create(true)
-                .truncate(true)
+                .create_new(true)
                 .write(true)
                 .open(&temp_path)?;
             file.write_all(&encoded)?;
             file.sync_all()?;
         }
-        match fs::rename(&temp_path, &final_path) {
-            Ok(()) => {}
+
+        // Publish with no-replace semantics. Unlike rename(2) on Unix, hard_link
+        // cannot overwrite an existing run identity, so concurrent semantic
+        // drift can only resolve to one winner plus a conflict.
+        match fs::hard_link(&temp_path, &final_path) {
+            Ok(()) => {
+                fs::remove_file(&temp_path)?;
+                sync_parent_directory(&self.directory)?;
+            }
             Err(error) if final_path.exists() => {
                 let _ = fs::remove_file(&temp_path);
                 let (current, current_digest) = self
@@ -297,9 +312,11 @@ impl ObjectiveRunFileStore {
                 }
                 return Err(ObjectivePublicationError::Conflict);
             }
-            Err(error) => return Err(ObjectivePublicationError::Io(error)),
+            Err(error) => {
+                let _ = fs::remove_file(&temp_path);
+                return Err(ObjectivePublicationError::Io(error));
+            }
         }
-        sync_parent_directory(&self.directory)?;
 
         Ok(ObjectivePublicationReceiptV1 {
             run_id,
