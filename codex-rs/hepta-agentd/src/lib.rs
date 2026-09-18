@@ -12,6 +12,7 @@ mod automation;
 mod client;
 mod cognitive_context;
 mod cognitive_ranker;
+mod cognitive_retrieval_adapter;
 mod config;
 mod control;
 mod error;
