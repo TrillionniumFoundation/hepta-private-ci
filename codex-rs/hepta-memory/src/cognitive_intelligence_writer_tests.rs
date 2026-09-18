@@ -233,13 +233,11 @@ async fn product_writer_atomically_remembers_corrects_forgets_and_blocks_resurre
         corrected_generation_digest
     );
     assert_eq!(
-        sqlx::Row::try_get::<i64, _>(&forgotten_v2, "node_count")
-            .expect("forgotten V2 node count"),
+        sqlx::Row::try_get::<i64, _>(&forgotten_v2, "node_count").expect("forgotten V2 node count"),
         0
     );
     assert_eq!(
-        sqlx::Row::try_get::<i64, _>(&forgotten_v2, "edge_count")
-            .expect("forgotten V2 edge count"),
+        sqlx::Row::try_get::<i64, _>(&forgotten_v2, "edge_count").expect("forgotten V2 edge count"),
         0
     );
     assert_ne!(
