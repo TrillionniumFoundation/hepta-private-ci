@@ -33,6 +33,7 @@ pub enum SignedIntentStatus {
     Prepared,
     Queued,
     Committed,
+    RolledBack,
     RecoveryRequired,
 }
 
