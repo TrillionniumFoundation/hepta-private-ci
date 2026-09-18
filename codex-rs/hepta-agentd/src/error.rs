@@ -3,6 +3,7 @@ use std::fmt;
 use std::path::Path;
 use std::path::PathBuf;
 
+use codex_app_server_client::TypedRequestError;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_memory::ProductionWriterError;
@@ -23,6 +24,8 @@ pub enum AgentdError {
     Fleet(#[from] FleetRegistryError),
     #[error(transparent)]
     Automation(#[from] AutomationError),
+    #[error(transparent)]
+    AppServerClient(#[from] TypedRequestError),
     #[error(transparent)]
     Io(#[from] std::io::Error),
     #[error(transparent)]
