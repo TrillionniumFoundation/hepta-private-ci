@@ -49,6 +49,13 @@ pub enum NativeOwnerAuthority {
     },
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NativeCodexObservationSource {
+    LiveTransport,
+    DurableThreadHistory,
+}
+
 /// Durable runtime.codex correlation receipt. This records what the trusted
 /// native App Server client observed; it is not model/provider authority.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -56,6 +63,8 @@ pub enum NativeOwnerAuthority {
 pub struct NativeCodexBoundaryReceipt {
     pub request_digest: String,
     pub response_digest: Option<String>,
+    #[serde(default)]
+    pub observation_source: Option<NativeCodexObservationSource>,
     pub context_digest: String,
     pub connection_digest: String,
     pub session_generation: u64,
@@ -94,6 +103,7 @@ impl NativeRunOutput {
             && self.codex_boundary.as_ref().is_some_and(|receipt| {
                 receipt.status == NativeRunStatus::Completed
                     && receipt.response_digest.is_some()
+                    && receipt.observation_source.is_some()
             })
     }
 }
@@ -670,6 +680,7 @@ fn validate_codex_observation(
                 || receipt.protocol_version != protocol_version
                 || receipt.status != output.status
                 || receipt.response_digest.is_some() != output.terminal_observed
+                || receipt.observation_source.is_some() != output.terminal_observed
             {
                 return Err(Error::AssignmentMismatch);
             }
