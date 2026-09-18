@@ -66,6 +66,7 @@ impl AutomationStore {
         .execute(&pool)
         .await
         .map_err(unavailable)?;
+        backfill_causal_occurrences(&pool, &owner_agent_id).await?;
         verify_store(&pool, &owner_agent_id).await?;
         Ok(Self {
             pool,
@@ -1064,6 +1065,99 @@ fn schedule_columns(
     })
 }
 
+
+async fn backfill_causal_occurrences(
+    pool: &SqlitePool,
+    owner_agent_id: &AgentId,
+) -> Result<(), AutomationError> {
+    let rows = sqlx::query(
+        "SELECT r.task_id, r.occurrence, r.scheduled_for_ms, r.client_user_message_id,
+                r.state, r.queued_submission_id, r.submitted_at_ms,
+                t.schedule_revision, t.updated_at_ms
+         FROM automation_runs r
+         JOIN automation_tasks t ON t.task_id = r.task_id
+         WHERE t.owner_agent_id = ?
+           AND NOT EXISTS (
+               SELECT 1 FROM automation_occurrences o
+               WHERE o.owner_agent_id = t.owner_agent_id
+                 AND o.task_id = r.task_id AND o.ordinal = r.occurrence
+           )
+         ORDER BY r.task_id, r.occurrence",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_all(pool)
+    .await
+    .map_err(unavailable)?;
+
+    if rows.is_empty() {
+        return Ok(());
+    }
+
+    let mut transaction = pool.begin().await.map_err(unavailable)?;
+    for row in rows {
+        let task_id = parse_task_id(&row, "task_id")?;
+        let ordinal = to_u64(row.try_get("occurrence").map_err(unavailable)?)?;
+        let scheduled_for_ms = to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?;
+        let schedule_revision =
+            to_u64(row.try_get("schedule_revision").map_err(unavailable)?)?;
+        let occurrence_id =
+            deterministic_occurrence_id(task_id, schedule_revision, scheduled_for_ms)?;
+        let client_user_message_id: String =
+            row.try_get("client_user_message_id").map_err(unavailable)?;
+        let legacy_state: String = row.try_get("state").map_err(unavailable)?;
+        let queued_submission_id: Option<String> =
+            row.try_get("queued_submission_id").map_err(unavailable)?;
+        let submitted_at_ms: Option<i64> =
+            row.try_get("submitted_at_ms").map_err(unavailable)?;
+        let task_updated_at_ms =
+            to_u64(row.try_get("updated_at_ms").map_err(unavailable)?)?;
+
+        let (state, terminal_at_ms) = match legacy_state.as_str() {
+            "submitted" => ("queue_admitted", None),
+            "cancelled" => ("cancelled", Some(task_updated_at_ms)),
+            "pending" | "leased" => ("materialized", None),
+            _ => return Err(AutomationError::Corrupt),
+        };
+        let materialized_at_ms = scheduled_for_ms.min(task_updated_at_ms);
+        let updated_at_ms = submitted_at_ms
+            .map(to_u64)
+            .transpose()?
+            .unwrap_or(task_updated_at_ms)
+            .max(materialized_at_ms);
+
+        sqlx::query(
+            "INSERT INTO automation_occurrences (
+                 owner_agent_id, occurrence_id, task_id, schedule_revision, ordinal,
+                 scheduled_for_ms, client_user_message_id, state, queued_submission_id,
+                 materialized_at_ms, updated_at_ms, terminal_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             ON CONFLICT(owner_agent_id, task_id, ordinal) DO NOTHING",
+        )
+        .bind(owner_agent_id.as_str())
+        .bind(&occurrence_id)
+        .bind(task_id.to_string())
+        .bind(to_i64(schedule_revision)?)
+        .bind(to_i64(ordinal)?)
+        .bind(to_i64(scheduled_for_ms)?)
+        .bind(&client_user_message_id)
+        .bind(state)
+        .bind(queued_submission_id)
+        .bind(to_i64(materialized_at_ms)?)
+        .bind(to_i64(updated_at_ms)?)
+        .bind(terminal_at_ms.map(to_i64).transpose()?)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|error| {
+            if is_constraint(&error) {
+                AutomationError::Conflict
+            } else {
+                unavailable(error)
+            }
+        })?;
+    }
+    transaction.commit().await.map_err(unavailable)
+}
+
 async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(), AutomationError> {
     let quick_check = sqlx::query_scalar::<_, String>("PRAGMA quick_check(1)")
         .fetch_all(pool)
@@ -1126,6 +1220,48 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     .map_err(unavailable)?;
     if invalid_outcomes != 0 {
         return Err(AutomationError::Corrupt);
+    }
+    let invalid_occurrences: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM automation_occurrences o
+         LEFT JOIN automation_tasks t ON t.task_id = o.task_id
+         LEFT JOIN automation_runs r
+           ON r.task_id = o.task_id AND r.occurrence = o.ordinal
+         WHERE o.owner_agent_id = ?
+           AND (
+               t.task_id IS NULL
+               OR t.owner_agent_id != o.owner_agent_id
+               OR r.task_id IS NULL
+               OR r.scheduled_for_ms != o.scheduled_for_ms
+               OR r.client_user_message_id != o.client_user_message_id
+               OR (r.state = 'submitted' AND (
+                   o.state = 'materialized'
+                   OR o.queued_submission_id IS NULL
+                   OR o.queued_submission_id IS NOT r.queued_submission_id
+               ))
+               OR (o.taskflow_run_id IS NOT NULL AND NOT EXISTS (
+                   SELECT 1 FROM taskflow_runs tr
+                   WHERE tr.owner_agent_id = o.owner_agent_id
+                     AND tr.run_id = o.taskflow_run_id
+               ))
+           )",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_occurrences != 0 {
+        return Err(AutomationError::Corrupt);
+    }
+    let foreign_occurrences: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM automation_occurrences WHERE owner_agent_id != ?",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if foreign_occurrences != 0 {
+        return Err(AutomationError::AccessDenied);
     }
     verify_taskflow_store(pool, owner_agent_id)
         .await
