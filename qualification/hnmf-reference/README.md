@@ -17,3 +17,12 @@ It implements:
 - deterministic receipts containing no raw source payload.
 
 The crate exposes no filesystem, network, model, provider, tool, secret, merge, promotion, or release capability. It is not a biological brain simulation and it does not establish production or longitudinal claims.
+
+
+## Canonical contract ownership
+
+This crate is an algorithm/reference runtime only. Its unversioned in-memory
+algorithm structs are not wire schemas and must not be consumed as canonical
+contracts. Canonical HNMF V1 Rust/JSON contracts are owned exclusively by
+`codex-rs/hepta-cognitive-types/src/hnmf_v1`; qualification adapters must
+translate to or import those types instead of defining a second wire contract.
