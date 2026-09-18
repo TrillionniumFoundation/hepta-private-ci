@@ -582,6 +582,8 @@ def generate_candidates(
             continue
         seen.add(digest)
         paths = _candidate_mutation_paths(mutation)
+        if len(paths) > envelope.maximum_changed_files:
+            raise EngineeringError("changed_file_limit")
         result.append(
             Candidate(
                 candidate_id,
