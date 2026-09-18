@@ -6,6 +6,7 @@
 
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::ErrorKind;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -22,6 +23,7 @@ use crate::RuntimeComposition;
 
 const RUN_LEDGER_SCHEMA_VERSION: u32 = 1;
 const RUN_LEDGER_FILE: &str = "agentd-run-lifecycle-v1.json";
+const MAX_RUN_LEDGER_BYTES: u64 = 4 * 1024 * 1024;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -44,7 +46,14 @@ impl RunLedger {
         let agent_id = identity.agent_id.to_string();
         let composition = runtime_composition(identity);
 
-        let coordinator = if path.exists() {
+        let coordinator = if path_exists_without_following(&path)? {
+            validate_private_regular_file(&path)?;
+            let metadata = std::fs::symlink_metadata(&path)?;
+            if metadata.len() > MAX_RUN_LEDGER_BYTES {
+                return Err(AgentdError::Protocol(format!(
+                    "Agentd run ledger exceeds {MAX_RUN_LEDGER_BYTES} bytes"
+                )));
+            }
             let bytes = std::fs::read(&path)?;
             let persisted: PersistedRunLedger = serde_json::from_slice(&bytes)?;
             if persisted.schema_version != RUN_LEDGER_SCHEMA_VERSION {
@@ -114,10 +123,16 @@ impl RunLedger {
         };
         let mut bytes = serde_json::to_vec(&persisted)?;
         bytes.push(b'\n');
+        if bytes.len() as u64 > MAX_RUN_LEDGER_BYTES {
+            return Err(AgentdError::Protocol(format!(
+                "Agentd run ledger encoding exceeds {MAX_RUN_LEDGER_BYTES} bytes"
+            )));
+        }
 
         let tmp = temp_path(&self.path);
+        remove_stale_private_temp(&tmp)?;
         let mut options = OpenOptions::new();
-        options.create(true).truncate(true).write(true);
+        options.create_new(true).write(true);
         #[cfg(unix)]
         {
             use std::os::unix::fs::OpenOptionsExt;
@@ -133,6 +148,7 @@ impl RunLedger {
             std::fs::set_permissions(&tmp, std::fs::Permissions::from_mode(0o600))?;
         }
         std::fs::rename(&tmp, &self.path)?;
+        validate_private_regular_file(&self.path)?;
         sync_parent(parent)?;
         Ok(())
     }
@@ -164,6 +180,62 @@ fn runtime_composition(identity: &AgentdIdentity) -> RuntimeComposition {
             .as_str()
             .to_string(),
     }
+}
+
+fn path_exists_without_following(path: &Path) -> Result<bool, AgentdError> {
+    match std::fs::symlink_metadata(path) {
+        Ok(_) => Ok(true),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(false),
+        Err(error) => Err(error.into()),
+    }
+}
+
+fn remove_stale_private_temp(path: &Path) -> Result<(), AgentdError> {
+    match std::fs::symlink_metadata(path) {
+        Ok(_) => {
+            validate_private_regular_file(path)?;
+            std::fs::remove_file(path)?;
+            Ok(())
+        }
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+        Err(error) => Err(error.into()),
+    }
+}
+
+fn validate_private_regular_file(path: &Path) -> Result<(), AgentdError> {
+    let metadata = std::fs::symlink_metadata(path)?;
+    if metadata.file_type().is_symlink() || !metadata.file_type().is_file() {
+        return Err(AgentdError::Protocol(format!(
+            "Agentd run ledger path is not a regular non-symlink file: {}",
+            path.display()
+        )));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::PermissionsExt;
+
+        if metadata.nlink() != 1 || metadata.permissions().mode() & 0o777 != 0o600 {
+            return Err(AgentdError::Protocol(format!(
+                "Agentd run ledger must be a single-link mode-0600 file: {}",
+                path.display()
+            )));
+        }
+        let parent = path.parent().ok_or_else(|| {
+            AgentdError::Invalid("run ledger path has no parent directory".to_string())
+        })?;
+        let parent_metadata = std::fs::symlink_metadata(parent)?;
+        if parent_metadata.file_type().is_symlink()
+            || !parent_metadata.file_type().is_dir()
+            || metadata.uid() != parent_metadata.uid()
+        {
+            return Err(AgentdError::Protocol(format!(
+                "Agentd run ledger owner or parent boundary is invalid: {}",
+                path.display()
+            )));
+        }
+    }
+    Ok(())
 }
 
 fn temp_path(path: &Path) -> PathBuf {
