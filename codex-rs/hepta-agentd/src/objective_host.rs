@@ -8,6 +8,7 @@ use std::fmt;
 
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::ProductionObjectiveError;
+use codex_hepta_intelligence::ProductionObjectiveStartReceiptV1;
 use codex_hepta_types::Digest32;
 
 use crate::AgentRunCoordinator;
@@ -43,12 +44,32 @@ impl StdError for ObjectiveHostError {
     }
 }
 
-/// Consume one already-durable, deny-all objective envelope into Agentd's
-/// ephemeral run coordinator.
+/// Consume one already-durable objective publication into Agentd's ephemeral
+/// run coordinator.
 ///
-/// No durable objective bytes are copied into Agentd. The runtime stores only
-/// exact digest references and requires context attachment before dispatch.
-pub fn start_intelligence_run_v1(
+/// The opaque publication receipt can only be produced after the sealed durable
+/// journal has accepted the complete admission/objective/RunStart event. Agentd
+/// therefore does not expose the raw digest envelope as a public start surface.
+/// No durable objective bytes are copied into Agentd; only exact digest bindings
+/// survive in the ephemeral run coordinator.
+pub fn start_published_intelligence_run_v1(
+    coordinator: &mut AgentRunCoordinator,
+    now_ms: u64,
+    publication: &ProductionObjectiveStartReceiptV1,
+    body_digest: Digest32,
+) -> Result<RunReceipt, ObjectiveHostError> {
+    publication
+        .validate()
+        .map_err(ObjectiveHostError::Envelope)?;
+    start_host_envelope_v1(
+        coordinator,
+        now_ms,
+        publication.host_envelope(),
+        body_digest,
+    )
+}
+
+fn start_host_envelope_v1(
     coordinator: &mut AgentRunCoordinator,
     now_ms: u64,
     envelope: &IntelligenceHostEnvelopeV1,
@@ -56,22 +77,23 @@ pub fn start_intelligence_run_v1(
 ) -> Result<RunReceipt, ObjectiveHostError> {
     envelope.validate().map_err(ObjectiveHostError::Envelope)?;
     let deadline_micros = envelope
-        .deadline_unix_micros
+        .deadline_unix_micros()
         .ok_or(ObjectiveHostError::DeadlineMissing)?;
     let deadline_ms = deadline_micros / 1_000;
+    let run_start = envelope.run_start();
 
     coordinator
         .start_run(
             now_ms,
             RunSnapshot {
-                run_id: envelope.run_start.run_id.to_string(),
-                request_digest: envelope.admitted_source_digest.to_string(),
-                objective_digest: envelope.run_start.objective_digest.to_string(),
+                run_id: run_start.run_id.to_string(),
+                request_digest: envelope.admitted_source_digest().to_string(),
+                objective_digest: run_start.objective_digest.to_string(),
                 body_digest: body_digest.to_string(),
-                artifact_set_digest: envelope.run_start.artifact_set_digest.to_string(),
-                authority_epoch: envelope.run_start.authority_epoch,
-                generation: envelope.run_start.generation,
-                fence_digest: envelope.run_start.fence_digest.to_string(),
+                artifact_set_digest: run_start.artifact_set_digest.to_string(),
+                authority_epoch: run_start.authority_epoch,
+                generation: run_start.generation,
+                fence_digest: run_start.fence_digest.to_string(),
                 deadline_ms,
             },
         )
