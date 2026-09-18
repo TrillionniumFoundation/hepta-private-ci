@@ -712,7 +712,10 @@ fn publication_digest(checkpoint: &CompactCheckpointV1, proof: &CompactionProofV
     frame_part(&mut hasher, checkpoint.checkpoint_digest.as_array());
     frame_part(&mut hasher, proof.candidate_digest.as_array());
     frame_part(&mut hasher, proof.proof_digest.as_array());
-    Digest32::from_array(hasher.finalize().into())
+    let output = hasher.finalize();
+    let mut digest = [0_u8; 32];
+    digest.copy_from_slice(&output);
+    Digest32::from_array(digest)
 }
 
 fn parse_digest(value: &str, label: &str) -> Result<Digest32, QualifiedCompactStoreError> {
