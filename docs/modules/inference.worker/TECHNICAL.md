@@ -141,6 +141,16 @@ Use the error/recovery path linked by the [current native implementation](../../
 
 ## 9. Security, privacy and threat controls
 
+### ResourceGrant trust boundary
+
+`model_worker::ResourceGrant` is a trusted in-process capability representation, not a self-authenticating wire credential. The worker validates local structure, generation/epoch fields, expiry/revocation state and capacity bounds; this module does not independently authenticate the grant issuer or perform an online authority lookup. Any caller crossing an IPC/network/process boundary must authenticate and validate authoritative grant semantics before constructing this value. Direct construction in unit tests is fixture behavior, not production authority evidence.
+
+If the grant becomes a wire contract, the same change must add explicit worker-side authenticity and replay verification, including issuer, freshness, epoch and revocation semantics. See [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md#2-grant-trust-boundary).
+
+### Isolation guarantee boundary
+
+"Isolated" currently means exact owner/generation fencing, bounded execution state, ephemeral hosted-thread execution and denial of undeclared authority. The hosted App Server profile requests a read-only sandbox. This module alone does not prove a complete OS/device sandbox for local-model execution: cgroup limits, namespaces/users, seccomp-equivalent policy, GPU/device ACLs, device leases and accelerator-memory enforcement must be supplied and proven by the selected launcher/runtime. See [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md#3-isolation-guarantees-and-non-guarantees).
+
 Owned threat entries:
 
 None.
