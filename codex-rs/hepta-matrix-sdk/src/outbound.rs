@@ -185,7 +185,7 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                 }
             }
             Err(MatrixTransportError::Permanent) => {
-                store
+                let observed = store
                     .record_outbox_transport_rejected(
                         &record.stable_txn_id,
                         record.attempts,
@@ -193,11 +193,28 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                     )
                     .await
                     .map_err(store_error)?;
-                store
-                    .mark_outbox_permanent_failure(&record.stable_txn_id, record.attempts, now_ms)
-                    .await
-                    .map_err(store_error)?;
-                stats.permanent_failure += 1;
+                if observed.state == MatrixDispatchState::Accepted {
+                    store
+                        .mark_outbox_retry(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                            PARKED_RECONCILIATION_AT_MS,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    stats.indeterminate += 1;
+                } else {
+                    store
+                        .mark_outbox_permanent_failure(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    stats.permanent_failure += 1;
+                }
             }
         }
     }
