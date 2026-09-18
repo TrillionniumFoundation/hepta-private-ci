@@ -24,7 +24,25 @@ pub(crate) struct TextTrust {
     key_epoch: u64,
     public_key_hex: String,
     revoked: bool,
+    #[serde(default)]
+    not_before_ms: Option<u64>,
+    #[serde(default)]
+    not_after_ms: Option<u64>,
+    #[serde(default)]
+    previous_epochs: Vec<TrustEpoch>,
     thread_ids: Vec<String>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct TrustEpoch {
+    key_epoch: u64,
+    public_key_hex: String,
+    revoked: bool,
+    #[serde(default)]
+    not_before_ms: Option<u64>,
+    #[serde(default)]
+    not_after_ms: Option<u64>,
 }
 
 impl TextTrust {
@@ -36,6 +54,7 @@ impl TextTrust {
         if trust.schema_version != 1
             || trust.agent_id != identity.agent_id.as_str()
             || trust.thread_ids.len() > 16
+            || trust.previous_epochs.len() > 4
             || trust
                 .thread_ids
                 .iter()
@@ -45,19 +64,104 @@ impl TextTrust {
                 "trust registry owner, schema or thread bound is invalid",
             ));
         }
-        trust.issuer()?;
+        trust.validate_epochs()?;
         Ok(trust)
     }
 
     pub fn issuer(&self) -> Result<IssuerRegistration, AgentdError> {
+        self.registration(
+            self.key_epoch,
+            &self.public_key_hex,
+            self.revoked,
+            self.not_before_ms,
+            self.not_after_ms,
+            None,
+        )
+    }
+
+    pub fn issuer_for(&self, key_epoch: u64, now_ms: u64) -> Result<IssuerRegistration, AgentdError> {
+        if key_epoch == self.key_epoch {
+            return self.registration(
+                self.key_epoch,
+                &self.public_key_hex,
+                self.revoked,
+                self.not_before_ms,
+                self.not_after_ms,
+                Some(now_ms),
+            );
+        }
+        let epoch = self
+            .previous_epochs
+            .iter()
+            .find(|epoch| epoch.key_epoch == key_epoch)
+            .ok_or_else(|| invalid("key epoch is not enrolled"))?;
+        self.registration(
+            epoch.key_epoch,
+            &epoch.public_key_hex,
+            epoch.revoked,
+            epoch.not_before_ms,
+            epoch.not_after_ms,
+            Some(now_ms),
+        )
+    }
+
+    pub fn registrations(&self, now_ms: u64) -> Result<Vec<IssuerRegistration>, AgentdError> {
+        let mut registrations = Vec::with_capacity(1 + self.previous_epochs.len());
+        registrations.push(self.issuer_for(self.key_epoch, now_ms)?);
+        for epoch in &self.previous_epochs {
+            registrations.push(self.issuer_for(epoch.key_epoch, now_ms)?);
+        }
+        Ok(registrations)
+    }
+
+    fn validate_epochs(&self) -> Result<(), AgentdError> {
+        let mut epochs = std::collections::BTreeSet::new();
+        if !epochs.insert(self.key_epoch) {
+            return Err(invalid("duplicate key epoch"));
+        }
+        let _ = self.issuer()?;
+        for epoch in &self.previous_epochs {
+            if !epochs.insert(epoch.key_epoch) {
+                return Err(invalid("duplicate key epoch"));
+            }
+            let _ = self.registration(
+                epoch.key_epoch,
+                &epoch.public_key_hex,
+                epoch.revoked,
+                epoch.not_before_ms,
+                epoch.not_after_ms,
+                None,
+            )?;
+        }
+        Ok(())
+    }
+
+    fn registration(
+        &self,
+        key_epoch: u64,
+        public_key_hex: &str,
+        revoked: bool,
+        not_before_ms: Option<u64>,
+        not_after_ms: Option<u64>,
+        now_ms: Option<u64>,
+    ) -> Result<IssuerRegistration, AgentdError> {
+        if not_before_ms.zip(not_after_ms).is_some_and(|(start, end)| start >= end) {
+            return Err(invalid("invalid key validity window"));
+        }
+        if let Some(now) = now_ms
+            && (not_before_ms.is_some_and(|start| now < start)
+                || not_after_ms.is_some_and(|end| now >= end))
+        {
+            return Err(invalid("key epoch is outside its validity window"));
+        }
         Ok(IssuerRegistration {
             issuer_id: StableId::new(&self.issuer_id)
                 .map_err(|error| invalid(&error.to_string()))?,
-            key_epoch: Generation::new(self.key_epoch)
+            key_epoch: Generation::new(key_epoch)
                 .map_err(|error| invalid(&error.to_string()))?,
-            verifying_key: VerifyingKey::from_bytes(&hex_bytes(&self.public_key_hex)?)
+            verifying_key: VerifyingKey::from_bytes(&hex_bytes(public_key_hex)?)
                 .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
-            revoked: self.revoked,
+            revoked,
         })
     }
 
