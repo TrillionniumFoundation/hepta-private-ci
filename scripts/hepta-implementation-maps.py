@@ -72,6 +72,7 @@ def parse_entrypoints(module: str):
 def map_for(module: dict, source_base: dict, lanes: dict):
     mid = module["id"]
     roots = [x["path"] for x in module["rootBindings"]]
+    production_implementation = module.get("production_implementation") is True
     operations = parse_entrypoints(mid)
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
@@ -99,8 +100,12 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "declaredRoots": roots,
         "resolvedRoots": resolve_source_roots(ROOT, module),
         "sourceRootPresent": all((ROOT / x).exists() for x in roots),
-        "productionImplementation": False,
-        "productCallerState": "not_composed",
+        "productionImplementation": production_implementation,
+        "productCallerState": (
+            "repository_product_caller_bound"
+            if production_implementation
+            else "not_composed"
+        ),
         "productionWriterState": "not_established",
         "operations": operations,
         "repositoryControlledGaps": [
@@ -117,7 +122,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
                 op["sourcePathExists"] and op["nativeSymbol"] for op in operations
             ),
             "sourceRootPresent": all((ROOT / x).exists() for x in roots),
-            "productionImplementation": False,
+            "productionImplementation": production_implementation,
             "productExecutionProved": False,
             "independentAcceptance": False,
             "activation": False,
@@ -334,6 +339,9 @@ def verify():
             continue
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
+        expected_production = module.get("production_implementation") is True
+        if row.get("productionImplementation") is not expected_production:
+            failures.append(f"{mid}: production implementation registry agreement")
         for op in ops:
             if not op.get("operation"):
                 failures.append(f"{mid}: operation id")
@@ -345,6 +353,10 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        elif boundary.get("productionImplementation") is not expected_production:
+            failures.append(f"{mid}: production claim boundary agreement")
+        if expected_production and row.get("productCallerState") in {None, "", "not_composed"}:
+            failures.append(f"{mid}: production caller binding")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
@@ -355,7 +367,12 @@ def verify():
                 "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
                 "modules": len(modules),
                 "maps": len(modules),
-                "productionImplementationProved": False,
+                "productionImplementationProved": all(
+                    module.get("production_implementation") is True for module in modules
+                ),
+                "productionImplementationCount": sum(
+                    module.get("production_implementation") is True for module in modules
+                ),
             },
             sort_keys=True,
         )
