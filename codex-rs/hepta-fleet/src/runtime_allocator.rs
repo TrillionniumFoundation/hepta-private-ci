@@ -1,8 +1,14 @@
 use std::collections::BTreeSet;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 use thiserror::Error;
 
 use crate::CapacityObservationError;
@@ -60,6 +66,8 @@ pub enum FleetRuntimeAllocatorError {
     Store(#[from] FleetAllocationStoreError),
     #[error(transparent)]
     Capacity(#[from] CapacityObservationError),
+    #[error("fleet final-use authority denied admission: {0}")]
+    Authority(#[from] FinalUseError),
     #[error("fleet lease operation failed: {0}")]
     Lease(#[from] LeaseError),
     #[error(transparent)]
@@ -143,6 +151,95 @@ impl FleetRuntimeAllocator {
 
     pub fn read_grants(&self, now_ms: u64) -> FleetAllocationGrantReadV1 {
         FleetAllocationGrantReadV1::from_state(self.store.current(), self.writer_epoch, now_ms)
+    }
+
+    /// Builds the exact kernel.authority binding for one runtime start.
+    ///
+    /// This is a proposal only. It grants no authority and contains no signer.
+    pub fn start_authority_binding(
+        &self,
+        agent_id: &AgentId,
+        budget: &ResourceBudget,
+        lifecycle_generation: u64,
+        release_id: &str,
+        control_state_digest: &str,
+    ) -> Result<FinalUseBinding, FleetRuntimeAllocatorError> {
+        if lifecycle_generation == 0 {
+            return Err(FleetRuntimeAllocatorError::Invalid(
+                "runtime start lifecycle generation must be non-zero".to_string(),
+            ));
+        }
+        validate_digest(control_state_digest)?;
+        let release_id = crate::ReleaseId::parse(release_id.to_string())
+            .map_err(|error| FleetRuntimeAllocatorError::Invalid(error.to_string()))?;
+        let resources = FleetResourceVectorV1::from(budget);
+        let request = serde_json::to_vec(&(
+            "hepta.runtime-fleet.start-authority-request.v1",
+            agent_id.as_str(),
+            lifecycle_generation,
+            release_id.as_str(),
+            control_state_digest,
+            resources,
+            self.writer_epoch,
+        ))?;
+        let scope = serde_json::to_vec(&(
+            "hepta.runtime-fleet.start-authority-scope.v1",
+            self.host_id.as_str(),
+            self.failure_domain_id.as_str(),
+            self.host_generation,
+            self.writer_epoch,
+        ))?;
+        let payload = serde_json::to_vec(&(
+            "hepta.runtime-fleet.start-authority-payload.v1",
+            release_id.as_str(),
+            control_state_digest,
+            resources,
+        ))?;
+        Ok(FinalUseBinding {
+            subject_id: agent_id.to_string(),
+            destination_id: format!("runtime.fleet:{}", self.host_id),
+            request_sha256: digest_array(&request),
+            scope_sha256: digest_array(&scope),
+            payload_sha256: digest_array(&payload),
+        })
+    }
+
+    /// Claims an independently signed final-use grant, rechecks revocation
+    /// under the authority fence, and only then publishes the durable resource
+    /// grant. The fleet owner never signs its own permission.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "final-use admission keeps every bound start field explicit"
+    )]
+    pub fn reserve_agent_start_authorized(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed_grant: &SignedFinalUseGrant,
+        agent_id: &AgentId,
+        budget: &ResourceBudget,
+        lifecycle_generation: u64,
+        release_id: &str,
+        control_state_digest: &str,
+        now_ms: u64,
+    ) -> Result<AllocationGrant, FleetRuntimeAllocatorError> {
+        let binding = self.start_authority_binding(
+            agent_id,
+            budget,
+            lifecycle_generation,
+            release_id,
+            control_state_digest,
+        )?;
+        let token = authority.claim(signed_grant, &binding)?;
+        authority.with_verified_use(token, &binding, || {
+            self.reserve_agent_start(
+                agent_id,
+                budget,
+                lifecycle_generation,
+                release_id,
+                control_state_digest,
+                now_ms,
+            )
+        })?
     }
 
     pub fn reserve_agent_start(
@@ -493,6 +590,10 @@ fn grant_digest(
         resources,
     })?;
     Ok(Sha256Digest::for_bytes(&bytes).as_str().to_string())
+}
+
+fn digest_array(bytes: &[u8]) -> [u8; 32] {
+    Sha256::digest(bytes).into()
 }
 
 fn validate_digest(value: &str) -> Result<(), FleetRuntimeAllocatorError> {

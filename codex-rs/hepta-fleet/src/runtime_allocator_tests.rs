@@ -1,6 +1,20 @@
 use std::collections::VecDeque;
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+#[cfg(unix)]
+use std::time::SystemTime;
+#[cfg(unix)]
+use std::time::UNIX_EPOCH;
 
+#[cfg(unix)]
+use codex_hepta_contracts::FinalUseGrant;
+#[cfg(unix)]
+use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_paths::HeptaFleetRoot;
+#[cfg(unix)]
+use ed25519_dalek::Signer;
+#[cfg(unix)]
+use ed25519_dalek::SigningKey;
 
 use super::*;
 
@@ -204,6 +218,90 @@ fn start_grant_binds_release_identity_and_retry_gets_new_allocation_identity() {
         .expect("second grant");
     assert_ne!(first.allocation_id, second.allocation_id);
     assert_ne!(first.semantic_digest, second.semantic_digest);
+}
+
+#[cfg(unix)]
+#[test]
+fn independently_signed_final_use_grant_is_required_by_authorized_start_path() {
+    let (_temp, registry) = registry();
+    let mut allocator = FleetRuntimeAllocator::open_with_observer(
+        &registry,
+        7,
+        100,
+        Box::new(ScriptedObserver {
+            capacities: VecDeque::from([Ok(capacity())]),
+            ttl_ms: 60_000,
+        }),
+    )
+    .expect("allocator");
+    let agent = AgentId::parse("00000000-0000-4000-8000-000000000001").expect("agent");
+    let budget = ResourceBudget::local_default();
+    let binding = allocator
+        .start_authority_binding(&agent, &budget, 1, "release.one", &digest())
+        .expect("binding");
+    let issuer = SigningKey::from_bytes(&[83; 32]);
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_millis() as u64;
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "fleet-owner".to_string(),
+        authority_epoch: 3,
+        grant_id: "fleet-start-one".to_string(),
+        nonce: [19; 32],
+        binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signature = issuer
+        .sign(&grant.signing_bytes().expect("signing bytes"))
+        .to_bytes()
+        .to_vec();
+    let signed = SignedFinalUseGrant { grant, signature };
+    let state = tempfile::tempdir().expect("authority state");
+    std::fs::set_permissions(state.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("permissions");
+    let authority = FinalUseAuthority::open_state_dir(
+        state.path(),
+        "fleet-owner".to_string(),
+        issuer.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 3,
+            revision: 1,
+            revoked_grant_ids: Default::default(),
+        },
+    )
+    .expect("authority");
+
+    let committed = allocator
+        .reserve_agent_start_authorized(
+            &authority,
+            &signed,
+            &agent,
+            &budget,
+            1,
+            "release.one",
+            &digest(),
+            200,
+        )
+        .expect("authorized start");
+    assert!(!committed.revoked);
+    assert!(matches!(
+        allocator.reserve_agent_start_authorized(
+            &authority,
+            &signed,
+            &agent,
+            &budget,
+            1,
+            "release.one",
+            &digest(),
+            201,
+        ),
+        Err(FleetRuntimeAllocatorError::Authority(
+            FinalUseError::AlreadyClaimed
+        ))
+    ));
 }
 
 struct SpoofingObserver;
