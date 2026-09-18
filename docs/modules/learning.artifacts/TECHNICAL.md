@@ -461,6 +461,7 @@ The current crate is no longer only a V1 registry shell. It contains the followi
 - V3 admission receipts that bind the validated manifest to both the withdrawal domain digest and exact withdrawal chain head;
 - `ArtifactLifecycleJournalV2` with predecessor-bound lifecycle evidence, independent actor roles and append-only replay;
 - create-only durable withdrawal and lifecycle snapshot adapters with independent receipts and canonical reopen validation;
+- non-mutating `stage_artifact_publication_v1` staging so rejected publication work cannot contaminate the caller's current registry;
 - a crash-recoverable `ArtifactPublicationTransactionV1` contract for the sequence `Prepared -> SnapshotDurable -> WitnessDurable -> Acknowledged`;
 - bounded governed self-iteration records and `IterationLedgerV1`, including externally evidenced transitions and snapshot replay;
 - contained final-component creation and conservative zero-length orphan reconciliation helpers.
