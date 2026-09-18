@@ -29,15 +29,15 @@ The canonical V2 engine is stateless across attempts. It binds query/lease/remot
 For one V2 attempt:
 
 1. validate the exact bounded query and capability lease;
-2. obtain a live preflight authority observation and require `Current` before any transport dispatch;
+2. obtain a live preflight authority observation, require unexpired `Current`, and reject a lease whose expiry exceeds the observed durable authority expiry before any transport dispatch;
 3. race one authenticated/read-only transport future against cancellation and the `min(query_deadline, lease_expiry)` authority horizon;
 4. verify the terminal remote response shape and recomputed response digest;
 5. verify peer, exact query binding, scope and purpose;
 6. perform a second fresh post-I/O authority observation before evidence admission and reject observation-time regression;
 7. reject an observation outside the query, lease or response time horizon;
 8. suppress evidence when post-I/O authority is revoked or generation-stale;
-9. cap result expiry to `min(response_expiry, lease_expiry, query_deadline)`;
-10. bind the post-I/O authority observation into the final result digest.
+9. cap result expiry to `min(response_expiry, lease_expiry, query_deadline, live_authority_expiry)`;
+10. bind the post-I/O authority state, observation time and durable authority expiry into the final result digest.
 
 There is no blind retry. Dropping the transport future is the in-flight cancellation boundary; a production transport must stop further adapter I/O when that future is dropped. Any separately authorized retry requires a new nonce/attempt identity.
 
@@ -60,6 +60,7 @@ Source tests now include identities for:
 - FED-05: a revoked/stale live authority observation fails before transport dispatch;
 - FED-06: post-I/O revoke/generation drift suppresses remote items;
 - FED-07: cancellation/deadline or an earlier lease expiry interrupts a pending transport future;
+- FED-07A: a widened caller lease or already-expired `Current` authority observation rejects before transport dispatch;
 - FED-08: duplicate remote record identity rejects;
 - FED-09: final result digest binds the post-I/O authority observation;
 - FED-10: product runtime keeps explicit requested/completed/failed/truncated coverage and revalidates an attachment against current owner capability state;
