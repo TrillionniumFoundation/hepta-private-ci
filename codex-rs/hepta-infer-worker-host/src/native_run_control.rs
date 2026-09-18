@@ -26,6 +26,7 @@ pub struct NativeAdmission {
     pub request_id: String,
     pub maximum_in_flight: usize,
     pub maximum_output_tokens: u64,
+    pub maximum_budget_units: u64,
     pub policy: NativeExecutionPolicy,
 }
 
@@ -57,6 +58,7 @@ impl AppServerModelDriver {
             self.config.generation,
             &self.config.model,
             admission.maximum_output_tokens,
+            admission.maximum_budget_units,
         )?;
         let request = NativeRequest {
             request_id: admission.request_id,
@@ -70,9 +72,11 @@ impl AppServerModelDriver {
                 &self.config.agentd_socket,
                 self.config.timeout.as_millis(),
                 admission.maximum_output_tokens,
+                admission.maximum_budget_units,
                 &admission_binding,
             ))?),
             maximum_output_tokens: admission.maximum_output_tokens,
+            maximum_budget_units: admission.maximum_budget_units,
             admission: Some(admission_binding),
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
@@ -127,6 +131,7 @@ impl AppServerModelDriver {
                 prompt,
                 context_query,
                 admission.maximum_output_tokens,
+                admission.maximum_budget_units,
                 &admission.policy,
                 cancellation,
                 grant_resolver,
