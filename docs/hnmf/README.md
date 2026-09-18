@@ -8,7 +8,7 @@ Read in this order:
 2. [`TECHNICAL.md`](TECHNICAL.md) — normative engineering design, fixed-point dynamics, write/recall/consolidation flows, failure semantics, and migration plan.
 3. [`GAPS.json`](GAPS.json) — exact blocker-to-evidence closure ledger.
 4. [`MIGRATION.md`](MIGRATION.md) — bounded migration from the current text/KG memory implementation.
-5. [`../../qualification/hnmf-reference/README.md`](../../qualification/hnmf-reference/README.md) — deterministic, no-network, no-provider, no-production-authority reference runtime.
+5. [`../../codex-rs/hepta-cognitive-types/src/hnmf/mod.rs`](../../codex-rs/hepta-cognitive-types/src/hnmf/mod.rs) — production-owned HNMF V1 contract surface and canonical JSON wire profile.\n6. [`../../qualification/hnmf-reference/README.md`](../../qualification/hnmf-reference/README.md) — deterministic, no-network, no-provider, no-production-authority reference oracle; it is not a second canonical ontology.
 
 Verification:
 
@@ -19,4 +19,4 @@ cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-target
 cargo test --manifest-path qualification/hnmf-reference/Cargo.toml
 ```
 
-Passing these checks proves only that the HNMF contracts, algorithms, bounds, negative authority posture, and deterministic reference behavior are internally closed at the exact candidate. It does not prove production activation, longitudinal efficacy, functional biomimicry, operator acceptance, promotion, or release.
+Passing these checks proves that the native HNMF contract source, canonical wire conformance, reference-oracle parity fixtures, algorithms, bounds, negative authority posture, and deterministic reference behavior pass at the exact candidate. It does not prove production activation, longitudinal efficacy, functional biomimicry, operator acceptance, promotion, or release.
