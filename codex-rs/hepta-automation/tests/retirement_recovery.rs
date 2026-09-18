@@ -277,10 +277,11 @@ async fn receipt_replay_retains_later_control_decisions_and_rejects_substitution
 
 #[tokio::test]
 async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
-    for assignment in [
-        "client_user_message_id = 'substituted.client'",
-        "queued_submission_id = 'substituted.queue'",
-        "submitted_at_ms = submitted_at_ms + 1",
+    // These three fixed corruption fixtures do not require dynamic SQL.
+    for statement in [
+        "UPDATE automation_dispatch_outcomes SET client_user_message_id = 'substituted.client'",
+        "UPDATE automation_dispatch_outcomes SET queued_submission_id = 'substituted.queue'",
+        "UPDATE automation_dispatch_outcomes SET submitted_at_ms = submitted_at_ms + 1",
     ] {
         let (_temp, layout, store, lease) = leased_store().await?;
         store
@@ -301,11 +302,7 @@ async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
         )?)
         .open_durable_evidence_pool(&path)
         .await?;
-        sqlx::query(&format!(
-            "UPDATE automation_dispatch_outcomes SET {assignment}"
-        ))
-        .execute(&pool)
-        .await?;
+        sqlx::query(statement).execute(&pool).await?;
         pool.close().await;
         assert!(matches!(
             AutomationStore::open(&layout).await,
