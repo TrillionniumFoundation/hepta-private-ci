@@ -205,7 +205,7 @@ For `runtime.codex`, this document grants no runtime, production, model, provide
 
 #### `P0.7B-B1B-MODEL-BOUNDARY`
 
-- State: `source_composed_external_qualification_pending`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_composed_authority_and_external_qualification_pending`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `codex-integration` / `agent-runtime`.
 - Allowed write paths:
 - `codex-rs/hepta-codex-adapter/**`
@@ -259,4 +259,4 @@ The bootstrap source-location obligation for `runtime.codex` is implemented by w
 - `codex-rs/codex-app-server`
 - `codex-rs/hepta-codex-adapter`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The named caller/reconciler and [fault matrix](FAULT_MATRIX.md) close the repository-controlled composition path, but only exact-candidate CI can establish that a particular commit passed those checks. This documentation grants no target-host execution, production-writer, model-provider, external-effect, independent-acceptance, activation, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The named caller/reconciler and [fault matrix](FAULT_MATRIX.md) close the terminal/correlation/reconciliation composition path, but the native caller still lacks the required non-constructible `kernel.authority` final-use capability bound to the exact final `TurnStart` payload. Only after that repository-controlled authority gate is composed, and exact-candidate CI passes, can source-boundary closure be claimed. This documentation grants no target-host execution, production-writer, model-provider, external-effect, independent-acceptance, activation, selection, promotion, merge or release authority.
