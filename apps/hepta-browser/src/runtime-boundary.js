@@ -57,7 +57,16 @@ export async function callWithDeadline({
       timeout,
     ]);
     if (first.kind === "value") return first.value;
-    if (first.kind === "error") throw first.error;
+    if (first.kind === "error") {
+      // An abort-aware driver may reject with its own AbortError before the
+      // timeout branch wins Promise.race. The timeout callback sets
+      // timeoutError before aborting, so preserve the causal timeout identity.
+      if (timeoutError !== null) {
+        await operation.catch(() => {});
+        throw timeoutError;
+      }
+      throw first.error;
+    }
 
     // Do not return while an effect-capable call can still complete in the
     // background. Abort, then wait until the driver has actually settled.
