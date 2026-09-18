@@ -779,9 +779,14 @@ fn automatic_restart_survives_stop_grace_escalation_to_kill() -> Result<(), Supe
     assert_eq!(supervisor.tick(now), TickReport::default());
     control.update(&fleet.first, |state| state.healthy = false);
 
-    // Unhealthy grace expires -> Failed + stop request.
+    // First observation enters Unhealthy; the grace period then expires
+    // into Failed + stop request.
     assert_eq!(
-        supervisor.tick(now + Duration::from_millis(11)),
+        supervisor.tick(now + Duration::from_millis(1)),
+        TickReport::default()
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(12)),
         TickReport::default()
     );
     assert_eq!(control.counts(&fleet.first), (0, 1, 0));
@@ -789,20 +794,20 @@ fn automatic_restart_survives_stop_grace_escalation_to_kill() -> Result<(), Supe
     // Stop grace expires -> kill request, but this is still a recoverable
     // failure rather than an explicit operator kill.
     assert_eq!(
-        supervisor.tick(now + Duration::from_millis(22)),
+        supervisor.tick(now + Duration::from_millis(23)),
         TickReport::default()
     );
     assert_eq!(control.counts(&fleet.first), (0, 1, 1));
     control.set_exit(&fleet.first);
     assert_eq!(
-        supervisor.tick(now + Duration::from_millis(23)),
+        supervisor.tick(now + Duration::from_millis(24)),
         TickReport::default()
     );
 
     // The first automatic retry remains queued after the kill escalation.
     assert_eq!(control.spawn_count(&fleet.first), 1);
     assert_eq!(
-        supervisor.tick(now + Duration::from_millis(28)),
+        supervisor.tick(now + Duration::from_millis(29)),
         TickReport::default()
     );
     assert_eq!(control.spawn_count(&fleet.first), 2);
