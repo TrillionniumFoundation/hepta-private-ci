@@ -19,10 +19,10 @@ fn intent(deadline_ms: u64) -> CodexOperationIntent {
     CodexOperationIntent {
         operation_id: id("operation:deadline"),
         subject_id: id("agent:deadline"),
-        destination_id: id("agent:deadline/app-server:9"),
+        destination_id: id("agent:deadline.app-server:9"),
         thread_id: id("thread:deadline"),
         client_message_id: "client:deadline".to_string(),
-        method_id: id("turn/start"),
+        method_id: id(TURN_START_METHOD_ID),
         payload_digest,
         lease_payload_digest: payload_digest,
         input_digest: turn_input_digest(&params),
