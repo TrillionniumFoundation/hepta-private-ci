@@ -13,7 +13,7 @@ transport-neutral protocol admission helpers.
 | Downgrade prevention | a required `FullFrameDigest` cannot negotiate V1 |
 | Schema admission | bounded registry with exact schema IDs, per-schema payload limits and validators |
 | Typed payloads | `TypedPayload` encode/decode helpers for both V1 and V2 |
-| Incremental framing | 54-byte header admission before body buffering; at most one partial frame retained |
+| Incremental framing | 54-byte header admission before body buffering; at most one partial frame retained; negotiated version can be pinned |
 | Cross-runtime evidence | Rust V2 producer to independent Python parser over loopback TCP |
 | Property coverage | generated valid round trips plus arbitrary-byte no-panic/buffer-bound checks |
 | Production activation | not claimed |
@@ -91,8 +91,10 @@ Repository CI remains the executed receipt; command text alone is not a pass.
 ## Integration prerequisites
 
 A session owner must construct local/remote `WireOffer` values from reviewed
-capabilities, call `negotiate`, and pin the resulting version for the
-connection. Required features must never be silently dropped.
+capabilities, call `negotiate`, and construct `WireStreamDecoder::for_version`
+with the resulting version for the connection. A mismatched frame version then
+rejects at the fixed-header boundary. Required features must never be silently
+dropped.
 
 After frame decoding, the consumer must run `SchemaRegistry::admit_v1` or
 `SchemaRegistry::admit_v2` (or an equivalent product registry) before domain
