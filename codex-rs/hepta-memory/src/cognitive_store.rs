@@ -230,9 +230,10 @@ impl CognitiveStore {
         .await
         .map_err(unavailable)?;
         // Migration 0011 deliberately does not fabricate V2 receipts in SQL.
-        // Reconstruct and certify any pre-0011 current generation through the
-        // same canonical Rust semantics used by future writes before accepting
-        // the store as readable.
+        // Validate the migrated schema/owner before any certification write,
+        // then reconstruct pre-0011 current generations through the same
+        // canonical Rust semantics used by future writes.
+        verify_store_identity_and_schema(&pool, layout.agent_id()).await?;
         certify_current_v2_publications(&pool).await?;
         verify_store(&pool, layout.agent_id()).await?;
         Ok(Self {
@@ -439,7 +440,10 @@ fn now_unix_seconds() -> Result<i64, CognitiveStoreError> {
         .map_err(|_| CognitiveStoreError::Unavailable("system clock overflow".to_string()))
 }
 
-async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), CognitiveStoreError> {
+async fn verify_store_identity_and_schema(
+    pool: &SqlitePool,
+    owner: &AgentId,
+) -> Result<(), CognitiveStoreError> {
     let quick_check = sqlx::query_scalar::<_, String>("PRAGMA quick_check(1)")
         .fetch_all(pool)
         .await
@@ -527,6 +531,11 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
             "cognitive database belongs to agent {stored_owner}, not {owner}"
         )));
     }
+    Ok(())
+}
+
+async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), CognitiveStoreError> {
+    verify_store_identity_and_schema(pool, owner).await?;
     let foreign_owned_rows: i64 = sqlx::query_scalar(
         "SELECT (
              SELECT COUNT(*) FROM source_ledger WHERE owner_agent_id != ?
