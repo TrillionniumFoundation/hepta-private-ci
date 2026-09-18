@@ -46,6 +46,7 @@ pub enum ArtifactPublicationError {
     Admission(ArtifactAdmissionError),
     RegistryManifestMissing,
     RegistryManifestMismatch,
+    PayloadSyncMismatch,
     SnapshotMismatch,
     InvalidSnapshotReceipt,
     AuthorityGrant,
@@ -63,6 +64,7 @@ impl StdError for ArtifactPublicationError {
             Self::Admission(error) => Some(error),
             Self::RegistryManifestMissing
             | Self::RegistryManifestMismatch
+            | Self::PayloadSyncMismatch
             | Self::SnapshotMismatch
             | Self::InvalidSnapshotReceipt
             | Self::AuthorityGrant => None,
@@ -129,6 +131,7 @@ pub fn finalize_artifact_publication_v1(
     admission: &WithdrawalBoundArtifactAdmissionV3,
     withdrawal_registry: &DatasetWithdrawalRegistry,
     current_scope: &WithdrawalRegistryScopeV1,
+    synced_payload_digest: Digest32,
     registry_snapshot_receipt: RegistrySnapshotReceipt,
     now: u64,
 ) -> Result<ArtifactPublicationCommitV1, ArtifactPublicationError> {
@@ -136,6 +139,9 @@ pub fn finalize_artifact_publication_v1(
         return Err(ArtifactPublicationError::AuthorityGrant);
     }
     validate_artifact_publication_v3(admission, withdrawal_registry, current_scope, now)?;
+    if synced_payload_digest != intent.payload_digest {
+        return Err(ArtifactPublicationError::PayloadSyncMismatch);
+    }
     if intent.admission_digest != admission.admission_digest
         || intent.manifest_digest != admission.validated_manifest.manifest_digest
         || intent.payload_digest != admission.validated_manifest.manifest.bytes_digest
