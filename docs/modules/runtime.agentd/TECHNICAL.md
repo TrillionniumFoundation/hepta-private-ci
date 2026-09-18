@@ -117,7 +117,7 @@ Critical protocol schemas:
 
 None.
 
-The Agentd-local control schema remains a bounded strict protocol and advertises optional `run.lifecycle@1.0`, `run.lifecycle.recovery@1.0` and `control.typed-overload@1.0` capabilities. Lifecycle extensions are additive and callers must negotiate rather than infer them from process version. Connection saturation returns a typed `overloaded` error through a separately bounded responder pool when that pool has capacity; if both the work pool and overload responder pool are exhausted, the transport is closed rather than allocating unbounded work.
+The Agentd-local control schema remains a bounded strict protocol and advertises optional `run.lifecycle@1.0`, `run.lifecycle.recovery@1.0` and `control.typed-overload@1.0` capabilities. Lifecycle extensions are additive and callers must negotiate rather than infer them from process version. Connection saturation returns a typed `overloaded` error through a separately bounded responder pool when that pool has capacity; `AgentdClient` maps this to `AgentdError::Overloaded` so callers can apply bounded backoff without parsing strings. If both the work pool and overload responder pool are exhausted, the transport is closed rather than allocating unbounded work.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
