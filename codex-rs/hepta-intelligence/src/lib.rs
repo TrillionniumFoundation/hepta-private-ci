@@ -17,12 +17,15 @@ pub use evaluated_shadow::run_evaluated_shadow_v1;
 mod intuition_qualification;
 
 pub use intuition_qualification::AuthenticatedIntuitionDecisionV1;
+pub use intuition_qualification::AuthenticatedIntuitionDecisionV2;
 pub use intuition_qualification::IntuitionQualificationError;
 pub use intuition_qualification::IntuitionQualificationEvidenceV1;
+pub use intuition_qualification::IntuitionQualificationEvidenceV2;
 pub use intuition_qualification::QualifiedEvaluatedShadowError;
 pub use intuition_qualification::QualifiedEvaluatedShadowReceiptV2;
 pub use intuition_qualification::QualifiedEvaluatedShadowRequestV2;
 pub use intuition_qualification::decide_authenticated_intuition_v1;
+pub use intuition_qualification::decide_authenticated_intuition_v2;
 pub use intuition_qualification::run_qualified_evaluated_shadow_v2;
 
 mod capability_snapshot;
