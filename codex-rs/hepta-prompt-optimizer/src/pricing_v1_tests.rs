@@ -61,6 +61,7 @@ fn candidate_set() -> PromptCandidateSetReceiptV1 {
         tokenizer_digest: digest("tokenizer"),
         template_digest: digest("template"),
         tool_schema_digest: digest("tools"),
+        context_profile_digest: digest("context-profile"),
         locale_id: id("en-US"),
     };
     let mut source = PromptCandidateSourceV1 {
