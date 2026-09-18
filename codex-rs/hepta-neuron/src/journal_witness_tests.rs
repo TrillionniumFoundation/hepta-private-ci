@@ -283,3 +283,47 @@ fn managed_old_retry_is_idempotent_after_later_witnesses_exist() {
         })
     );
 }
+
+
+#[test]
+fn same_generation_segment_seed_preserves_global_sequence_and_state() {
+    let first_root = Fixture::new();
+    let cfg = config(1);
+    let state = {
+        let mut host = first_root.open(cfg.clone());
+        let first = checked(host.commit(Digest32::ZERO, &tick(1, 1)));
+        checked(host.commit(first.checkpoint_after, &tick(2, 1)));
+        checked(host.current())
+            .cloned()
+            .unwrap_or_else(|| panic!("missing segment state"))
+    };
+    assert_eq!(state.sequence(), 2);
+    let seed = checked(crate::segment_seed(&state, &cfg));
+
+    let second_root = Fixture::new();
+    let receipt = {
+        let mut host = checked(ManagedSparseJournal::open_seeded(
+            second_root.file("journal"),
+            second_root.file("witness"),
+            cfg.clone(),
+            scope(),
+            16,
+            seed.clone(),
+        ));
+        checked(host.commit(seed.digest(), &tick(3, 1)))
+    };
+    assert_eq!(receipt.checkpoint_before, seed.digest());
+
+    let reopened = checked(ManagedSparseJournal::open_seeded(
+        second_root.file("journal"),
+        second_root.file("witness"),
+        cfg,
+        scope(),
+        16,
+        seed,
+    ));
+    let current = checked(reopened.current())
+        .unwrap_or_else(|| panic!("missing reopened segment state"));
+    assert_eq!(current.sequence(), 3);
+    assert_eq!(current.digest(), receipt.checkpoint_after);
+}

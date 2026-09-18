@@ -277,6 +277,16 @@ impl SparseCheckpoint {
 }
 
 
+pub fn segment_seed(
+    previous: &SparseCheckpoint,
+    config: &SparseConfig,
+) -> Result<SparseCheckpoint, SparseError> {
+    if !previous.verify_integrity() || previous.config != config.digest()? {
+        return Err(SparseError::InvalidCheckpoint);
+    }
+    Ok(previous.clone())
+}
+
 pub fn rollover_seed(
     previous: &SparseCheckpoint,
     previous_config: &SparseConfig,

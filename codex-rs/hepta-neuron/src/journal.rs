@@ -87,6 +87,7 @@ pub struct SparseJournal {
     scope: JournalScope,
     max_records: usize,
     entries: Vec<(Digest32, SparseSignalReceipt)>,
+    base_sequence: u64,
     current: Option<SparseCheckpoint>,
     poisoned: bool,
 }
@@ -178,25 +179,29 @@ impl SparseJournal {
         if !(1..=MAX_RECORDS).contains(&max_records) {
             return Err(JournalError::InvalidLimit);
         }
-        if let RecoveryPolicy::Require(anchor) = policy
-            && (anchor.sequence == 0
-                || anchor.sequence > max_records as u64
-                || anchor.checkpoint_digest.is_zero())
-        {
-            return Err(JournalError::InvalidAnchor);
-        }
         let config_digest = config.digest().map_err(JournalError::Mechanism)?;
         if scope.scope_digest.is_zero() || scope.objective_digest.is_zero() {
             return Err(JournalError::ContextMismatch);
         }
         if let Some(value) = seed.as_ref()
-            && (!value.is_rollover_seed()
-                || !value.verify_integrity()
+            && (!value.verify_integrity()
                 || value.config_digest() != config_digest
                 || value.scope_digest() != scope.scope_digest
                 || value.objective_digest() != scope.objective_digest)
         {
             return Err(JournalError::ContextMismatch);
+        }
+        let base_sequence = seed.as_ref().map_or(0, SparseCheckpoint::sequence);
+        if let RecoveryPolicy::Require(anchor) = policy {
+            let maximum_sequence = base_sequence
+                .checked_add(u64::try_from(max_records).map_err(|_| JournalError::InvalidLimit)?)
+                .ok_or(JournalError::InvalidLimit)?;
+            if anchor.sequence <= base_sequence
+                || anchor.sequence > maximum_sequence
+                || anchor.checkpoint_digest.is_zero()
+            {
+                return Err(JournalError::InvalidAnchor);
+            }
         }
         let mut file = LockedFile::acquire(file)?;
         let mut header = if seed.is_some() {
@@ -255,6 +260,7 @@ impl SparseJournal {
             scope,
             max_records,
             entries: Vec::new(),
+            base_sequence,
             current: seed,
             poisoned: false,
         };
@@ -263,10 +269,16 @@ impl SparseJournal {
         if complete > max_records {
             return Err(JournalError::Capacity);
         }
-        if let RecoveryPolicy::Require(anchor) = policy
-            && complete < anchor.sequence as usize
-        {
-            return Err(JournalError::AcknowledgedHistoryMissing);
+        if let RecoveryPolicy::Require(anchor) = policy {
+            let relative = anchor
+                .sequence
+                .checked_sub(base_sequence)
+                .ok_or(JournalError::InvalidAnchor)?;
+            if complete
+                < usize::try_from(relative).map_err(|_| JournalError::InvalidAnchor)?
+            {
+                return Err(JournalError::AcknowledgedHistoryMissing);
+            }
         }
         let mut frame = vec![0; frame_len];
         for _ in 0..complete {
@@ -290,13 +302,16 @@ impl SparseJournal {
                 .push((Digest32::of_bytes(&encode_tick(&tick)), receipt));
             journal.current = Some(state);
         }
-        if let RecoveryPolicy::Require(anchor) = policy
-            && journal.entries[(anchor.sequence - 1) as usize]
-                .1
-                .checkpoint_after
-                != anchor.checkpoint_digest
-        {
-            return Err(JournalError::AnchorMismatch);
+        if let RecoveryPolicy::Require(anchor) = policy {
+            let relative = anchor
+                .sequence
+                .checked_sub(base_sequence)
+                .and_then(|value| value.checked_sub(1))
+                .and_then(|value| usize::try_from(value).ok())
+                .ok_or(JournalError::InvalidAnchor)?;
+            if journal.entries[relative].1.checkpoint_after != anchor.checkpoint_digest {
+                return Err(JournalError::AnchorMismatch);
+            }
         }
         if !available.is_multiple_of(frame_len) {
             journal
@@ -341,8 +356,9 @@ impl SparseJournal {
         let tick_digest = Digest32::of_bytes(&encode_tick(tick));
         if let Some(index) = tick
             .sequence
-            .checked_sub(1)
-            .and_then(|n| usize::try_from(n).ok())
+            .checked_sub(self.base_sequence)
+            .and_then(|value| value.checked_sub(1))
+            .and_then(|value| usize::try_from(value).ok())
             && let Some((prior_digest, receipt)) = self.entries.get(index)
         {
             return if *prior_digest == tick_digest
@@ -400,8 +416,12 @@ impl SparseJournal {
             .iter()
             .enumerate()
             .map(|(index, (_, receipt))| {
+                let offset = u64::try_from(index + 1).map_err(|_| JournalError::Capacity)?;
                 Ok(JournalAnchor {
-                    sequence: u64::try_from(index + 1).map_err(|_| JournalError::Capacity)?,
+                    sequence: self
+                        .base_sequence
+                        .checked_add(offset)
+                        .ok_or(JournalError::Capacity)?,
                     checkpoint_digest: receipt.checkpoint_after,
                 })
             })

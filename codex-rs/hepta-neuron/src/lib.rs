@@ -43,6 +43,7 @@ pub use sparse::SparseAblationV1;
 pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
 pub use sparse::rollover_seed;
+pub use sparse::segment_seed;
 pub use sparse::sparse_tick;
 pub use sparse::sparse_tick_ablated;
 

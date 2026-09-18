@@ -62,6 +62,7 @@ pub struct AnchorWitnessStore {
     file: LockedFile,
     max_records: usize,
     anchors: Vec<JournalAnchor>,
+    base_sequence: u64,
     poisoned: bool,
 }
 
@@ -72,6 +73,26 @@ impl AnchorWitnessStore {
         scope: JournalScope,
         max_records: usize,
     ) -> Result<Self, WitnessError> {
+        Self::open_with_seed(file, config, scope, max_records, None)
+    }
+
+    pub fn open_seeded(
+        file: File,
+        config: &SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        seed: &crate::SparseCheckpoint,
+    ) -> Result<Self, WitnessError> {
+        Self::open_with_seed(file, config, scope, max_records, Some(seed))
+    }
+
+    fn open_with_seed(
+        file: File,
+        config: &SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        seed: Option<&crate::SparseCheckpoint>,
+    ) -> Result<Self, WitnessError> {
         if !(1..=MAX_RECORDS).contains(&max_records) {
             return Err(WitnessError::InvalidLimit);
         }
@@ -81,8 +102,23 @@ impl AnchorWitnessStore {
         let config_digest = config
             .digest()
             .map_err(|error| WitnessError::Journal(JournalError::Mechanism(error)))?;
+        if let Some(value) = seed
+            && (!value.verify_integrity()
+                || value.config_digest() != config_digest
+                || value.scope_digest() != scope.scope_digest
+                || value.objective_digest() != scope.objective_digest)
+        {
+            return Err(WitnessError::InvalidContext);
+        }
+        let base_sequence = seed.map_or(0, crate::SparseCheckpoint::sequence);
+        let context_digest = seed.map_or(config_digest, |value| {
+            let mut bytes = b"hepta.neuron.seeded-witness-context.v1".to_vec();
+            bytes.extend_from_slice(config_digest.as_array());
+            bytes.extend_from_slice(value.digest().as_array());
+            Digest32::of_bytes(&bytes)
+        });
         let mut header = MAGIC.to_vec();
-        for digest in [config_digest, scope.scope_digest, scope.objective_digest] {
+        for digest in [context_digest, scope.scope_digest, scope.objective_digest] {
             header.extend_from_slice(digest.as_array());
         }
         let checksum = Digest32::of_bytes(&header);
@@ -139,8 +175,10 @@ impl AnchorWitnessStore {
                     .try_into()
                     .map_err(|_| WitnessError::Corrupt)?,
             );
-            let expected_sequence =
-                u64::try_from(index + 1).map_err(|_| WitnessError::Capacity)?;
+            let offset = u64::try_from(index + 1).map_err(|_| WitnessError::Capacity)?;
+            let expected_sequence = base_sequence
+                .checked_add(offset)
+                .ok_or(WitnessError::Capacity)?;
             if sequence != expected_sequence
                 || checkpoint.is_zero()
                 || predecessor != prior_digest
@@ -164,6 +202,7 @@ impl AnchorWitnessStore {
             file,
             max_records,
             anchors,
+            base_sequence,
             poisoned: false,
         })
     }
@@ -185,7 +224,8 @@ impl AnchorWitnessStore {
         }
         if let Some(index) = anchor
             .sequence
-            .checked_sub(1)
+            .checked_sub(self.base_sequence)
+            .and_then(|value| value.checked_sub(1))
             .and_then(|value| usize::try_from(value).ok())
             && let Some(existing) = self.anchors.get(index).copied()
         {
@@ -195,8 +235,12 @@ impl AnchorWitnessStore {
                 Err(WitnessError::Conflict)
             };
         }
-        let expected_sequence = u64::try_from(self.anchors.len() + 1)
+        let offset = u64::try_from(self.anchors.len() + 1)
             .map_err(|_| WitnessError::Capacity)?;
+        let expected_sequence = self
+            .base_sequence
+            .checked_add(offset)
+            .ok_or(WitnessError::Capacity)?;
         if anchor.sequence != expected_sequence {
             return Err(WitnessError::Conflict);
         }
@@ -289,7 +333,8 @@ impl ManagedSparseJournal {
         if journal_length > HEADER as u64 && witness_length == 0 {
             return Err(WitnessError::AcknowledgedHistoryMissing);
         }
-        let mut witness = AnchorWitnessStore::open(witness_file, &config, scope, max_records)?;
+        let mut witness =
+            AnchorWitnessStore::open_seeded(witness_file, &config, scope, max_records, &seed)?;
         let anchor = witness.current()?;
         if anchor.is_none() && journal_length > HEADER as u64 {
             return Err(WitnessError::AcknowledgedHistoryMissing);
@@ -363,12 +408,12 @@ fn reconcile_witness(
     journal: &SparseJournal,
     witness: &mut AnchorWitnessStore,
 ) -> Result<(), WitnessError> {
-    let current_sequence = witness.current()?.map_or(0, |anchor| anchor.sequence);
+    let current_count = witness.anchors.len();
     for anchor in journal
         .committed_anchors()
         .map_err(WitnessError::Journal)?
         .into_iter()
-        .skip(usize::try_from(current_sequence).map_err(|_| WitnessError::Capacity)?)
+        .skip(current_count)
     {
         witness.acknowledge(anchor)?;
     }
