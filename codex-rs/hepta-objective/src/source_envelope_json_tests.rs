@@ -13,10 +13,10 @@ const SOURCE: &str = r#"{
  "principalScopeDigest":"0000000000000000000000000000000000000000000000000000000000000000",
  "intentDigest":"1111111111111111111111111111111111111111111111111111111111111111",
  "structuredIntent":{
-  "successPredicates":[{"predicateId":"z","unit":"e\u0301","comparator":"ne","boundQ32":-9223372036854775808,"evidenceSourceId":"observer / citations","terminal":false}],
-  "terminalConditions":[{"predicateId":"z","unit":"count","comparator":"lt","boundQ32":9223372036854775807,"evidenceSourceId":"observer / terminal","terminal":true}],
+  "successPredicates":[{"predicateId":"z","unit":"e\u0301","comparator":"gte","boundQ32":-9223372036854775808,"evidenceSourceId":"observer / citations","terminal":false}],
+  "terminalConditions":[{"predicateId":"z","unit":"count","comparator":"eq","boundQ32":9223372036854775807,"evidenceSourceId":"observer / terminal","terminal":true}],
   "legalActionClasses":["读取","abstain"],"forbiddenActionClasses":["读取"],"confirmationActionClasses":["读取"],
-  "constraints":[{"constraintId":"effects","unit":"count","comparator":"not_in","boundQ32":0,"evidenceSourceId":"observer / effects","terminal":true}],
+  "constraints":[{"constraintId":"effects","unit":"count","comparator":"lte","boundQ32":0,"evidenceSourceId":"observer / effects","terminal":true}],
   "softDimensions":[{"dimensionId":"latency / report","unit":"μs","direction":"minimize","minimumWeightQ32":-9223372036854775808,"maximumWeightQ32":9223372036854775807}],
   "evidenceRequirements":[{"requirementId":"independent","evidenceSourceId":"observer / confidence","minimumConfidencePpm":4294967295,"terminal":true}],
   "resources":{"timeMicros":18446744073709551615,"tokenCount":2,"computeMicros":3,"memoryBytes":4,"networkBytes":5,"externalEffectCount":4294967295},
@@ -38,7 +38,7 @@ fn decodes_all_fields_without_loss_or_semantic_admission() {
             success_predicates: vec![ObjectiveSourcePredicateV1 {
                 predicate_id: "z".into(),
                 unit: "e\u{0301}".into(),
-                comparator: ObjectivePredicateComparatorV1::NotEqual,
+                comparator: ObjectivePredicateComparatorV1::GreaterThanOrEqual,
                 bound_q32: i64::MIN,
                 evidence_source_id: "observer / citations".into(),
                 terminal: false,
@@ -46,7 +46,7 @@ fn decodes_all_fields_without_loss_or_semantic_admission() {
             terminal_conditions: vec![ObjectiveSourcePredicateV1 {
                 predicate_id: "z".into(),
                 unit: "count".into(),
-                comparator: ObjectivePredicateComparatorV1::LessThan,
+                comparator: ObjectivePredicateComparatorV1::Equal,
                 bound_q32: i64::MAX,
                 evidence_source_id: "observer / terminal".into(),
                 terminal: true,
@@ -57,7 +57,7 @@ fn decodes_all_fields_without_loss_or_semantic_admission() {
             constraints: vec![ObjectiveSourceConstraintV1 {
                 constraint_id: "effects".into(),
                 unit: "count".into(),
-                comparator: ObjectiveConstraintComparatorV1::NotInSet,
+                comparator: ObjectiveConstraintComparatorV1::LessThanOrEqual,
                 bound_q32: 0,
                 evidence_source_id: "observer / effects".into(),
                 terminal: true,
@@ -269,6 +269,27 @@ fn rejects_positional_structs_and_enum_objects_with_otherwise_correct_contents()
         ] {
             let mut source = original.clone();
             *source.pointer_mut(pointer).unwrap() = invalid;
+            reject(&serde_json::to_vec(&source).unwrap());
+        }
+    }
+}
+
+#[test]
+fn unsupported_comparators_reject_at_wire_ingress() {
+    let original: Value = serde_json::from_str(SOURCE).unwrap();
+    for (pointer, spellings) in [
+        (
+            "/structuredIntent/successPredicates/0/comparator",
+            &["ne", "lt", "gt"][..],
+        ),
+        (
+            "/structuredIntent/constraints/0/comparator",
+            &["ne", "lt", "gt", "in", "not_in"][..],
+        ),
+    ] {
+        for spelling in spellings {
+            let mut source = original.clone();
+            *source.pointer_mut(pointer).unwrap() = json!(spelling);
             reject(&serde_json::to_vec(&source).unwrap());
         }
     }
