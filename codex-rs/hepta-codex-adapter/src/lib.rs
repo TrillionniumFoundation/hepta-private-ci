@@ -28,6 +28,70 @@ pub struct AppServerObservation {
     pub response_digest: Digest32,
 }
 
+const MAX_PROMPT_REJECTION_REASON_BYTES: usize = 64;
+const MAX_OBSERVED_TOKEN_POSITIONS_BYTES: usize = 32_768;
+const MAX_OBSERVED_TOKEN_POSITIONS: usize =
+    MAX_OBSERVED_TOKEN_POSITIONS_BYTES / std::mem::size_of::<u32>();
+
+/// Open, bounded runtime rejection class carried by the registered V1 contract.
+///
+/// The canonical registry bounds `rejectedReason` as an enum but does not
+/// freeze a closed value set. This wrapper therefore validates a stable
+/// identifier without inventing provider-specific enum members in this crate.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptDeliveryRejectReasonV1(StableId);
+
+impl PromptDeliveryRejectReasonV1 {
+    pub fn new(value: StableId) -> Result<Self, Error> {
+        if value.as_str().len() > MAX_PROMPT_REJECTION_REASON_BYTES {
+            return Err(Error::InvalidPromptDeliveryObservation);
+        }
+        Ok(Self(value))
+    }
+
+    pub fn as_id(&self) -> &StableId {
+        &self.0
+    }
+}
+
+/// Exact in-process shape of the registered `PromptDeliveryObservationV1`.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptDeliveryObservationV1 {
+    pub compilation_id: StableId,
+    pub provider_request_digest: Digest32,
+    pub delivered: bool,
+    pub rejected_reason: Option<PromptDeliveryRejectReasonV1>,
+    pub observed_token_positions: Vec<u32>,
+    pub truncation_observed: bool,
+}
+
+impl PromptDeliveryObservationV1 {
+    pub fn validate(&self) -> Result<(), Error> {
+        if self.provider_request_digest.is_zero()
+            || self.observed_token_positions.len() > MAX_OBSERVED_TOKEN_POSITIONS
+            || self
+                .observed_token_positions
+                .windows(2)
+                .any(|pair| pair[0] >= pair[1])
+            || (self.delivered && self.rejected_reason.is_some())
+            || (!self.delivered && self.rejected_reason.is_none())
+        {
+            return Err(Error::InvalidPromptDeliveryObservation);
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptProviderTerminalObservationV1 {
+    pub terminal_observed: bool,
+    pub observed_provider_request_digest: Digest32,
+    pub delivered: bool,
+    pub rejected_reason: Option<PromptDeliveryRejectReasonV1>,
+    pub observed_token_positions: Vec<u32>,
+    pub truncation_observed: bool,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AdapterStatus {
     Succeeded,
@@ -51,6 +115,7 @@ pub enum Error {
     PayloadBindingMismatch,
     DeadlineExpired,
     MissingTerminalResponse,
+    InvalidPromptDeliveryObservation,
 }
 
 impl fmt::Display for Error {
@@ -60,6 +125,38 @@ impl fmt::Display for Error {
 }
 
 impl StdError for Error {}
+
+pub fn observe_prompt_delivery_v1(
+    now_ms: u64,
+    intent: &CodexOperationIntent,
+    compilation_id: StableId,
+    observation: PromptProviderTerminalObservationV1,
+) -> Result<PromptDeliveryObservationV1, Error> {
+    validate_intent(now_ms, intent)?;
+    if !observation.terminal_observed {
+        return Err(Error::MissingTerminalResponse);
+    }
+    if observation.observed_provider_request_digest.is_zero()
+        || observation.observed_provider_request_digest != intent.payload_digest
+    {
+        return Err(Error::PayloadBindingMismatch);
+    }
+    let result = PromptDeliveryObservationV1 {
+        compilation_id,
+        provider_request_digest: observation.observed_provider_request_digest,
+        delivered: observation.delivered,
+        rejected_reason: observation.rejected_reason,
+        observed_token_positions: observation.observed_token_positions,
+        truncation_observed: observation.truncation_observed,
+    };
+    result.validate()?;
+    Ok(result)
+}
+
+fn validate_intent(now_ms: u64, intent: &CodexOperationIntent) -> Result<(), Error> {
+    validate_intent(now_ms, &intent)?;
+    Ok(())
+}
 
 pub fn adapt(
     now_ms: u64,
