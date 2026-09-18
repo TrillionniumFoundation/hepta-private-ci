@@ -399,3 +399,79 @@ impl StoredSoftPreference {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct StoredRunStart {
+    run_id: String,
+    objective_digest: String,
+    hard_constraint_digest: String,
+    preference_state_digest: String,
+    model_tuple_digest: String,
+    prompt_registry_digest: String,
+    artifact_set_digest: String,
+    authority_epoch: u64,
+    generation: u64,
+    fence_digest: String,
+}
+
+impl From<&RunStartSnapshotV1> for StoredRunStart {
+    fn from(value: &RunStartSnapshotV1) -> Self {
+        Self {
+            run_id: value.run_id.to_string(),
+            objective_digest: value.objective_digest.to_string(),
+            hard_constraint_digest: value.hard_constraint_digest.to_string(),
+            preference_state_digest: value.preference_state_digest.to_string(),
+            model_tuple_digest: value.model_tuple_digest.to_string(),
+            prompt_registry_digest: value.prompt_registry_digest.to_string(),
+            artifact_set_digest: value.artifact_set_digest.to_string(),
+            authority_epoch: value.authority_epoch,
+            generation: value.generation,
+            fence_digest: value.fence_digest.to_string(),
+        }
+    }
+}
+
+impl StoredRunStart {
+    fn into_typed(self) -> Result<RunStartSnapshotV1, ObjectivePublicationStoreErrorV1> {
+        Ok(RunStartSnapshotV1 {
+            run_id: stable_id(self.run_id)?,
+            objective_digest: digest(self.objective_digest)?,
+            hard_constraint_digest: digest(self.hard_constraint_digest)?,
+            preference_state_digest: digest(self.preference_state_digest)?,
+            model_tuple_digest: digest(self.model_tuple_digest)?,
+            prompt_registry_digest: digest(self.prompt_registry_digest)?,
+            artifact_set_digest: digest(self.artifact_set_digest)?,
+            authority_epoch: self.authority_epoch,
+            generation: self.generation,
+            fence_digest: digest(self.fence_digest)?,
+        })
+    }
+}
+
+fn relation_text(relation: ConstraintRelation) -> &'static str {
+    match relation {
+        ConstraintRelation::AtLeast => "at_least",
+        ConstraintRelation::AtMost => "at_most",
+        ConstraintRelation::Equal => "equal",
+    }
+}
+
+fn relation(value: &str) -> Result<ConstraintRelation, ObjectivePublicationStoreErrorV1> {
+    match value {
+        "at_least" => Ok(ConstraintRelation::AtLeast),
+        "at_most" => Ok(ConstraintRelation::AtMost),
+        "equal" => Ok(ConstraintRelation::Equal),
+        _ => Err(ObjectivePublicationStoreErrorV1::Corrupt),
+    }
+}
+
+fn stable_id(value: String) -> Result<StableId, ObjectivePublicationStoreErrorV1> {
+    StableId::new(value).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)
+}
+
+fn revision(value: u64) -> Result<Revision, ObjectivePublicationStoreErrorV1> {
+    Revision::new(value).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)
+}
+
+fn digest(value: String) -> Result<Digest32, ObjectivePublicationStoreErrorV1> {
+    Digest32::from_str(&value).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)
+}
