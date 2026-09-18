@@ -135,20 +135,12 @@ pub fn compose_global_plan_v1(
         .map_err(GlobalPlanCompositionError::Planner)?;
     let prepared = prepare_plan_hardened(&snapshot, input.planning_request)
         .map_err(GlobalPlanCompositionError::Hardening)?;
-    let evaluated = evaluate_prepared_plan_with_ndu(
-        &snapshot,
-        &prepared,
-        input.ndu_input,
-        input.now_micros,
-    )
-    .map_err(GlobalPlanCompositionError::Ndu)?;
-    let grant_requests = request_execution_grants(
-        &snapshot,
-        &prepared,
-        &evaluated.plan,
-        input.now_micros,
-    )
-    .map_err(GlobalPlanCompositionError::Planner)?;
+    let evaluated =
+        evaluate_prepared_plan_with_ndu(&snapshot, &prepared, input.ndu_input, input.now_micros)
+            .map_err(GlobalPlanCompositionError::Ndu)?;
+    let grant_requests =
+        request_execution_grants(&snapshot, &prepared, &evaluated.plan, input.now_micros)
+            .map_err(GlobalPlanCompositionError::Planner)?;
     Ok(GlobalPlanCompositionV1 {
         snapshot,
         prepared,
@@ -321,7 +313,10 @@ mod tests {
             now_micros: 100,
         })
         .expect("global composition");
-        assert_eq!(result.evaluated.plan.chosen_candidate_id(), Some(&id("work")));
+        assert_eq!(
+            result.evaluated.plan.chosen_candidate_id(),
+            Some(&id("work"))
+        );
         assert_eq!(result.grant_requests.requests().len(), 1);
         assert!(!result.grant_requests.authority().grants_any());
 
