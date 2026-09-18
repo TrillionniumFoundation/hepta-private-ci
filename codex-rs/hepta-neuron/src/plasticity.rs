@@ -13,6 +13,7 @@ use std::fmt;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::SparseCheckpoint;
 use crate::protocol::Q24_ONE;
 
 const MAX_HISTORY: usize = 4096;
@@ -22,9 +23,46 @@ const ELIGIBILITY_L1: i64 = 4 * Q24_ONE;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlasticitySampleV1 {
-    pub checkpoint_digest: Digest32,
-    pub eligibility_q24: Vec<i64>,
-    pub independent_modulator_q24: Vec<i64>,
+    checkpoint_digest: Digest32,
+    eligibility_q24: Vec<i64>,
+    independent_modulator_q24: Vec<i64>,
+    independent_modulator_evidence_digest: Digest32,
+}
+
+impl PlasticitySampleV1 {
+    /// Construct plasticity input only from an actual neuron checkpoint. The
+    /// modulator evidence digest is supplied by an independent outcome/evaluator
+    /// boundary; a bare numeric vector is not sufficient provenance.
+    pub fn from_checkpoint(
+        checkpoint: &SparseCheckpoint,
+        independent_modulator_q24: Vec<i64>,
+        independent_modulator_evidence_digest: Digest32,
+    ) -> Result<Self, PlasticityError> {
+        if checkpoint.digest().is_zero() || independent_modulator_evidence_digest.is_zero() {
+            return Err(PlasticityError::EmptyDigest);
+        }
+        let sample = Self {
+            checkpoint_digest: checkpoint.digest(),
+            eligibility_q24: checkpoint.eligibility_q24().to_vec(),
+            independent_modulator_q24,
+            independent_modulator_evidence_digest,
+        };
+        let width = sample.eligibility_q24.len();
+        let modulator_width = sample.independent_modulator_q24.len();
+        if width == 0 || !(1..=MAX_MODULATORS).contains(&modulator_width) {
+            return Err(PlasticityError::DimensionMismatch);
+        }
+        validate_sample(&sample, width, modulator_width)?;
+        Ok(sample)
+    }
+
+    pub fn checkpoint_digest(&self) -> Digest32 {
+        self.checkpoint_digest
+    }
+
+    pub fn independent_modulator_evidence_digest(&self) -> Digest32 {
+        self.independent_modulator_evidence_digest
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -185,7 +223,9 @@ fn validate_sample(
     eligibility_width: usize,
     modulator_width: usize,
 ) -> Result<(), PlasticityError> {
-    if sample.checkpoint_digest.is_zero() {
+    if sample.checkpoint_digest.is_zero()
+        || sample.independent_modulator_evidence_digest.is_zero()
+    {
         return Err(PlasticityError::EmptyDigest);
     }
     if sample.eligibility_q24.len() != eligibility_width
@@ -364,6 +404,7 @@ fn digest_modulators(history: &[PlasticitySampleV1]) -> Digest32 {
     let mut bytes = b"hepta.neuron.plasticity-modulators.v1".to_vec();
     for sample in history {
         bytes.extend_from_slice(sample.checkpoint_digest.as_array());
+        bytes.extend_from_slice(sample.independent_modulator_evidence_digest.as_array());
         bytes.extend_from_slice(&(sample.independent_modulator_q24.len() as u64).to_be_bytes());
         for value in &sample.independent_modulator_q24 {
             bytes.extend_from_slice(&value.to_be_bytes());
