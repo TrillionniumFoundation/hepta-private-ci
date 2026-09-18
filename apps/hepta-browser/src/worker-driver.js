@@ -554,7 +554,27 @@ export class SubprocessBrowserDriver {
     return this.#client.request("reconcile", input.operationId, input, { signal });
   }
 
+  async contain(input) {
+    this.#requireSession(input);
+    this.#client?.close();
+    this.#child?.kill?.("SIGKILL");
+    this.#client = null;
+    this.#child = null;
+    return { contained: true };
+  }
+
   async stop(input, { signal } = {}) {
+    const generation = input.generation ?? input.profileGeneration;
+    if (
+      input.profileId !== this.#sessionId ||
+      generation !== this.#generation
+    ) {
+      throw new TypeError("browser worker session or generation mismatch");
+    }
+    if (!this.#child || !this.#client) {
+      await this.#cleanupProfile();
+      return { stopped: true };
+    }
     this.#requireSession(input);
     try {
       const observed = await this.#client.request(

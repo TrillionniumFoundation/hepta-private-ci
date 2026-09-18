@@ -52,7 +52,14 @@ export class BrowserProfileHost {
     driverCallTimeoutMs = DEFAULT_DRIVER_CALL_TIMEOUT_MS,
   }) {
     requireRecord(driver, "driver");
-    for (const method of ["start", "observe", "dispatch", "reconcile", "stop"]) {
+    for (const method of [
+      "start",
+      "observe",
+      "dispatch",
+      "reconcile",
+      "contain",
+      "stop",
+    ]) {
       if (typeof driver[method] !== "function") {
         throw new TypeError(`driver.${method} must be a function`);
       }
@@ -167,6 +174,7 @@ export class BrowserProfileHost {
           profileOwnerDigest,
           pageGeneration: 0,
           documentDigest: null,
+          quarantined: false,
           allowedOrigins,
           effectGrants,
           operations: new Map(),
@@ -265,6 +273,25 @@ export class BrowserProfileHost {
       const originAllowed = state.allowedOrigins.has(origin);
       state.pageGeneration = pageGeneration;
       state.documentDigest = originAllowed ? documentDigest : null;
+      if (!originAllowed) {
+        state.quarantined = true;
+        const contained = requireRecord(
+          await this.#callDriver(
+            "contain",
+            {
+              profileId: state.profileId,
+              processId: state.processId,
+              generation: state.generation,
+              reason: "origin_escape",
+            },
+            this.#clock() + this.#driverCallTimeoutMs,
+          ),
+          "driver containment observation",
+        );
+        if (contained.contained !== true) {
+          throw new TypeError("driver did not observe profile containment");
+        }
+      }
       return freezeResult({
         kind: "PageObservationV1",
         profileId: state.profileId,
@@ -619,6 +646,9 @@ export class BrowserProfileHost {
     }
     if (requireLiveGrant && this.#clock() >= state.expiresAtMs) {
       throw new TypeError("profile grant has expired");
+    }
+    if (requireLiveGrant && state.quarantined) {
+      throw new TypeError("profile is quarantined");
     }
     return state;
   }

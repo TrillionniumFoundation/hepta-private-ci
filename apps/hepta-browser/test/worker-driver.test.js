@@ -287,6 +287,25 @@ test("worker response must echo exact request kind and payload digest", async ()
   assert.equal(capture.child.killed, true);
 });
 
+test("subprocess driver containment kills the quarantined worker and still permits cleanup", async () => {
+  const fixture = await subprocessFixture();
+  const driver = fixture.driver;
+  await driver.start(fixture.startInput);
+  const child = fixture.launcher.child;
+  const contained = await driver.contain({
+    profileId: fixture.startInput.profileId,
+    generation: fixture.startInput.generation,
+    processId: `servo.pid.${child.pid}`,
+  });
+  assert.equal(contained.contained, true);
+  assert.equal(child.killed, true);
+  const stopped = await driver.stop({
+    profileId: fixture.startInput.profileId,
+    generation: fixture.startInput.generation,
+  });
+  assert.equal(stopped.stopped, true);
+});
+
 test("subprocess driver fails closed on worker artifact digest drift", async () => {
   const root = await mkdtemp(join(tmpdir(), "hepta-worker-driver-"));
   const workerPath = join(root, "worker.bin");

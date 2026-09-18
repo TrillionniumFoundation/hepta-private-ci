@@ -84,6 +84,7 @@ function authority({ authorized = true, witnessDigest = W1, delay = 0 } = {}) {
 
 function driver({ terminalOnReconcile = true, dispatchImpl, observeImpl } = {}) {
   let dispatchCalls = 0;
+  let containCalls = 0;
   let stopCalls = 0;
   return {
     supportsAbort: true,
@@ -92,6 +93,9 @@ function driver({ terminalOnReconcile = true, dispatchImpl, observeImpl } = {}) 
     },
     get dispatchCalls() {
       return dispatchCalls;
+    },
+    get containCalls() {
+      return containCalls;
     },
     get stopCalls() {
       return stopCalls;
@@ -122,6 +126,10 @@ function driver({ terminalOnReconcile = true, dispatchImpl, observeImpl } = {}) 
       return terminalOnReconcile
         ? { terminalObserved: true, status: "succeeded", outcomeDigest: D1 }
         : { terminalObserved: false };
+    },
+    async contain() {
+      containCalls += 1;
+      return { contained: true };
     },
     async stop() {
       stopCalls += 1;
@@ -496,7 +504,8 @@ test("disallowed observed origin is quarantined and cannot authorize an action",
   });
   assert.equal(page.originAllowed, false);
   assert.equal(page.quarantined, true);
-  await assert.rejects(host.navigateOrAct(operation()), /stale page generation/);
+  assert.equal(fakeDriver.containCalls, 1);
+  await assert.rejects(host.navigateOrAct(operation()), /profile is quarantined/);
   assert.equal(fakeDriver.dispatchCalls, 0);
 });
 

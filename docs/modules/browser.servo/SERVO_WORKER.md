@@ -101,7 +101,7 @@ Every subprocess worker generation receives a fresh random private directory. Br
 - Browser manifest digest;
 - profile grant digest.
 
-Stale cookie/cache/profile bytes are not implicitly reopened by reusing `${profileId}.${generation}`. Successful stop removes that private directory. Real cross-principal cookie/cache/storage isolation is still independently tested on the real qualified worker/host tuple.
+Stale cookie/cache/profile bytes are not implicitly reopened by reusing `${profileId}.${generation}`. An observed origin outside the grant immediately quarantines the profile and invokes driver containment, killing the private worker before any new effect can be admitted; reconciliation and final cleanup remain available. Successful stop removes that private directory. Real cross-principal cookie/cache/storage isolation is still independently tested on the real qualified worker/host tuple.
 
 ## 6. Semantic page observation
 
