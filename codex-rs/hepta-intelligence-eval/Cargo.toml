@@ -10,6 +10,12 @@ name = "codex_hepta_intelligence_eval"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+# Explicit compatibility escape hatch only. Production admission must use the
+# signed evaluation entry points documented in PRODUCTION_CONTRACT.md.
+legacy-inprocess-eval = []
+
 [lints]
 workspace = true
 
