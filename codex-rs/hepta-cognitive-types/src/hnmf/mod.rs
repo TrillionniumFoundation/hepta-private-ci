@@ -168,7 +168,11 @@ pub(crate) fn validate_bounded(
     Ok(())
 }
 
-pub(crate) fn increasing(start: u64, end: u64, name: &'static str) -> Result<(), HnmfContractError> {
+pub(crate) fn increasing(
+    start: u64,
+    end: u64,
+    name: &'static str,
+) -> Result<(), HnmfContractError> {
     if end <= start {
         return Err(HnmfContractError::Invalid(name));
     }
