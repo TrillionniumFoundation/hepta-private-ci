@@ -41,9 +41,12 @@ reconciliation loops or arbitrary plugin/user code.
 A valid signature on a revocation head is insufficient by itself.
 `FinalUseRevocationUpdate` V2 signs `issued_at_unix_ms` and
 `expires_at_unix_ms`. A host rejects a not-yet-valid or stale head. The
-registered Bao host begins with no freshness authority and denies final secret
-use until it has ingested a current signed head; it denies new final use again
-when that freshness window expires.
+registered Bao host begins with no freshness authority and denies provider
+dispatch until it has ingested a current signed head. It samples freshness
+again at the registered consumer boundary after provider I/O. That second
+successful check is the revocation-feed freshness linearization point for
+secret release: a feed that expires while the request is in flight cannot
+release the secret.
 
 This is the repository partition policy for that host: stale revocation
 knowledge stops new affected effects. Transport fanout and fleet convergence
