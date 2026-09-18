@@ -25,14 +25,10 @@ impl ContextAdmissionVerifierV2 for TestAdmissionVerifier {
         if !self.accept {
             return Err("untrusted snapshot".to_string());
         }
-        Ok(Digest32::of_bytes(
-            [
-                evidence.issuer_digest.as_array().as_slice(),
-                evidence.witness_digest.as_array().as_slice(),
-            ]
-            .concat()
-            .as_slice(),
-        ))
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(evidence.issuer_digest.as_array());
+        bytes.extend_from_slice(evidence.witness_digest.as_array());
+        Ok(Digest32::of_bytes(&bytes))
     }
 }
 
