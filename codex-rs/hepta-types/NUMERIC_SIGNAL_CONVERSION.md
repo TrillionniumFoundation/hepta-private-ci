@@ -10,8 +10,8 @@ methods keep their original truncation and checked arithmetic.
 The target profile controls rounding. The function computes
 `raw * target_scale` with checked i128 arithmetic, rounds the magnitude,
 restores its sign and checks the i64 result. Overflow or a violated declared
-range returns an error; there is no implicit saturation or projection. Unknown
-profile IDs reject.
+range returns an error; there is no implicit saturation or projection.
+Unknown profile IDs reject.
 
 Source and target must have identical shape, unit and normalization digest.
 Scalar shape is empty; other shapes have rank at most four, positive dimensions
