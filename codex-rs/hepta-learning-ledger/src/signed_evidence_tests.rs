@@ -297,3 +297,88 @@ fn distinct_keys_do_not_make_one_controller_independent() {
         Ok(())
     );
 }
+
+#[test]
+fn observer_and_evaluator_require_pairwise_independence() {
+    let mut independent = trust();
+    independent.signers.push(signer(
+        "observer",
+        "controller-c",
+        3,
+        LearningEvidenceRoleV1::Observer,
+    ));
+    let verifier = LearningEvidenceVerifierV1::new(independent).expect("host trust");
+    let observer = verifier
+        .verify(
+            LearningEvidenceRoleV1::Observer,
+            &sign(
+                &verifier,
+                "observer",
+                LearningEvidenceRoleV1::Observer,
+                3,
+                b"frontier",
+            ),
+            b"frontier",
+            50,
+        )
+        .expect("observer");
+    let evaluator = verifier
+        .verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &sign(
+                &verifier,
+                "evaluator",
+                LearningEvidenceRoleV1::Evaluator,
+                2,
+                b"metrics",
+            ),
+            b"metrics",
+            50,
+        )
+        .expect("evaluator");
+    assert_eq!(
+        verify_signed_independent_roles_v1(&observer, &evaluator, 50),
+        Ok(())
+    );
+
+    let mut shared = trust();
+    shared.signers.push(signer(
+        "observer",
+        "controller-b",
+        3,
+        LearningEvidenceRoleV1::Observer,
+    ));
+    let verifier = LearningEvidenceVerifierV1::new(shared).expect("shared controller trust");
+    let observer = verifier
+        .verify(
+            LearningEvidenceRoleV1::Observer,
+            &sign(
+                &verifier,
+                "observer",
+                LearningEvidenceRoleV1::Observer,
+                3,
+                b"frontier",
+            ),
+            b"frontier",
+            50,
+        )
+        .expect("observer");
+    let evaluator = verifier
+        .verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &sign(
+                &verifier,
+                "evaluator",
+                LearningEvidenceRoleV1::Evaluator,
+                2,
+                b"metrics",
+            ),
+            b"metrics",
+            50,
+        )
+        .expect("evaluator");
+    assert_eq!(
+        verify_signed_independent_roles_v1(&observer, &evaluator, 50),
+        Err(SignedEvidenceError::ControllerCollision)
+    );
+}
