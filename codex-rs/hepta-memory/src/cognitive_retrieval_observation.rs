@@ -50,6 +50,7 @@ pub struct ObservedRetrievalCandidate {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RetrievalObservation {
     batch: RetrievalBatch,
+    materialized_candidates: Vec<RetrievalCandidate>,
     candidates: Vec<ObservedRetrievalCandidate>,
     channels: Vec<RetrievalChannelObservation>,
     observation_sha256: Sha256Digest,
@@ -58,6 +59,13 @@ pub struct RetrievalObservation {
 impl RetrievalObservation {
     pub fn batch(&self) -> &RetrievalBatch {
         &self.batch
+    }
+    /// Every eligible, revalidated owner candidate before legacy top-four
+    /// truncation, in deterministic retrieval order. This remains an owner-local
+    /// materialization: callers must intersect it with an authorized coherent
+    /// read cut and revalidate that cut before delivery.
+    pub fn materialized_candidates(&self) -> &[RetrievalCandidate] {
+        &self.materialized_candidates
     }
     /// Every eligible, revalidated output of the bounded generator, ordered by
     /// memory identity, including those omitted from the legacy top-four batch.
@@ -124,6 +132,7 @@ impl CognitiveStore {
                         .cmp(&right.revalidation.memory.revision)
                 })
         });
+        let materialized_candidates = candidates.clone();
         candidates.truncate(MAX_RETRIEVAL_RESULTS);
         let batch = RetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query.as_bytes()),
@@ -145,6 +154,7 @@ impl CognitiveStore {
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
         let observation = RetrievalObservation {
             batch,
+            materialized_candidates,
             candidates: observed,
             channels: generated.channels,
             observation_sha256: Sha256Digest::for_bytes(&bytes),
