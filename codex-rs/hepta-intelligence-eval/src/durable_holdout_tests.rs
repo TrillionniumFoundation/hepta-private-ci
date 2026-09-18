@@ -254,7 +254,6 @@ fn ambiguous_write_fences_the_handle() {
     assert_eq!(store.anchor(), anchor);
 }
 
-
 fn stress_plan(index: u64) -> CrossFoldPlanReceiptV1 {
     let final_window = id(&format!("stress-final-window-{index}"));
     freeze_cross_fold_plan(CrossFoldPlanV1 {
@@ -382,9 +381,8 @@ fn durable_holdout_reopen_replay_stress() {
             HoldoutUseDispositionV1::IdempotentReplay
         );
         drop(store);
-        store =
-            DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor)
-                .unwrap();
+        store = DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor)
+            .unwrap();
         assert_eq!(store.anchor(), anchor);
     }
 }
