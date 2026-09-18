@@ -196,6 +196,80 @@ async fn live_control_routes_run_lifecycle_through_agentd_state() {
     );
 }
 
+#[tokio::test]
+async fn deadline_monitor_path_persists_cancellation_before_lost_interrupt_ack() {
+    let (_temp, _registry, state) = fixture().expect("runtime fixture");
+    let now_ms = u64::try_from(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("clock")
+            .as_millis(),
+    )
+    .expect("millisecond clock");
+    let deadline_ms = now_ms.checked_add(100).expect("deadline");
+    let snapshot = RunSnapshot {
+        run_id: "run.deadline.bound.1".to_string(),
+        request_digest: "1".repeat(64),
+        objective_digest: "2".repeat(64),
+        body_digest: "3".repeat(64),
+        artifact_set_digest: "4".repeat(64),
+        authority_epoch: 2,
+        deadline_ms,
+    };
+    let admitted = state.run_start(now_ms, snapshot.clone()).expect("start");
+    let attached = state
+        .run_attach_context(
+            now_ms + 1,
+            admitted.revision,
+            ContextAttachment {
+                run_id: snapshot.run_id.clone(),
+                request_digest: snapshot.request_digest.clone(),
+                objective_digest: snapshot.objective_digest.clone(),
+                body_digest: snapshot.body_digest.clone(),
+                artifact_set_digest: snapshot.artifact_set_digest.clone(),
+                authority_epoch: snapshot.authority_epoch,
+                deadline_ms: snapshot.deadline_ms,
+                context_digest: "5".repeat(64),
+                compilation_receipt_digest: "6".repeat(64),
+            },
+        )
+        .expect("attach");
+    let dispatch = RunDispatchBinding::new(
+        snapshot.run_id.clone(),
+        "5".repeat(64),
+        "thread.deadline.bound.1",
+        "7".repeat(64),
+    )
+    .expect("dispatch binding");
+    let dispatched = state
+        .run_mark_dispatched(now_ms + 2, &snapshot.run_id, attached.revision, dispatch.clone())
+        .expect("dispatch");
+    let execution = RunExecutionBinding::new(
+        snapshot.run_id.clone(),
+        dispatch.binding_digest,
+        dispatch.thread_id,
+        "turn.deadline.bound.1",
+    )
+    .expect("execution binding");
+    state
+        .run_bind_execution(&snapshot.run_id, dispatched.revision, execution)
+        .expect("bind execution");
+
+    // No App Server is listening in this fixture. The interrupt transport is
+    // therefore lost, but the durable lifecycle transition must still win.
+    state
+        .expire_run_deadlines_and_interrupt(deadline_ms)
+        .await
+        .expect("deadline processing");
+    let status = state
+        .run_status(&snapshot.run_id)
+        .expect("status")
+        .expect("retained run");
+    assert_eq!(status.phase, RunPhase::Cancelling);
+    assert_eq!(status.cancel_reason.as_deref(), Some("deadline_exceeded"));
+    assert!(status.cancellation_ack_deadline_ms.is_some());
+}
+
 #[test]
 fn missing_local_record_immediately_fences_the_serving_agent() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
