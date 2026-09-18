@@ -10,6 +10,7 @@ authority.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import json
 from pathlib import Path
 import subprocess
 import time
@@ -24,7 +25,9 @@ from .control_plane import (
     canonical_paths,
     checked_id,
     checked_sha256,
+    path_sets_overlap,
     semantic_digest,
+    _validate_envelope,
 )
 from .evidence import CanonicalSourceReceipt
 
@@ -188,6 +191,7 @@ def verify_canonical_source_receipt(
     now = time.time_ns() if now_ns is None else now_ns
     if type(now) is not int or now < 0:
         raise EngineeringError("invalid_time")
+    envelope = _validate_envelope(envelope)
     repository = Path(root).resolve()
     checked_sha256(source.document_set_digest, "document_set_digest")
     checked_sha256(expected_document_set_digest, "document_set_digest")
@@ -473,66 +477,102 @@ def schedule_engineering_work(
     blocked: list[tuple[str, str]] = []
     resource_ready: list[tuple[EngineeringWorkPackage, str]] = []
     ci_remaining = ci_capacity_units
-    for package in sorted(normalized_packages, key=_package_rank):
-        missing = sorted(set(package.predecessors) - completed_ids)
-        if missing:
-            blocked.append((package.package_id, "missing_authenticated_predecessor:" + missing[0]))
-            continue
-        if package.ci_units > ci_remaining:
-            blocked.append((package.package_id, "ci_capacity"))
-            continue
-        missing_review = next(
-            (role for role in package.review_roles if review_remaining.get(role, 0) <= 0),
-            None,
+    with store._transaction():
+        stored_envelope = store._get_envelope(envelope.envelope_id, now)
+        if str(stored_envelope["semantic_digest"]) != semantic_digest(asdict(envelope)):
+            raise EngineeringError("envelope_state_mismatch")
+        store._expire_leases(now)
+        active_rows = store._active_lease_rows(now)
+        active_paths = tuple(
+            path
+            for row in active_rows
+            for path in json.loads(bytes(row["paths_json"]).decode("utf-8"))
         )
-        if missing_review is not None:
-            blocked.append((package.package_id, "review_capacity:" + missing_review))
-            continue
-        required = set(package.required_skills)
-        eligible_workers: list[tuple[int, str]] = []
-        for worker_id, state in worker_state.items():
-            if not required.issubset(state["skills"]):
-                continue
-            if state["used"] + package.effort_units > state["capacity"]:
-                continue
-            if state["assignments"] >= state["parallel"]:
-                continue
-            eligible_workers.append((int(state["used"]), worker_id))
-        if not eligible_workers:
-            blocked.append((package.package_id, "worker_capacity_or_skill"))
-            continue
-        _, worker_id = min(eligible_workers)
-        state = worker_state[worker_id]
-        state["used"] = int(state["used"]) + package.effort_units
-        state["assignments"] = int(state["assignments"]) + 1
-        ci_remaining -= package.ci_units
-        for role in package.review_roles:
-            review_remaining[role] -= 1
-        resource_ready.append((package, worker_id))
+        selected_paths: list[str] = []
+        assignment_limit = int(stored_envelope["maximum_assignments"])
 
-    owner_packages = tuple(
-        WorkPackage(
-            rank,
-            package.package_id,
-            package.predecessors,
-            package.write_paths,
+        for package in sorted(normalized_packages, key=_package_rank):
+            missing = sorted(set(package.predecessors) - completed_ids)
+            if missing:
+                blocked.append(
+                    (
+                        package.package_id,
+                        "missing_authenticated_predecessor:" + missing[0],
+                    )
+                )
+                continue
+            if path_sets_overlap(package.write_paths, active_paths):
+                blocked.append((package.package_id, "active_path_lease"))
+                continue
+            if path_sets_overlap(package.write_paths, tuple(selected_paths)):
+                blocked.append((package.package_id, "batch_path_conflict"))
+                continue
+            if len(resource_ready) >= assignment_limit:
+                blocked.append((package.package_id, "assignment_limit"))
+                continue
+            if package.ci_units > ci_remaining:
+                blocked.append((package.package_id, "ci_capacity"))
+                continue
+            missing_review = next(
+                (
+                    role
+                    for role in package.review_roles
+                    if review_remaining.get(role, 0) <= 0
+                ),
+                None,
+            )
+            if missing_review is not None:
+                blocked.append(
+                    (package.package_id, "review_capacity:" + missing_review)
+                )
+                continue
+            required = set(package.required_skills)
+            eligible_workers: list[tuple[int, str]] = []
+            for worker_id, state in worker_state.items():
+                if not required.issubset(state["skills"]):
+                    continue
+                if int(state["used"]) + package.effort_units > int(state["capacity"]):
+                    continue
+                if int(state["assignments"]) >= int(state["parallel"]):
+                    continue
+                eligible_workers.append((int(state["used"]), worker_id))
+            if not eligible_workers:
+                blocked.append((package.package_id, "worker_capacity_or_skill"))
+                continue
+            _, worker_id = min(eligible_workers)
+            state = worker_state[worker_id]
+            state["used"] = int(state["used"]) + package.effort_units
+            state["assignments"] = int(state["assignments"]) + 1
+            ci_remaining -= package.ci_units
+            for role in package.review_roles:
+                review_remaining[role] -= 1
+            resource_ready.append((package, worker_id))
+            selected_paths.extend(package.write_paths)
+
+        owner_packages = tuple(
+            WorkPackage(
+                rank,
+                package.package_id,
+                package.predecessors,
+                package.write_paths,
+            )
+            for rank, (package, _worker_id) in enumerate(resource_ready)
         )
-        for rank, (package, _worker_id) in enumerate(resource_ready)
-    )
-    owner_receipt = store.schedule_ready_packages(
-        envelope.envelope_id,
-        owner_packages,
-        completed_ids,
-        generation_id=generation_id,
-        now_ns=now,
-    )
-    owner_assigned = set(owner_receipt.assigned)
-    blocked.extend(owner_receipt.blocked)
-    selected = [
-        (rank, package, worker_id)
-        for rank, (package, worker_id) in enumerate(resource_ready)
-        if package.package_id in owner_assigned
-    ]
+        owner_receipt = store.schedule_ready_packages(
+            envelope.envelope_id,
+            owner_packages,
+            completed_ids,
+            generation_id=generation_id,
+            now_ns=now,
+        )
+        owner_assigned = set(owner_receipt.assigned)
+        blocked.extend(owner_receipt.blocked)
+        selected = [
+            (rank, package, worker_id)
+            for rank, (package, worker_id) in enumerate(resource_ready)
+            if package.package_id in owner_assigned
+        ]
+        frontier = store.assignment_frontier(generation_id)
     assignments = tuple(
         WorkAssignment(
             package.package_id,
@@ -562,7 +602,6 @@ def schedule_engineering_work(
         )
         for assignment in assignments
     )
-    frontier = store.assignment_frontier(generation_id)
     completion_digest = semantic_digest([asdict(value) for value in completed])
     resource_digest = semantic_digest(
         {
