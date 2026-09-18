@@ -17,7 +17,7 @@ callers use `issue_verified_work_envelope`, signed `WorkCompletionReceipt` value
 the v2 evidence/seal path.
 The implementation guide, component map and security profile live in
 [`docs/modules/control.engineering/`](../../../docs/modules/control.engineering/IMPLEMENTATION.md).
-`SCHEMA.sql` is the sole executable schema, version 5. No import-time patches or
+`SCHEMA.sql` is the sole executable schema, version 6. No import-time patches or
 registry-count validators are required. Linux strong isolation must pass the actual
 Bubblewrap probe; portable fixture success cannot become strong review evidence.
 The named repository caller is `engineering-product-gate-v2`; it is read-only and
