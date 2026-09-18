@@ -17,50 +17,10 @@ pub const MAX_LOCAL_ALLOCATION_CANDIDATES: usize = 4_096;
 /// Bound on caller-supplied relative weights.
 pub const MAX_LOCAL_ALLOCATION_WEIGHT: u32 = 1_000_000;
 
-/// The fixed resource axes supported by the V1 local calculator.
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum LocalResourceAxisV1 {
-    ConcurrentTurns,
-    MemoryMib,
-    ToolProcesses,
-    TurnQueueSlots,
-}
-
-impl LocalResourceAxisV1 {
-    pub(crate) const ALL: [Self; 4] = [
-        Self::ConcurrentTurns,
-        Self::MemoryMib,
-        Self::ToolProcesses,
-        Self::TurnQueueSlots,
-    ];
-
-    pub(crate) const fn read(self, vector: LocalResourceVectorV1) -> u64 {
-        match self {
-            Self::ConcurrentTurns => vector.concurrent_turns,
-            Self::MemoryMib => vector.memory_mib,
-            Self::ToolProcesses => vector.tool_processes,
-            Self::TurnQueueSlots => vector.turn_queue_slots,
-        }
-    }
-
-    pub(crate) fn write(self, vector: &mut LocalResourceVectorV1, value: u64) {
-        match self {
-            Self::ConcurrentTurns => vector.concurrent_turns = value,
-            Self::MemoryMib => vector.memory_mib = value,
-            Self::ToolProcesses => vector.tool_processes = value,
-            Self::TurnQueueSlots => vector.turn_queue_slots = value,
-        }
-    }
-}
-
-/// Four fixed-width resource quantities. The algorithm never loops per unit.
-#[derive(Clone, Copy, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
-pub struct LocalResourceVectorV1 {
-    pub concurrent_turns: u64,
-    pub memory_mib: u64,
-    pub tool_processes: u64,
-    pub turn_queue_slots: u64,
-}
+/// Compatibility aliases: local calculation and durable fleet ownership now
+/// use the same unit-stable resource vocabulary.
+pub type LocalResourceAxisV1 = crate::FleetResourceAxisV1;
+pub type LocalResourceVectorV1 = crate::FleetResourceVectorV1;
 
 /// Untrusted local description of one host's allocatable capacity.
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]

@@ -31,7 +31,7 @@ runtime.supervisor daemon
 runtime.fleet remains a separate allocation-lease owner
 ```
 
-Embedding a library does not transfer data ownership. Agentd owns an explicit admission coordinator in its own source root and separately names Codex callees. Fleet calculation does not become a lease until the fleet owner commits the exact grant and fence.
+Embedding a library does not transfer data ownership. Agentd owns an explicit admission coordinator in its own source root and separately names Codex callees. Fleet calculation does not become a lease until the fleet owner commits the exact grant and fence. For the local supervisord `Start` path, `FleetRuntimeAllocator` now performs that durable commit before child spawn; the pure calculator remains non-authoritative.
 
 ## 4. Immutable run identity
 
@@ -104,7 +104,7 @@ Stop new admission; persist drain intent; cancel only provably pre-effect work; 
 
 ## 15. Source maturity
 
-The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. The component mappings do not close repository-controlled integration work. Durable owner wiring, actual local model/browser drivers and runtime composition remain implementation tasks in addition to external qualification.
+The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet now has supervisor-composed durable owner wiring, observed local capacity, deterministic placement, fsynced grants and holder reconciliation; inference, TaskFlow and Matrix include their own native owner ledgers/adapters; Agentd owns its run coordinator; Browser/Web/Native provide bounded driver/client boundaries. Fleet source composition does not self-issue independent authority or target-host qualification. Other Lane B repository-controlled gaps remain module-specific, and actual local model/browser drivers plus external qualification remain separate tasks.
 
 ## 16. Evidence package required for activation
 

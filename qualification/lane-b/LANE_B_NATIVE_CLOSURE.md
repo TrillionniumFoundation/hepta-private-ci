@@ -38,18 +38,14 @@ Current-fence reconciliation records the observed holder disposition; pure alloc
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn admit_host(` |
-| `allocate` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn issue(` |
+| `allocate` | `owner_native` | `codex-rs/hepta-fleet/src/runtime_allocator.rs` — `pub fn reserve_agent_start(` |
 | `renew_or_revoke` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn renew_or_revoke(` |
-
-Remaining repository implementation gaps:
-
-- Connect the in-memory lease component to supervisor-owned durable FleetRegistry grants, fences, and a real capacity observer.
 
 External evidence gates:
 
-- real enrolled host capacity observation
-- non-test local grant enforcement
-- partition and lease-expiry target qualification
+- independently issued final authority acceptance for runtime.fleet
+- target-host partition, lease-expiry and pressure qualification
+- operator acceptance, activation, promotion and release
 
 ## 4. `runtime.agentd`
 

@@ -31,7 +31,15 @@ use codex_hepta_contracts::AgentId;
 #[cfg(any(unix, test))]
 use codex_hepta_fleet::AgentLifecycle;
 #[cfg(unix)]
+use codex_hepta_fleet::FleetAllocationGrantReadV1;
+#[cfg(unix)]
 use codex_hepta_fleet::FleetRegistry;
+#[cfg(unix)]
+use codex_hepta_fleet::FleetRuntimeAllocator;
+#[cfg(unix)]
+use codex_hepta_fleet::FleetRuntimeAllocatorError;
+#[cfg(unix)]
+use codex_hepta_fleet::LocalCapacityPolicyV1;
 #[cfg(any(unix, test))]
 use codex_hepta_fleet::FleetRegistryError;
 #[cfg(any(unix, test))]
@@ -140,6 +148,7 @@ pub const PRODUCTION_AUTHORITY_FEATURE_ENABLED: bool =
 struct DaemonState<D: ProcessDriver> {
     registry: FleetRegistry,
     supervisor: Mutex<Supervisor<D>>,
+    fleet_allocator: Mutex<FleetRuntimeAllocator>,
     supervisor_epoch: SupervisorEpoch,
     production_grant_verifier: Option<H7H89ProductionGrantVerifier>,
     observed_faults: AtomicU64,
@@ -194,16 +203,62 @@ async fn run_supervisord_inner(
     let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let (supervisor, recovery) = Supervisor::recover(
+    let (mut supervisor, recovery) = Supervisor::recover(
         registry.clone(),
         driver,
         SupervisorConfig::local_default(),
         Instant::now(),
     )?;
+    let supervisor_epoch = SupervisorEpoch::new();
+    let writer_epoch = authority_epoch_for_supervisor_epoch(supervisor_epoch.as_str());
+    let now_ms = unix_millis_now();
+    let mut fleet_allocator = FleetRuntimeAllocator::open_local(
+        &registry,
+        writer_epoch,
+        now_ms,
+        LocalCapacityPolicyV1::default(),
+    )?;
+    for (agent_id, record) in &snapshot.agents {
+        let runtime_snapshot = supervisor.snapshot(agent_id);
+        if runtime_snapshot.as_ref().is_some_and(|runtime| runtime.active) {
+            let active_release = runtime_snapshot
+                .as_ref()
+                .and_then(|runtime| runtime.active_release.as_deref())
+                .ok_or_else(|| {
+                    SupervisorError::Invalid(format!(
+                        "active agent {agent_id} has no release identity for fleet grant recovery"
+                    ))
+                })?
+                .to_string();
+            let status = status_from(&supervisor_epoch, record, runtime_snapshot)?;
+            let grant = match fleet_allocator.reserve_agent_start(
+                agent_id,
+                &record.manifest.resources,
+                record.lifecycle.generation,
+                &active_release,
+                status.control_fence.state_digest.as_str(),
+                now_ms,
+            ) {
+                Ok(grant) => grant,
+                Err(error) => {
+                    stop_ungranted_recovered_runtimes(&mut supervisor);
+                    return Err(error.into());
+                }
+            };
+            let read = fleet_allocator.read_grants(now_ms);
+            if let Err(error) =
+                require_projected_grant(&read, &grant.allocation_id, &grant.semantic_digest)
+            {
+                stop_ungranted_recovered_runtimes(&mut supervisor);
+                return Err(error);
+            }
+        }
+    }
     let state = Arc::new(DaemonState {
         registry,
         supervisor: Mutex::new(supervisor),
-        supervisor_epoch: SupervisorEpoch::new(),
+        fleet_allocator: Mutex::new(fleet_allocator),
+        supervisor_epoch,
         production_grant_verifier,
         observed_faults: AtomicU64::new(recovery.faults.len() as u64),
     });
@@ -222,8 +277,12 @@ async fn run_supervisord_inner(
             tokio::select! {
                 _ = tick_cancellation.cancelled() => return,
                 _ = interval.tick() => {
-                    let faults = tick_state.supervisor.lock().await.tick(Instant::now()).faults;
+                    let faults = {
+                        let mut supervisor = tick_state.supervisor.lock().await;
+                        supervisor.tick(Instant::now()).faults
+                    };
                     tick_state.observed_faults.fetch_add(faults.len() as u64, Ordering::Relaxed);
+                    maintain_fleet_allocations(&tick_state).await;
                 }
             }
         }
@@ -232,6 +291,18 @@ async fn run_supervisord_inner(
     cancellation.cancel();
     let _ = ticker.await;
     result
+}
+
+#[cfg(unix)]
+fn stop_ungranted_recovered_runtimes<D: ProcessDriver>(supervisor: &mut Supervisor<D>) {
+    for agent_id in supervisor.agent_ids() {
+        if supervisor
+            .snapshot(&agent_id)
+            .is_some_and(|snapshot| snapshot.active)
+        {
+            let _ = supervisor.kill(&agent_id);
+        }
+    }
 }
 
 #[cfg(not(unix))]
@@ -659,6 +730,138 @@ fn unix_seconds_now() -> u64 {
 }
 
 #[cfg(unix)]
+fn unix_millis_now() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .ok()
+        .and_then(|duration| u64::try_from(duration.as_millis()).ok())
+        .unwrap_or(0)
+}
+
+#[cfg(unix)]
+async fn maintain_fleet_allocations<D: ProcessDriver>(state: &Arc<DaemonState<D>>) {
+    let active_agents = {
+        let supervisor = state.supervisor.lock().await;
+        supervisor
+            .agent_ids()
+            .into_iter()
+            .filter(|agent_id| {
+                supervisor
+                    .snapshot(agent_id)
+                    .is_some_and(|snapshot| snapshot.active)
+            })
+            .collect::<Vec<_>>()
+    };
+    let active_principals = active_agents
+        .iter()
+        .map(ToString::to_string)
+        .collect::<Vec<_>>();
+    let result = {
+        let mut allocator = state.fleet_allocator.lock().await;
+        allocator
+            .maintain(&active_principals, unix_millis_now())
+    };
+    let (denied, maintenance_failed) = match result {
+        Ok(report) => {
+            let missing = report
+                .missing_principals
+                .into_iter()
+                .collect::<std::collections::BTreeSet<_>>();
+            (
+                active_agents
+                    .into_iter()
+                    .filter(|agent_id| missing.contains(agent_id.as_str()))
+                    .collect::<Vec<_>>(),
+                false,
+            )
+        }
+        Err(_) => (active_agents, true),
+    };
+    if denied.is_empty() && !maintenance_failed {
+        return;
+    }
+
+    let mut faults = usize::from(maintenance_failed);
+    if !denied.is_empty() {
+        let mut supervisor = state.supervisor.lock().await;
+        for agent_id in denied {
+            if supervisor
+                .snapshot(&agent_id)
+                .is_some_and(|snapshot| snapshot.active)
+            {
+                let _ = supervisor.kill(&agent_id);
+                faults = faults.saturating_add(1);
+            }
+        }
+    }
+    state
+        .observed_faults
+        .fetch_add(faults as u64, Ordering::Relaxed);
+}
+
+#[cfg(unix)]
+async fn reserve_start_allocation<D: ProcessDriver>(
+    state: &DaemonState<D>,
+    agent_id: &AgentId,
+    accepted: &SupervisordAgentStatus,
+    target: &AgentRelease,
+) -> Result<(), SupervisorError> {
+    let record = state
+        .registry
+        .load()?
+        .agent(agent_id)
+        .cloned()
+        .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+    let lifecycle_generation = record
+        .lifecycle
+        .generation
+        .checked_add(1)
+        .ok_or_else(|| SupervisorError::Invalid("lifecycle generation overflow".to_string()))?;
+    let now_ms = unix_millis_now();
+    let mut allocator = state.fleet_allocator.lock().await;
+    let grant = allocator.reserve_agent_start(
+        agent_id,
+        &record.manifest.resources,
+        lifecycle_generation,
+        target.identity(),
+        accepted.control_fence.state_digest.as_str(),
+        now_ms,
+    )?;
+    let read = allocator.read_grants(now_ms);
+    require_projected_grant(&read, &grant.allocation_id, &grant.semantic_digest)?;
+    Ok(())
+}
+
+#[cfg(unix)]
+fn require_projected_grant(
+    read: &FleetAllocationGrantReadV1,
+    allocation_id: &str,
+    semantic_digest: &str,
+) -> Result<(), SupervisorError> {
+    if read.grants.iter().any(|grant| {
+        grant.allocation_id == allocation_id && grant.semantic_digest == semantic_digest
+    }) {
+        return Ok(());
+    }
+    Err(FleetRuntimeAllocatorError::Invalid(
+        "committed allocation is absent from the current durable grant read".to_string(),
+    )
+    .into())
+}
+
+#[cfg(unix)]
+async fn release_start_allocation<D: ProcessDriver>(
+    state: &DaemonState<D>,
+    agent_id: &AgentId,
+) {
+    let _ = state
+        .fleet_allocator
+        .lock()
+        .await
+        .release_agent(agent_id, unix_millis_now());
+}
+
+#[cfg(unix)]
 async fn handle_mutation<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     operation: SupervisordMutation,
@@ -732,11 +935,32 @@ async fn handle_mutation<D: ProcessDriver>(
         );
     }
 
+    let start_reserved = matches!(&prepared, PreparedMutation::Start(_));
+    if let PreparedMutation::Start(target) = &prepared
+        && let Err(error) =
+            reserve_start_allocation(&state, &agent_id, &actual, target).await
+    {
+        let refreshed = agent_status_locked(&state, &supervisor, &agent_id).ok();
+        return safe_rejection(
+            error,
+            refreshed.or(Some(actual)),
+            /*mutation_started*/ false,
+        );
+    }
+
     let next_revision = match supervisor.next_control_revision(&agent_id) {
         Ok(revision) => revision,
-        Err(error) => return safe_rejection(error, Some(actual), /*mutation_started*/ false),
+        Err(error) => {
+            if start_reserved {
+                release_start_allocation(&state, &agent_id).await;
+            }
+            return safe_rejection(error, Some(actual), /*mutation_started*/ false);
+        }
     };
     if let Err(error) = supervisor.set_control_revision(&agent_id, next_revision) {
+        if start_reserved {
+            release_start_allocation(&state, &agent_id).await;
+        }
         return safe_rejection(error, Some(actual), /*mutation_started*/ false);
     }
 
@@ -1097,6 +1321,11 @@ fn safe_rejection(
         SupervisorError::SignedIntentRecoveryRequired(_) => error_payload(
             "signed_intent_recovery_required",
             "a prior signed lifecycle operation requires recovery",
+            actual,
+        ),
+        SupervisorError::FleetAllocation(_) => error_payload(
+            "resource_unavailable",
+            "fleet resource admission or reconciliation is unavailable",
             actual,
         ),
         SupervisorError::CorruptLease(_)
@@ -1475,6 +1704,7 @@ mod tests {
             "no_previous_release",
             "no_previous_command",
             "unresolved_lease",
+            "resource_unavailable",
             "generation_fenced",
             "control_state_unavailable",
             "operation_indeterminate",

@@ -7,6 +7,7 @@ use std::path::PathBuf;
 use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
+use std::os::unix::process::CommandExt;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
@@ -163,6 +164,7 @@ impl ProcessDriver for UnixProcessDriver {
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
+        arm_parent_death_guard(&mut command)?;
         let mut child = command.spawn()?;
         let health_probe = match HealthProbe::spawn(HealthProbeIdentity::Agentd(
             AgentHealthProbeIdentity::from_spawn(spec, child.id()),
@@ -251,6 +253,7 @@ impl ProcessDriver for UnixProcessDriver {
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
+        arm_parent_death_guard(&mut command)?;
         let mut child = command.spawn()?;
         let health_probe = match HealthProbe::spawn(HealthProbeIdentity::Matrixd(
             MatrixHealthProbeIdentity::from_spawn(spec, child.id()),
@@ -668,6 +671,21 @@ fn spawn_log_reader(
             });
         }
     });
+}
+
+fn arm_parent_death_guard(command: &mut Command) -> Result<(), ProcessDriverError> {
+    let parent_pid = i32::try_from(std::process::id())
+        .map_err(|_| ProcessDriverError::new("supervisor PID does not fit Unix pid_t"))?;
+    // SAFETY: the pre-exec closure performs only the async-signal-safe libc
+    // setup encapsulated by codex-utils-pty before exec. On Linux it arms
+    // PDEATHSIG and rechecks the parent PID to close the fork/exec race; on
+    // other Unix targets the helper is a no-op and recovery remains authoritative.
+    unsafe {
+        command.pre_exec(move || {
+            codex_utils_pty::process_group::set_parent_death_signal(parent_pid)
+        });
+    }
+    Ok(())
 }
 
 fn send_signal(pid: u32, signal: i32) -> Result<(), ProcessDriverError> {
