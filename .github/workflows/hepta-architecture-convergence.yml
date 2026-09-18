@@ -148,10 +148,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if cargo metadata --locked --format-version=1 >/dev/null; then
+          set +e
+          cargo metadata --locked --format-version=1 >/dev/null
+          locked_status=$?
+          set -e
+          if [ "$locked_status" -eq 0 ]; then
             exit 0
           fi
-          locked_status=$?
           echo "::error::Cargo.lock differs from the exact candidate manifests"
           cargo metadata --offline --format-version=1 >/dev/null
           git diff -- Cargo.lock
