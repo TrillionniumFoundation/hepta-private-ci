@@ -30,7 +30,7 @@ must provide the separate owner authorization required by its own contract.
 | `candidate.py` | Compatibility candidate grammar, exact Git materialization and isolation; immutable oracle-path classifier | Public facade and CLI |
 | `candidate_bundle.py` | Atomic multi-file/rename candidate grammar using the same exact-source sandbox boundary | Product-facing candidate pipeline |
 | `orchestration.py` | Authenticated source issuance, signed predecessor completion, worker/review/CI planning and merge-queue proposals | Named product caller and owner store |
-| `execution_control.py` | Cross-process host sandbox slots, infrastructure-only retries and mutation-test admission | Strong qualification runner |
+| `execution_control.py` | Cross-process host sandbox slots, infrastructure-only retries and mutation-test admission | Public facade/CLI and strong qualification runner |
 | `external_control.py` | External leader/fence, audit-anchor and hardware key-custody receipt verification | Worker/deployment boundary |
 | `evidence.py` | Exact Git objects, source/completion/execution receipts and independent identities | Candidate evidence binder |
 | `hardening.py` | Active-state frontier and authenticated evidence/consent primitives | Store, closure and seal |
@@ -154,10 +154,13 @@ One elapsed time budget covers all checks. Source HEAD/tree/refs/worktree and
 candidate manifests are checked after every command, so a later check cannot hide
 an earlier mutation. Resource and isolation failure rejects or produces a failing
 receipt; no checks cannot pass. A production check runner must use an admitted
-strong profile. `HostSandboxLimiter` caps strong execution at eight concurrent
-sandboxes per host using cross-process locks, and the retry wrapper permits no more
-than two retries for enumerated infrastructure failures. Semantic rejection is never
-retried unchanged. Generated-test admission requires a nonempty mutation-probe set
+strong profile. The canonical v2 facade and CLI automatically route strong candidate
+and candidate-bundle execution through one host-wide `HostSandboxLimiter`; separate
+processes converge on the same lock namespace, so they cannot each create a private
+eight-slot pool. Strong execution is capped at eight concurrent sandboxes per host,
+and the canonical retry wrapper permits no more than two retries for enumerated
+infrastructure failures. Portable fixture execution remains single-attempt and can
+never produce `sandbox_tested`. Semantic rejection is never retried unchanged. Generated-test admission requires a nonempty mutation-probe set
 and fails while any declared mutant survives. This bounded executor has no
 autonomous merge or deployment loop.
 
