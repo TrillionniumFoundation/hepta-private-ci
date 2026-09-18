@@ -17,14 +17,19 @@ bounded JSON bytes
 -> ObjectiveSourceEnvelopeV1::validate_structure
 -> authenticate source and principal scope
 -> bind exact ObjectiveAdmissionProfileV1 digest
--> normalize and map every represented semantic field
--> check_feasibility_v1
--> compile
+-> normalize and map every supported represented semantic field
+   -> unsupported/unrepresentable V1 operators reject deterministically
+-> adapt_source
+-> crate::compiler::compile
+   -> scalar_conflict
+      -> check_feasibility_v1   # legacy normalized scalar hard constraints only
 -> ObjectiveAdmissionReceiptV1
 -> ObjectiveCompileReceiptV1 | ObjectiveConflictReceiptV1
 ```
 
-No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
+The generic `check_feasibility_v1(RegisteredGrammarV1, ConstraintAtomV1, OracleBudgetV1)` API is also a direct typed API. Its enumeration, action-implication and immutable-identity grammar is broader than the current `ObjectiveSourceEnvelopeV1 -> adapt_source -> compiler` compatibility path. Documentation and tests must not imply that generic grammar support is automatically reachable from Source V1.
+
+No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A represented field is either mapped exactly or rejected with a stable error; deterministic rejection is not semantic support. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
 
 ## 2. Input grammar and canonical IR
 
@@ -44,6 +49,22 @@ provenance: exact source and normalization-profile digests
 Free text is evidence for intent extraction, never the final authority representation. Every predicate has an identifier, unit, comparator, bound, evidence source and terminality. Arrays are stable-sorted by semantic identifier. Unicode uses the selected normalization profile; timestamps are UTC; durations are integer microseconds; numeric values use registered fixed-point profiles. Duplicate semantic keys are rejected.
 
 The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Every payload and collection has both count and encoded-byte bounds. Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and 256 KiB of encoded profile semantics; risk and rollback levels must be monotone.
+
+### 2.1 Source V1 semantic support matrix
+
+| Source V1 syntax / field | Admission result | Native representation | Feasibility path | Runtime objective result |
+|---|---|---|---|---|
+| scalar `eq`, `lte`, `gte` | supported when profile/unit/ID bindings match | `ConstraintRelation::{Equal,AtMost,AtLeast}` | private compiler scalar adapter -> `check_feasibility_v1` | retained as hard constraint |
+| strict `ne`, `lt`, `gt` | deterministic `OBJ-E002 UnsupportedComparator` | none | none | no objective published |
+| `in`, `not_in` in `ObjectiveSourceConstraintV1` | deterministic `OBJ-E002 UnsupportedComparator` in V1 because that source record carries one scalar `bound_q32`, not a finite value set | none | none through Source V1 | no objective published |
+| generic typed enumeration `Include/Exclude` | supported only for direct `ConstraintAtomV1` callers with a registered enumeration domain | `RegisteredDomainV1::Enumeration` | direct `check_feasibility_v1` | advisory feasibility receipt; not automatically an `ObjectiveFunctionV1` |
+| generic typed action `RequireAction/ForbidAction/Implies` | supported only for direct typed feasibility callers | `RegisteredDomainV1::Action` | direct bounded Horn closure | advisory feasibility receipt |
+| generic typed immutable identity equality | supported only for direct typed feasibility callers | `RegisteredDomainV1::ImmutableIdentity` | direct `check_feasibility_v1` | advisory feasibility receipt |
+| legal/forbidden/confirmation action classes | supported when every class has an exact action-profile mapping | `ActionClass` plus intrinsic `abstain` | compiler legal-set construction | retained in legal action set or explicit conflict |
+| success + terminal predicates | supported when every predicate/profile/unit binding is exact | `SuccessPredicate` | compiler digest/output | retained in immutable objective |
+| resources, risk, rollback, compensation, abstention rule and evidence requirements | supported by exact profile mapping into native constraints/predicates | bounded native constraints/predicates | compiler scalar feasibility | retained in objective semantics |
+
+A future Source protocol that carries finite enumeration values may connect `in/not_in` to the generic feasibility grammar. V1 must not guess a set from `bound_q32`, reinterpret strict inequalities, or claim generic typed feasibility coverage as Source V1 coverage.
 
 ## 3. Constraint precedence and conflict resolution
 
