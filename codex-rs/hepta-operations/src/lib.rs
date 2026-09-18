@@ -2,7 +2,9 @@
 //! ledger/outbox.
 //!
 //! `OperationLedger` and `Outbox` remain deterministic in-memory reference
-//! models used as semantic oracles. `DurableOperationStore` is the persistent
+//! models used as semantic oracles. The legacy surface is an In-memory reference model;
+//! it does not provide durable storage. Durability is supplied only by the separate
+//! `DurableOperationStore` path. `DurableOperationStore` is the persistent
 //! implementation: it atomically co-commits intent and local outbox state,
 //! fences claims with bounded leases, survives reopen, prevents blind retry
 //! after dispatch start, supports owner/authority handoff, and reconciles only
