@@ -1112,14 +1112,14 @@ async fn verify_current_projection_contents(
         let stored_kernel: Option<String> = current
             .try_get("kernel_generation_sha256")
             .map_err(unavailable)?;
+        let expected_kernel = build_kernel_generation(
+            &projection_scope,
+            generation,
+            &expected_input,
+            &expected_nodes,
+            &expected_edges,
+        )?;
         if let Some(stored_kernel) = stored_kernel {
-            let expected_kernel = build_kernel_generation(
-                &projection_scope,
-                generation,
-                &expected_input,
-                &expected_nodes,
-                &expected_edges,
-            )?;
             if expected_kernel.generation_digest.to_string() != stored_kernel {
                 return Err(CognitiveStoreError::Corrupt(format!(
                     "KG current projection `{projection_scope}` canonical kernel digest failed recomputation"
