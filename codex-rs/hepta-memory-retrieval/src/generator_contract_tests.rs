@@ -126,8 +126,9 @@ fn generator_contract_rejects_generation_drift_and_invalid_truncation() {
     );
 
     let mut truncated = batch(&cue);
-    truncated.completeness =
-        RetrievalChannelCompletenessV1::Truncated { omitted_at_least: 0 };
+    truncated.completeness = RetrievalChannelCompletenessV1::Truncated {
+        omitted_at_least: 0,
+    };
     assert_eq!(
         recall_from_batches(&cue, &policy(16), vec![truncated]),
         Err(GeneratorContractErrorV1::InvalidTruncation)
@@ -143,16 +144,15 @@ fn generator_contract_enforces_hnmf_result_ceiling() {
     );
 }
 
-
 #[test]
 fn generator_completeness_changes_product_receipt() {
     let cue = cue();
     let exhausted = recall_from_batches(&cue, &policy(16), vec![batch(&cue)]).unwrap();
     let mut truncated_batch = batch(&cue);
-    truncated_batch.completeness =
-        RetrievalChannelCompletenessV1::Truncated { omitted_at_least: 1 };
-    let truncated =
-        recall_from_batches(&cue, &policy(16), vec![truncated_batch]).unwrap();
+    truncated_batch.completeness = RetrievalChannelCompletenessV1::Truncated {
+        omitted_at_least: 1,
+    };
+    let truncated = recall_from_batches(&cue, &policy(16), vec![truncated_batch]).unwrap();
 
     assert_eq!(exhausted.recall, truncated.recall);
     assert_ne!(
