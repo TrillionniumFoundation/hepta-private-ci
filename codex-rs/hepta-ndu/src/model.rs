@@ -56,6 +56,10 @@ pub struct RequiredOrganSet {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct UtilityProfile {
     pub profile_id: StableId,
+    /// Immutable digest of axis units, normalization, scales and registry
+    /// semantics. This prevents a stable profile ID from silently changing its
+    /// numerical meaning between evaluations.
+    pub axis_semantics_digest: Digest32,
     pub dimensions: Vec<(StableId, AxisDirection)>,
     pub risk_ceilings: Vec<AxisLimit>,
     pub resource_ceilings: Vec<AxisLimit>,
