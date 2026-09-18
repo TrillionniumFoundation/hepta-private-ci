@@ -290,9 +290,16 @@ impl MatrixSyncComposer<'_> {
                 let event_id =
                     MatrixEventId::parse(event_id).map_err(|_| MatrixSdkError::Sync)?;
                 let key = event_id.as_str().to_string();
-                if let Some((prior_txn, prior_room)) = observations.get(&key) {
-                    if prior_txn != &txn_id || prior_room != &room_id {
+                if let Some((prior_txn, prior_room)) = observations.get_mut(&key) {
+                    if prior_room != &room_id {
                         return Err(MatrixSdkError::Sync);
+                    }
+                    match (prior_txn.as_ref(), txn_id.as_ref()) {
+                        (Some(prior), Some(current)) if prior != current => {
+                            return Err(MatrixSdkError::Sync);
+                        }
+                        (None, Some(_)) => *prior_txn = txn_id,
+                        _ => {}
                     }
                 } else {
                     observations.insert(key, (txn_id, room_id));
