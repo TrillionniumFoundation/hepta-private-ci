@@ -650,16 +650,14 @@ async fn ensure_dispatch_for_claim_tx(
     if attempt == 0 {
         return Err(MatrixDurableError::Invalid);
     }
-    let operation_id: String = sqlx::query_scalar(
-        "SELECT logical_outbox_id FROM outbox_messages WHERE outbox_id = ?",
-    )
-    .bind(to_i64(record.outbox_id)?)
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
+    let operation_id = format!("matrix-send:{}", record.stable_txn_id.as_str());
     let payload_sha256 = Sha256Digest::for_bytes(&record.payload);
-    let authority_identity =
-        format!("matrix-binding:{}:{}", record.binding_revision, record.generation);
+    let authority_identity = format!(
+        "matrix-binding:{}:{}:{}",
+        record.room_id.as_str(),
+        record.binding_revision,
+        record.generation
+    );
     if let Some(existing) = dispatch_by_txn_tx(transaction, &record.stable_txn_id).await? {
         if existing.operation_id != operation_id
             || existing.room_id != record.room_id
