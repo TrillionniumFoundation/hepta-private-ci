@@ -548,7 +548,7 @@ fn run_agent_child() -> Result<()> {
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
-        let drain_requested = matches!(request.method, AgentdMethod::Drain);
+        let drain_requested = matches!(&request.method, AgentdMethod::Drain);
         let payload = match request.method {
             AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
