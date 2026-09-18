@@ -201,6 +201,7 @@ fn fixture() -> Fixture {
         &portfolio,
         &exercise,
         &exercise_request,
+        &Accept,
         PromptContextPreparationRequestV1 {
             compilation_id: id("compilation:exposure"),
             serialization_id: id("serialization:exposure"),
