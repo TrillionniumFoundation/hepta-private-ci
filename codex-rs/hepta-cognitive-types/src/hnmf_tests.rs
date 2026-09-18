@@ -174,6 +174,46 @@ fn canonical_json_denies_unknown_fields_and_noncanonical_whitespace() {
     ));
 }
 
+
+#[test]
+fn canonical_json_golden_vectors_are_stable() {
+    let outcome = OutcomeSignalV1::try_new(
+        1,
+        -7,
+        11,
+        13,
+        17,
+        19,
+        digest(b"observer"),
+    )
+    .unwrap();
+    let outcome_bytes =
+        include_bytes!("../testdata/hnmf-wire-v1/outcome_signal_v1.json").as_slice();
+    assert_eq!(canonical_json_bytes(&outcome).unwrap(), outcome_bytes);
+    assert_eq!(
+        canonical_json_digest(&outcome).unwrap().to_string(),
+        "94f1ea223042fd0fd5ab8b1b5294dabb71813aca7735674aa4145d180ff8306d"
+    );
+
+    let cue = MemoryCueV1::try_new(
+        7,
+        digest(b"objective"),
+        digest(b"ndu"),
+        BTreeSet::from([ModalityKindV1::Text]),
+        BTreeSet::from(["door".to_owned()]),
+        BTreeSet::new(),
+        1,
+        ResourceBudgetV1::hnmf_default(),
+    )
+    .unwrap();
+    let cue_bytes = include_bytes!("../testdata/hnmf-wire-v1/memory_cue_v1.json").as_slice();
+    assert_eq!(canonical_json_bytes(&cue).unwrap(), cue_bytes);
+    assert_eq!(
+        canonical_json_digest(&cue).unwrap().to_string(),
+        "3416b1ec9cec8809423b33f4d8b5bc9758ad7a2c46b2f8f560d93e35a1b13087"
+    );
+}
+
 #[test]
 fn topology_and_plasticity_cannot_self_activate() {
     let topology = TopologyProposalV1::try_new(
