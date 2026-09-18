@@ -358,7 +358,7 @@ fn present_optional_capabilities_invoke_native_owner_ports() {
 }
 
 #[test]
-fn abstention_stops_before_context_evaluation_and_durable_record() {
+fn abstention_skips_dispatch_inputs_but_records_the_decision() {
     let request = request(false);
     let control = Control::new(request.started_at_micros);
     let mut ports = Ports::new(&request);
@@ -368,12 +368,16 @@ fn abstention_stops_before_context_evaluation_and_durable_record() {
     assert_eq!(receipt.disposition, CompositionDispositionV3::Abstained);
     assert_eq!(
         receipt.stages.last().map(|stage| stage.stage),
-        Some(CompositionStageV3::IntuitionDecided)
+        Some(CompositionStageV3::DecisionRecorded)
+    );
+    assert_eq!(
+        receipt.stages.last().map(|stage| stage.outcome),
+        Some(StageOutcomeV3::Completed)
     );
     assert!(receipt.envelope.is_none());
     assert!(!ports.calls.contains(&CompositionStageV3::ContextCompiled));
     assert!(!ports.calls.contains(&CompositionStageV3::EvaluationAdmitted));
-    assert!(!ports.calls.contains(&CompositionStageV3::DecisionRecorded));
+    assert!(ports.calls.contains(&CompositionStageV3::DecisionRecorded));
 }
 
 #[test]
@@ -456,7 +460,6 @@ fn candidate_set_digest_is_canonical_under_input_reordering() {
     .expect("candidate set");
     assert_eq!(first.digest(), second.digest());
 }
-
 
 #[test]
 fn caller_candidate_limit_reserves_ledger_control_slots() {
