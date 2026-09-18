@@ -48,6 +48,136 @@ fn vector(cut: &DurableCognitiveSnapshot) -> LaneCGenerationVectorV1 {
 }
 
 #[tokio::test]
+async fn durable_lane_c_pages_preserve_ancestry_and_global_tombstone_frontier() {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(100);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "page-source", "evidence"))
+        .await
+        .unwrap();
+
+    let first = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "page-a".to_string(),
+                revision: memory_revision(scope.clone(), "a-v1", citation.clone()),
+            },
+        )
+        .await
+        .unwrap();
+    store
+        .correct_memory(
+            &access,
+            &first.id.memory_id,
+            first.id.revision,
+            &memory_revision(scope.clone(), "a-v2", citation.clone()),
+        )
+        .await
+        .unwrap();
+    let second = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "page-b".to_string(),
+                revision: memory_revision(scope.clone(), "b-v1", citation.clone()),
+            },
+        )
+        .await
+        .unwrap();
+    store
+        .forget_memory(
+            &access,
+            &second.id.memory_id,
+            second.id.revision,
+            &ForgetMemoryDraft {
+                scope: scope.clone(),
+                reason: "page delete".to_string(),
+                valid_from_unix_seconds: 200,
+                citations: vec![citation],
+            },
+        )
+        .await
+        .unwrap();
+
+    let full = store.lane_c_snapshot(&access, &scope, 300).await.unwrap();
+    let first_page = store
+        .lane_c_snapshot_page(&access, &scope, 300, 1, None)
+        .await
+        .unwrap();
+    assert_eq!(first_page.frontiers(), full.frontiers());
+    assert_eq!(first_page.frontiers().tombstone, 1);
+    assert!(!first_page.is_complete());
+    assert_eq!(first_page.authority(), codex_hepta_types::AuthorityPosture::DENY_ALL);
+    let cursor = first_page.next().cloned().expect("continuation");
+
+    let second_page = store
+        .lane_c_snapshot_page(&access, &scope, 300, 1, Some(cursor))
+        .await
+        .unwrap();
+    assert_eq!(second_page.frontiers(), full.frontiers());
+    assert!(second_page.is_complete());
+
+    let mut records = first_page.records().to_vec();
+    records.extend_from_slice(second_page.records());
+    records.sort_by(|left, right| left.record_id.cmp(&right.record_id));
+    let mut expected = full.snapshot().records.clone();
+    expected.sort_by(|left, right| left.record_id.cmp(&right.record_id));
+    assert_eq!(records, expected);
+    assert!(records.iter().any(|record| {
+        record.revision.get() == 2 && record.predecessor_digest.is_some()
+    }));
+}
+
+#[tokio::test]
+async fn durable_lane_c_page_continuation_rejects_intervening_owner_change() {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(99);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "stable-source", "evidence"))
+        .await
+        .unwrap();
+    for key in ["stable-a", "stable-b"] {
+        store
+            .remember_memory(
+                &access,
+                &MemoryDraft {
+                    stable_key: key.to_string(),
+                    revision: memory_revision(scope.clone(), key, citation.clone()),
+                },
+            )
+            .await
+            .unwrap();
+    }
+    let first_page = store
+        .lane_c_snapshot_page(&access, &scope, 300, 1, None)
+        .await
+        .unwrap();
+    let cursor = first_page.next().cloned().expect("continuation");
+
+    store
+        .append_source(
+            &access,
+            &source(scope.clone(), "intervening-source", "new evidence"),
+        )
+        .await
+        .unwrap();
+
+    assert!(matches!(
+        store
+            .lane_c_snapshot_page(&access, &scope, 300, 1, Some(cursor))
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+}
+
+#[tokio::test]
 async fn existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen() {
     let temp = TempDir::new().unwrap();
     let owner = agent_id(101);
