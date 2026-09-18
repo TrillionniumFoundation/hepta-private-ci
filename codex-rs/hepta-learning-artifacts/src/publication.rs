@@ -19,7 +19,10 @@ use codex_hepta_types::StableId;
 use crate::ArtifactAdmissionError;
 use crate::ArtifactEvent;
 use crate::ArtifactManifest;
+use crate::ArtifactRegistry;
+use crate::ArtifactRegistryError;
 use crate::DatasetWithdrawalRegistry;
+use crate::RegistryAppendDisposition;
 use crate::RegistryAppendReceipt;
 use crate::RegistryHeadRequirementV1;
 use crate::RegistryHeadWitnessReceipt;
@@ -245,6 +248,87 @@ pub struct ArtifactPublicationRegistryBindingV1 {
     pub predecessor_head_digest: Digest32,
 }
 
+#[derive(Clone, Debug)]
+pub struct StagedArtifactPublicationV1 {
+    registry: ArtifactRegistry,
+    append_receipt: RegistryAppendReceipt,
+    transaction: ArtifactPublicationTransactionV1,
+}
+
+impl StagedArtifactPublicationV1 {
+    #[must_use]
+    pub fn registry(&self) -> &ArtifactRegistry {
+        &self.registry
+    }
+
+    #[must_use]
+    pub fn append_receipt(&self) -> &RegistryAppendReceipt {
+        &self.append_receipt
+    }
+
+    #[must_use]
+    pub fn transaction(&self) -> &ArtifactPublicationTransactionV1 {
+        &self.transaction
+    }
+
+    #[must_use]
+    pub fn into_parts(
+        self,
+    ) -> (
+        ArtifactRegistry,
+        RegistryAppendReceipt,
+        ArtifactPublicationTransactionV1,
+    ) {
+        (self.registry, self.append_receipt, self.transaction)
+    }
+}
+
+/// Build the next in-memory registry and publication contract without mutating
+/// the caller's current durable working state.
+///
+/// A host can discard this value on any later failure without contaminating the
+/// registry instance from which its current durable snapshot was loaded. The host
+/// still owns the authenticated writer fence and durable snapshot/witness steps.
+pub fn stage_artifact_publication_v1(
+    current_registry: &ArtifactRegistry,
+    registry_id: StableId,
+    operation_id: StableId,
+    admission: &WithdrawalBoundArtifactAdmissionV3,
+    withdrawal_registry: &DatasetWithdrawalRegistry,
+    now: u64,
+) -> Result<StagedArtifactPublicationV1, ArtifactPublicationError> {
+    validate_artifact_publication_v3(admission, withdrawal_registry, now)
+        .map_err(ArtifactPublicationError::Admission)?;
+
+    let predecessor_head_digest = current_registry.snapshot().head_digest;
+    let event = artifact_registry_event_for_admission_v3(operation_id.clone(), admission)?;
+    let mut registry = current_registry.clone();
+    let append_receipt = registry
+        .append(event)
+        .map_err(ArtifactPublicationError::Registry)?;
+    if append_receipt.disposition != RegistryAppendDisposition::Appended {
+        return Err(ArtifactPublicationError::OperationAlreadyPresent);
+    }
+
+    let transaction = prepare_artifact_publication_v1(
+        operation_id,
+        admission,
+        withdrawal_registry,
+        now,
+        &append_receipt,
+        ArtifactPublicationRegistryBindingV1 {
+            registry_id,
+            predecessor_head_digest,
+        },
+    )?;
+
+    Ok(StagedArtifactPublicationV1 {
+        registry,
+        append_receipt,
+        transaction,
+    })
+}
+
 pub fn prepare_artifact_publication_v1(
     operation_id: StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
@@ -363,12 +447,14 @@ fn push_stable_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ArtifactPublicationError {
     Admission(ArtifactAdmissionError),
+    Registry(ArtifactRegistryError),
     InvalidBinding,
     RegistryEventMismatch,
     RegistryChainMismatch,
     ContractBindingMismatch,
     OperationIdentityMismatch,
     OperationIdentityConflict,
+    OperationAlreadyPresent,
     MultiDatasetProjectionUnsupported,
     MultiPredecessorProjectionUnsupported,
     SnapshotReceiptMismatch,
@@ -384,7 +470,28 @@ impl fmt::Display for ArtifactPublicationError {
     }
 }
 
-impl Error for ArtifactPublicationError {}
+impl Error for ArtifactPublicationError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::Admission(error) => Some(error),
+            Self::Registry(error) => Some(error),
+            Self::InvalidBinding
+            | Self::RegistryEventMismatch
+            | Self::RegistryChainMismatch
+            | Self::ContractBindingMismatch
+            | Self::OperationIdentityMismatch
+            | Self::OperationIdentityConflict
+            | Self::OperationAlreadyPresent
+            | Self::MultiDatasetProjectionUnsupported
+            | Self::MultiPredecessorProjectionUnsupported
+            | Self::SnapshotReceiptMismatch
+            | Self::WitnessReceiptMismatch
+            | Self::SnapshotNotDurable
+            | Self::WitnessNotDurable
+            | Self::PhaseConflict => None,
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -631,6 +738,79 @@ mod tests {
             recover_artifact_publication_v1(contract, None, Some((&head, receipt))),
             Err(ArtifactPublicationError::SnapshotNotDurable)
         );
+    }
+
+    #[test]
+    fn staged_publication_keeps_current_registry_unmodified_until_host_commit() {
+        let withdrawal_registry = scoped_registry();
+        let admitted = crate::admit_manifest_at_withdrawal_head_v3(
+            &withdrawal_registry,
+            withdrawal_registry.snapshot().head_digest,
+            admission().validated_manifest.manifest,
+            20,
+        )
+        .expect("admission");
+        let current = ArtifactRegistry::new();
+
+        let staged = stage_artifact_publication_v1(
+            &current,
+            id("artifacts"),
+            id("operation"),
+            &admitted,
+            &withdrawal_registry,
+            20,
+        )
+        .expect("stage publication");
+
+        assert!(current.records().is_empty());
+        assert_eq!(staged.registry().records().len(), 1);
+        assert_eq!(
+            staged.append_receipt().disposition,
+            RegistryAppendDisposition::Appended
+        );
+        assert_eq!(
+            staged.transaction().phase(),
+            ArtifactPublicationPhaseV1::Prepared
+        );
+        assert_eq!(
+            staged.transaction().contract().registry_predecessor_head_digest,
+            Digest32::ZERO
+        );
+        assert_eq!(
+            staged.transaction().contract().registry_successor_head_digest,
+            staged.append_receipt().chain_digest
+        );
+    }
+
+    #[test]
+    fn staged_publication_failure_cannot_poison_current_registry() {
+        let withdrawal_registry = scoped_registry();
+        let mut manifest = admission().validated_manifest.manifest;
+        manifest.predecessor_ids = vec![id("missing-parent")];
+        manifest.rollback_predecessor = Some(id("missing-parent"));
+        let admitted = crate::admit_manifest_at_withdrawal_head_v3(
+            &withdrawal_registry,
+            withdrawal_registry.snapshot().head_digest,
+            manifest,
+            20,
+        )
+        .expect("admission");
+        let current = ArtifactRegistry::new();
+
+        assert_eq!(
+            stage_artifact_publication_v1(
+                &current,
+                id("artifacts"),
+                id("operation"),
+                &admitted,
+                &withdrawal_registry,
+                20,
+            ),
+            Err(ArtifactPublicationError::Registry(
+                ArtifactRegistryError::PredecessorNotFound("missing-parent".to_owned())
+            ))
+        );
+        assert!(current.records().is_empty());
     }
 
     #[test]
