@@ -70,6 +70,7 @@ EXPECTED_OPERATIONS = {
         "estimate_sequential",
         "freeze_cross_fold_plan_v2",
         "FencedFinalHoldoutOwnerV1::consume",
+        "FencedFinalHoldoutOwnerV1::reconcile_pending",
         "decide_with_signed_evidence_v2",
         "decide_with_signed_longitudinal_evidence_v3",
     },
