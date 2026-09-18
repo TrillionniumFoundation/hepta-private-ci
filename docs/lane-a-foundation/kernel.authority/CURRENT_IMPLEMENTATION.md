@@ -111,10 +111,14 @@ explicit; it never converts uncertainty into a reset.
 
 ## Capacity lifecycle
 
-General leases are bounded at 16,384 live lease records and 16,384 revocation
-records. `prune_expired_leases` can reclaim at most 1,024 expired unrevoked
-leases per call. Revocation tombstones are not silently collected within an
-epoch. Epoch advance fences prior authority and clears bounded history.
+General leases are bounded at 16,384 live lease records, 16,384 revocation
+records and 16,384 compact retired-id revision records. `prune_expired_leases`
+can reclaim at most 1,024 expired unrevoked lease payloads per call while
+retaining the last revision for each pruned lease id. Same-epoch reuse must
+continue at the retired revision plus one, so GC cannot reset an old identity to
+revision 1. Revocation and retired-id tombstones are not silently discarded;
+capacity exhaustion requires authority epoch rollover. Epoch advance fences
+prior authority and clears bounded history.
 
 FinalUse nonce/revocation history remains explicitly bounded and is cleared only
 by a stronger trusted epoch transition. There is no silent replay-history
@@ -122,17 +126,27 @@ eviction.
 
 ## Source composition
 
-The strongest source-composed product boundary is currently the registered Bao
-host in `codex-rs/hepta-bao-adapter/src/final_use_host.rs`. B4 restricts the
-lower `BaoClient::consume_kv_v2` caller set to that host and independently
+The registered Bao host in
+`codex-rs/hepta-bao-adapter/src/final_use_host.rs` remains the strongest
+secret-delivery source boundary. B4 restricts the lower
+`BaoClient::consume_kv_v2` caller set to that host and independently
 inventories the raw authority APIs.
 
-There is still **no selected deployed product process** for that host in this
-candidate. The other registered target ModulePorts (AuthBus, Servo, Matrix,
-inference, memory federation, Codex, fleet and supervisor generic-authority
-ports) do not become implemented merely because the general lease primitive
-exists. Existing module-specific authority/fence mechanisms keep their own
-semantics and are not re-labelled as kernel.authority composition.
+The architecture integration candidate also contains a real Agentd-owned
+Browser/Servo FinalUse composition in
+`codex-rs/hepta-agentd/src/browser_servo.rs`. Agentd claims the signed grant
+and holds `FinalUseAuthority::with_dispatch_boundary` only across the private
+Browser durable/local-worker dispatch handshake. The Browser side receives a
+request-bound witness over the private channel; it never receives or serializes
+the opaque Rust token.
+
+There is still **no selected deployed product process** for the registered Bao
+host and no generic `AuthorityLeaseVerifier` product consumer. AuthBus,
+Matrix, inference, memory federation, Codex, fleet and supervisor
+generic-authority ports therefore remain target-only unless the traceability
+table names a concrete caller. Existing module-specific authority/fence
+mechanisms keep their own semantics and are not re-labelled as generic
+kernel.authority composition.
 
 ## Verification added by this candidate
 
@@ -141,7 +155,7 @@ Current source tests cover, among other cases:
 - stale-token denial after lease replacement;
 - exact revocation retry semantics including timestamp;
 - bound-clock lease verification;
-- bounded expired-lease pruning;
+- bounded expired-lease pruning and monotonic lease-id reissue after pruning;
 - external general-lease snapshot rollback detection;
 - injected FinalUse clock;
 - external FinalUse claim-snapshot rollback detection;
@@ -158,8 +172,8 @@ verification/delivery methods, the bounded dispatch fence and lease pruning.
 
 Repository source does not manufacture or claim:
 
-- a selected product process for the registered Bao host;
-- generic kernel.authority composition for every target ModulePort;
+- a selected deployed product process for the registered Bao host;
+- generic `AuthorityLeaseVerifier` composition for every remaining target ModulePort;
 - fleet revocation transport/consensus or a measured convergence-latency SLA (signed per-node convergence evidence is implemented);
 - an attested production clock;
 - a deployed rollback-resistant external frontier store;
