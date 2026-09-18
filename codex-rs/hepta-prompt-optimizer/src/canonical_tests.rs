@@ -92,12 +92,14 @@ fn evidence(candidate_id: StableId, utility: i64) -> CandidateEvidenceV1 {
     CandidateEvidenceV1 {
         candidate_id,
         causal_utility: FixedQ32::from_raw(utility),
+        token_shadow_cost: FixedQ32::ZERO,
         latency_cost: FixedQ32::ZERO,
         crowding_cost: FixedQ32::ZERO,
         interference_cost: FixedQ32::ZERO,
         privacy_cost: FixedQ32::ZERO,
         instability_cost: FixedQ32::ZERO,
         future_option_cost: FixedQ32::ZERO,
+        resource_cost: FixedQ32::ZERO,
         support_digest: digest(b"support"),
         confidence_digest: digest(b"confidence"),
         applicability_digest: digest(b"applicability"),
@@ -203,6 +205,6 @@ fn pricing_subtracts_all_non_token_cost_dimensions() {
     row.future_option_cost = FixedQ32::from_raw(2);
     let other = evidence(candidates.candidates[1].candidate_id.clone(), 1);
     let pricing = must(price_factors(&candidates, vec![row, other]));
-    assert_eq!(pricing.prices[0].non_token_cost, FixedQ32::from_raw(13));
+    assert_eq!(pricing.prices[0].total_utility_cost, FixedQ32::from_raw(13));
     assert_eq!(pricing.prices[0].net_utility, FixedQ32::from_raw(7));
 }
