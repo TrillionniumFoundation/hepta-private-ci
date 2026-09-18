@@ -218,16 +218,26 @@ pub fn artifact_registry_event_for_admission_v3(
     })
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ArtifactPublicationRegistryBindingV1 {
+    pub registry_id: StableId,
+    pub predecessor_head_digest: Digest32,
+    pub snapshot_binding: Digest32,
+}
+
 pub fn prepare_artifact_publication_v1(
     operation_id: StableId,
-    registry_id: StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
     withdrawal_registry: &DatasetWithdrawalRegistry,
     now: u64,
-    registry_predecessor_head_digest: Digest32,
     append_receipt: &RegistryAppendReceipt,
-    snapshot_binding: Digest32,
+    registry_binding: ArtifactPublicationRegistryBindingV1,
 ) -> Result<ArtifactPublicationTransactionV1, ArtifactPublicationError> {
+    let ArtifactPublicationRegistryBindingV1 {
+        registry_id,
+        predecessor_head_digest: registry_predecessor_head_digest,
+        snapshot_binding,
+    } = registry_binding;
     validate_artifact_publication_v3(admission, withdrawal_registry, now)
         .map_err(ArtifactPublicationError::Admission)?;
     if append_receipt.event_digest.is_zero()
@@ -391,6 +401,17 @@ mod tests {
             sequence,
             event_digest,
             chain_digest: digest_chain(predecessor, sequence, event_digest),
+        }
+    }
+
+    fn publication_binding(
+        predecessor_head_digest: Digest32,
+        snapshot_binding: Digest32,
+    ) -> ArtifactPublicationRegistryBindingV1 {
+        ArtifactPublicationRegistryBindingV1 {
+            registry_id: id("artifacts"),
+            predecessor_head_digest,
+            snapshot_binding,
         }
     }
 
@@ -583,13 +604,11 @@ mod tests {
         let receipt = append_receipt(operation_id.clone(), &admitted, predecessor);
         let transaction = prepare_artifact_publication_v1(
             operation_id.clone(),
-            id("artifacts"),
             &admitted,
             &registry,
             20,
-            predecessor,
             &receipt,
-            digest("binding"),
+            publication_binding(predecessor, digest("binding")),
         )
         .expect("publication contract");
         assert_eq!(transaction.contract().operation_id, operation_id);
@@ -605,13 +624,11 @@ mod tests {
         assert_eq!(
             prepare_artifact_publication_v1(
                 id("operation"),
-                id("artifacts"),
                 &admitted,
                 &registry,
                 20,
-                predecessor,
                 &wrong_event,
-                digest("binding"),
+                publication_binding(predecessor, digest("binding")),
             ),
             Err(ArtifactPublicationError::RegistryEventMismatch)
         );
@@ -621,13 +638,11 @@ mod tests {
         assert_eq!(
             prepare_artifact_publication_v1(
                 id("operation"),
-                id("artifacts"),
                 &admitted,
                 &registry,
                 20,
-                predecessor,
                 &wrong_chain,
-                digest("binding"),
+                publication_binding(predecessor, digest("binding")),
             ),
             Err(ArtifactPublicationError::RegistryChainMismatch)
         );
@@ -655,13 +670,11 @@ mod tests {
         assert!(matches!(
             prepare_artifact_publication_v1(
                 operation_id,
-                id("artifacts"),
                 &stale,
                 &registry,
                 20,
-                predecessor,
                 &receipt,
-                binding,
+                publication_binding(predecessor, binding),
             ),
             Err(ArtifactPublicationError::Admission(_))
         ));
