@@ -355,7 +355,7 @@ fn decode_lifecycle_snapshot(
 }
 
 fn parse_id(value: &str) -> Result<StableId, ArtifactStorageError> {
-    StableId::new(value.to_owned()).map_err(|_| ArtifactStorageError::Corrupt)
+    StableId::new(value).map_err(|_| ArtifactStorageError::Corrupt)
 }
 
 fn parse_digest(value: &str) -> Result<Digest32, ArtifactStorageError> {
