@@ -40,8 +40,8 @@ use crate::SparseJournal;
 use crate::SparseSignalReceipt;
 use crate::WitnessError;
 use crate::active_indices;
-use crate::runtime_profile_digest;
 use crate::apply_calibration;
+use crate::runtime_profile_digest;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FrozenModelRequestV1 {
@@ -55,10 +55,7 @@ pub struct FrozenModelRequestV1 {
 }
 
 pub trait FrozenModelExecutor {
-    fn execute(
-        &mut self,
-        request: &FrozenModelRequestV1,
-    ) -> Result<BoundModelExecutionV1, String>;
+    fn execute(&mut self, request: &FrozenModelRequestV1) -> Result<BoundModelExecutionV1, String>;
 }
 
 pub trait LineagePolicy {
@@ -358,9 +355,7 @@ where
         let model_identity_digest = execution.model_identity_digest()?;
         let model_runtime_digest = execution.model_runtime_digest()?;
         let sparse_tick = input.to_sparse_tick(&self.scope, &execution);
-        let sparse_receipt = self
-            .journal
-            .commit(input.checkpoint_digest, &sparse_tick)?;
+        let sparse_receipt = self.journal.commit(input.checkpoint_digest, &sparse_tick)?;
         let checkpoint = self
             .journal
             .current()?
@@ -589,10 +584,7 @@ where
     }
 }
 
-pub fn witness_context_digest(
-    config_digest: Digest32,
-    scope: &RuntimeScopeBindingV1,
-) -> Digest32 {
+pub fn witness_context_digest(config_digest: Digest32, scope: &RuntimeScopeBindingV1) -> Digest32 {
     let mut bytes = b"hepta.neuron.recovery-witness-context.v1".to_vec();
     bytes.extend_from_slice(config_digest.as_array());
     bytes.extend_from_slice(scope.scope_digest.as_array());
