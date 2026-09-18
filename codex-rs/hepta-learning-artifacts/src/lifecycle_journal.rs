@@ -166,7 +166,13 @@ impl ArtifactLifecycleJournalV2 {
             .checked_add(1)
             .ok_or(ArtifactLifecycleJournalError::Arithmetic)?;
         let predecessor_head_digest = self.head_digest;
-        let chain_digest = digest_chain(sequence, predecessor_head_digest, event_digest);
+        let chain_digest = digest_chain(
+            sequence,
+            predecessor_head_digest,
+            producer_id,
+            &actor,
+            event_digest,
+        );
         let record = ArtifactLifecycleJournalRecordV2 {
             sequence,
             predecessor_head_digest,
@@ -258,6 +264,8 @@ impl ArtifactLifecycleJournalV2 {
         let chain_digest = digest_chain(
             sequence,
             expected.predecessor_head_digest,
+            &expected.producer_id,
+            &expected.actor,
             expected.event_digest,
         );
         if chain_digest != expected.chain_digest {
@@ -360,13 +368,39 @@ fn role_allows(
 fn digest_chain(
     sequence: u64,
     predecessor_head_digest: Digest32,
+    producer_id: &StableId,
+    actor: &LifecycleActorEvidenceV2,
     event_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = b"hepta.learning-artifacts.lifecycle-journal.v2".to_vec();
     bytes.extend_from_slice(&sequence.to_be_bytes());
     bytes.extend_from_slice(predecessor_head_digest.as_array());
+    push_id(&mut bytes, producer_id);
+    push_id(&mut bytes, &actor.actor_id);
+    bytes.extend_from_slice(actor.credential_digest.as_array());
+    bytes.push(match actor.role {
+        LifecycleActorRoleV2::Producer => 0,
+        LifecycleActorRoleV2::Evaluator => 1,
+        LifecycleActorRoleV2::ShadowOperator => 2,
+        LifecycleActorRoleV2::CanaryOperator => 3,
+        LifecycleActorRoleV2::HumanOperator => 4,
+        LifecycleActorRoleV2::Selector => 5,
+        LifecycleActorRoleV2::QuarantineAuthority => 6,
+        LifecycleActorRoleV2::RevocationAuthority => 7,
+        LifecycleActorRoleV2::RetirementAuthority => 8,
+    });
+    bytes.extend_from_slice(&actor.authority_epoch.to_be_bytes());
+    bytes.extend_from_slice(&actor.verified_at.to_be_bytes());
+    bytes.extend_from_slice(&actor.expires_at.to_be_bytes());
     bytes.extend_from_slice(event_digest.as_array());
     Digest32::of_bytes(&bytes)
+}
+
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
+    let raw = value.as_str().as_bytes();
+    let len = u64::try_from(raw.len()).unwrap_or(u64::MAX);
+    bytes.extend_from_slice(&len.to_be_bytes());
+    bytes.extend_from_slice(raw);
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -607,6 +641,37 @@ mod tests {
             Err(ArtifactLifecycleJournalError::Transition(
                 ArtifactClosureError::InvalidLifecycleTransition
             ))
+        );
+    }
+
+    #[test]
+    fn art_06_lifecycle_head_binds_actor_evidence_window() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        journal
+            .append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    20,
+                ),
+                20,
+            )
+            .expect("append succeeds");
+
+        let mut tampered = journal.snapshot();
+        tampered.records[0].actor.verified_at = 11;
+        assert_eq!(
+            ArtifactLifecycleJournalV2::from_snapshot(tampered, 20),
+            Err(ArtifactLifecycleJournalError::SnapshotMismatch)
         );
     }
 
