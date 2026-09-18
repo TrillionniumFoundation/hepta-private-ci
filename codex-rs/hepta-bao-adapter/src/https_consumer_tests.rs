@@ -458,3 +458,279 @@ async fn root_namespace_omits_namespace_header() {
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
     assert!(!observed.contains("x-vault-namespace:"));
 }
+
+
+fn lease_grant(
+    _client: &BaoClient,
+    binding: FinalUseBinding,
+    grant_id: &str,
+    nonce: [u8; 32],
+) -> Result<(FinalUseAuthority, SignedFinalUseGrant, tempfile::TempDir), TestError> {
+    let issuer = SigningKey::from_bytes(&[73; 32]);
+    let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "owner".into(),
+        authority_epoch: 7,
+        grant_id: grant_id.into(),
+        nonce,
+        binding,
+        not_before_unix_ms: now - 1000,
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+    let directory = tempfile::tempdir()?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    let authority = FinalUseAuthority::open_state_dir(
+        directory.path(),
+        "owner".into(),
+        issuer.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 7,
+            revision: 1,
+            revoked_grant_ids: Default::default(),
+        },
+    )?;
+    Ok((
+        authority,
+        SignedFinalUseGrant { grant, signature },
+        directory,
+    ))
+}
+
+#[tokio::test]
+async fn dynamic_lease_issue_delivers_only_to_consumer_and_returns_opaque_metadata() {
+    let dynamic_body = serde_json::json!({
+        "lease_id": "database/creds/read-only/provider-lease-123",
+        "renewable": true,
+        "lease_duration": 60,
+        "data": {
+            "username": "dynamic-user",
+            "password": "dynamic-password"
+        }
+    })
+    .to_string();
+    let (endpoint, ca, task) = server(200, dynamic_body, || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture-provider-token".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = crate::SecretLeaseRequest {
+        subject_id: "agent-one".into(),
+        consumer_id: "database-client".into(),
+        operation_id: "issue-001".into(),
+        namespace: "team/one".into(),
+        mount: "database".into(),
+        role: "read-only".into(),
+    };
+    let binding = client.secret_lease_binding(&request).unwrap();
+    let (authority, signed, directory) =
+        lease_grant(&client, binding, "lease-issue", [21; 32]).unwrap();
+    let registry = crate::SecretLeaseRegistry::open(directory.path()).await.unwrap();
+    let mut consumed = false;
+    let outcome = client
+        .request_secret_lease(&authority, &signed, &registry, &request, |secret| {
+            let text = std::str::from_utf8(secret).unwrap();
+            assert!(text.contains("dynamic-user"));
+            assert!(text.contains("dynamic-password"));
+            consumed = true;
+            Ok(())
+        })
+        .await
+        .unwrap();
+    assert!(consumed);
+    let crate::SecretLeaseIssueOutcome::Delivered { handle, metadata } = outcome else {
+        panic!("expected delivered dynamic lease");
+    };
+    let lease_digest = handle.lease_id_sha256();
+    assert_ne!(lease_digest, [0; 32]);
+    assert!(metadata.renewable);
+    let recovered = registry.recover_lease(lease_digest).await.unwrap().unwrap();
+    assert_eq!(recovered.handle.lease_id_sha256(), lease_digest);
+    assert_eq!(recovered.state, crate::RegisteredSecretLeaseState::Active);
+    let metadata_json = serde_json::to_string(&metadata).unwrap();
+    assert!(!metadata_json.contains("provider-lease-123"));
+    assert!(!metadata_json.contains("dynamic-password"));
+    let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
+    assert!(observed.starts_with("get /v1/database/creds/read-only http/1.1\r\n"));
+    assert!(observed.contains("x-vault-token: fixture-provider-token\r\n"));
+    assert!(observed.contains("x-vault-namespace: team/one\r\n"));
+}
+
+#[tokio::test]
+async fn dynamic_lease_body_timeout_is_indeterminate_and_burns_grant() {
+    let dynamic_body = serde_json::json!({
+        "lease_id": "database/creds/read-only/provider-lease-timeout",
+        "renewable": true,
+        "lease_duration": 60,
+        "data": {"password": "must-not-deliver"}
+    })
+    .to_string();
+    let (endpoint, ca, task) = server(200, dynamic_body, || async {
+        tokio::time::sleep(Duration::from_millis(150)).await;
+    })
+    .await
+    .unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture-provider-token".into()).unwrap(),
+        Duration::from_millis(50),
+    )
+    .unwrap();
+    let request = crate::SecretLeaseRequest {
+        subject_id: "agent-one".into(),
+        consumer_id: "database-client".into(),
+        operation_id: "issue-timeout".into(),
+        namespace: String::new(),
+        mount: "database".into(),
+        role: "read-only".into(),
+    };
+    let binding = client.secret_lease_binding(&request).unwrap();
+    let (authority, signed, directory) =
+        lease_grant(&client, binding, "lease-timeout", [22; 32]).unwrap();
+    let registry = crate::SecretLeaseRegistry::open(directory.path()).await.unwrap();
+    let outcome = client
+        .request_secret_lease(&authority, &signed, &registry, &request, |_| {
+            panic!("ambiguous lease response must not deliver secret")
+        })
+        .await
+        .unwrap();
+    let operation_sha256 = match outcome {
+        crate::SecretLeaseIssueOutcome::Indeterminate { operation_sha256 } => operation_sha256,
+        other => panic!("expected indeterminate lease, got {other:?}"),
+    };
+    assert_eq!(
+        registry.operation_state(operation_sha256).await.unwrap(),
+        Some(crate::SecretLeaseOperationState::Indeterminate)
+    );
+    assert!(matches!(
+        client
+            .request_secret_lease(&authority, &signed, &registry, &request, |_| Ok(()))
+            .await,
+        Err(BaoClientError::Authority(FinalUseError::AlreadyClaimed))
+    ));
+    task.abort();
+    let _ = task.await;
+}
+
+
+async fn seed_registered_lease(
+    registry: &crate::SecretLeaseRegistry,
+    handle: &crate::SecretLeaseHandle,
+    namespace: &str,
+) {
+    let operation = [31; 32];
+    let metadata = crate::SecretLeaseMetadata {
+        lease_id_sha256: handle.lease_id_sha256(),
+        operation_sha256: operation,
+        secret_sha256: [32; 32],
+        issued_at_unix_ms: 1,
+        expires_at_unix_ms: 10_000,
+        renewable: true,
+        secret_bytes: 8,
+    };
+    registry
+        .begin_operation(operation, "issue", 1)
+        .await
+        .unwrap();
+    registry
+        .record_issued(operation, handle, namespace, &metadata, 2)
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn renew_uses_sys_lease_endpoint_and_persists_new_expiry() {
+    let response_body = serde_json::json!({
+        "renewable": true,
+        "lease_duration": 120
+    })
+    .to_string();
+    let (endpoint, ca, task) = server(200, response_body, || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture-provider-token".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let handle =
+        crate::SecretLeaseHandle(zeroize::Zeroizing::new("database/creds/role/renew-id".into()));
+    let request = crate::SecretLeaseRenewRequest {
+        subject_id: "agent-one".into(),
+        consumer_id: "database-client".into(),
+        operation_id: "renew-001".into(),
+        namespace: "team/one".into(),
+        increment_seconds: 120,
+    };
+    let binding = client.secret_lease_renew_binding(&handle, &request).unwrap();
+    let (authority, signed, directory) =
+        lease_grant(&client, binding, "lease-renew", [23; 32]).unwrap();
+    let registry = crate::SecretLeaseRegistry::open(directory.path()).await.unwrap();
+    seed_registered_lease(&registry, &handle, &request.namespace).await;
+
+    let outcome = client
+        .renew_secret_lease(&authority, &signed, &registry, &handle, &request)
+        .await
+        .unwrap();
+    let crate::SecretLeaseMutationOutcome::Applied(renewal) = outcome else {
+        panic!("expected applied renewal");
+    };
+    assert!(renewal.expires_at_unix_ms > renewal.observed_at_unix_ms);
+    let recovered = registry
+        .recover_lease(handle.lease_id_sha256())
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(recovered.state, crate::RegisteredSecretLeaseState::Active);
+    assert_eq!(recovered.expires_at_unix_ms, renewal.expires_at_unix_ms);
+    let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
+    assert!(observed.starts_with("put /v1/sys/leases/renew http/1.1\r\n"));
+    assert!(observed.contains("x-vault-namespace: team/one\r\n"));
+}
+
+#[tokio::test]
+async fn revoke_uses_sys_lease_endpoint_and_persists_revoked_state() {
+    let (endpoint, ca, task) = server(204, String::new(), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture-provider-token".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let handle =
+        crate::SecretLeaseHandle(zeroize::Zeroizing::new("database/creds/role/revoke-id".into()));
+    let request = crate::SecretLeaseRevokeRequest {
+        subject_id: "agent-one".into(),
+        consumer_id: "database-client".into(),
+        operation_id: "revoke-001".into(),
+        namespace: "team/one".into(),
+    };
+    let binding = client.secret_lease_revoke_binding(&handle, &request).unwrap();
+    let (authority, signed, directory) =
+        lease_grant(&client, binding, "lease-revoke", [24; 32]).unwrap();
+    let registry = crate::SecretLeaseRegistry::open(directory.path()).await.unwrap();
+    seed_registered_lease(&registry, &handle, &request.namespace).await;
+
+    let outcome = client
+        .revoke_secret_lease(&authority, &signed, &registry, &handle, &request)
+        .await
+        .unwrap();
+    assert!(matches!(
+        outcome,
+        crate::SecretLeaseMutationOutcome::Applied(_)
+    ));
+    let recovered = registry
+        .recover_lease(handle.lease_id_sha256())
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(recovered.state, crate::RegisteredSecretLeaseState::Revoked);
+    let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
+    assert!(observed.starts_with("put /v1/sys/leases/revoke http/1.1\r\n"));
+}
