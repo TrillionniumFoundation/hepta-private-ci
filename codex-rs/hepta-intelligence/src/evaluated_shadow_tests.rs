@@ -257,7 +257,7 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
         assert!(
             run_evaluated_shadow_v1(
                 fixture.request(),
-                    &mut ledger,
+                &mut ledger,
                 &mut ports,
                 /*now*/ 50
             )
@@ -306,7 +306,6 @@ fn signed_ineligibility_insufficiency_and_expiry_refuse_all_ports() {
             fixture.bundle.metrics[0].support_digest = Digest32::ZERO;
         }
         fixture.resign_evaluator();
-        fixture.resign_decision();
         let mut ports = Ports::new(&fixture);
         let temp = tempfile::tempdir().unwrap();
         let mut ledger = ledger_at(&temp.path().join("ledger"), &fixture);
@@ -444,6 +443,7 @@ fn abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome() {
                 )
                 .unwrap();
         }
+        fixture.resign_decision();
         let mut ports = Ports::new(&fixture);
         let temp = tempfile::tempdir().unwrap();
         let mut ledger = ledger_at(&temp.path().join("ledger"), &fixture);
