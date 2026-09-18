@@ -240,3 +240,31 @@ Retirement of raw compatibility paths requires all callers migrated. Raw predict
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires current code, tests and a freshness-verified source snapshot. Qualification requires exact-candidate CI plus externally valid evidence for the claim being made. Product composition requires a named caller and selected-process loading. Independent operator acceptance, activation, canary, promotion and release are separate states.
 
 Current candidate status is therefore: **repository source closure in progress under PR CI; production implementation remains false; product caller remains not composed; external live/future/device/independent-acceptance gates remain open.**
+
+## 17. Source implementation receipt
+
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `build_targets` | `build_targets` | `codex-rs/hepta-bellman-operator/src/lib.rs` | `src/lib_tests.rs` |
+| `fit_tabular_operator` | `fit_tabular_operator` | `codex-rs/hepta-bellman-operator/src/admitted.rs` | `src/admitted.rs`, `src/learned_tests.rs` |
+| `fit_tabular_operator_strict_v2` | `fit_tabular_operator_strict_v2` | `codex-rs/hepta-bellman-operator/src/learned_strict.rs` | `src/learned_strict.rs` |
+| `load_pinned_tabular_operator` | `LoadedTabularOperatorV1::from_pinned_payload` | `codex-rs/hepta-bellman-operator/src/loaded.rs` | `src/loaded_tests.rs` |
+| `predict_loaded_tabular_operator` | `LoadedTabularOperatorV1::predict` | `codex-rs/hepta-bellman-operator/src/loaded.rs` | `src/loaded_tests.rs` |
+| `validate_applicability_certificate` | `validate_applicability_certificate` | `codex-rs/hepta-bellman-operator/src/reference.rs` | `src/reference_tests.rs` |
+| `build_sensor_core` | `build_sensor_core` | `codex-rs/hepta-bellman-operator/src/sensor_bounded.rs` | `src/sensor_bounded.rs`, `src/reference_tests.rs` |
+| `evaluate_bellman_reference` | `evaluate_bellman_reference` | `codex-rs/hepta-bellman-operator/src/reference.rs` | `src/reference_tests.rs` |
+| `admit_operator_regularity` | `admit_operator_regularity` | `codex-rs/hepta-bellman-operator/src/reference.rs` | `src/reference_tests.rs` |
+| `fit_transition_model` | `fit_transition_model` | `codex-rs/hepta-bellman-operator/src/admitted.rs` | `src/admitted.rs`, `src/world_model_tests.rs` |
+| `load_pinned_world_model` | `LoadedWorldModelV1::from_pinned_payload` | `codex-rs/hepta-bellman-operator/src/world_model_loaded.rs` | `src/world_model_loaded.rs` |
+| `predict_loaded_world_model` | `LoadedWorldModelV1::predict` | `codex-rs/hepta-bellman-operator/src/world_model_loaded.rs` | `src/world_model_loaded.rs` |
+| `admit_world_model_qualification` | `admit_world_model_qualification` | `codex-rs/hepta-bellman-operator/src/world_model_qualification.rs` | `src/world_model_qualification.rs` |
+| `prepare_qualification_acceptance` | `prepare` | `codex-rs/hepta-operator-acceptance/src/lib.rs` | `src/lib_tests.rs` |
+| `verify_and_seal_qualification_acceptance` | `verify_and_seal` | `codex-rs/hepta-operator-acceptance/src/lib.rs` | `src/lib_tests.rs`, `src/g5_trust_tests.rs` |
+| `verify_qualification_acceptance_receipt` | `verify_receipt` | `codex-rs/hepta-operator-acceptance/src/lib.rs` | `src/lib_tests.rs` |
+
+- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Consumer callsites and durable owner stores remain explicit follow-up evidence when not listed above.
+- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
