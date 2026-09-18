@@ -1,0 +1,100 @@
+name: Hepta inference maintenance
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/rust-toolchain*'
+      - 'scripts/hepta_ci_exec.py'
+      - '.github/workflows/hepta-inference-maintenance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-inference-maintenance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: '1'
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  owner-regression:
+    name: Inference maintenance owner regression
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind source and retain reproducible input
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          mkdir -p "$RUNNER_TEMP/hepta-inference-records"
+          printf 'source=%s\ntree=%s\n' "$SOURCE_SHA" "$(git rev-parse HEAD^{tree})" > "$RUNNER_TEMP/hepta-inference-records/identity.txt"
+          git archive --format=tar "$SOURCE_SHA" | gzip -1 > "$RUNNER_TEMP/hepta-inference-records/source-input.tar.gz"
+          rustc --version --verbose > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          cargo --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          cargo fmt --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+      - name: Run actual owner tests without unrelated product prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/owner.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
+      - name: Measure post-compaction growth and maintenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+      - name: Check owner formatting without modifying tested source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/format.json" -- cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-types -- --check
+      - name: Retain formatting suggestion separately from the tested checkout
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          # This worktree is NEVER executed, committed, pushed or treated as a
+          # candidate. Its patch is diagnostic input for ordinary source review.
+          proposal="$RUNNER_TEMP/hepta-format-proposal"
+          git worktree add --detach "$proposal" "$SOURCE_SHA"
+          trap 'git worktree remove --force "$proposal"' EXIT
+          cargo fmt --manifest-path "$proposal/codex-rs/Cargo.toml" --all > "$RUNNER_TEMP/hepta-inference-records/format-proposal.log" 2>&1
+          git -C "$proposal" diff --binary > "$RUNNER_TEMP/hepta-inference-records/format-proposal.patch"
+      - name: Verify the tested source is unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain real command evidence and source input
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-inference-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-inference-records/*
+          if-no-files-found: error
+          retention-days: 14
