@@ -73,10 +73,9 @@ fn an_exact_retry_keeps_the_adapter_receipt_stable() {
 #[test]
 fn the_deadline_remains_exclusive() {
     assert_eq!(
-        adapt(
+        validate_for_dispatch(
             /*now_ms*/ 2_000,
-            intent(/*deadline_ms*/ 2_000),
-            /*observation*/ None
+            &intent(/*deadline_ms*/ 2_000)
         ),
         Err(Error::DeadlineExpired)
     );
@@ -87,4 +86,36 @@ fn zero_generation_is_rejected() {
     let mut value = intent(2_000);
     value.session_generation = 0;
     assert_eq!(adapt(1_000, value, None), Err(Error::InvalidGeneration));
+}
+
+#[test]
+fn terminal_reconciliation_survives_the_original_deadline() {
+    use codex_app_server_protocol::Turn;
+    use codex_app_server_protocol::TurnCompletedNotification;
+    use codex_app_server_protocol::TurnItemsView;
+
+    let value = intent(/*deadline_ms*/ 2_000);
+    let notification = TurnCompletedNotification {
+        thread_id: value.thread_id.to_string(),
+        turn: Turn {
+            id: value.turn_id.as_ref().expect("turn").to_string(),
+            items: Vec::new(),
+            items_view: TurnItemsView::Full,
+            status: TurnStatus::Completed,
+            error: None,
+            started_at: None,
+            completed_at: None,
+            duration_ms: None,
+        },
+    };
+    let observation = AppServerObservation::from_turn_completed(
+        value.protocol_version.clone(),
+        value.session_generation,
+        1,
+        &notification,
+    )
+    .expect("valid terminal observation");
+    let receipt = adapt(/*now_ms after deadline*/ 3_000, value, Some(observation))
+        .expect("late terminal fact must remain recordable");
+    assert_eq!(receipt.status, AdapterStatus::Succeeded);
 }
