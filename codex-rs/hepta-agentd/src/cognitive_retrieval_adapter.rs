@@ -39,8 +39,7 @@ pub fn adapt_owner_retrieval(
         return Err("retrieval generation vector digest is empty".to_string());
     }
 
-    let mut generated =
-        BTreeMap::<RetrievalChannelV1, Vec<RetrievalChannelCandidateV1>>::new();
+    let mut generated = BTreeMap::<RetrievalChannelV1, Vec<RetrievalChannelCandidateV1>>::new();
     for observed in observation.candidates() {
         let record = read
             .records()
