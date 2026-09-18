@@ -45,7 +45,7 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Framing entrypoints:** frozen `WireEnvelope` V1 in `codex-rs/hepta-wire/src/envelope.rs`; metadata-bound `WireEnvelopeV2` in `src/envelope_v2.rs`; explicit multi-version `decode_frame` in `src/frame.rs`.
+- **Implemented entrypoints:** `WireEnvelope` in [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs); `WireEnvelopeV2` in [codex-rs/hepta-wire/src/envelope_v2.rs](../../../codex-rs/hepta-wire/src/envelope_v2.rs); `negotiate` in [codex-rs/hepta-wire/src/version.rs](../../../codex-rs/hepta-wire/src/version.rs); `SchemaRegistry` in [codex-rs/hepta-wire/src/schema.rs](../../../codex-rs/hepta-wire/src/schema.rs); `StreamingDecoder` in [codex-rs/hepta-wire/src/stream.rs](../../../codex-rs/hepta-wire/src/stream.rs). Multi-version dispatch is provided by `decode_frame` in `src/frame.rs`.
 - **Negotiation:** `NegotiationOffer`, `WireCapabilities` and `negotiate` in `src/version.rs` implement the bounded HPTN V1 hello and select only an explicitly common locally implemented version. Required capability pinning prevents a caller that requires V2 metadata binding from silently falling back to V1.
 - **Schema admission and typed serialization:** `SchemaRegistry`, `SchemaDescriptor` and `PayloadCodec` in `src/schema.rs` separate framing from product schema validation. Unknown schemas, incompatible wire versions and payload-bound violations reject before typed decode; codecs own required/unknown-field semantics.
 - **Streaming:** `StreamingDecoder` in `src/stream.rs` validates the fixed 54-byte header before accepting the advertised body and caps connection-local buffering at two maximum-size frames.
