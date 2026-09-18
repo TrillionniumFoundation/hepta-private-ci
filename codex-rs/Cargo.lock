@@ -3950,8 +3950,10 @@ dependencies = [
 name = "codex-hepta-neuron"
 version = "0.0.0"
 dependencies = [
+ "chrono",
  "codex-hepta-types",
  "pretty_assertions",
+ "serde_json",
 ]
 
 [[package]]
