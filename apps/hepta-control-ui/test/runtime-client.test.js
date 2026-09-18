@@ -61,6 +61,16 @@ function makeTransport({ requestImpl, reconcileImpl } = {}) {
   };
 }
 
+function displayedViewBinding({
+  sessionId = "session.1",
+  connectionGeneration = 1,
+  generation = 7,
+  revision = 9,
+  digest = D2,
+} = {}) {
+  return Object.freeze({ sessionId, connectionGeneration, generation, revision, digest });
+}
+
 async function connectedClient(io = makeTransport()) {
   const client = new RuntimeClient({ transport: io });
   await client.connect({
@@ -139,7 +149,7 @@ test("submitRequest transmits the proposal and computes semantic digest internal
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 4,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
     semanticDigest: "f".repeat(64),
   });
 
@@ -163,7 +173,7 @@ test("requestStop transmits a deeply frozen scope bound into semantic digest", a
   };
   const acknowledgement = await client.requestStop({
     operationId: "stop.1",
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
     scope,
   });
   scope.target.moduleId = "mutated";
@@ -183,7 +193,7 @@ test("changed semantics cannot reuse an operation identity", async () => {
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 9,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
   });
   await assert.rejects(
     client.submitRequest({
@@ -191,7 +201,7 @@ test("changed semantics cannot reuse an operation identity", async () => {
       subjectId: "runtime.agentd",
       action: "request_rollback",
       expectedRevision: 9,
-      displayedRevision: 9,
+      displayedView: displayedViewBinding(),
     }),
     (error) =>
       error instanceof UiControlError && error.code === ERROR_CODES.RECONCILIATION_MISMATCH,
@@ -229,7 +239,7 @@ test("transport ambiguity is preserved as indeterminate and reconciled after rec
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 9,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
   });
   assert.equal(ack.status, "indeterminate");
   assert.equal(ack.errorCode, ERROR_CODES.BACKEND_UNAVAILABLE);
@@ -254,7 +264,7 @@ test("reconciliation rejects wrong current-session or origin provenance", async 
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 9,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
   });
   assert.throws(
     () =>
@@ -283,7 +293,7 @@ test("terminal reconciliation removes pending work only with terminal observatio
   const { client } = await connectedClient();
   const ack = await client.requestStop({
     operationId: "stop.1",
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
     scope: { targetId: "runtime.agentd" },
   });
   assert.throws(
@@ -328,7 +338,7 @@ test("stale confirmations and incompatible protocols return stable typed errors"
           subjectId: "runtime.agentd",
           action: "request_retry",
           expectedRevision: 1,
-          displayedRevision: 1,
+          displayedView: displayedViewBinding({ generation: 1, revision: 1 }),
         });
       },
     ),
@@ -396,7 +406,7 @@ test("pending capacity is bounded at exactly 1024 operations", async () => {
       subjectId: "runtime.agentd",
       action: "request_retry",
       expectedRevision: 9,
-      displayedRevision: 9,
+      displayedView: displayedViewBinding(),
     });
   }
   await assert.rejects(
@@ -405,7 +415,7 @@ test("pending capacity is bounded at exactly 1024 operations", async () => {
       subjectId: "runtime.agentd",
       action: "request_retry",
       expectedRevision: 9,
-      displayedRevision: 9,
+      displayedView: displayedViewBinding(),
     }),
     (error) => error.code === ERROR_CODES.CAPACITY_EXHAUSTED,
   );
@@ -433,7 +443,7 @@ test("backend rejection clears local pending identity", async () => {
       subjectId: "runtime.agentd",
       action: "request_retry",
       expectedRevision: 9,
-      displayedRevision: 9,
+      displayedView: displayedViewBinding(),
     }),
     (error) => error.code === ERROR_CODES.REQUEST_REJECTED,
   );
