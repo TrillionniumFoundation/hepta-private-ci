@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "lane": "LANE-A-FOUNDATION",
   "closureScope": "current executable capabilities only",
-  "entryCount": 28,
+  "entryCount": 29,
   "entries": [
     {
       "capabilityId": "platform.types.bounded-values.v1",
@@ -413,7 +413,7 @@
         }
       ],
       "durability": "local_fsync_stores_with_host_frontier",
-      "activation": "source_composed_runtime_fleet_not_product_activated",
+      "activation": "registered_host_composed_not_product_activated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required",
       "sourceComposition": [
@@ -491,7 +491,7 @@
         }
       ],
       "durability": "local_fsync_stores_with_host_frontier",
-      "activation": "source_composed_runtime_fleet_not_product_activated",
+      "activation": "registered_host_composed_not_product_activated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required",
       "sourceComposition": [
@@ -584,7 +584,7 @@
     {
       "capabilityId": "kernel.authority.fleet-revocation-control.v1",
       "module": "kernel.authority",
-      "summary": "bounded fleet revocation catch-up, quarantine and stale-feed admission over authenticated distributor updates and enrolled-node acknowledgements",
+      "summary": "bounded fleet revocation catch-up/quarantine/stale-feed admission over authenticated update and acknowledgement evidence",
       "publicSymbols": [
         "FinalUseRevocationConvergenceVerifier",
         "FleetRevocationCoordinator",
@@ -628,12 +628,67 @@
           ]
         }
       ],
-      "durability": "local_authority_durable_fleet_convergence_state_in_memory",
-      "activation": "source_composed_wire_transport_external",
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required",
       "sourceComposition": [
         "codex-rs/hepta-fleet/src/revocation_control.rs"
+      ]
+    },
+    {
+      "capabilityId": "kernel.authority.runtime-fleet-generic-lease-consumer.v1",
+      "module": "kernel.authority",
+      "summary": "runtime.fleet concrete generic-lease consumer revalidates exact AllocationGrant binding before LeaseLedger issue",
+      "publicSymbols": [
+        "FleetAuthorityPort",
+        "FleetAuthorityPort::issue",
+        "AuthorityLeaseVerifier::verify_use",
+        "AuthorityLeaseVerifier::with_verified_use"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "pub struct FleetAuthorityPort",
+            "pub fn issue(",
+            ".verify_use(",
+            ".with_verified_use(",
+            "allocation_binding"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "pub struct AuthorityLeaseVerifier",
+            "pub fn verify_use(",
+            "pub fn with_verified_use"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "allocation_issue_consumes_exact_live_kernel_authority_lease"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "allocation_binding_changes_when_owner_mutation_semantics_change",
+            "AuthorityLeaseError::Revoked"
+          ]
+        }
+      ],
+      "durability": "local_fsync_stores_with_host_frontier",
+      "activation": "registered_host_composed_not_product_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required",
+      "sourceComposition": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
       ]
     },
     {
