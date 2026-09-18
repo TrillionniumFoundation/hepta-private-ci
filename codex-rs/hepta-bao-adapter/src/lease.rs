@@ -118,6 +118,13 @@ pub enum SecretLeaseIssueOutcome {
         metadata: SecretLeaseMetadata,
     },
     DeliveryBlocked(SecretLeaseDeliveryBlocked),
+    /// The provider lease is known and durably registered, but the trusted
+    /// consumer entered and reported an indeterminate effect. Preserve the
+    /// opaque handle so the host can revoke/reconcile instead of orphaning it.
+    ConsumerIndeterminate {
+        handle: SecretLeaseHandle,
+        metadata: SecretLeaseMetadata,
+    },
     /// Provider issuance succeeded but the local durable registry could not
     /// commit the handle. The trusted host still receives the opaque handle
     /// and must revoke/reconcile it before restart.
@@ -376,7 +383,10 @@ impl BaoClient {
 
         match authority.with_verified_use(verified, &binding, || consumer(&secret)) {
             Ok(Ok(())) => Ok(SecretLeaseIssueOutcome::Delivered { handle, metadata }),
-            Ok(Err(())) => Err(BaoClientError::ConsumerIndeterminate),
+            Ok(Err(())) => Ok(SecretLeaseIssueOutcome::ConsumerIndeterminate {
+                handle,
+                metadata,
+            }),
             Err(authority_error) => Ok(SecretLeaseIssueOutcome::DeliveryBlocked(
                 SecretLeaseDeliveryBlocked {
                     handle,
