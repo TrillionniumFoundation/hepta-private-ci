@@ -54,6 +54,26 @@ export function requireRecord(value, name) {
   return value;
 }
 
+export function readOwnDataFields(value, name, fields) {
+  requireRecord(value, name);
+  const descriptors = Object.getOwnPropertyDescriptors(value);
+  const result = Object.create(null);
+  for (const field of fields) {
+    const descriptor = descriptors[field];
+    if (
+      !descriptor ||
+      !Object.hasOwn(descriptor, "value") ||
+      descriptor.enumerable !== true ||
+      descriptor.get !== undefined ||
+      descriptor.set !== undefined
+    ) {
+      fail(ERROR_CODES.INVALID_INPUT, `${name}.${field} must be an enumerable own data field`);
+    }
+    result[field] = descriptor.value;
+  }
+  return Object.freeze(result);
+}
+
 export function stableId(value, name) {
   if (typeof value !== "string" || !STABLE_ID.test(value)) {
     fail(ERROR_CODES.INVALID_INPUT, `${name} must be a bounded stable identifier`);
