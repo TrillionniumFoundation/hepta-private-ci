@@ -18,28 +18,36 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "composed_read_only_cognitive_runtime",
   "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "execute_once",
       "nativeSymbol": "execute_once",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_read_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "execute_once",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_federation.rs::FederatedMemoryReader::retrieve"
+      ]
     },
     {
       "operation": "observe_cancellation",
       "nativeSymbol": "observe_cancellation",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_engine_composed_task_cancellable",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
@@ -47,10 +55,11 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the hardened product composition before changing productExecutionProved.",
+    "Wire an explicit host cancellation token where the selected host needs cancellation independent of task/future drop."
   ],
   "externalEvidenceGates": [
+    "authenticated cross-host peer transport and fleet enrollment when federation leaves the native owner-store host",
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
@@ -66,5 +75,24 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-federation"
-  ]
+  ],
+  "productCallsites": [
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-memory/src/cognitive_federation.rs",
+    "codex-rs/ext/hepta-memory/src/extension.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+  ],
+  "sourceAttestation": {
+    "commit": "872b4d0d214642eedb2883a9ec7f5f0c7386b4c9",
+    "baseCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "status": "implementation_head_pending_exact_candidate_ci",
+    "attestedPaths": [
+      "codex-rs/hepta-memory-federation",
+      "codex-rs/hepta-memory/Cargo.toml",
+      "codex-rs/hepta-memory/src/lib.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation.rs",
+      "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+    ]
+  }
 }
