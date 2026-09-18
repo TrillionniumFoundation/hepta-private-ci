@@ -85,7 +85,8 @@ impl UpdateVerifier {
         if !validate_stable_id(&key_id) {
             return Err(UpdateError::InvalidManifest);
         }
-        let key = VerifyingKey::from_bytes(&public_key).map_err(|_| UpdateError::InvalidManifest)?;
+        let key =
+            VerifyingKey::from_bytes(&public_key).map_err(|_| UpdateError::InvalidManifest)?;
         if key.is_weak() {
             return Err(UpdateError::InvalidManifest);
         }
@@ -93,7 +94,8 @@ impl UpdateVerifier {
     }
 
     pub fn load() -> Result<Option<Self>, UpdateError> {
-        let trust = if let Ok(public_key_b64) = std::env::var("HEPTA_NATIVE_UPDATE_PUBLIC_KEY_B64") {
+        let trust = if let Ok(public_key_b64) = std::env::var("HEPTA_NATIVE_UPDATE_PUBLIC_KEY_B64")
+        {
             Some(StoredUpdateTrustRoot {
                 key_id: std::env::var("HEPTA_NATIVE_UPDATE_KEY_ID")
                     .map_err(|_| UpdateError::InvalidManifest)?,
@@ -151,7 +153,7 @@ impl UpdateVerifier {
         let signature =
             Signature::from_slice(&signature_bytes).map_err(|_| UpdateError::InvalidSignature)?;
         self.key
-            .verify_strict(&update_signing_bytes(manifest)? , &signature)
+            .verify_strict(&update_signing_bytes(manifest)?, &signature)
             .map_err(|_| UpdateError::InvalidSignature)
     }
 }
@@ -253,7 +255,10 @@ impl UpdateManager {
         if !helper.is_file() {
             return Err(UpdateError::Unavailable);
         }
-        Command::new(helper).arg("--request").arg(&request_path).spawn()?;
+        Command::new(helper)
+            .arg("--request")
+            .arg(&request_path)
+            .spawn()?;
         Ok(request_path)
     }
 }
@@ -405,8 +410,12 @@ fn write_json_sync(path: &Path, value: &impl Serialize) -> Result<(), UpdateErro
 }
 
 fn verify_os_signature_if_required(path: &Path) -> Result<(), UpdateError> {
-    let required = std::env::var("HEPTA_NATIVE_REQUIRE_OS_CODESIGN")
-        .is_ok_and(|value| matches!(value.trim().to_ascii_lowercase().as_str(), "1" | "true" | "yes"));
+    let required = std::env::var("HEPTA_NATIVE_REQUIRE_OS_CODESIGN").is_ok_and(|value| {
+        matches!(
+            value.trim().to_ascii_lowercase().as_str(),
+            "1" | "true" | "yes"
+        )
+    });
     if !required {
         return Ok(());
     }

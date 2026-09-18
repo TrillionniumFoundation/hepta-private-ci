@@ -120,12 +120,7 @@ impl HeptaApp {
         let platform_authority = verifier.is_some();
         let update_verifier = UpdateVerifier::load()?;
         let update_authority = update_verifier.is_some();
-        let shell = DesktopShell::new(
-            backend,
-            SystemPlatformAdapter::new(),
-            journal,
-            verifier,
-        );
+        let shell = DesktopShell::new(backend, SystemPlatformAdapter::new(), journal, verifier);
         let updater = UpdateManager::new(root, update_verifier);
 
         let (command_tx, command_rx) = mpsc::channel();
@@ -291,28 +286,52 @@ impl HeptaApp {
         ui.add_space(8.0);
         egui::Grid::new("status-grid").striped(true).show(ui, |ui| {
             ui.label(self.tr("Runtime session", "运行时会话"));
-            ui.label(if self.session.is_some() { "connected" } else { "disconnected" });
+            ui.label(if self.session.is_some() {
+                "connected"
+            } else {
+                "disconnected"
+            });
             ui.end_row();
             ui.label(self.tr("Coherent view", "一致视图"));
             ui.label(
                 self.view
                     .as_ref()
-                    .map(|view| format!("generation {} / revision {}", view.generation, view.revision))
+                    .map(|view| {
+                        format!(
+                            "generation {} / revision {}",
+                            view.generation, view.revision
+                        )
+                    })
                     .unwrap_or_else(|| "unavailable".to_string()),
             );
             ui.end_row();
             ui.label(self.tr("Platform grant root", "平台授权信任根"));
-            ui.label(if self.platform_authority { "configured" } else { "fail-closed" });
+            ui.label(if self.platform_authority {
+                "configured"
+            } else {
+                "fail-closed"
+            });
             ui.end_row();
             ui.label(self.tr("Update trust root", "更新信任根"));
-            ui.label(if self.update_authority { "configured" } else { "fail-closed" });
+            ui.label(if self.update_authority {
+                "configured"
+            } else {
+                "fail-closed"
+            });
             ui.end_row();
             ui.label(self.tr("OS / arch", "系统 / 架构"));
-            ui.label(format!("{} / {}", std::env::consts::OS, std::env::consts::ARCH));
+            ui.label(format!(
+                "{} / {}",
+                std::env::consts::OS,
+                std::env::consts::ARCH
+            ));
             ui.end_row();
         });
         ui.add_space(8.0);
-        if ui.button(self.tr("Refresh runtime", "刷新运行时")).clicked() {
+        if ui
+            .button(self.tr("Refresh runtime", "刷新运行时"))
+            .clicked()
+        {
             self.request_refresh();
         }
         if let Some(error) = &self.last_error {
@@ -379,7 +398,9 @@ impl HeptaApp {
             ui.text_edit_singleline(&mut self.resource);
         });
         ui.label(match self.effect_action {
-            PlatformAction::OpenPath | PlatformAction::RevealPath => self.tr("Absolute path", "绝对路径"),
+            PlatformAction::OpenPath | PlatformAction::RevealPath => {
+                self.tr("Absolute path", "绝对路径")
+            }
             PlatformAction::CopyText => self.tr("Text", "文本"),
             PlatformAction::Notify => self.tr("Notification title", "通知标题"),
         });
@@ -388,10 +409,17 @@ impl HeptaApp {
             ui.label(self.tr("Notification body", "通知正文"));
             ui.text_edit_multiline(&mut self.notification_body);
         }
-        let revision = self.view.as_ref().map(|view| view.revision).unwrap_or_default();
+        let revision = self
+            .view
+            .as_ref()
+            .map(|view| view.revision)
+            .unwrap_or_default();
         ui.horizontal(|ui| {
             if ui
-                .add_enabled(revision > 0, egui::Button::new(self.tr("Prepare binding", "生成绑定数据")))
+                .add_enabled(
+                    revision > 0,
+                    egui::Button::new(self.tr("Prepare binding", "生成绑定数据")),
+                )
                 .clicked()
             {
                 self.prepared_binding = None;
@@ -460,7 +488,10 @@ impl HeptaApp {
         if !self.update_authority {
             ui.colored_label(
                 ui.visuals().warn_fg_color,
-                self.tr("No update trust root is configured.", "尚未配置更新信任根。"),
+                self.tr(
+                    "No update trust root is configured.",
+                    "尚未配置更新信任根。",
+                ),
             );
         }
         ui.horizontal(|ui| {
@@ -507,7 +538,11 @@ impl HeptaApp {
 
     fn diagnostics_page(&mut self, ui: &mut egui::Ui) {
         ui.heading(self.tr("Diagnostics", "诊断"));
-        ui.monospace(format!("app={} {}", crate::APP_ID, env!("CARGO_PKG_VERSION")));
+        ui.monospace(format!(
+            "app={} {}",
+            crate::APP_ID,
+            env!("CARGO_PKG_VERSION")
+        ));
         ui.monospace(format!(
             "platform={} architecture={}",
             std::env::consts::OS,

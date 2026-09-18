@@ -119,10 +119,7 @@ fn root(name: &str) -> std::path::PathBuf {
     ))
 }
 
-fn verifier(
-    root: &std::path::Path,
-    signing_key: &SigningKey,
-) -> GrantVerifier {
+fn verifier(root: &std::path::Path, signing_key: &SigningKey) -> GrantVerifier {
     GrantVerifier::new(
         "authority.test".to_string(),
         "key.test".to_string(),

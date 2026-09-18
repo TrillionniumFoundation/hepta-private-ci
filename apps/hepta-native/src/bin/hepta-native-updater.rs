@@ -13,7 +13,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     if args.next().as_deref() != Some(std::ffi::OsStr::new("--request")) {
         return Err("usage: hepta-native-updater --request PATH".into());
     }
-    let request = args.next().map(PathBuf::from).ok_or("missing request path")?;
+    let request = args
+        .next()
+        .map(PathBuf::from)
+        .ok_or("missing request path")?;
     if args.next().is_some() {
         return Err("unexpected updater arguments".into());
     }

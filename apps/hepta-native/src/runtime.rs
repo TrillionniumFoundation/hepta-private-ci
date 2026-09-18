@@ -108,7 +108,9 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
             return Err(RuntimeError::GenerationChanged);
         }
         let revision = match &self.view {
-            Some(view) if view.generation != generation => return Err(RuntimeError::GenerationChanged),
+            Some(view) if view.generation != generation => {
+                return Err(RuntimeError::GenerationChanged);
+            }
             Some(view) if view.digest == digest => view.revision,
             Some(view) => view.revision.checked_add(1).ok_or(RuntimeError::Encoding)?,
             None => 1,
@@ -213,23 +215,25 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
         }
 
         let Some(verifier) = self.verifier.as_ref() else {
-            let decision = rejected_decision(
-                key,
-                action.clone(),
-                "platform-effect-authority-unavailable",
-            );
-            self.journal
-                .finish(&decision.key, action, &binding.payload_digest, decision.clone())?;
+            let decision =
+                rejected_decision(key, action.clone(), "platform-effect-authority-unavailable");
+            self.journal.finish(
+                &decision.key,
+                action,
+                &binding.payload_digest,
+                decision.clone(),
+            )?;
             return Ok(decision);
         };
         if let Err(error) = verifier.claim(signed_grant, &binding) {
-            let decision = rejected_decision(
-                key,
-                action.clone(),
-                &format!("grant-rejected:{error}"),
-            );
-            self.journal
-                .finish(&decision.key, action, &binding.payload_digest, decision.clone())?;
+            let decision =
+                rejected_decision(key, action.clone(), &format!("grant-rejected:{error}"));
+            self.journal.finish(
+                &decision.key,
+                action,
+                &binding.payload_digest,
+                decision.clone(),
+            )?;
             return Ok(decision);
         }
 
@@ -246,19 +250,20 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
         let status = match observed.status {
             Some(ObservationStatus::Succeeded) => DecisionStatus::Succeeded,
             Some(ObservationStatus::Failed) => DecisionStatus::Failed,
-            None => return Err(RuntimeError::Platform(PlatformError::Adapter(
-                "terminal observation omitted status".to_string(),
-            ))),
+            None => {
+                return Err(RuntimeError::Platform(PlatformError::Adapter(
+                    "terminal observation omitted status".to_string(),
+                )));
+            }
         };
-        let decision = PlatformDecision::new(
-            key,
-            action.clone(),
-            status,
-            true,
-            observed.outcome_digest,
-        );
-        self.journal
-            .finish(&decision.key, action, &binding.payload_digest, decision.clone())?;
+        let decision =
+            PlatformDecision::new(key, action.clone(), status, true, observed.outcome_digest);
+        self.journal.finish(
+            &decision.key,
+            action,
+            &binding.payload_digest,
+            decision.clone(),
+        )?;
         Ok(decision)
     }
 
@@ -296,13 +301,8 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
                 )));
             }
         };
-        let decision = PlatformDecision::new(
-            key,
-            action.clone(),
-            status,
-            true,
-            observed.outcome_digest,
-        );
+        let decision =
+            PlatformDecision::new(key, action.clone(), status, true, observed.outcome_digest);
         self.journal
             .finish(&decision.key, action, payload_digest, decision.clone())?;
         Ok(decision)
@@ -318,11 +318,7 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
     }
 }
 
-fn rejected_decision(
-    key: OperationKey,
-    action: PlatformAction,
-    detail: &str,
-) -> PlatformDecision {
+fn rejected_decision(key: OperationKey, action: PlatformAction, detail: &str) -> PlatformDecision {
     PlatformDecision::new(
         key,
         action,

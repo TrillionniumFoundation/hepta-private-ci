@@ -30,8 +30,16 @@ fn sign(manifest: UpdateManifest, key: &SigningKey) -> SignedUpdateManifest {
 fn signed_update_binds_package_predecessor_and_selector() {
     let root = root("stage");
     std::fs::create_dir_all(&root).unwrap();
-    let current = root.join(if cfg!(windows) { "hepta-native.exe" } else { "hepta-native" });
-    let package = root.join(if cfg!(windows) { "candidate.exe" } else { "candidate" });
+    let current = root.join(if cfg!(windows) {
+        "hepta-native.exe"
+    } else {
+        "hepta-native"
+    });
+    let package = root.join(if cfg!(windows) {
+        "candidate.exe"
+    } else {
+        "candidate"
+    });
     std::fs::write(&current, b"old application bytes").unwrap();
     std::fs::write(&package, b"new independently selected application bytes").unwrap();
 

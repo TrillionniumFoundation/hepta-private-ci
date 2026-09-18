@@ -64,7 +64,9 @@ impl GatewayBackend {
         if !ip.is_loopback() {
             return Err(BackendError::Endpoint);
         }
-        let port = endpoint.port_or_known_default().ok_or(BackendError::Endpoint)?;
+        let port = endpoint
+            .port_or_known_default()
+            .ok_or(BackendError::Endpoint)?;
         if port == 0 {
             return Err(BackendError::Endpoint);
         }

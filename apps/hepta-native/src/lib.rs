@@ -32,7 +32,9 @@ pub fn now_unix_ms() -> Result<u64, std::time::SystemTimeError> {
 pub fn validate_digest(value: &str) -> bool {
     value.len() == 64
         && value != "0".repeat(64)
-        && value.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
 }
 
 pub fn validate_stable_id(value: &str) -> bool {

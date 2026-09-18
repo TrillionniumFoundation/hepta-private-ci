@@ -122,10 +122,7 @@ impl OperationJournal {
             if prior.payload_digest != payload_digest || prior.action != action {
                 return Err(JournalError::IdentityReuse);
             }
-            if let RecordPhase::Terminal {
-                decision: existing,
-            } = &prior.phase
-            {
+            if let RecordPhase::Terminal { decision: existing } = &prior.phase {
                 if *existing == decision {
                     return Ok(());
                 }
@@ -157,7 +154,9 @@ impl OperationJournal {
             }
             Ok(Some(match &record.phase {
                 RecordPhase::Dispatching => DispatchDisposition::Indeterminate,
-                RecordPhase::Terminal { decision } => DispatchDisposition::Terminal(decision.clone()),
+                RecordPhase::Terminal { decision } => {
+                    DispatchDisposition::Terminal(decision.clone())
+                }
             }))
         })
     }
@@ -245,7 +244,10 @@ fn read_records(file: &mut File) -> Result<Vec<OperationRecord>, JournalError> {
         return Err(JournalError::Invalid);
     }
     let mut records = Vec::new();
-    for line in bytes.split(|byte| *byte == b'\n').filter(|line| !line.is_empty()) {
+    for line in bytes
+        .split(|byte| *byte == b'\n')
+        .filter(|line| !line.is_empty())
+    {
         if line.len() > MAX_JSON_BYTES {
             return Err(JournalError::Invalid);
         }

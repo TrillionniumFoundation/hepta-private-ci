@@ -143,12 +143,8 @@ impl PlatformAdapter for SystemPlatformAdapter {
                     ))),
                 }
             }
-            (PlatformAction::OpenPath, PlatformPayload::Path { path }) => {
-                launch_path(path, false)
-            }
-            (PlatformAction::RevealPath, PlatformPayload::Path { path }) => {
-                launch_path(path, true)
-            }
+            (PlatformAction::OpenPath, PlatformPayload::Path { path }) => launch_path(path, false),
+            (PlatformAction::RevealPath, PlatformPayload::Path { path }) => launch_path(path, true),
             _ => Err(PlatformError::Payload),
         }
     }
