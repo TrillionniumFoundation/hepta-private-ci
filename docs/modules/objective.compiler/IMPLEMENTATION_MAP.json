@@ -11,7 +11,7 @@
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "candidate_composed",
   "productionWriterState": "not_applicable_stateless",
   "operations": [
     {
@@ -84,6 +84,56 @@
       "sourcePathExists": true
     },
     {
+      "operation": "admit_objective_v1",
+      "nativeSymbol": "codex_hepta_objective::admit_objective_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveAdmissionProfileV1",
+        "ObjectiveAdmissionContextV1"
+      ],
+      "outputs": [
+        "AdmittedObjectiveV1"
+      ],
+      "state": "source_implemented_product_boundary",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "split_admission_requires_and_preserves_the_opaque_admitted_value"
+        }
+      ],
+      "designOperation": "admit_objective_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "compile_admitted_objective_v1",
+      "nativeSymbol": "codex_hepta_objective::compile_admitted_objective_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "inputs": [
+        "AdmittedObjectiveV1"
+      ],
+      "outputs": [
+        "ObjectiveAdmissionReceiptV1",
+        "ObjectiveCompileReceipt",
+        "ObjectiveConflictReceipt"
+      ],
+      "state": "source_implemented_admitted_only",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "split_admission_requires_and_preserves_the_opaque_admitted_value"
+        }
+      ],
+      "designOperation": "compile_admitted_objective_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
       "operation": "admit_and_compile_objective_v1",
       "nativeSymbol": "codex_hepta_objective::admit_and_compile_objective_v1",
       "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
@@ -97,7 +147,7 @@
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "deny_all",
       "tests": [
         {
@@ -153,7 +203,7 @@
     },
     {
       "operation": "compile",
-      "nativeSymbol": "codex_hepta_objective::compile",
+      "nativeSymbol": "compiler::compile",
       "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
       "inputs": [
         "ObjectiveSourceEnvelope"
@@ -162,7 +212,7 @@
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_internal_legacy_qualification_only",
       "authority": "none",
       "tests": [
         {
@@ -194,7 +244,7 @@
     "specification": "complete",
     "source": "candidate_implemented",
     "exactHeadQualification": "required",
-    "productComposition": "not_established",
+    "productComposition": "candidate_composed",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -215,19 +265,26 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "productCompositionSourcePresent": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests before changing the qualification claim boundary.",
+    "Record named-host ordinary-compile and conflict-extraction measurements before target-host qualification."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "target-host qualification and current revocation/runtime reconciliation",
+    "operator acceptance, canary, activation, promotion and release"
+  ],
+  "productCompositionEvidence": [
+    "codex-rs/hepta-intelligence/src/objective_product.rs",
+    "codex-rs/hepta-intelligence/src/objective_product_tests.rs",
+    "ObjectiveProductCallerV1",
+    "DurableObjectivePublicationStoreV1"
   ]
 }
