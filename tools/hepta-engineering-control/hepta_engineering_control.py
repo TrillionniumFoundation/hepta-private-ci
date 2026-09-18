@@ -7,9 +7,9 @@ boundary and must not be used by new callers. It exposes no merge, runtime,
 deployment, promotion or release authority.
 """
 
-LEGACY_COMPATIBILITY_ONLY = True
-
 from __future__ import annotations
+
+LEGACY_COMPATIBILITY_ONLY = True
 
 from dataclasses import dataclass
 from pathlib import PurePosixPath
