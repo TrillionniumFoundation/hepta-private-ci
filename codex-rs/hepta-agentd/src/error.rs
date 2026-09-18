@@ -17,6 +17,8 @@ pub enum AgentdError {
     QualificationCognitiveRuntimeUnavailable,
     #[error("agentd protocol error: {0}")]
     Protocol(String),
+    #[error("agentd overloaded: {0}")]
+    Overloaded(String),
     #[error(transparent)]
     Fleet(#[from] FleetRegistryError),
     #[error(transparent)]
