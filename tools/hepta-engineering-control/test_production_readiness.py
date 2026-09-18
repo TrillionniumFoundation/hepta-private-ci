@@ -38,6 +38,15 @@ class ProductionReadinessTests(unittest.TestCase):
             deployment_receipt_digest="9" * 64,
             rollback_rehearsed=True,
             rollback_receipt_digest="a" * 64,
+            orchestration_product_receipt_digest="b" * 64,
+            sandbox_controller_verified=True,
+            sandbox_controller_receipt_digest="c" * 64,
+            generated_test_mutation_gate_verified=True,
+            generated_test_mutation_receipt_digest="d" * 64,
+            distributed_fencing_verified=True,
+            distributed_fencing_receipt_digest="e" * 64,
+            external_audit_anchor_verified=True,
+            external_audit_anchor_receipt_digest="f" * 64,
         )
 
     def test_complete_verified_fact_set_closes_both_readiness_dimensions(self) -> None:
@@ -93,6 +102,40 @@ class ProductionReadinessTests(unittest.TestCase):
         self.assertIn("strong_sandbox_not_observed", decision.deployment_blockers)
         self.assertIn("deployment_not_observed", decision.deployment_blockers)
         self.assertIn("rollback_not_rehearsed", decision.deployment_blockers)
+
+    def test_distributed_fence_and_external_audit_anchor_gate_deployment(self) -> None:
+        facts = replace(
+            self.facts(),
+            distributed_fencing_verified=False,
+            distributed_fencing_receipt_digest="",
+            external_audit_anchor_verified=False,
+            external_audit_anchor_receipt_digest="",
+        )
+        decision = evaluate_production_readiness(facts)
+        self.assertTrue(decision.production_implementation_ready)
+        self.assertFalse(decision.deployment_readiness_ready)
+        self.assertIn("distributed_fencing_not_verified", decision.deployment_blockers)
+        self.assertIn("external_audit_anchor_not_verified", decision.deployment_blockers)
+
+    def test_orchestration_sandbox_and_mutation_testing_gate_implementation(self) -> None:
+        facts = replace(
+            self.facts(),
+            orchestration_product_receipt_digest="",
+            sandbox_controller_verified=False,
+            generated_test_mutation_gate_verified=False,
+        )
+        decision = evaluate_production_readiness(facts)
+        self.assertFalse(decision.production_implementation_ready)
+        self.assertIn(
+            "orchestration_product_receipt_invalid", decision.implementation_blockers
+        )
+        self.assertIn(
+            "sandbox_controller_not_verified", decision.implementation_blockers
+        )
+        self.assertIn(
+            "generated_test_mutation_gate_not_verified",
+            decision.implementation_blockers,
+        )
 
     def test_non_boolean_claims_and_authority_delta_fail_closed(self) -> None:
         facts = replace(
