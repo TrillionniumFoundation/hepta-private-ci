@@ -80,6 +80,58 @@ CREATE TABLE automation_provider_observations (
 CREATE INDEX automation_provider_observations_lookup
     ON automation_provider_observations(owner_agent_id, occurrence_id, observed_at_ms);
 
+CREATE TABLE automation_effect_dispatches (
+    owner_agent_id TEXT NOT NULL,
+    occurrence_id TEXT NOT NULL,
+    run_id TEXT NOT NULL,
+    step_id TEXT NOT NULL,
+    attempt INTEGER NOT NULL CHECK (attempt > 0),
+    operation_id TEXT NOT NULL,
+    intent_digest TEXT NOT NULL CHECK (
+        length(intent_digest) = 64 AND intent_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    payload_digest TEXT NOT NULL CHECK (
+        length(payload_digest) = 64 AND payload_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    authority_epoch INTEGER NOT NULL CHECK (authority_epoch > 0),
+    verifier_receipt_digest TEXT NOT NULL CHECK (
+        length(verifier_receipt_digest) = 64
+        AND verifier_receipt_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    state TEXT NOT NULL CHECK (
+        state IN ('authorized', 'observed', 'indeterminate', 'not_admitted')
+    ),
+    provider_receipt_digest TEXT CHECK (
+        provider_receipt_digest IS NULL OR
+        (length(provider_receipt_digest) = 64
+         AND provider_receipt_digest NOT GLOB '*[^0-9a-f]*')
+    ),
+    observation TEXT CHECK (
+        observation IS NULL OR observation IN ('succeeded', 'failed', 'indeterminate')
+    ),
+    authorized_at_ms INTEGER NOT NULL CHECK (authorized_at_ms >= 0),
+    observed_at_ms INTEGER,
+    PRIMARY KEY (owner_agent_id, run_id, step_id, attempt),
+    UNIQUE (owner_agent_id, operation_id),
+    FOREIGN KEY (owner_agent_id, occurrence_id)
+        REFERENCES automation_occurrences(owner_agent_id, occurrence_id),
+    FOREIGN KEY (owner_agent_id, run_id)
+        REFERENCES taskflow_runs(owner_agent_id, run_id),
+    CHECK (
+        (state = 'authorized' AND provider_receipt_digest IS NULL
+            AND observation IS NULL AND observed_at_ms IS NULL)
+        OR
+        (state IN ('observed', 'indeterminate') AND provider_receipt_digest IS NOT NULL
+            AND observation IS NOT NULL AND observed_at_ms IS NOT NULL)
+        OR
+        (state = 'not_admitted' AND provider_receipt_digest IS NULL
+            AND observation IS NULL AND observed_at_ms IS NOT NULL)
+    )
+);
+
+CREATE INDEX automation_effect_dispatches_state_idx
+    ON automation_effect_dispatches(owner_agent_id, state, authorized_at_ms);
+
 -- Promote the existing durable step intent/receipt chain into the default
 -- schema. The runtime API still grants no provider authority by itself.
 CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
