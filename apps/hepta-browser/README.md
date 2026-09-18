@@ -25,7 +25,7 @@ The Browser service does not accept a reusable serialized `VerifiedUseToken`. Ag
 
 ## Secret and durability boundary
 
-Typed actions are closed-world: `navigate`, `click`, `type`, `credential`, `upload`, `focus`, `scroll`, `wait`, `download`. Credential/upload actions carry references rather than raw secret bytes or ambient host paths. `type.text` exists only in the live action payload; the durable operation journal does **not** store `typedAction` or raw text. It stores the final payload digest plus immutable effect semantics.
+Current effect actions are closed-world: `navigate`, `click`, `type`, `focus`, `scroll`, and `wait`. Credential, upload and download are explicit future capabilities and fail at ingress. `type.text` exists only in the live action payload; the durable operation journal does **not** store `typedAction` or raw text. It stores the final payload digest plus immutable effect semantics.
 
 The file journal validates every hydrated field, rejects unknown fields, checks canonical checksum envelopes, fsyncs dispatch intent before the effect boundary, compacts atomically before the file ceiling and retires a fully terminal profile generation after clean close. A generation with durable operation history cannot be reopened into a fresh worker; unresolved durable effects from another generation block profile advancement. Persisted recovery automatically retires the generation once all recovered operations become terminal. Live-worker reconciliation and post-Browser-process-loss reconciliation are separate driver paths: a replacement Servo worker is never treated as evidence of a prior remote business outcome, and the current subprocess driver stays indeterminate unless a trusted persisted-effect observer is explicitly injected. Persisted recovery is identified only by the checksum-protected non-secret operation identity; it never requires replaying `typedAction` or `type.text`, and an injected observer must echo the exact operation, request and semantic digests before a terminal claim is accepted.
 
@@ -61,3 +61,29 @@ node --check apps/hepta-browser/src/*.js
 Cross-owner Agentd qualification additionally runs the real `FinalUseAuthority` Browser handoff tests and compiles/lints the named `hepta-agentd-browser` caller. The current-pin worker gate runs `cargo check --locked` plus worker unit tests, the full Browser tests, the real Bubblewrap probe, two release builds, byte equality, dynamic-library closure, real worker smoke, deterministic SPDX SBOM and a checksum-bound build receipt. The trusted main-only target gate accepts only a successful exact-main worker-build run with a reviewed committed `Cargo.lock`, and rehashes the lock, worker, SBOM and source tree before target qualification.
 
 For the exact completion boundary see `docs/modules/browser.servo/TECHNICAL.md`, `docs/modules/browser.servo/SERVO_WORKER.md`, `docs/modules/browser.servo/IMPLEMENTATION_MAP.json` and `qualification/module-execution-dossiers/detail/browser.servo.md`.
+
+
+## Persistent product composition and egress
+
+The product topology is the long-running Agentd process retaining one private
+Browser service and a bounded profile-affine Servo worker pool. The existing
+Agentd owner-only UDS carries Browser calls, so profile state survives across
+separate open/observe/effect/reconcile/close requests; no Browser discovery
+listener is added.
+
+Servo has no direct external namespace. Its proxy preferences point at a
+loopback relay inside the sandbox, which can reach only a profile-private Unix
+socket. The host-side `GrantScopedEgressBroker` revalidates exact origin, DNS
+answers and destination IP for every HTTP request/CONNECT. Production denies
+private/special address ranges. The real worker gate verifies both a granted
+local fixture path (test-only private-range override) and denial of an
+ungranted subresource origin.
+
+After worker admission the response remains attached as a terminal-settlement
+future and Browser records any terminal result durably. A process restart may
+consume only an exact trusted persisted-effect receipt; absence remains
+indeterminate.
+
+The selected upstream Servo qualification candidate is
+`servo/servo@5cc5bd32d02619acdec5736055515e38c5840ce1`; promotion requirements are in
+`docs/modules/browser.servo/SERVO_PIN_AUDIT.md`.

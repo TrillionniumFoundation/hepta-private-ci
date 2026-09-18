@@ -23,7 +23,7 @@ Declared exclusive target roots:
 - `apps/hepta-browser`
 - `third_party/servo-patches`
 
-Both roots are present. The canonical upstream source pin is `servo/servo@84bcc9ac701874fa9819e5cdee06356b961d736c` in `third_party/servo-patches/MANIFEST.json`.
+Both roots are present. The selected upstream qualification candidate is `servo/servo@5cc5bd32d02619acdec5736055515e38c5840ce1` in `third_party/servo-patches/MANIFEST.json`. It replaces predecessor `84bcc9ac701874fa9819e5cdee06356b961d736c` only after exact-head locked-build, real-E2E and reproducibility evidence; see [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md).
 
 The current repository-owned implementation includes `browser.js`, `action.js`, `bridge.js`, `runtime.js`, `runtime-host.js`, `runtime-contract.js`, `runtime-boundary.js`, `journal.js`, `worker-protocol.js`, `worker-driver.js`, the Agentd parent protocol/service, and `servo-worker/`. Cross-owner composition source is present in `codex-rs/hepta-agentd/src/browser_servo.rs` plus the named `hepta-agentd-browser` caller.
 
@@ -76,7 +76,7 @@ Critical package-local protocols are explicit:
 
 The worker frame binds protocol version, session, generation, monotonic sequence, request identity and canonical payload digest. Before a new effect, the worker emits a dedicated `dispatch_boundary` frame only after stale-snapshot/action-surface revalidation and operation reservation; ordinary responses echo the original request kind, request payload digest and original request sequence, and success/error payloads reject unknown fields. A mismatch kills/fails the private channel. The parent protocol carries a secret-minimized authority challenge containing only request digest plus authority epoch, then authority enter plus `dispatch_boundary` or a proven `dispatch_rejected`; it does not duplicate typed actions into the authority plane or serialize a reusable `VerifiedUseToken`.
 
-Typed browser actions are closed-world: `navigate`, `click`, `type`, `credential`, `upload`, `focus`, `scroll`, `wait`, `download`. Navigation binds normalized URL, `policyDigest` and `expectedRevision`; the bridge uses the proposal `navigationId` as the operation identity. Thus policy revision and proposal identity are included in the final request digest rather than being dropped at adapter handoff.
+The currently admitted effect actions are closed-world: `navigate`, `click`, `type`, `focus`, `scroll`, and `wait`. `credential`, `upload`, and `download` are explicit future capabilities and fail at Browser ingress before final-use authority or worker admission. Navigation binds normalized URL, `policyDigest` and `expectedRevision`; the bridge uses the proposal `navigationId` as the operation identity.
 
 ## 6. Data authority, persistence and migrations
 
@@ -180,7 +180,7 @@ Credential/upload/download brokers remain separate follow-on capabilities and st
 
 ## 14. Activation, compatibility and retirement
 
-The named one-shot Agentd caller is source-present but does not activate the default long-running daemon or invent a trusted verifying key, authority epoch, revocation frontier or worker selection. Activation still requires a trusted live authority/revocation owner, qualified exact worker artifact, target sandbox identity, durable journal/profile root configuration, resource limits and successful cross-owner/source checks.
+The normal product topology is now the long-running Agentd process owning one persistent private Browser service and a bounded per-profile Servo worker pool behind the existing owner-only Agentd UDS. The one-shot `hepta-agentd-browser` binary remains a compatibility/qualification helper, not the product lifecycle owner. Browser activation remains explicit via `--browser-servo-config`; absence is fail-closed and no verifier key, authority epoch, revocation frontier, artifact, or network scope is invented.
 
 ## 15. Definition of module completion
 
@@ -197,3 +197,47 @@ The canonical readiness overlay binds `browser.servo` to `LANE-B-RUNTIME`. Manda
 The declared Browser roots are present and the candidate includes current-pin Servo worker source plus the Browser-side/private Agentd composition boundary. The consolidated source gate, dedicated Browser worker gate, Agentd composition gate and Lane-B source/synthetic-merge gate must execute on the exact candidate before source qualification is treated as current.
 
 This source receipt grants no production writer, deployed network/filesystem/credential authority, independent acceptance, selection, promotion, merge or release authority.
+
+
+## 18. 2026-09-19 product-closure overlay
+
+The repository candidate additionally closes the source-side gaps that previously
+separated the hardened owner boundary from a usable browser lifecycle:
+
+- **Persistent owner:** Agentd can explicitly load a private Browser runtime
+  configuration and retain one `BrowserServoPort` for the Agentd generation.
+  Calls over the existing Agentd UDS therefore preserve
+  `open -> observe -> act/reconcile -> close` state.
+- **Worker pool:** `PooledSubprocessBrowserDriver` retains one isolated Servo
+  process/profile per admitted profile, default capacity 16 and hard ceiling 64.
+- **Grant-scoped egress:** Servo keeps an unshared external network namespace.
+  Its HTTP(S) proxy preferences point to a sandbox-loopback relay which can only
+  reach a private Unix socket in the profile bind. The host-side
+  `GrantScopedEgressBroker` revalidates exact origin, DNS answers and
+  destination IP on every HTTP request/CONNECT; production denies
+  loopback/private/link-local/special destinations.
+- **Terminal pipeline:** final-use authority ends at the worker admission
+  boundary, but the driver retains the bound worker response. Terminal
+  settlement is persisted without holding the revocation fence; bounded late
+  settlement can also refine the journal.
+- **Crash reconciliation:** a replacement process may consume only an exact
+  private `hepta.browser.persisted-effect-observation.v1` receipt binding
+  profile generation, operation, request digest and semantic digest. Missing
+  trusted evidence remains indeterminate.
+- **Real E2E:** the worker gate now exercises the built Servo binary through
+  Bubblewrap for `open -> navigate -> observe -> type -> observe -> click ->
+  observe -> close`, checks an ungranted subresource cannot reach its server,
+  and checks persisted crash reconciliation.
+- **Capability truth:** credential, upload and download are not current Browser
+  capabilities; ingress rejects them as future capability instead of allowing a
+  later worker failure.
+
+The selected Servo candidate and its 239-commit predecessor delta are documented
+in [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md). The candidate is not a qualified
+deployment until its generated lock is reviewed/committed and exact-head build,
+real-E2E, reproducibility/SBOM and target evidence are terminal-success.
+
+External gates still include target-host enforcement, cross-profile cookie/cache
+isolation, target soak/resource measurements, platform equivalents where
+targeted, independently trusted remote business terminal observations, operator
+acceptance, promotion and release.

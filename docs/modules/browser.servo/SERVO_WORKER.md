@@ -2,7 +2,7 @@
 
 **Status:** hardened Browser owner boundary + current-pin Servo worker source + private Agentd final-use handoff implemented; exact artifact/target qualification and independent acceptance remain gated  
 **Module:** `browser.servo`  
-**Current upstream pin:** `servo/servo@84bcc9ac701874fa9819e5cdee06356b961d736c`  
+**Current upstream pin:** `servo/servo@5cc5bd32d02619acdec5736055515e38c5840ce1`  
 **Canonical pin source:** `third_party/servo-patches/MANIFEST.json`
 
 This is the current implementation-level Browser/Servo contract. Historical WEB-C1 documents that name older Servo commits are provenance only unless explicitly revalidated here. Source presence, CI configuration and author statements are never deployment/release evidence.
@@ -17,9 +17,9 @@ Agentd owns the parent-side composition. The Browser service is inherited stdio 
 - `src/agentd-service.js` — request dispatch plus authority challenge/enter and worker-admission `dispatch_boundary` / proven pre-dispatch `dispatch_rejected` handshake;
 - `src/agentd-service-main.js` — private Browser service executable;
 - `codex-rs/hepta-agentd/src/browser_servo.rs` — Agentd private-child port and real final-use authority handoff;
-- `codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs` — named one-shot non-test caller source.
+- `codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs` — one-shot compatibility/qualification caller.
 
-There is no Browser discovery listener. The default long-running Agentd daemon remains fail-closed unless a trusted owner supplies the authority/revocation and artifact configuration required for activation.
+There is no Browser discovery listener. The product owner is the normal long-running Agentd process: when explicitly started with `--browser-servo-config`, it opens and retains one Browser child/port for its generation and exposes Browser calls only through the existing private Agentd UDS. Without that explicit configuration Browser remains unavailable.
 
 ## 2. Implemented source surfaces
 
@@ -74,19 +74,19 @@ A concurrent revocation update cannot become current between final-use validatio
 
 The canonical typed-action digest is the `finalPayloadDigest`; the operation request digest includes operation/page/profile identity and typed-action semantics. Thus the final authority request is bound to the exact proposal revision, not merely to a destination URL.
 
-Registered action kinds are bounded forms of:
+Currently admitted action kinds are bounded forms of:
 
 - `navigate { url, policyDigest, expectedRevision }`;
 - `click { selector }`;
 - `type { selector, text }`;
-- `credential { selector, credentialRef }`;
-- `upload { selector, fileRef, fileDigest, maxBytes }`;
 - `focus { selector }`;
 - `scroll { deltaX, deltaY }`;
-- `wait { condition, timeoutMs }`;
-- `download { url, maxBytes }`.
+- `wait { condition, timeoutMs }`.
 
-Credential/upload actions carry opaque references, not host paths or raw secrets. The current worker rejects credential/upload/download as `capability_not_connected` until their dedicated broker/terminal observer is qualified.
+`credential`, `upload`, and `download` are future capabilities and are rejected
+at Browser ingress. They do not consume final-use authority or cross the worker
+admission boundary until dedicated secret/file/terminal-observer designs are
+implemented and qualified.
 
 ## 5. Secret-free durability and profile ownership
 
@@ -153,3 +153,33 @@ Still separately required where applicable: reviewed exact `Cargo.lock` and term
 ## 12. Claim boundary
 
 This candidate can establish repository-owned Browser correctness, current-pin worker source, semantic observation source, real final-use handoff source, named Agentd caller source, strict private protocols, durable recovery and Linux sandbox/probe source. It cannot self-certify a reproducibly qualified artifact, deployed OS enforcement, functional secret delivery, remote business terminality, independent acceptance, production activation, selection, promotion or release.
+
+
+## 13. Persistent owner, grant-scoped egress and terminal settlement
+
+The current candidate replaces the one-process singleton composition with a
+bounded profile-affine pool while keeping one Servo/one WebView per profile
+generation. Agentd retains the Browser child for its lifecycle, so separate UDS
+requests operate on the same private Browser state.
+
+Servo still receives no direct external namespace. A profile-local Unix socket
+is mounted through the writable profile bind. Inside the sandbox a loopback-only
+relay forwards Servo's HTTP/HTTPS proxy traffic to that socket; the host
+`GrantScopedEgressBroker` admits only an exact granted origin and independently
+resolves/validates the destination before connect. Every redirect/subresource
+request is rechecked. Production rejects private, loopback, link-local,
+documentation and multicast/special ranges; the private-network override exists
+only for repository E2E fixtures.
+
+Worker `dispatch_boundary` remains the final-use linearization point. After
+that boundary the worker response stays attached as a settlement future.
+Browser persists a terminal settlement when it arrives, or remains indeterminate
+and may later use live reconciliation. After Browser-process loss,
+`FilePersistedEffectReconciler` can terminalize an identity only from a
+separately supplied private receipt binding exact operation/request/semantic
+digests.
+
+The dedicated worker CI runs the real built Servo artifact through the complete
+Browser lifecycle and the egress-denial fixture before reproducibility/SBOM
+evidence is issued. The selected upstream candidate is
+`5cc5bd32d02619acdec5736055515e38c5840ce1`; [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md) defines its promotion oracle.

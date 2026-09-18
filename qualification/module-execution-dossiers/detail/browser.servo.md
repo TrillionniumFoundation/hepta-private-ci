@@ -7,9 +7,9 @@ Status: durable Browser effect owner, current-pin Servo worker source, bounded s
 
 Roots: `apps/hepta-browser`, `third_party/servo-patches`.
 Package: `BROWSER-WEB-C1`.
-Current Servo pin: `84bcc9ac701874fa9819e5cdee06356b961d736c`.
+Current Servo pin: `5cc5bd32d02619acdec5736055515e38c5840ce1`.
 
-Cross-owner Agentd composition is source-present in `codex-rs/hepta-agentd` and remains owned/reviewed by `runtime.agentd`. Browser ownership is not widened by the private caller.
+Cross-owner Agentd composition is source-present in `codex-rs/hepta-agentd` and remains owned/reviewed by `runtime.agentd`. The long-running Agentd process can retain the private Browser port for its generation; Browser ownership is not widened by the caller.
 
 ## 2. Public operations and contract details
 
@@ -104,3 +104,24 @@ Repository/source gates include complete Browser Node tests and JS syntax checks
 Still separately open until exact receipts exist: reviewed committed worker `Cargo.lock` and terminal-success exact-SHA reproducible worker artifact/SBOM; independent Linux target-host no-listener/no-egress/descendant/profile isolation evidence; macOS/Windows isolation equivalents if targeted; functional credential broker and upload/download terminal observers if enabled; real remote business terminal observations/reconciliation; target resource/soak measurements; trusted long-running authority/revocation feed for default daemon activation; independent operator acceptance, promotion and release.
 
 These are evidence/activation gates, not permission to weaken source semantics. The repository candidate must remain truthful while they are open.
+
+
+## 9. Product-closure addendum
+
+Current source additionally supplies a profile-affine Servo worker pool,
+long-running Agentd-owned Browser port, exact-origin host egress broker, bound
+worker terminal-settlement persistence, and optional trusted persisted-effect
+receipt reconciler. The real-worker CI executes a full navigation/semantic
+observation/type/click lifecycle and verifies a deliberately ungranted
+subresource origin is not reached.
+
+Current admitted effect kinds are `navigate`, `click`, `type`, `focus`,
+`scroll`, and `wait`. Credential, upload and download remain future
+capabilities and fail before authority admission.
+
+The selected Servo source candidate is `5cc5bd32d02619acdec5736055515e38c5840ce1`, 239 upstream commits after
+the predecessor. It remains qualification-pending until a candidate lock is
+generated, reviewed and committed and exact-head worker/E2E/reproducibility
+evidence succeeds. Target-host enforcement, cross-profile persistent-storage
+isolation, resource/soak measurements, real remote-business terminal observers,
+independent acceptance, promotion and release remain external gates.
