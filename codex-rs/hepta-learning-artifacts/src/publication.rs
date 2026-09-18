@@ -110,10 +110,11 @@ impl From<ArtifactRegistryError> for ArtifactPublicationError {
 
 /// Stage one V3-admitted artifact into the stable V1 durable registry.
 ///
-/// The V1 registry has a single-predecessor lineage shape. A V2 manifest with
-/// multiple predecessors is therefore rejected rather than silently dropping
-/// lineage. The V1 support digest is the complete validated V2 manifest digest,
-/// so every V2 field remains cryptographically bound by the durable V1 event.
+/// The V1 registry has one predecessor slot and one support-digest slot.
+/// Multi-predecessor manifests fail closed. Dataset-derived manifests are
+/// losslessly bridged only when they name exactly one source dataset, preserving
+/// the legacy dataset-revocation lookup. Dataset-independent manifests use the
+/// validated V2 manifest digest as their opaque V1 support commitment.
 pub fn prepare_artifact_publication_v3(
     current_registry: &ArtifactRegistry,
     expected_registry_head: Digest32,
