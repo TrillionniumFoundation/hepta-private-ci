@@ -26,6 +26,10 @@ use crate::PromptFactor;
 const ADMISSION_DOMAIN: &[u8] = b"hepta.prompt-registry.admission.v1\0";
 const FINAL_USE_REQUEST_DOMAIN: &[u8] = b"hepta.prompt-registry.final-use-admission.v1\0";
 const FINAL_USE_DESTINATION: &str = "prompt.registry:admission";
+const FINAL_USE_RETIRE_DESTINATION: &str = "prompt.registry:retire";
+const FINAL_USE_REVOKE_DESTINATION: &str = "prompt.registry:revoke";
+const FINAL_USE_RETIRE_REQUEST_DOMAIN: &[u8] = b"hepta.prompt-registry.final-use-retire.v1\0";
+const FINAL_USE_REVOKE_REQUEST_DOMAIN: &[u8] = b"hepta.prompt-registry.final-use-revoke.v1\0";
 const MAX_ADMISSION_LIFETIME_MS: u64 = 300_000;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -303,6 +307,86 @@ pub fn final_use_admission_binding(
     })
 }
 
+
+pub fn final_use_retire_binding(
+    factor: &PromptFactor,
+    actor_id: &StableId,
+    scope_digest: Digest32,
+    reason_digest: Digest32,
+) -> Result<FinalUseBinding, AdmissionError> {
+    final_use_lifecycle_binding(
+        FINAL_USE_RETIRE_REQUEST_DOMAIN,
+        FINAL_USE_RETIRE_DESTINATION,
+        factor,
+        actor_id,
+        scope_digest,
+        reason_digest,
+        None,
+    )
+}
+
+pub fn final_use_revoke_binding(
+    factor: &PromptFactor,
+    actor_id: &StableId,
+    scope_digest: Digest32,
+    reason_digest: Digest32,
+    cutoff_unix_ms: u64,
+) -> Result<FinalUseBinding, AdmissionError> {
+    if cutoff_unix_ms == 0 {
+        return Err(AdmissionError::InvalidGrant);
+    }
+    final_use_lifecycle_binding(
+        FINAL_USE_REVOKE_REQUEST_DOMAIN,
+        FINAL_USE_REVOKE_DESTINATION,
+        factor,
+        actor_id,
+        scope_digest,
+        reason_digest,
+        Some(cutoff_unix_ms),
+    )
+}
+
+fn final_use_lifecycle_binding(
+    domain: &[u8],
+    destination: &str,
+    factor: &PromptFactor,
+    actor_id: &StableId,
+    scope_digest: Digest32,
+    reason_digest: Digest32,
+    cutoff_unix_ms: Option<u64>,
+) -> Result<FinalUseBinding, AdmissionError> {
+    if scope_digest.is_zero() || reason_digest.is_zero() {
+        return Err(AdmissionError::ScopeMismatch);
+    }
+    let mut request = domain.to_vec();
+    push_id(&mut request, &factor.factor_id);
+    push_id(&mut request, &factor.proposer_id);
+    push_id(&mut request, &factor.semantic_version);
+    request.extend_from_slice(factor.content_digest.as_array());
+    request.push(match factor.lifecycle {
+        crate::Lifecycle::Draft => 0,
+        crate::Lifecycle::Admitted => 1,
+        crate::Lifecycle::Retired => 2,
+        crate::Lifecycle::Revoked => 3,
+    });
+    let mut payload = domain.to_vec();
+    payload.extend_from_slice(reason_digest.as_array());
+    match cutoff_unix_ms {
+        Some(value) => {
+            payload.push(1);
+            payload.extend_from_slice(&value.to_be_bytes());
+        }
+        None => payload.push(0),
+    }
+    Ok(FinalUseBinding {
+        subject_id: actor_id.to_string(),
+        destination_id: destination.to_owned(),
+        request_sha256: Digest32::of_bytes(&request).into_array(),
+        scope_sha256: scope_digest.into_array(),
+        payload_sha256: Digest32::of_bytes(&payload).into_array(),
+    })
+}
+
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
@@ -317,7 +401,7 @@ fn current_unix_ms() -> Result<u64, AdmissionError> {
     u64::try_from(value).map_err(|_| AdmissionError::AuthorityUnavailable)
 }
 
-const fn map_final_use_error(error: FinalUseError) -> AdmissionError {
+pub(crate) const fn map_final_use_error(error: FinalUseError) -> AdmissionError {
     match error {
         FinalUseError::Unavailable | FinalUseError::StateLocked => {
             AdmissionError::AuthorityUnavailable
