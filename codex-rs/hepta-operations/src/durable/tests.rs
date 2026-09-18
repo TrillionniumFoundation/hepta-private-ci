@@ -473,4 +473,76 @@ async fn metrics_and_terminal_retention_are_bounded() {
             .expect("lookup")
             .is_none()
     );
+    assert!(matches!(
+        source.prepare_intent(&request).await,
+        Err(DurableOperationError::Retired(_))
+    ));
+    let mut changed = request.clone();
+    changed.payload_digest = Digest32::of_bytes(b"resurrected-payload");
+    assert!(matches!(
+        source.prepare_intent(&changed).await,
+        Err(DurableOperationError::Conflict(_))
+    ));
+}
+
+
+#[tokio::test]
+async fn pruned_destination_receipt_remains_a_dedupe_fence() {
+    let temp = tempfile::tempdir().expect("tempdir");
+    let store = DurableOperationStore::open(&config(&temp))
+        .await
+        .expect("open store");
+    let destination = stable_id("destination:retired-dedupe");
+    let operation = stable_id("operation:retired-dedupe");
+    let semantic = Digest32::of_bytes(b"retired-semantic");
+    let evidence = Digest32::of_bytes(b"retired-evidence");
+    let original = store
+        .record_destination_outcome(
+            &destination,
+            &operation,
+            semantic,
+            ReconciliationOutcome::Applied,
+            evidence,
+        )
+        .await
+        .expect("record destination outcome");
+    assert_eq!(
+        store
+            .prune_destination_receipts(i64::MAX, 1)
+            .await
+            .expect("prune destination receipt"),
+        1
+    );
+    assert_eq!(
+        store
+            .destination_receipt(&destination, &operation)
+            .await
+            .expect("lookup tombstone"),
+        Some(original.clone())
+    );
+    assert_eq!(
+        store
+            .record_destination_outcome(
+                &destination,
+                &operation,
+                semantic,
+                ReconciliationOutcome::Applied,
+                evidence,
+            )
+            .await
+            .expect("exact replay from tombstone"),
+        original
+    );
+    assert!(matches!(
+        store
+            .record_destination_outcome(
+                &destination,
+                &operation,
+                semantic,
+                ReconciliationOutcome::Applied,
+                Digest32::of_bytes(b"changed-retired-evidence"),
+            )
+            .await,
+        Err(DurableOperationError::Conflict(_))
+    ));
 }
