@@ -26,7 +26,7 @@ fn intent(deadline_ms: u64) -> CodexOperationIntent {
 }
 
 fn must_adapt(intent: CodexOperationIntent) -> CodexAdapterReceipt {
-    let Ok(receipt) = adapt(/*now_ms*/ 1_000, intent, /*observation*/ None) else {
+    let Ok(receipt) = adapt_observation(/*now_ms*/ 1_000, intent, /*observation*/ None) else {
         panic!("valid request adaptation must succeed");
     };
     receipt
@@ -77,7 +77,7 @@ fn an_exact_retry_keeps_the_adapter_receipt_stable() {
 #[test]
 fn the_deadline_remains_exclusive() {
     assert_eq!(
-        adapt(
+        adapt_observation(
             /*now_ms*/ 2_000,
             intent(/*deadline_ms*/ 2_000),
             /*observation*/ None
