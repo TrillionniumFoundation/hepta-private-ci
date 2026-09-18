@@ -371,7 +371,6 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     std::fs::remove_file(path).unwrap();
 }
 
-
 fn authorized_request(id: &str, maximum_output_tokens: u64) -> NativeRequest {
     NativeRequest {
         request_id: id.to_string(),
