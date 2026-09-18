@@ -72,7 +72,7 @@ The legacy `CognitiveRuntime::AvailableFederated` / `FederatedRecallSet` surface
 
 Remote evidence retains provenance and cannot become trusted instructions. No-writer capability and immediate revoke/stop behavior remain mandatory. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
 
-## 8. Current native and product implementation
+## 8. Current native implementation
 
 - **Canonical entrypoints:** `execute_once` and `observe_cancellation` in [codex-rs/hepta-memory-federation/src/v2.rs](../../../codex-rs/hepta-memory-federation/src/v2.rs).
 - **Canonical contract state:** `FederatedQueryV2`/`FederatedLeaseV2` bind peer, principal, scope, purpose, generation, epoch, nonce and deadline. `RemoteFederatedResponseV2` is query-bound and digest-verified. `FederationAuthorityV2` supplies the post-I/O authority observation. `FederationAttemptControlV2` provides the interruptible deadline/cancellation boundary. Results distinguish valid, stale-generation, revoked and indeterminate outcomes while granting no authority.
