@@ -4,6 +4,7 @@
 
 mod channel_contract;
 mod generation_bound;
+mod hnmf;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -41,6 +42,18 @@ pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::build_candidate_union;
 pub use generation_bound::compile_cue;
 pub use generation_bound::recall;
+pub use hnmf::EngramNodeV1;
+pub use hnmf::EngramSnapshotV1;
+pub use hnmf::EngramSynapseV1;
+pub use hnmf::HnmfRecallErrorV1;
+pub use hnmf::HnmfRecallReceiptV1;
+pub use hnmf::MAX_ACTIVE_UNITS_PER_POPULATION;
+pub use hnmf::MAX_ENGRAM_NODES;
+pub use hnmf::MAX_ENGRAM_SYNAPSES;
+pub use hnmf::MAX_RECURRENT_STEPS;
+pub use hnmf::RecallActivationV1;
+pub use hnmf::RecallDynamicsV1;
+pub use hnmf::recall_with_engram;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 
