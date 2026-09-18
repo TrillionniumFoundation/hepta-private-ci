@@ -21,6 +21,7 @@ use crate::PreparedPlanInputV1;
 use crate::ResourceReservationV1;
 use crate::SnapshotRequestV1;
 use crate::bind_ndu_plan_evaluation_v1;
+use crate::canonical_resource_profile_digest;
 use crate::collect_snapshot;
 use crate::finalize_plan;
 use crate::prepare_plan;
@@ -95,18 +96,19 @@ fn candidate(name: &str) -> PlanCandidateV1 {
 }
 
 fn planning_request() -> PlanningRequestV1 {
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: id("compute"),
+        endowment: q32(10),
+        essential_floor: FixedQ32::ZERO,
+    }];
     PlanningRequestV1 {
         plan_id: id("plan-run"),
         now_micros: 100,
         deadline_micros: 400,
         evaluation_policy_digest: digest("policy"),
-        resource_profile_digest: digest("resource-profile"),
+        resource_profile_digest: must(canonical_resource_profile_digest(&resource_reservations)),
         candidates: vec![candidate("abstain"), candidate("work")],
-        resource_reservations: vec![ResourceReservationV1 {
-            axis: id("compute"),
-            endowment: q32(10),
-            essential_floor: FixedQ32::ZERO,
-        }],
+        resource_reservations,
     }
 }
 
@@ -215,6 +217,62 @@ fn revocation_clears_selection_and_prevents_reselection() {
         journal
             .select_plan(digest("select-2"), &receipt)
             .expect_err("revoked plan must not be reselected"),
+        PlannerJournalError::RevokedPlan
+    );
+}
+
+fn encode_semantic_entries(
+    entries: &[(PlannerJournalKindV1, Digest32, Digest32)],
+) -> Vec<u8> {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"HCPJNL01");
+    bytes.extend_from_slice(&(entries.len() as u32).to_be_bytes());
+    let mut predecessor = Digest32::ZERO;
+    for (index, (kind, identity, payload)) in entries.iter().copied().enumerate() {
+        let sequence = (index as u64) + 1;
+        let entry_digest = super::digest_entry(sequence, kind, identity, payload, predecessor);
+        bytes.extend_from_slice(&sequence.to_be_bytes());
+        bytes.push(match kind {
+            PlannerJournalKindV1::Snapshot => 0,
+            PlannerJournalKindV1::Decision => 1,
+            PlannerJournalKindV1::SelectedPlan => 2,
+            PlannerJournalKindV1::Revocation => 3,
+        });
+        bytes.extend_from_slice(identity.as_array());
+        bytes.extend_from_slice(payload.as_array());
+        bytes.extend_from_slice(predecessor.as_array());
+        bytes.extend_from_slice(entry_digest.as_array());
+        predecessor = entry_digest;
+    }
+    bytes
+}
+
+#[test]
+fn semantic_replay_rejects_hash_valid_invalid_selection_history() {
+    let target = digest("decision");
+    let without_decision = encode_semantic_entries(&[(
+        PlannerJournalKindV1::SelectedPlan,
+        digest("select"),
+        target,
+    )]);
+    assert_eq!(
+        PlannerJournalV1::reopen(&without_decision)
+            .expect_err("selection without a prior decision must reject"),
+        PlannerJournalError::DecisionNotRecorded
+    );
+
+    let after_revocation = encode_semantic_entries(&[
+        (PlannerJournalKindV1::Decision, target, target),
+        (PlannerJournalKindV1::Revocation, digest("revoke"), target),
+        (
+            PlannerJournalKindV1::SelectedPlan,
+            digest("select-after-revoke"),
+            target,
+        ),
+    ]);
+    assert_eq!(
+        PlannerJournalV1::reopen(&after_revocation)
+            .expect_err("a revoked decision cannot be selected during replay"),
         PlannerJournalError::RevokedPlan
     );
 }
