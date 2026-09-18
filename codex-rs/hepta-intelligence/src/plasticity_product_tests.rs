@@ -368,6 +368,44 @@ fn authenticated_product_path_generates_evaluates_appends_and_commits_anchor() {
 }
 
 #[test]
+fn host_evidence_verification_digest_is_bound_into_final_proposal() {
+    let fixture = Fixture::new(false);
+
+    let mut first_writer = writer();
+    let mut first_anchor = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let first = propose_authenticated_parameter_plasticity_v1(
+        fixture.request(),
+        &fixture.verifier,
+        &mut first_writer,
+        &mut first_anchor,
+        50,
+    )
+    .expect("first proposal");
+
+    let mut second_request = fixture.request();
+    second_request.host_evidence_verification_digest = digest("different-host-evidence");
+    let mut second_writer = writer();
+    let mut second_anchor = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    let second = propose_authenticated_parameter_plasticity_v1(
+        second_request,
+        &fixture.verifier,
+        &mut second_writer,
+        &mut second_anchor,
+        50,
+    )
+    .expect("second proposal");
+
+    assert_ne!(first.proposal.evaluation_digest, second.proposal.evaluation_digest);
+    assert_ne!(first.proposal.proposal_digest, second.proposal.proposal_digest);
+}
+
+#[test]
 fn product_path_rejects_tampered_frontier_witness() {
     let fixture = Fixture::new(false);
     let mut request = fixture.request();
