@@ -13,6 +13,8 @@ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_role_separation;
 use codex_hepta_types::Digest32;
 
+use crate::DurableHoldoutUseV1;
+use crate::EvaluationClaimScopeV1;
 use crate::EvaluationClosureError;
 use crate::IndependentEvaluationBundleV1;
 use crate::IndependentEvaluationDecisionV1;
@@ -80,6 +82,44 @@ pub fn decide_with_signed_evidence_v1(
     })
 }
 
+/// Production qualification payload. Unlike V2, this binds a type-level
+/// durable holdout proof that cannot be constructed from an in-memory registry
+/// receipt by an external caller.
+pub fn durable_evaluation_signing_payload_v3(
+    bundle: &IndependentEvaluationBundleV1,
+    roles: &[MetricRoleContractV2],
+    durable_holdout: &DurableHoldoutUseV1,
+) -> Result<Vec<u8>, SignedEvaluationError> {
+    validate_durable_holdout_binding(bundle, durable_holdout)?;
+    let mut bytes = b"hepta.intelligence-eval.signed-request.v3-durable\0".to_vec();
+    bytes.extend_from_slice(&evaluation_signing_payload_v2(bundle, roles)?);
+    bytes.extend_from_slice(durable_holdout.proof_digest().as_array());
+    Ok(bytes)
+}
+
+/// Production qualification entrypoint. External qualification must use
+/// signature-verified generator/evaluator evidence and a durable holdout proof.
+/// Longitudinal claims additionally require the V4 observed-time entrypoint.
+pub fn decide_with_signed_durable_evidence_v3(
+    bundle: IndependentEvaluationBundleV1,
+    roles: Vec<MetricRoleContractV2>,
+    durable_holdout: &DurableHoldoutUseV1,
+    evidence: &SignedEvaluationEvidenceV1,
+    verifier: &LearningEvidenceVerifierV1,
+    now: u64,
+) -> Result<SignedEvaluationDecisionV1, SignedEvaluationError> {
+    if bundle.claim_scope != EvaluationClaimScopeV1::Qualification {
+        return Err(SignedEvaluationError::MissingLongitudinalTiming);
+    }
+    let payload = durable_evaluation_signing_payload_v3(&bundle, &roles, durable_holdout)?;
+    let authentication_digest = authenticate(&bundle, evidence, verifier, &payload, now)?;
+    Ok(SignedEvaluationDecisionV1 {
+        decision: decide_independently_v2(bundle, roles, now)?,
+        trust_digest: verifier.trust_digest(),
+        authentication_digest,
+    })
+}
+
 pub fn decide_with_signed_evidence_v2(
     bundle: IndependentEvaluationBundleV1,
     roles: Vec<MetricRoleContractV2>,
@@ -97,6 +137,29 @@ pub fn decide_with_signed_evidence_v2(
         trust_digest: verifier.trust_digest(),
         authentication_digest,
     })
+}
+
+fn validate_durable_holdout_binding(
+    bundle: &IndependentEvaluationBundleV1,
+    durable_holdout: &DurableHoldoutUseV1,
+) -> Result<(), SignedEvaluationError> {
+    let receipt = durable_holdout.receipt();
+    if receipt != &bundle.holdout_use
+        || receipt.plan_digest != bundle.frozen_plan.plan_digest
+        || receipt.holdout_digest != bundle.frozen_plan.final_holdout_digest
+        || receipt.candidate_id != bundle.candidate_id
+        || receipt.baseline_id != bundle.baseline_id
+        || receipt.objective_digest != bundle.objective_digest
+        || receipt.dataset_digest != bundle.dataset_digest
+        || receipt.estimand_digest != bundle.estimand_digest
+        || receipt.metric_contract_digest != bundle.frozen_plan.metric_contract_digest
+        || durable_holdout.anchor().sequence == 0
+        || durable_holdout.anchor().head.is_zero()
+        || durable_holdout.storage_binding().is_zero()
+    {
+        return Err(SignedEvaluationError::DurableHoldoutBinding);
+    }
+    Ok(())
 }
 
 pub(crate) fn authenticate(
@@ -140,6 +203,7 @@ pub enum SignedEvaluationError {
     Evidence(SignedEvidenceError),
     Evaluation(EvaluationClosureError),
     IdentityBinding,
+    DurableHoldoutBinding,
     MissingLongitudinalTiming,
     Timing(&'static str),
 }
