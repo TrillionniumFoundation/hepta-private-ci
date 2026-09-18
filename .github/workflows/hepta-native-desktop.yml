@@ -40,10 +40,11 @@ jobs:
           rustup toolchain install 1.95.0 --profile minimal --component rustfmt
           rustup override set 1.95.0
 
-      - name: Generate canonical rustfmt patch
+      - name: Generate canonical lockfile and rustfmt patch
         shell: bash
         run: |
           set -euo pipefail
+          cargo generate-lockfile --manifest-path apps/hepta-native/Cargo.toml
           cargo fmt --manifest-path apps/hepta-native/Cargo.toml
           git diff --binary -- apps/hepta-native/src apps/hepta-native/tests > rustfmt.patch
 
@@ -52,6 +53,13 @@ jobs:
         with:
           name: hepta-native-rustfmt-${{ github.event.pull_request.head.sha || github.sha }}
           path: rustfmt.patch
+          if-no-files-found: error
+
+      - name: Retain generated lockfile
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-native-generated-lock-${{ github.event.pull_request.head.sha || github.sha }}
+          path: apps/hepta-native/Cargo.lock
           if-no-files-found: error
 
       - name: Require committed source to be formatted
