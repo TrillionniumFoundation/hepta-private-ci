@@ -275,13 +275,8 @@ fn canonical_selection(
         evidence_digest: Digest32::ZERO,
     };
     evidence.evidence_digest = evidence.compute_evidence_digest();
-    let pricing = price_factors_v1(
-        &candidate_set,
-        vec![evidence],
-        now_unix_ms,
-        &AcceptPricing,
-    )
-    .expect("price");
+    let pricing = price_factors_v1(&candidate_set, vec![evidence], now_unix_ms, &AcceptPricing)
+        .expect("price");
 
     let mut relations = PromptRelationSourceV1 {
         producer_id: id("knowledge.graph"),
@@ -346,8 +341,7 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let root = temporary.path().join("prompt-registry");
     let payload = b"Inspect evidence before mutation.";
-    let (registry, tuple, _authority, _signing_key, _grant_now) =
-        admitted_registry(&root, payload);
+    let (registry, tuple, _authority, _signing_key, _grant_now) = admitted_registry(&root, payload);
     let selected = canonical_selection(&registry, &tuple, 100);
 
     let output = compile_prompt_registry_v2(
@@ -416,7 +410,10 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
         .factor_protocol_v1(&id("factor:verify"))
         .expect("factor projection")
         .expect("factor exists");
-    assert_eq!(factor_v1.semantic_purpose, "inspect evidence before mutation");
+    assert_eq!(
+        factor_v1.semantic_purpose,
+        "inspect evidence before mutation"
+    );
     let realization_v1 = registry
         .registry()
         .realization_protocol_v1(&id("realization:verify"))
@@ -444,9 +441,8 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
     let revoke_scope = digest("scope:revoke:test");
     let reason = digest("reason:revoke");
     let cutoff = grant_now + 5_000;
-    let revoke_binding =
-        final_use_revoke_binding(&factor, &actor, revoke_scope, reason, cutoff)
-            .expect("revoke binding");
+    let revoke_binding = final_use_revoke_binding(&factor, &actor, revoke_scope, reason, cutoff)
+        .expect("revoke binding");
     let revoke_grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
