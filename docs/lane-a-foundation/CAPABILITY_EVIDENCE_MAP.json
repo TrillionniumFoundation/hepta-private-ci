@@ -134,7 +134,8 @@
           "path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
           "mustContain": [
             "frozen_golden_vector_matches_cross_language_digest",
-            "framing_separates_ambiguous_concatenations"
+            "framing_separates_ambiguous_concatenations",
+            "canonical_order_is_invariant_across_deterministic_permutations"
           ]
         },
         {
@@ -149,7 +150,8 @@
           "path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
           "mustContain": [
             "duplicate_names_map_keys_and_zero_version_reject",
-            "canonical_encoding_is_bounded"
+            "canonical_encoding_is_bounded",
+            "canonical_field_collection_and_depth_limits_reject"
           ]
         },
         {
