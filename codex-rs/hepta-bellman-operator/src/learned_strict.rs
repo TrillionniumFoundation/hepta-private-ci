@@ -44,8 +44,12 @@ pub fn predict_tabular_operator_indexed_v2(
 ) -> Result<TabularOperatorPredictionV1, StrictLearnedOperatorError> {
     match crate::predict_tabular_operator(artifact, pin, sensor_id, action_id) {
         Ok(prediction) => Ok(prediction),
-        Err(LearnedOperatorError::UnsupportedCell) => Err(StrictLearnedOperatorError::UnsupportedCell),
-        Err(LearnedOperatorError::InvalidGrid) => Err(StrictLearnedOperatorError::NonCanonicalArtifact),
+        Err(LearnedOperatorError::UnsupportedCell) => {
+            Err(StrictLearnedOperatorError::UnsupportedCell)
+        }
+        Err(LearnedOperatorError::InvalidGrid) => {
+            Err(StrictLearnedOperatorError::NonCanonicalArtifact)
+        }
         Err(error) => Err(StrictLearnedOperatorError::Learned(error)),
     }
 }
