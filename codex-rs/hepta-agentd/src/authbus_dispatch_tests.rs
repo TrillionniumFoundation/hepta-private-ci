@@ -106,7 +106,7 @@ impl Fixture {
             .iter()
             .map(|b| format!("{b:02x}"))
             .collect::<String>();
-        let json = serde_json::json!({"schema_version":1,"agent_id":self.state.identity().agent_id.as_str(),
+        let json = serde_json::json!({"schema_version":2,"trust_revision": if revoked { 2 } else { 1 },"agent_id":self.state.identity().agent_id.as_str(),
             "issuer_id":"issuer:test","key_epoch":1,"public_key_hex":key,"revoked":revoked,"thread_ids":["thread:test"]});
         std::fs::write(&self.trust_file, serde_json::to_vec(&json).unwrap()).unwrap();
         std::fs::set_permissions(&self.trust_file, std::fs::Permissions::from_mode(0o600)).unwrap();
