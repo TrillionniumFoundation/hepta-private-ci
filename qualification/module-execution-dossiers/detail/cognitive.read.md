@@ -15,7 +15,7 @@ The cognitive-read crate owns the read contract and deterministic projection onl
 
 The product contract is `read_authoritative(provider, now, acquisition_request, read_request) -> AuthoritativeReadResultV1`, followed by `revalidate_authoritative_read(...)` immediately before product consumption.
 
-`SnapshotAcquisitionRequestV1` binds request identity, scope, purpose, minimum memory/source/tombstone/knowledge frontiers, minimum knowledge-graph generation, authority epoch and deadline. `AuthoritativeReadGenerationVectorV1` binds the exact owner-observed values plus a consumer-profile digest. `AuthoritativeSnapshotV1` binds that vector to one immutable `CognitiveSnapshot`, provider identity, acquisition time, short lease and snapshot receipt digest.
+`SnapshotAcquisitionRequestV1` binds request identity, scope, purpose, the expected consumer-profile digest, minimum memory/source/tombstone/knowledge frontiers, minimum knowledge-graph generation, authority epoch and deadline. `AuthoritativeReadGenerationVectorV1` binds the exact owner-observed values plus a consumer-profile digest. `AuthoritativeSnapshotV1` binds that vector to one immutable `CognitiveSnapshot`, provider identity, acquisition time, short lease and snapshot receipt digest.
 
 The lower-level `read_v2` typed projection remains in `src/v2.rs`, but it is not re-exported from the crate root. Product callers therefore do not obtain a weaker public path that validates only caller-supplied snapshot bytes.
 
