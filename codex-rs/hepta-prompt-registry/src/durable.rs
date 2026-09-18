@@ -2145,6 +2145,116 @@ mod tests {
     }
 
     #[test]
+    fn poisoned_writer_rejects_before_consuming_final_use_grant() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let registry_root = temporary.path().join("registry-poisoned-grant");
+        let authority_root = temporary.path().join("authority-poisoned-grant");
+        let mut durable =
+            DurablePromptRegistry::open_state_dir(&registry_root, 64).expect("registry");
+
+        let target = PromptFactor {
+            factor_id: id("factor:grant-target"),
+            proposer_id: id("proposer:grant-target"),
+            semantic_version: id("v1"),
+            semantic_purpose: "verify before mutating".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
+            content_digest: digest("factor:grant-target"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        durable
+            .register_factor(target.clone())
+            .expect("persist target factor");
+
+        let signing_key = SigningKey::from_bytes(&[61; 32]);
+        let authority = FinalUseAuthority::open_state_dir(
+            &authority_root,
+            "security-owner:poisoned-grant".to_owned(),
+            signing_key.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 11,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )
+        .expect("final-use authority");
+        let reviewer = id("reviewer:grant-target");
+        let scope = digest("scope:grant-target");
+        let evidence = digest("evidence:grant-target");
+        let binding =
+            crate::final_use_admission_binding(&target, &reviewer, scope, evidence).expect("binding");
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_millis() as u64;
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "security-owner:poisoned-grant".to_owned(),
+            authority_epoch: 11,
+            grant_id: "grant:poisoned-admission".to_owned(),
+            nonce: [61; 32],
+            binding,
+            not_before_unix_ms: now.saturating_sub(1_000),
+            expires_at_unix_ms: now + 30_000,
+        };
+        let signed = SignedFinalUseGrant {
+            signature: signing_key
+                .sign(&grant.signing_bytes().expect("signing bytes"))
+                .to_bytes()
+                .to_vec(),
+            grant,
+        };
+
+        durable.fail_directory_sync_after_rename_once();
+        assert!(matches!(
+            durable.register_factor(PromptFactor {
+                factor_id: id("factor:poison-trigger"),
+                proposer_id: id("proposer:poison-trigger"),
+                semantic_version: id("v1"),
+                semantic_purpose: "verify before mutating".to_owned(),
+                authority_class: "registered_prompt_factor".to_owned(),
+                eligible_objective_dimensions: vec![id("dimension:truth")],
+                content_digest: digest("factor:poison-trigger"),
+                source: FactorSource::GovernedInternal,
+                lifecycle: Lifecycle::Draft,
+            }),
+            Err(DurableRegistryError::IndeterminateDurability)
+        ));
+        assert!(matches!(
+            durable.admit_factor_final_use(
+                &authority,
+                &signed,
+                &target.factor_id,
+                scope,
+                evidence,
+            ),
+            Err(DurableRegistryError::ReopenRequired)
+        ));
+
+        drop(durable);
+        let mut reopened =
+            DurablePromptRegistry::open_state_dir(&registry_root, 64).expect("reopen registry");
+        reopened
+            .admit_factor_final_use(
+                &authority,
+                &signed,
+                &target.factor_id,
+                scope,
+                evidence,
+            )
+            .expect("same grant remains unused after poisoned rejection");
+        assert_eq!(
+            reopened
+                .registry()
+                .expect("registry")
+                .factor(&target.factor_id)
+                .map(|factor| factor.lifecycle),
+            Some(Lifecycle::Admitted)
+        );
+    }
+
+    #[test]
     fn reopen_rejects_resource_policy_drift() {
         let temporary = tempfile::tempdir().expect("tempdir");
         let root = temporary.path().join("registry");
