@@ -440,15 +440,35 @@ export class BrowserProfileHost {
         entry.phase = entry.receipt.terminalObserved ? "terminal" : "indeterminate";
       } catch (error) {
         if (!entry) throw error;
-        entry.phase = "indeterminate";
-        entry.receipt = indeterminateReceipt(
-          state.profileId,
-          operationId,
-          entry.semanticDigest,
-          error?.name === "BrowserDriverTimeoutError"
-            ? "driver_timeout"
-            : "driver_error_after_dispatch_boundary",
-        );
+        if (
+          error?.code === "BROWSER_WORKER_PRE_DISPATCH_REJECTED" &&
+          typeof error?.outcomeDigest === "string"
+        ) {
+          entry.phase = "terminal";
+          entry.receipt = freezeResult({
+            ...this.#effectReceipt(
+              state.profileId,
+              operationId,
+              entry.semanticDigest,
+              {
+                terminalObserved: true,
+                status: "failed",
+                outcomeDigest: error.outcomeDigest,
+              },
+            ),
+            observationReason: "worker_rejected_before_dispatch",
+          });
+        } else {
+          entry.phase = "indeterminate";
+          entry.receipt = indeterminateReceipt(
+            state.profileId,
+            operationId,
+            entry.semanticDigest,
+            error?.name === "BrowserDriverTimeoutError"
+              ? "driver_timeout"
+              : "driver_error_after_dispatch_boundary",
+          );
+        }
       }
       await this.#persistReceipt(state, entry);
       this.#pruneTerminalOperations(state);

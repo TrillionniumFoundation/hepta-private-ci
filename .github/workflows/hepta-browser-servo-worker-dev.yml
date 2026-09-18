@@ -115,6 +115,7 @@ jobs:
         run: |
           set -euo pipefail
           cargo check --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/cargo-check.log
+          cargo test --locked --manifest-path "$WORKER_MANIFEST" 2>&1 | tee worker-evidence/cargo-test.log
 
       - name: Exercise Browser owner, protocol and isolation tests
         shell: bash

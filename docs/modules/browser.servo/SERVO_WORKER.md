@@ -14,7 +14,7 @@ One admitted profile generation owns one private Servo worker process and one fr
 Agentd owns the parent-side composition. The Browser service is inherited stdio only:
 
 - `src/agentd-protocol.js` — bounded canonical parent frames;
-- `src/agentd-service.js` — request dispatch plus authority challenge/enter/dispatch-boundary handshake;
+- `src/agentd-service.js` — request dispatch plus authority challenge/enter and worker-admission `dispatch_boundary` / proven pre-dispatch `dispatch_rejected` handshake;
 - `src/agentd-service-main.js` — private Browser service executable;
 - `codex-rs/hepta-agentd/src/browser_servo.rs` — Agentd private-child port and real final-use authority handoff;
 - `codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs` — named one-shot non-test caller source.
@@ -56,11 +56,12 @@ Agentd verifies that challenge against the independently signed final-use bindin
 2. Browser binds the current VerifiedUse witness;
 3. Browser fsyncs an indeterminate durable dispatch record;
 4. Browser writes exactly one command to the private Servo-worker pipe;
-5. Browser reports `dispatch_boundary`.
+5. the Servo worker dequeues the command, revalidates page generation, document digest, navigation epoch and actionable-surface digest, reserves the operation identity and emits `dispatch_boundary` immediately before effect execution;
+6. Browser forwards the worker admission boundary to Agentd. A worker-confirmed stale-state rejection instead produces `dispatch_rejected { localDispatchCrossed:false }`.
 
-Only after the successful local pipe write does Agentd release the revocation fence. The fence therefore covers final validation and the actual local external-effect handoff, but not arbitrary remote page execution. Worker/page/business terminality is a separate observation and reconciliation claim.
+A successful pipe write is not the final-use boundary. Only the worker-side admission ACK releases the revocation fence as crossed, so queue wait and final worker-side stale-state validation remain inside the live revocation fence. Worker/page/business terminality after admission is a separate observation and reconciliation claim.
 
-A concurrent revocation update cannot become current between final-use validation and the local dispatch boundary. A post-boundary timeout/error cannot make the operation identity fresh or authorize redispatch.
+A concurrent revocation update cannot become current between final-use validation and worker admission. A worker-confirmed pre-dispatch rejection is a terminal failed/no-dispatch outcome; timeout, channel loss or other uncertainty without such proof remains indeterminate. A post-boundary timeout/error cannot make the operation identity fresh or authorize redispatch.
 
 ## 4. Proposal provenance and typed action boundary
 
@@ -109,13 +110,13 @@ The real worker `observe` path executes one fixed worker-owned script through Se
 
 The worker canonicalizes the observation, computes `semanticDigest`, and incorporates that digest into the document digest. `BrowserProfileHost` rechecks both the digest and the caller's observation budget before publishing the observation.
 
-Each admitted observation advances page generation. A selector/action from an earlier observation therefore becomes stale even if page script changed the DOM without a navigation.
+Each admitted observation advances page generation and stores an actionable-surface digest over links, controls and forms. Immediately before worker admission the same fixed semantic projection is reevaluated; page generation, document digest, navigation epoch and actionable-surface digest must still match. Every effect invalidates the prior observation, so a later new effect requires a fresh observation.
 
 ## 7. Private worker protocol and response binding
 
 `hepta.browser.worker-frame.v1` uses a four-byte big-endian length prefix followed by <=1 MiB canonical JSON. Every frame binds protocol version, session, generation, monotonic sequence, request identity and canonical payload digest.
 
-Responses must also carry inside their payload `requestKind` equal to the original request kind and `requestPayloadDigest` equal to the original request payload digest. The Browser client rejects and kills/fails the channel on cross-session/generation response, sequence drift, unexpected non-response frames, unknown request identity or response-request binding drift.
+For dispatch, the worker first emits a dedicated `dispatch_boundary` frame only after worker-side snapshot/action-surface revalidation and operation reservation. Ordinary responses carry `requestKind` equal to the original request kind and `requestPayloadDigest` equal to the original request payload digest. A bound parent-side `dispatch_rejected` is emitted only for a worker-confirmed no-dispatch rejection. The Browser client rejects and kills/fails the channel on cross-session/generation frames, sequence drift, unregistered frame kinds, unknown request identity or request/response binding drift.
 
 Worker stderr is always drained so a full pipe cannot deadlock the process. Stderr is deliberately not retained in Browser journals/receipts because page and worker logs may contain sensitive data.
 
@@ -135,7 +136,7 @@ Independent hard bounds cover origins, admitted grants, nonterminal operations, 
 
 ## 10. Reproducible worker artifact and composition gates
 
-`.github/workflows/hepta-browser-servo-worker-dev.yml` runs on exact Browser/Servo candidate changes and requires pinned Rust/toolchain and Servo prerequisites, exact current Servo pin, rejection of `webdriver_server`, current-pin `cargo check --locked`, complete Browser Node tests, real Bubblewrap isolation probe, two independent release builds with byte equality, dynamic library closure, real worker start/stop, worker SHA-256, deterministic SPDX 2.3 SBOM and a build receipt.
+`.github/workflows/hepta-browser-servo-worker-dev.yml` runs on exact Browser/Servo candidate changes and requires pinned Rust/toolchain and Servo prerequisites, exact current Servo pin, rejection of `webdriver_server`, current-pin `cargo check --locked` plus worker unit tests, complete Browser Node tests, real Bubblewrap isolation probe, two independent release builds with byte equality, dynamic library closure, real worker start/stop, worker SHA-256, deterministic SPDX 2.3 SBOM and a build receipt.
 
 `.github/workflows/hepta-browser-agentd-composition.yml` binds the exact Browser+Agentd source and runs full Browser tests, real `FinalUseAuthority` handoff tests, named caller compilation and Clippy.
 
@@ -143,7 +144,7 @@ A generated `Cargo.lock` is a candidate until reviewed/committed. A successful s
 
 ## 11. Target qualification and capability gaps
 
-`.github/workflows/hepta-browser-servo-deployment-qualification.yml` remains manual and main-only. It revalidates exact source/build/artifact identity, records kernel/Bubblewrap identity, reruns sandbox/worker checks and emits target execution evidence without self-issuing operator acceptance, promotion or release.
+`.github/workflows/hepta-browser-servo-deployment-qualification.yml` remains manual and main-only. It executes only the workflow-dispatch `github.sha` on `refs/heads/main`, verifies the referenced successful worker-build run came from the expected workflow on that exact main SHA, requires `cargoLockCommitted=true`, rehashes Cargo.lock/worker/SPDX/source tree, records kernel/Bubblewrap identity, reruns sandbox/worker checks and emits target execution evidence without self-issuing operator acceptance, promotion or release.
 
 Still separately required where applicable: reviewed exact `Cargo.lock` and terminal-success reproducible worker artifact/SBOM receipt; independent Linux no-listener/no-egress/descendant/profile isolation evidence; macOS/Windows equivalent isolation if targeted; functional credential-reference broker if credential use is enabled; real upload/download terminal observers if enabled; real remote business terminal reconciliation; target resource/soak measurements; trusted long-running authority/revocation feed for default daemon activation; and independent operator acceptance/promotion/release.
 

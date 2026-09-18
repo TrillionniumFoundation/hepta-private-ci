@@ -257,7 +257,7 @@ class PrivateWorkerClient {
     });
   }
 
-  request(kind, semanticId, payload, { signal, onDispatched } = {}) {
+  request(kind, semanticId, payload, { signal, onDispatchBoundary } = {}) {
     if (this.#closed) {
       return Promise.reject(new Error("browser worker channel is closed"));
     }
@@ -286,6 +286,8 @@ class PrivateWorkerClient {
         cleanup: null,
         requestKind: kind,
         requestPayloadDigest: frame.payloadDigest,
+        onDispatchBoundary,
+        dispatchBoundaryObserved: false,
       };
       const abort = () => {
         if (!this.#pending.delete(id)) return;
@@ -313,20 +315,9 @@ class PrivateWorkerClient {
       }
       writeStarted = true;
       this.#child.stdin.write(encoded, (error) => {
-        if (error) {
-          if (this.#pending.delete(id)) {
-            entry.cleanup?.();
-            reject(error);
-          }
-          return;
-        }
-        try {
-          onDispatched?.();
-        } catch (callbackError) {
-          if (this.#pending.delete(id)) {
-            entry.cleanup?.();
-            reject(callbackError);
-          }
+        if (error && this.#pending.delete(id)) {
+          entry.cleanup?.();
+          reject(error);
         }
       });
     });
@@ -367,32 +358,99 @@ class PrivateWorkerClient {
         return;
       }
       this.#lastIncomingSequence = frame.sequence;
-      if (frame.kind !== "response") {
-        this.#failAll(
-          new TypeError("browser worker emitted an unexpected non-response frame"),
-        );
-        this.#child.kill("SIGKILL");
-        return;
-      }
       const pending = this.#pending.get(frame.requestId);
       if (!pending) {
-        if (this.#abandoned.delete(frame.requestId)) continue;
+        if (
+          frame.kind === "dispatch_boundary" &&
+          this.#abandoned.has(frame.requestId)
+        ) {
+          continue;
+        }
+        if (
+          frame.kind === "response" &&
+          this.#abandoned.delete(frame.requestId)
+        ) {
+          continue;
+        }
         this.#failAll(
-          new TypeError("browser worker response has no pending request"),
+          new TypeError("browser worker frame has no pending request"),
         );
         this.#child.kill("SIGKILL");
         return;
       }
-      const payload = requireRecord(
-        frame.payload,
-        "worker response payload",
-      );
+      const payload = requireRecord(frame.payload, "worker response payload");
       if (
         payload.requestKind !== pending.requestKind ||
         payload.requestPayloadDigest !== pending.requestPayloadDigest
       ) {
         this.#failAll(
           new TypeError("browser worker response did not bind the exact request"),
+        );
+        this.#child.kill("SIGKILL");
+        return;
+      }
+      if (frame.kind === "dispatch_boundary") {
+        const keys = Object.keys(payload).sort();
+        const expected = [
+          "localDispatchCrossed",
+          "requestKind",
+          "requestPayloadDigest",
+        ].sort();
+        if (
+          pending.requestKind !== "dispatch" ||
+          pending.dispatchBoundaryObserved === true ||
+          payload.localDispatchCrossed !== true ||
+          keys.length !== expected.length ||
+          keys.some((key, index) => key !== expected[index])
+        ) {
+          this.#failAll(
+            new TypeError("browser worker dispatch boundary is invalid"),
+          );
+          this.#child.kill("SIGKILL");
+          return;
+        }
+        pending.dispatchBoundaryObserved = true;
+        try {
+          pending.onDispatchBoundary?.();
+        } catch (error) {
+          this.#failAll(error);
+          this.#child.kill("SIGKILL");
+          return;
+        }
+        continue;
+      }
+      if (frame.kind !== "response") {
+        this.#failAll(
+          new TypeError("browser worker emitted an unexpected frame kind"),
+        );
+        this.#child.kill("SIGKILL");
+        return;
+      }
+      if (
+        pending.requestKind === "dispatch" &&
+        pending.dispatchBoundaryObserved !== true
+      ) {
+        if (payload.ok === false && typeof payload.error === "string") {
+          this.#pending.delete(frame.requestId);
+          pending.cleanup?.();
+          const error = new Error(
+            `browser worker rejected dispatch before admission: ${payload.error}`,
+          );
+          error.name = "BrowserWorkerPreDispatchError";
+          error.code = "BROWSER_WORKER_PRE_DISPATCH_REJECTED";
+          error.outcomeDigest = sha256(
+            Buffer.from(
+              `worker-pre-dispatch\0${pending.requestPayloadDigest}\0${payload.error}`,
+              "utf8",
+            ),
+          );
+          pending.reject(error);
+          continue;
+        }
+        this.#failAll(
+          new TypeError(
+            "browser worker returned dispatch result before admission boundary",
+          ),
         );
         this.#child.kill("SIGKILL");
         return;
@@ -570,7 +628,7 @@ export class SubprocessBrowserDriver {
         input,
         {
           signal,
-          onDispatched: () => {
+          onDispatchBoundary: () => {
             if (crossed) return;
             crossed = true;
             resolveBoundary();
@@ -590,12 +648,16 @@ export class SubprocessBrowserDriver {
         settled,
       ]);
       if (first === "rejected" && !crossed) {
-        this.#containBeforeDispatchBoundary();
+        if (earlyError?.code !== "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
+          this.#containBeforeDispatchBoundary();
+        }
         throw earlyError;
       }
       if (first === "resolved" && !crossed) {
-        crossed = true;
-        resolveBoundary();
+        this.#containBeforeDispatchBoundary();
+        throw new TypeError(
+          "browser worker settled dispatch before admission boundary",
+        );
       }
       response.catch(() => {});
       return { terminalObserved: false };

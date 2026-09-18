@@ -34,10 +34,11 @@ A new browser effect linearizes as:
 3. Agentd enters real `FinalUseAuthority::with_verified_use` and holds the live revocation mutex;
 4. Browser binds the current witness and fsyncs an indeterminate dispatch record;
 5. Browser performs exactly one local private-worker pipe write;
-6. Browser reports `dispatch_boundary`; Agentd may then release final-use authority;
-7. remote/page/business terminality is observed/reconciled separately.
+6. the Servo worker dequeues the request, revalidates page generation, document digest, navigation epoch and actionable-surface digest, reserves the operation and emits `dispatch_boundary` immediately before execution;
+7. Browser forwards that worker admission ACK; Agentd may then release final-use authority. A worker-confirmed pre-effect rejection emits `dispatch_rejected` with `localDispatchCrossed=false` and becomes a terminal failed/no-dispatch receipt;
+8. remote/page/business terminality is observed/reconciled separately.
 
-A timeout/error after durable dispatch never makes the operation identity fresh and never authorizes redispatch.
+A pipe write alone is not a crossed effect. Only a worker admission ACK proves the local boundary; a worker-confirmed pre-dispatch rejection proves no effect crossed. Timeout/transport uncertainty without either proof remains indeterminate and never makes the operation identity fresh or authorizes redispatch.
 
 ## 4. Durable recovery and secret boundary
 
@@ -53,13 +54,13 @@ The current-pin Servo worker implements a bounded semantic observation through a
 
 The worker canonicalizes the observation, emits `semanticDigest`, and includes that digest in `documentDigest`. `BrowserProfileHost` rechecks the semantic digest and caller observation budget before publication.
 
-Each admitted semantic observation advances page generation. An action derived from an earlier observation therefore fails the stale page-generation fence even if page script changed DOM without navigation.
+Each admitted semantic observation advances page generation and stores an actionable-surface digest over links, controls and forms. Worker admission rechecks page generation, document digest, navigation epoch and a fresh actionable-surface digest; every effect invalidates the prior observation, so later new effects require a fresh observation.
 
 ## 6. Private worker protocol and Linux isolation
 
 `apps/hepta-browser/src/worker-protocol.js` implements `hepta.browser.worker-frame.v1`: four-byte big-endian framing, <=1 MiB canonical JSON, protocol/session/generation/monotonic sequence/request ID/payload digest binding.
 
-Responses additionally echo the original request kind and request payload digest. The host fails/kills the channel on cross-session/generation frames, sequence drift, unexpected frame kind, unknown request identity or request/response binding mismatch. Worker stderr is continuously drained without entering durable receipts.
+`dispatch_boundary` is a worker-originated admission frame, not a pipe-write callback; it is emitted only after stale-state revalidation and operation reservation. Ordinary responses additionally echo the original request kind and request payload digest. The host fails/kills the channel on cross-session/generation frames, sequence drift, unregistered frame kind, unknown request identity or request/response binding mismatch. Worker stderr is continuously drained without entering durable receipts.
 
 `LinuxBubblewrapLauncher` is a source launch contract, not self-issued target enforcement evidence. It starts from an empty root; exposes selected runtime libraries/fonts/TLS data rather than host `/` or whole `/usr`; clears environment; uses `--unshare-all` without network sharing; hides general host binaries, user homes and service roots; mounts one private profile and exact worker; and uses parent-death containment.
 
@@ -86,10 +87,10 @@ The current worker is one Servo / one WebView per profile generation. The pilot 
 
 ## 9. Concrete verification cases
 
-- **BROWSER-01:** stale page/observation generation cannot authorize an action; every semantic observation advances generation.
+- **BROWSER-01:** stale page/document/navigation/action-surface state cannot cross worker admission; every effect invalidates the prior observation and the next new effect requires a fresh observation.
 - **BROWSER-02:** page content cannot widen authority; typed action/worker protocol are closed-world; target Linux isolation probe denies direct external egress.
 - **BROWSER-03:** source allocates a fresh principal-bound private profile directory; real cross-principal cookie/cache/storage isolation remains a target-host Servo evidence gate.
-- **BROWSER-04:** durable intent precedes local dispatch; concurrent duplicates dispatch once; post-boundary timeout/error remains indeterminate; process-loss recovery reconciles without redispatch.
+- **BROWSER-04:** durable intent precedes worker admission; a pipe write alone is not the final-use boundary; worker-confirmed pre-dispatch rejection is terminal failed/no-dispatch; post-boundary timeout/error remains indeterminate; process-loss recovery reconciles without redispatch.
 - **BROWSER-05:** proposal navigation ID/policy digest/expected revision are bound into the final effect identity.
 - **BROWSER-06:** `type.text`/credential bytes are absent from the durable journal.
 - **BROWSER-07:** worker response must echo exact request kind and payload digest; protocol drift fails the channel.
@@ -98,7 +99,7 @@ The current worker is one Servo / one WebView per profile generation. The pilot 
 
 ## 10. Qualification gates and remaining evidence
 
-Repository/source gates include complete Browser Node tests and JS syntax checks; exact current-pin worker `cargo check --locked`; real Bubblewrap sandbox probe; two deterministic release builds with byte equality; dynamic-library closure, worker smoke, worker SHA-256 and deterministic SPDX SBOM; real Agentd `FinalUseAuthority` handoff test, named caller compile and Clippy; and Lane-B exact-source and deterministic synthetic-merge checks.
+Repository/source gates include complete Browser Node tests and JS syntax checks; exact current-pin worker `cargo check --locked` plus worker unit tests; real Bubblewrap sandbox probe; two deterministic release builds with byte equality; dynamic-library closure, worker smoke, worker SHA-256 and deterministic SPDX SBOM; real Agentd `FinalUseAuthority` handoff test, named caller compile and Clippy; and Lane-B exact-source and deterministic synthetic-merge checks.
 
 Still separately open until exact receipts exist: reviewed committed worker `Cargo.lock` and terminal-success exact-SHA reproducible worker artifact/SBOM; independent Linux target-host no-listener/no-egress/descendant/profile isolation evidence; macOS/Windows isolation equivalents if targeted; functional credential broker and upload/download terminal observers if enabled; real remote business terminal observations/reconciliation; target resource/soak measurements; trusted long-running authority/revocation feed for default daemon activation; independent operator acceptance, promotion and release.
 

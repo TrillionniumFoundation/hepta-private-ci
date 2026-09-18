@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Read, Write};
 use std::rc::Rc;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, mpsc};
 use std::thread;
 use std::time::{Duration, Instant};
@@ -61,6 +61,7 @@ impl EventLoopWaker for Waker {
 
 struct Delegate {
     frame_ready: Arc<AtomicBool>,
+    navigation_epoch: Arc<AtomicU64>,
     allowed_origins: HashSet<String>,
 }
 
@@ -73,6 +74,7 @@ impl WebViewDelegate for Delegate {
         let allowed = request.url.as_str() == "about:blank"
             || origin(&request.url).is_some_and(|value| self.allowed_origins.contains(&value));
         if allowed {
+            self.navigation_epoch.fetch_add(1, Ordering::AcqRel);
             request.allow();
         } else {
             request.deny();
@@ -95,6 +97,11 @@ struct Browser {
     context: Rc<SoftwareRenderingContext>,
     webview: WebView,
     frame_ready: Arc<AtomicBool>,
+    navigation_epoch: Arc<AtomicU64>,
+    observed_navigation_epoch: Option<u64>,
+    last_document_digest: Option<String>,
+    last_action_surface_digest: Option<String>,
+    last_observation_budget: Option<usize>,
     allowed_origins: HashSet<String>,
     page_generation: u64,
     operations: HashMap<String, StoredOperation>,
@@ -114,8 +121,10 @@ impl Browser {
             .build();
         servo.setup_logging();
         let frame_ready = Arc::new(AtomicBool::new(false));
+        let navigation_epoch = Arc::new(AtomicU64::new(0));
         let delegate = Rc::new(Delegate {
             frame_ready: frame_ready.clone(),
+            navigation_epoch: navigation_epoch.clone(),
             allowed_origins: allowed_origins.clone(),
         });
         let webview = WebViewBuilder::new(&servo, context.clone())
@@ -127,6 +136,11 @@ impl Browser {
             context,
             webview,
             frame_ready,
+            navigation_epoch,
+            observed_navigation_epoch: None,
+            last_document_digest: None,
+            last_action_surface_digest: None,
+            last_observation_budget: None,
             allowed_origins,
             page_generation: 0,
             operations: HashMap::new(),
@@ -166,6 +180,7 @@ impl Browser {
         if !self.allowed_origins.contains(&current_origin) {
             return Err("current document origin is outside the admitted set".to_string());
         }
+        let navigation_epoch_before = self.navigation_epoch.load(Ordering::Acquire);
 
         // Every admitted observation advances the generation. This makes all
         // selectors/handles from an older observation stale even when the URL
@@ -180,6 +195,10 @@ impl Browser {
             Duration::from_secs(5),
         )?;
         validate_safe_json(&semantic_observation, 0)?;
+        let navigation_epoch_after = self.navigation_epoch.load(Ordering::Acquire);
+        if navigation_epoch_after != navigation_epoch_before {
+            return Err("document navigated during semantic observation".to_string());
+        }
         let semantic_json = canonical_json(&semantic_observation);
         if semantic_json.as_bytes().len() > budget {
             return Err("semantic observation exceeded observationBudget".to_string());
@@ -195,6 +214,10 @@ impl Browser {
             )
             .as_bytes(),
         );
+        self.observed_navigation_epoch = Some(navigation_epoch_after);
+        self.last_document_digest = Some(document_digest.clone());
+        self.last_action_surface_digest = Some(action_surface_digest(&semantic_observation)?);
+        self.last_observation_budget = Some(budget);
         Ok(json!({
             "pageGeneration": self.page_generation,
             "documentDigest": document_digest,
@@ -204,14 +227,15 @@ impl Browser {
         }))
     }
 
-    fn dispatch(&mut self, frame: &Frame) -> Result<Value, String> {
+    fn prepare_dispatch(&mut self, frame: &Frame) -> Result<Option<Value>, String> {
         let operation_id = string_field(&frame.payload, "operationId")?;
         if let Some(prior) = self.operations.get(operation_id) {
             if prior.payload_digest != frame.payload_digest {
                 return Err("operation identity was reused with changed worker payload".to_string());
             }
-            return Ok(stored_receipt(prior));
+            return Ok(Some(stored_receipt(prior)));
         }
+        self.pump();
         let action = frame
             .payload
             .get("typedAction")
@@ -221,16 +245,59 @@ impl Browser {
             .get("kind")
             .and_then(Value::as_str)
             .ok_or_else(|| "typedAction.kind must be a string".to_string())?;
-        let receipt = match kind {
-            "navigate" => self.navigate(action)?,
-            "click" => self.fixed_script(fixed_click(action)?, "click")?,
-            "type" => self.fixed_script(fixed_type(action)?, "type")?,
-            "focus" => self.fixed_script(fixed_focus(action)?, "focus")?,
-            "scroll" => self.fixed_script(fixed_scroll(action)?, "scroll")?,
-            "wait" => self.wait(action)?,
-            "credential" | "upload" | "download" => failed(kind, "capability_not_connected"),
-            _ => return Err("typedAction.kind is not registered by worker".to_string()),
+        validate_dispatch_snapshot_state(
+            &frame.payload,
+            kind,
+            self.page_generation,
+            self.last_document_digest.as_deref(),
+            self.observed_navigation_epoch,
+            self.navigation_epoch.load(Ordering::Acquire),
+        )?;
+        if frame
+            .payload
+            .get("pageGeneration")
+            .and_then(Value::as_u64)
+            .unwrap_or(0)
+            != 0
+        {
+            self.verify_action_surface()?;
+        }
+        self.operations.insert(
+            operation_id.to_string(),
+            StoredOperation {
+                payload_digest: frame.payload_digest.clone(),
+                terminal: None,
+            },
+        );
+        Ok(None)
+    }
+
+    fn execute_prepared_dispatch(&mut self, frame: &Frame) -> Result<Value, String> {
+        let operation_id = string_field(&frame.payload, "operationId")?;
+        let action = frame
+            .payload
+            .get("typedAction")
+            .and_then(Value::as_object)
+            .ok_or_else(|| "typedAction must be an object".to_string())?;
+        let kind = action
+            .get("kind")
+            .and_then(Value::as_str)
+            .ok_or_else(|| "typedAction.kind must be a string".to_string())?;
+        let receipt_result = match kind {
+            "navigate" => self.navigate(action),
+            "click" => fixed_click(action).and_then(|script| self.fixed_script(script, "click")),
+            "type" => fixed_type(action).and_then(|script| self.fixed_script(script, "type")),
+            "focus" => fixed_focus(action).and_then(|script| self.fixed_script(script, "focus")),
+            "scroll" => fixed_scroll(action).and_then(|script| self.fixed_script(script, "scroll")),
+            "wait" => self.wait(action),
+            "credential" | "upload" | "download" => {
+                Ok(failed(kind, "capability_not_connected"))
+            }
+            _ => Err("typedAction.kind is not registered by worker".to_string()),
         };
+        let invalidation_result = self.invalidate_observation_after_effect(kind);
+        let receipt = receipt_result?;
+        invalidation_result?;
         let terminal = receipt
             .get("terminalObserved")
             .and_then(Value::as_bool)
@@ -249,14 +316,54 @@ impl Browser {
                         .to_string(),
                 )
             });
-        self.operations.insert(
-            operation_id.to_string(),
-            StoredOperation {
-                payload_digest: frame.payload_digest.clone(),
-                terminal,
-            },
-        );
+        let stored = self
+            .operations
+            .get_mut(operation_id)
+            .ok_or_else(|| "prepared worker operation reservation is missing".to_string())?;
+        stored.terminal = terminal;
         Ok(receipt)
+    }
+
+    fn verify_action_surface(&mut self) -> Result<(), String> {
+        let expected = self
+            .last_action_surface_digest
+            .clone()
+            .ok_or_else(|| "worker has no admitted action surface for dispatch".to_string())?;
+        let budget = self
+            .last_observation_budget
+            .ok_or_else(|| "worker has no admitted observation budget for dispatch".to_string())?;
+        let expected_epoch = self
+            .observed_navigation_epoch
+            .ok_or_else(|| "worker has no admitted navigation epoch for dispatch".to_string())?;
+        let before = self.navigation_epoch.load(Ordering::Acquire);
+        if before != expected_epoch {
+            return Err("worker navigation epoch drifted before action-surface check".to_string());
+        }
+        let observation =
+            self.evaluate_json(semantic_snapshot_script(budget), Duration::from_secs(5))?;
+        validate_safe_json(&observation, 0)?;
+        let after = self.navigation_epoch.load(Ordering::Acquire);
+        if after != expected_epoch {
+            return Err("worker navigated during action-surface revalidation".to_string());
+        }
+        if action_surface_digest(&observation)? != expected {
+            return Err("worker action surface drifted before dispatch".to_string());
+        }
+        Ok(())
+    }
+
+    fn invalidate_observation_after_effect(&mut self, action: &str) -> Result<(), String> {
+        if action != "navigate" {
+            self.page_generation = self
+                .page_generation
+                .checked_add(1)
+                .ok_or_else(|| "page generation exhausted".to_string())?;
+        }
+        self.last_document_digest = None;
+        self.last_action_surface_digest = None;
+        self.last_observation_budget = None;
+        self.observed_navigation_epoch = None;
+        Ok(())
     }
 
     fn navigate(&mut self, action: &Map<String, Value>) -> Result<Value, String> {
@@ -269,6 +376,7 @@ impl Browser {
         if !self.allowed_origins.contains(&target_origin) {
             return Ok(failed("navigate", "origin_not_allowed"));
         }
+        self.navigation_epoch.fetch_add(1, Ordering::AcqRel);
         self.page_generation = self
             .page_generation
             .checked_add(1)
@@ -487,10 +595,34 @@ fn run() -> Result<(), String> {
                             .ok_or_else(|| "worker is not started".to_string())?
                             .observe(budget as usize)
                     }
-                    "dispatch" => browser
-                        .as_mut()
-                        .ok_or_else(|| "worker is not started".to_string())?
-                        .dispatch(&frame),
+                    "dispatch" => {
+                        let active = browser
+                            .as_mut()
+                            .ok_or_else(|| "worker is not started".to_string())?;
+                        match active.prepare_dispatch(&frame) {
+                            Ok(replay) => {
+                                write_worker_frame(
+                                    &mut output,
+                                    &frame,
+                                    response_sequence,
+                                    "dispatch_boundary",
+                                    json!({
+                                        "localDispatchCrossed": true,
+                                        "requestKind": frame.kind,
+                                        "requestPayloadDigest": frame.payload_digest,
+                                    }),
+                                )?;
+                                response_sequence = response_sequence
+                                    .checked_add(1)
+                                    .ok_or_else(|| "response sequence exhausted".to_string())?;
+                                match replay {
+                                    Some(receipt) => Ok(receipt),
+                                    None => active.execute_prepared_dispatch(&frame),
+                                }
+                            }
+                            Err(error) => Err(error),
+                        }
+                    }
                     "reconcile" => browser
                         .as_mut()
                         .ok_or_else(|| "worker is not started".to_string())?
@@ -614,19 +746,23 @@ fn validate_frame(frame: &Frame, sequence: u64) -> Result<(), String> {
     Ok(())
 }
 
-fn write_response(
+fn write_worker_frame(
     output: &mut impl Write,
     request: &Frame,
     sequence: u64,
+    kind: &str,
     payload: Value,
 ) -> Result<(), String> {
+    if !matches!(kind, "dispatch_boundary" | "response") {
+        return Err("worker attempted to emit an unregistered frame kind".to_string());
+    }
     let frame = json!({
         "schema": SCHEMA,
         "protocolVersion": PROTOCOL_VERSION,
         "sessionId": request.session_id,
         "generation": request.generation,
         "sequence": sequence,
-        "kind": "response",
+        "kind": kind,
         "requestId": request.request_id,
         "payloadDigest": sha256_hex(canonical_json(&payload).as_bytes()),
         "payload": payload,
@@ -640,6 +776,15 @@ fn write_response(
         .and_then(|_| output.write_all(body.as_bytes()))
         .and_then(|_| output.flush())
         .map_err(|error| format!("private channel response failed: {error}"))
+}
+
+fn write_response(
+    output: &mut impl Write,
+    request: &Frame,
+    sequence: u64,
+    payload: Value,
+) -> Result<(), String> {
+    write_worker_frame(output, request, sequence, "response", payload)
 }
 
 fn semantic_snapshot_script(budget: usize) -> String {
@@ -809,6 +954,72 @@ fn string_field<'a>(value: &'a Value, name: &str) -> Result<&'a str, String> {
         .ok_or_else(|| format!("{name} must be a string"))
 }
 
+fn action_surface_digest(observation: &Value) -> Result<String, String> {
+    let object = observation
+        .as_object()
+        .ok_or_else(|| "semantic observation must be an object".to_string())?;
+    let links = object
+        .get("links")
+        .cloned()
+        .ok_or_else(|| "semantic observation lacks links".to_string())?;
+    let controls = object
+        .get("controls")
+        .cloned()
+        .ok_or_else(|| "semantic observation lacks controls".to_string())?;
+    let forms = object
+        .get("forms")
+        .cloned()
+        .ok_or_else(|| "semantic observation lacks forms".to_string())?;
+    let surface = json!({
+        "links": links,
+        "controls": controls,
+        "forms": forms,
+    });
+    validate_safe_json(&surface, 0)?;
+    Ok(sha256_hex(canonical_json(&surface).as_bytes()))
+}
+
+fn validate_dispatch_snapshot_state(
+    payload: &Value,
+    action_kind: &str,
+    worker_page_generation: u64,
+    last_document_digest: Option<&str>,
+    observed_navigation_epoch: Option<u64>,
+    current_navigation_epoch: u64,
+) -> Result<(), String> {
+    let requested_page_generation = payload
+        .get("pageGeneration")
+        .and_then(Value::as_u64)
+        .filter(|value| *value <= MAX_SAFE_INTEGER)
+        .ok_or_else(|| "dispatch.pageGeneration must be a safe non-negative integer".to_string())?;
+    let document = payload
+        .get("documentDigest")
+        .ok_or_else(|| "dispatch.documentDigest is missing".to_string())?;
+    let bootstrap_navigation = action_kind == "navigate" && requested_page_generation == 0;
+    if bootstrap_navigation {
+        if worker_page_generation != 0 || !document.is_null() {
+            return Err("bootstrap navigation snapshot is stale".to_string());
+        }
+        return Ok(());
+    }
+    if requested_page_generation == 0 || requested_page_generation != worker_page_generation {
+        return Err("worker page generation drifted before dispatch".to_string());
+    }
+    let requested_document_digest = document
+        .as_str()
+        .filter(|value| is_digest(value))
+        .ok_or_else(|| "dispatch.documentDigest must be a non-zero SHA-256 digest".to_string())?;
+    if last_document_digest != Some(requested_document_digest) {
+        return Err("worker document digest drifted before dispatch".to_string());
+    }
+    let observed_epoch = observed_navigation_epoch
+        .ok_or_else(|| "worker has no admitted semantic observation for dispatch".to_string())?;
+    if observed_epoch != current_navigation_epoch {
+        return Err("worker navigation epoch drifted before dispatch".to_string());
+    }
+    Ok(())
+}
+
 fn validate_safe_json(value: &Value, depth: usize) -> Result<(), String> {
     if depth > 32 {
         return Err("private channel JSON nesting exceeds limit".to_string());
@@ -881,4 +1092,128 @@ fn is_digest(value: &str) -> bool {
         && value
             .bytes()
             .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn dispatch_snapshot_rejects_generation_document_and_navigation_drift() {
+        let digest = "1".repeat(64);
+        let payload = json!({
+            "pageGeneration": 7,
+            "documentDigest": digest,
+        });
+        assert!(
+            validate_dispatch_snapshot_state(
+                &payload,
+                "click",
+                7,
+                Some(digest.as_str()),
+                Some(11),
+                11,
+            )
+            .is_ok()
+        );
+        assert!(
+            validate_dispatch_snapshot_state(
+                &payload,
+                "click",
+                8,
+                Some(digest.as_str()),
+                Some(11),
+                11,
+            )
+            .unwrap_err()
+            .contains("page generation")
+        );
+        assert!(
+            validate_dispatch_snapshot_state(
+                &payload,
+                "click",
+                7,
+                Some(&"2".repeat(64)),
+                Some(11),
+                11,
+            )
+            .unwrap_err()
+            .contains("document digest")
+        );
+        assert!(
+            validate_dispatch_snapshot_state(
+                &payload,
+                "click",
+                7,
+                Some(digest.as_str()),
+                Some(11),
+                12,
+            )
+            .unwrap_err()
+            .contains("navigation epoch")
+        );
+    }
+
+    #[test]
+    fn action_surface_digest_ignores_visible_text_but_tracks_actionable_drift() {
+        let base = json!({
+            "schema": "hepta.browser.semantic-observation.v1",
+            "title": "Title A",
+            "visibleText": "dynamic counter 1",
+            "links": [{"text":"A","href":"https://example.com/a","selector":"a:nth-of-type(1)"}],
+            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":false,"checked":false}],
+            "forms": [],
+            "viewport": {"width":1280,"height":720},
+            "truncated": false,
+        });
+        let text_changed = json!({
+            "schema": "hepta.browser.semantic-observation.v1",
+            "title": "Title B",
+            "visibleText": "dynamic counter 2",
+            "links": [{"text":"A","href":"https://example.com/a","selector":"a:nth-of-type(1)"}],
+            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":false,"checked":false}],
+            "forms": [],
+            "viewport": {"width":1280,"height":720},
+            "truncated": false,
+        });
+        let control_changed = json!({
+            "schema": "hepta.browser.semantic-observation.v1",
+            "title": "Title B",
+            "visibleText": "dynamic counter 2",
+            "links": [{"text":"A","href":"https://example.com/a","selector":"a:nth-of-type(1)"}],
+            "controls": [{"selector":"button:nth-of-type(1)","tag":"button","role":"","type":"","name":"","ariaLabel":"Go","placeholder":"","disabled":true,"checked":false}],
+            "forms": [],
+            "viewport": {"width":1280,"height":720},
+            "truncated": false,
+        });
+        assert_eq!(
+            action_surface_digest(&base).expect("base digest"),
+            action_surface_digest(&text_changed).expect("text digest"),
+        );
+        assert_ne!(
+            action_surface_digest(&base).expect("base digest"),
+            action_surface_digest(&control_changed).expect("control digest"),
+        );
+    }
+
+    #[test]
+    fn only_initial_navigation_may_dispatch_without_an_observation() {
+        let payload = json!({
+            "pageGeneration": 0,
+            "documentDigest": null,
+        });
+        assert!(
+            validate_dispatch_snapshot_state(&payload, "navigate", 0, None, None, 0)
+                .is_ok()
+        );
+        assert!(
+            validate_dispatch_snapshot_state(&payload, "click", 0, None, None, 0)
+                .is_err()
+        );
+        assert!(
+            validate_dispatch_snapshot_state(&payload, "navigate", 1, None, None, 1)
+                .is_err()
+        );
+    }
 }

@@ -304,6 +304,32 @@ test("driver throw after dispatch boundary becomes indeterminate and retry never
   assert.equal(fakeDriver.dispatchCalls, 1);
 });
 
+test("worker pre-dispatch rejection is terminal and is never mislabeled as crossed", async () => {
+  const rejected = Object.assign(
+    new Error("worker rejected stale page snapshot before admission"),
+    {
+      name: "BrowserWorkerPreDispatchError",
+      code: "BROWSER_WORKER_PRE_DISPATCH_REJECTED",
+      outcomeDigest: D4,
+    },
+  );
+  const fakeDriver = driver({
+    dispatchImpl: async () => {
+      throw rejected;
+    },
+  });
+  const { host, journal } = await preparedHost({ driver: fakeDriver });
+  const result = await host.navigateOrAct(operation());
+  assert.equal(result.status, "failed");
+  assert.equal(result.terminalObserved, true);
+  assert.equal(result.observationReason, "worker_rejected_before_dispatch");
+  assert.equal(result.outcomeDigest, D4);
+  const durable = await journal.getOperation("profile.1", 1, "operation.1");
+  assert.equal(durable.receipt.status, "failed");
+  assert.equal(durable.receipt.terminalObserved, true);
+  assert.equal(fakeDriver.dispatchCalls, 1);
+});
+
 test("reconciliation and cleanup remain available after grant and deadline expiry", async () => {
   let now = 1_000;
   const { host } = await preparedHost({ clock: () => now });

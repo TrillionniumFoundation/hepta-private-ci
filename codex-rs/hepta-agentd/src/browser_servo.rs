@@ -249,29 +249,43 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                     }),
                 )?;
                 let boundary = receive_frame(state)?;
-                if boundary.kind != "dispatch_boundary" || boundary.request_id != request_id {
+                if boundary.request_id != request_id {
                     return Err(BrowserServoError::Indeterminate(
-                    "Browser did not acknowledge the local dispatch boundary after authority entry"
-                        .into(),
-                ));
+                        "Browser final-use boundary did not match the active request".into(),
+                    ));
                 }
                 let boundary_payload =
-                    require_plain_object(&boundary.payload, "Browser dispatch boundary")?;
-                if boundary_payload.get("localDispatchCrossed") != Some(&Value::Bool(true))
-                    || boundary_payload
-                        .get("requestDigest")
-                        .and_then(Value::as_str)
-                        != Some(request_digest_text)
+                    require_plain_object(&boundary.payload, "Browser final-use boundary")?;
+                if boundary_payload
+                    .get("requestDigest")
+                    .and_then(Value::as_str)
+                    != Some(request_digest_text)
                     || boundary_payload
                         .get("witnessDigest")
                         .and_then(Value::as_str)
                         != Some(witness_text.as_str())
                 {
                     return Err(BrowserServoError::Indeterminate(
-                        "Browser dispatch-boundary receipt drifted from final-use authority".into(),
+                        "Browser final-use boundary drifted from final-use authority".into(),
                     ));
                 }
-                Ok(())
+                match boundary.kind.as_str() {
+                    "dispatch_boundary"
+                        if boundary_payload.get("localDispatchCrossed")
+                            == Some(&Value::Bool(true)) =>
+                    {
+                        Ok(())
+                    }
+                    "dispatch_rejected"
+                        if boundary_payload.get("localDispatchCrossed")
+                            == Some(&Value::Bool(false)) =>
+                    {
+                        Ok(())
+                    }
+                    _ => Err(BrowserServoError::Indeterminate(
+                        "Browser did not issue a valid dispatch or rejection boundary".into(),
+                    )),
+                }
             })??;
         Ok(())
     }
@@ -415,7 +429,7 @@ fn receive_frame<T: BrowserServoTransport>(
         .ok_or_else(|| BrowserServoError::Protocol("Browser frame kind is missing".into()))?;
     if !matches!(
         kind,
-        "response" | "authority_challenge" | "dispatch_boundary"
+        "response" | "authority_challenge" | "dispatch_boundary" | "dispatch_rejected"
     ) {
         return Err(BrowserServoError::Protocol(
             "Browser emitted an unregistered frame kind".into(),
@@ -1030,6 +1044,96 @@ mod tests {
 
         let result = call.join().expect("call thread").expect("Browser result");
         assert_eq!(result["status"], "indeterminate");
+        revoked_rx
+            .recv_timeout(Duration::from_secs(1))
+            .expect("revocation unblocked")
+            .expect("revocation succeeded");
+        revoke.join().expect("revocation thread");
+    }
+
+    #[test]
+    fn pre_dispatch_rejection_releases_final_use_fence_without_claiming_crossed() {
+        let harness = harness();
+        let port = Arc::clone(&harness.port);
+        let invocation = harness.invocation.clone();
+        let call = thread::spawn(move || {
+            port.call(
+                BrowserServoCall::effect(json!({"operationId":"operation.rejected"}), invocation)
+                    .expect("effect call"),
+            )
+        });
+
+        let request = decode_outbound(&harness.outbound.recv().expect("request"));
+        assert_eq!(request["kind"], "request");
+        harness
+            .inbound
+            .send(inbound_frame(
+                1,
+                "authority_challenge",
+                "browser.agentd.1",
+                json!({
+                    "request": {"operationId":"operation.rejected"},
+                    "requestDigest": hex_lower(&harness.request_digest),
+                    "authorityEpoch": 7,
+                }),
+            ))
+            .expect("challenge");
+
+        let enter = decode_outbound(&harness.outbound.recv().expect("authority enter"));
+        assert_eq!(enter["kind"], "authority_enter");
+        let witness = enter["payload"]["witnessDigest"]
+            .as_str()
+            .expect("witness")
+            .to_string();
+
+        let authority = harness.authority.clone();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        let revoke = thread::spawn(move || {
+            let result = authority.update_revocations(FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["browser-grant.1".to_string()]),
+            });
+            revoked_tx.send(result).expect("revocation result");
+        });
+        assert!(matches!(
+            revoked_rx.recv_timeout(Duration::from_millis(50)),
+            Err(mpsc::RecvTimeoutError::Timeout)
+        ));
+
+        harness
+            .inbound
+            .send(inbound_frame(
+                2,
+                "dispatch_rejected",
+                "browser.agentd.1",
+                json!({
+                    "requestDigest": hex_lower(&harness.request_digest),
+                    "witnessDigest": witness,
+                    "localDispatchCrossed": false,
+                }),
+            ))
+            .expect("dispatch rejected");
+        harness
+            .inbound
+            .send(inbound_frame(
+                3,
+                "response",
+                "browser.agentd.1",
+                json!({
+                    "ok": true,
+                    "result": {
+                        "status":"failed",
+                        "terminalObserved":true,
+                        "observationReason":"worker_rejected_before_dispatch"
+                    },
+                }),
+            ))
+            .expect("response");
+
+        let result = call.join().expect("call thread").expect("Browser result");
+        assert_eq!(result["status"], "failed");
+        assert_eq!(result["terminalObserved"], true);
         revoked_rx
             .recv_timeout(Duration::from_secs(1))
             .expect("revocation unblocked")

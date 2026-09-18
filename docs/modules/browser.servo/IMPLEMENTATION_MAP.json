@@ -66,10 +66,10 @@
         {
           "path": "apps/hepta-browser/servo-worker/src/main.rs",
           "kind": "current_pin_servo_worker_source",
-          "command": "cargo check --manifest-path apps/hepta-browser/servo-worker/Cargo.toml --locked"
+          "command": "cargo test --manifest-path apps/hepta-browser/servo-worker/Cargo.toml --locked"
         }
       ],
-      "sourceSemantics": "Publishes page-generation-fenced origin plus digest-bound bounded semantic observations from the current-pin Servo WebView.",
+      "sourceSemantics": "Publishes page-generation-fenced origin plus digest-bound bounded semantic observations from the current-pin Servo WebView; worker admission later revalidates page/document/navigation epoch and the actionable-surface digest.",
       "operation": "observe_page",
       "nativeSymbol": "async observePage(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -110,7 +110,7 @@
           "command": "cd codex-rs && cargo test --locked -p codex-hepta-agentd browser_servo --lib"
         }
       ],
-      "sourceSemantics": "Binds proposal provenance, typed payload, page generation, grant and live VerifiedUse authority; holds the revocation fence through durable intent fsync and the successful local worker-pipe dispatch boundary, then reconciles remote terminality separately.",
+      "sourceSemantics": "Binds proposal provenance, typed payload, page/document generation, grant and live VerifiedUse authority; holds the revocation fence through durable intent fsync and worker queueing until the Servo worker revalidates current state, reserves the operation and emits dispatch_boundary immediately before effect execution. Proven worker pre-dispatch rejection is terminal no-dispatch; uncertain loss remains indeterminate.",
       "operation": "navigate_or_act",
       "nativeSymbol": "async navigateOrAct(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -119,6 +119,7 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
+    "reviewed committed exact Servo-worker Cargo.lock bound to the qualified build",
     "terminal-success reproducible current-pin Servo worker artifact/SBOM receipt",
     "independent Linux target-host namespace/profile/credential/network/no-listener/descendant-cleanup qualification and platform equivalents where targeted",
     "real credential broker and download/upload terminal observers when those capabilities are enabled",

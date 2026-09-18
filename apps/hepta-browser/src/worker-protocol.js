@@ -5,7 +5,7 @@ export const MAX_BROWSER_WORKER_FRAME_BYTES = 1_048_576;
 
 const SCHEMA = "hepta.browser.worker-frame.v1";
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
-const KINDS = new Set(["start", "observe", "dispatch", "reconcile", "stop", "response", "event"]);
+const KINDS = new Set(["start", "observe", "dispatch", "reconcile", "stop", "dispatch_boundary", "response", "event"]);
 
 function requireRecord(value, name) {
   if (

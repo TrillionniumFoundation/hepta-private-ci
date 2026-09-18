@@ -197,7 +197,19 @@ export class ParentFinalUseAuthority {
     if (witness.requestDigest !== requestDigest || witness.authorityEpoch !== authorityEpoch) {
       throw new TypeError("Agentd final-use witness does not bind the Browser request");
     }
-    const result = await consumer(witness);
+    let result;
+    try {
+      result = await consumer(witness);
+    } catch (error) {
+      if (error?.code === "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
+        await this.#channel.send("dispatch_rejected", requestId, {
+          requestDigest,
+          witnessDigest: witness.witnessDigest,
+          localDispatchCrossed: false,
+        });
+      }
+      throw error;
+    }
     await this.#channel.send("dispatch_boundary", requestId, {
       requestDigest,
       witnessDigest: witness.witnessDigest,

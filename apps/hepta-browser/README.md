@@ -11,7 +11,7 @@ This root contains the repository-owned `browser.servo` boundary. The current ca
 - `src/runtime-boundary.js` — bounded per-profile serialization queue plus safe abort settlement; an effect-capable driver timeout is not reported until the abort/containment path itself has settled.
 - `src/journal.js` — strict private durable operation journal with compaction and clean-generation retirement.
 - `src/worker-protocol.js` — canonical bounded private Browser/Servo frames.
-- `src/worker-driver.js` — exact-artifact subprocess driver, principal-bound fresh profile roots, response-request binding, stderr drain and Linux Bubblewrap source contract. If an abort races a private pipe write, the worker is contained and the request is not reported timed out while the write can still complete in background.
+- `src/worker-driver.js` — exact-artifact subprocess driver, principal-bound fresh profile roots, worker-originated admission boundary, response-request binding, stderr drain and Linux Bubblewrap source contract. A pipe write is not treated as effect admission; timeout/abort before a worker boundary contains the worker unless the worker has explicitly proven a no-dispatch rejection.
 - `src/agentd-protocol.js`, `src/agentd-service.js`, `src/agentd-service-main.js` — private Agentd parent handoff.
 - `servo-worker/` — Hepta-owned current-pin Servo worker source with one Servo / one WebView and fixed worker-owned semantic/action scripts.
 
@@ -21,7 +21,7 @@ The canonical upstream pin remains `third_party/servo-patches/MANIFEST.json`. A 
 
 `buildNavigationIntent()` is authority-free. `src/bridge.js` preserves the proposal `navigationId` as the effect operation identity and includes the proposal `policyDigest` and `expectedRevision` in the typed `navigate` payload. The final payload digest and request digest therefore bind the exact proposal provenance rather than only the URL.
 
-The Browser service does not accept a reusable serialized `VerifiedUseToken`. Agentd receives an exact Browser `authority_challenge`, enters real `FinalUseAuthority::with_verified_use`, sends `authority_enter`, and keeps the live revocation fence through Browser journal fsync and the successful local worker-pipe write. Browser then emits `dispatch_boundary`; remote page/business completion is reconciled separately. Browser no longer wraps this non-cancelable fence in an outer Promise timeout that could return failure while a late dispatch continues in background.
+The Browser service does not accept a reusable serialized `VerifiedUseToken`. Agentd receives an exact Browser `authority_challenge`, enters real `FinalUseAuthority::with_verified_use`, sends `authority_enter`, and keeps the live revocation fence through Browser journal fsync, private-pipe queue wait and Servo-worker admission. The worker revalidates page/document/navigation/action-surface state, reserves the operation and emits `dispatch_boundary` immediately before effect execution. A worker-confirmed stale-state rejection is returned as `dispatch_rejected { localDispatchCrossed:false }`; timeout/transport uncertainty without either proof remains indeterminate. Remote page/business completion after admission is reconciled separately.
 
 ## Secret and durability boundary
 
@@ -35,11 +35,11 @@ Each worker generation receives a fresh random private profile directory and a m
 
 The current-pin worker's `observe` path emits bounded `hepta.browser.semantic-observation.v1` data rather than only URL/digests. It includes title, bounded visible text, HTTP(S) links, forms, page-local selectors for actionable controls and viewport metadata. Password controls and control values are excluded. The semantic value is canonical-digest-bound by the worker and rechecked by `BrowserProfileHost` against the caller's observation budget.
 
-Every admitted semantic observation advances page generation. An action prepared from an earlier observation therefore fails the host's stale-generation check even when page script changed the DOM without a navigation.
+Every admitted semantic observation advances page generation and records an actionable-surface digest over links, controls and forms. Immediately before admission the worker reruns the fixed projection and requires page generation, document digest, navigation epoch and actionable-surface digest to still match. Every effect invalidates the prior observation, so the next new effect requires a fresh observe.
 
 ## Worker and sandbox boundary
 
-The private worker protocol uses a four-byte length prefix plus <=1 MiB canonical JSON. Frames bind protocol version, session, generation, monotonic sequence, request identity and payload digest. Responses must additionally echo the original request kind and request payload digest; mismatches terminate/fail the private channel.
+The private worker protocol uses a four-byte length prefix plus <=1 MiB canonical JSON. Frames bind protocol version, session, generation, monotonic sequence, request identity and payload digest. A dispatch receives a dedicated worker-originated `dispatch_boundary` only after worker-side stale-state validation and operation reservation; ordinary responses additionally echo the original request kind and request payload digest. Binding drift terminates/fails the private channel.
 
 Worker stderr is always drained but is not copied into receipts or journals, avoiding both pipe deadlock and accidental persistence of page/worker secrets.
 
@@ -47,7 +47,7 @@ Worker stderr is always drained but is not copied into receipts or journals, avo
 
 ## Capacity and backpressure
 
-Profile mutations use a bounded serialization queue (64 queued operations per key by default) and fail with `BrowserBackpressureError` on overload. Separate ceilings cover origins, grants, active operations, terminal in-memory replay cache, action fields, semantic observations, frames, journal size and call deadlines.
+Browser service process/profile admission is also bounded globally (default 1 active profile/worker, configurable only up to 64 for compatible injected drivers). Profile mutations use a bounded serialization queue (64 queued operations per key by default) and fail with `BrowserBackpressureError` on overload. Separate ceilings cover origins, grants, active operations, terminal in-memory replay cache, action fields, semantic observations, frames, journal size and call deadlines.
 
 ## Verification
 
@@ -58,6 +58,6 @@ node --test apps/hepta-browser/test/*.test.js
 node --check apps/hepta-browser/src/*.js
 ```
 
-Cross-owner Agentd qualification additionally runs the real `FinalUseAuthority` Browser handoff tests and compiles/lints the named `hepta-agentd-browser` caller. The current-pin worker gate runs `cargo check --locked`, the full Browser tests, the real Bubblewrap probe, two release builds, byte equality, dynamic-library closure, real worker smoke, deterministic SPDX SBOM and a checksum-bound build receipt.
+Cross-owner Agentd qualification additionally runs the real `FinalUseAuthority` Browser handoff tests and compiles/lints the named `hepta-agentd-browser` caller. The current-pin worker gate runs `cargo check --locked` plus worker unit tests, the full Browser tests, the real Bubblewrap probe, two release builds, byte equality, dynamic-library closure, real worker smoke, deterministic SPDX SBOM and a checksum-bound build receipt. The trusted main-only target gate accepts only a successful exact-main worker-build run with a reviewed committed `Cargo.lock`, and rehashes the lock, worker, SBOM and source tree before target qualification.
 
 For the exact completion boundary see `docs/modules/browser.servo/TECHNICAL.md`, `docs/modules/browser.servo/SERVO_WORKER.md`, `docs/modules/browser.servo/IMPLEMENTATION_MAP.json` and `qualification/module-execution-dossiers/detail/browser.servo.md`.

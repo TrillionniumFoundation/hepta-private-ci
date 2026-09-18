@@ -57,6 +57,8 @@ function startInput(overrides = {}) {
 
 function fakeLauncher({
   holdDispatchResponse = null,
+  holdDispatchBoundary = null,
+  rejectDispatchBeforeBoundary = false,
   capture = null,
   corruptResponseBinding = false,
 } = {}) {
@@ -91,6 +93,23 @@ function fakeLauncher({
       let sequence = 1;
       child.stdin.on("data", (chunk) => {
         for (const request of decoder.push(chunk)) {
+          let dispatchBoundary = null;
+          if (request.kind === "dispatch" && !rejectDispatchBeforeBoundary) {
+            dispatchBoundary = encodeWorkerFrame(
+              buildWorkerFrame({
+                sessionId: request.sessionId,
+                generation: request.generation,
+                sequence: sequence++,
+                kind: "dispatch_boundary",
+                requestId: request.requestId,
+                payload: {
+                  localDispatchCrossed: true,
+                  requestKind: request.kind,
+                  requestPayloadDigest: request.payloadDigest,
+                },
+              }),
+            );
+          }
           let observation;
           switch (request.kind) {
             case "start":
@@ -128,19 +147,38 @@ function fakeLauncher({
               sequence: sequence++,
               kind: "response",
               requestId: request.requestId,
-              payload: {
-                ok: true,
-                requestKind: request.kind,
-                requestPayloadDigest: corruptResponseBinding ? D1 : request.payloadDigest,
-                observation,
-              },
+              payload:
+                request.kind === "dispatch" && rejectDispatchBeforeBoundary
+                  ? {
+                      ok: false,
+                      requestKind: request.kind,
+                      requestPayloadDigest: request.payloadDigest,
+                      error: "worker page generation drifted before dispatch",
+                    }
+                  : {
+                      ok: true,
+                      requestKind: request.kind,
+                      requestPayloadDigest: corruptResponseBinding
+                        ? D1
+                        : request.payloadDigest,
+                      observation,
+                    },
             }),
           );
-          if (request.kind === "dispatch" && holdDispatchResponse) {
-            holdDispatchResponse.release = () => child.stdout.write(encoded);
-            holdDispatchResponse.requestId = request.requestId;
+          if (request.kind === "dispatch" && holdDispatchBoundary) {
+            holdDispatchBoundary.release = () => {
+              child.stdout.write(dispatchBoundary);
+              child.stdout.write(encoded);
+            };
+            holdDispatchBoundary.requestId = request.requestId;
           } else {
-            child.stdout.write(encoded);
+            if (dispatchBoundary) child.stdout.write(dispatchBoundary);
+            if (request.kind === "dispatch" && holdDispatchResponse) {
+              holdDispatchResponse.release = () => child.stdout.write(encoded);
+              holdDispatchResponse.requestId = request.requestId;
+            } else {
+              child.stdout.write(encoded);
+            }
           }
         }
       });
@@ -226,7 +264,7 @@ test("profile directory carries a private principal-bound owner manifest and std
   });
 });
 
-test("dispatch returns at local pipe write without waiting for worker execution response", async () => {
+test("dispatch returns at worker admission boundary without waiting for worker execution response", async () => {
   const held = {};
   const { driver, started } = await preparedDriver({
     launcher: fakeLauncher({ holdDispatchResponse: held }),
@@ -258,11 +296,75 @@ test("dispatch returns at local pipe write without waiting for worker execution 
   assert.equal(terminal.status, "succeeded");
 });
 
-test("abort racing a private pipe write contains the worker before the driver settles", async () => {
+test("pipe write alone does not cross the final-use dispatch boundary", async () => {
+  const held = {};
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({ holdDispatchBoundary: held }),
+  });
+  const dispatch = driver.dispatch({
+    profileId: "profile.1",
+    processId: started.processId,
+    profileGeneration: 1,
+    pageGeneration: 0,
+    documentDigest: null,
+    operationId: "operation.worker-boundary",
+    typedAction: {
+      kind: "navigate",
+      url: "https://example.com/",
+      policyDigest: D1,
+      expectedRevision: 1,
+    },
+  });
+  const timeout = Symbol("timeout");
+  const beforeBoundary = await Promise.race([
+    dispatch,
+    new Promise((resolve) => setTimeout(() => resolve(timeout), 25)),
+  ]);
+  assert.equal(beforeBoundary, timeout);
+  assert.equal(typeof held.release, "function");
+  held.release();
+  const result = await dispatch;
+  assert.equal(result.terminalObserved, false);
+});
+
+test("worker can reject stale dispatch before boundary without killing the channel", async () => {
+  const capture = {};
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({
+      rejectDispatchBeforeBoundary: true,
+      capture,
+    }),
+  });
+  await assert.rejects(
+    driver.dispatch({
+      profileId: "profile.1",
+      processId: started.processId,
+      profileGeneration: 1,
+      pageGeneration: 1,
+      documentDigest: D1,
+      operationId: "operation.stale",
+      typedAction: { kind: "click", selector: "button:nth-of-type(1)" },
+    }),
+    (error) =>
+      error?.name === "BrowserWorkerPreDispatchError" &&
+      error?.code === "BROWSER_WORKER_PRE_DISPATCH_REJECTED" &&
+      /^[0-9a-f]{64}$/.test(error?.outcomeDigest),
+  );
+  assert.equal(capture.child.killed, false);
+  const observed = await driver.observe({
+    profileId: "profile.1",
+    processId: started.processId,
+    profileGeneration: 1,
+    observationBudget: 1024,
+  });
+  assert.equal(observed.origin, "https://example.com");
+});
+
+test("abort before worker admission boundary contains the worker before dispatch settles", async () => {
   const held = {};
   const capture = {};
   const { driver, started } = await preparedDriver({
-    launcher: fakeLauncher({ holdDispatchResponse: held, capture }),
+    launcher: fakeLauncher({ holdDispatchBoundary: held, capture }),
   });
   const controller = new AbortController();
   const dispatch = driver.dispatch(

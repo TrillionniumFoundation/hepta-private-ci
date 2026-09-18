@@ -51,7 +51,7 @@ The Browser owner accepts only bounded typed inputs. Unknown critical action/pro
 
 The current source is decomposed into bounded authority-free proposal/projection ingress; typed-action normalizer and payload digest binder; provenance-preserving proposal/effect bridge; per-profile bounded single-writer queue; live final-use authority handshake; strict durable pre-dispatch journal; private parent protocol and Browser service; private Browser/Servo worker protocol; exact-artifact subprocess driver; current-pin one-Servo/one-WebView worker; Linux namespace launch contract and real sandbox probe; and reconciliation/terminal receipt reporter.
 
-For a new effect, the live revocation fence is held from Agentd `authority_enter` through Browser durable-intent fsync and the successful local worker-pipe write. Browser then emits `dispatch_boundary`, allowing Agentd to release the revocation mutex before arbitrary page execution. Remote completion remains a separate terminal/reconciliation observation.
+For a new effect, the live revocation fence is held from Agentd `authority_enter` through Browser durable-intent fsync until the Servo worker has dequeued the command, revalidated page/document/navigation epoch plus the actionable DOM surface, reserved the operation identity and emitted `dispatch_boundary` immediately before effect execution. A worker-side pre-dispatch rejection emits `dispatch_rejected` with `localDispatchCrossed=false`; only a real worker admission boundary releases the fence as crossed. Remote completion remains a separate terminal/reconciliation observation.
 
 ## 5. Contracts, ports and compatibility
 
@@ -74,7 +74,7 @@ Critical package-local protocols are explicit:
 - `hepta.browser.agentd-stdio-frame.v1` — Agentd <-> Browser private parent frames;
 - `hepta.browser.semantic-observation.v1` — bounded page semantic observation carried inside `PageObservationV1`.
 
-The worker frame binds protocol version, session, generation, monotonic sequence, request identity and canonical payload digest. Responses additionally echo the original request kind and request payload digest; a mismatch kills/fails the private channel. The parent protocol carries an authority challenge and dispatch-boundary handshake rather than serializing a reusable `VerifiedUseToken`.
+The worker frame binds protocol version, session, generation, monotonic sequence, request identity and canonical payload digest. Before a new effect, the worker emits a dedicated `dispatch_boundary` frame only after stale-snapshot/action-surface revalidation and operation reservation; ordinary responses additionally echo the original request kind and request payload digest. A mismatch kills/fails the private channel. The parent protocol carries authority challenge/enter plus `dispatch_boundary` or a proven `dispatch_rejected` rather than serializing a reusable `VerifiedUseToken`.
 
 Typed browser actions are closed-world: `navigate`, `click`, `type`, `credential`, `upload`, `focus`, `scroll`, `wait`, `download`. Navigation binds normalized URL, `policyDigest` and `expectedRevision`; the bridge uses the proposal `navigationId` as the operation identity. Thus policy revision and proposal identity are included in the final request digest rather than being dropped at adapter handoff.
 
@@ -99,14 +99,15 @@ New effect algorithm:
 5. Agentd enters real `FinalUseAuthority::with_verified_use` while holding the live revocation fence;
 6. Browser binds the witness and fsyncs an indeterminate durable dispatch record;
 7. Browser writes exactly one request to the current private worker pipe;
-8. Browser emits/returns the local dispatch boundary and releases final-use authority;
+8. the Servo worker dequeues it, revalidates page generation, document digest, navigation epoch and actionable-surface digest, reserves the operation, and emits `dispatch_boundary` immediately before execution;
+9. Browser forwards that boundary and Agentd releases final-use authority; a proven worker pre-effect rejection instead emits `dispatch_rejected` and is persisted as terminal failed/no-dispatch;
 9. terminal/unknown worker/business outcome is persisted and reconciled separately.
 
 An already-dispatched identity never re-enters final-use authority and never redispatches. Reconciliation remains available after the old grant/deadline expires because it observes prior work rather than authorizing new work.
 
 ## 8. Failure semantics, recovery and rollback
 
-Before durable dispatch, validation, authority denial, invalid protocol or persistence failure rejects without claiming an external effect. After durable dispatch, driver timeout, channel loss, worker crash or unknown response remains `indeterminate` until reconciliation.
+Before worker admission, validation, authority denial, invalid protocol, persistence failure or stale page/action-surface rejection cannot claim a crossed effect. A worker-confirmed pre-dispatch rejection is persisted as terminal failed. After the worker emits `dispatch_boundary`, driver timeout, channel loss, worker crash or unknown response remains `indeterminate` until reconciliation.
 
 Profile close refuses while any live or durable operation is nonterminal. Once all effects are terminal and worker stop is observed, retirement first fsyncs the profile-generation high-water and only then removes the generation's bulky operation records. A crash may therefore leave redundant terminal records but cannot make a clean-retired generation admissible again. If journal retirement fails after worker stop, the host reports `BrowserJournalRetirementError`.
 
@@ -132,7 +133,7 @@ The current worker is one WebView/profile generation. The dossier's <=16 concurr
 
 Safe observations include profile/process/page generations, operation/request/semantic digests, profile-owner digest, worker artifact identity and terminal/indeterminate state. Raw credential values, `type.text`, upload content/host paths, raw page HTML and worker stderr are excluded from durable receipts.
 
-`observePage` now carries a digest-bound `hepta.browser.semantic-observation.v1` produced by the real Servo WebView using a fixed worker-owned script. It exposes bounded title, visible text, HTTP(S) links, forms, page-local CSS selectors for actionable controls and viewport metadata; password inputs and control values are not exported. Every accepted semantic observation advances page generation, so stale selectors from older observations fail even when script changed DOM without navigation.
+`observePage` carries a digest-bound `hepta.browser.semantic-observation.v1` produced by the real Servo WebView using a fixed worker-owned script. It exposes bounded title, visible text, HTTP(S) links, forms, page-local CSS selectors for actionable controls and viewport metadata; password inputs and control values are not exported. The worker stores a digest of the actionable surface (links/controls/forms), re-evaluates that surface immediately before admitting an effect, rejects navigation/document/action-surface drift before `dispatch_boundary`, and invalidates the observation after every effect so the next new effect requires a fresh observation.
 
 Operating references:
 
@@ -150,7 +151,7 @@ node --test apps/hepta-browser/test/*.test.js
 node --check apps/hepta-browser/src/*.js
 ```
 
-Coverage includes canonical proposals, action/provenance binding, authority linearization, secret-free durability, semantic-observation digest/budget, bounded serialization backpressure, strict journal hydration/compaction/retirement, private protocol canonicality, response-request echo binding, worker artifact/profile ownership, stderr drain and Linux launch allowlist.
+Coverage includes canonical proposals, action/provenance binding, worker-admission authority linearization, explicit pre-dispatch rejection, page/document/navigation/action-surface drift, observation invalidation after effects, secret-free durability, semantic-observation digest/budget, bounded serialization backpressure, strict journal hydration/compaction/retirement, private protocol canonicality, response-request echo binding, worker artifact/profile ownership, stderr drain and Linux launch allowlist.
 
 Cross-owner qualification additionally runs:
 
