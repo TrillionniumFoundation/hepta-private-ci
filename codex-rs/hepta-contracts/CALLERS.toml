@@ -6,7 +6,12 @@ frozen_oracle = "2f704dc7c1172cefca908852456beccf4d02a5d1"
 [[surface]]
 crate = "codex-hepta-governance"
 role = "product_extension"
-public_items = ["install", "install_with_mode", "GovernanceState"]
+public_items = [
+  "install",
+  "install_with_mode",
+  "install_with_mode_and_qualification_authority",
+  "GovernanceState",
+]
 product_callers = [
   "codex-rs/app-server/src/extensions.rs",
   "codex-rs/mcp-server/src/message_processor.rs",
@@ -21,6 +26,7 @@ public_items = [
   "QualificationEvidenceEnvelopeV1",
   "EvidenceDispositionV1",
   "EvidenceExternalCheckpointV1",
+  "EvidenceIssuerAuthorityV1",
 ]
 product_callers = [
   "codex-rs/ext/hepta-governance/src/install.rs",
