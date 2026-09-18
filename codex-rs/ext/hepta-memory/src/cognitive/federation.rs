@@ -620,10 +620,16 @@ fn compile_retrieval_batch(
         selected_memories = proposed;
         selected_bindings.push(candidate.revalidation.clone());
     }
-    if selected_bindings.is_empty() {
+    if selected_bindings.is_empty()
+        && batch.coverage.requested_sources == 0
+        && batch.coverage.discovery_failures == 0
+    {
         return None;
     }
     let content = serialize_attachment(&selected_memories, &batch.coverage).ok()?;
+    if content.len() > max_bytes {
+        return None;
+    }
     Some((selected_bindings, content))
 }
 
@@ -784,6 +790,46 @@ mod tests {
     const THREAD_ID: &str = "00000000-0000-4000-8000-000000000711";
     const OWNER_ID: &str = "00000000-0000-4000-8000-000000000712";
     const CONSUMER_ID: &str = "00000000-0000-4000-8000-000000000713";
+
+    #[test]
+    fn coverage_only_attachment_distinguishes_failed_federation_from_no_federation() {
+        let failed = FederatedRetrievalBatch {
+            query_sha256: Sha256Digest::for_bytes(b"failed-query"),
+            candidates: Vec::new(),
+            coverage: codex_hepta_memory::FederatedRetrievalCoverage {
+                requested_sources: 1,
+                completed_sources: 0,
+                failed_sources: 1,
+                discovery_failures: 0,
+            },
+        };
+        let (bindings, content) =
+            super::compile_retrieval_batch(&failed, 16 * 1024, 4 * 1024)
+                .expect("coverage-only attachment");
+        assert!(bindings.is_empty());
+        let payload = serde_json::from_str::<serde_json::Value>(&content)
+            .expect("coverage-only payload");
+        assert_eq!(payload["schema_version"], 2);
+        assert_eq!(payload["coverage"]["requested_sources"], 1);
+        assert_eq!(payload["coverage"]["completed_sources"], 0);
+        assert_eq!(payload["coverage"]["failed_sources"], 1);
+        assert_eq!(payload["coverage"]["discovery_failures"], 0);
+        assert_eq!(payload["memories"].as_array().expect("memories").len(), 0);
+
+        let not_configured = FederatedRetrievalBatch {
+            query_sha256: Sha256Digest::for_bytes(b"none-query"),
+            candidates: Vec::new(),
+            coverage: codex_hepta_memory::FederatedRetrievalCoverage {
+                requested_sources: 0,
+                completed_sources: 0,
+                failed_sources: 0,
+                discovery_failures: 0,
+            },
+        };
+        assert!(
+            super::compile_retrieval_batch(&not_configured, 16 * 1024, 4 * 1024).is_none()
+        );
+    }
 
     #[test]
     fn federation_source_binding_distinguishes_partial_coverage() {
