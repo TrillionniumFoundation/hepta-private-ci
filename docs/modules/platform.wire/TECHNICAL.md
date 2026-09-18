@@ -29,7 +29,7 @@ it.
 | deterministic version/capability negotiation | implemented as a bounded transport-neutral helper |
 | negotiation downgrade resistance | binding digest exposed; authentication belongs to the selected session/transport |
 | bounded streaming decode | implemented for blocking `Read`; header admission precedes body allocation |
-| schema registry / typed payload admission | target-only until a native schema layer is bound |
+| schema registry / typed payload admission | implemented as a bounded library policy; domain owners still register production schemas |
 | live cross-runtime loading | qualification follow-up |
 | product caller source | not yet composed |
 
@@ -94,7 +94,7 @@ The bounded components are:
 - `version negotiation`
 - `bounded decoder` (whole-frame and bounded stream reader)
 - `transport-neutral error mapping`
-- target schema admission / typed payload layer
+- bounded schema registry, producer admission and typed payload codec boundary
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -185,6 +185,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-wire/src/framed_tests.rs](../../../codex-rs/hepta-wire/src/framed_tests.rs); bounded stream framing and truncation.
 - [codex-rs/hepta-wire/src/version_tests.rs](../../../codex-rs/hepta-wire/src/version_tests.rs); highest-common negotiation and required-capability downgrade exclusion.
 - [codex-rs/hepta-wire/src/property_tests.rs](../../../codex-rs/hepta-wire/src/property_tests.rs); generated canonical round trips and arbitrary-byte no-panic corpus.
+- [codex-rs/hepta-wire/src/schema_tests.rs](../../../codex-rs/hepta-wire/src/schema_tests.rs); strict schema/producer admission and typed payload round trips.
 
 In `codex-rs`, run `just test -p codex-hepta-wire`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
 
