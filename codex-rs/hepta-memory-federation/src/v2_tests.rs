@@ -169,6 +169,41 @@ impl FederationCancellationV2 for ImmediateCancellation {
     }
 }
 
+struct DelayedCancellation {
+    delay: Duration,
+}
+
+impl FederationCancellationV2 for DelayedCancellation {
+    fn cancelled<'a>(
+        &'a self,
+        _query: &'a FederatedQueryV2,
+    ) -> FederationCancellationFutureV2<'a> {
+        Box::pin(async move {
+            tokio::time::sleep(self.delay).await;
+        })
+    }
+}
+
+struct SlowAuthority {
+    observation: FederationAuthorityObservationV2,
+    delay: Duration,
+    completed: Arc<AtomicBool>,
+}
+
+impl FederationAuthorityV2 for SlowAuthority {
+    fn observe<'a>(
+        &'a self,
+        _query: &'a FederatedQueryV2,
+        _lease: &'a FederatedLeaseV2,
+    ) -> FederationAuthorityFutureV2<'a> {
+        Box::pin(async move {
+            tokio::time::sleep(self.delay).await;
+            self.completed.store(true, Ordering::SeqCst);
+            Ok(self.observation.clone())
+        })
+    }
+}
+
 fn current_authority(query: &FederatedQueryV2) -> FixtureAuthority {
     FixtureAuthority::new([
         authority_observation(query, 10),
@@ -490,7 +525,9 @@ async fn cancellation_drops_inflight_transport_future() {
     let result = execute_once(
         &transport,
         &current_authority(&query),
-        &ImmediateCancellation,
+        &DelayedCancellation {
+            delay: Duration::from_millis(5),
+        },
         10,
         query.clone(),
         &lease(&query),
@@ -500,6 +537,63 @@ async fn cancellation_drops_inflight_transport_future() {
     assert_eq!(result.validity, FederatedValidityV2::Indeterminate);
     assert!(result.items.is_empty());
     assert!(!completed.load(Ordering::SeqCst));
+}
+
+#[tokio::test]
+async fn pre_dispatch_cancellation_blocks_authority_and_transport() {
+    let query = query();
+    let completed = Arc::new(AtomicBool::new(false));
+    let transport = SlowTransport {
+        result: FederationTransportResultV2::Terminal(terminal_response(&query)),
+        delay: Duration::from_millis(1),
+        completed: Arc::clone(&completed),
+    };
+    assert_eq!(
+        execute_once(
+            &transport,
+            &current_authority(&query),
+            &ImmediateCancellation,
+            10,
+            query.clone(),
+            &lease(&query),
+        )
+        .await,
+        Err(FederationV2Error::OperationCancelled)
+    );
+    assert!(!completed.load(Ordering::SeqCst));
+}
+
+#[tokio::test]
+async fn authority_observation_is_bounded_by_query_deadline() {
+    let mut query = query();
+    query.deadline_unix_ms = 15;
+    let lease = lease(&query);
+    let authority_completed = Arc::new(AtomicBool::new(false));
+    let authority = SlowAuthority {
+        observation: authority_observation(&query, 11),
+        delay: Duration::from_millis(50),
+        completed: Arc::clone(&authority_completed),
+    };
+    let transport_completed = Arc::new(AtomicBool::new(false));
+    let transport = SlowTransport {
+        result: FederationTransportResultV2::Terminal(terminal_response(&query)),
+        delay: Duration::from_millis(1),
+        completed: Arc::clone(&transport_completed),
+    };
+    assert_eq!(
+        execute_once(
+            &transport,
+            &authority,
+            &NeverCancelledV2,
+            10,
+            query,
+            &lease,
+        )
+        .await,
+        Err(FederationV2Error::AuthorityUnavailable)
+    );
+    assert!(!authority_completed.load(Ordering::SeqCst));
+    assert!(!transport_completed.load(Ordering::SeqCst));
 }
 
 #[tokio::test]
