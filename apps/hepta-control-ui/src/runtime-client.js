@@ -489,6 +489,7 @@ export class RuntimeClient {
       reconcileAttempts: 0,
       nextReconcileAtMs: now + RECONCILE_BASE_DELAY_MS,
       recoveryRequired: false,
+      requestInFlight: false,
     };
     cloneAcknowledgement(entry, "pending", { accepted: null });
     this.#pending.set(operationId, entry);
@@ -511,6 +512,7 @@ export class RuntimeClient {
       [input.payloadName]: payload,
     });
 
+    entry.requestInFlight = true;
     this.#beginIo();
     try {
       let rawResponse;
@@ -588,7 +590,12 @@ export class RuntimeClient {
       this.#scheduleReconciliation();
       return entry.acknowledgement;
     } finally {
+      entry.requestInFlight = false;
       this.#endIo();
+      // A reconnect may have happened while the mutation acknowledgement was
+      // in flight. Only after the original dispatch settles may the operation
+      // enter read-only reconciliation.
+      this.#scheduleReconciliation();
     }
   }
 
@@ -686,6 +693,7 @@ export class RuntimeClient {
     for (const entry of candidates) {
       recoveryChanged =
         this.#refreshRecoveryRequirement(entry, now) || recoveryChanged;
+      if (entry.requestInFlight === true) continue;
       if (entry.recoveryRequired && !includeRecoveryRequired) continue;
       if (!ignoreBackoff && entry.nextReconcileAtMs > now) continue;
       eligible.push(entry);
@@ -782,6 +790,7 @@ export class RuntimeClient {
     for (const entry of this.#pending.values()) {
       recoveryChanged =
         this.#refreshRecoveryRequirement(entry, now) || recoveryChanged;
+      if (entry.requestInFlight === true) continue;
       if (entry.recoveryRequired) continue;
       if (due === null || entry.nextReconcileAtMs < due) due = entry.nextReconcileAtMs;
     }
@@ -839,6 +848,7 @@ export class RuntimeClient {
         ...record,
         semantics: null,
         acknowledgement: null,
+        requestInFlight: false,
       };
       cloneAcknowledgement(entry, record.status, {
         accepted: record.accepted,
