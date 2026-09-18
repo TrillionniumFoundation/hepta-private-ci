@@ -717,14 +717,8 @@ impl AutomationStore {
         .await
         .map_err(unavailable)?;
 
-        advance_task_after_submission(
-            &mut transaction,
-            &self.owner_agent_id,
-            task_id,
-            scheduled_for_ms,
-            submitted_at_ms,
-        )
-        .await?;
+        // Reconciled queue admission is still not semantic completion.
+        // The occurrence stays open until TaskFlow reaches a terminal state.
         transaction.commit().await.map_err(unavailable)?;
         self.task(task_id).await?.ok_or(AutomationError::Corrupt)
     }
@@ -863,46 +857,9 @@ impl AutomationStore {
             })?;
         }
 
-        // Control operations can disable or cancel a task while an already admitted
-        // occurrence is in flight. The queue admission cannot be revoked after the
-        // App Server accepts it, but its completion must never resurrect the task or
-        // overwrite a later control-plane decision from the stale lease snapshot.
-        let current_row = sqlx::query(TASK_SELECT_BY_ID)
-            .bind(lease.task.task_id.to_string())
-            .fetch_one(&mut *transaction)
-            .await
-            .map_err(unavailable)?;
-        let current = task_from_row(&current_row, &self.owner_agent_id)?;
-        let (next_state, next_run) = match current.state {
-            AutomationTaskState::Enabled => {
-                let next_run = current.schedule.next_after(lease.scheduled_for_ms)?;
-                let next_state = if next_run.is_some() {
-                    AutomationTaskState::Enabled
-                } else {
-                    AutomationTaskState::Completed
-                };
-                (next_state, next_run)
-            }
-            AutomationTaskState::Disabled
-            | AutomationTaskState::Cancelled
-            | AutomationTaskState::Completed => (current.state, None),
-        };
-        let updated = sqlx::query(
-            "UPDATE automation_tasks
-             SET state = ?, next_run_at_ms = ?, updated_at_ms = ?
-             WHERE task_id = ? AND owner_agent_id = ?",
-        )
-        .bind(next_state.as_str())
-        .bind(next_run.map(to_i64).transpose()?)
-        .bind(to_i64(submitted_at_ms)?)
-        .bind(lease.task.task_id.to_string())
-        .bind(self.owner_agent_id.as_str())
-        .execute(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        if updated.rows_affected() != 1 {
-            return Err(AutomationError::Corrupt);
-        }
+        // Queue admission is not automation completion. Keep the task's
+        // next_run_at_ms unchanged here; recurring progression is owned by
+        // durable TaskFlow terminal reconciliation in causal_chain.
         transaction.commit().await.map_err(unavailable)?;
         self.task(lease.task.task_id)
             .await?
