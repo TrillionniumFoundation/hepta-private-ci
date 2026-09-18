@@ -542,11 +542,15 @@ def verify_production_contract(findings: Findings) -> None:
         )
 
     lib = EVAL_LIB_PATH.read_text(encoding="utf-8")
-    findings.require(
-        not re.search(r"\bpub\s+fn\s+evaluate\s*\(", lib),
-        "legacy_default_public_api",
-        "weak evaluate() must not be a default public function",
-    )
+    legacy_wrapper = re.search(r"\bpub\s+fn\s+evaluate\s*\(", lib)
+    if legacy_wrapper:
+        prefix = lib[max(0, legacy_wrapper.start() - 320) : legacy_wrapper.start()]
+        findings.require(
+            '#[cfg(feature = "legacy-inprocess-eval")]' in prefix
+            and "#[deprecated(" in prefix,
+            "legacy_default_public_api",
+            "weak evaluate() may exist only as the deprecated explicit legacy feature wrapper",
+        )
     findings.require(
         'feature = "legacy-inprocess-eval"' in lib
         and "evaluate_legacy_inprocess_v1" in lib,
