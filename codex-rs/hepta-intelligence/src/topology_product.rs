@@ -137,6 +137,11 @@ pub fn topology_generation_signing_payload_v1(
         push_optional_digest(&mut bytes, change.predecessor_digest);
         push_optional_digest(&mut bytes, change.candidate_digest);
         for digest in [
+            change.capability_typing_digest,
+            change.compatibility_plan_digest,
+            change.lesion_ablation_digest,
+            change.resource_review_digest,
+            change.security_review_digest,
             change.migration_digest,
             change.rollback_digest,
             change.writer_handoff_digest,
@@ -408,6 +413,11 @@ mod tests {
             operation: TopologyOperationV2::Replace,
             predecessor_digest: Some(digest(b"old")),
             candidate_digest: Some(digest(b"new")),
+            capability_typing_digest: digest(b"capability-typing"),
+            compatibility_plan_digest: digest(b"compatibility-plan"),
+            lesion_ablation_digest: digest(b"lesion-ablation"),
+            resource_review_digest: digest(b"resource-review"),
+            security_review_digest: digest(b"security-review"),
             migration_digest: handoff.migration_digest,
             rollback_digest: handoff.rollback_digest,
             writer_handoff_digest: handoff.plan_digest,
