@@ -693,13 +693,9 @@ impl BaoClient {
             expires_at_unix_ms,
             renewable: decoded.data.renewable,
         };
-        if let Err(error) = authority.with_verified_use(verified, &binding, || ()) {
-            registry
-                .mark_rejected(operation_sha256, now_unix_ms()?)
-                .await
-                .map_err(BaoClientError::LeaseRegistry)?;
-            return Err(BaoClientError::Authority(error));
-        }
+        authority
+            .with_verified_use(verified, &binding, || ())
+            .map_err(BaoClientError::Authority)?;
         registry
             .observe_active(
                 handle.lease_id_sha256(),
@@ -729,9 +725,13 @@ impl BaoClient {
             .begin_operation(operation_sha256, "revoke", now_unix_ms()?)
             .await
             .map_err(BaoClientError::LeaseRegistry)?;
-        authority
-            .with_verified_use(verified, &binding, || ())
-            .map_err(BaoClientError::Authority)?;
+        if let Err(error) = authority.with_verified_use(verified, &binding, || ()) {
+            registry
+                .mark_rejected(operation_sha256, now_unix_ms()?)
+                .await
+                .map_err(BaoClientError::LeaseRegistry)?;
+            return Err(BaoClientError::Authority(error));
+        }
 
         let url = self.system_lease_url("revoke")?;
         let payload = LeaseRevokePayload {
