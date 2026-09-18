@@ -310,7 +310,7 @@ impl NeuronRuntimeConfigV1 {
         {
             return Err(ProtocolError::InvalidConfig("fixed-point profile"));
         }
-        if self.top_k_policy.minimum_ratio_ppm == 0
+        if self.top_k_policy.minimum_ratio_ppm < 10_000
             || self.top_k_policy.minimum_ratio_ppm > self.top_k_policy.maximum_ratio_ppm
             || self.top_k_policy.maximum_ratio_ppm > 200_000
             || self.top_k_policy.tie_break != TopKTieBreakV1::CanonicalUnitId
@@ -387,6 +387,11 @@ impl NativeSparseProfileV1 {
         if config.state_dimensions.temporal_state != config.state_dimensions.activation {
             return Err(ProtocolError::InvalidNativeProfile(
                 "native Q24 profile requires temporal_state == activation",
+            ));
+        }
+        if config.top_k_policy.per_population_first {
+            return Err(ProtocolError::InvalidNativeProfile(
+                "native Q24 profile does not implement per-population competition",
             ));
         }
         if self.inhibition.len() != config.state_dimensions.inhibition_edges as usize {
