@@ -170,3 +170,8 @@ impl AgentdProductionWriterHost {
         Ok(dispatcher.dispatch(self.writer.as_ref(), receipt).await?)
     }
 }
+
+
+#[cfg(test)]
+#[path = "production_writer_host_tests.rs"]
+mod tests;
