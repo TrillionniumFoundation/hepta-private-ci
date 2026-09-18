@@ -94,4 +94,3 @@ fn load_private_seed(_path: &str) -> Result<SigningKey, Box<dyn std::error::Erro
             .into(),
     )
 }
-
