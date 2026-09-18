@@ -167,6 +167,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.active_release = None;
                 match self.start_release_slot(agent_id, slot, target, now) {
                     Ok(()) => Ok(true),
+                    // If the child spawned but its process lease could not be
+                    // published, start_release_slot retains a fenced cleanup
+                    // runtime. Wait for that exact process to exit before
+                    // beginning rollback; otherwise rollback would race an
+                    // untracked target child.
+                    Err(error) if slot.runtime.is_some() => Err(error),
                     Err(_) => self.start_automatic_rollback(agent_id, slot, now),
                 }
             }
