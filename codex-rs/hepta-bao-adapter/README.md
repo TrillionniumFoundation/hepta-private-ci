@@ -19,7 +19,8 @@ The adapter now also contains the source-implemented dynamic lease surface:
 `lease_issue_binding` / `request_secret_lease`,
 `lease_renew_binding` / `renew_secret_lease`,
 `lease_revoke_binding` / `revoke_secret_lease`,
-`lookup_secret_lease`, and `pending_secret_lease_operation`. These methods are
+`lookup_secret_lease`, `lookup_secret_lease_by_operation`, and
+`pending_secret_lease_operation`. These methods are
 paired with the durable dynamic-secret runtime in
 `TrillionniumFoundation/HeptaBao#110`; they must not be activated against the
 older pinned service candidate until that provider change has an exact accepted
@@ -30,9 +31,12 @@ than the KV read path. The adapter serializes the exact provider mutation body,
 binds its SHA-256 into the final-use grant, claims the single-use grant before
 dispatch, and performs no automatic retry. Transport loss, an unreadable or
 malformed success response, or post-dispatch authority loss returns an unknown
-or reconciliation-required result. The caller must use the repeatable lease
-lookup and pending-operation projections before obtaining fresh mutation
-authority. A provider response that explicitly proves failure before plugin
+or reconciliation-required result. The caller must use the repeatable lease lookup, operation-identity lookup and
+pending-operation projections before obtaining fresh mutation authority. If
+issuance committed but the response carrying the generated credential was lost,
+the operation lookup recovers the active lease metadata without redispatching;
+the orphan lease must be revoked before a replacement issuance uses a fresh
+operation identity. A provider response that explicitly proves failure before plugin
 entry is surfaced separately as `ProviderBeforeEntry`; the library still does
 not retry it automatically.
 
