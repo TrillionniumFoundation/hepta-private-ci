@@ -44,7 +44,8 @@
           "path": "codex-rs/hepta-types/src/identity_tests.rs",
           "mustContain": [
             "id_profiles_and_namespaces_are_explicit_and_canonical",
-            "stable_profile_exhaustively_matches_the_v1_ascii_alphabet"
+            "stable_profile_exhaustively_matches_the_v1_ascii_alphabet",
+            "stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation"
           ]
         }
       ],
@@ -108,6 +109,12 @@
           "path": "codex-rs/hepta-types/src/identity_tests.rs",
           "mustContain": [
             "identity_bounds_and_monotonic_overflow_fail_closed"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/src/digest_tests.rs",
+          "mustContain": [
+            "digest_parser_deterministic_fuzz_corpus_is_total_and_strict"
           ]
         }
       ],
