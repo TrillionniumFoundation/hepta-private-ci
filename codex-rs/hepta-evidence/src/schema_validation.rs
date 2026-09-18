@@ -276,6 +276,15 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         ],
     },
     SchemaObjectSpec {
+        name: "authbus_retired_epochs_no_update",
+        object_type: "trigger",
+        table_name: "authbus_retired_epochs",
+        required_sql_fragments: &[
+            "before update on authbus_retired_epochs",
+            "authbus retired epochs are immutable",
+        ],
+    },
+    SchemaObjectSpec {
         name: "authbus_retired_epochs_no_delete",
         object_type: "trigger",
         table_name: "authbus_retired_epochs",
