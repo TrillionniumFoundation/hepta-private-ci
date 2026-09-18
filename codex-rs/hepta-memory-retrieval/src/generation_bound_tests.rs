@@ -225,3 +225,84 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
         ))
     );
 }
+
+
+#[test]
+fn cue_compiler_and_product_bounds_fail_closed() {
+    let source = cue();
+    let compiled = compile_cue(
+        source.cue_id.clone(),
+        source.objective_digest,
+        source.approved_context_digest,
+        source.snapshot_key.clone(),
+        source.cue_profile_digest,
+    )
+    .unwrap();
+    assert_eq!(compiled, source);
+
+    let mut oversized = policy();
+    oversized.maximum_results = u32::try_from(MAX_GENERATION_BOUND_RESULTS + 1).unwrap();
+    assert_eq!(
+        oversized.validate(),
+        Err(RecallErrorV1::InvalidMaximumResults)
+    );
+}
+
+#[test]
+fn zero_weight_channel_does_not_satisfy_coverage() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.channel_weights = vec![
+        RetrievalChannelWeightV1 {
+            channel: RetrievalChannelV1::Lexical,
+            weight: FixedQ32::ONE,
+            maximum_candidates: 16,
+        },
+        RetrievalChannelWeightV1 {
+            channel: RetrievalChannelV1::Entity,
+            weight: FixedQ32::ZERO,
+            maximum_candidates: 16,
+        },
+    ];
+    policy.minimum_distinct_channels = 2;
+    let packet = recall(
+        &cue,
+        &policy,
+        vec![
+            candidate(record(1), RetrievalChannelV1::Lexical, 1),
+            candidate(record(2), RetrievalChannelV1::Entity, 1),
+        ],
+    )
+    .unwrap();
+    assert_eq!(
+        packet.disposition,
+        RecallDispositionV1::Abstained(RecallAbstentionReasonV1::InsufficientChannelCoverage)
+    );
+}
+
+#[test]
+fn forged_public_receipts_are_rejected_by_validate() {
+    let cue = cue();
+    let policy = policy();
+    let candidates = vec![
+        candidate(record(1), RetrievalChannelV1::Lexical, 1),
+        candidate(record(1), RetrievalChannelV1::Entity, 1),
+    ];
+    let mut union = build_candidate_union(&cue, &policy, candidates.clone()).unwrap();
+    union.entries[0].support_digests.reverse();
+    union.union_digest = union.compute_union_digest();
+    assert!(matches!(
+        union.validate(),
+        Err(RecallErrorV1::InvalidUnionEntry(_))
+    ));
+
+    let mut packet = recall(&cue, &policy, candidates).unwrap();
+    if packet.selections.len() > 1 {
+        packet.selections.reverse();
+        packet.packet_digest = packet.compute_packet_digest();
+        assert_eq!(
+            packet.validate(),
+            Err(RecallErrorV1::NonCanonicalOrdering)
+        );
+    }
+}
