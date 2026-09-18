@@ -889,7 +889,7 @@
       ],
       "guide": "docs/modules/cognitive.types/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/cognitive.types.md",
-      "implementationState": "canonical_v1_source_implemented_execution_pending",
+      "implementationState": "specified_not_product_evidence",
       "apiContract": "build_snapshot; CognitiveSnapshotKeyV1; canonical HNMF V1 event/span/engram/synapse/cue/recall/replay/plasticity/cognitive-topology/forget contracts via strict schema-versioned JSON envelopes.",
       "stateAndEncoding": "Canonical HNMF V1 JSON is owned by codex-hepta-cognitive-types::hnmf_v1. Unknown fields fail closed; encoded bytes are bounded; 64-bit identities/counters are exact decimal text on the JSON wire; all authority-bearing contracts validate deny-all.",
       "linearizationAndRecovery": "Pure validation before asset access; no store,SQL,clock or writer. Reject wrong modality units,invalid range/overflow and unsupported schema before returning a typed object.",
@@ -934,7 +934,8 @@
           "Exact-head and synthetic-merge execution evidence",
           "Authenticated product composition and independent acceptance remain external gates"
         ]
-      }
+      },
+      "sourceImplementationState": "canonical_v1_source_implemented_execution_pending"
     },
     {
       "module": "cognitive.store",
