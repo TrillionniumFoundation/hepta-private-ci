@@ -38,8 +38,10 @@ class ProductGateTests(unittest.TestCase):
         for field in (
             "runtimeAuthority",
             "mergeAuthority",
+            "activationAuthority",
             "promotionAuthority",
             "releaseAuthority",
+            "externalEffectAuthority",
         ):
             self.assertFalse(receipt[field])
 
