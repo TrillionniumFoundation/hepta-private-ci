@@ -182,6 +182,30 @@ impl SparseCheckpoint {
         &self.threshold
     }
 
+    pub fn temporal_q24(&self) -> &[i64] {
+        &self.temporal
+    }
+
+    pub fn activation_q24(&self) -> &[i64] {
+        &self.activation
+    }
+
+    pub fn activity_q24(&self) -> &[i64] {
+        &self.activity
+    }
+
+    pub fn sequence(&self) -> u64 {
+        self.sequence
+    }
+
+    pub fn monotonic_micros(&self) -> u64 {
+        self.monotonic_micros
+    }
+
+    pub fn input_digest(&self) -> Digest32 {
+        self.input
+    }
+
     fn calculate_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.neuron.sparse-checkpoint.q24.v1".to_vec();
         for value in [

@@ -17,12 +17,14 @@ use codex_hepta_types::StableId;
 
 mod journal;
 mod journal_lock;
+mod protocol;
 mod sparse;
 
 pub use journal::JournalAnchor;
 pub use journal::JournalError;
 pub use journal::JournalScope;
 pub use journal::SparseJournal;
+pub use protocol::*;
 pub use sparse::InhibitoryEdge;
 pub use sparse::SparseCheckpoint;
 pub use sparse::SparseConfig;
