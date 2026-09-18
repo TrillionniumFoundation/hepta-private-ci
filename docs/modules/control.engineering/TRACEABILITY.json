@@ -130,6 +130,122 @@
       ],
       "state": "source_implemented",
       "capabilityCeiling": "assignment projection or bounded qualification only"
+    },
+    {
+      "designOperation": "evaluate_production_readiness",
+      "nativeModule": "control_engineering_v2.production",
+      "nativeSymbol": "evaluate_production_readiness",
+      "ownerSymbol": "evaluate_production_readiness",
+      "tests": [
+        "ProductionReadinessTests.test_complete_verified_fact_set_closes_both_readiness_dimensions",
+        "ProductionReadinessTests.test_product_caller_and_tests_gate_production_implementation",
+        "ProductionReadinessTests.test_independent_identity_and_live_delivery_gate_deployment"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "status projection only; no merge, deployment, promotion or release authority"
+    },
+    {
+      "designOperation": "issue_verified_work_envelope",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "issue_verified_work_envelope",
+      "ownerSymbol": "issue_verified_work_envelope",
+      "tests": [
+        "FullOrchestrationClosureTests.test_scheduler_consumes_signed_completion_and_multidimensional_capacity"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "authenticated exact-source envelope only"
+    },
+    {
+      "designOperation": "plan_engineering_work",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "plan_engineering_work",
+      "ownerSymbol": "plan_engineering_work",
+      "tests": [
+        "FullOrchestrationClosureTests.test_scheduler_consumes_signed_completion_and_multidimensional_capacity",
+        "FullOrchestrationClosureTests.test_forged_completion_receipt_fails_closed"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "assignment/integration/merge-queue proposals only"
+    },
+    {
+      "designOperation": "generate_candidate_bundle",
+      "nativeModule": "control_engineering_v2.candidate_bundle",
+      "nativeSymbol": "generate_candidate_bundle",
+      "ownerSymbol": "generate_candidate_bundle",
+      "tests": [
+        "FullOrchestrationClosureTests.test_multi_file_and_rename_candidate_bundle_are_content_addressed"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "draft atomic bundle only"
+    },
+    {
+      "designOperation": "protect_evaluation_oracles",
+      "nativeModule": "control_engineering_v2.candidate",
+      "nativeSymbol": "is_immutable_oracle_path",
+      "ownerSymbol": "generate_candidates",
+      "tests": [
+        "FullOrchestrationClosureTests.test_test_and_evaluator_paths_are_unconditionally_protected"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "candidate cannot edit tests/evaluators"
+    },
+    {
+      "designOperation": "control_sandbox_capacity",
+      "nativeModule": "control_engineering_v2.execution_control",
+      "nativeSymbol": "HostSandboxLimiter",
+      "ownerSymbol": "facade.execute_candidate_sandbox / facade.execute_candidate_bundle_sandbox",
+      "tests": [
+        "FullOrchestrationClosureTests.test_host_sandbox_limiter_caps_parallelism",
+        "ControlledSandboxFacadeTests.test_strong_candidate_path_enforces_host_slot_and_two_infra_retries",
+        "ControlledSandboxFacadeTests.test_semantic_failure_never_retries",
+        "ControlledSandboxFacadeTests.test_bundle_uses_the_same_controlled_execution_path"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "eight host sandboxes and two infra retries at most"
+    },
+    {
+      "designOperation": "mutation_test_admission",
+      "nativeModule": "control_engineering_v2.execution_control",
+      "nativeSymbol": "evaluate_mutation_probes",
+      "ownerSymbol": "evaluate_mutation_probes",
+      "tests": [
+        "FullOrchestrationClosureTests.test_mutation_testing_requires_every_probe_to_be_killed"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "evidence admission only"
+    },
+    {
+      "designOperation": "verify_external_worker_and_custody_boundaries",
+      "nativeModule": "control_engineering_v2.external_control",
+      "nativeSymbol": "admit_distributed_write_grant",
+      "ownerSymbol": "admit_distributed_write_grant / verify_store_audit_anchor / verify_key_custody_receipt",
+      "tests": [
+        "FullOrchestrationClosureTests.test_distributed_frontier_rejects_superseded_grants",
+        "FullOrchestrationClosureTests.test_audit_anchor_binds_authoritative_store_state",
+        "FullOrchestrationClosureTests.test_key_custody_binds_subject_key_attestation"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "durable external-fence admission and externally attested audit/key verification only"
+    },
+    {
+      "designOperation": "repository_product_composition",
+      "nativeModule": "control_engineering_v2.product_caller",
+      "nativeSymbol": "build_product_receipt",
+      "ownerSymbol": "build_product_receipt",
+      "tests": [],
+      "state": "source_implemented",
+      "capabilityCeiling": "read-only CI product execution; no merge/deploy/release authority"
+    },
+    {
+      "designOperation": "persist_orchestration_generation",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "persist_orchestration_generation",
+      "ownerSymbol": "SQLite orchestration_generations + assignment_generations",
+      "tests": [
+        "FullOrchestrationClosureTests.test_scheduler_consumes_signed_completion_and_multidimensional_capacity"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "immutable rich work-assignment projection only"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -149,6 +265,9 @@
     "tools/hepta-engineering-control/test_lane_g_hardening.py",
     "tools/hepta-engineering-control/test_lane_g_closure.py",
     "tools/hepta-engineering-control/test_lane_g_seal.py",
-    "tools/hepta-engineering-control/test_consolidated_engineering.py"
+    "tools/hepta-engineering-control/test_consolidated_engineering.py",
+    "tools/hepta-engineering-control/test_production_readiness.py",
+    "tools/hepta-engineering-control/test_full_orchestration_closure.py",
+    "tools/hepta-engineering-control/test_controlled_sandbox_facade.py"
   ]
 }

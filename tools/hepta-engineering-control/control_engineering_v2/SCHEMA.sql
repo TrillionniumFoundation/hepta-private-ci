@@ -1,4 +1,4 @@
--- Canonical engineering owner schema, version 5. Applied in one transaction.
+-- Canonical engineering owner schema, version 6. Applied in one transaction.
 
 CREATE TABLE IF NOT EXISTS work_envelopes(
   envelope_id TEXT PRIMARY KEY,
@@ -38,6 +38,33 @@ CREATE TABLE IF NOT EXISTS assignment_generations(
   blocked_json BLOB NOT NULL,
   created_unix_ns INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS orchestration_generations(
+  generation_id TEXT PRIMARY KEY,
+  semantic_digest TEXT NOT NULL,
+  plan_json BLOB NOT NULL,
+  created_unix_ns INTEGER NOT NULL,
+  FOREIGN KEY(generation_id)
+    REFERENCES assignment_generations(generation_id)
+    DEFERRABLE INITIALLY DEFERRED
+);
+
+CREATE TABLE IF NOT EXISTS distributed_write_frontiers(
+  worker_id TEXT PRIMARY KEY,
+  coordinator_id TEXT NOT NULL,
+  leader_epoch INTEGER NOT NULL CHECK(leader_epoch >= 1),
+  fencing_token INTEGER NOT NULL CHECK(fencing_token >= 1),
+  source_commit TEXT NOT NULL,
+  source_tree TEXT NOT NULL,
+  grant_digest TEXT NOT NULL,
+  issuer TEXT NOT NULL,
+  signing_identity TEXT NOT NULL,
+  observed_unix_ns INTEGER NOT NULL,
+  expires_unix_ns INTEGER NOT NULL,
+  updated_unix_ns INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_distributed_write_frontiers_coordinator
+  ON distributed_write_frontiers(coordinator_id, leader_epoch, fencing_token);
+
 CREATE TABLE IF NOT EXISTS integration_decisions(
   decision_id TEXT PRIMARY KEY,
   evidence_digest TEXT NOT NULL,

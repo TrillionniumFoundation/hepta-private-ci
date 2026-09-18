@@ -12,8 +12,10 @@ assignment generations; creates bounded code candidates; runs admitted checks;
 verifies source, execution and evaluator evidence; records signed candidate-bound
 review eligibility; and composes consent-bound dormant external-system proposals.
 Its CLI exposes local scheduling, candidate generation and sandbox execution.
-The pilot mutation grammar is deterministic (`no_change`, `add_file`, `replace_text`,
-`delete_file`). It is not a learned code generator or an autonomous development agent.
+The compatibility single-mutation grammar is deterministic (`no_change`, `add_file`,
+`replace_text`, `delete_file`). The production-facing candidate-bundle grammar adds
+atomic multi-file changes and `rename_file` while retaining exact-manifest binding.
+Neither path is a learned code generator or an autonomous development agent.
 
 Review requests and dormant proposals do not themselves merge, activate, deploy,
 enroll a host or transfer credentials. A deployment controller or production caller
@@ -25,12 +27,18 @@ must provide the separate owner authorization required by its own contract.
 | --- | --- | --- |
 | `path_policy.py` | Canonical POSIX paths and cross-platform alias rejection | Store, candidate generator and sandbox |
 | `control_plane.py` | SQLite schema, transactions, envelopes, leases, scheduling and audit | Public facade and CLI |
-| `candidate.py` | Deterministic candidate grammar, exact Git materialization and isolation | Public facade and CLI |
-| `evidence.py` | Exact Git objects, source/merge execution receipts and independent identities | Candidate evidence binder |
+| `candidate.py` | Compatibility candidate grammar, exact Git materialization and isolation; immutable oracle-path classifier | Public facade and CLI |
+| `candidate_bundle.py` | Atomic multi-file/rename candidate grammar using the same exact-source sandbox boundary | Product-facing candidate pipeline |
+| `orchestration.py` | Authenticated source issuance, signed predecessor completion, worker/review/CI planning and merge-queue proposals | Named product caller and owner store |
+| `execution_control.py` | Cross-process host sandbox slots, infrastructure-only retries and mutation-test admission | Public facade/CLI and strong qualification runner |
+| `external_control.py` | External leader/fence, audit-anchor and hardware key-custody receipt verification | Worker/deployment boundary |
+| `evidence.py` | Exact Git objects, source/completion/execution receipts and independent identities | Candidate evidence binder |
 | `hardening.py` | Active-state frontier and authenticated evidence/consent primitives | Store, closure and seal |
 | `closure.py` | Source-tree and freshness-window binding, dormant assimilation | Seal and public facade |
 | `seal.py` | Signed evidence seals, replay prevention, review and durable eligibility | Public package and facade |
-| `cli.py` | Bounded JSON ingress and local operations | `python -m control_engineering_v2`, installed CLI |
+| `product_caller.py` | Named read-only repository product composition through v2 only | `engineering-product-gate-v2` CI job |
+| `production.py` | Fail-closed implementation/deployment readiness projection | CLI and external release governance |
+| `cli.py` | Bounded JSON ingress and local compatibility operations | `python -m control_engineering_v2`, installed CLI |
 
 There are no import-time store patches or alternate clone sandbox owners. The
 public package, direct facade and historical public `hardened_*` aliases use the
@@ -43,12 +51,14 @@ connection, modules or database.
 
 `EngineeringStore` uses SQLite foreign keys, WAL, `synchronous=FULL` and one outer
 `BEGIN IMMEDIATE` per mutation. Nested owner operations share that transaction.
-`SCHEMA.sql` is the single schema source, currently version 5. Tables are:
+`SCHEMA.sql` is the single schema source, currently version 6. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;
 - `path_leases`: state, revision, authority epoch, monotonically increasing fence and expiry;
-- `assignment_generations`: immutable assigned and blocked projections;
+- `assignment_generations`: immutable assigned and blocked package-ID projections;
 - `assignment_generation_frontiers`: exact envelope revision, source and active-lease frontier;
+- `orchestration_generations`: immutable rich worker/review/CI/value/debt/rollback assignment, blocked-reason, integration-order and merge-queue projections;
+- `distributed_write_frontiers`: highest externally admitted leader/fencing grant per worker, source-bound and replay-fenced;
 - `integration_decisions`: immutable eligibility and rejection projection;
 - `integration_decision_bindings`: candidate, sandbox and evidence identity;
 - `integration_decision_seals`: authenticated seal identity, freshness and replay uniqueness;
@@ -57,10 +67,10 @@ connection, modules or database.
 
 An owner mutation, its binding/frontier and audit event either commit together or
 roll back together. Equal identity and semantics replay idempotently; different
-semantics conflict. Startup checks the audit chain. Additive v2/v3/v4 stores migrate
-transactionally to v5; historical generations without a bound frontier remain
+semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5 stores migrate
+transactionally to v6; historical generations without a bound frontier remain
 unusable and require a new generation. A future version is rejected before any
-schema or journal-mode write. A database claiming v5 but missing a required table
+schema or journal-mode write. A database claiming v6 but missing a required table
 is rejected. A corrupted store must be quarantined and restored from a verified
 backup; startup does not silently reconstruct acceptance or change owner facts.
 
@@ -70,6 +80,10 @@ connections and serialize writes in SQLite. WAL disk growth, backups, external
 audit anchoring, archival retention and production availability remain operational
 work. The in-file hash chain detects accidental mutation; it is not protection
 against an administrator who can rewrite the complete database and chain.
+`store_snapshot_digest` therefore hashes every authoritative owner table
+independently of that chain; `verify_store_audit_anchor` requires an externally
+signed receipt to match both the current audit head and that deterministic state
+digest.
 
 ## Leases and scheduling
 
@@ -89,10 +103,41 @@ A generation binds the exact source/envelope/active-lease frontier. A changed
 frontier requires a new generation ID. An assignment is a proposal; workers still
 need to acquire leases before writing their declared paths.
 
+## Authenticated source and multidimensional orchestration
+
+The production-facing entrypoint is `issue_verified_work_envelope`, not direct
+caller construction of a trusted source tuple. It verifies a signed, fresh
+`CanonicalSourceReceipt` against the exact repository remote, commit, tree and
+document-set digest before the SQLite owner persists the envelope. Direct
+`EngineeringStore.issue_work_envelope` remains the internal/trusted owner primitive.
+
+`plan_engineering_work` accepts the work DAG plus bounded worker skills/capacity
+and path scopes, review-role capacity, CI capacity, expected value,
+architecture-debt reduction and rollback cost. Predecessors are satisfied only by
+fresh signed `WorkCompletionReceipt` values bound to the exact source commit/tree;
+a caller-provided package ID is not production completion evidence. The result
+contains worker assignments, deterministic integration order and merge-queue
+proposals, all with zero write/merge/release authority. The exact assigned package
+projection is persisted through `persist_orchestration_generation` and therefore
+retains the existing SQLite generation/frontier semantics.
+
+A worker still acquires the normal fenced path lease before a local write. For
+multi-host execution, the real worker-write boundary additionally verifies a fresh
+signed `DistributedWriteGrant` containing leader epoch, fencing token, exact source
+identity, worker identity and path scope. The highest admitted worker
+`(leader_epoch, fencing_token)` frontier is persisted in
+`distributed_write_frontiers` in the same owner transaction as its audit event, so
+a process restart cannot make a superseded grant current again. SQLite is still not
+a replicated consensus service; a selected external coordinator supplies leader
+consensus and the local owner only enforces the monotonic observed fence.
+
 ## Candidate qualification
 
 Candidates bind exact base commit, allowed/protected paths and file/diff/resource
-budgets. No-change is first and candidate identity is content-derived. The executor
+budgets. No-change is first and candidate identity is content-derived. Test and
+evaluator paths are unconditionally immutable by path classification (test/tests/qa/
+qualification segments, conventional test filenames and snapshots) even when a
+caller accidentally includes their parent product root in `allowed_paths`. The executor
 requires the clean caller HEAD to match the envelope. It reads exact Git tree and
 blob records into a metadata-free temporary workspace, without checkout filters,
 Git archive attributes, hooks, repository remotes or credential files.
@@ -109,7 +154,15 @@ One elapsed time budget covers all checks. Source HEAD/tree/refs/worktree and
 candidate manifests are checked after every command, so a later check cannot hide
 an earlier mutation. Resource and isolation failure rejects or produces a failing
 receipt; no checks cannot pass. A production check runner must use an admitted
-strong profile. This bounded executor has no autonomous merge or deployment loop.
+strong profile. The canonical v2 facade and CLI automatically route strong candidate
+and candidate-bundle execution through one host-wide `HostSandboxLimiter`; separate
+processes converge on the same lock namespace, so they cannot each create a private
+eight-slot pool. Strong execution is capped at eight concurrent sandboxes per host,
+and the canonical retry wrapper permits no more than two retries for enumerated
+infrastructure failures. Portable fixture execution remains single-attempt and can
+never produce `sandbox_tested`. Semantic rejection is never retried unchanged. Generated-test admission requires a nonempty mutation-probe set
+and fails while any declared mutant survives. This bounded executor has no
+autonomous merge or deployment loop.
 
 ## Evidence, review and replay
 
@@ -124,9 +177,16 @@ Persisted bindings and seals commit with the decision, and seal reuse under a ne
 decision ID is rejected. Denied decisions can still be recorded without a seal.
 
 `HmacTrustStore` is the deterministic reference/test signing adapter. Production
-composition needs independent registered signing identities and protected verifier
-keys. Tests using fixture signers establish protocol behavior; they do not establish
-organizational evaluator independence or production key custody.
+composition needs an external signing/verifying port whose private key never enters
+this process. `KeyCustodyReceipt` now binds the custodied signing identity, key
+algorithm, public-key digest and independent hardware-attestation digest, and
+requires hardware-backed non-exportability. `CustodiedSignatureProvider` is the
+production-facing port; `verify_custodied_signature_provider` binds it to that
+receipt before use. Likewise `AuditAnchorReceipt` binds both the SQLite audit head
+and `store_snapshot_digest`, and `verify_store_audit_anchor` compares the signed
+receipt back to current authoritative state. Tests using fixture signers establish
+protocol behavior; they do not establish organizational evaluator independence or
+real production key custody.
 
 ## Authorized external-system composition
 
@@ -139,6 +199,22 @@ activation, propagation and authority fields false. The current module does not
 install an adapter into Debian, execute a production Debian lifecycle or teach an
 arbitrary external application to evolve. Those require real adapter/runtime work
 and its own measured acceptance evidence.
+
+## Named repository product caller
+
+The workflow job `engineering-product-gate-v2` is the named repository product
+caller. It runs only after the engineering strong-sandbox job and the consolidated
+source qualification matrix. For source-head and deterministic synthetic-merge
+identities it composes signed source verification, multidimensional orchestration,
+durable generation persistence and exact integration-evidence verification through
+`control_engineering_v2`. It never imports the legacy top-level
+`hepta_engineering_control.decide_integration` API.
+
+The caller uses deterministic reference signing keys only to exercise the repository
+composition path. Its receipt explicitly reports `referenceSigningOnly=true` and
+`externalKeyCustody=false`; therefore it cannot satisfy independent acceptance or
+deployment readiness. A successful exact-candidate workflow run is required before
+the repository may advance `productExecutionProved`.
 
 ## Local CLI
 
@@ -161,7 +237,9 @@ the same commands. JSON object keys match the exported dataclass field names;
 `packages.json` and `mutations.json` are arrays of `WorkPackage` and `Mutation`
 objects. `checks.json` is an array of string argument arrays. Candidate IDs come from
 the `candidates` output, including its no-change entry. Schedule optionally accepts
-`--completed completed.json`, a JSON array of completed package IDs. Each input
+`--completed completed.json`, a JSON array of completed package IDs. That argument
+is a local compatibility surface only; production-facing orchestration accepts
+signed `WorkCompletionReceipt` values instead of trusting caller strings. Each input
 file is bounded to 2 MiB; duplicate and unknown record keys reject. Machine-readable
 results go to stdout; a rejected operation emits a safe error code on stderr and
 exits 1. A failed sandbox check also exits 1. The CLI cannot issue signed review

@@ -10,10 +10,12 @@ import re
 import subprocess
 import time
 from collections.abc import Mapping
+from typing import Protocol
 
 from .control_plane import (
     EngineeringError,
     canonical_json,
+    checked_id,
     checked_sha256,
     semantic_digest,
 )
@@ -63,6 +65,22 @@ class EvaluatorIndependenceReceipt:
 
 
 @dataclass(frozen=True)
+class WorkCompletionReceipt:
+    package_id: str
+    generation_id: str
+    source_commit: str
+    source_tree: str
+    checks_digest: str
+    status: str
+    issuer: str
+    signing_identity: str
+    observed_unix_ns: int
+    expires_unix_ns: int
+    signature: str = ""
+    authority_delta: bool = False
+
+
+@dataclass(frozen=True)
 class EvidenceDecision:
     eligible_for_independent_review: bool
     reasons: tuple[str, ...]
@@ -72,6 +90,29 @@ class EvidenceDecision:
     activation_authority: bool = False
     promotion_authority: bool = False
     release_authority: bool = False
+
+
+class SignatureVerifier(Protocol):
+    """Verification port implemented by reference stores or external custodians."""
+
+    def verify(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+        signature: str,
+    ) -> bool: ...
+
+
+class SignatureProvider(SignatureVerifier, Protocol):
+    """Signing port; production implementations keep private keys out of process."""
+
+    def sign(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+    ) -> str: ...
 
 
 class HmacTrustStore:
@@ -160,6 +201,91 @@ def _valid_window(observed: int, expires: int, now: int) -> bool:
     )
 
 
+def verify_canonical_source_receipt(
+    root: str | Path,
+    expected_repository: str,
+    source: CanonicalSourceReceipt,
+    trust_store: SignatureVerifier,
+    *,
+    expected_document_set_digest: str,
+    now_ns: int | None = None,
+) -> CanonicalSourceReceipt:
+    """Authenticate the exact source identity before a work envelope is issued."""
+    now = time.time_ns() if now_ns is None else now_ns
+    if not isinstance(source, CanonicalSourceReceipt):
+        raise EngineeringError("invalid_source_receipt")
+    if source.repository_full_name != expected_repository:
+        raise EngineeringError("repository_mismatch")
+    if source.issuer != "source_authority":
+        raise EngineeringError("source_issuer_role")
+    checked_sha256(source.document_set_digest, "document_set_digest")
+    checked_sha256(expected_document_set_digest, "document_set_digest")
+    if source.document_set_digest != expected_document_set_digest:
+        raise EngineeringError("document_set_drift")
+    if not _valid_window(source.observed_unix_ns, source.expires_unix_ns, now):
+        raise EngineeringError("source_receipt_stale")
+    if not trust_store.verify(
+        source, source.issuer, source.signing_identity, source.signature
+    ):
+        raise EngineeringError("source_receipt_signature")
+    repository = Path(root).resolve()
+    remote = _normal_remote(_run_git(repository, "config", "--get", "remote.origin.url"))
+    if remote != expected_repository:
+        raise EngineeringError("repository_remote_mismatch")
+    tree, _parents = _git_identity(repository, source.source_commit)
+    if tree != source.source_tree:
+        raise EngineeringError("source_tree_mismatch")
+    return source
+
+
+def verify_work_completion_receipts(
+    receipts: tuple[WorkCompletionReceipt, ...] | list[WorkCompletionReceipt],
+    trust_store: SignatureVerifier,
+    *,
+    generation_id: str | None,
+    source_commit: str,
+    source_tree: str,
+    now_ns: int | None = None,
+) -> frozenset[str]:
+    """Return authenticated completed package ids for one exact source generation."""
+    now = time.time_ns() if now_ns is None else now_ns
+    if generation_id is not None:
+        checked_id(generation_id, "generation_id")
+    if SHA1.fullmatch(source_commit) is None or SHA1.fullmatch(source_tree) is None:
+        raise EngineeringError("invalid_git_identity")
+    if len(receipts) > 4096:
+        raise EngineeringError("completed_limit_exceeded")
+    completed: set[str] = set()
+    for receipt in receipts:
+        if not isinstance(receipt, WorkCompletionReceipt):
+            raise EngineeringError("invalid_completion_receipt")
+        checked_id(receipt.package_id, "package_id")
+        checked_id(receipt.generation_id, "generation_id")
+        checked_sha256(receipt.checks_digest, "checks_digest")
+        if receipt.status != "completed":
+            raise EngineeringError("completion_not_terminal")
+        if generation_id is not None and receipt.generation_id != generation_id:
+            raise EngineeringError("completion_generation_mismatch")
+        if receipt.source_commit != source_commit or receipt.source_tree != source_tree:
+            raise EngineeringError("completion_source_mismatch")
+        if receipt.authority_delta is not False:
+            raise EngineeringError("completion_authority_delta")
+        if receipt.issuer not in {"ci_executor", "independent_evaluator"}:
+            raise EngineeringError("completion_issuer_role")
+        if not _valid_window(
+            receipt.observed_unix_ns, receipt.expires_unix_ns, now
+        ):
+            raise EngineeringError("completion_receipt_stale")
+        if not trust_store.verify(
+            receipt, receipt.issuer, receipt.signing_identity, receipt.signature
+        ):
+            raise EngineeringError("completion_receipt_signature")
+        if receipt.package_id in completed:
+            raise EngineeringError("duplicate_completion_receipt")
+        completed.add(receipt.package_id)
+    return frozenset(completed)
+
+
 def verify_integration_evidence(
     root: str | Path,
     expected_repository: str,
@@ -167,7 +293,7 @@ def verify_integration_evidence(
     source_execution: ExecutionReceipt,
     merge_execution: ExecutionReceipt,
     independence: EvaluatorIndependenceReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     *,
     expected_document_set_digest: str,
     now_ns: int | None = None,

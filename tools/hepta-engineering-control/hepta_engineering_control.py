@@ -1,11 +1,15 @@
-"""Deterministic engineering scheduling and integration eligibility.
+"""Legacy compatibility scheduler for pre-v2 Lane G callers.
 
-This module coordinates bounded work envelopes. It deliberately exposes no API
-for merging a pull request, modifying runtime authority, deploying, promoting,
-or releasing a candidate.
+Canonical production-facing composition lives in control_engineering_v2.
+This module is retained only for historical fixtures and source compatibility;
+its caller-supplied boolean integration evidence is not an authenticated product
+boundary and must not be used by new callers. It exposes no merge, runtime,
+deployment, promotion or release authority.
 """
 
 from __future__ import annotations
+
+LEGACY_COMPATIBILITY_ONLY = True
 
 from dataclasses import dataclass
 from pathlib import PurePosixPath

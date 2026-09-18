@@ -489,16 +489,16 @@
     },
     {
       "module": "control.engineering",
-      "path": "tools/hepta-engineering-control/hepta_engineering_control.py",
-      "blobSha": "8bb54ee7998ca1e6202ee67096f51b1fde6ca64a",
+      "path": "tools/hepta-engineering-control/control_engineering_v2/orchestration.py",
+      "blobSha": "23ca902e9c74b110579b93cdab2b099a018616ed",
       "exports": [
-        "WorkPackage",
-        "PathLease",
-        "ScheduleReceipt",
-        "IntegrationEvidence",
-        "IntegrationDecision",
-        "schedule",
-        "decide_integration"
+        "EngineeringWorkPackage",
+        "WorkerCapacity",
+        "ReviewCapacity",
+        "OrchestrationPlan",
+        "issue_verified_work_envelope",
+        "plan_engineering_work",
+        "persist_orchestration_generation"
       ]
     }
   ],

@@ -47,46 +47,51 @@ fn encode_hex(bytes: &[u8]) -> String {
     output
 }
 
-fn run_python(frame: &[u8]) -> std::process::Output {
+fn run_python(frame: &[u8]) -> std::io::Result<std::process::Output> {
     let mut child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
         .args(["-c", PYTHON_PARSER])
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
-        .spawn()
-        .expect("python3 is required for the Rust↔Python product boundary test");
+        .spawn()?;
     use std::io::Write;
-    child
-        .stdin
-        .take()
-        .expect("python stdin")
-        .write_all(encode_hex(frame).as_bytes())
-        .expect("write frame to python");
-    child.wait_with_output().expect("python parser result")
+    let Some(mut stdin) = child.stdin.take() else {
+        return Err(std::io::Error::other("python stdin is unavailable"));
+    };
+    stdin.write_all(encode_hex(frame).as_bytes())?;
+    drop(stdin);
+    child.wait_with_output()
 }
 
 #[test]
 fn rust_python_wire_roundtrip_and_payload_fault_reject() {
-    let schema = StableId::new("hepta.integration.v1").unwrap();
-    let producer = StableId::new("hepta-shadow-qualification").unwrap();
-    let generation = Generation::new(7).unwrap();
+    let Ok(schema) = StableId::new("hepta.integration.v1") else {
+        panic!("test schema identifier must be valid");
+    };
+    let Ok(producer) = StableId::new("hepta-shadow-qualification") else {
+        panic!("test producer identifier must be valid");
+    };
+    let Ok(generation) = Generation::new(7) else {
+        panic!("test generation must be valid");
+    };
     let payload = br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec();
-    let envelope = WireEnvelope::new(
+    let Ok(envelope) = WireEnvelope::new(
         schema.clone(),
         producer.clone(),
         generation,
         payload.clone(),
-    )
-    .expect("valid product envelope");
+    ) else {
+        panic!("test product envelope must be valid");
+    };
     let frame = envelope.encode();
 
-    let output = run_python(&frame);
-    assert!(
-        output.status.success(),
-        "python parser failed: {:?}",
-        output
-    );
-    let report: Value = serde_json::from_slice(&output.stdout).expect("python JSON receipt");
+    let Ok(output) = run_python(&frame) else {
+        panic!("python3 is required for the Rust↔Python product boundary test");
+    };
+    assert!(output.status.success(), "python parser failed: {output:?}");
+    let Ok(report): Result<Value, _> = serde_json::from_slice(&output.stdout) else {
+        panic!("python JSON receipt must parse");
+    };
     assert_eq!(report["schema"], schema.as_str());
     assert_eq!(report["producer"], producer.as_str());
     assert_eq!(report["generation"], generation.get());
@@ -98,9 +103,14 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
 
     // Mutating the payload without changing the signed digest must be rejected
     // by both language boundaries.
-    let mut tampered = frame.clone();
-    *tampered.last_mut().expect("non-empty payload") ^= 0x01;
-    let python_fault = run_python(&tampered);
+    let mut tampered = frame;
+    let Some(last) = tampered.last_mut() else {
+        panic!("encoded frame must contain a payload");
+    };
+    *last ^= 0x01;
+    let Ok(python_fault) = run_python(&tampered) else {
+        panic!("python parser process must execute");
+    };
     assert!(!python_fault.status.success());
     assert!(String::from_utf8_lossy(&python_fault.stderr).contains("digest mismatch"));
     assert!(matches!(

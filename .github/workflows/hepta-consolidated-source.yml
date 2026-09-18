@@ -308,3 +308,84 @@ jobs:
           path: ${{ runner.temp }}/hepta-command-records/*.json
           if-no-files-found: error
           retention-days: 30
+
+  engineering-product-gate-v2:
+    name: engineering-product-gate-v2
+    needs: [engineering-sandbox, qualification]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","synthetic-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct deterministic synthetic merge for product composition
+        id: synthetic
+        if: matrix.lane == 'synthetic-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Engineering CI
+          author-email: hepta-engineering-ci@users.noreply.github.com
+          message: Engineering product synthetic merge
+      - name: Execute the named v2 product caller
+        shell: bash
+        env:
+          MODE: ${{ matrix.lane }}
+          PR_NUMBER: ${{ github.event.pull_request.number || 0 }}
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          args=(
+            --repository .
+            --mode "$MODE"
+            --source-sha "$SOURCE_SHA"
+            --repository-full-name "${{ github.repository }}"
+            --repository-id "${{ github.repository_id }}"
+            --workflow-ref "${{ github.workflow_ref }}"
+            --job-name "engineering-product-gate-v2"
+            --run-id "${{ github.run_id }}"
+            --run-attempt "${{ github.run_attempt }}"
+            --event-name "${{ github.event_name }}"
+            --pull-request-number "$PR_NUMBER"
+            --output ".hepta-evidence/control-engineering-product-${MODE}.json"
+          )
+          if [[ "$MODE" == "synthetic-merge" ]]; then
+            args+=(--base-sha "$BASE_SHA")
+            test "$(git rev-parse HEAD)" = "${{ steps.synthetic.outputs.sha }}"
+          else
+            test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          fi
+          PYTHONPATH=tools/hepta-engineering-control             python3 -m control_engineering_v2.product_caller "${args[@]}"
+          python3 - ".hepta-evidence/control-engineering-product-${MODE}.json" <<'PY'
+          import json, pathlib, sys
+          row=json.loads(pathlib.Path(sys.argv[1]).read_text())
+          assert row["productCaller"] == "github-actions:control-engineering-v2-product-gate"
+          assert row["sourceReceiptVerified"] is True
+          assert row["authenticatedCompletionBoundary"] is True
+          assert row["multidimensionalOrchestration"] is True
+          for key in (
+              "runtimeAuthority","workerWriteAuthority","mergeAuthority",
+              "activationAuthority","promotionAuthority","releaseAuthority",
+          ):
+              assert row[key] is False, key
+          PY
+      - name: Retain product-composition receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-product-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-evidence/control-engineering-product-*.json
+          if-no-files-found: error
+          retention-days: 30
