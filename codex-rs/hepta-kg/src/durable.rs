@@ -251,8 +251,23 @@ pub fn build_durable_generation_v2(
     nodes: &[DurableProjectionNodeV2],
     edges: &[DurableProjectionEdgeV2],
 ) -> Result<KnowledgeGenerationV2, DurableProjectionErrorV2> {
+    build_durable_generation_from_snapshot_v2(
+        generation,
+        scope,
+        durable_input_heads_digest_v2(scope, heads),
+        nodes,
+        edges,
+    )
+}
+
+pub fn build_durable_generation_from_snapshot_v2(
+    generation: Generation,
+    scope: &str,
+    source_snapshot_digest: Digest32,
+    nodes: &[DurableProjectionNodeV2],
+    edges: &[DurableProjectionEdgeV2],
+) -> Result<KnowledgeGenerationV2, DurableProjectionErrorV2> {
     validate_durable_projection_v2(nodes, edges)?;
-    let source_snapshot_digest = durable_input_heads_digest_v2(scope, heads);
     let generation_vector_digest = domain_digest(
         b"hepta.knowledge-durable-generation-vector.v2",
         &[scope.as_bytes(), source_snapshot_digest.as_array()],
