@@ -25,6 +25,9 @@ use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_paths::HeptaStateLayout;
 use codex_hepta_paths::HeptaStateRoot;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use codex_hepta_wire::WireEnvelopeV2;
 use hmac::Hmac;
 use hmac::Mac;
 use serde::Deserialize;
@@ -101,6 +104,22 @@ impl HeptaRuntime {
     /// The wire payload is unchanged; no mutable or external organ is admitted.
     pub fn status_json(&self) -> Result<Vec<u8>> {
         self.organs.status_json()
+    }
+
+    /// Encode the read-only runtime status in the negotiated HPTA V2 envelope.
+    ///
+    /// Generation 1 identifies this transport profile; the payload retains its
+    /// own runtime snapshot version/generation. This method grants no authority
+    /// and preserves the existing JSON API as the default representation.
+    pub fn status_wire_v2(&self) -> Result<Vec<u8>> {
+        let envelope = WireEnvelopeV2::new(
+            StableId::new("hepta.runtime.status.v1")?,
+            StableId::new("runtime.codex")?,
+            Generation::new(1)?,
+            self.status_json()?,
+        )
+        .context("encode runtime status HPTA V2 envelope")?;
+        Ok(envelope.encode())
     }
 
     pub fn status(&self) -> RuntimeStatus {
@@ -848,6 +867,14 @@ mod tests {
         let report = runtime.status_json()?;
         assert_eq!(
             serde_json::from_slice::<serde_json::Value>(&report)?,
+            serde_json::to_value(&status)?
+        );
+        let wire = runtime.status_wire_v2()?;
+        let decoded = WireEnvelopeV2::decode(&wire)?;
+        assert_eq!(decoded.schema().as_str(), "hepta.runtime.status.v1");
+        assert_eq!(decoded.producer().as_str(), "runtime.codex");
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(decoded.payload())?,
             serde_json::to_value(&status)?
         );
         drop(runtime);
