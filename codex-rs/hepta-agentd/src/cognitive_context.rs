@@ -1,5 +1,6 @@
 //! Connect the canonical SQLite owner to the newer bounded cognitive read port.
 
+use std::collections::BTreeMap;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -12,7 +13,9 @@ use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_memory::MemoryRevalidationBinding;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -54,8 +57,9 @@ pub(crate) async fn read(
     }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
+    let retrieval_now = now_seconds()?;
     let cut = store
-        .lane_c_snapshot(&access, &scope, now_seconds()?)
+        .lane_c_snapshot(&access, &scope, retrieval_now)
         .await?;
     let read = cut
         .read(ReadRequestV2 {
@@ -68,8 +72,10 @@ pub(crate) async fn read(
             maximum_encoded_bytes: 1024 * 1024,
         })
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
-    let candidates = store
-        .retrieve_memory_candidates(&access, &RetrievalRequest::new(query, now_seconds()?))
+    // Observe the complete bounded owner generator before legacy top-four
+    // truncation. This is the canonical product seam for all later ranking.
+    let observation = store
+        .observe_memory_retrieval(&access, &RetrievalRequest::new(query, retrieval_now))
         .await?;
     let mut response = CognitiveContextSnapshot {
         snapshot_digest: read.snapshot_digest().to_string(),
@@ -78,31 +84,56 @@ pub(crate) async fn read(
         items: Vec::new(),
         plan: None,
     };
-    // Admit the whole bounded owner cut before applying the response byte
-    // budget.  Ranking must see every admitted candidate; otherwise a large
-    // low-ranked record can hide the learned winner before the ranker runs.
-    let mut admitted_items = Vec::new();
-    for candidate in candidates.candidates {
-        let memory = candidate.memory;
-        // The legacy search ranks candidates; the new owner cut admits only
-        // the exact verified revision and content bound by the read port.
+
+    // Admit only exact records from the same Lane-C read cut. Keep the owner's
+    // RRF order as the deterministic fallback, but do not truncate it yet.
+    let mut admitted = Vec::new();
+    for candidate in observation.candidates() {
+        let binding = candidate.revalidation.clone();
         let accepted = read.records().iter().any(|record| {
-            record.record_id.as_str() == memory.id.memory_id.as_str()
-                && record.revision.get() == memory.id.revision
-                && record.content_digest.to_string() == memory.content_sha256.as_str()
-                && memory.scope == scope
+            record.record_id.as_str() == binding.memory.memory_id.as_str()
+                && record.revision.get() == binding.memory.revision
+                && record.content_digest.to_string() == binding.content_sha256.as_str()
+                && binding.scope == scope
         });
         if !accepted {
             continue;
         }
-        let item = CognitiveContextItem {
-            memory_id: memory.id.memory_id.as_str().to_string(),
-            revision: memory.id.revision,
-            content: memory.content,
-            content_sha256: memory.content_sha256.as_str().to_string(),
-        };
-        admitted_items.push(item);
+        admitted.push((
+            candidate.reciprocal_rank_score,
+            CognitiveContextItem {
+                memory_id: binding.memory.memory_id.as_str().to_string(),
+                revision: binding.memory.revision,
+                // PinnedCognitiveRanker binds only identity/revision/content hash.
+                // Raw text is resolved from one owner revalidation transaction
+                // after every ranker has seen the complete bounded candidate set.
+                content: String::new(),
+                content_sha256: binding.content_sha256.as_str().to_string(),
+            },
+            binding,
+        ));
     }
+    admitted.sort_by(|left, right| {
+        right
+            .0
+            .cmp(&left.0)
+            .then_with(|| left.1.memory_id.cmp(&right.1.memory_id))
+            .then_with(|| left.1.revision.cmp(&right.1.revision))
+    });
+
+    let bindings_by_identity = admitted
+        .iter()
+        .map(|(_, item, binding)| {
+            (
+                (item.memory_id.clone(), item.revision),
+                binding.clone(),
+            )
+        })
+        .collect::<BTreeMap<_, _>>();
+    let mut admitted_items = admitted
+        .into_iter()
+        .map(|(_, item, _)| item)
+        .collect::<Vec<_>>();
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
         let rank_owner = owner.clone();
@@ -120,11 +151,31 @@ pub(crate) async fn read(
         .map_err(|_| CognitiveContextError::RankerUnavailable)?
         .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
-    // Bound the complete payload, including JSON escaping and envelope, only
-    // after ranking.  This preserves the highest-ranked item when the legacy
-    // byte cut would otherwise discard it.  Oversized winners are skipped so
-    // they cannot consume the only result slot.
-    for item in admitted_items {
+
+    let ordered_bindings = admitted_items
+        .iter()
+        .map(|item| {
+            bindings_by_identity
+                .get(&(item.memory_id.clone(), item.revision))
+                .cloned()
+                .ok_or_else(|| {
+                    CognitiveStoreError::Corrupt(
+                        "ranked candidate lost its owner revalidation binding".to_string(),
+                    )
+                })
+        })
+        .collect::<Result<Vec<MemoryRevalidationBinding>, CognitiveStoreError>>()?;
+    let statuses = store
+        .revalidate_memory_candidates(&access, &ordered_bindings, retrieval_now)
+        .await?;
+
+    // Apply result and encoded-byte limits only after owner generation,
+    // optional learned ranking, and one-snapshot source revalidation.
+    for (mut item, status) in admitted_items.into_iter().zip(statuses) {
+        let RevalidationStatus::Current(explanation) = status else {
+            continue;
+        };
+        item.content = explanation.memory.content;
         response.items.push(item);
         let encoded_bytes = serde_json::to_vec(&response)
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?
