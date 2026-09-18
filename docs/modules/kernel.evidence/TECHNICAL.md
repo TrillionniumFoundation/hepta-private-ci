@@ -88,6 +88,7 @@ Configuration is immutable for one process generation. Changes affecting authori
 Produced contracts:
 
 - `DomainRead::qualification_evidenceV1`
+- `IndependentDecisionReceiptV1`
 - `ModulePort::kernel.evidence::control.engineering`
 - `ModulePort::kernel.evidence::control.runtime`
 - `ModulePort::kernel.evidence::learning.eval`
@@ -96,6 +97,9 @@ Produced contracts:
 
 Consumed contracts:
 
+- `AlgorithmFaultReceiptV1`
+- `CandidateEvaluationReceiptV1`
+- `ConformanceReceiptV1`
 - `DomainRead::automation_occurrenceV1`
 - `DomainRead::automation_scheduleV1`
 - `DomainRead::browser_profile_stateV1`
@@ -119,7 +123,11 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `AlgorithmFaultReceiptV1`
+- `CandidateEvaluationReceiptV1`
+- `ConformanceReceiptV1`
 - `EvaluationReceiptV1`
+- `IndependentDecisionReceiptV1`
 - `LocalModelRuntimeReceiptV1`
 - `LongitudinalEvaluationReceiptV1`
 - `UnlearningComplianceReceiptV1`
@@ -132,6 +140,7 @@ Rust types and canonical JSON represent identical semantics. Tests cover round t
 
 Owned authoritative or rebuildable domains:
 
+- `independent_decision_receipt_v1`
 - `qualification_evidence`
 
 Read-only data dependencies:
@@ -146,7 +155,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) identifies the actual state owner, persistent surfaces and lock/transaction boundary. `HeptaEvidenceStore::qualification()` now exposes the target qualification façade with `append_receipt`, `verify_chain` and `query_claim` over the same authoritative SQLite lineage; the pre-existing governance `HeptaEvidenceStore::append_receipt` API remains unchanged for backward compatibility. Production composition still requires an authenticated external caller and current exact-candidate execution evidence.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -178,7 +187,10 @@ Operate through the existing evidence store and its migrations. Keep candidate, 
 
 Current operating and state-format references:
 
+- [codex-rs/hepta-evidence/src/qualification_store.rs](../../../codex-rs/hepta-evidence/src/qualification_store.rs).
 - [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs).
+- [anti-rollback and restore-frontier contract](../../lane-a-foundation/kernel.evidence/ANTI_ROLLBACK_V1.md).
+- [qualification traceability matrix](../../lane-a-foundation/kernel.evidence/TRACEABILITY.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -186,6 +198,7 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-evidence/src/qualification_store_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_store_tests.rs); named cases cover `target_api_appends_queries_verifies_and_survives_reopen`, EVID-01 through EVID-04, and reused-identity conflict.
 - [codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs); named case: `current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers`.
 - [codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs); named case: `quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement`.
 
