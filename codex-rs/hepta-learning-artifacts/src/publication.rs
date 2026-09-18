@@ -271,6 +271,7 @@ mod tests {
             registry_id: id("withdrawal-registry"),
             scope_digest: digest("tenant-a"),
             authority_id: id("withdrawal-authority"),
+            authority_epoch: 7,
         }
     }
 
