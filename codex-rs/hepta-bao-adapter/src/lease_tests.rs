@@ -42,6 +42,7 @@ struct FakeState {
     lookup_plan: Option<LookupPlan>,
     dispatches: usize,
     lookups: usize,
+    last_provider_operation_id_sha256: Option<Sha256Digest>,
 }
 
 #[derive(Clone, Debug)]
@@ -59,6 +60,7 @@ impl FakeProvider {
                 lookup_plan: None,
                 dispatches: 0,
                 lookups: 0,
+                last_provider_operation_id_sha256: None,
             })),
         }
     }
@@ -71,6 +73,7 @@ impl FakeProvider {
                 lookup_plan: None,
                 dispatches: 0,
                 lookups: 0,
+                last_provider_operation_id_sha256: None,
             })),
         }
     }
@@ -115,17 +118,19 @@ impl BaoLeaseProvider for FakeProvider {
         operation: &'a BaoLeaseOperation,
         _provider_payload: &'a [u8],
     ) -> ProviderEffectFuture<'a, BaoLeaseProviderDispatch> {
+        let provider_operation_id_sha256 =
+            Sha256Digest::for_bytes(operation.operation_id.as_bytes());
         let plan = match self.state.lock() {
             Ok(mut state) => {
                 state.dispatches = state.dispatches.saturating_add(1);
+                state.last_provider_operation_id_sha256 =
+                    Some(provider_operation_id_sha256.clone());
                 state.dispatch_plan.take().unwrap_or(DispatchPlan::Unknown)
             }
             Err(_) => DispatchPlan::Unknown,
         };
         let key = intent.key.clone();
         let payload_sha256 = intent.payload_sha256.clone();
-        let provider_operation_id_sha256 =
-            Sha256Digest::for_bytes(operation.operation_id.as_bytes());
         Box::pin(async move {
             match plan {
                 DispatchPlan::Completed {
@@ -173,17 +178,21 @@ impl BaoLeaseProvider for FakeProvider {
         &'a self,
         intent: &'a ProviderEffectIntent,
     ) -> ProviderEffectFuture<'a, BaoLeaseProviderLookup> {
-        let plan = match self.state.lock() {
+        let (plan, prior_provider_operation_id) = match self.state.lock() {
             Ok(mut state) => {
                 state.lookups = state.lookups.saturating_add(1);
-                state.lookup_plan.take().unwrap_or(LookupPlan::Unknown)
+                (
+                    state.lookup_plan.take().unwrap_or(LookupPlan::Unknown),
+                    state.last_provider_operation_id_sha256.clone(),
+                )
             }
-            Err(_) => LookupPlan::Unknown,
+            Err(_) => (LookupPlan::Unknown, None),
         };
         let key = intent.key.clone();
         let payload_sha256 = intent.payload_sha256.clone();
-        let provider_operation_id_sha256 =
-            Sha256Digest::for_bytes(format!("lookup:{}", key.as_str()).as_bytes());
+        let provider_operation_id_sha256 = prior_provider_operation_id.unwrap_or_else(|| {
+            Sha256Digest::for_bytes(format!("lookup:{}", key.as_str()).as_bytes())
+        });
         Box::pin(async move {
             match plan {
                 LookupPlan::Completed(observation) => BaoLeaseProviderLookup {
