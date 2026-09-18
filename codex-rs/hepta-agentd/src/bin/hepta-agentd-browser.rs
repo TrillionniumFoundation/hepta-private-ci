@@ -131,8 +131,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         max_processes: config.max_processes,
         driver_timeout_ms: config.driver_timeout_ms,
     };
+    let parent_frame_timeout = process.parent_frame_timeout()?;
     let transport = ChildBrowserTransport::spawn(&process)?;
-    let port = BrowserServoPort::new(authority, transport);
+    let port = BrowserServoPort::with_frame_timeout(
+        authority,
+        transport,
+        parent_frame_timeout,
+    )?;
     let module_method = call.method.module_method();
     let request = if matches!(module_method, BrowserServoMethod::NavigateOrAct) {
         let signed_grant = call

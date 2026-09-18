@@ -15,10 +15,12 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Child;
 use std::process::ChildStdin;
-use std::process::ChildStdout;
 use std::process::Command;
 use std::process::Stdio;
 use std::sync::Mutex;
+use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
@@ -39,6 +41,10 @@ const MAX_WORKER_BYTES: usize = 512 * 1024 * 1024;
 const MAX_BWRAP_BYTES: usize = 64 * 1024 * 1024;
 const MAX_PRLIMIT_BYTES: usize = 16 * 1024 * 1024;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
+const MAX_DRIVER_TIMEOUT_MS: u64 = 120_000;
+const PARENT_FRAME_GRACE_MS: u64 = 5_000;
+const DEFAULT_PARENT_FRAME_TIMEOUT_MS: u64 = 35_000;
+const MAX_PARENT_FRAME_TIMEOUT_MS: u64 = MAX_DRIVER_TIMEOUT_MS + PARENT_FRAME_GRACE_MS;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BrowserServoMethod {
@@ -112,12 +118,16 @@ impl BrowserServoCall {
 
 pub trait BrowserServoTransport: Send {
     fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError>;
-    fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError>;
+    fn read_frame_timeout(
+        &mut self,
+        timeout: Duration,
+    ) -> Result<Vec<u8>, BrowserServoError>;
 }
 
 pub struct BrowserServoPort<T: BrowserServoTransport> {
     authority: FinalUseAuthority,
     state: Mutex<PortState<T>>,
+    frame_timeout: Duration,
 }
 
 struct PortState<T> {
@@ -146,7 +156,32 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                 next_outgoing_sequence: 1,
                 next_incoming_sequence: 1,
             }),
+            frame_timeout: Duration::from_millis(DEFAULT_PARENT_FRAME_TIMEOUT_MS),
         }
+    }
+
+    pub fn with_frame_timeout(
+        authority: FinalUseAuthority,
+        transport: T,
+        frame_timeout: Duration,
+    ) -> Result<Self, BrowserServoError> {
+        if frame_timeout.is_zero()
+            || frame_timeout > Duration::from_millis(MAX_PARENT_FRAME_TIMEOUT_MS)
+        {
+            return Err(BrowserServoError::Invalid(
+                "Browser parent frame timeout is outside the hard bound".into(),
+            ));
+        }
+        Ok(Self {
+            authority,
+            state: Mutex::new(PortState {
+                transport,
+                next_request_id: 1,
+                next_outgoing_sequence: 1,
+                next_incoming_sequence: 1,
+            }),
+            frame_timeout,
+        })
     }
 
     pub fn call(&self, call: BrowserServoCall) -> Result<Value, BrowserServoError> {
@@ -176,7 +211,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
             }),
         )?;
 
-        let first = receive_frame(&mut state)?;
+        let first = receive_frame(&mut state, self.frame_timeout)?;
         if call.method.requires_final_use() {
             if first.kind != "authority_challenge" || first.request_id != request_id {
                 return Err(BrowserServoError::Protocol(
@@ -188,7 +223,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                 BrowserServoError::Invalid("missing Browser final-use invocation".into())
             })?;
             self.authorize_dispatch_boundary(&mut state, &request_id, &first, invocation)?;
-            let response = receive_frame(&mut state)?;
+            let response = receive_frame(&mut state, self.frame_timeout)?;
             response_result(response, &request_id)
         } else {
             response_result(first, &request_id)
@@ -249,7 +284,7 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
                         "requestDigest": request_digest_text,
                     }),
                 )?;
-                let boundary = receive_frame(state)?;
+                let boundary = receive_frame(state, self.frame_timeout)?;
                 if boundary.request_id != request_id {
                     return Err(BrowserServoError::Indeterminate(
                         "Browser final-use boundary did not match the active request".into(),
@@ -368,8 +403,9 @@ fn send_frame<T: BrowserServoTransport>(
 
 fn receive_frame<T: BrowserServoTransport>(
     state: &mut PortState<T>,
+    timeout: Duration,
 ) -> Result<DecodedFrame, BrowserServoError> {
-    let bytes = state.transport.read_frame()?;
+    let bytes = state.transport.read_frame_timeout(timeout)?;
     if bytes.len() < 5 || bytes.len() > MAX_FRAME_BYTES + 4 {
         return Err(BrowserServoError::Protocol(
             "Browser input frame has invalid byte length".into(),
@@ -669,24 +705,42 @@ impl BrowserServoProcessConfig {
                 )));
             }
         }
+        if self.driver_timeout_ms > MAX_DRIVER_TIMEOUT_MS {
+            return Err(BrowserServoError::Invalid(format!(
+                "Browser driver timeout exceeds {MAX_DRIVER_TIMEOUT_MS} ms hard ceiling"
+            )));
+        }
         verify_file_digest(&self.service_path, self.service_sha256, MAX_SERVICE_BYTES)?;
         verify_file_digest(&self.worker_path, self.worker_sha256, MAX_WORKER_BYTES)?;
         verify_file_digest(&self.bwrap_path, self.bwrap_sha256, MAX_BWRAP_BYTES)?;
         verify_file_digest(&self.prlimit_path, self.prlimit_sha256, MAX_PRLIMIT_BYTES)?;
         Ok(())
     }
+
+    pub fn parent_frame_timeout(&self) -> Result<Duration, BrowserServoError> {
+        if self.driver_timeout_ms == 0 || self.driver_timeout_ms > MAX_DRIVER_TIMEOUT_MS {
+            return Err(BrowserServoError::Invalid(
+                "Browser driver timeout is outside the hard bound".into(),
+            ));
+        }
+        Ok(Duration::from_millis(
+            self.driver_timeout_ms + PARENT_FRAME_GRACE_MS,
+        ))
+    }
 }
 
 pub struct ChildBrowserTransport {
     child: Child,
     stdin: ChildStdin,
-    stdout: BufReader<ChildStdout>,
+    stdout_rx: mpsc::Receiver<Result<Vec<u8>, BrowserServoError>>,
+    closed: bool,
 }
 
 impl fmt::Debug for ChildBrowserTransport {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ChildBrowserTransport")
             .field("pid", &self.child.id())
+            .field("closed", &self.closed)
             .finish_non_exhaustive()
     }
 }
@@ -747,16 +801,73 @@ impl ChildBrowserTransport {
         let stdout = child.stdout.take().ok_or_else(|| {
             BrowserServoError::Unavailable("Browser child stdout was not piped".into())
         })?;
+        let (stdout_tx, stdout_rx) = mpsc::sync_channel(8);
+        let mut reader = BufReader::new(stdout);
+        if let Err(error) = thread::Builder::new()
+            .name("hepta-browser-child-reader".to_string())
+            .spawn(move || loop {
+                let result = read_private_child_frame(&mut reader);
+                let terminal = result.is_err();
+                if stdout_tx.send(result).is_err() || terminal {
+                    break;
+                }
+            })
+        {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(BrowserServoError::Unavailable(format!(
+                "failed to start bounded Browser child reader: {error}"
+            )));
+        }
         Ok(Self {
             child,
             stdin,
-            stdout: BufReader::new(stdout),
+            stdout_rx,
+            closed: false,
         })
     }
+
+    fn terminate(&mut self) {
+        if self.closed {
+            return;
+        }
+        self.closed = true;
+        let _ = self.child.kill();
+    }
+}
+
+fn read_private_child_frame(reader: &mut impl Read) -> Result<Vec<u8>, BrowserServoError> {
+    let mut prefix = [0u8; 4];
+    reader.read_exact(&mut prefix).map_err(|error| {
+        BrowserServoError::Indeterminate(format!(
+            "Browser private-channel prefix read failed: {error}"
+        ))
+    })?;
+    let length = u32::from_be_bytes(prefix) as usize;
+    if length == 0 || length > MAX_FRAME_BYTES {
+        return Err(BrowserServoError::Protocol(
+            "Browser child announced an invalid frame length".into(),
+        ));
+    }
+    let mut body = vec![0u8; length];
+    reader.read_exact(&mut body).map_err(|error| {
+        BrowserServoError::Indeterminate(format!(
+            "Browser private-channel body read failed: {error}"
+        ))
+    })?;
+    let mut frame = Vec::with_capacity(length + 4);
+    frame.extend_from_slice(&prefix);
+    frame.extend_from_slice(&body);
+    Ok(frame)
 }
 
 impl BrowserServoTransport for ChildBrowserTransport {
     fn write_frame(&mut self, bytes: &[u8]) -> Result<(), BrowserServoError> {
+        if self.closed {
+            return Err(BrowserServoError::Unavailable(
+                "Browser private child is closed".into(),
+            ));
+        }
         if bytes.len() < 5 || bytes.len() > MAX_FRAME_BYTES + 4 {
             return Err(BrowserServoError::Protocol(
                 "Browser output frame bytes are outside bounds".into(),
@@ -774,35 +885,37 @@ impl BrowserServoTransport for ChildBrowserTransport {
         })
     }
 
-    fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError> {
-        let mut prefix = [0u8; 4];
-        self.stdout.read_exact(&mut prefix).map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel prefix read failed: {error}"
-            ))
-        })?;
-        let length = u32::from_be_bytes(prefix) as usize;
-        if length == 0 || length > MAX_FRAME_BYTES {
-            return Err(BrowserServoError::Protocol(
-                "Browser child announced an invalid frame length".into(),
+    fn read_frame_timeout(
+        &mut self,
+        timeout: Duration,
+    ) -> Result<Vec<u8>, BrowserServoError> {
+        if self.closed {
+            return Err(BrowserServoError::Unavailable(
+                "Browser private child is closed".into(),
             ));
         }
-        let mut body = vec![0u8; length];
-        self.stdout.read_exact(&mut body).map_err(|error| {
-            BrowserServoError::Indeterminate(format!(
-                "Browser private-channel body read failed: {error}"
-            ))
-        })?;
-        let mut frame = Vec::with_capacity(length + 4);
-        frame.extend_from_slice(&prefix);
-        frame.extend_from_slice(&body);
-        Ok(frame)
+        match self.stdout_rx.recv_timeout(timeout) {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => {
+                self.terminate();
+                Err(BrowserServoError::Indeterminate(
+                    "Browser private-channel read timed out; child terminated before releasing the final-use fence"
+                        .into(),
+                ))
+            }
+            Err(mpsc::RecvTimeoutError::Disconnected) => {
+                self.terminate();
+                Err(BrowserServoError::Indeterminate(
+                    "Browser private-channel reader terminated without a frame".into(),
+                ))
+            }
+        }
     }
 }
 
 impl Drop for ChildBrowserTransport {
     fn drop(&mut self) {
-        let _ = self.child.kill();
+        self.terminate();
         let _ = self.child.wait();
     }
 }
@@ -888,10 +1001,18 @@ mod tests {
                 .map_err(|_| BrowserServoError::Unavailable("test Browser receiver closed".into()))
         }
 
-        fn read_frame(&mut self) -> Result<Vec<u8>, BrowserServoError> {
-            self.inbound
-                .recv()
-                .map_err(|_| BrowserServoError::Unavailable("test Browser sender closed".into()))
+        fn read_frame_timeout(
+            &mut self,
+            timeout: Duration,
+        ) -> Result<Vec<u8>, BrowserServoError> {
+            self.inbound.recv_timeout(timeout).map_err(|error| match error {
+                mpsc::RecvTimeoutError::Timeout => BrowserServoError::Indeterminate(
+                    "test Browser frame read timed out".into(),
+                ),
+                mpsc::RecvTimeoutError::Disconnected => {
+                    BrowserServoError::Unavailable("test Browser sender closed".into())
+                }
+            })
         }
     }
 
@@ -906,6 +1027,10 @@ mod tests {
     }
 
     fn harness() -> Harness {
+        harness_with_timeout(Duration::from_millis(DEFAULT_PARENT_FRAME_TIMEOUT_MS))
+    }
+
+    fn harness_with_timeout(frame_timeout: Duration) -> Harness {
         let state = tempfile::tempdir().expect("authority tempdir");
         let signing = SigningKey::from_bytes(&[7u8; 32]);
         let authority = FinalUseAuthority::open_state_dir(
@@ -951,13 +1076,17 @@ mod tests {
         };
         let (to_browser, outbound) = mpsc::channel();
         let (inbound, from_browser) = mpsc::channel();
-        let port = Arc::new(BrowserServoPort::new(
-            authority.clone(),
-            ChannelTransport {
-                outbound: to_browser,
-                inbound: from_browser,
-            },
-        ));
+        let port = Arc::new(
+            BrowserServoPort::with_frame_timeout(
+                authority.clone(),
+                ChannelTransport {
+                    outbound: to_browser,
+                    inbound: from_browser,
+                },
+                frame_timeout,
+            )
+            .expect("bounded Browser port"),
+        );
         Harness {
             port,
             authority,
@@ -1085,6 +1214,64 @@ mod tests {
         revoked_rx
             .recv_timeout(Duration::from_secs(1))
             .expect("revocation unblocked")
+            .expect("revocation succeeded");
+        revoke.join().expect("revocation thread");
+    }
+
+    #[test]
+    fn final_use_boundary_timeout_releases_revocation_fence() {
+        let harness = harness_with_timeout(Duration::from_millis(75));
+        let port = Arc::clone(&harness.port);
+        let invocation = harness.invocation.clone();
+        let call = thread::spawn(move || {
+            port.call(
+                BrowserServoCall::effect(json!({"operationId":"operation.timeout"}), invocation)
+                    .expect("effect call"),
+            )
+        });
+
+        let request = decode_outbound(&harness.outbound.recv().expect("request"));
+        assert_eq!(request["kind"], "request");
+        harness
+            .inbound
+            .send(inbound_frame(
+                1,
+                "authority_challenge",
+                "browser.agentd.1",
+                json!({
+                    "request": {"operationId":"operation.timeout"},
+                    "requestDigest": hex_lower(&harness.request_digest),
+                    "authorityEpoch": 7,
+                }),
+            ))
+            .expect("challenge");
+
+        let enter = decode_outbound(&harness.outbound.recv().expect("authority enter"));
+        assert_eq!(enter["kind"], "authority_enter");
+
+        let authority = harness.authority.clone();
+        let (revoked_tx, revoked_rx) = mpsc::channel();
+        let revoke = thread::spawn(move || {
+            let result = authority.update_revocations(FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from(["browser-grant.1".to_string()]),
+            });
+            revoked_tx.send(result).expect("revocation result");
+        });
+        assert!(matches!(
+            revoked_rx.recv_timeout(Duration::from_millis(25)),
+            Err(mpsc::RecvTimeoutError::Timeout)
+        ));
+
+        let error = call
+            .join()
+            .expect("call thread")
+            .expect_err("missing Browser boundary must time out");
+        assert!(matches!(error, BrowserServoError::Indeterminate(_)));
+        revoked_rx
+            .recv_timeout(Duration::from_secs(1))
+            .expect("revocation unblocked after timeout")
             .expect("revocation succeeded");
         revoke.join().expect("revocation thread");
     }

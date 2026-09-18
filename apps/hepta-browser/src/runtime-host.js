@@ -2,6 +2,7 @@ import {
   DEFAULT_DRIVER_CALL_TIMEOUT_MS,
   DEFAULT_MAX_ACTIVE_PROFILES,
   MAX_CONFIGURED_ACTIVE_PROFILES,
+  MAX_DRIVER_CALL_TIMEOUT_MS,
   MAX_EFFECT_GRANTS,
   MAX_ORIGINS,
   MAX_OUTSTANDING_OPERATIONS,
@@ -110,6 +111,11 @@ export class BrowserProfileHost {
       throw new TypeError("clock must be a function");
     }
     positiveInteger(driverCallTimeoutMs, "driverCallTimeoutMs");
+    if (driverCallTimeoutMs > MAX_DRIVER_CALL_TIMEOUT_MS) {
+      throw new TypeError(
+        "driverCallTimeoutMs exceeds the Browser hard ceiling",
+      );
+    }
     positiveInteger(maxActiveProfiles, "maxActiveProfiles");
     if (maxActiveProfiles > MAX_CONFIGURED_ACTIVE_PROFILES) {
       throw new TypeError(

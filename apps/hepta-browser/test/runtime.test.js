@@ -192,6 +192,21 @@ test("effect owner rejects volatile journals unless a test explicitly opts in", 
   );
 });
 
+test("driver timeout configuration has a hard ceiling", () => {
+  assert.throws(
+    () =>
+      new BrowserProfileHost({
+        driver: driver(),
+        authority: authority(),
+        journal: new MemoryBrowserOperationJournal(),
+        clock: () => 1_000,
+        allowVolatileJournalForTests: true,
+        driverCallTimeoutMs: 120_001,
+      }),
+    /driverCallTimeoutMs exceeds the Browser hard ceiling/,
+  );
+});
+
 test("global active profile capacity rejects a second worker before start", async () => {
   const fakeDriver = driver();
   let starts = 0;
