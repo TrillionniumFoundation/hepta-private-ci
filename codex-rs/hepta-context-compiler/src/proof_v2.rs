@@ -265,72 +265,109 @@ impl ContextAdmissionRecordV2 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextAdmissionSnapshotEvidenceV2 {
+    pub issuer_digest: Digest32,
+    pub source_snapshot_digest: Digest32,
+    pub revocation_frontier_digest: Digest32,
+    pub witness_digest: Digest32,
+    pub observed_unix_ms: u64,
+    pub records: Vec<ContextAdmissionRecordV2>,
+}
+
+/// Host authentication boundary for admission/revocation snapshots.
+///
+/// Implementations authenticate the upstream issuer/latest-head witness rather
+/// than merely checking internal digest consistency. The returned nonzero
+/// verification digest is bound into all downstream admission proofs.
+pub trait ContextAdmissionVerifierV2 {
+    fn verifier_digest(&self) -> Digest32;
+
+    fn verify_snapshot(
+        &self,
+        evidence: &ContextAdmissionSnapshotEvidenceV2,
+    ) -> Result<Digest32, String>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextAdmissionSnapshotV2 {
     issuer_digest: Digest32,
     source_snapshot_digest: Digest32,
     revocation_frontier_digest: Digest32,
     witness_digest: Digest32,
+    verifier_digest: Digest32,
+    verification_digest: Digest32,
     observed_unix_ms: u64,
     records: BTreeMap<StableId, ContextAdmissionRecordV2>,
     snapshot_digest: Digest32,
 }
 
-impl ContextAdmissionSnapshotV2 {
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        issuer_digest: Digest32,
-        source_snapshot_digest: Digest32,
-        revocation_frontier_digest: Digest32,
-        witness_digest: Digest32,
-        observed_unix_ms: u64,
-        records: Vec<ContextAdmissionRecordV2>,
-    ) -> Result<Self, ContextCompilerV2Error> {
-        for (name, digest) in [
-            ("admission_issuer", issuer_digest),
-            ("admission_source_snapshot", source_snapshot_digest),
-            ("revocation_frontier", revocation_frontier_digest),
-            ("admission_witness", witness_digest),
-        ] {
-            ensure_digest(name, digest)?;
+pub fn verify_admission_snapshot_v2(
+    evidence: ContextAdmissionSnapshotEvidenceV2,
+    verifier: &impl ContextAdmissionVerifierV2,
+) -> Result<ContextAdmissionSnapshotV2, ContextCompilerV2Error> {
+    for (name, digest) in [
+        ("admission_issuer", evidence.issuer_digest),
+        ("admission_source_snapshot", evidence.source_snapshot_digest),
+        ("revocation_frontier", evidence.revocation_frontier_digest),
+        ("admission_witness", evidence.witness_digest),
+    ] {
+        ensure_digest(name, digest)?;
+    }
+    if evidence.observed_unix_ms == 0 {
+        return Err(ContextCompilerV2Error::InvalidAdmissionSnapshotTime);
+    }
+    let mut by_id = BTreeMap::new();
+    for record in &evidence.records {
+        record.validate()?;
+        let item_id = record.item_id.clone();
+        if by_id.insert(item_id.clone(), record.clone()).is_some() {
+            return Err(ContextCompilerV2Error::DuplicateAdmissionRecord(
+                item_id.to_string(),
+            ));
         }
-        if observed_unix_ms == 0 {
-            return Err(ContextCompilerV2Error::InvalidAdmissionSnapshotTime);
-        }
-        let mut by_id = BTreeMap::new();
-        for record in records {
-            record.validate()?;
-            let item_id = record.item_id.clone();
-            if by_id.insert(item_id.clone(), record).is_some() {
-                return Err(ContextCompilerV2Error::DuplicateAdmissionRecord(
-                    item_id.to_string(),
-                ));
-            }
-        }
-        let snapshot_digest = compute_admission_snapshot_digest(
-            issuer_digest,
-            source_snapshot_digest,
-            revocation_frontier_digest,
-            witness_digest,
-            observed_unix_ms,
-            by_id.values(),
-        );
-        Ok(Self {
-            issuer_digest,
-            source_snapshot_digest,
-            revocation_frontier_digest,
-            witness_digest,
-            observed_unix_ms,
-            records: by_id,
-            snapshot_digest,
-        })
     }
 
+    let verifier_digest = verifier.verifier_digest();
+    ensure_digest("admission_verifier", verifier_digest)?;
+    let verification_digest = verifier
+        .verify_snapshot(&evidence)
+        .map_err(ContextCompilerV2Error::AdmissionVerificationFailure)?;
+    ensure_digest("admission_verification", verification_digest)?;
+
+    let snapshot_digest = compute_admission_snapshot_digest(
+        evidence.issuer_digest,
+        evidence.source_snapshot_digest,
+        evidence.revocation_frontier_digest,
+        evidence.witness_digest,
+        verifier_digest,
+        verification_digest,
+        evidence.observed_unix_ms,
+        by_id.values(),
+    );
+    let snapshot = ContextAdmissionSnapshotV2 {
+        issuer_digest: evidence.issuer_digest,
+        source_snapshot_digest: evidence.source_snapshot_digest,
+        revocation_frontier_digest: evidence.revocation_frontier_digest,
+        witness_digest: evidence.witness_digest,
+        verifier_digest,
+        verification_digest,
+        observed_unix_ms: evidence.observed_unix_ms,
+        records: by_id,
+        snapshot_digest,
+    };
+    snapshot.validate()?;
+    Ok(snapshot)
+}
+
+impl ContextAdmissionSnapshotV2 {
     pub fn validate(&self) -> Result<(), ContextCompilerV2Error> {
         for (name, digest) in [
             ("admission_issuer", self.issuer_digest),
             ("admission_source_snapshot", self.source_snapshot_digest),
             ("revocation_frontier", self.revocation_frontier_digest),
             ("admission_witness", self.witness_digest),
+            ("admission_verifier", self.verifier_digest),
+            ("admission_verification", self.verification_digest),
             ("admission_snapshot", self.snapshot_digest),
         ] {
             ensure_digest(name, digest)?;
@@ -346,6 +383,8 @@ impl ContextAdmissionSnapshotV2 {
             self.source_snapshot_digest,
             self.revocation_frontier_digest,
             self.witness_digest,
+            self.verifier_digest,
+            self.verification_digest,
             self.observed_unix_ms,
             self.records.values(),
         );
@@ -417,6 +456,16 @@ impl ContextAdmissionSnapshotV2 {
     }
 
     #[must_use]
+    pub const fn verifier_digest(&self) -> Digest32 {
+        self.verifier_digest
+    }
+
+    #[must_use]
+    pub const fn verification_digest(&self) -> Digest32 {
+        self.verification_digest
+    }
+
+    #[must_use]
     pub const fn observed_unix_ms(&self) -> u64 {
         self.observed_unix_ms
     }
@@ -438,6 +487,8 @@ pub struct VerifiedContextAdmissionV2 {
     snapshot_digest: Digest32,
     revocation_frontier_digest: Digest32,
     witness_digest: Digest32,
+    verifier_digest: Digest32,
+    verification_digest: Digest32,
     verified_at_unix_ms: u64,
     proof_digest: Digest32,
 }
@@ -454,6 +505,8 @@ impl VerifiedContextAdmissionV2 {
             snapshot_digest: snapshot.snapshot_digest,
             revocation_frontier_digest: snapshot.revocation_frontier_digest,
             witness_digest: snapshot.witness_digest,
+            verifier_digest: snapshot.verifier_digest,
+            verification_digest: snapshot.verification_digest,
             verified_at_unix_ms: snapshot.observed_unix_ms,
             proof_digest: Digest32::ZERO,
         };
@@ -479,6 +532,8 @@ impl VerifiedContextAdmissionV2 {
             || self.snapshot_digest != snapshot.snapshot_digest
             || self.revocation_frontier_digest != snapshot.revocation_frontier_digest
             || self.witness_digest != snapshot.witness_digest
+            || self.verifier_digest != snapshot.verifier_digest
+            || self.verification_digest != snapshot.verification_digest
             || self.verified_at_unix_ms != snapshot.observed_unix_ms
         {
             return Err(ContextCompilerV2Error::AdmissionSnapshotMismatch(
@@ -517,6 +572,8 @@ impl VerifiedContextAdmissionV2 {
             self.snapshot_digest,
             self.revocation_frontier_digest,
             self.witness_digest,
+            self.verifier_digest,
+            self.verification_digest,
         ] {
             push_digest(&mut bytes, digest);
         }
@@ -714,6 +771,8 @@ pub struct ContextCompilationReceiptV2 {
     pub admission_snapshot_digest: Digest32,
     pub revocation_frontier_digest: Digest32,
     pub admission_witness_digest: Digest32,
+    pub admission_verifier_digest: Digest32,
+    pub admission_verification_digest: Digest32,
     pub admission_observed_unix_ms: u64,
     pub candidate_set_digest: Digest32,
     pub mandatory_groups_digest: Digest32,
@@ -740,6 +799,8 @@ impl ContextCompilationReceiptV2 {
             ("admission_snapshot", self.admission_snapshot_digest),
             ("revocation_frontier", self.revocation_frontier_digest),
             ("admission_witness", self.admission_witness_digest),
+            ("admission_verifier", self.admission_verifier_digest),
+            ("admission_verification", self.admission_verification_digest),
             ("candidate_set", self.candidate_set_digest),
             ("mandatory_groups", self.mandatory_groups_digest),
             ("selected_binding", self.selected_binding_digest),
@@ -783,6 +844,8 @@ impl ContextCompilationReceiptV2 {
             self.admission_snapshot_digest,
             self.revocation_frontier_digest,
             self.admission_witness_digest,
+            self.admission_verifier_digest,
+            self.admission_verification_digest,
             self.candidate_set_digest,
             self.mandatory_groups_digest,
             self.selected_binding_digest,
@@ -914,6 +977,8 @@ pub fn compile_v2(
         admission_snapshot_digest: request.admission_snapshot.snapshot_digest,
         revocation_frontier_digest: request.admission_snapshot.revocation_frontier_digest,
         admission_witness_digest: request.admission_snapshot.witness_digest,
+        admission_verifier_digest: request.admission_snapshot.verifier_digest,
+        admission_verification_digest: request.admission_snapshot.verification_digest,
         admission_observed_unix_ms: request.admission_snapshot.observed_unix_ms,
         candidate_set_digest: selection.receipt.candidate_set_digest,
         mandatory_groups_digest,
@@ -1156,6 +1221,8 @@ pub struct ContextAttachmentV2 {
     admission_snapshot_digest: Digest32,
     revocation_frontier_digest: Digest32,
     admission_witness_digest: Digest32,
+    admission_verifier_digest: Digest32,
+    admission_verification_digest: Digest32,
     revalidated_at_unix_ms: u64,
     revalidation_digest: Digest32,
     payload_digest: Digest32,
@@ -1177,6 +1244,8 @@ impl ContextAttachmentV2 {
             ("admission_snapshot", self.admission_snapshot_digest),
             ("revocation_frontier", self.revocation_frontier_digest),
             ("admission_witness", self.admission_witness_digest),
+            ("admission_verifier", self.admission_verifier_digest),
+            ("admission_verification", self.admission_verification_digest),
             ("revalidation", self.revalidation_digest),
             ("payload", self.payload_digest),
             ("attachment", self.attachment_digest),
@@ -1215,6 +1284,8 @@ impl ContextAttachmentV2 {
             self.admission_snapshot_digest,
             self.revocation_frontier_digest,
             self.admission_witness_digest,
+            self.admission_verifier_digest,
+            self.admission_verification_digest,
             self.revalidation_digest,
             self.payload_digest,
         ] {
@@ -1303,6 +1374,8 @@ pub fn build_attachment(
         admission_snapshot_digest: current_admission_snapshot.snapshot_digest,
         revocation_frontier_digest: current_admission_snapshot.revocation_frontier_digest,
         admission_witness_digest: current_admission_snapshot.witness_digest,
+        admission_verifier_digest: current_admission_snapshot.verifier_digest,
+        admission_verification_digest: current_admission_snapshot.verification_digest,
         revalidated_at_unix_ms: current_admission_snapshot.observed_unix_ms,
         revalidation_digest: compute_revalidation_digest(&current_proofs),
         payload_digest: receipt.payload_digest,
@@ -1557,6 +1630,8 @@ fn compute_admission_snapshot_digest<'a>(
     source_snapshot_digest: Digest32,
     revocation_frontier_digest: Digest32,
     witness_digest: Digest32,
+    verifier_digest: Digest32,
+    verification_digest: Digest32,
     observed_unix_ms: u64,
     records: impl IntoIterator<Item = &'a ContextAdmissionRecordV2>,
 ) -> Digest32 {
@@ -1567,6 +1642,8 @@ fn compute_admission_snapshot_digest<'a>(
         source_snapshot_digest,
         revocation_frontier_digest,
         witness_digest,
+        verifier_digest,
+        verification_digest,
     ] {
         push_digest(&mut bytes, digest);
     }
@@ -1676,6 +1753,7 @@ pub enum ContextCompilerV2Error {
     MissingTrustedAdmission(String),
     EvidenceRoleConfusion(String),
     DuplicateAdmissionRecord(String),
+    AdmissionVerificationFailure(String),
     AdmissionRoleNotTrusted(String),
     AdmissionMissing(String),
     AdmissionBindingMismatch(String),
