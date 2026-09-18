@@ -281,6 +281,33 @@ fn response_digest_detects_field_tampering() {
 }
 
 #[test]
+fn response_digest_binds_items_and_completeness() {
+    let query = query();
+
+    let mut changed_item = terminal_response(&query);
+    changed_item.items[0].record_digest = digest("tampered-record");
+    let item_transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::Terminal(changed_item)),
+    };
+    assert_eq!(
+        execute(&item_transport, query.clone(), &lease(&query)),
+        Err(FederationV2Error::DigestMismatch("response"))
+    );
+
+    let mut changed_completeness = terminal_response(&query);
+    changed_completeness.completeness = FederatedCompletenessV2::Partial;
+    let completeness_transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::Terminal(
+            changed_completeness,
+        )),
+    };
+    assert_eq!(
+        execute(&completeness_transport, query.clone(), &lease(&query)),
+        Err(FederationV2Error::DigestMismatch("response"))
+    );
+}
+
+#[test]
 fn response_cannot_replay_across_query_binding() {
     let first = query();
     let response = terminal_response(&first);
@@ -309,6 +336,23 @@ fn result_expiry_is_capped_by_lease_and_query() {
     let result = execute(&transport, query.clone(), &lease(&query))
         .unwrap_or_else(|error| panic!("valid capped result: {error}"));
     assert_eq!(result.expires_unix_ms, 90);
+}
+
+#[test]
+fn result_expiry_is_capped_by_query_when_query_is_shorter_than_lease() {
+    let mut query = query();
+    query.deadline_unix_ms = 70;
+    let mut long_lease = lease(&query);
+    long_lease.expires_unix_ms = 500;
+    let mut response = terminal_response(&query);
+    response.expires_unix_ms = 600;
+    response.response_digest = response.compute_response_digest();
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::Terminal(response)),
+    };
+    let result = execute(&transport, query.clone(), &long_lease)
+        .unwrap_or_else(|error| panic!("valid query-capped result: {error}"));
+    assert_eq!(result.expires_unix_ms, 70);
 }
 
 #[test]
