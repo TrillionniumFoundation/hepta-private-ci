@@ -1553,6 +1553,113 @@ pub fn observe_delivery(
     Ok(observation)
 }
 
+fn revalidate_candidate_admission(
+    candidate: &ContextCandidateV2,
+    current_admission_snapshot: &impl ContextAdmissionSnapshotVerifierV2,
+    at_unix_ms: u64,
+) -> Result<(), ContextCompilerV2Error> {
+    let claim = candidate.admission_claim();
+    let decision = current_admission_snapshot
+        .verify_admitted(&claim, at_unix_ms)
+        .map_err(|reason| ContextCompilerV2Error::AdmissionRevalidationFailed {
+            item_id: candidate.item_id.to_string(),
+            reason,
+        })?;
+    ensure_digest("current_source_admission", decision.source_admission_digest)?;
+    if decision.source_admission_digest != candidate.admission.source_admission_digest {
+        return Err(ContextCompilerV2Error::AdmissionRevalidationMismatch(
+            candidate.item_id.to_string(),
+        ));
+    }
+    if decision.expires_at_unix_ms <= at_unix_ms {
+        return Err(ContextCompilerV2Error::AdmissionExpired(
+            candidate.item_id.to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn validate_materialization(
+    compiled: &CompiledContextV2,
+    items: &[ContextMaterializedItemV2],
+) -> Result<Digest32, ContextCompilerV2Error> {
+    if items.len() != compiled.selected_candidates.len() {
+        return Err(ContextCompilerV2Error::MaterializationMismatch);
+    }
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(MATERIALIZATION_DOMAIN);
+    push_len(&mut bytes, items.len());
+    for (item, candidate) in items.iter().zip(&compiled.selected_candidates) {
+        if item.item_id != candidate.item_id
+            || item.content.is_empty()
+            || item.content.len() > MAX_CONTEXT_ITEM_BYTES_V2
+        {
+            return Err(ContextCompilerV2Error::MaterializationMismatch);
+        }
+        let content_digest = Digest32::of_bytes(&item.content);
+        if content_digest != candidate.content_digest {
+            return Err(ContextCompilerV2Error::MaterializedContentMismatch(
+                item.item_id.to_string(),
+            ));
+        }
+        push_id(&mut bytes, &item.item_id);
+        bytes.push(role_code(candidate.role));
+        push_digest(&mut bytes, content_digest);
+        push_len(&mut bytes, item.content.len());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn normalize_mandatory_groups(
+    mut groups: Vec<MandatoryContextGroupV2>,
+    candidates: &BTreeMap<StableId, ContextCandidateV2>,
+) -> Result<Vec<MandatoryContextGroupV2>, ContextCompilerV2Error> {
+    groups.sort_by(|left, right| left.group_id.cmp(&right.group_id));
+    let mut previous_group: Option<StableId> = None;
+    for group in &mut groups {
+        if previous_group.as_ref() == Some(&group.group_id) {
+            return Err(ContextCompilerV2Error::DuplicateMandatoryGroup(
+                group.group_id.to_string(),
+            ));
+        }
+        previous_group = Some(group.group_id.clone());
+        ensure_digest("mandatory_group_reason", group.reason_digest)?;
+        if group.item_ids.is_empty() {
+            return Err(ContextCompilerV2Error::EmptyMandatoryGroup(
+                group.group_id.to_string(),
+            ));
+        }
+        group.item_ids.sort();
+        let mut previous_item: Option<StableId> = None;
+        for item_id in &group.item_ids {
+            if previous_item.as_ref() == Some(item_id) {
+                return Err(ContextCompilerV2Error::DuplicateMandatoryItem(
+                    item_id.to_string(),
+                ));
+            }
+            previous_item = Some(item_id.clone());
+            if !candidates.contains_key(item_id) {
+                return Err(ContextCompilerV2Error::UnknownMandatoryItem(
+                    item_id.to_string(),
+                ));
+            }
+        }
+    }
+    Ok(groups)
+}
+
+fn compute_mandatory_groups_digest(groups: &[MandatoryContextGroupV2]) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(MANDATORY_GROUPS_DOMAIN);
+    push_len(&mut bytes, groups.len());
+    for group in groups {
+        push_id(&mut bytes, &group.group_id);
+        push_ids(&mut bytes, &group.item_ids);
+        push_digest(&mut bytes, group.reason_digest);
+    }
+    Digest32::of_bytes(&bytes)
+}
+
 fn compute_candidate_set_digest<'a>(
     candidates: impl IntoIterator<Item = &'a ContextCandidateV2>,
 ) -> Digest32 {
@@ -1565,14 +1672,8 @@ fn compute_candidate_set_digest<'a>(
         push_digest(&mut bytes, candidate.source_digest);
         push_digest(&mut bytes, candidate.generation_vector_digest);
         push_digest(&mut bytes, candidate.tokenization.receipt_digest);
+        push_digest(&mut bytes, candidate.admission.receipt_digest);
         push_i64(&mut bytes, candidate.expected_value.raw());
-        match candidate.trusted_admission_digest {
-            Some(digest) => {
-                bytes.push(1);
-                push_digest(&mut bytes, digest);
-            }
-            None => bytes.push(0),
-        }
     }
     Digest32::of_bytes(&bytes)
 }
@@ -1587,6 +1688,7 @@ fn compute_context_digest(candidates: &[ContextCandidateV2]) -> Digest32 {
         push_digest(&mut bytes, candidate.content_digest);
         push_digest(&mut bytes, candidate.source_digest);
         push_digest(&mut bytes, candidate.tokenization.receipt_digest);
+        push_digest(&mut bytes, candidate.admission.receipt_digest);
     }
     Digest32::of_bytes(&bytes)
 }
@@ -1617,6 +1719,12 @@ pub enum ContextCompilerV2Error {
     InvalidModelContextLimit,
     InvalidTokenBudget,
     InvalidTokenCount(String),
+    InvalidCompilationTime,
+    InvalidSerializationTime,
+    InvalidAttachmentTime,
+    InvalidObservationTime,
+    InvalidMaterializedItemBytes(String),
+    InvalidSerializedPayloadBytes,
     DuplicateCandidate(String),
     DuplicateMandatoryGroup(String),
     EmptyMandatoryGroup(String),
@@ -1625,22 +1733,49 @@ pub enum ContextCompilerV2Error {
     GenerationVectorMismatch(String),
     TokenizationItemMismatch(String),
     TokenizerMismatch(String),
+    TokenizerFailure(String),
     ValueOutOfRange(String),
     SecretRejected(String),
-    MissingTrustedAdmission(String),
-    EvidenceRoleConfusion(String),
+    AdmissionVerifierFailed {
+        item_id: String,
+        reason: String,
+    },
+    AdmissionBindingMismatch(String),
+    AdmissionSnapshotMismatch(String),
+    AdmissionVerifierChanged,
+    InvalidAdmissionWindow(String),
+    AdmissionExpired(String),
+    AdmissionRevalidationFailed {
+        item_id: String,
+        reason: String,
+    },
+    AdmissionRevalidationMismatch(String),
     InsufficientMandatoryBudget {
         required_tokens: u64,
         token_budget: u64,
     },
     TokenBudgetExceeded,
     SelectedSetMismatch,
+    MaterializationMismatch,
+    MaterializedContentMismatch(String),
+    SerializerProfileMismatch,
+    SerializerFailure(String),
+    SerializationTokenizerMismatch,
+    SerializationTokenCountMismatch,
+    SerializedTokenBudgetExceeded {
+        serialized_tokens: u64,
+        token_budget: u64,
+    },
     SerializationMismatch,
     AttachmentMismatch,
+    ProviderReceiptInvalid(String),
+    ProviderEvidenceInvalid(String),
+    MissingProviderInputBinding,
+    MissingProviderInputWitness,
+    ProviderModelProfileMismatch,
     DeliveryMismatch,
     MissingTerminalObservation,
     InvalidDeliveryDisposition,
-    InvalidObservationTime,
     AuthorityGranted,
     Arithmetic,
 }
@@ -1701,7 +1836,8 @@ const fn delivery_disposition_code(disposition: ContextDeliveryDispositionV2) ->
     match disposition {
         ContextDeliveryDispositionV2::Delivered => 0,
         ContextDeliveryDispositionV2::Rejected => 1,
-        ContextDeliveryDispositionV2::Indeterminate => 2,
+        ContextDeliveryDispositionV2::NotDispatched => 2,
+        ContextDeliveryDispositionV2::Indeterminate => 3,
     }
 }
 
