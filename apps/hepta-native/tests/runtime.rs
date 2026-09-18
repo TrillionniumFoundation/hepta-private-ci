@@ -6,7 +6,6 @@ use hepta_native::backend::BackendAdapter;
 use hepta_native::error::ShellError;
 use hepta_native::journal::OperationJournal;
 use hepta_native::model::EndpointManifest;
-use hepta_native::model::PlatformAction;
 use hepta_native::model::PlatformObservation;
 use hepta_native::model::PlatformPayload;
 use hepta_native::model::PlatformRequest;
@@ -18,6 +17,7 @@ use hepta_native::platform::PermissionDecision;
 use hepta_native::platform::PlatformAdapter;
 use hepta_native::runtime::NativeShellRuntime;
 use hepta_native::security::GrantVerifier;
+use hepta_native::security::PlatformGrantContext;
 use tempfile::TempDir;
 
 const D1: &str = "1111111111111111111111111111111111111111111111111111111111111111";
@@ -106,12 +106,7 @@ impl GrantVerifier for AllowGrantVerifier {
     fn verify_platform_grant(
         &self,
         _grant: &SignedPlatformGrantV1,
-        _session_id: &str,
-        _session_generation: u64,
-        _operation_id: &str,
-        _action: PlatformAction,
-        _payload_digest: &str,
-        _now_unix_ms: u64,
+        _context: PlatformGrantContext<'_>,
     ) -> Result<(), ShellError> {
         Ok(())
     }
