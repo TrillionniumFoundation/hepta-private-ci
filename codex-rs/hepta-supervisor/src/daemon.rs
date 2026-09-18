@@ -1464,6 +1464,94 @@ mod tests {
             logs: Vec::new(),
             control_revision: 0,
             restart_pending: false,
+            automatic_restart_attempt: 0,
+            automatic_restart_pending: false,
+            release_state_generation: record.release_state.generation,
+            runtime_phase: None,
+            runtime_release: None,
+            runtime_incarnation: None,
+            runtime_fenced: false,
+            release_change: None,
+            has_last_command: false,
+        };
+        status_from(
+            &SupervisorEpoch::parse(EPOCH).expect("fixed epoch"),
+            &record,
+            Some(snapshot),
+        )
+        .expect("derive status")
+        .control_fence
+        .state_digest
+    }
+
+    #[test]
+    fn automatic_restart_state_participates_in_control_state_digest() {
+        let matrix = MatrixSupervisorSnapshot {
+            configured: false,
+            active: false,
+            healthy: false,
+            degraded: false,
+            process_system_id: None,
+            attached_agent_generation: None,
+            binding_revision: None,
+            restart_attempt: 0,
+            last_error: None,
+        };
+        let baseline = recovery_control_digest(matrix.clone(), 0, false);
+        assert_ne!(
+            recovery_control_digest(matrix.clone(), 1, false),
+            baseline,
+            "automatic restart attempt changed without changing the control digest"
+        );
+        assert_ne!(
+            recovery_control_digest(matrix, 0, true),
+            baseline,
+            "automatic restart pending state changed without changing the control digest"
+        );
+    }
+
+    fn recovery_control_digest(
+        matrix: MatrixSupervisorSnapshot,
+        automatic_restart_attempt: u32,
+        automatic_restart_pending: bool,
+    ) -> ControlStateDigest {
+        let temp = tempfile::tempdir().expect("create temporary fleet");
+        let fleet_root =
+            HeptaFleetRoot::parse(temp.path().join("fleet")).expect("parse temporary fleet root");
+        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
+        let workspace = temp.path().join("workspace");
+        std::fs::create_dir(&workspace).expect("create workspace");
+        let agent_id = AgentId::parse(AGENT_ID).expect("fixed AgentId");
+        let record = registry
+            .register(
+                AgentManifest::new(
+                    agent_id,
+                    WorkspaceBinding::new(
+                        workspace.canonicalize().expect("canonical workspace"),
+                        &fleet_root,
+                    )
+                    .expect("workspace binding"),
+                    ResourceBudget::local_default(),
+                )
+                .expect("agent manifest"),
+            )
+            .expect("register agent");
+        let snapshot = AgentSupervisorSnapshot {
+            active: false,
+            healthy: false,
+            runtime_generation: None,
+            spawn_generation: None,
+            process_system_id: None,
+            active_release: None,
+            previous_release: None,
+            release_change_pending: false,
+            matrix,
+            events: Vec::new(),
+            logs: Vec::new(),
+            control_revision: 0,
+            restart_pending: false,
+            automatic_restart_attempt,
+            automatic_restart_pending,
             release_state_generation: record.release_state.generation,
             runtime_phase: None,
             runtime_release: None,
