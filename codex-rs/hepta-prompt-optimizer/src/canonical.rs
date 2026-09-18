@@ -827,3 +827,7 @@ fn push_u64(bytes: &mut Vec<u8>, value: u64) {
 fn push_i64(bytes: &mut Vec<u8>, value: i64) {
     bytes.extend_from_slice(&value.to_be_bytes());
 }
+
+#[cfg(test)]
+#[path = "canonical_tests.rs"]
+mod tests;
