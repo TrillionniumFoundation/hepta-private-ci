@@ -166,7 +166,7 @@ mod tests {
                 memory_bytes: 1024,
                 accelerator_millis: 0,
             },
-            semantic_digest: Sha256::digest(b"fleet-allocation-one")\n                .iter()\n                .map(|byte| format!("{byte:02x}"))\n                .collect(),
+            semantic_digest: format!("{:x}", Sha256::digest(b"fleet-allocation-one")),
             revoked: false,
         }
     }
