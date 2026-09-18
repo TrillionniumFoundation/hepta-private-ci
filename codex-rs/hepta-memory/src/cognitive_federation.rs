@@ -225,9 +225,27 @@ pub struct FederatedRetrievalCandidate {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct FederatedRetrievalCoverage {
+    pub requested_sources: u32,
+    pub completed_sources: u32,
+    pub failed_sources: u32,
+}
+
+impl FederatedRetrievalCoverage {
+    pub fn is_partial(&self) -> bool {
+        self.failed_sources > 0 && self.completed_sources > 0
+    }
+
+    pub fn is_unavailable(&self) -> bool {
+        self.requested_sources > 0 && self.completed_sources == 0 && self.failed_sources > 0
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FederatedRetrievalBatch {
     pub query_sha256: Sha256Digest,
     pub candidates: Vec<FederatedRetrievalCandidate>,
+    pub coverage: FederatedRetrievalCoverage,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -658,6 +676,11 @@ impl FederatedMemoryReader {
         Ok(FederatedRetrievalBatch {
             query_sha256: batch.query_sha256,
             candidates,
+            coverage: FederatedRetrievalCoverage {
+                requested_sources: 1,
+                completed_sources: 1,
+                failed_sources: 0,
+            },
         })
     }
 
@@ -832,12 +855,20 @@ impl FederatedRecallSet {
             ));
         }
         let readers = self.current_readers(request.now_unix_seconds()).await;
+        let requested_sources = u32::try_from(readers.len()).unwrap_or(u32::MAX);
+        let mut completed_sources = 0u32;
+        let mut failed_sources = 0u32;
         let mut candidates = Vec::new();
         for reader in &readers {
-            let Ok(batch) = reader.retrieve(access, request).await else {
-                continue;
-            };
-            candidates.extend(batch.candidates);
+            match reader.retrieve(access, request).await {
+                Ok(batch) => {
+                    completed_sources = completed_sources.saturating_add(1);
+                    candidates.extend(batch.candidates);
+                }
+                Err(_) => {
+                    failed_sources = failed_sources.saturating_add(1);
+                }
+            }
         }
         candidates.sort_by(|left, right| {
             right
@@ -864,6 +895,11 @@ impl FederatedRecallSet {
         Ok(FederatedRetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query().as_bytes()),
             candidates,
+            coverage: FederatedRetrievalCoverage {
+                requested_sources,
+                completed_sources,
+                failed_sources,
+            },
         })
     }
 
