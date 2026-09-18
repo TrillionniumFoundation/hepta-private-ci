@@ -124,6 +124,47 @@ fn epoch_change_fences_outstanding_claims_and_old_grants() {
 }
 
 #[test]
+fn capacity_snapshot_tracks_claims_revocations_and_epoch_rollover() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let empty = authority.capacity().unwrap();
+    assert_eq!(empty.authority_epoch, 9);
+    assert_eq!(empty.revision, 1);
+    assert_eq!(empty.used_nonces, 0);
+    assert_eq!(empty.revoked_grants, 0);
+    assert_eq!(empty.remaining_claims(), empty.max_claims);
+    assert!(!empty.rollover_required_with_reserve(0));
+
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    drop(token);
+    let claimed = authority.capacity().unwrap();
+    assert_eq!(claimed.used_nonces, 1);
+    assert_eq!(claimed.remaining_claims(), claimed.max_claims - 1);
+
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        })
+        .unwrap();
+    let revoked = authority.capacity().unwrap();
+    assert_eq!(revoked.revision, 2);
+    assert_eq!(revoked.revoked_grants, 1);
+
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 10,
+            revision: 3,
+            revoked_grant_ids: BTreeSet::new(),
+        })
+        .unwrap();
+    let rolled = authority.capacity().unwrap();
+    assert_eq!(rolled.authority_epoch, 10);
+    assert_eq!(rolled.used_nonces, 0);
+    assert_eq!(rolled.revoked_grants, 0);
+}
+
+#[test]
 fn expired_grant_is_denied_using_verifier_clock() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.not_before_unix_ms = 1;
