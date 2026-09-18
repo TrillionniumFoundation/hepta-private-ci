@@ -287,10 +287,7 @@ pub fn read_artifact_publication_commit(
 fn digest_commit(commit: &ArtifactPublicationCommitV1) -> Digest32 {
     let mut bytes = b"hepta.learning-artifacts.publication-commit.v1".to_vec();
     push_id(&mut bytes, &commit.registry_id);
-    for digest in [
-        commit.scope_digest,
-        commit.store_binding,
-    ] {
+    for digest in [commit.scope_digest, commit.store_binding] {
         bytes.extend_from_slice(digest.as_array());
     }
     push_id(&mut bytes, &commit.artifact_id);
@@ -388,7 +385,9 @@ fn parse_digest(value: &str) -> Result<Digest32, ArtifactStorageError> {
 }
 
 fn parse_u64(value: &str) -> Result<u64, ArtifactStorageError> {
-    value.parse::<u64>().map_err(|_| ArtifactStorageError::Corrupt)
+    value
+        .parse::<u64>()
+        .map_err(|_| ArtifactStorageError::Corrupt)
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
@@ -440,10 +439,8 @@ mod tests {
     impl Fixture {
         fn new() -> Self {
             let serial = NEXT.fetch_add(1, Ordering::Relaxed);
-            let dir = std::env::temp_dir().join(format!(
-                "hepta-publication-{}-{serial}",
-                std::process::id()
-            ));
+            let dir = std::env::temp_dir()
+                .join(format!("hepta-publication-{}-{serial}", std::process::id()));
             std::fs::create_dir(&dir).expect("fixture dir");
             Self { dir }
         }
@@ -623,16 +620,11 @@ mod tests {
         .expect("prepare publication");
         let receipt = write_artifact_publication_commit(fixture.create("commit"), &commit)
             .expect("write commit");
-        let reopened = read_artifact_publication_commit(fixture.open("commit"), receipt)
-            .expect("read commit");
+        let reopened =
+            read_artifact_publication_commit(fixture.open("commit"), receipt).expect("read commit");
         assert_eq!(reopened, commit);
-        verify_artifact_publication_commit_v1(
-            &reopened,
-            Digest32::ZERO,
-            &withdrawal,
-            &lifecycle,
-        )
-        .expect("commit remains current");
+        verify_artifact_publication_commit_v1(&reopened, Digest32::ZERO, &withdrawal, &lifecycle)
+            .expect("commit remains current");
     }
 
     #[test]
@@ -672,6 +664,9 @@ mod tests {
         let next = fixture.path("CURRENT.next");
         std::fs::write(&next, format!("{}\n", commit.commit_digest)).expect("write next pointer");
         std::fs::rename(&next, &current).expect("atomic pointer replace");
-        assert_eq!(read_pointer(&current), format!("{}\n", commit.commit_digest));
+        assert_eq!(
+            read_pointer(&current),
+            format!("{}\n", commit.commit_digest)
+        );
     }
 }
