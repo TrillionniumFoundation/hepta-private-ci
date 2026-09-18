@@ -212,7 +212,12 @@ fn decision() -> ProductionDecisionV2 {
     }
 }
 
-fn outcome(record: &str, outcome: &str, predecessor: Option<&str>, value: i64) -> AuthenticatedOutcomeV1 {
+fn outcome(
+    record: &str,
+    outcome: &str,
+    predecessor: Option<&str>,
+    value: i64,
+) -> AuthenticatedOutcomeV1 {
     AuthenticatedOutcomeV1 {
         record_id: id(record),
         outcome_id: id(outcome),
@@ -280,20 +285,10 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         &outcome_signing_payload_v2(&first),
     );
     let first_receipt = writer
-        .append_outcome(
-            decision_receipt.chain_digest,
-            first,
-            &first_evidence,
-            50,
-        )
+        .append_outcome(decision_receipt.chain_digest, first, &first_evidence, 50)
         .unwrap();
 
-    let corrected = outcome(
-        "outcome-record-2",
-        "outcome-2",
-        Some("outcome-1"),
-        120,
-    );
+    let corrected = outcome("outcome-record-2", "outcome-2", Some("outcome-1"), 120);
     let corrected_evidence = sign(
         writer.verifier(),
         "observer",
@@ -320,12 +315,7 @@ fn production_writer_closes_authenticated_causal_chain_and_witnesses_each_commit
         &credit_batch_signing_payload_v2(&batch, batch_digest),
     );
     let credit_receipt = writer
-        .append_credit_batch(
-            corrected_receipt.chain_digest,
-            batch,
-            &credit_evidence,
-            50,
-        )
+        .append_credit_batch(corrected_receipt.chain_digest, batch, &credit_evidence, 50)
         .unwrap();
 
     let plan = DatasetFreezePlanV2 {

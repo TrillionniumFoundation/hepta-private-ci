@@ -95,9 +95,7 @@ fn snapshot() -> LedgerSnapshot {
     ledger
         .append(LedgerEvent::AuthenticatedOutcomeV2(outcome()))
         .unwrap();
-    ledger
-        .append(LedgerEvent::CreditBatchV2(batch()))
-        .unwrap();
+    ledger.append(LedgerEvent::CreditBatchV2(batch())).unwrap();
     ledger.snapshot()
 }
 
@@ -144,8 +142,7 @@ fn credit_and_episode_views_bind_exact_snapshot_history() {
             _ => None,
         })
         .unwrap();
-    let credit_wire =
-        CreditAssignmentReceiptV1::from_batch(credit, &snapshot).unwrap();
+    let credit_wire = CreditAssignmentReceiptV1::from_batch(credit, &snapshot).unwrap();
     let encoded = encode_credit_assignment_receipt_v1(&credit_wire).unwrap();
     assert_eq!(
         decode_credit_assignment_receipt_v1(&encoded).unwrap(),

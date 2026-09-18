@@ -244,9 +244,7 @@ impl LedgerWriter {
         ledger.rotate(next_segment, expected)?;
         let after = self.backend.frontier()?;
         if let Err(witness_error) = self.witness.advance(before, after) {
-            return Err(ProductionLedgerError::IndeterminateAfterTopologyChange {
-                witness_error,
-            });
+            return Err(ProductionLedgerError::IndeterminateAfterTopologyChange { witness_error });
         }
         self.segmented_checkpoint()?
             .ok_or(ProductionLedgerError::UnsupportedBackend)
@@ -260,10 +258,12 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = decision_signing_payload_v2(&request)?;
-        let verified = self
-            .trust
-            .verifier()
-            .verify(LearningEvidenceRoleV1::Generator, evidence, &payload, now)?;
+        let verified = self.trust.verifier().verify(
+            LearningEvidenceRoleV1::Generator,
+            evidence,
+            &payload,
+            now,
+        )?;
         require_role(&verified, LearningEvidenceRoleV1::Generator)?;
         if request.objective_digest != self.trust.verifier().objective_digest()
             || request.completeness.generator_id != verified.principal().principal_id
@@ -304,10 +304,12 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = outcome_signing_payload_v2(&outcome);
-        let verified = self
-            .trust
-            .verifier()
-            .verify(LearningEvidenceRoleV1::Observer, evidence, &payload, now)?;
+        let verified = self.trust.verifier().verify(
+            LearningEvidenceRoleV1::Observer,
+            evidence,
+            &payload,
+            now,
+        )?;
         require_role(&verified, LearningEvidenceRoleV1::Observer)?;
         if verified.principal() != &outcome.observer {
             return Err(ProductionLedgerError::Binding("outcome observer"));
@@ -678,7 +680,10 @@ fn validate_outcome_time(
 ) -> Result<(), ProductionLedgerError> {
     if outcome.watermark.latest_observable_at > now
         || outcome.observed_at.is_some_and(|value| value > now)
-        || outcome.watermark.finalized_at.is_some_and(|value| value > now)
+        || outcome
+            .watermark
+            .finalized_at
+            .is_some_and(|value| value > now)
     {
         return Err(ProductionLedgerError::Binding("outcome time"));
     }
@@ -732,9 +737,7 @@ fn find_authenticated_decision<'a>(
         .records()
         .iter()
         .find_map(|record| match &record.event {
-            LedgerEvent::AuthenticatedDecisionV2(value)
-                if value.record_id == active_record_id =>
-            {
+            LedgerEvent::AuthenticatedDecisionV2(value) if value.record_id == active_record_id => {
                 Some(value)
             }
             _ => None,
@@ -783,14 +786,10 @@ fn derive_dataset(
 
     for record in &active {
         match &record.event {
-            LedgerEvent::AuthenticatedDecisionV2(value)
-                if episodes.contains(&value.episode_id) =>
-            {
+            LedgerEvent::AuthenticatedDecisionV2(value) if episodes.contains(&value.episode_id) => {
                 source_record_digests.push(record.event_digest);
             }
-            LedgerEvent::AuthenticatedOutcomeV2(value)
-                if episodes.contains(&value.episode_id) =>
-            {
+            LedgerEvent::AuthenticatedOutcomeV2(value) if episodes.contains(&value.episode_id) => {
                 source_record_digests.push(record.event_digest);
                 outcome_watermark = outcome_watermark.max(value.latest_observable_at);
                 match value.terminality {
@@ -921,13 +920,13 @@ fn validate_witness_state(
                     return Err(ProductionLedgerError::WitnessLag);
                 }
             }
-            (Some(0), None) if ledger.anchor.sequence == 0 && !ledger.sealed && !witness.sealed => {}
+            (Some(0), None) if ledger.anchor.sequence == 0 && !ledger.sealed && !witness.sealed => {
+            }
             (Some(ledger_segment), Some(witness_segment))
                 if ledger_segment == witness_segment && ledger.sealed == witness.sealed => {}
             _ => return Err(ProductionLedgerError::WitnessLag),
         }
-    } else if let (Some(witness_segment), Some(ledger_segment)) =
-        (witness.segment, ledger.segment)
+    } else if let (Some(witness_segment), Some(ledger_segment)) = (witness.segment, ledger.segment)
         && witness_segment != ledger_segment
     {
         return Err(ProductionLedgerError::WitnessLag);

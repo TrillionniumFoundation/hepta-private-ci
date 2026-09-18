@@ -85,9 +85,11 @@ impl TryFrom<&AuthenticatedOutcomeRecordV2> for OutcomeReceiptV1 {
                 "OutcomeReceiptV1 requires a terminal observed value",
             ));
         }
-        let observed_at = value.observed_at.ok_or(LearningProtocolError::NotRepresentable(
-            "OutcomeReceiptV1 requires observedAtUnixMs",
-        ))?;
+        let observed_at = value
+            .observed_at
+            .ok_or(LearningProtocolError::NotRepresentable(
+                "OutcomeReceiptV1 requires observedAtUnixMs",
+            ))?;
         let utility = value.value.ok_or(LearningProtocolError::NotRepresentable(
             "OutcomeReceiptV1 requires utilityVector",
         ))?;
@@ -179,8 +181,10 @@ impl TryFrom<&DatasetSnapshotReceiptV3> for DatasetSnapshotV1 {
     fn try_from(value: &DatasetSnapshotReceiptV3) -> Result<Self, Self::Error> {
         let row_count = u64::try_from(value.snapshot.source_record_digests.len())
             .map_err(|_| LearningProtocolError::Bounds)?;
-        let episode_range_digest =
-            digest_list(DATASET_EPISODE_RANGE_DOMAIN, &value.snapshot.source_record_digests);
+        let episode_range_digest = digest_list(
+            DATASET_EPISODE_RANGE_DOMAIN,
+            &value.snapshot.source_record_digests,
+        );
         let deletion_cutoff_digest = digest_list(
             DATASET_DELETION_CUTOFF_DOMAIN,
             &[value.correction_cut_digest, value.revocation_cut_digest],
@@ -254,8 +258,7 @@ impl LearningEpisodeV1 {
             .iter()
             .find_map(|record| match &record.event {
                 LedgerEvent::AuthenticatedDecisionV2(value)
-                    if &value.episode_id == episode_id
-                        && active_ids.contains(&value.record_id) =>
+                    if &value.episode_id == episode_id && active_ids.contains(&value.record_id) =>
                 {
                     Some(value)
                 }
@@ -271,8 +274,7 @@ impl LearningEpisodeV1 {
             .rev()
             .find_map(|record| match &record.event {
                 LedgerEvent::AuthenticatedOutcomeV2(value)
-                    if &value.episode_id == episode_id
-                        && active_ids.contains(&value.record_id) =>
+                    if &value.episode_id == episode_id && active_ids.contains(&value.record_id) =>
                 {
                     Some(value)
                 }
@@ -372,9 +374,7 @@ pub fn encode_outcome_receipt_v1(
     encode(value)
 }
 
-pub fn decode_outcome_receipt_v1(
-    bytes: &[u8],
-) -> Result<OutcomeReceiptV1, LearningProtocolError> {
+pub fn decode_outcome_receipt_v1(bytes: &[u8]) -> Result<OutcomeReceiptV1, LearningProtocolError> {
     decode(bytes)
 }
 
