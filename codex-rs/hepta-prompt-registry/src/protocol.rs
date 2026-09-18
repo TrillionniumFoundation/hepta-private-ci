@@ -13,6 +13,8 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::Lifecycle;
+use crate::PromptFactor;
+use crate::PromptRealizationBindingV2;
 use crate::PromptRoleV2;
 
 const MAX_PROTOCOL_BYTES: usize = 262_144;
@@ -21,6 +23,12 @@ const MAX_AUTHORITY_CLASS_BYTES: usize = 64;
 const MAX_ELIGIBLE_DIMENSIONS_BYTES: usize = 8_192;
 const MAX_MODEL_VERSION_BYTES: usize = 256;
 const MAX_MESSAGE_ROLE_BYTES: usize = 32;
+const AUTHORITY_CLASSES: [&str; 4] = [
+    "system_policy",
+    "developer_policy",
+    "signed_objective",
+    "registered_prompt_factor",
+];
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptFactorV1 {
@@ -44,6 +52,22 @@ struct PromptFactorWireV1 {
 }
 
 impl PromptFactorV1 {
+    pub(crate) fn from_registry(
+        factor: &PromptFactor,
+        revision: u64,
+    ) -> Result<Self, ProtocolCodecError> {
+        let value = Self {
+            factor_id: factor.factor_id.clone(),
+            semantic_purpose: factor.semantic_purpose.clone(),
+            authority_class: factor.authority_class.clone(),
+            eligible_objective_dimensions: factor.eligible_objective_dimensions.clone(),
+            lifecycle: factor.lifecycle,
+            revision,
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
     pub fn encode_canonical_json(&self) -> Result<Vec<u8>, ProtocolCodecError> {
         self.validate()?;
         let wire = PromptFactorWireV1 {
@@ -87,33 +111,17 @@ impl PromptFactorV1 {
     }
 
     fn validate(&self) -> Result<(), ProtocolCodecError> {
-        if self.semantic_purpose.is_empty()
-            || self.semantic_purpose.len() > MAX_SEMANTIC_PURPOSE_BYTES
-            || self.authority_class.is_empty()
-            || self.authority_class.len() > MAX_AUTHORITY_CLASS_BYTES
-            || self.revision == 0
-        {
-            return Err(ProtocolCodecError::InvalidField);
-        }
-        let dimension_bytes = self
-            .eligible_objective_dimensions
-            .iter()
-            .try_fold(0_usize, |total, value| {
-                total.checked_add(value.as_str().len())
-            })
-            .ok_or(ProtocolCodecError::InvalidField)?;
-        if dimension_bytes > MAX_ELIGIBLE_DIMENSIONS_BYTES
-            || self
-                .eligible_objective_dimensions
-                .windows(2)
-                .any(|window| window[0] >= window[1])
-        {
+        validate_factor_fields(
+            &self.semantic_purpose,
+            &self.authority_class,
+            &self.eligible_objective_dimensions,
+        )?;
+        if self.revision == 0 {
             return Err(ProtocolCodecError::InvalidField);
         }
         Ok(())
     }
 }
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptRealizationV1 {
     pub factor_id: StableId,
@@ -143,6 +151,24 @@ struct PromptRealizationWireV1 {
 }
 
 impl PromptRealizationV1 {
+    pub(crate) fn from_binding(
+        binding: &PromptRealizationBindingV2,
+    ) -> Result<Self, ProtocolCodecError> {
+        let value = Self {
+            factor_id: binding.factor_id.clone(),
+            model_id: binding.model_id.clone(),
+            model_version: binding.model_version.clone(),
+            tokenizer_digest: binding.tokenizer_digest,
+            system_template_digest: binding.template_digest,
+            message_role: binding.role,
+            payload_digest: binding.payload_digest,
+            token_cost_upper_bound: binding.token_cost,
+            expires_unix_ms: binding.expires_unix_ms,
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
     pub fn encode_canonical_json(&self) -> Result<Vec<u8>, ProtocolCodecError> {
         self.validate()?;
         let wire = PromptRealizationWireV1 {
@@ -197,6 +223,45 @@ impl PromptRealizationV1 {
         }
         Ok(())
     }
+}
+
+pub(crate) fn validate_factor_semantics(
+    factor: &PromptFactor,
+) -> Result<(), ProtocolCodecError> {
+    validate_factor_fields(
+        &factor.semantic_purpose,
+        &factor.authority_class,
+        &factor.eligible_objective_dimensions,
+    )
+}
+
+fn validate_factor_fields(
+    semantic_purpose: &str,
+    authority_class: &str,
+    eligible_objective_dimensions: &[StableId],
+) -> Result<(), ProtocolCodecError> {
+    if semantic_purpose.is_empty()
+        || semantic_purpose.len() > MAX_SEMANTIC_PURPOSE_BYTES
+        || !AUTHORITY_CLASSES.contains(&authority_class)
+    {
+        return Err(ProtocolCodecError::InvalidField);
+    }
+    if eligible_objective_dimensions
+        .windows(2)
+        .any(|window| window[0] >= window[1])
+    {
+        return Err(ProtocolCodecError::InvalidField);
+    }
+    let dimensions = eligible_objective_dimensions
+        .iter()
+        .map(ToString::to_string)
+        .collect::<Vec<_>>();
+    let encoded =
+        serde_json::to_vec(&dimensions).map_err(|_| ProtocolCodecError::InvalidJson)?;
+    if encoded.len() > MAX_ELIGIBLE_DIMENSIONS_BYTES {
+        return Err(ProtocolCodecError::InvalidField);
+    }
+    Ok(())
 }
 
 fn ensure_protocol_size(bytes: &[u8]) -> Result<(), ProtocolCodecError> {
@@ -258,6 +323,7 @@ pub enum ProtocolCodecError {
     NonCanonicalJson,
     InvalidField,
     PayloadTooLarge,
+    MissingAuthoritativeLineage,
 }
 
 impl fmt::Display for ProtocolCodecError {
@@ -285,7 +351,7 @@ mod tests {
         let value = PromptFactorV1 {
             factor_id: id("factor:1"),
             semantic_purpose: "verify before mutating".to_owned(),
-            authority_class: "developer_policy".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
             eligible_objective_dimensions: vec![id("dimension:truth")],
             lifecycle: Lifecycle::Admitted,
             revision: 7,
