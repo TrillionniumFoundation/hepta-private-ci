@@ -16,6 +16,7 @@ use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceDispositionV1;
 use codex_hepta_evidence::EvidenceError;
 use codex_hepta_evidence::EvidenceExternalCheckpointV1;
+use codex_hepta_evidence::EvidenceId;
 use codex_hepta_evidence::EvidenceIssuerAuthorityV1;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
 use codex_hepta_evidence::EvidenceReferenceV1;
@@ -117,7 +118,7 @@ impl GovernanceState {
         &self,
         signed: &SignedQualificationEvidenceEnvelopeV1,
         issuer: &AuthenticatedEvidenceIssuerV1,
-    ) -> Result<AppendDisposition, EvidenceError> {
+    ) -> Result<EvidenceId, EvidenceError> {
         self.qualification_store()?.append_receipt(signed, issuer).await
     }
 
