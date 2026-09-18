@@ -262,13 +262,13 @@ fn product_objective_is_one_durable_replayable_run_start() {
         bindings("run-start-record-1", "run-1", Digest32::ZERO),
     )
     .expect("prepare product run");
-    let ProductionObjectiveDispositionV1::Published(envelope) = result else {
+    let ProductionObjectiveDispositionV1::Published(receipt) = result else {
         panic!("expected published run")
     };
-    envelope.validate().expect("valid host envelope");
+    receipt.validate().expect("valid product receipt");
     assert_eq!(ledger.records().expect("records").len(), 1);
-    let chain_digest = envelope.durable_append.chain_digest;
-    assert_eq!(envelope.durable_append.disposition, AppendDisposition::Appended);
+    let chain_digest = receipt.durable_append.chain_digest;
+    assert_eq!(receipt.durable_append.disposition, AppendDisposition::Appended);
     drop(ledger);
 
     let file = OpenOptions::new()
@@ -294,7 +294,7 @@ fn product_objective_is_one_durable_replayable_run_start() {
     assert_eq!(publication.run_start.run_id, id("run-1"));
     assert_eq!(
         publication.compile.objective.semantic_digest,
-        envelope.objective.objective.semantic_digest
+        receipt.objective.objective.semantic_digest
     );
     publication
         .run_start
@@ -396,10 +396,10 @@ fn product_objective_named_host_measurement_receipt() {
             ),
         )
         .expect("measurement run");
-        let ProductionObjectiveDispositionV1::Published(envelope) = result else {
+        let ProductionObjectiveDispositionV1::Published(receipt) = result else {
             panic!("measurement must publish");
         };
-        predecessor = envelope.durable_append.chain_digest;
+        predecessor = receipt.durable_append.chain_digest;
         micros.push(started.elapsed().as_micros());
     }
     micros.sort_unstable();
