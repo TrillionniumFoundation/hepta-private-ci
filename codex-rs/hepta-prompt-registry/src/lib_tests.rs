@@ -327,3 +327,58 @@ fn verified_admission_cannot_be_used_after_expiry() {
         Some(Lifecycle::Draft)
     );
 }
+
+
+#[test]
+fn verified_admission_rejects_clock_rollback_between_verify_and_commit() {
+    let mut registry = registry();
+    let value = factor(FactorSource::GovernedInternal);
+    registry
+        .register_factor(value.clone())
+        .unwrap_or_else(|error| panic!("register factor: {error}"));
+
+    let signing_key = SigningKey::from_bytes(&[9; 32]);
+    let authority = AdmissionAuthority::new(
+        id("review-authority:3"),
+        signing_key.verifying_key().to_bytes(),
+    )
+    .unwrap_or_else(|error| panic!("authority: {error}"));
+    let grant = AdmissionGrantV1 {
+        schema_version: 1,
+        signer_id: "review-authority:3".to_owned(),
+        grant_id: "admission:3".to_owned(),
+        binding: AdmissionBindingV1 {
+            factor_id: value.factor_id.to_string(),
+            factor_content_sha256: value.content_digest.into_array(),
+            reviewer_id: "reviewer:3".to_owned(),
+            reviewed_scope_sha256: digest(b"scope:3").into_array(),
+            evidence_sha256: digest(b"evidence:3").into_array(),
+        },
+        not_before_unix_ms: 10,
+        expires_at_unix_ms: 100,
+    };
+    let signature = signing_key
+        .sign(
+            &grant
+                .signing_bytes()
+                .unwrap_or_else(|error| panic!("signing bytes: {error}")),
+        )
+        .to_bytes()
+        .to_vec();
+    let verified = authority
+        .verify(
+            &SignedAdmissionGrantV1 { grant, signature },
+            &value,
+            digest(b"scope:3"),
+            20,
+        )
+        .unwrap_or_else(|error| panic!("verify admission: {error}"));
+    assert_eq!(
+        registry.admit_factor_verified(verified, 19),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(
+        registry.factor(&value.factor_id).map(|factor| factor.lifecycle),
+        Some(Lifecycle::Draft)
+    );
+}
