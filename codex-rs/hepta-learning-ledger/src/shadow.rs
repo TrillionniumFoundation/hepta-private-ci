@@ -25,7 +25,7 @@ use crate::LedgerError;
 use crate::LedgerEvent;
 
 const ABSTAIN_ID: &str = "abstain";
-const MAX_CANDIDATES_WITH_ABSTAIN: usize = 128;
+const MAX_CANDIDATES_WITH_ABSTAIN: usize = 513;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ShadowDecisionRequest {
@@ -71,7 +71,7 @@ impl fmt::Display for ShadowDecisionError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::CandidateLimitExceeded => {
-                formatter.write_str("shadow candidate set plus abstain exceeds 128 entries")
+                formatter.write_str("shadow candidate set plus abstain exceeds 513 entries")
             }
             Self::CandidateSetDigestMismatch { expected, provided } => write!(
                 formatter,
