@@ -29,7 +29,9 @@ use super::{CrossModalBindingV1, ModalitySpanRefV1};
     deny_unknown_fields
 )]
 pub enum MemoryScopeV1 {
+    #[non_exhaustive]
     AgentPrivate { agent_id: String },
+    #[non_exhaustive]
     WorkspacePrivate {
         agent_id: String,
         #[serde(with = "super::wire::digest")]
@@ -231,7 +233,9 @@ impl ValidateHnmfV1 for RetentionPolicyV1 {
 )]
 pub enum MemoryLifecycleV1 {
     Active,
+    #[non_exhaustive]
     Superseded { by_event_id: EventIdV1 },
+    #[non_exhaustive]
     Tombstoned {
         #[serde(with = "super::wire::digest")]
         reason_sha256: Digest32,
@@ -239,6 +243,21 @@ pub enum MemoryLifecycleV1 {
 }
 
 impl MemoryLifecycleV1 {
+    pub fn superseded(
+        event_id: EventIdV1,
+        by_event_id: EventIdV1,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::Superseded { by_event_id };
+        value.validate_for(event_id)?;
+        Ok(value)
+    }
+
+    pub fn tombstoned(reason_sha256: Digest32) -> Result<Self, HnmfContractError> {
+        let value = Self::Tombstoned { reason_sha256 };
+        value.validate_for(0)?;
+        Ok(value)
+    }
+
     fn validate_for(&self, event_id: EventIdV1) -> Result<(), HnmfContractError> {
         match self {
             Self::Active => Ok(()),
