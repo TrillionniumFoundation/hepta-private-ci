@@ -34,6 +34,8 @@ pub use contracts_v1::LegalActionCandidateV1;
 
 mod composition_v3;
 mod composition_v3_control;
+mod composition_v3_engine;
+mod composition_v3_runtime;
 mod composition_v3_validate;
 
 pub use composition_v3::CompositionDispositionV3;
@@ -52,6 +54,7 @@ pub use composition_v3_control::CompositionCancellationV3;
 pub use composition_v3_control::CompositionClockV3;
 pub use composition_v3_control::NeverCancelledV3;
 pub use composition_v3_control::SystemCompositionClockV3;
+pub use composition_v3_runtime::run_composition_v3;
 
 mod pipeline_v2;
 
