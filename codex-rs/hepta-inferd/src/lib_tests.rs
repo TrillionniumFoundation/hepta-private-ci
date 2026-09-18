@@ -131,10 +131,7 @@ fn scheduler_rejects_exhausted_or_model_mismatched_workers() {
     wrong_model.model_digest = digest(b"other-model");
 
     assert_eq!(
-        schedule(
-            1_000,
-            schedule_request(vec![exhausted, wrong_model]),
-        ),
+        schedule(1_000, schedule_request(vec![exhausted, wrong_model])),
         Err(Error::NoFeasibleWorker)
     );
 }
@@ -143,10 +140,7 @@ fn scheduler_rejects_exhausted_or_model_mismatched_workers() {
 fn scheduler_rejects_duplicate_worker_identity() {
     let worker = worker("worker:duplicate", 0, 4_096, 1);
     assert_eq!(
-        schedule(
-            1_000,
-            schedule_request(vec![worker.clone(), worker]),
-        ),
+        schedule(1_000, schedule_request(vec![worker.clone(), worker])),
         Err(Error::DuplicateWorker)
     );
 }
@@ -154,13 +148,13 @@ fn scheduler_rejects_duplicate_worker_identity() {
 #[test]
 fn eligible_snapshot_and_selection_digest_bind_capacity_and_lease() {
     let base = worker("worker:stable", 0, 1_024, 1);
-    let first = schedule(1_000, schedule_request(vec![base.clone()]))
-        .expect("first assignment");
+    let first =
+        schedule(1_000, schedule_request(vec![base.clone()])).expect("first assignment");
 
     let mut changed_capacity = base.clone();
     changed_capacity.available_tokens = 2_048;
-    let capacity = schedule(1_000, schedule_request(vec![changed_capacity]))
-        .expect("capacity assignment");
+    let capacity =
+        schedule(1_000, schedule_request(vec![changed_capacity])).expect("capacity assignment");
     assert_ne!(
         first.eligible_snapshot_digest,
         capacity.eligible_snapshot_digest
@@ -169,8 +163,8 @@ fn eligible_snapshot_and_selection_digest_bind_capacity_and_lease() {
 
     let mut changed_lease = base;
     changed_lease.lease_digest = digest(b"lease:changed");
-    let lease = schedule(1_000, schedule_request(vec![changed_lease]))
-        .expect("lease assignment");
+    let lease =
+        schedule(1_000, schedule_request(vec![changed_lease])).expect("lease assignment");
     assert_ne!(first.eligible_snapshot_digest, lease.eligible_snapshot_digest);
     assert_ne!(first.selection_digest, lease.selection_digest);
 }
