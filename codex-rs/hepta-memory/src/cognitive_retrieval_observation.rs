@@ -44,6 +44,7 @@ pub struct ObservedRetrievalCandidate {
     pub revalidation: MemoryRevalidationBinding,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
+    pub channel_ranks: Vec<(RetrievalChannel, u32)>,
 }
 
 /// Created only by the owner read API from one SQLite read transaction.
@@ -118,6 +119,7 @@ impl CognitiveStore {
                 revalidation: candidate.revalidation.clone(),
                 reciprocal_rank_score: candidate.reciprocal_rank_score,
                 channels: candidate.channels.clone(),
+                channel_ranks: candidate.channel_ranks.clone(),
             })
             .collect::<Vec<_>>();
         observed.sort_by(|left, right| {
@@ -261,6 +263,7 @@ impl CognitiveStore {
                 memory: explanation.memory.clone(),
                 reciprocal_rank_score: rank.score,
                 channels: rank.channels.into_iter().collect(),
+                channel_ranks: rank.channel_ranks.into_iter().collect(),
                 revalidation: binding_from_explanation(&explanation),
             });
         }
