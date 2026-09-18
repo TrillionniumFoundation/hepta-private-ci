@@ -47,9 +47,12 @@ fn terminal(status: TurnStatus, error: Option<TurnError>) -> TurnCompletedNotifi
 #[test]
 fn exact_completed_observation_maps_without_authority() {
     let intent = intent();
-    let observation =
-        AppServerObservation::from_turn_completed(&intent, &id("turn:1"), &terminal(TurnStatus::Completed, None))
-            .unwrap();
+    let observation = AppServerObservation::from_turn_completed(
+        &intent,
+        &id("turn:1"),
+        &terminal(TurnStatus::Completed, None),
+    )
+    .unwrap();
     let receipt = adapt(1_000, intent, Some(observation)).unwrap();
     assert_eq!(receipt.status, AdapterStatus::Succeeded);
     assert_eq!(receipt.replay, ReplayDisposition::NotRetryable);
@@ -91,10 +94,7 @@ fn failed_and_interrupted_are_never_success() {
     .unwrap();
     let interrupted_receipt = adapt(1_000, interrupted_intent, Some(interrupted)).unwrap();
     assert_eq!(interrupted_receipt.status, AdapterStatus::Interrupted);
-    assert_eq!(
-        interrupted_receipt.replay,
-        ReplayDisposition::NotRetryable
-    );
+    assert_eq!(interrupted_receipt.replay, ReplayDisposition::NotRetryable);
 }
 
 #[test]
@@ -151,20 +151,13 @@ fn timeout_and_transport_loss_require_reconciliation() {
     let timeout_observation = AppServerObservation::timed_out(&timeout_intent).unwrap();
     let timeout_receipt = adapt(1_000, timeout_intent, Some(timeout_observation)).unwrap();
     assert_eq!(timeout_receipt.status, AdapterStatus::TimedOut);
-    assert_eq!(
-        timeout_receipt.replay,
-        ReplayDisposition::ReconcileOnly
-    );
+    assert_eq!(timeout_receipt.replay, ReplayDisposition::ReconcileOnly);
 
     let transport_intent = intent();
     let transport_observation = AppServerObservation::transport_lost(&transport_intent).unwrap();
-    let transport_receipt =
-        adapt(1_000, transport_intent, Some(transport_observation)).unwrap();
+    let transport_receipt = adapt(1_000, transport_intent, Some(transport_observation)).unwrap();
     assert_eq!(transport_receipt.status, AdapterStatus::Unavailable);
-    assert_eq!(
-        transport_receipt.replay,
-        ReplayDisposition::ReconcileOnly
-    );
+    assert_eq!(transport_receipt.replay, ReplayDisposition::ReconcileOnly);
 }
 
 #[test]
