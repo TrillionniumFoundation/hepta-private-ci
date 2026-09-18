@@ -6,8 +6,6 @@
 //! claim the run projection for the narrow purpose of writing
 //! `Indeterminate -> Reconcile`. No provider dispatch occurs on this path.
 
-use sqlx::Row;
-
 use crate::AutomationOccurrenceTerminalState;
 use crate::AutomationOccurrenceWork;
 use crate::AutomationStore;
