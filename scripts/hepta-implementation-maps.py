@@ -126,22 +126,34 @@ def parse_entrypoints(module: str):
     if not match:
         return []
     entries = []
-    for name, source in re.findall(r"`([^`]+)`\s+in\s+\[([^]]+)\]", match.group(1)):
-        source = source.split(")", 1)[0]
+    # One source clause may name several entrypoints, for example:
+    # `build_qualified_candidate` and `prove_compaction` in [qualified.rs](...).
+    # Parse the source once, then bind every backticked symbol before that
+    # source. Splitting on semicolons preserves the older one-symbol-per-source
+    # dossier spelling as well.
+    for clause in match.group(1).split(";"):
+        source_match = re.search(r"\s+in\s+\[([^]]+)\]", clause)
+        if not source_match:
+            continue
+        source = source_match.group(1)
         if source.startswith("../../../"):
             source = source[9:]
         source_path = ROOT / source
-        entries.append(
-            {
-                "operation": re.sub(r"[^a-zA-Z0-9]+", "_", name).strip("_").lower(),
-                "nativeSymbol": name,
-                "sourcePath": source,
-                "state": "source_implemented_not_product_composed",
-                "authority": "none",
-                "tests": discover_tests_for_source(source),
-                "sourcePathExists": source_path.is_file(),
-            }
-        )
+        names = re.findall(r"`([^`]+)`", clause[: source_match.start()])
+        for name in names:
+            entries.append(
+                {
+                    "operation": re.sub(r"[^a-zA-Z0-9]+", "_", name)
+                    .strip("_")
+                    .lower(),
+                    "nativeSymbol": name,
+                    "sourcePath": source,
+                    "state": "source_implemented_not_product_composed",
+                    "authority": "none",
+                    "tests": discover_tests_for_source(source),
+                    "sourcePathExists": source_path.is_file(),
+                }
+            )
     return entries
 
 
