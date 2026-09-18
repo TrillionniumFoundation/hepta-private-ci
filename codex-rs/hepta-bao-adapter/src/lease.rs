@@ -73,7 +73,7 @@ pub struct SecretLeaseLookupRequest {
 }
 
 /// Provider lease identifier retained only by the trusted host boundary.
-pub struct SecretLeaseHandle(Zeroizing<String>);
+pub struct SecretLeaseHandle(pub(crate) Zeroizing<String>);
 
 impl SecretLeaseHandle {
     pub fn lease_id_sha256(&self) -> [u8; 32] {
