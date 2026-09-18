@@ -182,9 +182,9 @@ impl Browser {
         }
         let navigation_epoch_before = self.navigation_epoch.load(Ordering::Acquire);
 
-        // Every admitted observation advances the generation. This makes all
-        // selectors/handles from an older observation stale even when the URL
-        // did not change but page script mutated the DOM.
+        // Every admitted observation advances the host-visible generation.
+        // Worker admission additionally revalidates the exact document,
+        // navigation epoch and actionable surface before any later effect.
         self.page_generation = self
             .page_generation
             .checked_add(1)

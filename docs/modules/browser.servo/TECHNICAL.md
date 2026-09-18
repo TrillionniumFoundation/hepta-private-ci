@@ -101,7 +101,7 @@ New effect algorithm:
 7. Browser writes exactly one request to the current private worker pipe;
 8. the Servo worker dequeues it, revalidates page generation, document digest, navigation epoch and actionable-surface digest, reserves the operation, and emits `dispatch_boundary` immediately before execution;
 9. Browser forwards that boundary and Agentd releases final-use authority; a proven worker pre-effect rejection instead emits `dispatch_rejected` and is persisted as terminal failed/no-dispatch;
-9. terminal/unknown worker/business outcome is persisted and reconciled separately.
+10. terminal/unknown worker/business outcome is persisted and reconciled separately.
 
 An already-dispatched identity never re-enters final-use authority and never redispatches. Reconciliation remains available after the old grant/deadline expires because it observes prior work rather than authorizing new work.
 
