@@ -8,6 +8,7 @@ use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
+use super::NativeFinalUseAdmission;
 use super::NativeOwnerAuthority;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
@@ -15,10 +16,16 @@ use super::Result;
 
 /// Explicit local capacity policy; the first request pins the journal's limit.
 /// This limits admitted runs, not provider tokens, billing or device memory.
-pub struct NativeAdmission {
+pub struct NativeLocalSlotAdmission {
     pub request_id: String,
     pub maximum_in_flight: usize,
 }
+
+/// Compatibility name for callers compiled against the earlier local-slot API.
+/// New production code should use NativeLocalSlotAdmission so it cannot be
+/// confused with the target economic/resource reservation contract.
+#[doc(hidden)]
+pub type NativeAdmission = NativeLocalSlotAdmission;
 
 impl AppServerModelDriver {
     /// Reserves before any provider call, journals dispatch before `turn/start`,
@@ -27,7 +34,8 @@ impl AppServerModelDriver {
     pub async fn run(
         &self,
         control: &mut DurableInferenceControl,
-        admission: NativeAdmission,
+        admission: NativeLocalSlotAdmission,
+        final_use: Option<NativeFinalUseAdmission<'_>>,
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
@@ -70,25 +78,43 @@ impl AppServerModelDriver {
                 model_provider: dispatch.model_provider,
                 status: NativeRunStatus::Indeterminate,
                 output: String::new(),
+                output_digest: Some(digest(b"")),
+                output_retained: true,
                 observed_output_tokens: None,
                 terminal_observed: false,
                 owner_authority: NativeOwnerAuthority::Unverified,
+                final_use_authorized: dispatch.final_use_witness.is_some(),
                 stop_reason: Some(
                     "reopened after possible dispatch; reservation held, no replay".to_string(),
                 ),
             };
-            control.settle_native(&record.request.request_id, output.clone())?;
-            return Ok(output);
+            let settled = control.settle_native(&record.request.request_id, output)?;
+            return settled
+                .observation
+                .ok_or_else(|| "missing durable reopened observation".into());
         }
-        let request_id = record.request.request_id;
+        let final_use = final_use.ok_or(
+            "kernel final-use authority and an independently signed grant are required before provider dispatch",
+        )?;
+        let request = record.request;
+        let request_id = request.request_id.clone();
         match self
-            .run_once(control, &request_id, prompt, context_query, cancellation)
+            .run_once(
+                control,
+                &request,
+                &final_use,
+                prompt,
+                context_query,
+                cancellation,
+            )
             .await
         {
-            Ok(output) => {
+            Ok(mut output) => {
                 if !output.terminal_observed && cancellation.is_cancelled() {
                     control.cancel_native(&request_id)?;
                 }
+                output.output_digest = Some(digest(output.output.as_bytes()));
+                output.output_retained = true;
                 control.settle_native(&request_id, output.clone())?;
                 Ok(output)
             }
