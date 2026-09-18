@@ -18,7 +18,10 @@ use codex_hepta_intelligence::{
     PlasticityAnchorCommitterV1, propose_authenticated_parameter_plasticity_v1,
 };
 use codex_hepta_learning_artifacts::{ArtifactKind, ArtifactManifest, ArtifactRegistry};
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::{
+    DatasetReceiptError, DatasetSnapshotReceiptV3, LearningEvidenceVerifierV1,
+    verify_dataset_snapshot_receipt_v3,
+};
 use codex_hepta_types::{Digest32, Generation, StableId};
 
 const ANCHOR_MAGIC: &[u8; 8] = b"HPAF0001";
@@ -213,6 +216,8 @@ pub trait PlasticityOwnerEvidenceResolverV1 {
 #[derive(Debug)]
 pub enum AgentdPlasticityHostErrorV1 {
     Artifact(&'static str),
+    Dataset(DatasetReceiptError),
+    DatasetBinding(&'static str),
     Evidence(PlasticityOwnerEvidenceErrorV1),
     EvidencePolicy(PlasticityOwnerEvidencePolicyErrorV1),
     EvidenceFrontierMismatch,
@@ -224,6 +229,11 @@ impl fmt::Display for AgentdPlasticityHostErrorV1 {
     }
 }
 impl StdError for AgentdPlasticityHostErrorV1 {}
+impl From<DatasetReceiptError> for AgentdPlasticityHostErrorV1 {
+    fn from(value: DatasetReceiptError) -> Self {
+        Self::Dataset(value)
+    }
+}
 impl From<PlasticityOwnerEvidenceErrorV1> for AgentdPlasticityHostErrorV1 {
     fn from(value: PlasticityOwnerEvidenceErrorV1) -> Self {
         Self::Evidence(value)
@@ -265,12 +275,14 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
     pub fn propose_parameter_plasticity(
         &self,
         mut request: ParameterPlasticityProductRequestV1,
+        dataset: &DatasetSnapshotReceiptV3,
         verifier: &LearningEvidenceVerifierV1,
         writer: &mut AnchoredPlasticityWriterV1,
         anchor_committer: &mut impl PlasticityAnchorCommitterV1,
         now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
         self.verify_artifact_frontier(&request)?;
+        self.verify_dataset_receipt(&request, dataset, now)?;
         request.host_evidence_verification_digest = self.verify_owner_evidence(&request, now)?;
         propose_authenticated_parameter_plasticity_v1(
             request,
@@ -280,6 +292,23 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
             now,
         )
         .map_err(Into::into)
+    }
+
+    fn verify_dataset_receipt(
+        &self,
+        request: &ParameterPlasticityProductRequestV1,
+        dataset: &DatasetSnapshotReceiptV3,
+        now: u64,
+    ) -> Result<(), AgentdPlasticityHostErrorV1> {
+        verify_dataset_snapshot_receipt_v3(dataset, now)?;
+        if dataset.snapshot.dataset_digest != request.admission.dataset_digest
+            || dataset.snapshot.objective_digest != request.admission.objective_digest
+        {
+            return Err(AgentdPlasticityHostErrorV1::DatasetBinding(
+                "dataset snapshot",
+            ));
+        }
+        Ok(())
     }
 
     fn verify_artifact_frontier(
@@ -555,16 +584,21 @@ impl AgentdPlasticityAnchorFenceStoreV1 {
         };
         let mut offset = ANCHOR_HEADER_BYTES as u64;
         let length = file.metadata()?.len();
-        while offset < length {
-            if length - offset < ANCHOR_FRAME_BYTES as u64 {
-                return Err(AgentdPlasticityAnchorStoreErrorV1::Corrupt);
-            }
+        while length - offset >= ANCHOR_FRAME_BYTES as u64 {
             file.seek(SeekFrom::Start(offset))?;
             let mut frame = [0_u8; ANCHOR_FRAME_BYTES];
             file.read_exact(&mut frame)?;
             apply_anchor_frame(&frame, &mut state)?;
             offset += ANCHOR_FRAME_BYTES as u64;
         }
+        // A crash may leave at most one partial append after the last fully
+        // validated frame. Repair only that incomplete tail; a complete invalid
+        // frame remains corruption and is never silently discarded.
+        if offset != length {
+            file.set_len(offset)?;
+            file.sync_all()?;
+        }
+        file.sync_data()?;
         Ok(Self { file, scope, state })
     }
 
