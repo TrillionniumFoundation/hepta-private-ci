@@ -8,17 +8,20 @@ promote, or release anything.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import re
 import subprocess
+import tempfile
+import time
 
-from hepta_engineering_control import (
-    IntegrationEvidence,
-    WorkPackage,
-    decide_integration,
-    schedule,
-)
+from hepta_engineering_control import IntegrationEvidence, decide_integration
+
+from .control_plane import DENIED_AUTHORITIES
+from .control_plane import EngineeringStore
+from .control_plane import WorkEnvelope
+from .control_plane import WorkPackage
 
 _SHA1 = re.compile(r"^[0-9a-f]{40}$")
 
@@ -56,30 +59,82 @@ def build_product_receipt(
         _git(repository, "rev-parse", "HEAD^{tree}"), "head_tree"
     )
 
-    scheduling = schedule(
-        [
-            WorkPackage(
-                0,
-                "control.engineering.ci-product-gate",
-                (),
-                ("tools/hepta-engineering-control/**",),
-            )
-        ],
-        completed=(),
-        active_leases=(),
+    if mode == "source-head":
+        if head != source_sha:
+            raise ValueError("source_head_mismatch")
+        source_tree = head_tree
+        parents: tuple[str, ...] = ()
+    elif mode == "base-merge":
+        if base_sha is None:
+            raise ValueError("missing_base_sha")
+        base_sha = _checked_sha(base_sha, "base_sha")
+        parents = tuple(_git(repository, "show", "-s", "--format=%P", "HEAD").split())
+        if parents != (base_sha, source_sha):
+            raise ValueError("ordered_merge_parent_mismatch")
+        source_tree = _checked_sha(
+            _git(repository, "rev-parse", f"{source_sha}^{{tree}}"), "source_tree"
+        )
+    else:
+        raise ValueError("invalid_mode")
+
+    now_ns = time.time_ns()
+    objective_digest = hashlib.sha256(
+        b"control.engineering.ci-product-gate"
+    ).hexdigest()
+    contract_digest = hashlib.sha256(
+        b"hepta.control-engineering-product-execution.v1"
+    ).hexdigest()
+    envelope = WorkEnvelope(
+        envelope_id=f"ci-{source_sha[:24]}",
+        source_commit=source_sha,
+        source_tree=source_tree,
+        objective_digest=objective_digest,
+        contract_digest=contract_digest,
+        owner="github-actions",
+        allowed_paths=("tools/hepta-engineering-control/**",),
+        denied_authorities=tuple(sorted(DENIED_AUTHORITIES)),
         maximum_assignments=1,
+        expires_unix_ns=now_ns + 300_000_000_000,
     )
+    package = WorkPackage(
+        0,
+        "control.engineering.ci-product-gate",
+        (),
+        ("tools/hepta-engineering-control/**",),
+    )
+    with tempfile.TemporaryDirectory(prefix="hepta-engineering-product-") as directory:
+        with EngineeringStore(Path(directory) / "engineering.sqlite3") as store:
+            store.issue_work_envelope(envelope, now_ns=now_ns)
+            scheduling = store.schedule_ready_packages(
+                envelope.envelope_id,
+                (package,),
+                (),
+                generation_id=f"ci-generation-{head[:24]}",
+                now_ns=now_ns,
+            )
+            frontier = store.assignment_frontier(scheduling.generation_id)
     if scheduling.assigned != ("control.engineering.ci-product-gate",):
         raise RuntimeError("product_scheduler_rejected_own_bounded_package")
-    if scheduling.runtime_authority or scheduling.merge_authority:
+    if any(
+        (
+            scheduling.runtime_authority,
+            scheduling.merge_authority,
+            scheduling.activation_authority,
+            scheduling.promotion_authority,
+            scheduling.release_authority,
+        )
+    ):
         raise RuntimeError("product_scheduler_authority_widened")
 
     receipt: dict[str, object] = {
         "schema": "hepta.control-engineering-product-execution.v1",
         "mode": mode,
         "sourceSha": source_sha,
+        "sourceTree": source_tree,
         "testedSha": head,
         "testedTree": head_tree,
+        "durableGenerationId": scheduling.generation_id,
+        "assignmentFrontierDigest": frontier["frontierDigest"],
         "schedulerAssigned": list(scheduling.assigned),
         "eligibleForIndependentReview": False,
         "runtimeAuthority": False,
@@ -89,21 +144,7 @@ def build_product_receipt(
     }
 
     if mode == "source-head":
-        if head != source_sha:
-            raise ValueError("source_head_mismatch")
         return receipt
-    if mode != "base-merge":
-        raise ValueError("invalid_mode")
-    if base_sha is None:
-        raise ValueError("missing_base_sha")
-    base_sha = _checked_sha(base_sha, "base_sha")
-    parents = tuple(_git(repository, "show", "-s", "--format=%P", "HEAD").split())
-    if parents != (base_sha, source_sha):
-        raise ValueError("ordered_merge_parent_mismatch")
-
-    source_tree = _checked_sha(
-        _git(repository, "rev-parse", f"{source_sha}^{{tree}}"), "source_tree"
-    )
     evidence = IntegrationEvidence(
         candidate_head=source_sha,
         exact_head=source_sha,
@@ -143,7 +184,6 @@ def build_product_receipt(
     receipt.update(
         {
             "baseSha": base_sha,
-            "sourceTree": source_tree,
             "mergeParents": list(parents),
             "eligibleForIndependentReview": True,
         }
