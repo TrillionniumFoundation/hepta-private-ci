@@ -1,4 +1,4 @@
--- Canonical engineering owner schema, version 5. Applied in one transaction.
+-- Canonical engineering owner schema, version 6. Applied in one transaction.
 
 CREATE TABLE IF NOT EXISTS work_envelopes(
   envelope_id TEXT PRIMARY KEY,
@@ -38,6 +38,16 @@ CREATE TABLE IF NOT EXISTS assignment_generations(
   blocked_json BLOB NOT NULL,
   created_unix_ns INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS orchestration_generations(
+  generation_id TEXT PRIMARY KEY,
+  semantic_digest TEXT NOT NULL,
+  plan_json BLOB NOT NULL,
+  created_unix_ns INTEGER NOT NULL,
+  FOREIGN KEY(generation_id)
+    REFERENCES assignment_generations(generation_id)
+    DEFERRABLE INITIALLY DEFERRED
+);
+
 CREATE TABLE IF NOT EXISTS integration_decisions(
   decision_id TEXT PRIMARY KEY,
   evidence_digest TEXT NOT NULL,
