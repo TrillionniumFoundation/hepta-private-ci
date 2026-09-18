@@ -196,7 +196,8 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_receipt_is_context_bound",
-        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_rejects_context_substitution"
+        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_rejects_context_substitution",
+        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_set_includes_mutation_policy_and_canonical_kinds"
       ],
       "sourcePathExists": true,
       "designOperation": "agentd_owner_evidence_resolution",
