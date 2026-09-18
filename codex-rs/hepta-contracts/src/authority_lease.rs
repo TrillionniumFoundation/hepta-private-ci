@@ -514,23 +514,24 @@ impl AuthorityLeaseRegistry {
         }
         let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let mut state = self.lock_state()?;
-        let available_retired =
-            MAX_RETIRED_AUTHORITY_LEASE_IDS.saturating_sub(state.retired_revisions.len());
-        if available_retired == 0 {
-            return Err(AuthorityLeaseError::CapacityExceeded);
-        }
-        let expired: Vec<String> = state
+        let candidates: Vec<String> = state
             .leases
             .iter()
             .filter(|(id, lease)| {
                 lease.expires_at_unix_ms <= now_unix_ms && !state.revocations.contains_key(*id)
             })
-            .take(max_to_prune.min(available_retired))
+            .take(max_to_prune)
             .map(|(id, _)| id.clone())
             .collect();
-        if expired.is_empty() {
+        if candidates.is_empty() {
             return Ok(0);
         }
+        let available_retired =
+            MAX_RETIRED_AUTHORITY_LEASE_IDS.saturating_sub(state.retired_revisions.len());
+        if available_retired == 0 {
+            return Err(AuthorityLeaseError::CapacityExceeded);
+        }
+        let expired: Vec<String> = candidates.into_iter().take(available_retired).collect();
         let mut next = state.clone();
         for lease_id in &expired {
             let lease = next
