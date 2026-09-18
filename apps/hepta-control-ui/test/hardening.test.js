@@ -247,3 +247,132 @@ test("pending store rejects tampered schema instead of silently discarding it", 
   const store = new LocalStoragePendingStore({ storage, key: "x" });
   assert.throws(() => store.load(), (error) => error.code === ERROR_CODES.PERSISTENCE_UNAVAILABLE);
 });
+
+test("snapshot and module accessor ingress fails without invoking getters", async () => {
+  const transport = {
+    async connect(input) {
+      return {
+        authenticated: true,
+        sessionId: "session.1",
+        connectionGeneration: 1,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request() { assert.fail("mutation should not run"); },
+    async reconcile() { return null; },
+    async close() {},
+  };
+  const client = new RuntimeClient({
+    transport,
+    setTimer: frozenTimer,
+    clearTimer: () => {},
+  });
+  await client.connect({ endpointId: "runtime.1", protocolVersion: 1, manifestDigest: D1 });
+
+  let snapshotGetterCalls = 0;
+  const hostileSnapshot = {
+    sessionId: "session.1",
+    connectionGeneration: 1,
+    revision: 1,
+    digest: D2,
+    modules: [],
+  };
+  Object.defineProperty(hostileSnapshot, "generation", {
+    enumerable: true,
+    get() {
+      snapshotGetterCalls += 1;
+      return 1;
+    },
+  });
+  assert.throws(
+    () => client.applySnapshot(hostileSnapshot),
+    (error) => error.code === ERROR_CODES.INVALID_INPUT,
+  );
+  assert.equal(snapshotGetterCalls, 0);
+
+  let moduleGetterCalls = 0;
+  const hostileModule = {
+    moduleId: "runtime.agentd",
+    revision: 1,
+    digest: D3,
+  };
+  Object.defineProperty(hostileModule, "status", {
+    enumerable: true,
+    get() {
+      moduleGetterCalls += 1;
+      return "ready";
+    },
+  });
+  assert.throws(
+    () =>
+      client.applySnapshot({
+        sessionId: "session.1",
+        connectionGeneration: 1,
+        generation: 1,
+        revision: 1,
+        digest: D2,
+        modules: [hostileModule],
+      }),
+    (error) => error.code === ERROR_CODES.INVALID_INPUT,
+  );
+  assert.equal(moduleGetterCalls, 0);
+});
+
+test("confirmation is invalidated when host blocks mutation before submit", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  let submissions = 0;
+  let releaseConfirm;
+  const confirmation = new Promise((resolve) => { releaseConfirm = resolve; });
+  const client = {
+    readView: () => sampleView(),
+    async submitRequest() {
+      submissions += 1;
+      return { operationId: "operation.blocked", status: "pending" };
+    },
+    async requestStop() { assert.fail("stop should not run"); },
+  };
+  const app = new ControlPlaneApp({
+    root,
+    client,
+    operationIdFactory: () => "operation.blocked",
+    confirmAction: () => confirmation,
+  });
+  app.render();
+  const retry = allElements(root).find((e) => e.tagName === "button" && e.textContent.startsWith("Retry "));
+  retry.listeners.get("click")();
+  app.setMutationBlock("Network connectivity is unavailable.");
+  releaseConfirm(true);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(submissions, 0);
+  assert.match(
+    allElements(root).find((e) => e.attributes.get("role") === "alert")?.textContent ?? "",
+    /invalidated/,
+  );
+});
+
+test("cancelled confirmation restores focus after dialog focus displacement", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  const client = {
+    readView: () => sampleView(),
+    async submitRequest() { assert.fail("cancelled request must not submit"); },
+    async requestStop() { assert.fail("stop should not run"); },
+  };
+  const app = new ControlPlaneApp({
+    root,
+    client,
+    operationIdFactory: () => "operation.cancelled",
+    confirmAction: async () => {
+      document.activeElement = new FakeElement("dialog", document);
+      return false;
+    },
+  });
+  app.render();
+  const retry = allElements(root).find((e) => e.tagName === "button" && e.textContent.startsWith("Retry "));
+  retry.focus();
+  retry.listeners.get("click")();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(document.activeElement?.textContent, "Retry runtime.agentd");
+});
+
