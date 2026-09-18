@@ -269,7 +269,9 @@ impl AutomationStore {
         let run = self
             .taskflow_run(&occurrence.taskflow_run_id)
             .await?
-            .ok_or_else(|| TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
+            })?;
         if run.state == TaskFlowRunState::Queued {
             let payload: Option<String> = sqlx::query_scalar(
                 "SELECT payload_json FROM taskflow_events
@@ -286,8 +288,9 @@ impl AutomationStore {
                     "queued automation run lacks provider-absence evidence".to_string(),
                 ));
             };
-            let transition: TaskFlowTransition = serde_json::from_str(&payload)
-                .map_err(|_| TaskFlowError::Corrupt("provider-absence event payload".to_string()))?;
+            let transition: TaskFlowTransition = serde_json::from_str(&payload).map_err(|_| {
+                TaskFlowError::Corrupt("provider-absence event payload".to_string())
+            })?;
             if !matches!(transition, TaskFlowTransition::RequeueProvenAbsent { .. }) {
                 return Err(TaskFlowError::Corrupt(
                     "automation requeue command has the wrong transition".to_string(),
@@ -308,7 +311,9 @@ impl AutomationStore {
                 &fence,
             )
             .await?
-            .ok_or_else(|| TaskFlowError::Conflict("automation TaskFlow step is missing".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("automation TaskFlow step is missing".to_string())
+            })?;
         if step.state != TaskFlowStepState::Claimed {
             return Err(TaskFlowError::Conflict(
                 "provider absence can requeue only an undisposed claimed step".to_string(),
@@ -695,7 +700,9 @@ fn automation_fence(
         .checked_sub(1)
         .and_then(|base| base.checked_mul(TASKFLOW_ATTEMPT_GENERATION_STRIDE))
         .and_then(|base| base.checked_add(u64::from(step_attempt)))
-        .ok_or_else(|| TaskFlowError::Invalid("automation TaskFlow generation overflow".to_string()))?;
+        .ok_or_else(|| {
+            TaskFlowError::Invalid("automation TaskFlow generation overflow".to_string())
+        })?;
     TaskFlowFence::new(
         lease.task.owner_agent_id.clone(),
         format!("automation.scheduler:{}", lease.task.task_id),
