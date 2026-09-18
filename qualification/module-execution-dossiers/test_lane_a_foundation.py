@@ -182,11 +182,23 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertEqual(registry["schemaVersion"], 1)
         self.assertEqual(registry["lane"], "LANE-A-FOUNDATION")
         self.assertEqual(registry["authority"], "none")
+        protocol_modules = [row["module"] for row in registry["protocols"]]
+        self.assertEqual(set(protocol_modules), set(verify.EXPECTED_MODULES))
+        self.assertEqual(len(registry["protocols"]), 8)
+        wire_protocols = {
+            row["protocolId"]
+            for row in registry["protocols"]
+            if row["module"] == "platform.wire"
+        }
         self.assertEqual(
-            [row["module"] for row in registry["protocols"]],
-            verify.EXPECTED_MODULES,
+            wire_protocols,
+            {
+                "hepta.platform.wire.hpta-envelope.v1",
+                "hepta.platform.wire.hpta-envelope.v2",
+            },
         )
-        self.assertEqual(len(registry["protocols"]), 7)
+        for module in verify.EXPECTED_MODULES:
+            self.assertIn(module, protocol_modules)
         for row in registry["protocols"]:
             self.assertTrue(row["protocolId"].startswith("hepta."))
             self.assertTrue(row["source"])
