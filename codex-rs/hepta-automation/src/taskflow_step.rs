@@ -420,7 +420,16 @@ impl AutomationStore {
             attempt,
             &events,
         )?;
-        check_historical_fence(&run, &receipt.fence, fence)?;
+        if receipt.state == TaskFlowStepState::Reconciled {
+            // Recovery may legitimately re-fence a still-Running run projection
+            // after this immutable step has already reached its terminal
+            // reconciliation receipt. Historical terminal evidence remains
+            // readable only under the exact fence that authored the step; this
+            // does not authorize any new step mutation or provider dispatch.
+            check_step_fence(&receipt.fence, fence)?;
+        } else {
+            check_historical_fence(&run, &receipt.fence, fence)?;
+        }
         tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(Some(receipt))
     }
@@ -687,9 +696,9 @@ impl From<TaskFlowReconcileOutcome> for StepOperationResult {
 }
 
 async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError> {
-    // The schema is additive and deliberately qualification-only.  Keeping it
-    // Kept as an idempotent guard for stores created by the historical
-    // qualification path; normal stores receive this table from migrations.
+    // The schema is additive. Keep this idempotent guard for stores created by
+    // the historical qualification path; normal stores receive this table from
+    // migrations.
     sqlx::query(
         r#"CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
             owner_agent_id TEXT NOT NULL,
@@ -1385,8 +1394,7 @@ fn check_run_identity_for_observation(
     Ok(())
 }
 
-fn check_historical_fence(
-    run: &TaskFlowRun,
+fn check_step_fence(
     event_fence: &TaskFlowFence,
     supplied: &TaskFlowFence,
 ) -> Result<(), TaskFlowError> {
@@ -1398,6 +1406,15 @@ fn check_historical_fence(
     {
         return Err(TaskFlowError::StaleFence);
     }
+    Ok(())
+}
+
+fn check_historical_fence(
+    run: &TaskFlowRun,
+    event_fence: &TaskFlowFence,
+    supplied: &TaskFlowFence,
+) -> Result<(), TaskFlowError> {
+    check_step_fence(event_fence, supplied)?;
     // If the run is still leased, its current tuple must remain the same.  A
     // terminal run clears the lease but keeps the historical step readable.
     if !matches!(
