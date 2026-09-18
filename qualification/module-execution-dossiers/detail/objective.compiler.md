@@ -1,13 +1,13 @@
 # objective.compiler: implementation design
 
 Parent: `docs/modules/objective.compiler/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
-Status: source candidate implemented and mapped; exact-head qualification, canonical wire projection and product composition remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md`, `docs/contracts/OBJECTIVE_ERRORS.json` and `docs/contracts/OBJECTIVE_RETRY_POLICY.json`.
+Status: source implementation, canonical `ObjectiveFunctionV1` projection, durable `RunStartSnapshotV1` publication and Agentd host composition are implemented on this candidate; exact-head/synthetic-merge qualification, independent acceptance and activation remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md`, `docs/contracts/OBJECTIVE_ERRORS.json` and `docs/contracts/OBJECTIVE_RETRY_POLICY.json`.
 
 ## 1. Source and work envelope
 
 Root: `codex-rs/hepta-objective`. Packages: `OBJ-0-OBJECTIVE-CONTRACTS`, `OBJ-1-OBJECTIVE-COMPILER`. Exact operation-to-symbol and test mappings are in `docs/modules/objective.compiler/IMPLEMENTATION_MAP.json`.
 
-This candidate changes no authority, effect or writer ownership. The module remains stateless for domain facts. The owning production caller, canonical `ObjectiveFunctionV1` wire adapter, owner store and durable `RunStartSnapshotV1` publication path are not established by this source candidate.
+This candidate changes no authority, effect or writer ownership. The module remains stateless for domain facts. `codex-hepta-intelligence::prepare_intelligence_run_v1` is the named source-level product composition façade: it authenticates/admit-compiles the source objective, projects canonical `ObjectiveFunctionV1`, binds `RunStartSnapshotV1`, and appends both through the sealed durable `learning.ledger` owner port. Agentd consumes only the resulting deny-all `IntelligenceHostEnvelopeV1` through `start_intelligence_run_v1`; it does not become the objective fact owner.
 
 ## 2. Native operations and contract details
 
@@ -37,9 +37,9 @@ Admission validates source authentication, principal scope, schema, normalizatio
 
 ## 3. State, identity and publication
 
-The compiler owns no durable store. Native output digest-binds request, principal, source, schema, selected profile, hard constraints, legal actions, success/terminal/evidence semantics, resource/risk policy and soft preferences. V1 admission currently lowers terminal/evidence/resource/risk semantics into native `success_predicates` / `constraints`; this is not the exact canonical `ObjectiveFunctionV1` JSON projection.
+The compiler owns no durable store. Native output digest-binds request, principal, source, schema, selected profile, hard constraints, legal actions, success/terminal/evidence semantics, resource/risk policy and soft preferences. V1 admission lowers terminal/evidence/resource/risk semantics into the native owner IR, then `project_objective_function_v1` creates the exact canonical JSON projection registered for `ObjectiveFunctionV1`. `prepare_intelligence_run_v1` revalidates the compiled owner IR, binds the canonical projection digest into `RunStartSnapshotV1`, and appends the projection, admission/compile lineage and run snapshot as one synced `learning.ledger::RunStart` event. Exact retries remain predecessor-bound and replay the same durable identity.
 
-A production caller must publish the canonical `ObjectiveFunctionV1` and matching `RunStartSnapshotV1` atomically enough that a run cannot observe one without the other, and reconcile by exact semantic identity. No such production owner-store path is established by this source candidate.
+Agentd receives only the validated durable host envelope and starts an ephemeral run from its frozen digests/generation/authority epoch. This is source-level product composition, not evidence that the current PR head has passed its exact-head and synthetic-merge qualification, and it grants no runtime effect authority.
 
 A typed hard conflict produces `ObjectiveConflictReceiptV1`. `CompileDisposition::ExplicitAbstain` is a successful non-error outcome in which abstain is the sole legal action. New read-only intelligence callers can use `run_read_only_vertical_outcome_v1` to preserve that non-error distinction; the older error-shaped façade remains only for compatibility.
 
@@ -89,9 +89,9 @@ Native test files and symbols are registered in the implementation map. A green 
 
 ## 7. Integration, rollback and capability ceiling
 
-Compile before adaptive selection. NDU and Control consume a frozen objective representation but cannot mutate hard constraints, observer requirements or legal effects. Rollback/reuse of a prior durable objective is owned by the future production caller and requires exact request/principal compatibility plus current revocation checks; otherwise a new authorized run is required or the system abstains.
+Compile before adaptive selection. NDU and Control consume a frozen objective representation but cannot mutate hard constraints, observer requirements or legal effects. Rollback/reuse of a prior durable objective requires exact request/principal compatibility, the durable predecessor/chain identity and current authority/revocation checks; otherwise a new authorized run is required or the system abstains.
 
-The current read-only intelligence vertical is an integration harness with zero effect authority. It does not substitute for canonical `ObjectiveFunctionV1 + RunStartSnapshotV1` publication, owner-store crash recovery or production reconciliation.
+The read-only intelligence vertical remains an integration harness with zero effect authority, while the separate production-objective façade now provides canonical `ObjectiveFunctionV1 + RunStartSnapshotV1` durable publication and Agentd consumption. Neither path turns source composition into independent acceptance, activation, promotion or release.
 
 The candidate issues no runtime, model, provider, network, filesystem, tool, secret, Matrix, fleet, acceptance, merge, promotion or release authority. Product composition, independent review and exact-head/synthetic-merge workflow success remain separately governed.
 
@@ -99,7 +99,7 @@ The candidate issues no runtime, model, provider, network, filesystem, tool, sec
 
 - **Implemented entrypoints:** `admit_and_compile_objective_v1` in [codex-rs/hepta-objective/src/objective_admission_gate.rs](../../../codex-rs/hepta-objective/src/objective_admission_gate.rs); `check_feasibility_v1` in [codex-rs/hepta-objective/src/feasibility.rs](../../../codex-rs/hepta-objective/src/feasibility.rs); `compile` in [codex-rs/hepta-objective/src/compiler.rs](../../../codex-rs/hepta-objective/src/compiler.rs). The public V1 admission gate runs general feasibility on the complete V1 scalar hard set before native compile.
 - **Compatibility internals:** [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs) retains native lowering/admission checks; [codex-rs/hepta-objective/src/scalar_adapter.rs](../../../codex-rs/hepta-objective/src/scalar_adapter.rs) remains a compiler defense-in-depth scalar recheck.
-- **State and recovery:** Stateless outputs bind the immutable source/principal/profile/schema/unit/time/intent tuple; unknown mappings fail closed. A production caller/owner store and atomic objective/run-snapshot publication are not established.
+- **State and recovery:** Stateless compile output binds the immutable source/principal/profile/schema/unit/time/intent tuple; unknown mappings fail closed. `prepare_intelligence_run_v1` atomically appends canonical objective bytes, admission/compile lineage and `RunStartSnapshotV1` through the sealed durable learning-ledger journal, and emits a digest-bound Agentd host envelope. Durable replay is covered by the product-objective tests.
 - **Source tests:** [codex-rs/hepta-objective/src/objective_admission_tests.rs](../../../codex-rs/hepta-objective/src/objective_admission_tests.rs), [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs), [codex-rs/hepta-objective/tests/admission_closure.rs](../../../codex-rs/hepta-objective/tests/admission_closure.rs), [codex-rs/hepta-objective/tests/retry_policy.rs](../../../codex-rs/hepta-objective/tests/retry_policy.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md](../../../docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md), [docs/modules/objective.compiler/IMPLEMENTATION_MAP.json](../../../docs/modules/objective.compiler/IMPLEMENTATION_MAP.json).
-- **Repository-controlled blockers before a stronger claim:** the readiness source bounds are now aligned with the enforced V1 capacity; remaining work is to define a source grammar for enum-set/action-implication payloads before claiming those rich domains, implement the exact canonical `ObjectiveFunctionV1` projection, bind a named authenticated production caller/owner store, atomically persist/reconcile the objective plus run snapshot, replace manual profile byte estimation if 256 KiB is protocol-hard, and obtain exact-head and synthetic-merge evidence.
+- **Repository-controlled blockers before a stronger claim:** define a source grammar for enum-set/action-implication payloads before claiming those rich domains; replace manual profile byte estimation if 256 KiB remains protocol-hard; and obtain terminal exact-head plus deterministic synthetic-merge evidence for the current combined candidate. Canonical projection, durable run-start publication and named Agentd host consumption are source-implemented on this candidate.
