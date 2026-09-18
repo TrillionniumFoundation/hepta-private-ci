@@ -197,7 +197,7 @@ mod tests {
         let mut host = AgentdSelfEvolutionHostV1::new(runtime);
         let mut selected = witness();
         selected.authority = AuthorityPosture {
-            runtime_authority: true,
+            runtime: true,
             ..AuthorityPosture::DENY_ALL
         };
         assert!(matches!(
