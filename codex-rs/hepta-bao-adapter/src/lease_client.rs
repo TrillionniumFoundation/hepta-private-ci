@@ -302,6 +302,17 @@ struct LeaseEnvelope {
 }
 
 #[derive(Deserialize)]
+struct OperationLeaseEnvelope {
+    data: OperationLeaseData,
+}
+
+#[derive(Deserialize)]
+struct OperationLeaseData {
+    operation_id: String,
+    lease: BaoLeaseMetadata,
+}
+
+#[derive(Deserialize)]
 struct PendingEnvelope {
     data: PendingData,
 }
@@ -480,6 +491,42 @@ impl BaoClient {
             return Err(BaoLeaseClientError::InvalidResponse);
         }
         Ok(decoded.data)
+    }
+
+    /// Resolve the deterministic lease projection for an issuance operation.
+    /// This is the primary recovery read after the issue response was lost:
+    /// it never invokes the provider and therefore cannot mint a duplicate
+    /// credential. If an active orphan lease is found but its generated
+    /// credential was lost with the response, revoke that lease before using
+    /// a fresh operation id for a replacement issuance.
+    pub async fn lookup_secret_lease_by_operation(
+        &self,
+        namespace: &str,
+        operation_id: &str,
+    ) -> Result<BaoLeaseMetadata, BaoLeaseClientError> {
+        if (!namespace.is_empty() && !segmented(namespace)) || !heptabao_id(operation_id) {
+            return Err(BaoLeaseClientError::InvalidRequest);
+        }
+        let url = self.endpoint(&["sys", "dynamic-secrets", "operations", operation_id])?;
+        let (status, body) = self.get_projection(url, namespace).await?;
+        match status {
+            StatusCode::OK => {}
+            StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => {
+                return Err(BaoLeaseClientError::ProviderDenied);
+            }
+            StatusCode::NOT_FOUND => return Err(BaoLeaseClientError::NotFound),
+            _ => return Err(BaoLeaseClientError::ProviderUnavailable),
+        }
+        let decoded: OperationLeaseEnvelope =
+            serde_json::from_slice(&body).map_err(|_| BaoLeaseClientError::InvalidResponse)?;
+        if decoded.data.operation_id != operation_id
+            || !heptabao_id(&decoded.data.lease.lease_id)
+            || !canonical_scope(&decoded.data.lease.scope)
+            || decoded.data.lease.generation == 0
+        {
+            return Err(BaoLeaseClientError::InvalidResponse);
+        }
+        Ok(decoded.data.lease)
     }
 
     /// Returns the one durable provider invocation requiring reconciliation,
