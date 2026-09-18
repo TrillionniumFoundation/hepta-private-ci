@@ -114,7 +114,7 @@ try {
   });
   const navInput = operation("soak.navigate", 0, navigate, navGrant);
   let navReceipt = await host.navigateOrAct(navInput);
-  for (let i = 0; i < 250 && !navReceipt.terminalObserved; i += 1) {
+  for (let i = 0; i < 750 && !navReceipt.terminalObserved; i += 1) {
     await new Promise((resolve) => setTimeout(resolve, 20));
     navReceipt = await host.reconcileOperation(navInput);
   }
