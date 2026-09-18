@@ -9,10 +9,10 @@ be declared complete merely by editing this file.
 | Priority | Gate | Current state | Closure evidence required |
 | --- | --- | --- | --- |
 | P1 | Durable operations ledger/outbox | Not implemented; bounded memory oracle only | transactional backend, same state-machine suite, crash/reopen, corruption, migration and multi-writer tests |
-| P1 | AuthBus host trust and recovery | Signed authentication and SQLite replay implemented; host provisioning and external rollback protection remain | enrolled caller, managed issuer keys/revocation, trusted time and independently retained restore checkpoint |
-| P1 | Authorization policy and quota ledger | Not implemented | durable policy revision, conservation-safe reservation/settlement, crash reconciliation and real caller |
+| P1 | AuthBus host trust and recovery | Candidate source adds monotonic trust schema v2, full projection digest, replay checkpoints and safe retired-epoch compaction; external checkpoint custody and issuer private-key lifecycle remain operator-governed | exact-head/merge receipts, managed issuer keys/revocation, trusted time and independently retained restore checkpoint |
+| P1 | Authorization policy and quota ledger | Candidate source implemented in the existing evidence SQLite owner: versioned policy, atomic quota reservation, conservative settlement/reconciliation and BUS-01..04 tests; production effect caller not activated | exact-head/merge candidate receipts, independent semantic review and a named production effect caller |
 | P1 | Bao operation/evidence/quota composition | Host composition required | durable intent before dispatch, observed outcome, evidence append and settlement receipts |
-| P1 | Authority trusted time and external anti-rollback | Local wall clock/filesystem only | independently governed time/checkpoint source and rollback tests |
+| P1 | Authority trusted time and external anti-rollback | Replay rollback can now be fenced by an independently supplied checkpoint and rollback tests exist; wall-clock trust and independent checkpoint storage remain external | independently governed time/checkpoint source plus retained target-host restore receipts |
 | P1 | Cross-language wire/authority conformance | Rust source vector only | independent client implementations and golden-vector execution |
 | P2 | Fuzz, disk-full and fault campaigns | Partial | retained exact-candidate fuzz/crash/fault receipts |
 | P2 | Capacity and recovery measurements | Not accepted | measured budgets on named target hosts |
