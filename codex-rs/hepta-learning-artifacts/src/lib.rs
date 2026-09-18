@@ -25,6 +25,7 @@ pub use admission_v3::verify_artifact_admission_v3;
 pub use closure_v2::ArtifactClosureError;
 pub use closure_v2::ArtifactLifecycleEventV1;
 pub use closure_v2::ArtifactLifecycleStateV1;
+pub use closure_v2::DatasetWithdrawalDomainV1;
 pub use closure_v2::DatasetWithdrawalNoticeV1;
 pub use closure_v2::DatasetWithdrawalReceiptV1;
 pub use closure_v2::DatasetWithdrawalRecordV1;
