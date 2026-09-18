@@ -46,7 +46,9 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-memory-federation/src/lib.rs](../../../codex-rs/hepta-memory-federation/src/lib.rs); observed identifiers include `FederatedReadRequest`, `FederatedReadLease`, `RemoteObservation`, `FederatedReadReceipt`, `observe`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.federation.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-memory-federation/src/lib.rs](../../../codex-rs/hepta-memory-federation/src/lib.rs). The hardened generation-bound surface is implemented in [codex-rs/hepta-memory-federation/src/v2.rs](../../../codex-rs/hepta-memory-federation/src/v2.rs) and is summarized in [V2_HARDENING.md](V2_HARDENING.md). The V2 boundary recomputes remote response bindings, caps result lifetime by response/lease/query horizons, requires live authority before dispatch and after I/O, and supports interruptible single-attempt transport.
+
+The named product composition is [`CognitiveRuntime::AvailableFederatedV2`](../../../codex-rs/hepta-memory/src/cognitive_runtime.rs), composed by Agentd and consumed by the Memory extension. `CognitiveRuntime::AvailableFederated`/`FederatedRecallSet` remain compatibility surfaces and are not the Agentd product path. This is still a source/composition fact, not proof of exact-current-head execution, independent acceptance, activation or release. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.federation.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) for the exact claim boundary and remaining external gates.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -152,12 +154,19 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native federation contract validates scoped remote observations; its result does not enroll a peer or establish a network service. A deployed host must supply authenticated peer transport and current grants. Preserve partial coverage/unavailable on timeout, and invalidate cached observations on revocation or deletion.
+The native federation contract validates scoped remote observations; its result does not enroll a peer or establish a general network service. The current Agentd product caller supplies bounded owner-layout candidates, rediscovers active grants, filters the exact consumer workspace before enrollment, and adapts the local owner read through canonical V2. Unobservable owner capability stores remain explicit bounded failed coverage; revoked or generation-stale post-I/O observations cannot contribute admissible evidence.
+
+The Memory extension preserves requested/completed/failed/truncated coverage through pure federated and combined local+federated model-input payloads, and revalidates capability plus memory again under a bounded timeout at physical model-request assembly.
+
+The current in-process adapter's `observed_frontier` is the durable capability revision used for provenance; it is not a coherent memory-ledger snapshot frontier. A multi-process or multi-host profile must authenticate its real remote data frontier/snapshot witness. Preserve partial coverage/unavailable on timeout and invalidate evidence on revocation, generation drift or deletion.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-memory-federation/src/lib.rs](../../../codex-rs/hepta-memory-federation/src/lib.rs).
 - [codex-rs/hepta-memory-federation/src/v2.rs](../../../codex-rs/hepta-memory-federation/src/v2.rs).
+- [codex-rs/hepta-memory/src/cognitive_runtime.rs](../../../codex-rs/hepta-memory/src/cognitive_runtime.rs).
+- [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs).
+- [V2_HARDENING.md](V2_HARDENING.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -165,10 +174,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory-federation/src/lib_tests.rs](../../../codex-rs/hepta-memory-federation/src/lib_tests.rs); named case: `missing_terminal_observation_is_indeterminate`.
-- [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs); named case: `one_attempt_returns_bounded_partial_result`.
+- [codex-rs/hepta-memory-federation/src/lib_tests.rs](../../../codex-rs/hepta-memory-federation/src/lib_tests.rs).
+- [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), covering response-binding tamper/replay, expiry ceilings, preflight/post-I/O authority drift, true in-flight cancellation/deadline interruption, duplicate identities and bounded partial results.
+- [codex-rs/hepta-memory/src/cognitive_runtime_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_runtime_tests.rs), covering product composition, explicit discovery failure coverage and wrong-workspace non-enrollment.
+- [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs), whose focused tests cover physical-send revalidation and coverage-preserving combined model input.
 
-In `codex-rs`, run `just test -p codex-hepta-memory-federation`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) separately labels target acceptance designs.
+The candidate also carries a read-only focused workflow at [`.github/workflows/memory-federation-v2-final-verify.yml`](../../../.github/workflows/memory-federation-v2-final-verify.yml). Commands and workflow definitions are not pass receipts: inspect exact-current-head and merge-candidate outputs before changing `productExecutionProved` or any activation/release claim. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -184,9 +195,9 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+The named source-level product caller is `CognitiveRuntime::AvailableFederatedV2`, wired through Agentd/App Server and the Memory extension. This satisfies composition identity but does not by itself prove product execution, activation or release; those states remain gated on exact-candidate evidence and external acceptance.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+`CognitiveRuntime::AvailableFederated` and `FederatedRecallSet` are retained as compatibility/test surfaces. Product Agentd registration must not automatically fall back to them. Retirement requires remaining compatibility callers migrated, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
 ## 15. Definition of module completion
 
