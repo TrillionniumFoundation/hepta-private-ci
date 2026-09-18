@@ -74,6 +74,25 @@ pub struct CreditAssignment {
     pub support_digest: Digest32,
 }
 
+/// Terminal observation that a compiled prompt portfolio was or was not
+/// delivered by an independent runtime observer. Indeterminate provider state
+/// is reconciled outside this event and is appended only once terminal.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptDeliveryObservation {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub compilation_id: StableId,
+    pub observer_id: StableId,
+    pub portfolio_receipt_digest: Digest32,
+    pub provider_request_digest: Digest32,
+    pub delivered: bool,
+    pub rejected_reason_digest: Option<Digest32>,
+    pub observed_token_positions_digest: Option<Digest32>,
+    pub truncation_observed: bool,
+    pub context_delivery_observation_digest: Digest32,
+    pub support_digest: Digest32,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Revocation {
     pub record_id: StableId,
@@ -87,6 +106,7 @@ pub enum LedgerEvent {
     Decision(EpisodeDecision),
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
+    PromptDelivery(PromptDeliveryObservation),
     Revocation(Revocation),
 }
 
@@ -96,6 +116,7 @@ impl LedgerEvent {
             Self::Decision(value) => &value.record_id,
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
+            Self::PromptDelivery(value) => &value.record_id,
             Self::Revocation(value) => &value.record_id,
         }
     }
