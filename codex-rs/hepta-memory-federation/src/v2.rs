@@ -666,16 +666,24 @@ where
         }
     };
 
-    let post_authority = observe_authority_bounded(
-        authority,
-        cancellation,
-        &query,
-        lease,
-        now_unix_ms,
-        attempt_cutoff,
-        attempt_started,
-    )
-    .await?;
+    // A nonterminal attempt has no remote evidence to release, so the
+    // successfully validated pre-dispatch authority observation is sufficient
+    // for its indeterminate receipt. A terminal response must always cross a
+    // fresh post-I/O authority observation before any item can be exposed.
+    let post_authority = if matches!(transport_result, FederationTransportResultV2::Terminal(_)) {
+        observe_authority_bounded(
+            authority,
+            cancellation,
+            &query,
+            lease,
+            now_unix_ms,
+            attempt_cutoff,
+            attempt_started,
+        )
+        .await?
+    } else {
+        pre_authority.clone()
+    };
     let post_validity = post_authority.post_validity(&query, lease)?;
     let authority_observation_digest = post_authority.binding_digest();
     let effective_authority_expiry = attempt_cutoff.min(post_authority.expires_unix_ms);
