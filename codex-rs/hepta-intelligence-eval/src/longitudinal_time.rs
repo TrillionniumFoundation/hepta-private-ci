@@ -19,6 +19,7 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_role_separation;
+use codex_hepta_learning_ledger::verify_verified_actor_separation;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -169,7 +170,14 @@ pub fn decide_with_signed_durable_longitudinal_evidence_v4(
         bundle.frozen_plan.plan_digest.as_array(),
         now_unix_micros,
     )?;
+    let evaluator = verifier.verify(
+        LearningEvidenceRoleV1::Evaluator,
+        &evidence.evaluator_bundle,
+        &payload,
+        now_unix_micros,
+    )?;
     verify_signed_role_separation(&generator, &observer, now_unix_micros)?;
+    verify_verified_actor_separation(&evaluator, &observer, now_unix_micros)?;
     validate_observed_windows(
         &bundle,
         timing,
@@ -221,7 +229,14 @@ pub fn decide_with_signed_longitudinal_evidence_v3(
         bundle.frozen_plan.plan_digest.as_array(),
         now_unix_micros,
     )?;
+    let evaluator = verifier.verify(
+        LearningEvidenceRoleV1::Evaluator,
+        &evidence.evaluator_bundle,
+        &payload,
+        now_unix_micros,
+    )?;
     verify_signed_role_separation(&generator, &observer, now_unix_micros)?;
+    verify_verified_actor_separation(&evaluator, &observer, now_unix_micros)?;
     validate_observed_windows(
         &bundle,
         timing,
