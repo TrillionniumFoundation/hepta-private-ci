@@ -1,11 +1,12 @@
 use super::*;
+use std::fs::OpenOptions;
 use std::io::Write;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_plasticity::*;
 use codex_hepta_types::{Digest32, FixedQ32, Generation, StableId};
 use ed25519_dalek::{Signer, SigningKey};
-use tempfile::tempfile;
+use tempfile::{NamedTempFile, tempfile};
 
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("id {value}: {error}"))
@@ -348,6 +349,101 @@ fn writer() -> AnchoredTopologyPlasticityWriterV1 {
         16,
     )
     .expect("topology writer")
+}
+
+fn open_file(path: &std::path::Path) -> std::fs::File {
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(path)
+        .expect("open topology registry")
+}
+
+fn raw_topology_proposal(
+    proposal_id: &str,
+    window_id: &str,
+    seed: &str,
+) -> TopologyProposalV2 {
+    let selected_artifact_digest = digest("topology-reopen-selected-artifact");
+    propose_topology_v2(TopologyProposalRequestV2 {
+        proposal_id: id(proposal_id),
+        proposer_id: id("topology-reopen-generator"),
+        evaluator_id: id("topology-reopen-evaluator"),
+        selected_artifact_digest,
+        window: ProposalWindowV2 {
+            window_id: id(window_id),
+            window_digest: digest(&format!("topology-window-{seed}")),
+        },
+        baseline_generation: generation(4),
+        candidate_generation: generation(5),
+        evaluation_digest: digest(&format!("topology-evaluation-{seed}")),
+        rollback_predecessor_digest: selected_artifact_digest,
+        changes: vec![TopologyChangeV2 {
+            module_id: id("module:topology-reopen"),
+            operation: TopologyOperationV2::Rewire,
+            predecessor_digest: Some(digest(&format!("topology-old-{seed}"))),
+            candidate_digest: Some(digest(&format!("topology-new-{seed}"))),
+            migration_digest: digest(&format!("topology-migration-{seed}")),
+            rollback_digest: digest(&format!("topology-rollback-{seed}")),
+            writer_handoff_digest: digest(&format!("topology-handoff-{seed}")),
+            evidence_digest: digest(&format!("topology-evidence-{seed}")),
+        }],
+    })
+    .expect("raw topology proposal")
+}
+
+
+#[test]
+fn product_reopen_rejects_complete_unacknowledged_topology_tail() {
+    let fixture = NamedTempFile::new().expect("named tempfile");
+    let scope = digest("topology-registry-scope:recovery-tail");
+    let anchor = {
+        let mut registry = DurableTopologyProposalRegistryV2::open_bootstrap_empty(
+            open_file(fixture.path()),
+            scope,
+            43,
+            8,
+        )
+        .expect("bootstrap raw topology registry");
+        let first = registry
+            .append_v2(
+                Digest32::ZERO,
+                raw_topology_proposal("topology:reopen:1", "topology-window:reopen:1", "one"),
+            )
+            .expect("append first topology proposal");
+        let acknowledged = DurableRegistryAnchorV1 {
+            sequence: first.sequence,
+            frame_digest: first.frame_digest,
+        };
+        registry
+            .append_v2(
+                first.frame_digest,
+                raw_topology_proposal("topology:reopen:2", "topology-window:reopen:2", "two"),
+            )
+            .expect("append unacknowledged topology tail");
+        acknowledged
+    };
+
+    assert!(matches!(
+        AnchoredTopologyPlasticityWriterV1::reopen_anchored(
+            open_file(fixture.path()),
+            scope,
+            43,
+            8,
+            anchor,
+        ),
+        Err(DurableTopologyProposalRegistryError::Conflict)
+    ));
+
+    let recovered = DurableTopologyProposalRegistryV2::open_anchored(
+        open_file(fixture.path()),
+        scope,
+        43,
+        8,
+        anchor,
+    )
+    .expect("raw topology reconciliation reopen");
+    assert_eq!(recovered.record_count(), Ok(2));
 }
 
 #[test]
