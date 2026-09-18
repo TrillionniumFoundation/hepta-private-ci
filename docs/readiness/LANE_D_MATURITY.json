@@ -200,15 +200,17 @@
           "evidence": [
             "collect_snapshot",
             "prepare_plan",
-            "bind_ndu_plan_evaluation_v1",
+            "evaluate_prepared_plan_with_ndu",
             "finalize_plan",
             "request_execution_grants"
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "durable_store_candidate_implemented_not_activated",
           "evidence": [
-            "PlannerJournalV1"
+            "PlannerJournalV1",
+            "PlannerJournalStoreV1",
+            "durable_store_round_trips_and_rejects_older_backup_against_trusted_head"
           ]
         },
         "effectAuthority": {
@@ -254,6 +256,40 @@
             "snapshotPolicyDigest",
             "evaluationPolicyDigest",
             "resourceProfileDigest"
+          ]
+        },
+        "globalCoordinator": {
+          "state": "candidate_implemented_not_product_composed",
+          "evidence": [
+            "evaluate_global_plan_v1",
+            "authenticated_multi_owner_flow_reaches_deny_all_grant_requests"
+          ]
+        },
+        "narrowProductCaller": {
+          "state": "agentd_context_caller_composed",
+          "evidence": [
+            "plan_observed_context",
+            "codex-rs/hepta-agentd/src/cognitive_context.rs"
+          ]
+        },
+        "resourceProfileBinding": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "canonical_resource_profile_digest",
+            "ResourceProfileMismatch"
+          ]
+        },
+        "semanticJournalReplay": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "semantic_replay_rejects_hash_valid_invalid_selection_history"
+          ]
+        },
+        "monotonicProductClock": {
+          "state": "agentd_context_composed",
+          "evidence": [
+            "monotonic_now_micros",
+            "context_planner_clock_is_process_monotonic"
           ]
         }
       }
