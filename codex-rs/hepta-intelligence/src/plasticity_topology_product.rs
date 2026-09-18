@@ -152,14 +152,21 @@ impl AnchoredTopologyPlasticityWriterV1 {
         maximum_records: usize,
         anchor: DurableRegistryAnchorV1,
     ) -> Result<Self, DurableTopologyProposalRegistryError> {
+        let registry = DurableTopologyProposalRegistryV2::open_anchored(
+            file,
+            registry_scope_digest,
+            writer_fence,
+            maximum_records,
+            anchor,
+        )?;
+        if registry.current_anchor()? != Some(anchor) {
+            // Preserve a valid later tail for explicit reconciliation, but never
+            // let the product writer treat unacknowledged structural proposals as
+            // a healthy externally acknowledged head.
+            return Err(DurableTopologyProposalRegistryError::Conflict);
+        }
         Ok(Self {
-            registry: DurableTopologyProposalRegistryV2::open_anchored(
-                file,
-                registry_scope_digest,
-                writer_fence,
-                maximum_records,
-                anchor,
-            )?,
+            registry,
             registry_scope_digest,
             writer_fence,
             state: PlasticityWriterStateV1::Healthy,
