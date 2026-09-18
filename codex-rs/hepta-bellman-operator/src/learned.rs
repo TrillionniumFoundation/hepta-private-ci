@@ -297,6 +297,7 @@ pub fn fit_tabular_operator(
     })
 }
 
+#[cfg(test)]
 pub(crate) fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
