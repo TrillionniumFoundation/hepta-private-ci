@@ -344,6 +344,130 @@ fn external_final_use_frontier_detects_restored_claim_snapshot() {
 }
 
 #[test]
+fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
+    let old = SigningKey::from_bytes(&[61; 32]);
+    let next = SigningKey::from_bytes(&[62; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&head).unwrap(),
+    )));
+    let authority = FinalUseAuthority::open_state_dir_with_issuer_keys(
+        directory.path(),
+        "rotating-owner".into(),
+        vec![
+            FinalUseIssuerTrustKey {
+                key_id: "old".into(),
+                verifying_key: old.verifying_key().to_bytes(),
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: 9,
+            },
+            FinalUseIssuerTrustKey {
+                key_id: "next".into(),
+                verifying_key: next.verifying_key().to_bytes(),
+                not_before_authority_epoch: 9,
+                not_after_authority_epoch: 20,
+            },
+        ],
+        head,
+        Arc::new(FixedClock(2_000)),
+        frontier_store,
+    )
+    .unwrap();
+    assert_eq!(authority.issuer_key_ids(), vec!["next", "old"]);
+
+    let make = |grant_id: &str, nonce: [u8; 32], signer: &SigningKey| {
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "rotating-owner".into(),
+            authority_epoch: 9,
+            grant_id: grant_id.into(),
+            nonce,
+            binding: FinalUseBinding {
+                subject_id: "agent-one".into(),
+                destination_id: "provider:heptabao".into(),
+                request_sha256: [21; 32],
+                scope_sha256: [22; 32],
+                payload_sha256: [23; 32],
+            },
+            not_before_unix_ms: 1_000,
+            expires_at_unix_ms: 3_000,
+        };
+        SignedFinalUseGrant {
+            signature: signer
+                .sign(&grant.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            grant,
+        }
+    };
+    let old_grant = make("old-key-use", [24; 32], &old);
+    let next_grant = make("next-key-use", [25; 32], &next);
+    assert!(authority
+        .claim(&old_grant, &old_grant.grant.binding)
+        .is_ok());
+    assert!(authority
+        .claim(&next_grant, &next_grant.grant.binding)
+        .is_ok());
+
+    let retired_head = FinalUseRevocations {
+        authority_epoch: 10,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let retired_dir = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(
+        retired_dir.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
+    let retired_frontier = Arc::new(MemoryFinalUseFrontier(Mutex::new(
+        FinalUseFrontier::for_initial_head(&retired_head).unwrap(),
+    )));
+    let retired = FinalUseAuthority::open_state_dir_with_issuer_keys(
+        retired_dir.path(),
+        "rotating-owner".into(),
+        vec![
+            FinalUseIssuerTrustKey {
+                key_id: "old".into(),
+                verifying_key: old.verifying_key().to_bytes(),
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: 9,
+            },
+            FinalUseIssuerTrustKey {
+                key_id: "next".into(),
+                verifying_key: next.verifying_key().to_bytes(),
+                not_before_authority_epoch: 9,
+                not_after_authority_epoch: 20,
+            },
+        ],
+        retired_head,
+        Arc::new(FixedClock(2_000)),
+        retired_frontier,
+    )
+    .unwrap();
+    let mut retired_old = old_grant.clone();
+    retired_old.grant.authority_epoch = 10;
+    retired_old.grant.grant_id = "retired-old-key".into();
+    retired_old.grant.nonce = [26; 32];
+    retired_old.signature = old
+        .sign(&retired_old.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+    assert_eq!(
+        retired
+            .claim(&retired_old, &retired_old.grant.binding)
+            .unwrap_err(),
+        FinalUseError::InvalidSignature
+    );
+}
+
+#[test]
 fn replay_state_survives_owner_restart_and_prevents_concurrent_owners() {
     let (authority, signed, directory) = fixture().unwrap();
     assert_eq!(

@@ -22,6 +22,7 @@ mod store;
 
 const MAX_CLAIMS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
+const MAX_ISSUER_TRUST_KEYS: usize = 8;
 
 /// Source-visible markers consumed by the closed-world B4 caller proof.
 pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_CLAIM: &str = "claim_final_use";
@@ -83,6 +84,64 @@ impl FinalUseGrant {
 pub struct SignedFinalUseGrant {
     pub grant: FinalUseGrant,
     pub signature: Vec<u8>,
+}
+
+/// One issuer key generation accepted only in its inclusive authority-epoch
+/// window. Key ids are configuration/audit identities and are not request
+/// authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FinalUseIssuerTrustKey {
+    pub key_id: String,
+    pub verifying_key: [u8; 32],
+    pub not_before_authority_epoch: u64,
+    pub not_after_authority_epoch: u64,
+}
+
+#[derive(Clone)]
+struct PinnedIssuerKey {
+    key_id: String,
+    key: VerifyingKey,
+    not_before_authority_epoch: u64,
+    not_after_authority_epoch: u64,
+}
+
+fn pin_issuer_keys(
+    mut keys: Vec<FinalUseIssuerTrustKey>,
+) -> Result<(Vec<PinnedIssuerKey>, [u8; 32]), FinalUseError> {
+    if keys.is_empty() || keys.len() > MAX_ISSUER_TRUST_KEYS {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    keys.sort_by(|left, right| left.key_id.cmp(&right.key_id));
+    let mut ids = BTreeSet::new();
+    let mut public_keys = BTreeSet::new();
+    let mut digest = Sha256::new();
+    digest.update(b"hepta.kernel.authority.final-use-issuer-trust.v1\0");
+    let mut pinned = Vec::with_capacity(keys.len());
+    for candidate in keys {
+        let key = VerifyingKey::from_bytes(&candidate.verifying_key)
+            .map_err(|_| FinalUseError::InvalidTrust)?;
+        if !identifier(&candidate.key_id)
+            || key.is_weak()
+            || candidate.not_before_authority_epoch == 0
+            || candidate.not_after_authority_epoch < candidate.not_before_authority_epoch
+            || !ids.insert(candidate.key_id.clone())
+            || !public_keys.insert(candidate.verifying_key)
+        {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        digest.update((candidate.key_id.len() as u64).to_le_bytes());
+        digest.update(candidate.key_id.as_bytes());
+        digest.update(candidate.verifying_key);
+        digest.update(candidate.not_before_authority_epoch.to_le_bytes());
+        digest.update(candidate.not_after_authority_epoch.to_le_bytes());
+        pinned.push(PinnedIssuerKey {
+            key_id: candidate.key_id,
+            key,
+            not_before_authority_epoch: candidate.not_before_authority_epoch,
+            not_after_authority_epoch: candidate.not_after_authority_epoch,
+        });
+    }
+    Ok((pinned, digest.finalize().into()))
 }
 
 /// Trusted host update. Increasing revision is mandatory; epoch changes fence
@@ -158,7 +217,7 @@ struct State {
 
 struct Inner {
     signer_id: String,
-    key: VerifyingKey,
+    issuer_keys: Vec<PinnedIssuerKey>,
     state: Mutex<State>,
     store: store::Store,
     clock: Arc<dyn AuthorityClock>,
@@ -226,7 +285,12 @@ impl FinalUseAuthority {
         let (store, state) = store::Store::open(directory, &signer_id, verifying_key, head)?;
         Ok(Self(Arc::new(Inner {
             signer_id,
-            key,
+            issuer_keys: vec![PinnedIssuerKey {
+                key_id: "single-key".into(),
+                key,
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: u64::MAX,
+            }],
             state: Mutex::new(state),
             store,
             clock,
@@ -259,12 +323,62 @@ impl FinalUseAuthority {
         }
         Ok(Self(Arc::new(Inner {
             signer_id,
-            key,
+            issuer_keys: vec![PinnedIssuerKey {
+                key_id: "single-key".into(),
+                key,
+                not_before_authority_epoch: 1,
+                not_after_authority_epoch: u64::MAX,
+            }],
             state: Mutex::new(state),
             store,
             clock,
             frontier_store: Some(frontier_store),
         })))
+    }
+
+    /// Production constructor with a bounded issuer key ring. The complete
+    /// trust-set digest is pinned in durable store schema V2. V1 single-key
+    /// state is not silently migrated into this trust model.
+    pub fn open_state_dir_with_issuer_keys(
+        directory: &std::path::Path,
+        signer_id: String,
+        issuer_keys: Vec<FinalUseIssuerTrustKey>,
+        head: FinalUseRevocations,
+        clock: Arc<dyn AuthorityClock>,
+        frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
+    ) -> Result<Self, FinalUseError> {
+        if !identifier(&signer_id) || !valid_head(&head) {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        clock.now_unix_ms().map_err(map_trust_error)?;
+        let (issuer_keys, issuer_trust_sha256) = pin_issuer_keys(issuer_keys)?;
+        let (store, state) = store::Store::open_key_ring_exact(
+            directory,
+            &signer_id,
+            issuer_trust_sha256,
+            head,
+        )?;
+        let observed = frontier_for_state(&state);
+        let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
+        if trusted != observed {
+            return Err(FinalUseError::AntiRollbackViolation);
+        }
+        Ok(Self(Arc::new(Inner {
+            signer_id,
+            issuer_keys,
+            state: Mutex::new(state),
+            store,
+            clock,
+            frontier_store: Some(frontier_store),
+        })))
+    }
+
+    pub fn issuer_key_ids(&self) -> Vec<&str> {
+        self.0
+            .issuer_keys
+            .iter()
+            .map(|candidate| candidate.key_id.as_str())
+            .collect()
     }
 
     pub fn frontier(&self) -> Result<FinalUseFrontier, FinalUseError> {
@@ -345,10 +459,14 @@ impl FinalUseAuthority {
         }
         let signature = Signature::from_slice(&signed.signature)
             .map_err(|_| FinalUseError::InvalidSignature)?;
-        self.0
-            .key
-            .verify_strict(&input, &signature)
-            .map_err(|_| FinalUseError::InvalidSignature)?;
+        let verified = self.0.issuer_keys.iter().any(|candidate| {
+            signed.grant.authority_epoch >= candidate.not_before_authority_epoch
+                && signed.grant.authority_epoch <= candidate.not_after_authority_epoch
+                && candidate.key.verify_strict(&input, &signature).is_ok()
+        });
+        if !verified {
+            return Err(FinalUseError::InvalidSignature);
+        }
         let mut state = self
             .0
             .state

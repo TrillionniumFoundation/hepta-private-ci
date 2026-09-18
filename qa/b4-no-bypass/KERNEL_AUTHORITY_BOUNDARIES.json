@@ -22,9 +22,11 @@
         "update_revocations": "final_use_revocation_update",
         "claim": "final_use_claim_raw",
         "with_verified_use": "final_use_delivery_raw",
-        "with_dispatch_boundary": "final_use_dispatch_raw"
+        "with_dispatch_boundary": "final_use_dispatch_raw",
+        "open_state_dir_with_issuer_keys": "final_use_open_state"
       },
       "nonPrivilegedMethods": [
+        "issuer_key_ids",
         "frontier",
         "capacity"
       ]
@@ -129,7 +131,8 @@
       "callPatterns": [
         "FinalUseAuthority\\s*::\\s*open_state_dir\\s*\\(",
         "FinalUseAuthority\\s*::\\s*open_state_dir_with_clock\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*open_state_dir_with_trust\\s*\\("
+        "FinalUseAuthority\\s*::\\s*open_state_dir_with_trust\\s*\\(",
+        "FinalUseAuthority\\\\s*::\\\\s*open_state_dir_with_issuer_keys\\\\s*\\\\("
       ],
       "allowedCallers": []
     },

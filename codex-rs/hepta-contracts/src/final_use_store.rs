@@ -13,17 +13,32 @@ use std::path::Path;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-struct Stored {
+struct StoredV1 {
     schema: u32,
     signer_id: String,
     verifying_key: [u8; 32],
     state: State,
 }
 
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredV2 {
+    schema: u32,
+    signer_id: String,
+    issuer_trust_sha256: [u8; 32],
+    state: State,
+}
+
+#[derive(Clone, Copy)]
+enum StoreTrust {
+    SingleKey([u8; 32]),
+    IssuerKeyRing([u8; 32]),
+}
+
 pub(super) struct Store {
     root: File,
     signer_id: String,
-    verifying_key: [u8; 32],
+    trust: StoreTrust,
     _lock: File,
 }
 
@@ -34,7 +49,13 @@ impl Store {
         verifying_key: [u8; 32],
         initial: FinalUseRevocations,
     ) -> Result<(Self, State), FinalUseError> {
-        Self::open_inner(root, signer_id, verifying_key, initial, true)
+        Self::open_inner(
+            root,
+            signer_id,
+            StoreTrust::SingleKey(verifying_key),
+            initial,
+            true,
+        )
     }
 
     pub(super) fn open_exact(
@@ -43,13 +64,34 @@ impl Store {
         verifying_key: [u8; 32],
         initial: FinalUseRevocations,
     ) -> Result<(Self, State), FinalUseError> {
-        Self::open_inner(root, signer_id, verifying_key, initial, false)
+        Self::open_inner(
+            root,
+            signer_id,
+            StoreTrust::SingleKey(verifying_key),
+            initial,
+            false,
+        )
+    }
+
+    pub(super) fn open_key_ring_exact(
+        root: &Path,
+        signer_id: &str,
+        issuer_trust_sha256: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        Self::open_inner(
+            root,
+            signer_id,
+            StoreTrust::IssuerKeyRing(issuer_trust_sha256),
+            initial,
+            false,
+        )
     }
 
     fn open_inner(
         root: &Path,
         signer_id: &str,
-        verifying_key: [u8; 32],
+        trust: StoreTrust,
         initial: FinalUseRevocations,
         allow_startup_head_advance: bool,
     ) -> Result<(Self, State), FinalUseError> {
@@ -60,7 +102,7 @@ impl Store {
         let store = Self {
             root,
             signer_id: signer_id.to_owned(),
-            verifying_key,
+            trust,
             _lock: lock,
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
@@ -73,17 +115,36 @@ impl Store {
             if bytes.len() > 8 * 1024 * 1024 {
                 return Err(FinalUseError::InvalidTrust);
             }
-            let stored: Stored =
+            let value: serde_json::Value =
                 serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
-            if stored.schema != 1
-                || stored.signer_id != signer_id
-                || stored.verifying_key != verifying_key
-                || !valid_head(&stored.state.head)
-                || stored.state.used_nonces.len() > MAX_CLAIMS
-            {
+            let schema = value
+                .get("schema")
+                .and_then(serde_json::Value::as_u64)
+                .ok_or(FinalUseError::InvalidTrust)?;
+            let mut state = match (trust, schema) {
+                (StoreTrust::SingleKey(verifying_key), 1) => {
+                    let stored: StoredV1 =
+                        serde_json::from_value(value).map_err(|_| FinalUseError::InvalidTrust)?;
+                    if stored.signer_id != signer_id || stored.verifying_key != verifying_key {
+                        return Err(FinalUseError::InvalidTrust);
+                    }
+                    stored.state
+                }
+                (StoreTrust::IssuerKeyRing(issuer_trust_sha256), 2) => {
+                    let stored: StoredV2 =
+                        serde_json::from_value(value).map_err(|_| FinalUseError::InvalidTrust)?;
+                    if stored.signer_id != signer_id
+                        || stored.issuer_trust_sha256 != issuer_trust_sha256
+                    {
+                        return Err(FinalUseError::InvalidTrust);
+                    }
+                    stored.state
+                }
+                _ => return Err(FinalUseError::InvalidTrust),
+            };
+            if !valid_head(&state.head) || state.used_nonces.len() > MAX_CLAIMS {
                 return Err(FinalUseError::InvalidTrust);
             }
-            let mut state = stored.state;
             if allow_startup_head_advance {
                 if initial.authority_epoch >= state.head.authority_epoch
                     && initial.revision > state.head.revision
@@ -130,13 +191,21 @@ impl Store {
     }
 
     pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
-        let stored = Stored {
-            schema: 1,
-            signer_id: self.signer_id.clone(),
-            verifying_key: self.verifying_key,
-            state: state.clone(),
-        };
-        let bytes = serde_json::to_vec(&stored).map_err(|_| FinalUseError::Unavailable)?;
+        let bytes = match self.trust {
+            StoreTrust::SingleKey(verifying_key) => serde_json::to_vec(&StoredV1 {
+                schema: 1,
+                signer_id: self.signer_id.clone(),
+                verifying_key,
+                state: state.clone(),
+            }),
+            StoreTrust::IssuerKeyRing(issuer_trust_sha256) => serde_json::to_vec(&StoredV2 {
+                schema: 2,
+                signer_id: self.signer_id.clone(),
+                issuer_trust_sha256,
+                state: state.clone(),
+            }),
+        }
+        .map_err(|_| FinalUseError::Unavailable)?;
         let mut file = open_private(&self.root, "authority.next", Access::Create)?;
         file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
         file.write_all(&bytes)
