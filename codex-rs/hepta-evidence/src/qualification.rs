@@ -309,6 +309,41 @@ impl EvidenceIssuerRevocationsV1 {
     }
 }
 
+#[derive(Clone, Debug)]
+pub struct EvidenceIssuerAuthorityV1 {
+    root: EvidenceTrustRootV1,
+    revocations: EvidenceIssuerRevocationsV1,
+}
+
+impl EvidenceIssuerAuthorityV1 {
+    pub fn new(
+        root: EvidenceTrustRootV1,
+        revocations: EvidenceIssuerRevocationsV1,
+    ) -> Result<Self, EvidenceError> {
+        revocations.validate()?;
+        if revocations.root_id != root.root_id() {
+            return invalid("issuer authority revocation head is bound to a different trust root");
+        }
+        Ok(Self { root, revocations })
+    }
+
+    pub fn root_id(&self) -> &str {
+        self.root.root_id()
+    }
+
+    pub fn revision(&self) -> u64 {
+        self.revocations.revision
+    }
+
+    pub fn authenticate(
+        &self,
+        signed: SignedEvidenceIssuerCertificateV1,
+        now_unix_ms: u64,
+    ) -> Result<AuthenticatedEvidenceIssuerV1, EvidenceError> {
+        authenticate_evidence_issuer(&self.root, &self.revocations, signed, now_unix_ms)
+    }
+}
+
 #[derive(Clone)]
 pub struct EvidenceTrustRootV1 {
     root_id: String,
