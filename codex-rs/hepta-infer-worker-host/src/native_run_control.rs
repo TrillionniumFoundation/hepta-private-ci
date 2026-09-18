@@ -74,23 +74,11 @@ impl AppServerModelDriver {
 
         let request_id = record.request.request_id.clone();
         let result = if record.state == NativeReservationState::Reserved {
-            self.run_once(
-                control,
-                &request_id,
-                prompt,
-                context_query,
-                cancellation,
-            )
-            .await
+            self.run_once(control, &request_id, prompt, context_query, cancellation)
+                .await
         } else {
-            self.reconcile_once(
-                control,
-                &request_id,
-                prompt,
-                context_query,
-                cancellation,
-            )
-            .await
+            self.reconcile_once(control, &request_id, prompt, context_query, cancellation)
+                .await
         };
 
         match result {
@@ -123,9 +111,7 @@ impl AppServerModelDriver {
                 // Reconciliation transport failure is itself not evidence of a
                 // provider outcome. Persist a bounded indeterminate observation
                 // while retaining the exact thread/turn binding for a later retry.
-                let dispatch = current
-                    .dispatch
-                    .ok_or("missing durable dispatch binding")?;
+                let dispatch = current.dispatch.ok_or("missing durable dispatch binding")?;
                 let output = NativeRunOutput {
                     thread_id: dispatch.thread_id,
                     turn_id: current.turn_id.unwrap_or_default(),
