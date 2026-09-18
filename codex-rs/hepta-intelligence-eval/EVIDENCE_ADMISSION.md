@@ -149,7 +149,7 @@ must follow freezing, not overlap, have nonzero observed counts and distinct
 source cuts, and end before the observer's signed observation and trusted current
 time. The final holdout window must be among those observed windows.
 
-The independent observer signs `future_window_signing_payload_v1`. Compatibility
+The independent observer signs `future_window_signing_payload_v1` and must be independent from both the generator and evaluator under the verified principal/controller separation rules. Compatibility
 V3 signs `longitudinal_evaluation_signing_payload_v3`; production longitudinal
 admission signs `longitudinal_evaluation_signing_payload_v4`, which additionally
 binds the durable holdout proof. Both include time evidence, observer signature
