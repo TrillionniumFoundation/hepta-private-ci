@@ -40,18 +40,29 @@
           ]
         },
         "durability": {
-          "state": "not_applicable_stateless_compiler",
+          "state": "stateless_compiler_with_candidate_durable_owner_publication",
           "evidence": [
-            "owning caller persists immutable objective and run snapshot"
+            "ObjectiveRunPublicationV1",
+            "RunStartSnapshotV1",
+            "codex-rs/hepta-agentd/src/objective_runtime.rs",
+            "restart_recovery_restores_replay_frontier_and_active_snapshot"
           ]
         },
         "exactHeadSourceQualification": {
           "state": "pending_current_candidate_workflows",
-          "evidence": []
+          "evidence": [
+            ".github/workflows/hepta-objective-admission.yml",
+            ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+            ".github/workflows/hepta-agentd-process.yml"
+          ]
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "candidate_composed",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/objective_runtime.rs",
+            "codex-rs/hepta-agentd/src/state_control.rs",
+            "codex-rs/hepta-agent-protocol/src/authbus.rs"
+          ]
         },
         "productionWriter": {
           "state": "not_applicable_stateless_compiler",
