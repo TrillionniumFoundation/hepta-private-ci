@@ -8,7 +8,7 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-hardening-final",
     "baseCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
-    "candidateHead": "525bbae47f029addeabd6398c8fd54c1623ee124",
+    "candidateHead": "7243f40453271efc2e158b888a46c5fbe400e09e",
     "headMeaning": "implementation_test_and_design_head_before_this_attestation_metadata_commit",
     "status": "pending_exact_candidate_execution",
     "scope": [
@@ -35,7 +35,7 @@
       "docs/modules/memory.federation/V2_HARDENING.md",
       "qualification/module-execution-dossiers/detail/memory.federation.md"
     ],
-    "note": "sourceBase remains the shared historical identity required across all module maps. candidateHead attests the implementation/test/design content immediately before this metadata-only map commit, avoiding a self-referential HEAD digest. Exact-candidate workflow evidence must target the resulting PR head before productExecutionProved changes."
+    "note": "sourceBase remains the shared historical identity required across all module maps. candidateHead attests the frozen implementation/test/design content immediately before this metadata-only map commit, avoiding a self-referential HEAD digest. Exact-candidate workflow evidence must target the resulting PR head before productExecutionProved changes."
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
