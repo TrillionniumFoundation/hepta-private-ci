@@ -505,7 +505,6 @@ fn negative_closure_terminates_cycles_and_is_order_invariant() {
     }
 }
 
-
 #[test]
 #[ignore = "run only on a named target host through hepta-objective-target-measure.py"]
 fn measurement_conflict_extraction_v1() {
@@ -513,13 +512,9 @@ fn measurement_conflict_extraction_v1() {
         atom("a", "x", interval(0, 1)),
         atom("b", "x", interval(2, 3)),
     ];
-    atoms.extend((2..256).map(|index| {
-        atom(
-            &format!("irrelevant-{index:03}"),
-            "x",
-            interval(-5, 5),
-        )
-    }));
+    atoms.extend(
+        (2..256).map(|index| atom(&format!("irrelevant-{index:03}"), "x", interval(-5, 5))),
+    );
     let samples = std::env::var("HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES")
         .ok()
         .and_then(|value| value.parse::<usize>().ok())
