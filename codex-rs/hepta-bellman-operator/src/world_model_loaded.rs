@@ -16,7 +16,6 @@ use codex_hepta_types::StableId;
 use crate::TabularWorldModelV1;
 use crate::TransitionBranchV1;
 use crate::TransitionEstimateV1;
-use crate::WorldModelError;
 use crate::WorldModelPredictionV1;
 use crate::world_model::MAX_BRANCHES_PER_STATE_ACTION;
 use crate::world_model::MAX_SAMPLES;
