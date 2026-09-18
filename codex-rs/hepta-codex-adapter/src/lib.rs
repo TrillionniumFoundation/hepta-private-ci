@@ -157,15 +157,6 @@ pub fn observe_prompt_delivery_v1(
 }
 
 fn validate_intent(now_ms: u64, intent: &CodexOperationIntent) -> Result<(), Error> {
-    validate_intent(now_ms, &intent)?;
-    Ok(())
-}
-
-pub fn adapt(
-    now_ms: u64,
-    intent: CodexOperationIntent,
-    observation: Option<AppServerObservation>,
-) -> Result<CodexAdapterReceipt, Error> {
     if intent.payload_digest.is_zero() || intent.lease_payload_digest.is_zero() {
         return Err(Error::EmptyDigest("payload"));
     }
@@ -175,6 +166,15 @@ pub fn adapt(
     if now_ms >= intent.deadline_ms {
         return Err(Error::DeadlineExpired);
     }
+    Ok(())
+}
+
+pub fn adapt(
+    now_ms: u64,
+    intent: CodexOperationIntent,
+    observation: Option<AppServerObservation>,
+) -> Result<CodexAdapterReceipt, Error> {
+    validate_intent(now_ms, &intent)?;
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.codex.adapter.request.v1");
     push_id(&mut bytes, &intent.operation_id);
