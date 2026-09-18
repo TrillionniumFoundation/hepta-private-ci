@@ -388,7 +388,13 @@ impl<P: BaoLeaseProvider> BaoLeaseCoordinator<P> {
         let operation = normalize_issue(request, provider_payload)?;
         let binding = operation_binding(self.provider.provider_scope(), &operation)?;
         let execution = self
-            .execute_mutation(authority, grant, binding.clone(), operation, provider_payload)
+            .execute_mutation(
+                authority,
+                grant,
+                binding.clone(),
+                operation,
+                provider_payload,
+            )
             .await?;
         let mut receipt = execution.receipt;
         if let Some(secret) = execution.secret {
@@ -475,9 +481,7 @@ impl<P: BaoLeaseProvider> BaoLeaseCoordinator<P> {
     ) -> Result<BaoLeaseOperationReceipt, BaoLeaseError> {
         validate_operation_id(&request.operation_id)?;
         validate_component(&request.subject_id)?;
-        if self.provider.capability()
-            != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
-        {
+        if self.provider.capability() != ProviderEffectIdempotencyCapability::KeyAndStatusLookup {
             return Err(BaoLeaseError::UnsupportedProviderCapability);
         }
         let stored = self
@@ -510,8 +514,12 @@ impl<P: BaoLeaseProvider> BaoLeaseCoordinator<P> {
                     self.mark_indeterminate(&stored.intent.key, "provider_lookup_ack_invalid")?;
                     return Err(error.into());
                 }
-                let metadata =
-                    self.metadata_for_ack(&stored, &ack, lease, ProviderEffectAckSource::StatusLookup)?;
+                let metadata = self.metadata_for_ack(
+                    &stored,
+                    &ack,
+                    lease,
+                    ProviderEffectAckSource::StatusLookup,
+                )?;
                 self.store.append(LeaseJournalRecord::Ack {
                     operation_id: stored.operation.operation_id.clone(),
                     ack,
@@ -588,9 +596,7 @@ impl<P: BaoLeaseProvider> BaoLeaseCoordinator<P> {
         operation: BaoLeaseOperation,
         provider_payload: &[u8],
     ) -> Result<MutationExecution, BaoLeaseError> {
-        if self.provider.capability()
-            != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
-        {
+        if self.provider.capability() != ProviderEffectIdempotencyCapability::KeyAndStatusLookup {
             return Err(BaoLeaseError::UnsupportedProviderCapability);
         }
         let intent = intent_for(self.provider.provider_scope(), &operation)?;
@@ -647,25 +653,24 @@ impl<P: BaoLeaseProvider> BaoLeaseCoordinator<P> {
                 ) {
                     Ok(metadata) => metadata,
                     Err(error) => {
-                        self.mark_indeterminate(&intent.key, "provider_dispatch_observation_invalid")?;
-                        return Err(error);
-                    }
-                };
-                let secret = match self.validate_dispatch_secret(
-                    &stored,
-                    &ack,
-                    metadata.as_ref(),
-                    secret,
-                ) {
-                    Ok(secret) => secret,
-                    Err(error) => {
                         self.mark_indeterminate(
                             &intent.key,
-                            "provider_dispatch_secret_invalid",
+                            "provider_dispatch_observation_invalid",
                         )?;
                         return Err(error);
                     }
                 };
+                let secret =
+                    match self.validate_dispatch_secret(&stored, &ack, metadata.as_ref(), secret) {
+                        Ok(secret) => secret,
+                        Err(error) => {
+                            self.mark_indeterminate(
+                                &intent.key,
+                                "provider_dispatch_secret_invalid",
+                            )?;
+                            return Err(error);
+                        }
+                    };
                 self.store.append(LeaseJournalRecord::Ack {
                     operation_id: operation.operation_id.clone(),
                     ack,
@@ -945,8 +950,10 @@ fn intent_for(
     ))?;
     let operation_bytes =
         serde_json::to_vec(operation).map_err(|_| BaoLeaseError::InvalidRequest)?;
-    let payload_material =
-        bound_bytes(b"hepta.bao.lease.effect-payload.v1", &[operation_bytes.as_slice()]);
+    let payload_material = bound_bytes(
+        b"hepta.bao.lease.effect-payload.v1",
+        &[operation_bytes.as_slice()],
+    );
     Ok(ProviderEffectIntent::new(
         key,
         Sha256Digest::for_bytes(&payload_material),
@@ -1163,7 +1170,9 @@ fn apply_record(state: &mut StoreState, record: &LeaseJournalRecord) -> Result<(
                 .cloned()
                 .ok_or(BaoLeaseError::OperationNotFound)?;
             if ack.key != stored.intent.key {
-                return Err(BaoLeaseError::Effect(ProviderEffectBindingError::KeyMismatch));
+                return Err(BaoLeaseError::Effect(
+                    ProviderEffectBindingError::KeyMismatch,
+                ));
             }
             ack.validate_for(&stored.intent)?;
             match ack.status {
@@ -1177,9 +1186,7 @@ fn apply_record(state: &mut StoreState, record: &LeaseJournalRecord) -> Result<(
                     validate_metadata_transition(state, &stored, metadata)?;
                 }
             }
-            state
-                .effect
-                .record_ack_from_source(ack.clone(), *source)?;
+            state.effect.record_ack_from_source(ack.clone(), *source)?;
             if let Some(metadata) = lease {
                 state
                     .leases
@@ -1257,7 +1264,10 @@ fn validate_metadata_transition(
     Ok(())
 }
 
-fn lease_for_operation(state: &StoreState, stored: &StoredOperation) -> Option<BaoSecretLeaseMetadata> {
+fn lease_for_operation(
+    state: &StoreState,
+    stored: &StoredOperation,
+) -> Option<BaoSecretLeaseMetadata> {
     match stored.operation.kind {
         BaoLeaseOperationKind::Issue => state
             .leases
@@ -1319,7 +1329,11 @@ fn validate_namespace(value: &str) -> Result<(), BaoLeaseError> {
     if value.is_empty() {
         return Ok(());
     }
-    if value.len() > 1024 || !value.split('/').all(|segment| validate_component(segment).is_ok()) {
+    if value.len() > 1024
+        || !value
+            .split('/')
+            .all(|segment| validate_component(segment).is_ok())
+    {
         return Err(BaoLeaseError::InvalidRequest);
     }
     Ok(())
@@ -1328,7 +1342,9 @@ fn validate_namespace(value: &str) -> Result<(), BaoLeaseError> {
 fn validate_target(value: &str) -> Result<(), BaoLeaseError> {
     if value.is_empty()
         || value.len() > 1024
-        || !value.split('/').all(|segment| validate_component(segment).is_ok())
+        || !value
+            .split('/')
+            .all(|segment| validate_component(segment).is_ok())
     {
         return Err(BaoLeaseError::InvalidRequest);
     }
