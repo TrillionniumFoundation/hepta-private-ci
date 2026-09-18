@@ -27,7 +27,10 @@
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intuition/src/calibrated_tests.rs",
+        "codex-rs/hepta-intuition/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "decide_calibrated",
       "mappingClass": "owner_native",
@@ -39,16 +42,34 @@
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated_binding.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "decide_calibrated_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_qualified_v1",
+      "nativeSymbol": "decide_qualified_v1",
+      "sourcePath": "codex-rs/hepta-intuition/src/qualified/decision.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/qualified_tests.rs",
+        "codex-rs/hepta-intuition/tests/frozen_qualification.rs",
+        "codex-rs/hepta-intuition/tests/fast_benchmark_gate.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decide_qualified_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose decide_qualified_v1 through a named authenticated product caller and provision distinct production artifact/scorer/assignment keys outside request data.",
+    "Run current exact-head and deterministic synthetic-merge qualification before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
