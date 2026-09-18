@@ -1216,10 +1216,21 @@ fn bounded_limit(maximum: usize) -> Result<i64, CognitiveStoreError> {
 }
 
 
-fn recovered_database_filename(anchor: &CognitiveRecoveryAnchor) -> String {
+pub(crate) fn recovered_database_filename(
+    anchor: &CognitiveRecoveryAnchor,
+    writer_fence: &Sha256Digest,
+) -> String {
+    let mut hasher = Sha256::new();
+    frame_part(
+        &mut hasher,
+        b"hepta:cognitive:recovered-generation:v1",
+    );
+    frame_part(&mut hasher, anchor.state_digest.as_str().as_bytes());
+    frame_part(&mut hasher, writer_fence.as_str().as_bytes());
+    let generation = Sha256Digest::from_sha256_output(hasher.finalize());
     format!(
         "{COGNITIVE_RECOVERED_DB_PREFIX}{}.sqlite3",
-        anchor.state_digest.as_str()
+        generation.as_str()
     )
 }
 
