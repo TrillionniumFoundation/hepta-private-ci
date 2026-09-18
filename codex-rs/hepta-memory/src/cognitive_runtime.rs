@@ -3,8 +3,12 @@ use std::fmt;
 use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -56,6 +60,7 @@ use crate::RetrievalRequest;
 const PRODUCT_FEDERATION_TOTAL_BUDGET: Duration = Duration::from_secs(2);
 const MAX_PRODUCT_FEDERATION_OWNER_LAYOUTS: usize = 128;
 const PRODUCT_FEDERATION_PURPOSE: &[u8] = b"hepta.cognitive.federated-recall.product.v2";
+static PRODUCT_FEDERATION_ATTEMPT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 /// Sanitized reason why an owning runtime could not open its Cognitive Plane.
 ///
@@ -360,6 +365,14 @@ async fn retrieve_federated_product(
         ));
     }
 
+    let logical_start_ms = seconds_to_ms(request.now_unix_seconds())?;
+    let started_at = Instant::now();
+    let global_deadline_ms = logical_start_ms
+        .checked_add(
+            u64::try_from(PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()).unwrap_or(u64::MAX),
+        )
+        .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
+
     let discovery = async {
         let mut readers = Vec::new();
         for owner_layout in owner_layouts {
@@ -399,13 +412,6 @@ async fn retrieve_federated_product(
     readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
 
     let query_sha256 = Sha256Digest::for_bytes(request.query().as_bytes());
-    let logical_start_ms = seconds_to_ms(request.now_unix_seconds())?;
-    let started_at = Instant::now();
-    let global_deadline_ms = logical_start_ms
-        .checked_add(
-            u64::try_from(PRODUCT_FEDERATION_TOTAL_BUDGET.as_millis()).unwrap_or(u64::MAX),
-        )
-        .ok_or_else(|| CognitiveStoreError::Invalid("federation deadline overflow".to_string()))?;
     let mut coverage = FederatedCoverageV2 {
         requested_peers: u32::try_from(readers.len()).unwrap_or(u32::MAX),
         completed_peers: 0,
@@ -708,12 +714,27 @@ fn build_product_query_and_lease(
         ],
     );
     let query_digest = Digest32::of_bytes(request.query().as_bytes());
+    let attempt_sequence = PRODUCT_FEDERATION_ATTEMPT_SEQUENCE
+        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| value.checked_add(1))
+        .map_err(|_| {
+            CognitiveStoreError::Unavailable(
+                "memory federation attempt sequence exhausted".to_string(),
+            )
+        })?;
+    let wall_clock_nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_nanos())
+        .unwrap_or(0);
+    let process_id = u64::from(std::process::id());
     let nonce_digest = domain_digest32(
         b"hepta.memory-federation.product-nonce.v2",
         &[
             query_digest.as_array(),
             capability.id().as_str().as_bytes(),
             &logical_start_ms.to_be_bytes(),
+            &attempt_sequence.to_be_bytes(),
+            &wall_clock_nanos.to_be_bytes(),
+            &process_id.to_be_bytes(),
         ],
     );
     let query_id_digest = domain_digest32(
