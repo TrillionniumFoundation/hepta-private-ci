@@ -352,6 +352,7 @@ export class RuntimeClient {
   }
 
   async close() {
+    this.#connectAttempt += 1;
     if (!this.#session) return;
     const closingSession = Object.freeze({ ...this.#session });
     this.#cancelReconciliationTimer();
@@ -458,7 +459,7 @@ export class RuntimeClient {
       });
       this.#persistBestEffort();
       this.#scheduleReconciliation();
-      return acknowledgement;
+      return entry.acknowledgement;
     }
     let response;
     try {
@@ -518,10 +519,10 @@ export class RuntimeClient {
       });
     }
 
-    const acknowledgement = cloneAcknowledgement(entry, "pending", { accepted: true });
+    cloneAcknowledgement(entry, "pending", { accepted: true });
     this.#persistBestEffort();
     this.#scheduleReconciliation();
-    return acknowledgement;
+    return entry.acknowledgement;
   }
 
   #reconcileObservation(observation, pending, session) {
@@ -790,8 +791,16 @@ export class RuntimeClient {
   #persistBestEffort() {
     try {
       this.#persistPending();
+      return true;
     } catch {
-      for (const entry of this.#pending.values()) entry.recoveryRequired = true;
+      for (const entry of this.#pending.values()) {
+        entry.recoveryRequired = true;
+        cloneAcknowledgement(entry, "indeterminate", {
+          accepted: entry.accepted,
+          errorCode: ERROR_CODES.PERSISTENCE_UNAVAILABLE,
+        });
+      }
+      return false;
     }
   }
 
