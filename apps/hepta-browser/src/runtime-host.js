@@ -123,6 +123,19 @@ export class BrowserProfileHost {
         "maxActiveProfiles exceeds the configured Browser process ceiling",
       );
     }
+    const driverProfileLimit =
+      driver.maxActiveProfiles ?? DEFAULT_MAX_ACTIVE_PROFILES;
+    positiveInteger(driverProfileLimit, "driver.maxActiveProfiles");
+    if (driverProfileLimit > MAX_CONFIGURED_ACTIVE_PROFILES) {
+      throw new TypeError(
+        "driver.maxActiveProfiles exceeds the Browser hard ceiling",
+      );
+    }
+    if (maxActiveProfiles > driverProfileLimit) {
+      throw new TypeError(
+        "maxActiveProfiles exceeds driver.maxActiveProfiles",
+      );
+    }
     this.#driver = driver;
     this.#authority = authority;
     this.#journal = journal;
@@ -223,6 +236,7 @@ export class BrowserProfileHost {
           expiresAtMs,
           processId,
           profileOwnerDigest,
+          processStopped: false,
           pageGeneration: 0,
           documentDigest: null,
           quarantined: false,
@@ -712,22 +726,24 @@ export class BrowserProfileHost {
           "profile has indeterminate browser effects requiring reconciliation",
         );
       }
-      const observed = requireRecord(
-        await this.#callDriver(
-          "stop",
-          {
-            profileId: state.profileId,
-            processId: state.processId,
-            generation: state.generation,
-          },
-          this.#clock() + this.#driverCallTimeoutMs,
-        ),
-        "driver stop observation",
-      );
-      if (observed.stopped !== true) {
-        throw new TypeError("driver did not observe profile stop");
+      if (!state.processStopped) {
+        const observed = requireRecord(
+          await this.#callDriver(
+            "stop",
+            {
+              profileId: state.profileId,
+              processId: state.processId,
+              generation: state.generation,
+            },
+            this.#clock() + this.#driverCallTimeoutMs,
+          ),
+          "driver stop observation",
+        );
+        if (observed.stopped !== true) {
+          throw new TypeError("driver did not observe profile stop");
+        }
+        state.processStopped = true;
       }
-      this.#profiles.delete(state.profileId);
       try {
         await this.#journal.retireProfile(state.profileId, state.generation);
       } catch (cause) {
@@ -738,6 +754,7 @@ export class BrowserProfileHost {
         error.name = "BrowserJournalRetirementError";
         throw error;
       }
+      this.#profiles.delete(state.profileId);
       return freezeResult({
         kind: "BrowserProfileClosedV1",
         profileId: state.profileId,
@@ -777,6 +794,11 @@ export class BrowserProfileHost {
     }
     if (input.generation !== state.generation) {
       throw new TypeError("profile generation mismatch");
+    }
+    if (requireLiveGrant && state.processStopped) {
+      throw new TypeError(
+        "profile process is stopped pending durable journal retirement",
+      );
     }
     if (requireLiveGrant && this.#clock() >= state.expiresAtMs) {
       throw new TypeError("profile grant has expired");

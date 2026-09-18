@@ -582,6 +582,7 @@ class PrivateWorkerClient {
 
 export class SubprocessBrowserDriver {
   supportsAbort = true;
+  maxActiveProfiles = 1;
   maxOutstandingOperations = 1;
 
   #workerPath;

@@ -47,7 +47,7 @@ Worker stderr is always drained but is not copied into receipts or journals, avo
 
 ## Capacity and backpressure
 
-Browser service process/profile admission is also bounded globally (default 1 active profile/worker, configurable only up to 64 for compatible injected drivers). Profile mutations use a bounded serialization queue (64 queued operations per key by default) and fail with `BrowserBackpressureError` on overload. Separate ceilings cover origins, grants, active operations, terminal in-memory replay cache, action fields, semantic observations, frames, journal size and call deadlines.
+Browser service process/profile admission is also bounded globally (default 1 active profile/worker, configurable only up to 64 and never above the injected driver's declared active-profile capability). Profile mutations use a bounded serialization queue (64 queued operations per key by default) and fail with `BrowserBackpressureError` on overload. Separate ceilings cover origins, grants, active operations, terminal in-memory replay cache, action fields, semantic observations, frames, journal size and call deadlines.
 
 ## Verification
 

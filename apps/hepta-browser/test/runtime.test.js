@@ -227,6 +227,24 @@ test("driver timeout configuration has a hard ceiling", () => {
   );
 });
 
+test("active profile configuration cannot exceed the injected driver capability", () => {
+  const fakeDriver = driver();
+  fakeDriver.maxActiveProfiles = 1;
+  assert.throws(
+    () =>
+      new BrowserProfileHost({
+        driver: fakeDriver,
+        authority: authority(),
+        journal: new MemoryBrowserOperationJournal(),
+        clock: () => 1_000,
+        allowVolatileJournalForTests: true,
+        driverCallTimeoutMs: 50,
+        maxActiveProfiles: 2,
+      }),
+    /maxActiveProfiles exceeds driver\.maxActiveProfiles/,
+  );
+});
+
 test("global active profile capacity rejects a second worker before start", async () => {
   const fakeDriver = driver();
   let starts = 0;
@@ -434,6 +452,67 @@ test("reconciliation and cleanup remain available after grant and deadline expir
     generation: 1,
   });
   assert.equal(closed.terminalObserved, true);
+});
+
+test("journal retirement failure after stop is retryable without restarting the worker", async () => {
+  const baseJournal = new MemoryBrowserOperationJournal();
+  let retireCalls = 0;
+  const journal = {
+    durable: false,
+    async assertProfileGenerationAvailable(...args) {
+      return baseJournal.assertProfileGenerationAvailable(...args);
+    },
+    async recordDispatch(...args) {
+      return baseJournal.recordDispatch(...args);
+    },
+    async recordObservation(...args) {
+      return baseJournal.recordObservation(...args);
+    },
+    async getOperation(...args) {
+      return baseJournal.getOperation(...args);
+    },
+    async listOperations(...args) {
+      return baseJournal.listOperations(...args);
+    },
+    async retireProfile(...args) {
+      retireCalls += 1;
+      if (retireCalls === 1) {
+        throw new Error("simulated retirement fsync failure");
+      }
+      return baseJournal.retireProfile(...args);
+    },
+  };
+  const fakeDriver = driver({ terminalOnReconcile: true });
+  const { host } = await preparedHost({ driver: fakeDriver, journal });
+  await host.navigateOrAct(operation());
+  await host.reconcileOperation(operation());
+
+  await assert.rejects(
+    host.closeProfile({
+      profileId: "profile.1",
+      principalId: "principal.1",
+      generation: 1,
+    }),
+    (error) => error?.name === "BrowserJournalRetirementError",
+  );
+  assert.equal(fakeDriver.stopCalls, 1);
+  await assert.rejects(
+    host.navigateOrAct(
+      operation({
+        operationId: "operation.after-stop",
+      }),
+    ),
+    /process is stopped pending durable journal retirement/,
+  );
+
+  const closed = await host.closeProfile({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+  });
+  assert.equal(closed.terminalObserved, true);
+  assert.equal(fakeDriver.stopCalls, 1);
+  assert.equal(retireCalls, 2);
 });
 
 test("typed action bytes are bound to final payload digest and destination", async () => {
