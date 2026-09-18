@@ -9,6 +9,7 @@ import sys
 from .candidate import (
     CandidateEnvelope,
     Mutation,
+    MutationSet,
     generate_candidates,
     sandbox_candidate,
 )
@@ -54,9 +55,25 @@ def _records(record_type, value, limit):
     return tuple(_record(record_type, item) for item in value)
 
 
+def _candidate_mutations(value):
+    if not isinstance(value, list) or len(value) > 32:
+        raise EngineeringError("input_record_limit_exceeded")
+    result = []
+    for item in value:
+        if isinstance(item, dict) and set(item) == {"mutations"}:
+            result.append(
+                MutationSet(
+                    _records(Mutation, item["mutations"], 100)
+                )
+            )
+        else:
+            result.append(_record(Mutation, item))
+    return tuple(result)
+
+
 def _candidate_inputs(args):
     envelope = _record(CandidateEnvelope, _read(args.envelope))
-    mutations = _records(Mutation, _read(args.mutations), 32)
+    mutations = _candidate_mutations(_read(args.mutations))
     return envelope, generate_candidates(envelope, mutations)
 
 
