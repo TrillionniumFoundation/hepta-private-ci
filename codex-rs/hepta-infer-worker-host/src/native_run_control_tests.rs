@@ -12,9 +12,9 @@ use codex_hepta_contracts::ResourceAdvertisementState;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::SubjectRef;
+use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use ed25519_dalek::SigningKey;
 use std::collections::BTreeSet;
-use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use std::path::PathBuf;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -189,12 +189,14 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
                 thread_id: "thread-1".to_string(),
                 model_provider: "provider".to_string(),
                 context_digest: "a".repeat(64),
-                final_use: Some(codex_hepta_infer_core::durable_control::native::NativeFinalUseWitness {
-                    grant_id: "grant:test".to_string(),
-                    authority_epoch: 7,
-                    expires_at_unix_ms: u64::MAX,
-                    binding_digest: "a".repeat(64),
-                }),
+                final_use: Some(
+                    codex_hepta_infer_core::durable_control::native::NativeFinalUseWitness {
+                        grant_id: "grant:test".to_string(),
+                        authority_epoch: 7,
+                        expires_at_unix_ms: u64::MAX,
+                        binding_digest: "a".repeat(64),
+                    },
+                ),
             },
         )
         .unwrap();
@@ -279,7 +281,8 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
 #[tokio::test]
 async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims() {
     for cancelled in [true, false] {
-        let (driver, path, _authority_state) = fixture(if cancelled { "cancel" } else { "connection" });
+        let (driver, path, _authority_state) =
+            fixture(if cancelled { "cancel" } else { "connection" });
         let mut control = DurableInferenceControl::open(&path, 8).unwrap();
         let admission = admission(&driver);
         let cancellation = CancellationToken::new();
