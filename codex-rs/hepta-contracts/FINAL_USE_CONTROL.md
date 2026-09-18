@@ -69,8 +69,10 @@ authority owner.
 active epoch-key and Ed25519 signature, then delegates the head to
 `FinalUseAuthority::update_revocations`. The durable authority owner still
 enforces monotonic revision/epoch and same-epoch revocation-superset rules.
-The returned `FinalUseRevocationReceipt` records the distributor, selected
-trust key, head epoch/revision and freshness deadline without secret material.
+The returned opaque `FinalUseRevocationReceipt` records the distributor,
+selected trust key, head epoch/revision, exact update digest and freshness
+deadline without secret material. Its fields are private: callers cannot
+fabricate an "applied" receipt with a struct literal.
 
 A signature is therefore not a perpetual revocation credential. Transport may
 retry while the signed freshness window is current; deployment must obtain a
@@ -80,7 +82,10 @@ new head before expiry.
 
 `FinalUseRevocationAck` is a separate node-signed receipt over the exact
 revocation-update digest, distributor identity, epoch/revision and local apply
-time. `FinalUseRevocationConvergenceVerifier` pins a closed set of at most 256
+time. Its public constructor requires the opaque receipt returned by applying
+that exact signed update to the local authority; a receipt from a semantically
+different update is rejected. `FinalUseRevocationConvergenceVerifier` pins a
+closed set of at most 256
 enrolled nodes, each with its own bounded epoch key ring. A convergence check
 also receives the pinned `FinalUseRevocationFeedVerifier` and the
 `SignedFinalUseRevocationUpdate`: distributor identity, freshness, active
