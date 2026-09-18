@@ -157,6 +157,10 @@ fn callers_manifest_records_the_live_product_chain() {
         ]
     );
 
+    let wire = surface(&manifest, "codex-hepta-wire");
+    assert_eq!(wire.public_items, ["WireEnvelopeV2"]);
+    assert_eq!(wire.product_callers, ["codex-rs/hepta-runtime/src/lib.rs"]);
+
     let runtime = surface(&manifest, "codex-hepta-runtime");
     assert_eq!(runtime.public_items, ["HeptaRuntime", "RuntimeStatus"]);
     assert_eq!(
