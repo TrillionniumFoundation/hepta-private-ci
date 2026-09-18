@@ -11,6 +11,7 @@ use codex_hepta_contracts::Sha256Digest;
 use crate::AutomationError;
 use crate::AutomationLease;
 use crate::AutomationOccurrence;
+use crate::AutomationProviderObservationState;
 use crate::AutomationStore;
 use crate::AutomationTaskId;
 use crate::TaskFlowCommand;
@@ -183,6 +184,73 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
         self.claim_or_reuse_taskflow(run, owner_epoch, None, now_ms, lease_duration_ms)
+            .await
+    }
+
+    /// Quarantine a provider outcome that cannot yet be proven terminal.
+    /// Dependent work remains blocked until explicit reconciliation observes a
+    /// durable terminal receipt.
+    pub async fn mark_taskflow_indeterminate_from_observation(
+        &self,
+        task_id: AutomationTaskId,
+        occurrence: u64,
+        owner_epoch: u64,
+        receipt_digest: &Sha256Digest,
+        reason: &str,
+        now_ms: u64,
+        lease_duration_ms: u64,
+    ) -> Result<AutomationOccurrence, AutomationError> {
+        let occurrence_record = self
+            .occurrence(task_id, occurrence)
+            .await?
+            .ok_or(AutomationError::Conflict)?;
+        if !self
+            .has_provider_observation(
+                &occurrence_record.occurrence_id,
+                receipt_digest,
+                AutomationProviderObservationState::Indeterminate,
+            )
+            .await?
+        {
+            return Err(AutomationError::Conflict);
+        }
+        let run_id = occurrence_record
+            .taskflow_run_id
+            .as_deref()
+            .ok_or(AutomationError::Conflict)?;
+        let run = self
+            .taskflow_run(run_id)
+            .await
+            .map_err(map_taskflow_error)?
+            .ok_or(AutomationError::Corrupt)?;
+        if run.state == TaskFlowRunState::Indeterminate {
+            return self
+                .sync_occurrence_from_taskflow(task_id, occurrence, now_ms)
+                .await;
+        }
+        if is_terminal(run.state) {
+            return self
+                .sync_occurrence_from_taskflow(task_id, occurrence, now_ms)
+                .await;
+        }
+        let claimed = self
+            .claim_or_reuse_taskflow(run, owner_epoch, None, now_ms, lease_duration_ms)
+            .await?;
+        let command = TaskFlowCommand::new(
+            run_id,
+            format!("{}:indeterminate:{}", occurrence_record.occurrence_id, receipt_digest.as_str()),
+            claimed.fence,
+            claimed.run.revision,
+            TaskFlowTransition::Indeterminate {
+                reason: bounded_reason(reason)?,
+            },
+            now_ms,
+        )
+        .map_err(map_taskflow_error)?;
+        self.apply_taskflow_command(&command)
+            .await
+            .map_err(map_taskflow_error)?;
+        self.sync_occurrence_from_taskflow(task_id, occurrence, now_ms)
             .await
     }
 
