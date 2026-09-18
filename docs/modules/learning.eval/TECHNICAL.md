@@ -16,6 +16,8 @@
 
 This stable document is the implementation guide for `learning.eval`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+**Production API authority:** [`codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md`](../../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md) is the normative source for production admission. Direct `decide_independently*` entry points are trusted-only deterministic cores; external qualification requires signed V2 evidence and external longitudinal claims require signed V3 observed-time evidence. The lightweight legacy evaluator is crate-private and compiled only under `cfg(test)`.
+
 ## 1. Identity, mission and ownership
 
 Perform support-aware causal and longitudinal evaluation independently from the production writer.

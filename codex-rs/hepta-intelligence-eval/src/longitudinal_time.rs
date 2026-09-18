@@ -98,8 +98,10 @@ pub fn longitudinal_evaluation_signing_payload_v3(
     Ok(bytes)
 }
 
-/// External longitudinal entrypoint. Does not mint a holdout-use anchor,
-/// authenticate a storage namespace, select an artifact, or bypass statistics.
+/// Production external-admission entrypoint for `SystemLongitudinal` claims.
+/// It requires signed observed-time evidence in addition to signed V2 request
+/// semantics. It does not mint a holdout-use anchor, authenticate a storage
+/// namespace, select an artifact, or bypass statistics.
 pub fn decide_with_signed_longitudinal_evidence_v3(
     bundle: IndependentEvaluationBundleV1,
     roles: Vec<MetricRoleContractV2>,

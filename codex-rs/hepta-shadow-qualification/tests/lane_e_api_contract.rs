@@ -3,6 +3,25 @@
 //! authority-bearing action; it proves that mapped symbols are public and
 //! available to a real cross-crate consumer.
 
+use codex_hepta_intelligence_eval::DurableHoldoutError;
+use codex_hepta_intelligence_eval::HoldoutFenceStateV1;
+use codex_hepta_intelligence_eval::HoldoutFenceStoreV1;
+
+struct TestFence;
+impl HoldoutFenceStoreV1 for TestFence {
+    fn load(&mut self) -> Result<HoldoutFenceStateV1, DurableHoldoutError> {
+        Err(DurableHoldoutError::Indeterminate)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        _expected: HoldoutFenceStateV1,
+        _desired: HoldoutFenceStateV1,
+    ) -> Result<bool, DurableHoldoutError> {
+        Err(DurableHoldoutError::Indeterminate)
+    }
+}
+
 #[test]
 fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_ledger::verify_independent_roles;
@@ -31,9 +50,17 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_intelligence_eval::estimate_sequential;
     let _ = codex_hepta_intelligence_eval::fit_temporal_fold;
     let _ = codex_hepta_intelligence_eval::evaluate_temporal_holdout;
+    // Trusted-only compatibility cores remain linkable, but production
+    // admission is the signed V2/V3 surface plus the fenced durable owner.
     let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan;
-    let _ = codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume;
     let _ = codex_hepta_intelligence_eval::decide_independently;
+    let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
+    let _ = codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+    let _ = codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3;
+    let _ = codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<TestFence>::consume;
+    let _ =
+        codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<TestFence>::reconcile_pending;
+    let _ = codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::consume;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::from_snapshot;
 

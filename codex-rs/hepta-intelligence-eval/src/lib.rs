@@ -1,6 +1,7 @@
 //! Independent deterministic candidate evaluation. Eligibility is not promotion.
 #![forbid(unsafe_code)]
 
+#[cfg(test)]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -11,10 +12,14 @@ use codex_hepta_types::StableId;
 
 mod closure;
 mod durable_holdout;
+mod fenced_holdout;
 mod holdout_journal;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorV1;
+pub use fenced_holdout::FencedFinalHoldoutOwnerV1;
+pub use fenced_holdout::HoldoutFenceStateV1;
+pub use fenced_holdout::HoldoutFenceStoreV1;
 mod ope;
 mod sequential;
 mod signed_evaluation;
@@ -93,6 +98,7 @@ pub use temporal_fold::TemporalFoldPlan;
 pub use temporal_fold::TemporalFoldReceipt;
 pub use temporal_fold::fit_temporal_fold;
 
+#[cfg(test)]
 const MAX_METRICS: usize = 128;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -159,7 +165,13 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+/// Trusted in-process compatibility evaluator retained only for legacy fixtures.
+/// External or production qualification must use the signature-verified V2/V3
+/// admission entry points exported below; this helper is intentionally not public.
+#[cfg(test)]
+fn evaluate_legacy_inprocess_v1(
+    mut request: EvaluationRequest,
+) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
     }
@@ -211,6 +223,7 @@ pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Err
     })
 }
 
+#[cfg(test)]
 fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let raw = i128::from(left.raw()) - i128::from(right.raw());
     Ok(FixedQ32::from_raw(
@@ -218,6 +231,7 @@ fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     ))
 }
 
+#[cfg(test)]
 fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[StableId]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.intelligence-eval.v1");

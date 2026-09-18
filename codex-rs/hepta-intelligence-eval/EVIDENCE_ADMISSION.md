@@ -1,5 +1,7 @@
 # Learning evaluation admission after consolidation
 
+> Normative production-use rules live in [`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md). In particular, direct `decide_independently*` functions are trusted-only cores; production/external admission must use the signature-verified V2 or V3 entry point appropriate to the claim scope.
+
 The restored Lane E source includes strict learned-operator fitting, immutable
 dataset/admission receipts, and replayable final-holdout/lifecycle journals. The
 journals implement semantic replay and expected-head checks; the host still owns
@@ -112,9 +114,19 @@ the host must durably retain the returned anchor independently of this journal.
 A backup cannot manufacture its own expected anchor. The host still owns current
 trust/revocation distribution, directory durability, retention and the production
 scheduler. Locks exclude cooperating writers, not hostile filesystem mutation.
-Tests in `src/durable_holdout_tests.rs` cover a different loading process,
-idempotent retries, acknowledged-history truncation, corruption, writer collision
-and write uncertainty. They are not production-caller or future-window receipts.
+For a multi-host product, `FencedFinalHoldoutOwnerV1` requires an independently
+durable linearizable `HoldoutFenceStoreV1`: it reserves the exact plan digest by
+compare-and-swap before journal mutation and commits the new anchor only after
+the journal is synchronized. `reconcile_pending` handles both supported crash
+cuts—reservation before journal write and journal sync before fence commit—using
+the exact frozen plan; unexpected sequence growth or a changed reservation fails
+closed. The host still authenticates the fence caller and owns anti-rollback of
+the fence store itself.
+
+Tests in `src/durable_holdout_tests.rs` and `src/fenced_holdout_tests.rs` cover a
+different loading process, idempotent retries, acknowledged-history truncation,
+corruption, writer collision, write uncertainty, fencing and pending-reservation
+reconciliation. They are not production-caller or future-window receipts.
 
 ## Observed-time longitudinal admission
 

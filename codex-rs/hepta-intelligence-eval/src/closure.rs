@@ -144,8 +144,10 @@ pub struct IndependentEvaluationDecisionV1 {
     pub authority: AuthorityPosture,
 }
 
-/// Legacy contract: every metric must strictly outperform its baseline.
-/// Use [`decide_independently_v2`] for preregistered metric roles.
+/// Trusted-only legacy deterministic core: every metric must strictly outperform
+/// its baseline. This function does not authenticate external callers. External
+/// or production qualification must use the signature-verified admission APIs.
+/// Use [`decide_independently_v2`] only for preregistered trusted in-process composition.
 pub fn decide_independently(
     bundle: IndependentEvaluationBundleV1,
     now: u64,

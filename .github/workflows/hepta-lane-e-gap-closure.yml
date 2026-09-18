@@ -10,9 +10,13 @@ on:
       - codex-rs/hepta-learning-artifacts/**
       - codex-rs/hepta-bellman-operator/**
       - codex-rs/hepta-intelligence-eval/**
+      - codex-rs/hepta-intelligence/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
+      - docs/modules/learning.eval/**
+      - docs/readiness/LEARNING_EVALUATION_EXECUTION.md
       - qualification/lane-e/**
+      - qualification/module-execution-dossiers/detail/learning.eval.md
       - scripts/hepta-lane-e-closure.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
@@ -71,6 +75,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets
 
@@ -98,6 +103,25 @@ jobs:
           -p codex-hepta-shadow-qualification
           --test cross_language_wire_fault
           -- --test-threads=1
+      - name: Signed production ingress closure
+        working-directory: codex-rs
+        run: >-
+          just test --locked
+          -p codex-hepta-intelligence
+          evaluated_shadow_tests::
+          --test-threads=1
+
+      - name: Bounded learning.eval fencing and signed-admission stress
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          for _ in $(seq 1 8); do
+            cargo test --locked -p codex-hepta-intelligence-eval \
+              fenced_holdout::tests:: -- --test-threads=1
+            cargo test --locked -p codex-hepta-intelligence-eval \
+              signed_evaluation_binds_metrics_roles_and_host_identities -- --test-threads=1
+          done
 
       - name: Strict Lane E lint
         working-directory: codex-rs
@@ -107,6 +131,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets -- -D warnings
 
@@ -120,13 +145,103 @@ jobs:
             --package codex-hepta-learning-artifacts \
             --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
             --package codex-hepta-shadow-qualification \
             -- --check
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
 
+      - name: Materialize learning.eval qualification evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_dir="${RUNNER_TEMP}/hepta-learning-eval-evidence"
+          mkdir -p "${evidence_dir}"
+          python3 scripts/hepta-lane-e-closure.py emit-evidence \
+            --source-sha "${SOURCE_SHA}" \
+            --tree-sha "$(git rev-parse HEAD^{tree})" \
+            --run-id "${GITHUB_RUN_ID}" \
+            --run-attempt "${GITHUB_RUN_ATTEMPT}" \
+            --repository "${GITHUB_REPOSITORY}" \
+            --workflow-ref "${GITHUB_WORKFLOW_REF}" \
+            --actor-id "${GITHUB_ACTOR_ID}" \
+            --stress-iterations 8 \
+            --output "${evidence_dir}/learning-eval-evidence.json"
+
+      - name: Retain unsigned learning.eval evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-evidence-unsigned-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-learning-eval-evidence/learning-eval-evidence.json
+          if-no-files-found: error
+          retention-days: 7
+
+  sign-evidence:
+    if: github.event_name == 'push'
+    needs: rust-closure
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Bind exact trusted branch source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          python3 scripts/hepta-lane-e-closure.py verify
+
+      - name: Download unsigned learning.eval evidence
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: learning-eval-evidence-unsigned-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-learning-eval-evidence
+
+      - name: Verify evidence source binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'hepta-learning-eval-evidence' / 'learning-eval-evidence.json'
+          evidence = json.loads(path.read_text(encoding='utf-8'))
+          assert evidence['source']['commitSha'] == os.environ['SOURCE_SHA']
+          tree = subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          assert evidence['source']['treeSha'] == tree
+          assert evidence['workflow']['runId'] == os.environ['GITHUB_RUN_ID']
+          assert evidence['externalCapabilityGatesRemainOpen'] is True
+          assert evidence['authorityDelta'] == 'none'
+          PY
+
+      - name: Sign learning.eval evidence
+        uses: ./.github/actions/linux-code-sign
+        with:
+          target: lane-e-learning-eval
+          artifacts-dir: ${{ runner.temp }}/hepta-learning-eval-evidence
+          binaries: learning-eval-evidence.json
+
+      - name: Retain learning.eval evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-evidence-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-learning-eval-evidence/
+          if-no-files-found: error
+          retention-days: 30
   synthetic-merge:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -191,6 +306,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets
 
@@ -218,6 +334,13 @@ jobs:
           -p codex-hepta-shadow-qualification
           --test cross_language_wire_fault
           -- --test-threads=1
+      - name: Test merged signed production ingress
+        working-directory: codex-rs
+        run: >-
+          just test --locked
+          -p codex-hepta-intelligence
+          evaluated_shadow_tests::
+          --test-threads=1
 
       - name: Verify merged formatting and index stability
         shell: bash
@@ -228,6 +351,7 @@ jobs:
             --package codex-hepta-learning-artifacts \
             --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
             --package codex-hepta-shadow-qualification \
             -- --check
           git diff --cached --check

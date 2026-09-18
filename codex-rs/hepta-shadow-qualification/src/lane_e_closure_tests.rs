@@ -5,16 +5,24 @@ use codex_hepta_bellman_operator::evaluate_bellman_reference;
 use codex_hepta_bellman_operator::fit_transition_model;
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
 use codex_hepta_intelligence_eval::CrossFoldPlanV1;
+use codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1;
+use codex_hepta_intelligence_eval::DurableHoldoutError;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
 use codex_hepta_intelligence_eval::EvaluationDirectionV1;
 use codex_hepta_intelligence_eval::EvaluationIntervalV1;
-use codex_hepta_intelligence_eval::FinalHoldoutRegistry;
+use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
+use codex_hepta_intelligence_eval::HoldoutFenceStateV1;
+use codex_hepta_intelligence_eval::HoldoutFenceStoreV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
 use codex_hepta_intelligence_eval::MetricGateV1;
-use codex_hepta_intelligence_eval::decide_independently;
-use codex_hepta_intelligence_eval::freeze_cross_fold_plan;
+use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::MetricRoleV2;
+use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
+use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
+use codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactLifecycleEventV1;
 use codex_hepta_learning_artifacts::ArtifactLifecycleStateV1;
@@ -28,8 +36,13 @@ use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::CreditAllocationBatchV1;
 use codex_hepta_learning_ledger::CreditAllocationV1;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::OutcomeTerminalityV1;
 use codex_hepta_learning_ledger::OutcomeWatermarkV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_learning_ledger::finalize_credit_batch;
 use codex_hepta_learning_ledger::freeze_dataset;
 use codex_hepta_learning_ledger::validate_authenticated_outcome;
@@ -38,6 +51,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
+use std::fs::OpenOptions;
 
 fn id(value: &str) -> StableId {
     match StableId::new(value.to_owned()) {
@@ -69,6 +85,66 @@ fn actor(name: &str, credential: &str, key: &str) -> AuthenticatedPrincipalV1 {
     }
 }
 
+fn signed_actor(name: &str, credential: &str, key: &SigningKey) -> AuthenticatedPrincipalV1 {
+    AuthenticatedPrincipalV1 {
+        principal_id: id(name),
+        credential_chain_digest: digest(credential),
+        signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+        scope_digest: digest("lane-e-evaluation-scope"),
+        authority_epoch: 8,
+        authenticated_at: 10,
+        expires_at: 100,
+    }
+}
+
+fn sign_evaluation_evidence(
+    verifier: &LearningEvidenceVerifierV1,
+    principal: &AuthenticatedPrincipalV1,
+    key: &SigningKey,
+    role: LearningEvidenceRoleV1,
+    objective_digest: Digest32,
+    payload: &[u8],
+) -> SignedLearningEvidenceV1 {
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: principal.principal_id.clone(),
+        principal_id: principal.principal_id.clone(),
+        role,
+        trust_digest: verifier.trust_digest(),
+        scope_digest: principal.scope_digest,
+        objective_digest,
+        authority_epoch: principal.authority_epoch,
+        issued_at: 20,
+        expires_at: 90,
+        payload_digest: Digest32::of_bytes(payload),
+        signature: [0; 64],
+    };
+    evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+    evidence
+}
+
+#[derive(Clone, Copy)]
+struct TestFence {
+    state: HoldoutFenceStateV1,
+}
+
+impl HoldoutFenceStoreV1 for TestFence {
+    fn load(&mut self) -> Result<HoldoutFenceStateV1, DurableHoldoutError> {
+        Ok(self.state)
+    }
+
+    fn compare_and_swap(
+        &mut self,
+        expected: HoldoutFenceStateV1,
+        desired: HoldoutFenceStateV1,
+    ) -> Result<bool, DurableHoldoutError> {
+        if self.state != expected {
+            return Ok(false);
+        }
+        self.state = desired;
+        Ok(true)
+    }
+}
+
 fn bellman_cell(
     sensor: &str,
     action: &str,
@@ -87,9 +163,35 @@ fn bellman_cell(
 
 #[test]
 fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
-    let generator = actor("generator", "generator-credential", "generator-key");
+    let generator_key = SigningKey::from_bytes(&[31; 32]);
+    let evaluator_key = SigningKey::from_bytes(&[47; 32]);
+    let generator = signed_actor("generator", "generator-credential", &generator_key);
     let observer = actor("observer", "observer-credential", "observer-key");
-    let evaluator = actor("evaluator", "evaluator-credential", "evaluator-key");
+    let evaluator = signed_actor("evaluator", "evaluator-credential", &evaluator_key);
+    let verifier = match LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: digest("lane-e-evaluation-scope"),
+        objective_digest: digest("objective"),
+        authority_epoch: 8,
+        signers: vec![
+            TrustedLearningSignerV1 {
+                principal: generator.clone(),
+                controller_id: id("generator-controller"),
+                verifying_key: generator_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Generator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: evaluator.clone(),
+                controller_id: id("evaluator-controller"),
+                verifying_key: evaluator_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Evaluator],
+                revoked_at: None,
+            },
+        ],
+    }) {
+        Ok(verifier) => verifier,
+        Err(error) => panic!("evaluation verifier failed: {error}"),
+    };
 
     let candidate_receipt = CandidateSetCompletenessReceiptV1 {
         set_id: id("candidate-set-1"),
@@ -253,105 +355,165 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
     assert!(!artifact.authority.grants_any());
 
     let objective_digest = digest("objective");
-    let estimand_digest = digest("system-longitudinal-task-utility");
-    let frozen_plan = match freeze_cross_fold_plan(CrossFoldPlanV1 {
-        plan_id: id("evaluation-plan"),
-        claim_scope: EvaluationClaimScopeV1::SystemLongitudinal,
-        candidate_id: artifact_id.clone(),
-        baseline_id: id("baseline-1"),
-        objective_digest,
-        dataset_digest: dataset.dataset_digest,
-        estimand_digest,
-        metric_contracts: vec![MetricContractV1 {
-            metric_id: id("task-utility"),
-            direction: EvaluationDirectionV1::Maximize,
-            safety_floor: Some(FixedQ32::from_raw(95)),
-        }],
-        family_alpha_ppm: 50_000,
-        simultaneous_comparisons: 1,
-        folds: vec![
-            CrossFoldPartitionV1 {
-                fold_id: id("evaluation-fold-1"),
-                training_principals: vec![id("evaluation-principal-2")],
-                training_episodes: vec![id("evaluation-episode-2")],
-                training_windows: vec![id("evaluation-train-window-1")],
-                holdout_principals: vec![id("evaluation-principal-1")],
-                holdout_episodes: vec![id("evaluation-episode-1")],
-                holdout_windows: vec![id("window-1")],
-                model_digest: digest("evaluation-model-1"),
-                predictions_digest: digest("evaluation-predictions-1"),
-            },
-            CrossFoldPartitionV1 {
-                fold_id: id("evaluation-fold-2"),
-                training_principals: vec![id("evaluation-principal-1")],
-                training_episodes: vec![id("evaluation-episode-1")],
-                training_windows: vec![id("evaluation-train-window-2")],
-                holdout_principals: vec![id("evaluation-principal-2")],
-                holdout_episodes: vec![id("evaluation-episode-2")],
-                holdout_windows: vec![id("window-2")],
-                model_digest: digest("evaluation-model-2"),
-                predictions_digest: digest("evaluation-predictions-2"),
-            },
-        ],
-        final_holdout_window_id: id("window-2"),
-        final_holdout_digest: digest("final-holdout"),
-    }) {
-        Ok(receipt) => receipt,
-        Err(error) => panic!("frozen evaluation plan failed: {error}"),
-    };
-    let mut final_holdout_registry = FinalHoldoutRegistry::new();
-    let holdout_use = match final_holdout_registry.consume(&frozen_plan) {
-        Ok(receipt) => receipt,
-        Err(error) => panic!("final holdout use failed: {error}"),
-    };
-
-    let evaluation = match decide_independently(
-        IndependentEvaluationBundleV1 {
-            evaluation_id: id("evaluation-1"),
+    let estimand_digest = digest("qualification-task-utility");
+    let metric_roles = vec![MetricRoleContractV2 {
+        metric_id: id("task-utility"),
+        role: MetricRoleV2::PrimarySuperiority {
+            minimum_improvement: FixedQ32::ZERO,
+        },
+    }];
+    let frozen_plan = match freeze_cross_fold_plan_v2(
+        CrossFoldPlanV1 {
+            plan_id: id("evaluation-plan"),
+            claim_scope: EvaluationClaimScopeV1::Qualification,
             candidate_id: artifact_id.clone(),
             baseline_id: id("baseline-1"),
-            claim_scope: EvaluationClaimScopeV1::SystemLongitudinal,
-            generator: generator.clone(),
-            evaluator: evaluator.clone(),
-            frozen_plan,
-            holdout_use,
             objective_digest,
             dataset_digest: dataset.dataset_digest,
             estimand_digest,
-            estimate_receipt_digest: bellman.evidence_digest,
-            support_audit_digest: candidate_digest,
-            confidence_receipt_digest: digest("confidence"),
-            retention_receipt_digests: vec![digest("retention")],
-            unlearning_receipt_digest: digest("unlearning"),
-            snapshot_ids: vec![id("snapshot-1"), id("snapshot-2"), id("snapshot-3")],
-            future_window_ids: vec![id("window-1"), id("window-2")],
-            family_alpha_ppm: 50_000,
-            simultaneous_comparisons: 1,
-            metrics: vec![MetricGateV1 {
+            metric_contracts: vec![MetricContractV1 {
                 metric_id: id("task-utility"),
                 direction: EvaluationDirectionV1::Maximize,
-                candidate: EvaluationIntervalV1 {
-                    lower: FixedQ32::from_raw(100),
-                    upper: FixedQ32::from_raw(110),
-                },
-                baseline: EvaluationIntervalV1 {
-                    lower: FixedQ32::from_raw(80),
-                    upper: FixedQ32::from_raw(90),
-                },
                 safety_floor: Some(FixedQ32::from_raw(95)),
-                support_digest: outcome_digest,
             }],
+            family_alpha_ppm: 50_000,
+            simultaneous_comparisons: 1,
+            folds: vec![
+                CrossFoldPartitionV1 {
+                    fold_id: id("evaluation-fold-1"),
+                    training_principals: vec![id("evaluation-principal-2")],
+                    training_episodes: vec![id("evaluation-episode-2")],
+                    training_windows: vec![id("evaluation-train-window-1")],
+                    holdout_principals: vec![id("evaluation-principal-1")],
+                    holdout_episodes: vec![id("evaluation-episode-1")],
+                    holdout_windows: vec![id("window-1")],
+                    model_digest: digest("evaluation-model-1"),
+                    predictions_digest: digest("evaluation-predictions-1"),
+                },
+                CrossFoldPartitionV1 {
+                    fold_id: id("evaluation-fold-2"),
+                    training_principals: vec![id("evaluation-principal-1")],
+                    training_episodes: vec![id("evaluation-episode-1")],
+                    training_windows: vec![id("evaluation-train-window-2")],
+                    holdout_principals: vec![id("evaluation-principal-2")],
+                    holdout_episodes: vec![id("evaluation-episode-2")],
+                    holdout_windows: vec![id("window-2")],
+                    model_digest: digest("evaluation-model-2"),
+                    predictions_digest: digest("evaluation-predictions-2"),
+                },
+            ],
+            final_holdout_window_id: id("window-2"),
+            final_holdout_digest: digest("final-holdout"),
         },
-        50,
+        metric_roles.clone(),
     ) {
-        Ok(decision) => decision,
-        Err(error) => panic!("independent evaluation failed: {error}"),
+        Ok(receipt) => receipt,
+        Err(error) => panic!("frozen evaluation plan failed: {error}"),
     };
+
+    let holdout_dir = match tempfile::tempdir() {
+        Ok(directory) => directory,
+        Err(error) => panic!("holdout directory failed: {error}"),
+    };
+    let holdout_file = match OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(holdout_dir.path().join("final-holdout"))
+    {
+        Ok(file) => file,
+        Err(error) => panic!("holdout file failed: {error}"),
+    };
+    let journal = match DurableFinalHoldoutJournalV1::create(
+        holdout_file,
+        digest("lane-e-holdout-binding"),
+    ) {
+        Ok(journal) => journal,
+        Err(error) => panic!("holdout journal failed: {error}"),
+    };
+    let fence = TestFence {
+        state: HoldoutFenceStateV1::committed(1, journal.anchor()),
+    };
+    let mut holdout_owner = match FencedFinalHoldoutOwnerV1::new(journal, fence) {
+        Ok(owner) => owner,
+        Err(error) => panic!("fenced holdout owner failed: {error}"),
+    };
+    let holdout_use = match holdout_owner.consume(&frozen_plan) {
+        Ok(receipt) => receipt.use_receipt,
+        Err(error) => panic!("fenced final holdout use failed: {error}"),
+    };
+
+    let bundle = IndependentEvaluationBundleV1 {
+        evaluation_id: id("evaluation-1"),
+        candidate_id: artifact_id.clone(),
+        baseline_id: id("baseline-1"),
+        claim_scope: EvaluationClaimScopeV1::Qualification,
+        generator: generator.clone(),
+        evaluator: evaluator.clone(),
+        frozen_plan,
+        holdout_use,
+        objective_digest,
+        dataset_digest: dataset.dataset_digest,
+        estimand_digest,
+        estimate_receipt_digest: bellman.evidence_digest,
+        support_audit_digest: candidate_digest,
+        confidence_receipt_digest: digest("confidence"),
+        retention_receipt_digests: vec![],
+        unlearning_receipt_digest: Digest32::ZERO,
+        snapshot_ids: vec![id("dataset-1")],
+        future_window_ids: vec![id("window-2")],
+        family_alpha_ppm: 50_000,
+        simultaneous_comparisons: 1,
+        metrics: vec![MetricGateV1 {
+            metric_id: id("task-utility"),
+            direction: EvaluationDirectionV1::Maximize,
+            candidate: EvaluationIntervalV1 {
+                lower: FixedQ32::from_raw(100),
+                upper: FixedQ32::from_raw(110),
+            },
+            baseline: EvaluationIntervalV1 {
+                lower: FixedQ32::from_raw(80),
+                upper: FixedQ32::from_raw(90),
+            },
+            safety_floor: Some(FixedQ32::from_raw(95)),
+            support_digest: outcome_digest,
+        }],
+    };
+    let generator_plan = sign_evaluation_evidence(
+        &verifier,
+        &generator,
+        &generator_key,
+        LearningEvidenceRoleV1::Generator,
+        objective_digest,
+        bundle.frozen_plan.plan_digest.as_array(),
+    );
+    let evaluator_payload = match evaluation_signing_payload_v2(&bundle, &metric_roles) {
+        Ok(payload) => payload,
+        Err(error) => panic!("evaluation signing payload failed: {error}"),
+    };
+    let evaluator_bundle = sign_evaluation_evidence(
+        &verifier,
+        &evaluator,
+        &evaluator_key,
+        LearningEvidenceRoleV1::Evaluator,
+        objective_digest,
+        &evaluator_payload,
+    );
+    let evidence = SignedEvaluationEvidenceV1 {
+        generator_plan,
+        evaluator_bundle,
+    };
+    let evaluation =
+        match decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, &verifier, 50) {
+            Ok(decision) => decision,
+            Err(error) => panic!("signed independent evaluation failed: {error}"),
+        };
     assert_eq!(
-        evaluation.disposition,
+        evaluation.decision.disposition,
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
     );
-    assert!(!evaluation.authority.grants_any());
+    assert!(!evaluation.decision.authority.grants_any());
+    assert!(!evaluation.authentication_digest.is_zero());
 
     let trained_event = ArtifactLifecycleEventV1 {
         event_id: id("lifecycle-trained"),
@@ -372,7 +534,7 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         next_state: ArtifactLifecycleStateV1::Evaluated,
         actor_id: evaluator.principal_id,
         actor_credential_digest: evaluator.credential_chain_digest,
-        evidence_digest: evaluation.evidence_digest,
+        evidence_digest: evaluation.decision.evidence_digest,
         authority_epoch: 8,
         occurred_at: 50,
     };

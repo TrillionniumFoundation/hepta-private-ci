@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
+from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -17,6 +19,10 @@ ROOT = Path(__file__).resolve().parents[1]
 MATRIX_PATH = ROOT / "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json"
 TRACE_PATH = ROOT / "qualification/lane-e/TEST_TRACEABILITY.json"
 WORKFLOW_PATH = ROOT / ".github/workflows/hepta-lane-e-gap-closure.yml"
+PRODUCTION_CONTRACT_PATH = ROOT / "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"
+PRODUCTION_INGRESS_PATH = ROOT / "codex-rs/hepta-intelligence/src/evaluated_shadow.rs"
+EVAL_LIB_PATH = ROOT / "codex-rs/hepta-intelligence-eval/src/lib.rs"
+FENCED_HOLDOUT_PATH = ROOT / "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs"
 TEMPORARY_WORKFLOW_PATH = (
     ROOT / ".github/workflows/hepta-lane-e-materialize-generated.yml"
 )
@@ -62,9 +68,11 @@ EXPECTED_OPERATIONS = {
     "learning.eval": {
         "estimate_ope",
         "estimate_sequential",
-        "freeze_cross_fold_plan",
-        "FinalHoldoutRegistry::consume",
-        "decide_independently",
+        "freeze_cross_fold_plan_v2",
+        "FencedFinalHoldoutOwnerV1::consume",
+        "FencedFinalHoldoutOwnerV1::reconcile_pending",
+        "decide_with_signed_evidence_v2",
+        "decide_with_signed_longitudinal_evidence_v3",
     },
 }
 EXPECTED_CRATES = {
@@ -72,6 +80,7 @@ EXPECTED_CRATES = {
     "codex-hepta-learning-artifacts",
     "codex-hepta-bellman-operator",
     "codex-hepta-intelligence-eval",
+    "codex-hepta-intelligence",
     "codex-hepta-shadow-qualification",
 }
 
@@ -136,7 +145,7 @@ def verify_symbol(source: str, native_symbol: str) -> bool:
         owner = parts[-2]
         return bool(
             re.search(rf"\b(?:struct|enum|type)\s+{re.escape(owner)}\b", source)
-            and re.search(rf"\bimpl\s+{re.escape(owner)}\b", source)
+            and re.search(rf"\bimpl(?:\s*<[^>]+>)?\s+{re.escape(owner)}\b", source)
         )
     return True
 
@@ -445,6 +454,204 @@ def verify_traceability(
                 )
 
 
+    production_raw = trace.get("productionIngressCases")
+    findings.require(
+        isinstance(production_raw, list) and len(production_raw) == 1,
+        "production_ingress_case_count",
+        "exactly one signed production-ingress case is required",
+    )
+    if isinstance(production_raw, list):
+        for item in production_raw:
+            if not isinstance(item, dict):
+                findings.add("invalid_production_ingress_case", "invalid production-ingress case")
+                continue
+            source_path = relative_path(item.get("source"), findings, "productionIngressCase.source")
+            functions = item.get("functions")
+            if source_path is None or not source_path.is_file():
+                findings.add("production_ingress_source_missing", "production-ingress source is missing")
+                continue
+            findings.require(
+                isinstance(functions, list)
+                and len(functions) >= 2
+                and all(isinstance(value, str) for value in functions),
+                "production_ingress_functions_missing",
+                "production-ingress case must map at least two native tests",
+            )
+            if isinstance(functions, list):
+                source_text = source_path.read_text(encoding="utf-8")
+                for function in functions:
+                    if isinstance(function, str):
+                        findings.require(
+                            bool(re.search(rf"\bfn\s+{re.escape(function)}\s*\(", source_text)),
+                            "production_ingress_function_unresolved",
+                            f"production-ingress function is missing: {function}",
+                        )
+            findings.require(
+                item.get("status") == "native_test_mapped",
+                "production_ingress_status",
+                "production-ingress case must be native_test_mapped",
+            )
+
+
+def verify_learning_eval_production_contract(findings: Findings) -> None:
+    for path, label in [
+        (PRODUCTION_CONTRACT_PATH, "production contract"),
+        (PRODUCTION_INGRESS_PATH, "production ingress"),
+        (EVAL_LIB_PATH, "evaluation library"),
+        (FENCED_HOLDOUT_PATH, "fenced holdout owner"),
+    ]:
+        findings.require(path.is_file(), "production_contract_missing", f"missing {label}: {path.relative_to(ROOT)}")
+    if not all(path.is_file() for path in [PRODUCTION_CONTRACT_PATH, PRODUCTION_INGRESS_PATH, EVAL_LIB_PATH, FENCED_HOLDOUT_PATH]):
+        return
+
+    contract = PRODUCTION_CONTRACT_PATH.read_text(encoding="utf-8")
+    for token in [
+        "decide_with_signed_evidence_v2",
+        "decide_with_signed_longitudinal_evidence_v3",
+        "FencedFinalHoldoutOwnerV1",
+        "Trusted-only",
+        "Production-required",
+    ]:
+        findings.require(token.lower() in contract.lower(), "production_contract_incomplete", f"production contract is missing {token}")
+
+    lib = EVAL_LIB_PATH.read_text(encoding="utf-8")
+    findings.require(
+        "fn evaluate_legacy_inprocess_v1(" in lib,
+        "legacy_evaluator_missing",
+        "crate-local legacy evaluator must remain explicitly named",
+    )
+    findings.require(
+        "pub fn evaluate(" not in lib,
+        "legacy_evaluator_public",
+        "weak evaluate() must not be public",
+    )
+
+    ingress = PRODUCTION_INGRESS_PATH.read_text(encoding="utf-8")
+    findings.require(
+        "decide_with_signed_evidence_v2" in ingress
+        and "LearningEvidenceVerifierV1" in ingress
+        and "evaluation_evidence" in ingress,
+        "unsigned_production_ingress",
+        "production ingress must verify signed V2 evaluation evidence",
+    )
+    findings.require(
+        "decide_independently(" not in ingress and "decide_independently_v2(" not in ingress,
+        "direct_production_decision",
+        "production ingress must not call direct unsigned decision functions",
+    )
+
+    fenced = FENCED_HOLDOUT_PATH.read_text(encoding="utf-8")
+    for token in ["HoldoutFenceStoreV1", "compare_and_swap", "pending_plan_digest", "FencedFinalHoldoutOwnerV1"]:
+        findings.require(token in fenced, "fenced_holdout_incomplete", f"fenced holdout owner is missing {token}")
+
+    forbidden = ("decide_independently(", "decide_independently_v2(")
+    eval_root = ROOT / "codex-rs/hepta-intelligence-eval"
+    for source in (ROOT / "codex-rs").glob("**/src/**/*.rs"):
+        if eval_root in source.parents:
+            continue
+        relative = source.relative_to(ROOT).as_posix()
+        if relative.endswith("_tests.rs") or relative.endswith("/lane_e_closure_tests.rs"):
+            continue
+        text = source.read_text(encoding="utf-8")
+        for symbol in forbidden:
+            findings.require(
+                symbol not in text,
+                "unsigned_direct_caller",
+                f"production source calls trusted-only {symbol[:-1]}: {relative}",
+            )
+
+
+def _digest_paths(patterns: list[str]) -> str:
+    paths: set[Path] = set()
+    for pattern in patterns:
+        paths.update(path for path in ROOT.glob(pattern) if path.is_file())
+    digest = hashlib.sha256()
+    for path in sorted(paths, key=lambda value: value.relative_to(ROOT).as_posix()):
+        relative = path.relative_to(ROOT).as_posix().encode("utf-8")
+        data = path.read_bytes()
+        digest.update(len(relative).to_bytes(4, "big"))
+        digest.update(relative)
+        digest.update(len(data).to_bytes(8, "big"))
+        digest.update(data)
+    return digest.hexdigest()
+
+
+def emit_learning_eval_evidence(args: argparse.Namespace) -> dict[str, Any]:
+    findings = verify()
+    if findings.items:
+        raise ValueError("cannot emit evidence while Lane E source verification has findings")
+    matrix = load_json(MATRIX_PATH, Findings())
+    trace = load_json(TRACE_PATH, Findings())
+    module = next(item for item in matrix["modules"] if item["module"] == "learning.eval")
+    eval_cases = [item for item in trace["cases"] if item.get("module") == "learning.eval"]
+    production_cases = trace.get("productionIngressCases", [])
+    input_digest = _digest_paths([
+        "codex-rs/hepta-intelligence-eval/**/*.rs",
+        "codex-rs/hepta-intelligence-eval/*.md",
+        "codex-rs/hepta-intelligence/src/evaluated_shadow*.rs",
+        "codex-rs/hepta-intelligence/EVALUATED_SHADOW.md",
+        "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs",
+        "codex-rs/hepta-shadow-qualification/tests/durable_learning_roundtrip.rs",
+        "codex-rs/hepta-shadow-qualification/tests/support/*.rs",
+        "docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json",
+        "docs/modules/learning.eval/TECHNICAL.md",
+        "docs/readiness/LEARNING_EVALUATION_EXECUTION.md",
+        "qualification/lane-e/TEST_TRACEABILITY.json",
+        "qualification/module-execution-dossiers/detail/learning.eval.md",
+        ".github/workflows/hepta-lane-e-gap-closure.yml",
+        "scripts/hepta-lane-e-closure.py",
+        "codex-rs/Cargo.lock",
+    ])
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    expires = now + timedelta(days=7)
+    build_preimage = "|".join([
+        args.repository,
+        args.workflow_ref,
+        args.run_id,
+        args.run_attempt,
+        args.source_sha,
+        args.tree_sha,
+    ]).encode("utf-8")
+    return {
+        "schema": "hepta.learning-eval-ci-evidence.v1",
+        "source": {
+            "commitSha": args.source_sha,
+            "treeSha": args.tree_sha,
+            "testInputDigest": input_digest,
+        },
+        "buildIdentity": hashlib.sha256(build_preimage).hexdigest(),
+        "workflow": {
+            "repository": args.repository,
+            "workflowRef": args.workflow_ref,
+            "runId": args.run_id,
+            "runAttempt": args.run_attempt,
+        },
+        "coverage": {
+            "operationCount": len(module.get("operations", [])),
+            "laneEvalCaseCount": len(eval_cases),
+            "productionIngressCaseCount": len(production_cases),
+            "matrixDigest": hashlib.sha256(MATRIX_PATH.read_bytes()).hexdigest(),
+            "traceabilityDigest": hashlib.sha256(TRACE_PATH.read_bytes()).hexdigest(),
+            "productionContractDigest": hashlib.sha256(PRODUCTION_CONTRACT_PATH.read_bytes()).hexdigest(),
+        },
+        "stress": {
+            "profile": "fenced_holdout_and_signed_admission_serial_v1",
+            "iterations": args.stress_iterations,
+        },
+        "generatedAt": now.isoformat().replace("+00:00", "Z"),
+        "expiresAt": expires.isoformat().replace("+00:00", "Z"),
+        "signer": {
+            "kind": "github-actions-oidc-sigstore",
+            "repository": args.repository,
+            "workflowRef": args.workflow_ref,
+            "actorId": args.actor_id,
+        },
+        "externalCapabilityGatesRemainOpen": True,
+        "authorityDelta": "none",
+    }
+
+
 def verify_authority_posture(findings: Findings) -> None:
     sources = [
         ROOT / "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -547,6 +754,54 @@ def verify_workflow(findings: Findings) -> None:
         "workflow is missing synthetic-merge job",
     )
     findings.require(
+        "evaluated_shadow_tests::" in text
+        and "-p codex-hepta-intelligence" in text,
+        "workflow_gate_missing",
+        "workflow is missing signed production-ingress regression tests",
+    )
+    findings.require(
+        "fenced_holdout::tests::" in text
+        and "signed_evaluation_binds_metrics_roles_and_host_identities" in text,
+        "workflow_gate_missing",
+        "workflow is missing bounded fenced/signed stress coverage",
+    )
+    for token in [
+        "emit-evidence",
+        "Sign learning.eval evidence",
+        "Retain learning.eval evidence",
+        "id-token: write",
+        "learning-eval-evidence.json",
+    ]:
+        findings.require(
+            token in text,
+            "workflow_evidence_missing",
+            f"workflow evidence/provenance step is missing {token}",
+        )
+    findings.require(
+        bool(re.search(
+            r"^  synthetic-merge:\n    if: github\.event_name == 'pull_request'\s*$",
+            text,
+            re.MULTILINE,
+        )),
+        "workflow_synthetic_scope",
+        "synthetic-merge must be PR-only because BASE_SHA is PR-scoped",
+    )
+    findings.require(
+        bool(re.search(
+            r"^  sign-evidence:\n    if: github\.event_name == 'push'\n    needs: rust-closure",
+            text,
+            re.MULTILINE,
+        )),
+        "workflow_signing_scope",
+        "Sigstore evidence signing must run only after successful trusted-branch rust closure",
+    )
+    rust_job = text.split("  rust-closure:", 1)[1].split("\n  sign-evidence:", 1)[0]
+    findings.require(
+        "id-token: write" not in rust_job,
+        "workflow_oidc_exposure",
+        "pull-request test code must not receive OIDC id-token write permission",
+    )
+    findings.require(
         not TEMPORARY_WORKFLOW_PATH.exists(),
         "temporary_workflow_present",
         "temporary generated-file materializer must not remain in the candidate",
@@ -569,6 +824,14 @@ def run_self_test() -> list[Finding]:
         "free-function symbol resolver failed",
     )
     findings.require(
+        verify_symbol(
+            "pub struct Generic<T>(T); impl<T> Generic<T> { pub fn execute(&self) {} }",
+            "crate::Generic::execute",
+        ),
+        "self_test_generic_method",
+        "generic method symbol resolver failed",
+    )
+    findings.require(
         not verify_symbol("pub fn another() {}", "crate::execute"),
         "self_test_false_positive",
         "symbol resolver accepted a missing function",
@@ -582,6 +845,7 @@ def verify() -> Findings:
     trace = load_json(TRACE_PATH, findings)
     modules = verify_matrix(matrix, findings)
     verify_traceability(trace, modules, findings)
+    verify_learning_eval_production_contract(findings)
     verify_authority_posture(findings)
     verify_workflow(findings)
     return findings
@@ -591,11 +855,38 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=("verify", "self-test"),
+        choices=("verify", "self-test", "emit-evidence"),
         nargs="?",
         default="verify",
     )
+    parser.add_argument("--source-sha")
+    parser.add_argument("--tree-sha")
+    parser.add_argument("--run-id")
+    parser.add_argument("--run-attempt")
+    parser.add_argument("--repository")
+    parser.add_argument("--workflow-ref")
+    parser.add_argument("--actor-id")
+    parser.add_argument("--stress-iterations", type=int, default=8)
+    parser.add_argument("--output")
     args = parser.parse_args()
+    if args.command == "emit-evidence":
+        required = [
+            "source_sha", "tree_sha", "run_id", "run_attempt", "repository",
+            "workflow_ref", "actor_id", "output",
+        ]
+        missing = [name for name in required if not getattr(args, name)]
+        if missing or args.stress_iterations < 1:
+            parser.error(f"emit-evidence missing/invalid arguments: {missing}")
+        try:
+            output = emit_learning_eval_evidence(args)
+        except ValueError as error:
+            print(json.dumps({"schema": "hepta.learning-eval-ci-evidence-error.v1", "error": str(error)}, indent=2, sort_keys=True))
+            return 1
+        destination = Path(args.output)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(json.dumps(output, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        print(json.dumps(output, indent=2, sort_keys=True))
+        return 0
     if args.command == "self-test":
         findings = run_self_test()
     else:
