@@ -18,6 +18,7 @@ pub mod local_shadow;
 
 mod canonical_v1;
 mod pricing_v1;
+mod relations_v1;
 
 pub use canonical_v1::CANONICAL_NO_INTERVENTION_ID_V1;
 pub use canonical_v1::CanonicalPromptErrorV1;
@@ -38,6 +39,13 @@ pub use pricing_v1::PromptPricingEvidenceAuthenticatorV1;
 pub use pricing_v1::PromptPricingEvidenceV1;
 pub use pricing_v1::PromptPricingReceiptV1;
 pub use pricing_v1::price_factors_v1;
+pub use relations_v1::MAX_CANONICAL_PROMPT_CONSTRAINTS_V1;
+pub use relations_v1::MAX_CANONICAL_PROMPT_INTERACTIONS_V1;
+pub use relations_v1::PromptHardConstraintV1;
+pub use relations_v1::PromptPairInteractionV1;
+pub use relations_v1::PromptRelationErrorV1;
+pub use relations_v1::PromptRelationSourceAuthenticatorV1;
+pub use relations_v1::PromptRelationSourceV1;
 
 
 const MAX_CANDIDATES: usize = 4_096;
