@@ -188,20 +188,17 @@ impl ArtifactPublicationTransactionV1 {
 /// and admission time. The V1 predecessor is the explicit rollback predecessor
 /// when present, otherwise the sole predecessor when there is exactly one.
 /// Complete multi-predecessor lineage remains committed by the admission digest.
-#[must_use]
 pub fn artifact_registry_event_for_admission_v3(
     operation_id: StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
-) -> ArtifactEvent {
+) -> Result<ArtifactEvent, ArtifactPublicationError> {
     let manifest = &admission.validated_manifest.manifest;
-    let predecessor_id = manifest.rollback_predecessor.clone().or_else(|| {
-        if manifest.predecessor_ids.len() == 1 {
-            manifest.predecessor_ids.first().cloned()
-        } else {
-            None
-        }
-    });
-    ArtifactEvent::Register {
+    let predecessor_id = match manifest.predecessor_ids.as_slice() {
+        [] => None,
+        [only] => Some(only.clone()),
+        _ => return Err(ArtifactPublicationError::MultiPredecessorProjectionUnsupported),
+    };
+    Ok(ArtifactEvent::Register {
         event_id: operation_id,
         manifest: ArtifactManifest {
             artifact_id: manifest.artifact_id.clone(),
@@ -215,7 +212,7 @@ pub fn artifact_registry_event_for_admission_v3(
             compatibility_digest: manifest.compatibility_digest,
             encoded_size_bytes: manifest.encoded_size_bytes,
         },
-    }
+    })
 }
 
 pub fn prepare_artifact_publication_v1(
@@ -236,7 +233,7 @@ pub fn prepare_artifact_publication_v1(
     {
         return Err(ArtifactPublicationError::InvalidBinding);
     }
-    let expected_event = artifact_registry_event_for_admission_v3(operation_id.clone(), admission);
+    let expected_event = artifact_registry_event_for_admission_v3(operation_id.clone(), admission)?;
     let expected_event_digest = digest_event(&expected_event);
     if append_receipt.event_digest != expected_event_digest {
         return Err(ArtifactPublicationError::RegistryEventMismatch);
@@ -295,6 +292,7 @@ pub enum ArtifactPublicationError {
     InvalidBinding,
     RegistryEventMismatch,
     RegistryChainMismatch,
+    MultiPredecessorProjectionUnsupported,
     SnapshotReceiptMismatch,
     WitnessReceiptMismatch,
     SnapshotNotDurable,
@@ -382,7 +380,8 @@ mod tests {
         predecessor: Digest32,
     ) -> RegistryAppendReceipt {
         let sequence = LogicalSequence::new(1).expect("sequence");
-        let event = artifact_registry_event_for_admission_v3(operation_id, admission);
+        let event =
+            artifact_registry_event_for_admission_v3(operation_id, admission).expect("projection");
         let event_digest = digest_event(&event);
         RegistryAppendReceipt {
             disposition: RegistryAppendDisposition::Appended,
@@ -624,6 +623,18 @@ mod tests {
                 digest("binding"),
             ),
             Err(ArtifactPublicationError::RegistryChainMismatch)
+        );
+    }
+
+    #[test]
+    fn multi_predecessor_manifest_is_not_silently_downgraded_to_v1_lineage() {
+        let mut multi = admission();
+        multi.validated_manifest.manifest.predecessor_ids =
+            vec![id("parent-a"), id("parent-b")];
+        multi.validated_manifest.manifest.rollback_predecessor = Some(id("parent-a"));
+        assert_eq!(
+            artifact_registry_event_for_admission_v3(id("operation"), &multi),
+            Err(ArtifactPublicationError::MultiPredecessorProjectionUnsupported)
         );
     }
 
