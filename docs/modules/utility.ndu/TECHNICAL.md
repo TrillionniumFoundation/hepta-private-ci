@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `utility.ndu`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. Source-level read-only callers now exist in Control planning and the Intelligence vertical; their presence establishes composition only and does not establish a production projection writer, effect authority, independent acceptance, activation, promotion or release. `IMPLEMENTATION_MAP.json.sourceBase` is the shared static map-generation baseline used across module maps, not a cached live HEAD; current source identity and CI are resolved from the exact candidate at observation time. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -73,8 +73,11 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 The bounded components are:
 
 - `preference-state reader`
-- `bounded state updater`
+- `bounded context-bound state updater`
 - `recursive utility evaluator`
+- `policy-bound candidate evaluator`
+- `stochastic-evidence admission boundary`
+- `owner-local projection journal and checkpoint`
 - `boundary-condition cache`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -120,7 +123,7 @@ Critical protocol schemas:
 - `ObjectiveFunctionV1`
 - `RunStartSnapshotV1`
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+Every producer validates output before publication and binds semantic fields into the declared digest scope. `UtilityProfile` additionally requires a nonzero immutable axis-semantics digest covering the owner-registered units, normalization and scales used by the evaluator; changing those semantics changes the profile/evaluation identity. Protocol-capable preference solves receive their canonical subject/objective/generation/event/coefficient context digest before iteration, and publication rejects an unbound or rebound local receipt. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
@@ -143,11 +146,11 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Owner-local revocation is scoped by objective + subject + projection payload. The reference journal exposes a deterministic record-count/hash-chain-head checkpoint for an external trusted signer or durable store to anchor; the journal does not self-authenticate that checkpoint. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Preference vectors are bounded to 1–64 dimensions in [-1,1]. The canonical context-bound solver emits no revision for an already-converged state and treats iteration-budget exhaustion as unavailable. Hierarchy staging uses explicit subject/parent identities rather than class-only exclusion. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -177,7 +180,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. Projection journals are bounded owner-local references and must not be substituted for an independently selected production writer.
+Embed the deterministic evaluator under a frozen objective, immutable axis-semantics digest and versioned policy. The actual request-local context planner is described in the native host guide; it invokes the owner evaluator but does not activate global adaptive reconfiguration. Stochastic numeric output crosses toward a production-facing consumer only through the owner-local evidence admission that binds coefficient, normalization/runtime/conditioning, Q24 conversion, conditional-identification, well-posedness, independent convergence, rollback, objective-class, expiry and covariance-profile identities. Projection journals and their checkpoints are bounded owner-local references and must not be substituted for an independently selected production writer or trusted signature/store anchor.
 
 Current operating and state-format references:
 
@@ -192,8 +195,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-ndu/src/preference_tests.rs](../../../codex-rs/hepta-ndu/src/preference_tests.rs); bounds, zero-revision no-op, exhaustion and explicit hierarchy relation cases.
+- [codex-rs/hepta-ndu/src/protocol_tests.rs](../../../codex-rs/hepta-ndu/src/protocol_tests.rs); context binding, rebinding rejection and unbound-publication rejection.
+- [codex-rs/hepta-ndu/src/projection_journal_tests.rs](../../../codex-rs/hepta-ndu/src/projection_journal_tests.rs); scoped revocation, exact reopen, checkpoint, truncation and tamper cases.
 - [codex-rs/hepta-ndu/src/covariance_tests.rs](../../../codex-rs/hepta-ndu/src/covariance_tests.rs); named case: `scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds`.
-- [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); named case: `hard_violation_is_filtered_before_utility`.
+- [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); feasibility/policy cases plus axis-semantics identity binding.
+- [codex-rs/hepta-ndu/src/stochastic_admission.rs](../../../codex-rs/hepta-ndu/src/stochastic_admission.rs); evidence completeness, expiry/objective mismatch and bound-regression cases.
 
 In `codex-rs`, run `just test -p codex-hepta-ndu`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
 
@@ -219,7 +226,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Named source-level read-only callers are currently present in Control planning and the Intelligence vertical. Qualification still requires current exact-candidate and merge-candidate evidence; production persistence additionally requires a selected authoritative store and durability/recovery qualification. Independently issued convergence/well-posedness evidence, acceptance, activation, selection, promotion and release are separate externally governed states.
 
 For `utility.ndu`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
