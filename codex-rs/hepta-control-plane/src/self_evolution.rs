@@ -181,18 +181,26 @@ impl SelfEvolutionRuntimeV1 {
             self.rollback = Some(checkpoint);
             return Err(SelfEvolutionRuntimeError::SelectionMismatch);
         }
-        let mut bytes = b"hepta.control.self-evolution-rollback.v1".to_vec();
+        // Rollback restores predecessor content under a fresh generation.
+        // Generation numbers never rewind, otherwise stale pre-adoption handles
+        // could become current again after a regression.
+        let restored_generation = self
+            .generation
+            .next()
+            .map_err(|_| SelfEvolutionRuntimeError::GenerationMismatch)?;
+        let mut bytes = b"hepta.control.self-evolution-rollback.v2".to_vec();
         push_id(&mut bytes, &self.active_candidate_id);
         push_id(&mut bytes, &checkpoint.candidate_id);
         bytes.extend_from_slice(&self.generation.get().to_be_bytes());
         bytes.extend_from_slice(&checkpoint.generation.get().to_be_bytes());
+        bytes.extend_from_slice(&restored_generation.get().to_be_bytes());
         bytes.extend_from_slice(selection.selection_digest.as_array());
         bytes.extend_from_slice(selection.rollback_digest.as_array());
         bytes.extend_from_slice(regression_evidence_digest.as_array());
         let receipt = SelfEvolutionRollbackReceiptV1 {
             rejected_candidate_id: self.active_candidate_id.clone(),
             restored_candidate_id: checkpoint.candidate_id.clone(),
-            restored_generation: checkpoint.generation,
+            restored_generation,
             restored_artifact_digest: checkpoint.artifact_digest,
             selection_digest: selection.selection_digest,
             regression_evidence_digest,
@@ -200,7 +208,7 @@ impl SelfEvolutionRuntimeV1 {
             authority: AuthorityPosture::DENY_ALL,
         };
         self.active_candidate_id = checkpoint.candidate_id;
-        self.generation = checkpoint.generation;
+        self.generation = restored_generation;
         self.artifact_digest = checkpoint.artifact_digest;
         Ok(receipt)
     }
