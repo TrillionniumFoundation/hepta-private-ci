@@ -16,12 +16,17 @@ path = "src/main.rs"
 name = "hepta-native-updater"
 path = "src/bin/hepta-native-updater.rs"
 
+[[bin]]
+name = "hepta-native-credential"
+path = "src/bin/hepta-native-credential.rs"
+
 [dependencies]
 atomic-write-file = "0.3.1"
 arboard = "3"
 base64 = "0.22.1"
 codex-keyring-store = { path = "../../codex-rs/keyring-store" }
 ed25519-dalek = { version = "2.2.0", features = ["pkcs8"] }
+getrandom = "0.4.3"
 eframe = { version = "0.36.2", default-features = false, features = ["accesskit", "default_fonts", "glow", "persistence", "wayland", "x11"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
