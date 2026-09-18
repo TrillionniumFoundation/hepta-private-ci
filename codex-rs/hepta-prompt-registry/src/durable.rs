@@ -40,6 +40,7 @@ use crate::PromptRegistryV2Error;
 use crate::PromptRoleV2;
 use crate::RealizationDeliveryV2;
 use crate::RegistryReceipt;
+#[cfg(test)]
 use crate::VerifiedAdmission;
 use crate::admission::map_final_use_error;
 use crate::final_use_realization_binding;
