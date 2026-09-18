@@ -47,6 +47,7 @@ pub struct SecretLeaseRenewRequest {
     pub subject_id: String,
     pub consumer_id: String,
     pub operation_id: String,
+    pub namespace: String,
     pub increment_seconds: u64,
 }
 
@@ -57,6 +58,7 @@ pub struct SecretLeaseRevokeRequest {
     pub subject_id: String,
     pub consumer_id: String,
     pub operation_id: String,
+    pub namespace: String,
 }
 
 /// Provider lease identifier retained only by the trusted host boundary.
@@ -298,7 +300,10 @@ impl BaoClient {
             &request.consumer_id,
             &request.operation_id,
         )?;
-        if request.increment_seconds == 0 || request.increment_seconds > MAX_INCREMENT_SECONDS {
+        if request.increment_seconds == 0
+            || request.increment_seconds > MAX_INCREMENT_SECONDS
+            || (!request.namespace.is_empty() && !segmented(&request.namespace))
+        {
             return Err(BaoClientError::InvalidRequest);
         }
         mutation_binding(
@@ -308,6 +313,7 @@ impl BaoClient {
             &request.subject_id,
             &request.consumer_id,
             &request.operation_id,
+            &request.namespace,
             Some(request.increment_seconds),
         )
     }
@@ -339,8 +345,10 @@ impl BaoClient {
             .header("X-Vault-Token", self.sensitive_token_header()?)
             .header("Accept", "application/json")
             .json(&payload);
-        // sys/leases endpoints are namespace-aware too.
-        // Namespace is intentionally not inferred from the handle.
+        if !request.namespace.is_empty() {
+            network_request =
+                network_request.header("X-Vault-Namespace", &request.namespace);
+        }
         let mut response = match network_request.send().await {
             Ok(response) => response,
             Err(_) => {
@@ -396,6 +404,9 @@ impl BaoClient {
             &request.consumer_id,
             &request.operation_id,
         )?;
+        if !request.namespace.is_empty() && !segmented(&request.namespace) {
+            return Err(BaoClientError::InvalidRequest);
+        }
         mutation_binding(
             self,
             "revoke",
@@ -403,6 +414,7 @@ impl BaoClient {
             &request.subject_id,
             &request.consumer_id,
             &request.operation_id,
+            &request.namespace,
             None,
         )
     }
@@ -427,14 +439,17 @@ impl BaoClient {
         let payload = LeaseRevokePayload {
             lease_id: &handle.0,
         };
-        let response = match self
+        let mut network_request = self
             .client
             .request(Method::PUT, url)
             .header("X-Vault-Token", self.sensitive_token_header()?)
             .header("Accept", "application/json")
-            .json(&payload)
-            .send()
-            .await
+            .json(&payload);
+        if !request.namespace.is_empty() {
+            network_request =
+                network_request.header("X-Vault-Namespace", &request.namespace);
+        }
+        let response = match network_request.send().await
         {
             Ok(response) => response,
             Err(_) => {
@@ -497,6 +512,7 @@ fn mutation_binding(
     subject_id: &str,
     consumer_id: &str,
     operation_id: &str,
+    namespace: &str,
     increment_seconds: Option<u64>,
 ) -> Result<FinalUseBinding, BaoClientError> {
     let request_bytes = serde_json::to_vec(&(
@@ -506,6 +522,7 @@ fn mutation_binding(
         client.ca_sha256,
         handle.lease_id_sha256(),
         operation_id,
+        namespace,
         increment_seconds,
     ))
     .map_err(|_| BaoClientError::InvalidRequest)?;
@@ -513,6 +530,7 @@ fn mutation_binding(
         "hepta.bao.secret-lease.mutation-scope.v1",
         client.origin.as_str(),
         handle.lease_id_sha256(),
+        namespace,
         consumer_id,
     ))
     .map_err(|_| BaoClientError::InvalidRequest)?;
@@ -568,7 +586,7 @@ fn component(value: &str) -> bool {
         && value != ".."
         && value
             .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || b"_-.:" .contains(&b))
+            .all(|b| b.is_ascii_alphanumeric() || b"_-.:".contains(&b))
 }
 
 fn segmented(value: &str) -> bool {
