@@ -10,6 +10,8 @@ on:
       - "scripts/hepta-hnmf.py"
       - ".github/workflows/hnmf-qualification.yml"
       - "README.md"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/Cargo.lock"
   push:
     branches:
       - main
@@ -21,6 +23,8 @@ on:
       - "scripts/hepta-hnmf.py"
       - ".github/workflows/hnmf-qualification.yml"
       - "README.md"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/Cargo.lock"
 
 permissions:
   contents: read
@@ -45,6 +49,18 @@ jobs:
           rustc --version --verbose
           cargo --version --verbose
           cargo clippy --version
+
+      - name: Check production cognitive contract formatting
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check
+
+      - name: Check production cognitive contract targets
+        run: cargo check --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types --all-targets --locked
+
+      - name: Lint production cognitive contracts
+        run: cargo clippy --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types --all-targets --locked -- -D warnings
+
+      - name: Test production cognitive contracts and reference conformance
+        run: cargo test --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types --locked
 
       - name: Check multimodal contract reference formatting
         run: cargo fmt --manifest-path qualification/hnmf-contract-reference/Cargo.toml -- --check
