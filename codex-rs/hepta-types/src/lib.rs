@@ -12,6 +12,7 @@ mod fixed;
 mod identity;
 mod numeric_conversion;
 mod numeric_profile;
+mod prompt_delivery;
 
 pub use bounded::BoundedBytes;
 pub use bounded::BoundedText;
@@ -36,3 +37,7 @@ pub use numeric_profile::NumericProfileV1;
 pub use numeric_profile::NumericRoundingV1;
 pub use numeric_profile::NumericSignalSchemaV1;
 pub use numeric_profile::SignalUnitV1;
+pub use prompt_delivery::MAX_PROMPT_TOKEN_POSITIONS_V1;
+pub use prompt_delivery::PromptDeliveryErrorV1;
+pub use prompt_delivery::PromptDeliveryObservationV1;
+pub use prompt_delivery::PromptDeliveryRejectionV1;

@@ -59,6 +59,7 @@ pub use model::LedgerRecord;
 pub use model::LedgerSnapshot;
 pub use model::OutcomeFinality;
 pub use model::OutcomeObservation;
+pub use model::PromptDeliveryLineageV1;
 pub use model::PromptDeliveryObservation;
 pub use model::Revocation;
 pub use segments::LedgerSegmentCheckpoint;

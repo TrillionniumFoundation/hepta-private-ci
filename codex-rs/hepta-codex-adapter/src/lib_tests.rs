@@ -72,8 +72,13 @@ fn exact_prompt_delivery_observation_binds_submitted_bytes() {
         observe_prompt_delivery_v1(input, payload).expect("exact submitted payload is observed");
     assert_eq!(observation.provider_request_digest, digest(payload));
     assert!(observation.delivered);
-    assert!(!observation.authority.grants_any());
     observation.validate().expect("valid observation");
+    assert!(
+        !observation
+            .semantic_digest()
+            .expect("valid semantic digest")
+            .is_zero()
+    );
 }
 
 #[test]

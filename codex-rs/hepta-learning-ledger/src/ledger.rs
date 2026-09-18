@@ -3,6 +3,8 @@ use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
+use codex_hepta_types::PromptDeliveryObservationV1 as RuntimePromptDeliveryObservationV1;
+use codex_hepta_types::PromptDeliveryRejectionV1;
 use codex_hepta_types::StableId;
 
 use crate::AppendDisposition;
@@ -16,6 +18,7 @@ use crate::LedgerRecord;
 use crate::LedgerSnapshot;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
+use crate::PromptDeliveryLineageV1;
 use crate::PromptDeliveryObservation;
 use crate::Revocation;
 
@@ -67,6 +70,52 @@ impl LearningLedger {
     pub fn append(&mut self, event: LedgerEvent) -> Result<AppendReceipt, LedgerError> {
         let prepared = self.prepare(event)?;
         self.apply(prepared)
+    }
+
+    /// Consume the canonical runtime.codex prompt-delivery protocol and append
+    /// the learning-owned causal lineage in one validated operation.
+    ///
+    /// The runtime observation owns physical-delivery facts. The ledger adds
+    /// only its own episode/portfolio lineage and never lets the evaluated
+    /// policy certify delivery on its own behalf.
+    pub fn append_runtime_prompt_delivery_v1(
+        &mut self,
+        lineage: PromptDeliveryLineageV1,
+        observation: RuntimePromptDeliveryObservationV1,
+    ) -> Result<AppendReceipt, LedgerError> {
+        observation
+            .validate()
+            .map_err(|_| LedgerError::InvalidDeliveryObservation)?;
+        if lineage.portfolio_receipt_digest.is_zero() {
+            return Err(LedgerError::EmptyDigest("prompt portfolio"));
+        }
+        if lineage.support_digest.is_zero() {
+            return Err(LedgerError::EmptyDigest("prompt delivery support"));
+        }
+
+        let context_delivery_observation_digest = observation
+            .semantic_digest()
+            .map_err(|_| LedgerError::InvalidDeliveryObservation)?;
+        let rejected_reason_digest = observation.rejected_reason.map(rejection_digest);
+        let observed_token_positions_digest =
+            token_positions_digest(&observation.observed_token_positions);
+        let observer_id =
+            StableId::new("runtime.codex").map_err(|_| LedgerError::InternalInvariant)?;
+
+        self.append(LedgerEvent::PromptDelivery(PromptDeliveryObservation {
+            record_id: lineage.record_id,
+            episode_id: lineage.episode_id,
+            compilation_id: observation.compilation_id,
+            observer_id,
+            portfolio_receipt_digest: lineage.portfolio_receipt_digest,
+            provider_request_digest: observation.provider_request_digest,
+            delivered: observation.delivered,
+            rejected_reason_digest,
+            observed_token_positions_digest,
+            truncation_observed: observation.truncation_observed,
+            context_delivery_observation_digest,
+            support_digest: lineage.support_digest,
+        }))
     }
 
     pub(crate) fn prepare(&self, mut event: LedgerEvent) -> Result<PreparedAppend, LedgerError> {
@@ -409,6 +458,28 @@ impl LearningLedger {
             LedgerEvent::Revocation(_) => true,
         }
     }
+}
+
+fn rejection_digest(reason: PromptDeliveryRejectionV1) -> Digest32 {
+    let mut bytes = b"hepta.learning-ledger.prompt-delivery-rejection.v1".to_vec();
+    bytes.extend_from_slice(reason.as_str().as_bytes());
+    Digest32::of_bytes(&bytes)
+}
+
+fn token_positions_digest(positions: &[u32]) -> Option<Digest32> {
+    if positions.is_empty() {
+        return None;
+    }
+    let mut bytes = b"hepta.learning-ledger.prompt-token-positions.v1".to_vec();
+    bytes.extend_from_slice(
+        &u32::try_from(positions.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
+    for position in positions {
+        bytes.extend_from_slice(&position.to_be_bytes());
+    }
+    Some(Digest32::of_bytes(&bytes))
 }
 
 fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {

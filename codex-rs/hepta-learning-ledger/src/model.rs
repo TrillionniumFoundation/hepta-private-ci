@@ -78,6 +78,14 @@ pub struct CreditAssignment {
 /// delivered by an independent runtime observer. Indeterminate provider state
 /// is reconciled outside this event and is appended only once terminal.
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptDeliveryLineageV1 {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub portfolio_receipt_digest: Digest32,
+    pub support_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptDeliveryObservation {
     pub record_id: StableId,
     pub episode_id: StableId,
