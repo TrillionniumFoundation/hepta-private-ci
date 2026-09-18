@@ -16,7 +16,7 @@
     "apps/hepta-browser",
     "third_party/servo-patches"
   ],
-  "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict durable operation journal; a fresh principal-bound private profile directory is created for each worker generation and raw credentials remain external references.",
+  "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict durable operation journal; a bounded global profile admission and profile-to-worker pool enforce one private worker process per live profile generation; fresh principal-bound private profile directories are used and raw credentials remain external references.",
   "terminalObserverDisposition": "The current-pin Servo worker source supplies bounded semantic page observations and local action observations; durable reconciliation owns unknown dispatches, while remote business terminality and target-host enforcement still require independent evidence.",
   "operations": [
     {
@@ -41,7 +41,7 @@
           "command": "node --test apps/hepta-browser/test/worker-driver.test.js"
         }
       ],
-      "sourceSemantics": "Admits a profile/principal/generation, verifies the exact worker artifact, creates a fresh private principal-bound profile directory and starts one private worker process.",
+      "sourceSemantics": "Admits a bounded profile/principal/generation, enforces the global live-profile/process ceiling, verifies the exact worker artifact, creates a fresh private principal-bound profile directory and starts one prlimit-wrapped private worker process.",
       "operation": "open_profile",
       "nativeSymbol": "async openProfile(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -122,7 +122,8 @@
     "terminal-success reproducible current-pin Servo worker artifact/SBOM receipt",
     "independent Linux target-host namespace/profile/credential/network/no-listener/descendant-cleanup qualification and platform equivalents where targeted",
     "real credential broker and download/upload terminal observers when those capabilities are enabled",
-    "real remote business terminal observations plus independent acceptance/promotion/release"
+    "real remote business terminal observations plus independent acceptance/promotion/release",
+    "target resource and soak measurements under configured process ceilings"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
