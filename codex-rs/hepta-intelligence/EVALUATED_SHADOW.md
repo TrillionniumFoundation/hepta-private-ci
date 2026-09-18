@@ -10,10 +10,12 @@ actual candidate byte digest/length and artifact generation. The bytes must matc
 the F snapshot's model-artifact digest. These bounded opaque bytes need not be a
 model; their meaning and evaluation provenance remain the signer's responsibility.
 
-`run_evaluated_shadow_v1` and `evaluated_candidate_signing_payload_v1` remain
-compatibility surfaces for existing trusted callers; they use signed V2 evaluation
-without the type-level durable holdout proof and are not the production-required
-learning.eval ingress.
+`run_evaluated_shadow_v1`, `EvaluatedShadowRequestV1` and
+`evaluated_candidate_signing_payload_v1` remain compatibility surfaces for existing
+trusted callers only behind the explicit `trusted-evaluated-shadow-v1` feature. The
+default public API does not export them. They use signed V2 evaluation without the
+type-level durable holdout proof and are not the production-required learning.eval
+ingress.
 
 The host supplies the first seven `LaneFShadowPortsV1` methods. Its intuition
 result must match a recomputed `decide_calibrated_v2` receipt and disposition for
