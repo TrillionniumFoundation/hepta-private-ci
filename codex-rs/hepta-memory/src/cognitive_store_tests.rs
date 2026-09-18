@@ -115,11 +115,15 @@ async fn durable_owner_implements_cognitive_store_binding_without_granting_autho
     assert!(!first_descriptor.authority.grants_any());
     assert_ne!(
         first_descriptor.owner_identity_digest,
-        second.authoritative_owner_descriptor_v1().owner_identity_digest
+        second
+            .authoritative_owner_descriptor_v1()
+            .owner_identity_digest
     );
     assert_ne!(
         first_descriptor.physical_store_digest,
-        second.authoritative_owner_descriptor_v1().physical_store_digest
+        second
+            .authoritative_owner_descriptor_v1()
+            .physical_store_digest
     );
 }
 
@@ -903,7 +907,6 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
     );
 }
 
-
 #[tokio::test]
 #[ignore = "manual PERF-DURABLE profile; set HEPTA_COGNITIVE_PERF_RECORDS to size the retained fixture"]
 async fn perf_durable_reports_write_wal_reopen_and_max_cut_metrics() {
@@ -1040,12 +1043,7 @@ async fn perf_durable_reports_write_wal_reopen_and_max_cut_metrics() {
     let reopen_micros = reopen_started.elapsed().as_micros();
     let revalidate_started = Instant::now();
     reopened
-        .revalidate_lane_c_cut(
-            &access,
-            &CognitiveScope::AgentPrivate,
-            cut_digest,
-            2,
-        )
+        .revalidate_lane_c_cut(&access, &CognitiveScope::AgentPrivate, cut_digest, 2)
         .await
         .expect("perf cut revalidation");
     let revalidate_micros = revalidate_started.elapsed().as_micros();
