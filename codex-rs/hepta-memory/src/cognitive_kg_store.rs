@@ -9,6 +9,8 @@ use codex_hepta_kg::durable_projection_digest_v2;
 use codex_hepta_kg::build_durable_generation_from_snapshot_v2;
 use codex_hepta_kg::build_durable_generation_v2;
 use codex_hepta_kg::publish_generation;
+use codex_hepta_kg::derive_incremental_delta;
+use codex_hepta_kg::apply_incremental_delta;
 use codex_hepta_kg::KnowledgeGenerationV2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -326,6 +328,17 @@ impl CognitiveStore {
             &edges,
         )
         .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+        if let Some(predecessor) = predecessor.as_ref() {
+            let delta = derive_incremental_delta(predecessor, &v2_generation)
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            let incremental = apply_incremental_delta(predecessor, next_generation, delta)
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            if incremental != v2_generation {
+                return Err(CognitiveStoreError::Corrupt(
+                    "full and incremental KG V2 generation paths diverged".to_string(),
+                ));
+            }
+        }
         let publication = publish_generation(predecessor.as_ref(), &v2_generation)
             .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
         sqlx::query(
