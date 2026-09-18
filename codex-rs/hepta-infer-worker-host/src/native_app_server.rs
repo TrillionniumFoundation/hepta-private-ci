@@ -101,6 +101,14 @@ fn codex_deadline(timeout: Duration) -> Result<(u64, u64)> {
     Ok((now_ms, deadline_ms))
 }
 
+fn remaining_before(deadline_ms: u64) -> Result<Duration> {
+    let now_ms = unix_now_ms()?;
+    if now_ms >= deadline_ms {
+        return Err("runtime.codex request deadline elapsed before effect entry".into());
+    }
+    Ok(Duration::from_millis(deadline_ms - now_ms))
+}
+
 fn codex_intent(
     request_id: &str,
     session_id: &str,
@@ -524,6 +532,7 @@ impl AppServerModelDriver {
             })
             .transpose()?;
         let ingress = owner.session_ingress().await?;
+        let ingress_socket_path = ingress.socket_path.clone();
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
         let mut client = timeout(
             RPC_TIMEOUT,
@@ -600,12 +609,85 @@ impl AppServerModelDriver {
             &started.model,
             &started.model_provider,
         )?;
-        let verified_use = turn_start_authorizer.claim(authority_binding.clone()).await?;
+        // The authority round trip consumes the same request deadline as the
+        // model attempt. A slow issuer can deny progress, but can never cause a
+        // stale turn/start to be sent after the bound deadline.
+        let verified_use = match timeout(
+            remaining_before(codex_deadline_ms)?,
+            turn_start_authorizer.claim(authority_binding.clone()),
+        )
+        .await
+        {
+            Ok(result) => result?,
+            Err(_) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("final-use authorization exceeded the runtime.codex deadline".into());
+            }
+        };
         if verified_use.witness_sha256() == [0; 32] {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("kernel.authority returned an empty final-use witness".into());
         }
+
+        // Authority acquisition may have waited on an external policy owner.
+        // Revalidate the exact Agent generation/session after that await so a
+        // grant for a generation that was fenced meanwhile cannot cross the
+        // provider boundary.
+        if cancellation.is_cancelled() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("cancelled while waiting for final-use authorization".into());
+        }
+        let owner_health = match timeout(
+            RPC_TIMEOUT.min(remaining_before(codex_deadline_ms)?),
+            owner.health(),
+        )
+        .await
+        {
+            Ok(result) => result?,
+            Err(_) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("owner health recheck timed out before final-use entry".into());
+            }
+        };
+        if !owner_health.ready || owner_health.fenced {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("owning Agent lost readiness during final-use authorization".into());
+        }
+        let current_ingress = match timeout(
+            RPC_TIMEOUT.min(remaining_before(codex_deadline_ms)?),
+            owner.session_ingress(),
+        )
+        .await
+        {
+            Ok(result) => result?,
+            Err(_) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("Agent generation recheck timed out before final-use entry".into());
+            }
+        };
+        if current_ingress.socket_path != ingress_socket_path {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("App Server ingress changed during final-use authorization".into());
+        }
+        if cancellation.is_cancelled() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("cancelled before final-use entry".into());
+        }
+        remaining_before(codex_deadline_ms)?;
+
         let authority_witness =
             Digest32::from_array(verified_use.witness_sha256()).to_string();
+        // Final revocation/expiry checking happens after every authority and
+        // owner-generation await. If this fails, no durable dispatch marker
+        // exists and the reservation is released as definitely unsent.
+        let entered_use = verified_use.enter(&authority_binding)?;
+        if !entered_use.matches(&authority_binding) {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("kernel.authority final-use binding mismatch at entry".into());
+        }
+        // Write-ahead dispatch is committed after final-use entry but before
+        // the first App Server turn/start await. A crash before this record is
+        // definitely unsent; a crash after it is reconcile-only.
         control.dispatch_native(
             request_id,
             NativeDispatch {
@@ -621,13 +703,6 @@ impl AppServerModelDriver {
                 codex_request_digest: Some(exact_codex_request_digest.to_string()),
             },
         )?;
-        // This is the final revocation/expiry fence. After it returns, the
-        // effect is considered entered: any acknowledgement loss is reconciled
-        // and never turned into a blind retry.
-        let entered_use = verified_use.enter(&authority_binding)?;
-        if !entered_use.matches(&authority_binding) {
-            return Err("kernel.authority final-use binding mismatch at entry".into());
-        }
         let response = timeout(
             RPC_TIMEOUT,
             send_authorized_turn_start(&mut client, entered_use, turn_start_params),
