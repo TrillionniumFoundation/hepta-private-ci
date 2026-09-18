@@ -877,7 +877,7 @@ fn store_error(error: LeaseStoreError) -> BaoClientError {
         LeaseStoreError::InvalidState
         | LeaseStoreError::CapacityExceeded
         | LeaseStoreError::Unavailable
-        | LeaseStoreError::UnsafeStateDirectory => BaoClientError::ProviderUnavailable,
+        | LeaseStoreError::UnsafeStateDirectory => BaoClientError::LeaseStateUnavailable,
     }
 }
 
