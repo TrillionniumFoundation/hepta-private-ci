@@ -129,6 +129,9 @@ changing local policy metadata.
 
 The product adapter derives proposer/evaluator identities from authenticated
 principals. It does not treat unequal caller strings as proof of independence.
+Generator, Observer and Evaluator are pairwise separated across principal,
+credential-chain, signing-key and controller identity; a collapse of any pair fails
+before proposal persistence.
 
 ## 5. Selected-host evidence and artifact frontier
 
