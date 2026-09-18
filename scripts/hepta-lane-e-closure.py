@@ -73,6 +73,7 @@ EXPECTED_CRATES = {
     "codex-hepta-learning-artifacts",
     "codex-hepta-bellman-operator",
     "codex-hepta-intelligence-eval",
+    "codex-hepta-intelligence",
     "codex-hepta-shadow-qualification",
 }
 
@@ -565,6 +566,18 @@ def verify_workflow(findings: Findings) -> None:
         ).read_text(encoding="utf-8"),
         "production_e2e_missing",
         "cross-crate closure does not use signed durable evaluation admission",
+    )
+    findings.require(
+        "run_evaluated_shadow_v2"
+        in (
+            ROOT / "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+        ).read_text(encoding="utf-8")
+        and "decide_with_signed_durable_evidence_v3"
+        in (
+            ROOT / "codex-rs/hepta-intelligence/src/evaluated_shadow.rs"
+        ).read_text(encoding="utf-8"),
+        "production_consumer_missing",
+        "evaluated-shadow consumer does not use strict signed durable evaluation admission",
     )
     findings.require(
         "--features trusted-inprocess-eval" in text
