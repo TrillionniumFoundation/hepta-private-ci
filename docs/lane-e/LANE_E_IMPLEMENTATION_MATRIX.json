@@ -138,7 +138,7 @@
       "dossier": "qualification/module-execution-dossiers/detail/learning.operator.md",
       "nativeMapping": "codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md",
       "implementationState": "source_implemented_ci_pending",
-      "compatibility": "legacy_train_alias_retained_raw_predictors_internal_loaded_prediction_surfaces_required",
+      "compatibility": "train_alias_deprecated_build_targets_explicit_replay_safe_two_action_and_loaded_prediction_surfaces_required",
       "operations": [
         {
           "operation": "build_targets",
@@ -155,7 +155,7 @@
         {
           "operation": "build_sensor_core",
           "nativeSymbol": "codex_hepta_bellman_operator::build_sensor_core",
-          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "source": "codex-rs/hepta-bellman-operator/src/sensor_bounded.rs",
           "status": "implemented"
         },
         {
@@ -193,6 +193,13 @@
           "nativeSymbol": "codex_hepta_bellman_operator::LoadedTabularWorldModelV1::predict",
           "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "admit_world_model_qualification",
+          "nativeSymbol": "codex_hepta_bellman_operator::admit_world_model_qualification",
+          "source": "codex-rs/hepta-bellman-operator/src/world_model_qualification.rs",
+          "status": "implemented",
+          "profile": "external_frozen_evidence_holdout_future_drift_confidence_admission_v1"
         }
       ],
       "supplementalOperations": [
@@ -250,7 +257,15 @@
         "distinct_process_load_changes_prediction_and_rolls_back_without_retraining",
         "exact_challenge_boundary_accepts_only_operator_acceptance",
         "durable_time_watermark_rejects_clock_rollback",
-        "exact_replay_returns_same_receipt_and_conflicting_claim_fails"
+        "exact_replay_returns_same_receipt_and_conflicting_claim_fails",
+        "exact_sensor_budget_rejects_nominal_maxima_before_quadratic_work",
+        "relabelled_duplicate_support_evidence_fails",
+        "tabular_operator_requires_reference_action_domain",
+        "loaded_grid_rejects_single_action_even_if_artifact_was_hand_built",
+        "qualification_admission_requires_support_future_windows_and_bounds",
+        "qualification_admission_fails_closed_without_future_window_support",
+        "qualification_admission_rejects_drift_beyond_profile",
+        "qualification_admission_rejects_relabelled_profile_thresholds"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [

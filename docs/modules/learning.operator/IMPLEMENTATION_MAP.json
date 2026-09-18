@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e7edac3ba75fb0a24334b35f5a14533c46224f75",
-    "tree": "ea6bea4a314776fd741bd5266166333fbb1afcbd"
+    "commit": "c5eb8347990c4fca52856c42189eb43ba1787e89",
+    "tree": "423dc85e8dbab06d56be1bd4b56bd72f889a5c01"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -40,7 +40,8 @@
         "deterministic_and_canonical",
         "terminal_transition_has_no_bootstrap",
         "invalid_gamma_fails_closed",
-        "duplicate_sample_fails"
+        "duplicate_sample_fails",
+        "relabelled_duplicate_support_evidence_fails"
       ],
       "sourcePathExists": true,
       "designOperation": "build_targets",
@@ -64,11 +65,14 @@
     {
       "operation": "build_sensor_core",
       "nativeSymbol": "build_sensor_core",
-      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/sensor_bounded.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [
-        "op_01_farthest_point_sensor_core_is_deterministic"
+        "op_01_farthest_point_sensor_core_is_deterministic",
+        "exact_sensor_budget_accepts_small_reference_fixture",
+        "exact_sensor_budget_rejects_nominal_maxima_before_quadratic_work",
+        "exact_sensor_budget_accounts_for_selected_pair_geometry"
       ],
       "sourcePathExists": true,
       "designOperation": "build_sensor_core",
@@ -112,7 +116,8 @@
       "tests": [
         "op_05_tabular_operator_fits_complete_grid_deterministically",
         "op_05_tabular_operator_rejects_missing_or_underfilled_cells",
-        "op_05_tabular_operator_rejects_relabelled_duplicate_evidence"
+        "op_05_tabular_operator_rejects_relabelled_duplicate_evidence",
+        "tabular_operator_requires_reference_action_domain"
       ],
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator",
@@ -143,7 +148,8 @@
         "actual_fit_serializes_and_predicts_with_no_mutable_loaded_surface",
         "independent_pin_and_all_truncations_are_checked",
         "loaded_process_predicts_only_the_host_pinned_candidate",
-        "distinct_process_load_changes_prediction_and_rolls_back_without_retraining"
+        "distinct_process_load_changes_prediction_and_rolls_back_without_retraining",
+        "loaded_grid_rejects_single_action_even_if_artifact_was_hand_built"
       ],
       "sourcePathExists": true,
       "designOperation": "load_tabular_operator",
@@ -219,6 +225,23 @@
       ],
       "sourcePathExists": true,
       "designOperation": "predict_loaded_world_model",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_world_model_qualification",
+      "nativeSymbol": "admit_world_model_qualification",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model_qualification.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "qualification_admission_requires_support_future_windows_and_bounds",
+        "qualification_admission_fails_closed_without_future_window_support",
+        "qualification_admission_rejects_drift_beyond_profile",
+        "qualification_admission_rejects_relabelled_profile_thresholds"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_world_model_qualification",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -336,7 +359,7 @@
     "codex-rs/hepta-bellman-operator"
   ],
   "sourceRootTrees": {
-    "codex-rs/hepta-bellman-operator": "56cf9d544baaefcefdbbf747c5d8cbcba4c2e41f",
+    "codex-rs/hepta-bellman-operator": "d8e37b676862a2ff4ed1c1201ae73b5ee73e08aa",
     "codex-rs/hepta-operator-acceptance": "a58da2ee6ead76d650a2d7dbed681680e511528c"
   }
 }

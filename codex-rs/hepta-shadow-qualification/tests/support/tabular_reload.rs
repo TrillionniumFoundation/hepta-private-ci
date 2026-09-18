@@ -38,6 +38,20 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 fn fit(generation: u64, value: i64) -> TabularOperatorArtifactV1 {
+    let mut samples = Vec::new();
+    for (action, targets) in [("read", [value - 2, value + 2]), ("abstain", [0, 0])] {
+        for (replicate, target) in targets.into_iter().enumerate() {
+            samples.push(TabularOperatorSampleV1 {
+                sample_id: id(&format!("sample-{action}-{replicate}")),
+                sensor_id: id("state"),
+                action_id: id(action),
+                target: FixedQ32::from_raw(target),
+                evidence_digest: digest(&format!(
+                    "fixture-observation-{generation}-{action}-{replicate}"
+                )),
+            });
+        }
+    }
     fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
         artifact_id: id(&format!("tabular-{generation}")),
         producer_id: id("fixture-trainer"),
@@ -48,18 +62,8 @@ fn fit(generation: u64, value: i64) -> TabularOperatorArtifactV1 {
         training_profile_digest: digest("strict-tabular"),
         minimum_samples_per_cell: 2,
         sensor_ids: vec![id("state")],
-        action_ids: vec![id("read")],
-        samples: [value - 2, value + 2]
-            .into_iter()
-            .enumerate()
-            .map(|(i, target)| TabularOperatorSampleV1 {
-                sample_id: id(&format!("sample-{i}")),
-                sensor_id: id("state"),
-                action_id: id("read"),
-                target: FixedQ32::from_raw(target),
-                evidence_digest: digest(&format!("fixture-observation-{generation}-{i}")),
-            })
-            .collect(),
+        action_ids: vec![id("read"), id("abstain")],
+        samples,
     })
     .expect("strict learner")
 }
@@ -114,7 +118,13 @@ impl Request {
 fn worker() {
     let Ok(raw) = std::env::var("HEPTA_TEST_OWNER_TABULAR_REQUEST") else {
         // Normal invocation still exercises an actual fitted model, not an empty main.
-        assert_eq!(fit(1, 1).cells[0].mean_target.raw(), 1);
+        let model = fit(1, 1);
+        let read = model
+            .cells
+            .iter()
+            .find(|cell| cell.action_id == id("read"))
+            .expect("read cell");
+        assert_eq!(read.mean_target.raw(), 1);
         return;
     };
     assert!(raw.len() <= 16384);
