@@ -1,11 +1,13 @@
-//! Exact-profile, generation-bound context compilation and delivery receipts.
+//! Exact-profile, admission-verified context compilation and delivery receipts.
 //!
-//! This module keeps trusted instructions, schemas and untrusted evidence in
-//! distinct roles; binds every candidate to one Lane C generation vector; binds
-//! token counts to the exact tokenizer; preserves mandatory groups atomically;
-//! selects optional evidence by deterministic value-per-token; and emits a
-//! compilation -> serialization -> attachment -> terminal-delivery digest chain.
-//! It has no model client or provider authority.
+//! V2 is the normative context compiler path. Candidates are created only by
+//! an admission-snapshot verifier and an exact tokenizer adapter; compilation
+//! binds one coherent admission/revocation snapshot and mandatory-group policy;
+//! serialization materializes the exact selected bytes, runs the registered
+//! serializer and tokenizes the final payload; attachment revalidates current
+//! admission; delivery consumes a validated provider receipt plus an
+//! independent provider-evidence verifier. This crate never sends to a provider
+//! and grants no runtime, writer or model authority.
 
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -13,6 +15,8 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_hepta_contracts::ProviderInvocationReceipt;
+use codex_hepta_contracts::ProviderTerminal;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -21,11 +25,16 @@ use codex_hepta_types::StableId;
 pub const MAX_CONTEXT_CANDIDATES_V2: usize = 4_096;
 pub const MAX_CONTEXT_GROUPS_V2: usize = 256;
 pub const MAX_CONTEXT_TOKENS_V2: u64 = 1_000_000;
+pub const MAX_CONTEXT_ITEM_BYTES_V2: usize = 4 * 1024 * 1024;
+pub const MAX_CONTEXT_SERIALIZED_BYTES_V2: usize = 16 * 1024 * 1024;
 const TOKENIZATION_DOMAIN: &[u8] = b"hepta.context-tokenization.v2";
+const ADMISSION_DOMAIN: &[u8] = b"hepta.context-admission.v2";
 const MODEL_PROFILE_DOMAIN: &[u8] = b"hepta.context-model-profile.v2";
 const CANDIDATE_SET_DOMAIN: &[u8] = b"hepta.context-candidate-set.v2";
+const MANDATORY_GROUPS_DOMAIN: &[u8] = b"hepta.context-mandatory-groups.v2";
 const CONTEXT_DOMAIN: &[u8] = b"hepta.context-compilation.v2";
 const COMPILATION_RECEIPT_DOMAIN: &[u8] = b"hepta.context-compilation-receipt.v2";
+const MATERIALIZATION_DOMAIN: &[u8] = b"hepta.context-materialization.v2";
 const SERIALIZATION_DOMAIN: &[u8] = b"hepta.context-serialization.v2";
 const ATTACHMENT_DOMAIN: &[u8] = b"hepta.context-attachment.v2";
 const DELIVERY_DOMAIN: &[u8] = b"hepta.context-delivery-observation.v2";
@@ -37,22 +46,242 @@ pub enum ContextRoleV2 {
     UntrustedEvidence,
 }
 
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextAdmissionClaimV2 {
+    pub item_id: StableId,
+    pub role: ContextRoleV2,
+    pub content_digest: Digest32,
+    pub source_digest: Digest32,
+    pub generation_vector_digest: Digest32,
+    pub contains_secret: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextAdmissionDecisionV2 {
+    pub source_admission_digest: Digest32,
+    pub expires_at_unix_ms: u64,
+}
+
+pub trait ContextAdmissionSnapshotVerifierV2 {
+    fn verifier_digest(&self) -> Digest32;
+    fn snapshot_digest(&self) -> Digest32;
+    fn revocation_frontier_digest(&self) -> Digest32;
+    fn verify_admitted(
+        &self,
+        claim: &ContextAdmissionClaimV2,
+        at_unix_ms: u64,
+    ) -> Result<ContextAdmissionDecisionV2, String>;
+}
+
+pub trait ExactContextTokenizerV2 {
+    fn tokenizer_digest(&self) -> Digest32;
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, String>;
+}
+
+pub trait ContextSerializerV2 {
+    fn serializer_digest(&self) -> Digest32;
+    fn template_digest(&self) -> Digest32;
+    fn tool_schema_digest(&self) -> Digest32;
+    fn serialize(
+        &self,
+        compiled: &CompiledContextV2,
+        items: &[ContextMaterializedItemV2],
+    ) -> Result<Vec<u8>, String>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextProviderDeliveryDecisionV2 {
+    pub evidence_digest: Digest32,
+    pub recorded_at_unix_ms: u64,
+}
+
+pub trait ContextProviderDeliveryVerifierV2 {
+    fn verifier_digest(&self) -> Digest32;
+    fn verify_delivery(
+        &self,
+        receipt: &ProviderInvocationReceipt,
+    ) -> Result<ContextProviderDeliveryDecisionV2, String>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextAdmissionReceiptV2 {
+    item_id: StableId,
+    role: ContextRoleV2,
+    content_digest: Digest32,
+    source_digest: Digest32,
+    generation_vector_digest: Digest32,
+    verifier_digest: Digest32,
+    snapshot_digest: Digest32,
+    revocation_frontier_digest: Digest32,
+    source_admission_digest: Digest32,
+    verified_at_unix_ms: u64,
+    expires_at_unix_ms: u64,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl ContextAdmissionReceiptV2 {
+    #[must_use]
+    pub fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    #[must_use]
+    pub fn snapshot_digest(&self) -> Digest32 {
+        self.snapshot_digest
+    }
+
+    #[must_use]
+    pub fn revocation_frontier_digest(&self) -> Digest32 {
+        self.revocation_frontier_digest
+    }
+
+    #[must_use]
+    pub fn source_admission_digest(&self) -> Digest32 {
+        self.source_admission_digest
+    }
+
+    fn new(
+        claim: &ContextAdmissionClaimV2,
+        verifier: &impl ContextAdmissionSnapshotVerifierV2,
+        decision: ContextAdmissionDecisionV2,
+        verified_at_unix_ms: u64,
+    ) -> Result<Self, ContextCompilerV2Error> {
+        let verifier_digest = verifier.verifier_digest();
+        let snapshot_digest = verifier.snapshot_digest();
+        let revocation_frontier_digest = verifier.revocation_frontier_digest();
+        for (name, digest) in [
+            ("admission_verifier", verifier_digest),
+            ("admission_snapshot", snapshot_digest),
+            ("revocation_frontier", revocation_frontier_digest),
+            ("source_admission", decision.source_admission_digest),
+        ] {
+            ensure_digest(name, digest)?;
+        }
+        if verified_at_unix_ms == 0 || decision.expires_at_unix_ms <= verified_at_unix_ms {
+            return Err(ContextCompilerV2Error::InvalidAdmissionWindow(
+                claim.item_id.to_string(),
+            ));
+        }
+        let mut receipt = Self {
+            item_id: claim.item_id.clone(),
+            role: claim.role,
+            content_digest: claim.content_digest,
+            source_digest: claim.source_digest,
+            generation_vector_digest: claim.generation_vector_digest,
+            verifier_digest,
+            snapshot_digest,
+            revocation_frontier_digest,
+            source_admission_digest: decision.source_admission_digest,
+            verified_at_unix_ms,
+            expires_at_unix_ms: decision.expires_at_unix_ms,
+            receipt_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        receipt.receipt_digest = receipt.compute_digest();
+        receipt.validate_for_claim(claim, verified_at_unix_ms)?;
+        Ok(receipt)
+    }
+
+    fn validate_for_claim(
+        &self,
+        claim: &ContextAdmissionClaimV2,
+        at_unix_ms: u64,
+    ) -> Result<(), ContextCompilerV2Error> {
+        if self.item_id != claim.item_id
+            || self.role != claim.role
+            || self.content_digest != claim.content_digest
+            || self.source_digest != claim.source_digest
+            || self.generation_vector_digest != claim.generation_vector_digest
+        {
+            return Err(ContextCompilerV2Error::AdmissionBindingMismatch(
+                claim.item_id.to_string(),
+            ));
+        }
+        for (name, digest) in [
+            ("admission_content", self.content_digest),
+            ("admission_source", self.source_digest),
+            ("admission_generation", self.generation_vector_digest),
+            ("admission_verifier", self.verifier_digest),
+            ("admission_snapshot", self.snapshot_digest),
+            ("revocation_frontier", self.revocation_frontier_digest),
+            ("source_admission", self.source_admission_digest),
+            ("admission_receipt", self.receipt_digest),
+        ] {
+            ensure_digest(name, digest)?;
+        }
+        if self.verified_at_unix_ms == 0
+            || self.expires_at_unix_ms <= self.verified_at_unix_ms
+            || at_unix_ms < self.verified_at_unix_ms
+            || at_unix_ms >= self.expires_at_unix_ms
+        {
+            return Err(ContextCompilerV2Error::AdmissionExpired(
+                claim.item_id.to_string(),
+            ));
+        }
+        if self.authority.grants_any() {
+            return Err(ContextCompilerV2Error::AuthorityGranted);
+        }
+        if self.receipt_digest != self.compute_digest() {
+            return Err(ContextCompilerV2Error::DigestMismatch("admission_receipt"));
+        }
+        Ok(())
+    }
+
+    fn compute_digest(&self) -> Digest32 {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(ADMISSION_DOMAIN);
+        push_id(&mut bytes, &self.item_id);
+        bytes.push(role_code(self.role));
+        for digest in [
+            self.content_digest,
+            self.source_digest,
+            self.generation_vector_digest,
+            self.verifier_digest,
+            self.snapshot_digest,
+            self.revocation_frontier_digest,
+            self.source_admission_digest,
+        ] {
+            push_digest(&mut bytes, digest);
+        }
+        push_u64(&mut bytes, self.verified_at_unix_ms);
+        push_u64(&mut bytes, self.expires_at_unix_ms);
+        Digest32::of_bytes(&bytes)
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TokenizationReceiptV2 {
-    pub item_id: StableId,
-    pub content_digest: Digest32,
-    pub tokenizer_digest: Digest32,
-    pub token_count: u64,
-    pub receipt_digest: Digest32,
+    item_id: StableId,
+    content_digest: Digest32,
+    tokenizer_digest: Digest32,
+    token_count: u64,
+    receipt_digest: Digest32,
 }
 
 impl TokenizationReceiptV2 {
-    pub fn new(
+    #[must_use]
+    pub fn token_count(&self) -> u64 {
+        self.token_count
+    }
+
+    #[must_use]
+    pub fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    fn from_exact_tokenizer(
         item_id: StableId,
         content_digest: Digest32,
-        tokenizer_digest: Digest32,
-        token_count: u64,
+        tokenizer: &impl ExactContextTokenizerV2,
+        content: &[u8],
     ) -> Result<Self, ContextCompilerV2Error> {
+        let tokenizer_digest = tokenizer.tokenizer_digest();
+        ensure_digest("tokenizer", tokenizer_digest)?;
+        let token_count = tokenizer
+            .count_tokens(content)
+            .map_err(ContextCompilerV2Error::TokenizerFailure)?;
         let mut receipt = Self {
             item_id,
             content_digest,
@@ -65,7 +294,7 @@ impl TokenizationReceiptV2 {
         Ok(receipt)
     }
 
-    pub fn validate(&self) -> Result<(), ContextCompilerV2Error> {
+    fn validate(&self) -> Result<(), ContextCompilerV2Error> {
         ensure_digest("tokenized_content", self.content_digest)?;
         ensure_digest("tokenizer", self.tokenizer_digest)?;
         if self.token_count == 0 || self.token_count > MAX_CONTEXT_TOKENS_V2 {
@@ -81,8 +310,7 @@ impl TokenizationReceiptV2 {
         Ok(())
     }
 
-    #[must_use]
-    pub fn compute_digest(&self) -> Digest32 {
+    fn compute_digest(&self) -> Digest32 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(TOKENIZATION_DOMAIN);
         push_id(&mut bytes, &self.item_id);
@@ -96,7 +324,10 @@ impl TokenizationReceiptV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextModelProfileV2 {
     pub model_digest: Digest32,
+    pub provider_id_digest: Digest32,
+    pub provider_model_digest: Digest32,
     pub tokenizer_digest: Digest32,
+    pub serializer_digest: Digest32,
     pub template_digest: Digest32,
     pub tool_schema_digest: Digest32,
     pub maximum_context_tokens: u64,
@@ -106,7 +337,10 @@ impl ContextModelProfileV2 {
     pub fn validate(&self) -> Result<(), ContextCompilerV2Error> {
         for (name, digest) in [
             ("model", self.model_digest),
+            ("provider_id", self.provider_id_digest),
+            ("provider_model", self.provider_model_digest),
             ("tokenizer", self.tokenizer_digest),
+            ("serializer", self.serializer_digest),
             ("template", self.template_digest),
             ("tool_schema", self.tool_schema_digest),
         ] {
@@ -124,7 +358,10 @@ impl ContextModelProfileV2 {
         bytes.extend_from_slice(MODEL_PROFILE_DOMAIN);
         for digest in [
             self.model_digest,
+            self.provider_id_digest,
+            self.provider_model_digest,
             self.tokenizer_digest,
+            self.serializer_digest,
             self.template_digest,
             self.tool_schema_digest,
         ] {
@@ -136,23 +373,78 @@ impl ContextModelProfileV2 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ContextCandidateV2 {
+pub struct ContextCandidateDraftV2 {
     pub item_id: StableId,
     pub role: ContextRoleV2,
-    pub content_digest: Digest32,
     pub source_digest: Digest32,
     pub generation_vector_digest: Digest32,
-    pub tokenization: TokenizationReceiptV2,
     pub expected_value: FixedQ32,
-    pub trusted_admission_digest: Option<Digest32>,
     pub contains_secret: bool,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextCandidateV2 {
+    item_id: StableId,
+    role: ContextRoleV2,
+    content_digest: Digest32,
+    source_digest: Digest32,
+    generation_vector_digest: Digest32,
+    tokenization: TokenizationReceiptV2,
+    admission: ContextAdmissionReceiptV2,
+    expected_value: FixedQ32,
+    contains_secret: bool,
+}
+
 impl ContextCandidateV2 {
+    #[must_use]
+    pub fn item_id(&self) -> &StableId {
+        &self.item_id
+    }
+
+    #[must_use]
+    pub fn role(&self) -> ContextRoleV2 {
+        self.role
+    }
+
+    #[must_use]
+    pub fn content_digest(&self) -> Digest32 {
+        self.content_digest
+    }
+
+    #[must_use]
+    pub fn source_digest(&self) -> Digest32 {
+        self.source_digest
+    }
+
+    #[must_use]
+    pub fn token_count(&self) -> u64 {
+        self.tokenization.token_count
+    }
+
+    #[must_use]
+    pub fn admission_receipt(&self) -> &ContextAdmissionReceiptV2 {
+        &self.admission
+    }
+
+    fn admission_claim(&self) -> ContextAdmissionClaimV2 {
+        ContextAdmissionClaimV2 {
+            item_id: self.item_id.clone(),
+            role: self.role,
+            content_digest: self.content_digest,
+            source_digest: self.source_digest,
+            generation_vector_digest: self.generation_vector_digest,
+            contains_secret: self.contains_secret,
+        }
+    }
+
     fn validate(
         &self,
         expected_generation_vector_digest: Digest32,
         profile: &ContextModelProfileV2,
+        admission_verifier_digest: Digest32,
+        admission_snapshot_digest: Digest32,
+        revocation_frontier_digest: Digest32,
+        compiled_at_unix_ms: u64,
     ) -> Result<(), ContextCompilerV2Error> {
         ensure_digest("candidate_content", self.content_digest)?;
         ensure_digest("candidate_source", self.source_digest)?;
@@ -185,25 +477,83 @@ impl ContextCandidateV2 {
                 self.item_id.to_string(),
             ));
         }
-        match self.role {
-            ContextRoleV2::TrustedInstruction | ContextRoleV2::Schema => {
-                let Some(admission) = self.trusted_admission_digest else {
-                    return Err(ContextCompilerV2Error::MissingTrustedAdmission(
-                        self.item_id.to_string(),
-                    ));
-                };
-                ensure_digest("trusted_admission", admission)?;
-            }
-            ContextRoleV2::UntrustedEvidence => {
-                if self.trusted_admission_digest.is_some() {
-                    return Err(ContextCompilerV2Error::EvidenceRoleConfusion(
-                        self.item_id.to_string(),
-                    ));
-                }
-            }
+        let claim = self.admission_claim();
+        self.admission
+            .validate_for_claim(&claim, compiled_at_unix_ms)?;
+        if self.admission.verifier_digest != admission_verifier_digest
+            || self.admission.snapshot_digest != admission_snapshot_digest
+            || self.admission.revocation_frontier_digest != revocation_frontier_digest
+        {
+            return Err(ContextCompilerV2Error::AdmissionSnapshotMismatch(
+                self.item_id.to_string(),
+            ));
         }
         Ok(())
     }
+}
+
+pub fn verify_context_candidate_v2(
+    draft: ContextCandidateDraftV2,
+    content: &[u8],
+    admission_snapshot: &impl ContextAdmissionSnapshotVerifierV2,
+    tokenizer: &impl ExactContextTokenizerV2,
+    verified_at_unix_ms: u64,
+) -> Result<ContextCandidateV2, ContextCompilerV2Error> {
+    if content.is_empty() || content.len() > MAX_CONTEXT_ITEM_BYTES_V2 {
+        return Err(ContextCompilerV2Error::InvalidMaterializedItemBytes(
+            draft.item_id.to_string(),
+        ));
+    }
+    ensure_digest("candidate_source", draft.source_digest)?;
+    ensure_digest("candidate_generation_vector", draft.generation_vector_digest)?;
+    if draft.expected_value < FixedQ32::ZERO || draft.expected_value > FixedQ32::ONE {
+        return Err(ContextCompilerV2Error::ValueOutOfRange(
+            draft.item_id.to_string(),
+        ));
+    }
+    if draft.contains_secret {
+        return Err(ContextCompilerV2Error::SecretRejected(
+            draft.item_id.to_string(),
+        ));
+    }
+    let content_digest = Digest32::of_bytes(content);
+    let claim = ContextAdmissionClaimV2 {
+        item_id: draft.item_id.clone(),
+        role: draft.role,
+        content_digest,
+        source_digest: draft.source_digest,
+        generation_vector_digest: draft.generation_vector_digest,
+        contains_secret: draft.contains_secret,
+    };
+    let decision = admission_snapshot
+        .verify_admitted(&claim, verified_at_unix_ms)
+        .map_err(|reason| ContextCompilerV2Error::AdmissionVerifierFailed {
+            item_id: draft.item_id.to_string(),
+            reason,
+        })?;
+    let admission = ContextAdmissionReceiptV2::new(
+        &claim,
+        admission_snapshot,
+        decision,
+        verified_at_unix_ms,
+    )?;
+    let tokenization = TokenizationReceiptV2::from_exact_tokenizer(
+        draft.item_id.clone(),
+        content_digest,
+        tokenizer,
+        content,
+    )?;
+    Ok(ContextCandidateV2 {
+        item_id: draft.item_id,
+        role: draft.role,
+        content_digest,
+        source_digest: draft.source_digest,
+        generation_vector_digest: draft.generation_vector_digest,
+        tokenization,
+        admission,
+        expected_value: draft.expected_value,
+        contains_secret: draft.contains_secret,
+    })
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -219,9 +569,13 @@ pub struct ContextCompilationRequestV2 {
     pub objective_digest: Digest32,
     pub prompt_portfolio_digest: Digest32,
     pub generation_vector_digest: Digest32,
+    pub admission_verifier_digest: Digest32,
+    pub admission_snapshot_digest: Digest32,
+    pub revocation_frontier_digest: Digest32,
     pub model_profile: ContextModelProfileV2,
     pub token_budget: u64,
     pub truncation_policy_digest: Digest32,
+    pub compiled_at_unix_ms: u64,
     pub candidates: Vec<ContextCandidateV2>,
     pub mandatory_groups: Vec<MandatoryContextGroupV2>,
 }
