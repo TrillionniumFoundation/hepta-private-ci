@@ -42,7 +42,6 @@ struct FakePorts {
     failure: Option<(LaneFStageV1, PortFailureClassV1)>,
     intuition_decision: PortDecisionV1,
     wrong_snapshot: Option<LaneFStageV1>,
-    authority_widening: Option<LaneFStageV1>,
     calls: Vec<LaneFStageV1>,
 }
 
@@ -52,7 +51,6 @@ impl Default for FakePorts {
             failure: None,
             intuition_decision: PortDecisionV1::Continue,
             wrong_snapshot: None,
-            authority_widening: None,
             calls: Vec::new(),
         }
     }
@@ -74,10 +72,7 @@ impl FakePorts {
                 evidence_digest: digest(format!("failure:{stage:?}").as_bytes()),
             });
         }
-        let mut authority = AuthorityPosture::DENY_ALL;
-        if self.authority_widening == Some(input.stage) {
-            authority.runtime = true;
-        }
+        let authority = AuthorityPosture::DENY_ALL;
         Ok(PortReceiptV1 {
             stage: input.stage,
             producer: id(producer),
@@ -257,14 +252,13 @@ fn mixed_snapshot_rejects_before_next_stage() {
 }
 
 #[test]
-fn port_cannot_widen_authority() {
-    let mut ports = FakePorts {
-        authority_widening: Some(LaneFStageV1::IntuitionDecided),
-        ..FakePorts::default()
-    };
+fn port_cannot_construct_widened_authority() {
     assert_eq!(
-        run_shadow_pipeline(request(), &mut ports),
-        Err(PipelineErrorV1::AuthorityWidening)
+        AuthorityPosture::try_from_flags(codex_hepta_types::AuthorityFlagsV1 {
+            runtime: true,
+            ..codex_hepta_types::AuthorityFlagsV1::default()
+        }),
+        Err(codex_hepta_types::AuthorityPostureError::GrantRequested)
     );
 }
 

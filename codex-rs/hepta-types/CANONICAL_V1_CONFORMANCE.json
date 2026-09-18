@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.platform-types.canonical-conformance.v1",
+  "schemaVersion": 1,
+  "protocolId": "hepta.platform.types.canonical-digest.v1",
+  "magic": "HPTC",
+  "encodingVersion": 1,
+  "domain": "hepta.platform.types.canonical-digest.v1",
+  "maxEncodedBytes": 262144,
+  "maxContainerItems": 4096,
+  "maxDepth": 16,
+  "vectors": [
+    {
+      "id": "all-core-tags-v1",
+      "typeId": "platform.types:canonical-fixture",
+      "schemaVersion": 1,
+      "fields": [
+        {
+          "name": "weights",
+          "value": {
+            "type": "array",
+            "items": [
+              {"type": "i64", "value": -2},
+              {"type": "u128", "value": "3"}
+            ]
+          }
+        },
+        {"name": "payload", "value": {"type": "bytes", "hex": "000102ff"}},
+        {"name": "enabled", "value": {"type": "bool", "value": true}},
+        {"name": "subject", "value": {"type": "stable_id", "value": "module:alpha-1"}},
+        {
+          "name": "labels",
+          "value": {
+            "type": "map",
+            "entries": [
+              {"key": "z", "value": {"type": "text", "value": "last"}},
+              {"key": "a", "value": {"type": "u64", "value": "1"}}
+            ]
+          }
+        },
+        {
+          "name": "evidence",
+          "value": {
+            "type": "digest",
+            "hex": "be5df7bbbf50c940858b5b6a58a01308df2144a5a8461207f1ac5cb53066b3a4"
+          }
+        }
+      ],
+      "encodedLength": 265,
+      "encodingHex": "485054430001002868657074612e706c6174666f726d2e74797065732e63616e6f6e6963616c2d6469676573742e76310020706c6174666f726d2e74797065733a63616e6f6e6963616c2d6669787475726500000001000000060007656e61626c65640101000865766964656e636507be5df7bbbf50c940858b5b6a58a01308df2144a5a8461207f1ac5cb53066b3a400066c6162656c730a0000000200016102000000000000000100017a06000000046c61737400077061796c6f61640500000004000102ff00077375626a65637408000e6d6f64756c653a616c7068612d31000777656967687473090000000204fffffffffffffffe0300000000000000000000000000000003",
+      "sha256": "d2b04b7011cdef013c9f01053b8ed70a8a924db7632714e9840bcfea17d72736"
+    }
+  ]
+}

@@ -1,9 +1,15 @@
 use crate::AuthorityPosture;
+use crate::CanonicalFieldV1;
+use crate::CanonicalValueV1;
+use crate::ContractRegistryV1;
 use crate::Digest32;
 use crate::NumericConversionError;
 use crate::NumericProfileV1;
 use crate::NumericRoundingV1;
 use crate::NumericSignalSchemaV1;
+use crate::RegistryKindV1;
+use crate::StableId;
+use crate::canonical_digest_v1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NumericSignalV1 {
@@ -102,56 +108,160 @@ pub fn rescale_signal(
         schema: target.clone(),
         values,
     };
-    let source_digest = signal_digest(source);
-    let output_digest = signal_digest(&output);
+    let source_digest = signal_digest(source)?;
+    let output_digest = signal_digest(&output)?;
     let absolute_error_bound = NumericErrorBoundV1 {
         numerator: maximum_error,
         denominator: (source_scale as u128)
             .checked_mul(target_scale as u128)
             .ok_or(NumericConversionError::Overflow)?,
     };
-    let mut bytes = b"hepta.numeric-signal.conversion.native.v1".to_vec();
-    bytes.extend_from_slice(source_digest.as_array());
-    bytes.extend_from_slice(output_digest.as_array());
-    bytes.extend_from_slice(&absolute_error_bound.numerator.to_be_bytes());
-    bytes.extend_from_slice(&absolute_error_bound.denominator.to_be_bytes());
+    let evidence_digest = conversion_digest(
+        source.schema.profile,
+        target.profile,
+        source_digest,
+        output_digest,
+        absolute_error_bound,
+    )?;
     let receipt = NumericConversionReceiptV1 {
         source_profile: source.schema.profile,
         target_profile: target.profile,
         source_digest,
         output_digest,
         absolute_error_bound,
-        evidence_digest: Digest32::of_bytes(&bytes),
+        evidence_digest,
         authority: AuthorityPosture::DENY_ALL,
     };
     Ok((output, receipt))
 }
 
-fn signal_digest(signal: &NumericSignalV1) -> Digest32 {
+/// Registry-enforced conversion. The normalization contract must resolve to an
+/// immutable V1 normalization definition before numeric conversion begins.
+pub fn rescale_signal_registered(
+    source: &NumericSignalV1,
+    target: &NumericSignalSchemaV1,
+    registry: &ContractRegistryV1,
+) -> Result<(NumericSignalV1, NumericConversionReceiptV1), NumericConversionError> {
+    if source.schema.normalization_digest.is_zero() || target.normalization_digest.is_zero() {
+        return Err(NumericConversionError::MissingNormalization);
+    }
+    if source.schema.normalization_digest != target.normalization_digest {
+        return Err(NumericConversionError::NormalizationMismatch);
+    }
+    if registry
+        .resolve_digest(
+            RegistryKindV1::Normalization,
+            source.schema.normalization_digest,
+        )
+        .is_none()
+    {
+        return Err(NumericConversionError::UnknownNormalization);
+    }
+    rescale_signal(source, target)
+}
+
+fn signal_digest(signal: &NumericSignalV1) -> Result<Digest32, NumericConversionError> {
     let schema = &signal.schema;
-    let mut bytes = b"hepta.numeric-signal.row-major.native.v1".to_vec();
-    let id = schema.profile.id().as_bytes();
-    bytes.extend_from_slice(&(id.len() as u64).to_be_bytes());
-    bytes.extend_from_slice(id);
-    bytes.extend_from_slice(&schema.profile.scale().to_be_bytes());
-    bytes.push(match schema.profile.rounding() {
-        NumericRoundingV1::TowardZero => 0,
-        NumericRoundingV1::NearestTiesEven => 1,
-    });
-    bytes.push(0); // V1 overflow policy: reject, never saturate.
-    bytes.push(schema.unit.tag());
-    bytes.extend_from_slice(&(schema.shape.len() as u64).to_be_bytes());
-    for dimension in &schema.shape {
-        bytes.extend_from_slice(&(*dimension as u64).to_be_bytes());
-    }
-    bytes.extend_from_slice(&schema.minimum_raw.to_be_bytes());
-    bytes.extend_from_slice(&schema.maximum_raw.to_be_bytes());
-    bytes.extend_from_slice(schema.normalization_digest.as_array());
-    bytes.extend_from_slice(&(signal.values.len() as u64).to_be_bytes());
-    for value in &signal.values {
-        bytes.extend_from_slice(&value.to_be_bytes());
-    }
-    Digest32::of_bytes(&bytes)
+    let type_id = StableId::new("hepta.numeric-signal:row-major-native-v1")
+        .map_err(|_| NumericConversionError::CanonicalEncoding)?;
+    let shape: Vec<CanonicalValueV1<'_>> = schema
+        .shape
+        .iter()
+        .map(|dimension| {
+            u64::try_from(*dimension)
+                .map(CanonicalValueV1::U64)
+                .map_err(|_| NumericConversionError::CanonicalEncoding)
+        })
+        .collect::<Result<_, _>>()?;
+    let values: Vec<CanonicalValueV1<'_>> = signal
+        .values
+        .iter()
+        .copied()
+        .map(CanonicalValueV1::I64)
+        .collect();
+    let fields = [
+        CanonicalFieldV1 {
+            name: "maximum_raw",
+            value: CanonicalValueV1::I64(schema.maximum_raw),
+        },
+        CanonicalFieldV1 {
+            name: "minimum_raw",
+            value: CanonicalValueV1::I64(schema.minimum_raw),
+        },
+        CanonicalFieldV1 {
+            name: "normalization_digest",
+            value: CanonicalValueV1::Digest(schema.normalization_digest),
+        },
+        CanonicalFieldV1 {
+            name: "overflow_policy",
+            value: CanonicalValueV1::Text("reject"),
+        },
+        CanonicalFieldV1 {
+            name: "profile_id",
+            value: CanonicalValueV1::Text(schema.profile.id()),
+        },
+        CanonicalFieldV1 {
+            name: "rounding",
+            value: CanonicalValueV1::Text(schema.profile.rounding().id()),
+        },
+        CanonicalFieldV1 {
+            name: "scale",
+            value: CanonicalValueV1::U64(schema.profile.scale()),
+        },
+        CanonicalFieldV1 {
+            name: "shape",
+            value: CanonicalValueV1::Array(&shape),
+        },
+        CanonicalFieldV1 {
+            name: "unit",
+            value: CanonicalValueV1::Text(schema.unit.id()),
+        },
+        CanonicalFieldV1 {
+            name: "values",
+            value: CanonicalValueV1::Array(&values),
+        },
+    ];
+    canonical_digest_v1(&type_id, 1, &fields)
+        .map_err(|_| NumericConversionError::CanonicalEncoding)
+}
+
+fn conversion_digest(
+    source_profile: NumericProfileV1,
+    target_profile: NumericProfileV1,
+    source_digest: Digest32,
+    output_digest: Digest32,
+    error: NumericErrorBoundV1,
+) -> Result<Digest32, NumericConversionError> {
+    let type_id = StableId::new("hepta.numeric-signal:conversion-receipt-native-v1")
+        .map_err(|_| NumericConversionError::CanonicalEncoding)?;
+    let fields = [
+        CanonicalFieldV1 {
+            name: "error_denominator",
+            value: CanonicalValueV1::U128(error.denominator),
+        },
+        CanonicalFieldV1 {
+            name: "error_numerator",
+            value: CanonicalValueV1::U128(error.numerator),
+        },
+        CanonicalFieldV1 {
+            name: "output_digest",
+            value: CanonicalValueV1::Digest(output_digest),
+        },
+        CanonicalFieldV1 {
+            name: "source_digest",
+            value: CanonicalValueV1::Digest(source_digest),
+        },
+        CanonicalFieldV1 {
+            name: "source_profile",
+            value: CanonicalValueV1::Text(source_profile.id()),
+        },
+        CanonicalFieldV1 {
+            name: "target_profile",
+            value: CanonicalValueV1::Text(target_profile.id()),
+        },
+    ];
+    canonical_digest_v1(&type_id, 1, &fields)
+        .map_err(|_| NumericConversionError::CanonicalEncoding)
 }
 
 #[cfg(test)]

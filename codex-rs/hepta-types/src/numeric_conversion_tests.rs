@@ -252,3 +252,35 @@ fn digest_binds_numerical_profile_shape_range_units_and_normalization() {
         assert_ne!(receipt.evidence_digest, result.1.evidence_digest);
     }
 }
+
+
+#[test]
+fn registered_conversion_requires_resolvable_normalization_contract() {
+    let normalization = crate::RegistryDefinitionV1::new(
+        crate::RegistryKindV1::Normalization,
+        crate::validate_id(
+            "normalization:identity",
+            crate::IdProfileV1::Namespaced,
+        )
+        .expect("normalization id"),
+        1,
+        "scale=identity;clamp=none",
+    )
+    .expect("normalization definition");
+    let normalization_digest = normalization.digest();
+    let registry =
+        crate::ContractRegistryV1::new(vec![normalization]).expect("contract registry");
+    let mut source = signal(NumericProfileV1::HnmfPpmTowardZero, vec![1, 2]);
+    source.schema.normalization_digest = normalization_digest;
+    let target = NumericSignalSchemaV1 {
+        profile: NumericProfileV1::SignedQ24NearestTiesEven,
+        ..source.schema.clone()
+    };
+    assert!(rescale_signal_registered(&source, &target, &registry).is_ok());
+
+    let empty = crate::ContractRegistryV1::new(Vec::new()).expect("empty registry");
+    assert_eq!(
+        rescale_signal_registered(&source, &target, &empty),
+        Err(NumericConversionError::UnknownNormalization)
+    );
+}

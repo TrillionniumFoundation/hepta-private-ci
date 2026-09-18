@@ -2,61 +2,197 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "tree": "789fa2ea88e8a6e787a0fb838a8dda3cf2e20701"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
-  "owner": "kernel-contracts",
-  "deputy": "architecture",
-  "technicalGuide": "docs/modules/platform.types/TECHNICAL.md",
+  "sourceMaturity": "native_protocol_contracts",
   "declaredRoots": [
     "codex-rs/hepta-types"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-types"
   ],
-  "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "stateOwnerDisposition": "Stateless authority-free values; immutable registry generations are caller-owned inputs.",
+  "terminalObserverDisposition": "No effects or terminal observer; native qualification proves deterministic value semantics only.",
   "operations": [
     {
-      "operation": "rescale_signal",
-      "nativeSymbol": "rescale_signal",
-      "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "rescale_signal",
+      "designOperation": "validate_id",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "stableid",
-      "nativeSymbol": "StableId",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-types/src/identity.rs",
+        "symbol": "pub fn validate_id(",
+        "buildTarget": "codex-hepta-types"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-types/src/identity_tests.rs",
+          "kind": "profile_boundary_and_exhaustive_ascii",
+          "command": "just test -p codex-hepta-types"
+        }
+      ],
+      "sourceSemantics": "Validates bounded stable/module/namespaced V1 identity grammar before allocating the accepted owned value.",
+      "operation": "validate_id",
+      "nativeSymbol": "pub fn validate_id(",
       "sourcePath": "codex-rs/hepta-types/src/identity.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "stableid",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "canonical_digest_v1",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+        "symbol": "pub fn canonical_digest_v1(",
+        "buildTarget": "codex-hepta-types"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+          "kind": "native_golden_and_negative",
+          "command": "just test -p codex-hepta-types"
+        },
+        {
+          "path": "codex-rs/hepta-types/conformance/verify_vectors.py",
+          "kind": "independent_python_golden",
+          "command": "python3 codex-rs/hepta-types/conformance/verify_vectors.py"
+        },
+        {
+          "path": "codex-rs/hepta-types/conformance/verify_vectors.ts",
+          "kind": "independent_typescript_golden",
+          "command": "node --input-type=module < codex-rs/hepta-types/conformance/verify_vectors.ts"
+        }
+      ],
+      "sourceSemantics": "Produces a bounded HPTC V1 domain-separated typed length-framed digest with canonical field/map ordering and semantic array order.",
+      "operation": "canonical_digest_v1",
+      "nativeSymbol": "pub fn canonical_digest_v1(",
+      "sourcePath": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "contract_registry_v1",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-types/src/registry.rs",
+        "symbol": "pub struct ContractRegistryV1",
+        "buildTarget": "codex-hepta-types"
+      },
+      "delegatedCallees": [
+        {
+          "role": "canonical_definition_digest",
+          "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+          "symbol": "canonical_digest_v1"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-types/src/registry_tests.rs",
+          "kind": "immutable_registry_resolution_and_bounds",
+          "command": "just test -p codex-hepta-types"
+        }
+      ],
+      "sourceSemantics": "Resolves bounded immutable schema/normalization definitions by canonical digest without a mutable global registry.",
+      "operation": "contract_registry_v1",
+      "nativeSymbol": "pub struct ContractRegistryV1",
+      "sourcePath": "codex-rs/hepta-types/src/registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "rescale_signal",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+        "symbol": "pub fn rescale_signal(",
+        "buildTarget": "codex-hepta-types"
+      },
+      "delegatedCallees": [
+        {
+          "role": "canonical_signal_and_receipt_digest",
+          "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+          "symbol": "canonical_digest_v1"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+          "kind": "rounding_overflow_shape_unit_range",
+          "command": "just test -p codex-hepta-types"
+        }
+      ],
+      "sourceSemantics": "Performs deterministic checked i128 rescaling with explicit profile rounding and canonical signal/receipt commitments.",
+      "operation": "rescale_signal",
+      "nativeSymbol": "pub fn rescale_signal(",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "rescale_signal_registered",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+        "symbol": "pub fn rescale_signal_registered(",
+        "buildTarget": "codex-hepta-types"
+      },
+      "delegatedCallees": [
+        {
+          "role": "normalization_resolution",
+          "path": "codex-rs/hepta-types/src/registry.rs",
+          "symbol": "normalization_definition"
+        },
+        {
+          "role": "numeric_conversion",
+          "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+          "symbol": "rescale_signal"
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+          "kind": "registered_normalization_admission",
+          "command": "just test -p codex-hepta-types"
+        }
+      ],
+      "sourceSemantics": "Requires the normalization digest to resolve in an explicit immutable registry before invoking deterministic conversion.",
+      "operation": "rescale_signal_registered",
+      "nativeSymbol": "pub fn rescale_signal_registered(",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge Lane A qualification for this candidate before treating source qualification as current.",
+    "Generated cross-language bindings are not supplied by the conformance-vector oracles."
   ],
   "externalEvidenceGates": [
+    "named product execution for newly added canonical/profile/registry APIs",
     "independent semantic review",
-    "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
+    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledMappingGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "productExecutionComplete": false,
+    "deploymentQualificationComplete": false,
+    "independentAcceptanceComplete": false,
     "sourceRootPresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
@@ -64,6 +200,13 @@
     "activation": false,
     "release": false
   },
+  "sourceRootPresent": true,
+  "productionImplementation": false,
+  "productCallerState": "not_composed",
+  "productionWriterState": "not_established",
+  "owner": "kernel-contracts",
+  "deputy": "architecture",
+  "technicalGuide": "docs/modules/platform.types/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-types"
   ]
