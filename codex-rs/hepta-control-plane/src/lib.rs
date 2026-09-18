@@ -11,6 +11,7 @@
 mod cart;
 #[path = "embodiment/io.rs"]
 mod io;
+mod module_lifecycle;
 mod organ_graph;
 mod organ_hierarchy;
 mod organ_registry;
@@ -38,6 +39,12 @@ pub use io::SyntheticActuatorReceiptV1;
 pub use io::SyntheticCartIoV1;
 pub use io::TypedActuatorDispatchV1;
 pub use io::TypedSensorReadingV1;
+pub use module_lifecycle::ModuleLifecycleBarrierV1;
+pub use module_lifecycle::ModuleLifecycleError;
+pub use module_lifecycle::ModuleLifecycleKindV1;
+pub use module_lifecycle::ModuleLifecyclePhaseV1;
+pub use module_lifecycle::RetirementObservationV1;
+pub use module_lifecycle::WriterHandoffReceiptV1;
 pub use organ_graph::DataflowTiming;
 pub use organ_graph::FailureDomainV1;
 pub use organ_graph::FallbackTerminal;
