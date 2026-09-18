@@ -137,6 +137,22 @@ Each synapse carries fixed-point weight, bounded delay, plasticity class, eligib
 
 A recall packet contains only bounded identifiers, digests, selected event revisions, active node summaries, activation paths, contradiction groups, coverage, confidence, OOD, abstention reason, and resource receipt. Raw source data is attached later only by `context.compiler` after exact revalidation.
 
+### 4.7 Production Rust ownership and canonical JSON V1
+
+The canonical production Rust contract owner is `codex-rs/hepta-cognitive-types/src/hnmf`. The qualification packages remain deterministic reference/oracle implementations; they do not define a second production ontology. `HNMF.json#protocols` binds every protocol ID to its native Rust symbol and source path.
+
+All twelve registered HNMF protocols use the Hepta `canonical_json_v1` wire profile. The transport envelope is exactly:
+
+```json
+{"schema":"hepta.hnmf.<protocol>.v1","schemaVersion":1,"payload":{}}
+```
+
+The actual `payload` is the typed protocol object. Producers validate before encoding. Consumers admit bytes only through the canonical decoder, which enforces the registered encoded-byte ceiling, exact schema ID, `schemaVersion=1`, rejection of unknown envelope/payload fields, rejection of unknown enum variants, semantic validation after decode, and byte-for-byte equality with deterministic reserialization. Digests are lowercase 64-character hexadecimal strings. Ordered sets/maps use deterministic Rust ordered collections before serialization. Non-canonical whitespace or key ordering is rejected rather than normalized at a trust boundary.
+
+This profile is intentionally narrower than arbitrary JSON and is not claimed to be RFC 8785/JCS. The checked-in `modality_span_v1.canonical.json` vector freezes representative bytes, and `hnmf_reference_conformance.rs` feeds the same semantic fixture to the production contract layer and the qualification reference. A change to a V1 field name, enum meaning, canonical byte sequence, required-field semantics, or digest interpretation is therefore a contract change and cannot be made silently in place.
+
+Construction of production HNMF values uses private fields plus validated `try_new` constructors. Raw serde decoding is not an authority grant: the supported wire admission path always performs post-decode semantic validation. Current-run mutation and production activation remain forbidden for proposal objects.
+
 ## 5. Seven functional engram populations
 
 HNMF uses seven engineering populations. These are functional boundaries, not claims of anatomical equivalence.
