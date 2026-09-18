@@ -80,6 +80,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         generation: u64,
     ) -> Result<(), SupervisorError> {
+        let mut automatic_rollback_committed = false;
         if let Some(change) = slot.release_change.take() {
             match change.phase {
                 ReleaseChangePhase::TargetStarting => {
@@ -106,6 +107,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                             restored: change.origin.identity().to_string(),
                         },
                     );
+                    automatic_rollback_committed = true;
                 }
                 ReleaseChangePhase::WaitingForTargetExit => {
                     slot.release_change = Some(change);
@@ -113,7 +115,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
         self.persist_release_state(agent_id, slot)?;
-        self.commit_signed_intent_if_target(agent_id, slot)
+        if automatic_rollback_committed {
+            self.mark_signed_intent_rolled_back(agent_id, slot)
+        } else {
+            self.commit_signed_intent_if_target(agent_id, slot)
+        }
     }
 
     pub(crate) fn persist_release_state(
@@ -184,6 +190,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                         rollback: change.origin.identity().to_string(),
                     },
                 );
+                self.mark_signed_intent_recovery_required(agent_id, slot)?;
                 Ok(true)
             }
         }
@@ -221,6 +228,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     },
                 );
             }
+            self.mark_signed_intent_recovery_required(agent_id, slot)?;
             return Err(error);
         }
         Ok(true)
