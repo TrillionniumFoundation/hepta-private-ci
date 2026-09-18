@@ -194,7 +194,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-cognitive-read/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-read/src/v2_tests.rs) — lower-level projection, ordering, missing/stale and resource-bound behavior.
 - [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs) — scope/frontier/epoch binding plus delivery-time provider/vector/lease revalidation.
 - [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs) — one-owner SQLite cut, correction/tombstone/time/reopen/currentness behavior.
-- [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs) — real SQLite production-provider adversarial final-use test that advances the memory frontier, changes the authority epoch and expires the lease between read and consume.
+- [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs) — real SQLite provider-level adversarial tests for memory-frontier, authority-epoch and lease drift.\n- [codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs) — deterministic full-production-`read()` race: pause after authoritative acquisition during real ranker currentness, advance the real SQLite memory revision, release the read and require the final-use fence to fail closed.
 
 In `codex-rs`, focused source qualification is:
 
