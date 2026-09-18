@@ -132,6 +132,18 @@ impl VerifiedLearningEvidenceV1 {
         self.trust_digest
     }
     #[must_use]
+    pub const fn scope_digest(&self) -> Digest32 {
+        self.scope_digest
+    }
+    #[must_use]
+    pub const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+    #[must_use]
+    pub const fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
+    }
+    #[must_use]
     pub fn objective_digest(&self) -> Digest32 {
         self.objective_digest
     }
