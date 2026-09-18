@@ -808,7 +808,7 @@ mod tests {
             ),
             Err(ArtifactPublicationError::Registry(
                 ArtifactRegistryError::PredecessorNotFound(ref predecessor)
-            )) if predecessor == "missing-parent"
+            )) if predecessor.as_str() == "missing-parent"
         ));
         assert!(current.records().is_empty());
     }
