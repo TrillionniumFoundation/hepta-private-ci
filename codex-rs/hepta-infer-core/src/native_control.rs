@@ -457,8 +457,7 @@ impl DurableInferenceControl {
         if !body.is_empty() {
             for raw_line in body.split(|byte| *byte == b'\n') {
                 let line = raw_line.strip_suffix(b"\r").unwrap_or(raw_line);
-                let text = std::str::from_utf8(line)
-                    .map_err(|_| Error::CorruptJournal("utf8"))?;
+                let text = std::str::from_utf8(line).map_err(|_| Error::CorruptJournal("utf8"))?;
                 if let Some(json) = text.strip_prefix(JOURNAL_PREFIX) {
                     let mut event: Event = serde_json::from_str(json)
                         .map_err(|_| Error::CorruptJournal("native decode"))?;
@@ -484,8 +483,8 @@ impl DurableInferenceControl {
         }
         let marker = Event::OutputHistoryRedacted;
         next_native.apply(marker.clone())?;
-        let marker_json = serde_json::to_string(&marker)
-            .map_err(|_| Error::CorruptJournal("native encode"))?;
+        let marker_json =
+            serde_json::to_string(&marker).map_err(|_| Error::CorruptJournal("native encode"))?;
         rewritten.extend_from_slice(JOURNAL_PREFIX.as_bytes());
         rewritten.extend_from_slice(marker_json.as_bytes());
         rewritten.push(b'\n');
