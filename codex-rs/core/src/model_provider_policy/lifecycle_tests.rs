@@ -167,6 +167,7 @@ async fn active_snapshot_is_stable_across_contributor_awaits() {
         let result = begin_model_provider_policy(
             &registry,
             input(&session_store, &thread_store, &turn_store, &digests),
+        false,
         )
         .await
         .expect("snapshot evaluation should not fail");
@@ -229,6 +230,25 @@ fn input<'a>(
 }
 
 #[tokio::test]
+async fn required_policy_without_active_contributor_fails_closed() {
+    let registry = ExtensionRegistryBuilder::<crate::config::Config>::new().build();
+    let (session_store, thread_store, turn_store) = stores();
+    let digests = [digest('a'), digest('b'), digest('c'), digest('d')];
+
+    let error = begin_model_provider_policy(
+        &registry,
+        input(&session_store, &thread_store, &turn_store, &digests),
+        true,
+    )
+    .await
+    .expect_err("required provider policy must not fall back to NoPolicy");
+    assert_eq!(
+        error.reason_code(),
+        "model_provider_policy_required_missing"
+    );
+}
+
+#[tokio::test]
 async fn inactive_contributors_produce_no_policy() {
     let events = Arc::new(Mutex::new(Vec::new()));
     let mut builder = ExtensionRegistryBuilder::<crate::config::Config>::new();
@@ -249,6 +269,7 @@ async fn inactive_contributors_produce_no_policy() {
         begin_model_provider_policy(
             &registry,
             input(&session_store, &thread_store, &turn_store, &digests),
+        false,
         )
         .await
         .expect("inactive contributors should not fail"),
@@ -282,6 +303,7 @@ async fn active_contributors_finish_in_registration_order() {
     let ModelProviderPolicyBegin::Allow { lease } = begin_model_provider_policy(
         &registry,
         input(&session_store, &thread_store, &turn_store, &digests),
+    false,
     )
     .await
     .expect("all contributors should allow") else {
@@ -348,6 +370,7 @@ async fn block_and_begin_error_close_previously_acquired_leases() {
         let result = begin_model_provider_policy(
             &registry,
             input(&session_store, &thread_store, &turn_store, &digests),
+        false,
         )
         .await;
         match result {
@@ -391,6 +414,7 @@ async fn composite_finish_attempts_every_lease_and_surfaces_failures() {
     let ModelProviderPolicyBegin::Allow { lease } = begin_model_provider_policy(
         &registry,
         input(&session_store, &thread_store, &turn_store, &digests),
+    false,
     )
     .await
     .expect("all contributors should begin") else {
@@ -439,6 +463,7 @@ async fn cancelled_begin_closes_every_acquired_lease() {
     let mut begin = Box::pin(begin_model_provider_policy(
         &registry,
         input(&session_store, &thread_store, &turn_store, &digests),
+    false,
     ));
 
     tokio::select! {
