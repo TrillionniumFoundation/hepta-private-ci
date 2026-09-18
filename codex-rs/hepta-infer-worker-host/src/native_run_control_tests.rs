@@ -65,6 +65,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
                 codex_session_id: None,
                 codex_deadline_ms: None,
                 codex_payload_digest: None,
+                codex_authority_witness_sha256: None,
                 codex_request_digest: None,
             },
         )
