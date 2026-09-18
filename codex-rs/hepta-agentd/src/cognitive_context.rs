@@ -37,6 +37,7 @@ impl From<CognitiveStoreError> for CognitiveContextError {
 
 /// `body_generation` is the process launch identity, not the separately fenced
 /// fleet lifecycle epoch (Starting -> Running advances that epoch).
+#[cfg(test)]
 pub(crate) async fn read(
     store: &CognitiveStore,
     owner: &AgentId,
