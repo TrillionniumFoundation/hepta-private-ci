@@ -27,7 +27,7 @@ fn owner_channel(channel: RetrievalChannel) -> OwnerRetrievalChannelV1 {
     }
 }
 
-pub(crate) fn adapt_sqlite_owner_observation(
+pub fn adapt_sqlite_owner_observation(
     records: &[MemoryRecord],
     observation: &RetrievalObservation,
     generation_vector_digest: Digest32,
