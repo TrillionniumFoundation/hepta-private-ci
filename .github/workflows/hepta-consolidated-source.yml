@@ -311,11 +311,15 @@ jobs:
 
 
   engineering-product-gate:
-    name: control.engineering product caller
+    name: control.engineering product caller (${{ matrix.lane }})
     needs: [workspace-regression, engineering-sandbox, qualification]
     if: ${{ always() && needs.workspace-regression.result == 'success' && needs.engineering-sandbox.result == 'success' && needs.qualification.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     permissions:
       contents: read
     steps:
@@ -325,7 +329,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Reconstruct qualified synthetic merge
-        if: github.event_name == 'pull_request'
+        if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
         with:
           base-sha: ${{ env.BASE_SHA }}
@@ -349,12 +353,13 @@ jobs:
             --source-sha "$SOURCE_SHA" \
             --base-sha "$BASE_SHA" \
             --event-name "${{ github.event_name }}" \
+            --lane "${{ matrix.lane }}" \
             --pull-request-number "${{ github.event.pull_request.number || 0 }}" \
             --output "$RUNNER_TEMP/control-engineering-product.json"
       - name: Retain product execution receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: control-engineering-product-${{ github.run_id }}-${{ github.run_attempt }}
+          name: control-engineering-product-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
           path: ${{ runner.temp }}/control-engineering-product.json
           if-no-files-found: error
           retention-days: 30
