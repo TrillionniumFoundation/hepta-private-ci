@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod hnmf_v1;
 pub mod lane_c;
 
 use std::collections::BTreeSet;
