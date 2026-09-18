@@ -5,7 +5,15 @@
 
 #![forbid(unsafe_code)]
 
+/// Maximum append-only history that the crate-owned durable snapshot formats can encode.
+///
+/// In-memory owners fail before crossing this boundary so every accepted state remains
+/// representable by the durable create-only storage contract.
+pub const MAX_DURABLE_HISTORY_RECORDS: usize = 4096;
+
+mod admin;
 mod admission_v3;
+mod aux_storage;
 mod closure_v2;
 mod dataset_revocation;
 mod error;
@@ -14,14 +22,23 @@ mod iteration_ledger;
 mod lifecycle_journal;
 mod model;
 mod pinned;
+mod publication;
 mod registry;
 mod storage;
 
+pub use admin::ArtifactAdminSnapshotV1;
+pub use admin::inspect_artifact_admin_state;
 pub use admission_v3::ArtifactAdmissionError;
 pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
 pub use admission_v3::admit_manifest_at_withdrawal_head_v3;
 pub use admission_v3::validate_artifact_publication_v3;
 pub use admission_v3::verify_artifact_admission_v3;
+pub use aux_storage::LifecycleJournalSnapshotReceipt;
+pub use aux_storage::WithdrawalRegistrySnapshotReceipt;
+pub use aux_storage::read_lifecycle_journal_snapshot;
+pub use aux_storage::read_withdrawal_registry_snapshot;
+pub use aux_storage::write_lifecycle_journal_snapshot;
+pub use aux_storage::write_withdrawal_registry_snapshot;
 pub use closure_v2::ArtifactClosureError;
 pub use closure_v2::ArtifactLifecycleEventV1;
 pub use closure_v2::ArtifactLifecycleStateV1;
@@ -37,6 +54,7 @@ pub use closure_v2::RegistryHeadRequirementV1;
 pub use closure_v2::RegistryHeadWitnessV1;
 pub use closure_v2::ValidatedArtifactManifestV2;
 pub use closure_v2::WithdrawalAppendDispositionV1;
+pub use closure_v2::WithdrawalRegistryBindingV1;
 pub use closure_v2::validate_artifact_lifecycle_transition;
 pub use closure_v2::validate_artifact_manifest_v2;
 pub use closure_v2::validate_registry_head_witness;
@@ -77,11 +95,19 @@ pub use pinned::PinnedCandidateLoadError;
 pub use pinned::PinnedCandidateSpec;
 pub use pinned::RevalidatingCandidate;
 pub use pinned::load_pinned_candidate;
+pub use publication::ArtifactPublicationError;
+pub use publication::ArtifactPublicationTransactionV3;
+pub use publication::PreparedArtifactPublicationV3;
+pub use publication::RevalidatedArtifactPublicationV3;
+pub use publication::prepare_artifact_publication_v3;
+pub use publication::revalidate_artifact_publication_v3;
 pub use registry::ArtifactRegistry;
 pub use storage::ArtifactStorageError;
 pub use storage::CreateOnlyArtifactFile;
+pub use storage::OrphanInspection;
 pub use storage::RegistryHeadWitnessReceipt;
 pub use storage::RegistrySnapshotReceipt;
+pub use storage::inspect_orphan_candidate;
 pub use storage::read_candidate_payload;
 pub use storage::read_registry_head_witness;
 pub use storage::read_registry_snapshot;

@@ -55,11 +55,14 @@ No selected artifact or running process is changed by preparation or persistence
 
 ## Explicit remaining limits
 
-This is a snapshot-local invalidation batch, NOT a persistent dataset tombstone.
-The host must retain the source withdrawal and deny new dataset-dependent artifact
-admission; otherwise an entirely new artifact could be registered later. A retry
-against a newer head can invalidate newly discovered direct targets, but cannot
-prove that all external caches, models or backups were covered. Rebuilding without
+`prepare_dataset_revocation` remains a snapshot-local invalidation batch; it is
+not itself the persistent dataset tombstone. The persistent tombstone owner is
+the scoped `DatasetWithdrawalRegistry`, which can be stored and reopened through
+`write_withdrawal_registry_snapshot` / `read_withdrawal_registry_snapshot`.
+V3 admission binds that registry's identity/scope and exact head before a new
+artifact can be durably published. A retry against a newer head can invalidate
+newly discovered direct targets, but cannot prove that all external caches,
+models or backups were covered. Rebuilding without
 the dataset, exact source membership, independent credentials, production rollout,
 physical erasure and backup non-resurrection remain separate gates.
 

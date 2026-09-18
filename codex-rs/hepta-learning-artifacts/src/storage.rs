@@ -13,6 +13,7 @@ use std::io::SeekFrom;
 use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
+use std::path::Component;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -31,8 +32,8 @@ use crate::StateChange;
 
 const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
 const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
-const MAX_RECORDS: usize = 4096;
 const MAX_HEAD: usize = 4096;
+const MAX_ORPHAN_REFERENCES: usize = 65_536;
 const MAGIC: &str = "HEPTAR01";
 const HEAD_MAGIC: &str = "HEPTAH01";
 
@@ -51,6 +52,25 @@ impl fmt::Debug for CreateOnlyArtifactFile {
 }
 
 impl CreateOnlyArtifactFile {
+    /// Create a target under a caller-authenticated directory using exactly one
+    /// normal path component. This closes lexical `..`/absolute/subdirectory
+    /// escape through an untrusted leaf name. It does not authenticate or pin the
+    /// ancestor directory against hostile rename/symlink races; that remains a
+    /// host/platform capability boundary.
+    pub fn create_in_directory(
+        directory: impl AsRef<Path>,
+        leaf: impl AsRef<Path>,
+    ) -> Result<Self, ArtifactStorageError> {
+        let leaf = leaf.as_ref();
+        let mut components = leaf.components();
+        if !matches!(components.next(), Some(Component::Normal(_)))
+            || components.next().is_some()
+        {
+            return Err(ArtifactStorageError::InvalidPath);
+        }
+        Self::create(directory.as_ref().join(leaf))
+    }
+
     pub fn create(path: impl AsRef<Path>) -> Result<Self, ArtifactStorageError> {
         let mut options = OpenOptions::new();
         options.read(true).write(true).create_new(true);
@@ -90,6 +110,19 @@ pub struct RegistryHeadWitnessReceipt {
     pub encoded_bytes: usize,
 }
 
+/// Read-only reconciliation evidence for a host-fenced orphan candidate.
+///
+/// This value never authorizes deletion. The caller must separately prove the
+/// path/identity is outside every current and retained historical receipt before
+/// removing anything from the filesystem.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct OrphanInspection {
+    pub file_digest: Digest32,
+    pub encoded_bytes: usize,
+    pub empty: bool,
+    pub referenced: bool,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactStorageError {
     InvalidBinding,
@@ -98,6 +131,7 @@ pub enum ArtifactStorageError {
     HeadWitnessMismatch,
     Busy,
     NotRegular,
+    InvalidPath,
     AlreadyExists,
     Capacity,
     Corrupt,
@@ -118,6 +152,39 @@ impl From<io::Error> for ArtifactStorageError {
     fn from(value: io::Error) -> Self {
         Self::Io(value.kind())
     }
+}
+
+/// Inspect a suspected orphan without mutating or deleting it.
+///
+/// `retained_digests` must come from independently authenticated current and
+/// retained historical receipts/manifests. A false `referenced` result is only
+/// one input to host reconciliation; it is not deletion authority.
+pub fn inspect_orphan_candidate(
+    file: File,
+    retained_digests: &[Digest32],
+) -> Result<OrphanInspection, ArtifactStorageError> {
+    if retained_digests.len() > MAX_ORPHAN_REFERENCES {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    let observed_bytes = file.metadata()?.len();
+    if observed_bytes > MAX_PAYLOAD as u64 {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    let bytes = read_bounded(
+        file,
+        MAX_PAYLOAD,
+        observed_bytes,
+        ArtifactStorageError::Corrupt,
+    )?;
+    let file_digest = Digest32::of_bytes(&bytes);
+    let empty = bytes.is_empty();
+    let referenced = !empty && retained_digests.contains(&file_digest);
+    Ok(OrphanInspection {
+        file_digest,
+        encoded_bytes: bytes.len(),
+        empty,
+        referenced,
+    })
 }
 
 /// Write a new immutable snapshot; an existing file is never overwritten.
@@ -212,7 +279,7 @@ pub fn read_registry_snapshot(
 ) -> Result<ArtifactRegistry, ArtifactStorageError> {
     if expected.binding.is_zero()
         || expected.file_digest.is_zero()
-        || expected.records > MAX_RECORDS
+        || expected.records > crate::MAX_DURABLE_HISTORY_RECORDS
         || expected.encoded_bytes > MAX_SNAPSHOT
         || expected.encoded_bytes == 0
         || (expected.records == 0) != expected.head_digest.is_zero()
@@ -344,7 +411,10 @@ fn lock(file: File, kind: LockKind) -> Result<LockedFile, ArtifactStorageError> 
     }
 }
 
-fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
+pub(crate) fn write_new(
+    file: CreateOnlyArtifactFile,
+    bytes: &[u8],
+) -> Result<(), ArtifactStorageError> {
     let mut guard = lock(file.0, LockKind::Exclusive)?;
     if guard.0.metadata()?.len() != 0 {
         // Atomic creation already proved the target did not exist. Bytes appearing
@@ -359,7 +429,7 @@ fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactS
         .map_err(|_| ArtifactStorageError::Indeterminate)
 }
 
-fn read_bounded(
+pub(crate) fn read_bounded(
     file: File,
     limit: usize,
     expected_bytes: u64,
@@ -445,7 +515,7 @@ fn decode_head_witness(
     let parse_digest =
         |value: &str| Digest32::from_str(value).map_err(|_| ArtifactStorageError::Corrupt);
     let parse_id =
-        |value: &str| StableId::new(value.to_owned()).map_err(|_| ArtifactStorageError::Corrupt);
+        |value: &str| StableId::new(value).map_err(|_| ArtifactStorageError::Corrupt);
     let parse_u64 = |value: &str| {
         value
             .parse::<u64>()
@@ -470,7 +540,7 @@ fn encode_snapshot(
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     let count = registry.records().len();
-    if count > MAX_RECORDS {
+    if count > crate::MAX_DURABLE_HISTORY_RECORDS {
         return Err(ArtifactStorageError::Capacity);
     }
     let mut text = format!("{MAGIC}\n{binding}\n{count}\n");

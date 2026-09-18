@@ -439,8 +439,174 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `learning.artifacts` is implemented by work package `ART-1-LEARNING-ARTIFACT-REGISTRY` in:
+This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, external-effect, selection, activation, promotion or release authority.
 
-- `codex-rs/hepta-learning-artifacts`
+| Operation | Native symbol | Source path | Tests |
+|---|---|---|---|
+| `append_registry_event` | `ArtifactRegistry::append` | `codex-rs/hepta-learning-artifacts/src/registry.rs` | `codex-rs/hepta-learning-artifacts/src/registry_tests.rs` |
+| `write_registry_snapshot` | `write_registry_snapshot` | `codex-rs/hepta-learning-artifacts/src/storage.rs` | `codex-rs/hepta-learning-artifacts/src/storage_tests.rs, codex-rs/hepta-learning-artifacts/src/storage_tests.rs` |
+| `write_candidate_payload` | `write_candidate_payload` | `codex-rs/hepta-learning-artifacts/src/storage.rs` | `codex-rs/hepta-learning-artifacts/src/storage_tests.rs` |
+| `load_pinned_candidate` | `load_pinned_candidate` | `codex-rs/hepta-learning-artifacts/src/pinned.rs` | `codex-rs/hepta-learning-artifacts/src/pinned_tests.rs` |
+| `validate_artifact_manifest_v2` | `validate_artifact_manifest_v2` | `codex-rs/hepta-learning-artifacts/src/closure_v2.rs` | `codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs` |
+| `append_dataset_withdrawal` | `DatasetWithdrawalRegistry::append` | `codex-rs/hepta-learning-artifacts/src/closure_v2.rs` | `codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs` |
+| `admit_manifest_at_withdrawal_head_v3` | `admit_manifest_at_withdrawal_head_v3` | `codex-rs/hepta-learning-artifacts/src/admission_v3.rs` | `codex-rs/hepta-learning-artifacts/src/admission_v3.rs, codex-rs/hepta-learning-artifacts/src/admission_v3.rs, codex-rs/hepta-learning-artifacts/src/admission_v3.rs, codex-rs/hepta-learning-artifacts/src/admission_v3.rs` |
+| `prepare_artifact_publication_v3` | `prepare_artifact_publication_v3` | `codex-rs/hepta-learning-artifacts/src/publication.rs` | `codex-rs/hepta-learning-artifacts/src/publication.rs, codex-rs/hepta-learning-artifacts/src/publication.rs` |
+| `revalidate_artifact_publication_v3` | `revalidate_artifact_publication_v3` | `codex-rs/hepta-learning-artifacts/src/publication.rs` | `codex-rs/hepta-learning-artifacts/src/publication.rs` |
+| `write_withdrawal_registry_snapshot` | `write_withdrawal_registry_snapshot` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` |
+| `read_withdrawal_registry_snapshot` | `read_withdrawal_registry_snapshot` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` |
+| `append_lifecycle_event_v2` | `ArtifactLifecycleJournalV2::append` | `codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs` | `codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs, codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs` |
+| `write_lifecycle_journal_snapshot` | `write_lifecycle_journal_snapshot` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` |
+| `read_lifecycle_journal_snapshot` | `read_lifecycle_journal_snapshot` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` | `codex-rs/hepta-learning-artifacts/src/aux_storage.rs` |
+| `validate_iteration_transition` | `validate_iteration_transition` | `codex-rs/hepta-learning-artifacts/src/iteration.rs` | `codex-rs/hepta-learning-artifacts/src/iteration.rs, codex-rs/hepta-learning-artifacts/src/iteration.rs` |
+| `record_iteration_evidence` | `IterationLedgerV1::transition` | `codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs` | `codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs, codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs` |
+| `validate_registry_head_witness` | `validate_registry_head_witness` | `codex-rs/hepta-learning-artifacts/src/closure_v2.rs` | `codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs` |
+| `inspect_orphan_candidate` | `inspect_orphan_candidate` | `codex-rs/hepta-learning-artifacts/src/storage.rs` | `codex-rs/hepta-learning-artifacts/src/storage_tests.rs` |
+| `inspect_artifact_admin_state` | `inspect_artifact_admin_state` | `codex-rs/hepta-learning-artifacts/src/admin.rs` | `codex-rs/hepta-learning-artifacts/src/admin.rs` |
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+- Source identity: repository-wide `sourceBase` remains recorded in `IMPLEMENTATION_MAP.json`; the module-specific `implementationHead` records the newer source closure described by sections 18+.
+- Consumer callsites, authenticated newest-head discovery, host writer composition and target-filesystem qualification remain separate evidence when not listed above.
+- Production implementation, product execution, independent acceptance, activation and release remain false until their separate evidence gates pass.
+
+## 18. Current native closure, durability and host boundary
+
+The module-specific source closure represented by
+`docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json` now includes the
+stable V1 registry/storage surface plus the additive V2/V3 admission,
+withdrawal, lifecycle and governed-iteration surfaces. The map's `sourceBase`
+remains the repository-wide implementation-map generation identity shared by
+all module maps; its `implementationHead` records the newer
+`learning.artifacts` source closure reviewed by this guide.
+
+### 18.1 Bounded durable histories
+
+All crate-owned append-only histories that are expected to round-trip through
+the create-only snapshot formats use the shared
+`MAX_DURABLE_HISTORY_RECORDS = 4096` ceiling. The stable V1 artifact registry,
+the scoped dataset-withdrawal registry and the lifecycle journal must reject a
+new append before they can enter a state that the bounded durable formats cannot
+represent. The byte ceiling remains independently enforced by each format.
+
+The stable artifact snapshot remains `HEPTAR01`. Additive create-only sidecar
+formats provide durable semantic replay for the other authoritative histories:
+
+- `HEPTAW01` persists one scoped `DatasetWithdrawalRegistry`, including its
+  registry identity, scope digest, exact notice sequence and head;
+- `HEPTAL02` persists `ArtifactLifecycleJournalV2`, including predecessor
+  head, actor evidence and the complete lifecycle event for every record.
+
+Readers require an independently retained receipt, verify bounded exact bytes,
+replay the source semantics and reject non-canonical re-encoding.
+
+### 18.2 Historical lifecycle recovery
+
+A lifecycle actor must be currently valid when creating a new mutation.
+Historical snapshot replay is different: each persisted record is revalidated
+at its immutable `event.occurred_at` time. Therefore a credential that was
+valid when an event was accepted may later expire without making the immutable
+history unrecoverable. Reopening after expiry must succeed; attempting a new
+append with the expired credential must still fail.
+
+### 18.3 Scoped withdrawal authority
+
+V3 withdrawal-aware admission requires a
+`WithdrawalRegistryBindingV1 { registry_id, scope_digest }`. The binding is
+domain-separated into its own digest and is carried by the withdrawal snapshot
+and `WithdrawalBoundArtifactAdmissionV3`. The V3 admission digest binds the
+complete V2 manifest digest, withdrawal registry binding, exact withdrawal head
+and admission time.
+
+Two registries with an identical event head are not interchangeable when their
+registry identity or scope differs. Legacy unscoped withdrawal registries remain
+usable for the V2 source API, but they cannot issue a V3 publication admission.
+
+### 18.4 V3 admission to durable registry publication
+
+`prepare_artifact_publication_v3` and
+`revalidate_artifact_publication_v3` define the crate-side transaction
+contract. Preparation returns `PreparedArtifactPublicationV3`, which deliberately
+does not expose the staged registry or durable snapshot binding. Preparation binds:
+
+1. the V3 admission digest;
+2. withdrawal registry/scope binding and exact withdrawal head;
+3. the expected stable V1 registry predecessor head;
+4. the exact V1 register-event digest;
+5. the resulting stable registry head.
+
+The resulting transaction digest is the required binding for the create-only
+registry snapshot. Immediately before publication, while holding the host
+writer fence, the host consumes the prepared value through
+`revalidate_artifact_publication_v3`. A changed registry head or withdrawal
+frontier fails closed. Only the returned `RevalidatedArtifactPublicationV3`
+exposes the staged registry and snapshot binding, so the safe API cannot publish
+a prepared-but-not-revalidated registry snapshot.
+
+The stable V1 durable registry has one predecessor slot and one `support_digest`
+slot. A V2 manifest with multiple predecessors is therefore refused instead of
+silently discarding lineage. A dataset-derived V2 manifest is losslessly bridged
+only when it references exactly one source dataset; that dataset digest remains
+the V1 `support_digest`, preserving the existing `prepare_dataset_revocation`
+lookup semantics. Dataset-independent artifacts use the complete validated V2
+manifest digest as their V1 support commitment. Multi-dataset V2 publication is
+refused by the stable V1 bridge until a versioned durable format can represent
+all source datasets explicitly. A future multi-predecessor or multi-dataset
+encoding requires a new versioned format rather than an in-place reinterpretation.
+
+Cross-file durability remains a bounded saga, not a claimed filesystem
+transaction: payload synchronization, registry snapshot creation and current
+head-witness publication are distinct durable effects. The externally visible
+commit point is the host's authenticated publication of the exact registry
+snapshot/current-head witness pair. Crash recovery reconciles by transaction
+digest, exact predecessor and independently retained receipts.
+
+### 18.5 Iteration and iteration-ledger contracts
+
+`iteration.rs` owns bounded iteration-envelope and candidate transition
+semantics only. `iteration_ledger.rs` records bounded externally supplied
+evidence and rebuilds candidate state exclusively by replaying that evidence.
+Neither surface executes a sandbox, evaluates code, chooses a winner, merges a
+candidate, promotes it or releases it. Evidence requiring independence rejects
+the generator identity where the state transition requires a separate actor.
+
+### 18.6 Host-owned obligations and non-claims
+
+The source crate now owns the deterministic validation, create-only bytes,
+semantic replay and digest-bound publication contracts described above. The
+product host still owns all capabilities that require an authenticated or
+platform-specific environment:
+
+- newest/current snapshot and witness discovery;
+- signature verification, key distribution and principal authentication;
+- writer fencing and serialized publication;
+- trusted ancestor-directory traversal, namespace containment and
+  containing-directory synchronization;
+- encryption, quota, retention, backup deletion and physically deleting a
+  proven orphan;
+- target-filesystem locking/power-loss qualification;
+- independently authorized selection, process loading, canary, promotion and
+  release.
+
+An empty or partial file left after a failed create-only write is never silently
+reused. `inspect_orphan_candidate` can hash and classify a caller-opened file
+against a bounded set of independently retained digests under a shared lock; it
+does not delete the file and does not turn absence from that digest set into
+deletion authority. Cleanup is a separately fenced host operation that must
+first prove the path/identity is not referenced by any current or retained
+historical receipt.
+
+`inspect_artifact_admin_state` is the crate's read-only operational surface for
+already-supplied registry, withdrawal and lifecycle objects. It reports chain
+heads, record counts, direct artifact states and eligibility counts and always
+returns `AuthorityPosture::DENY_ALL`. It neither discovers the latest state nor
+mutates, selects, activates, promotes or releases an artifact.
+
+### 18.7 Qualification
+
+`.github/workflows/hepta-lane-e-gap-closure.yml` qualifies the exact PR source
+and an ordered-parent synthetic merge. Pull requests use the PR base SHA; push
+qualification uses `github.event.before`, with the all-zero initial-push value
+falling back to the source commit's parent. Compilation, owner tests,
+cross-crate closure, strict Clippy, rustfmt and clean-tree checks must all be
+green before this source closure is treated as repository-qualified.
+
+These source changes do not change the capability ceiling: product execution,
+independent acceptance, activation and release remain separate evidence gates.

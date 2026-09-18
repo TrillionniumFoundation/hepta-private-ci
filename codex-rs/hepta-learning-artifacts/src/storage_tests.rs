@@ -198,6 +198,61 @@ fn payload_rejects_wrong_bytes_without_reusing_its_created_target() {
 }
 
 #[test]
+fn create_in_directory_rejects_lexical_path_escape() {
+    let root = TestFile::new();
+    fs::create_dir(&root.0).unwrap();
+
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in_directory(&root.0, "../escape").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in_directory(&root.0, "nested/file").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+
+    let leaf = root.0.join("snapshot");
+    let created = CreateOnlyArtifactFile::create_in_directory(&root.0, "snapshot").unwrap();
+    write_registry_snapshot(created, &ArtifactRegistry::new(), binding()).unwrap();
+    assert!(leaf.is_file());
+
+    fs::remove_file(leaf).unwrap();
+    fs::remove_dir(&root.0).unwrap();
+}
+
+#[test]
+fn orphan_inspection_is_read_only_and_requires_retained_digest_evidence() {
+    let empty = TestFile::new();
+    let created = empty.create().unwrap();
+    drop(created);
+    let empty_inspection = inspect_orphan_candidate(empty.open(), &[]).unwrap();
+    assert!(empty_inspection.empty);
+    assert!(!empty_inspection.referenced);
+    assert_eq!(fs::metadata(&empty.0).unwrap().len(), 0);
+
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "policy", None, b"policy");
+    let payload = TestFile::new();
+    write_candidate_payload(
+        payload.create().unwrap(),
+        &registry,
+        &id("policy"),
+        b"policy",
+    )
+    .unwrap();
+
+    let digest = Digest32::of_bytes(b"policy");
+    let referenced = inspect_orphan_candidate(payload.open(), &[digest]).unwrap();
+    assert!(!referenced.empty);
+    assert!(referenced.referenced);
+    assert_eq!(referenced.file_digest, digest);
+
+    let unreferenced = inspect_orphan_candidate(payload.open(), &[]).unwrap();
+    assert!(!unreferenced.referenced);
+    assert_eq!(fs::read(&payload.0).unwrap(), b"policy");
+}
+
+#[test]
 fn existing_nonempty_file_is_never_reopened_for_writing() {
     let registry = ArtifactRegistry::new();
     let file = TestFile::new();
