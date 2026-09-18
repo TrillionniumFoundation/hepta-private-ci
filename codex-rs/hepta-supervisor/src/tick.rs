@@ -242,7 +242,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     matches!(runtime.phase, RuntimePhase::Running | RuntimePhase::Unhealthy { .. })
                 }
                 AgentLifecycle::Failed => {
-                    matches!(runtime.phase, RuntimePhase::Stopping { .. })
+                    matches!(
+                        runtime.phase,
+                        RuntimePhase::Stopping { .. } | RuntimePhase::Killing
+                    )
                 }
                 AgentLifecycle::Draining | AgentLifecycle::Stopped => false,
             };
