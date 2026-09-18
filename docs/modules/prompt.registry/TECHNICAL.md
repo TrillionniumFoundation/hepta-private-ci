@@ -91,6 +91,7 @@ Produced contracts:
 - `DomainRead::prompt_factor_lifecycleV1`
 - `DomainRead::prompt_factor_registryV1`
 - `DomainRead::prompt_realization_registryV1`
+- `ModulePort::prompt.registry::intelligence.control`
 - `ModulePort::prompt.registry::knowledge.graph`
 - `ModulePort::prompt.registry::prompt.optimizer`
 - `PromptFactorV1`
