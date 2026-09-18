@@ -37,6 +37,24 @@ pub struct PreparedArtifactPublicationV3 {
 
 impl PreparedArtifactPublicationV3 {
     #[must_use]
+    pub fn transaction(&self) -> &ArtifactPublicationTransactionV3 {
+        &self.transaction
+    }
+}
+
+/// Publication state after both mutable frontiers have been revalidated.
+///
+/// Only this type exposes the staged registry and durable snapshot binding. The
+/// host must hold its writer fence from revalidation through snapshot/head
+/// publication; this crate cannot manufacture that platform capability.
+#[derive(Clone, Debug)]
+pub struct RevalidatedArtifactPublicationV3 {
+    registry: ArtifactRegistry,
+    transaction: ArtifactPublicationTransactionV3,
+}
+
+impl RevalidatedArtifactPublicationV3 {
+    #[must_use]
     pub fn registry(&self) -> &ArtifactRegistry {
         &self.registry
     }
@@ -189,12 +207,12 @@ pub fn prepare_artifact_publication_v3(
 /// staged create-only snapshot. The caller must hold the same writer fence used
 /// to publish its current registry pointer/witness.
 pub fn revalidate_artifact_publication_v3(
-    prepared: &PreparedArtifactPublicationV3,
+    prepared: PreparedArtifactPublicationV3,
     current_registry: &ArtifactRegistry,
     withdrawal_registry: &DatasetWithdrawalRegistry,
     admission: &WithdrawalBoundArtifactAdmissionV3,
     now: u64,
-) -> Result<(), ArtifactPublicationError> {
+) -> Result<RevalidatedArtifactPublicationV3, ArtifactPublicationError> {
     if current_registry.snapshot().head_digest
         != prepared.transaction.expected_registry_head_digest
     {
@@ -208,7 +226,10 @@ pub fn revalidate_artifact_publication_v3(
     {
         return Err(ArtifactPublicationError::SnapshotReceiptMismatch);
     }
-    Ok(())
+    Ok(RevalidatedArtifactPublicationV3 {
+        registry: prepared.registry,
+        transaction: prepared.transaction,
+    })
 }
 
 fn digest_transaction(
@@ -321,14 +342,22 @@ mod tests {
         )
         .expect("prepare");
 
+        let revalidated = revalidate_artifact_publication_v3(
+            prepared,
+            &current,
+            &withdrawal,
+            &admission,
+            20,
+        )
+        .expect("revalidate");
         let path = unique_path("publication-reopen");
         let receipt = write_registry_snapshot(
             CreateOnlyArtifactFile::create(&path).expect("create snapshot"),
-            prepared.registry(),
-            prepared.snapshot_binding(),
+            revalidated.registry(),
+            revalidated.snapshot_binding(),
         )
         .expect("write snapshot");
-        prepared
+        revalidated
             .validate_snapshot_receipt(&receipt)
             .expect("receipt bound to transaction");
 
@@ -336,7 +365,7 @@ mod tests {
             .expect("reopen exact snapshot");
         assert_eq!(
             reopened.snapshot().head_digest,
-            prepared.transaction().resulting_registry_head_digest
+            revalidated.transaction().resulting_registry_head_digest
         );
         remove_file(path).expect("remove test file");
     }
@@ -363,8 +392,16 @@ mod tests {
         )
         .expect("prepare");
 
+        let revalidated = revalidate_artifact_publication_v3(
+            prepared,
+            &current,
+            &withdrawal,
+            &admission,
+            20,
+        )
+        .expect("revalidate");
         assert_eq!(
-            prepared
+            revalidated
                 .registry()
                 .manifest(&id("artifact-v3-publication"))
                 .expect("registered manifest")
@@ -372,8 +409,8 @@ mod tests {
             dataset
         );
         let revocation = prepare_dataset_revocation(
-            prepared.registry(),
-            prepared.registry().snapshot().head_digest,
+            revalidated.registry(),
+            revalidated.registry().snapshot().head_digest,
             &DatasetRevocationRequest {
                 operation_id: id("revoke-dataset"),
                 dataset_digest: dataset,
@@ -448,17 +485,17 @@ mod tests {
                 issued_at: 21,
             })
             .expect("withdrawal append");
+        let error = revalidate_artifact_publication_v3(
+            prepared,
+            &current,
+            &withdrawal,
+            &admission,
+            21,
+        )
+        .expect_err("withdrawal frontier changed after preparation");
         assert_eq!(
-            revalidate_artifact_publication_v3(
-                &prepared,
-                &current,
-                &withdrawal,
-                &admission,
-                21,
-            ),
-            Err(ArtifactPublicationError::Admission(
-                ArtifactAdmissionError::WithdrawalHeadChanged
-            ))
+            error,
+            ArtifactPublicationError::Admission(ArtifactAdmissionError::WithdrawalHeadChanged)
         );
     }
 }
