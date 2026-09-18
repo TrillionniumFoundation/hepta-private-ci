@@ -294,12 +294,24 @@ pub struct FinalUseRevocationAck {
 }
 
 impl FinalUseRevocationAck {
-    pub fn for_update(
+    /// Construct a node acknowledgement only from the receipt returned after
+    /// this exact signed update was successfully applied to the local authority.
+    pub fn for_applied_update(
         node_id: String,
-        update: &FinalUseRevocationUpdate,
+        signed_update: &SignedFinalUseRevocationUpdate,
+        receipt: &FinalUseRevocationReceipt,
         applied_at_unix_ms: u64,
     ) -> Result<Self, FinalUseControlError> {
+        let update = &signed_update.update;
         let update_sha256 = revocation_update_digest(update)?;
+        if receipt.distributor_id != update.distributor_id
+            || receipt.authority_epoch != update.head.authority_epoch
+            || receipt.revision != update.head.revision
+            || receipt.update_sha256 != update_sha256
+            || receipt.valid_until_unix_ms != update.expires_at_unix_ms
+        {
+            return Err(FinalUseControlError::InvalidRevocationAck);
+        }
         let ack = Self {
             schema_version: REVOCATION_ACK_SCHEMA_VERSION,
             node_id,
@@ -487,13 +499,43 @@ pub struct FinalUseRevocationFeedVerifier {
     keys: Vec<PinnedControlKey>,
 }
 
+/// Opaque evidence that one authenticated signed revocation update was
+/// accepted by the local durable authority owner. Fields are intentionally
+/// private so callers cannot fabricate "applied" evidence with a struct literal.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FinalUseRevocationReceipt {
-    pub distributor_id: String,
-    pub trust_key_id: String,
-    pub authority_epoch: u64,
-    pub revision: u64,
-    pub valid_until_unix_ms: u64,
+    distributor_id: String,
+    trust_key_id: String,
+    authority_epoch: u64,
+    revision: u64,
+    update_sha256: [u8; 32],
+    valid_until_unix_ms: u64,
+}
+
+impl FinalUseRevocationReceipt {
+    pub fn distributor_id(&self) -> &str {
+        &self.distributor_id
+    }
+
+    pub fn trust_key_id(&self) -> &str {
+        &self.trust_key_id
+    }
+
+    pub fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
+    }
+
+    pub fn revision(&self) -> u64 {
+        self.revision
+    }
+
+    pub fn update_sha256(&self) -> [u8; 32] {
+        self.update_sha256
+    }
+
+    pub fn valid_until_unix_ms(&self) -> u64 {
+        self.valid_until_unix_ms
+    }
 }
 
 impl fmt::Debug for FinalUseRevocationFeedVerifier {
@@ -549,6 +591,7 @@ impl FinalUseRevocationFeedVerifier {
             trust_key_id: key_id,
             authority_epoch: signed.update.head.authority_epoch,
             revision: signed.update.head.revision,
+            update_sha256: revocation_update_digest(&signed.update)?,
             valid_until_unix_ms: signed.update.expires_at_unix_ms,
         })
     }
@@ -760,8 +803,8 @@ mod tests {
         )
         .unwrap();
         let receipt = verifier.apply(&authority, &signed, 2_000).unwrap();
-        assert_eq!(receipt.trust_key_id, "single-key");
-        assert_eq!(receipt.valid_until_unix_ms, 31_000);
+        assert_eq!(receipt.trust_key_id(), "single-key");
+        assert_eq!(receipt.valid_until_unix_ms(), 31_000);
         assert_eq!(
             authority.with_verified_use(token, &grant.grant.binding, || ()),
             Err(FinalUseError::Revoked)
@@ -884,6 +927,9 @@ mod tests {
             distributor.verifying_key().to_bytes(),
         )
         .unwrap();
+        let applied_receipt = feed_verifier
+            .apply(&_authority, &signed_update, 1_500)
+            .unwrap();
         let verifier = FinalUseRevocationConvergenceVerifier::new([
             FinalUseRevocationNodeTrust {
                 node_id: "node-a".into(),
@@ -906,7 +952,12 @@ mod tests {
         ])
         .unwrap();
 
-        let ack_a = FinalUseRevocationAck::for_update("node-a".into(), &update, 2_000).unwrap();
+        let ack_a = FinalUseRevocationAck::for_applied_update(
+            "node-a".into(),
+            &signed_update,
+            &applied_receipt,
+            2_000,
+        ).unwrap();
         let signed_a = SignedFinalUseRevocationAck {
             signature: node_a
                 .sign(&ack_a.signing_bytes().unwrap())
@@ -920,7 +971,12 @@ mod tests {
         assert!(!partial.converged());
         assert_eq!(partial.missing_nodes, vec!["node-b"]);
 
-        let ack_b = FinalUseRevocationAck::for_update("node-b".into(), &update, 2_050).unwrap();
+        let ack_b = FinalUseRevocationAck::for_applied_update(
+            "node-b".into(),
+            &signed_update,
+            &applied_receipt,
+            2_050,
+        ).unwrap();
         let signed_b = SignedFinalUseRevocationAck {
             signature: node_b
                 .sign(&ack_b.signing_bytes().unwrap())
@@ -977,6 +1033,9 @@ mod tests {
             distributor.verifying_key().to_bytes(),
         )
         .unwrap();
+        let applied_receipt = feed_verifier
+            .apply(&_authority, &signed_update, 1_200)
+            .unwrap();
         let verifier = FinalUseRevocationConvergenceVerifier::new([
             FinalUseRevocationNodeTrust {
                 node_id: "node-a".into(),
@@ -989,7 +1048,12 @@ mod tests {
             },
         ])
         .unwrap();
-        let ack = FinalUseRevocationAck::for_update("node-a".into(), &update, 1_500).unwrap();
+        let ack = FinalUseRevocationAck::for_applied_update(
+            "node-a".into(),
+            &signed_update,
+            &applied_receipt,
+            1_500,
+        ).unwrap();
         let signed = SignedFinalUseRevocationAck {
             signature: node
                 .sign(&ack.signing_bytes().unwrap())
@@ -1007,7 +1071,12 @@ mod tests {
             Err(FinalUseControlError::InvalidRevocationAck)
         );
         let future_ack =
-            FinalUseRevocationAck::for_update("node-a".into(), &update, 1_800).unwrap();
+            FinalUseRevocationAck::for_applied_update(
+                "node-a".into(),
+                &signed_update,
+                &applied_receipt,
+                1_800,
+            ).unwrap();
         let future_signed = SignedFinalUseRevocationAck {
             signature: node
                 .sign(&future_ack.signing_bytes().unwrap())
@@ -1035,6 +1104,66 @@ mod tests {
         assert_eq!(
             verifier.verify(&feed_verifier, &forged_update, &[signed], 1_600),
             Err(FinalUseControlError::InvalidSignature)
+        );
+    }
+
+    #[test]
+    fn revocation_ack_requires_receipt_for_the_exact_applied_update() {
+        let (authority, grant, _directory, _approver, distributor) = fixture();
+        let applied = FinalUseRevocationUpdate::new(
+            "revocation-distributor".into(),
+            FinalUseRevocations {
+                authority_epoch: 11,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from([grant.grant.grant_id.clone()]),
+            },
+            1_000,
+            31_000,
+        );
+        let signed_applied = SignedFinalUseRevocationUpdate {
+            signature: distributor
+                .sign(&applied.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            update: applied,
+        };
+        let feed_verifier = FinalUseRevocationFeedVerifier::new(
+            "revocation-distributor".into(),
+            distributor.verifying_key().to_bytes(),
+        )
+        .unwrap();
+        let receipt = feed_verifier
+            .apply(&authority, &signed_applied, 1_500)
+            .unwrap();
+
+        let drifted = FinalUseRevocationUpdate::new(
+            "revocation-distributor".into(),
+            FinalUseRevocations {
+                authority_epoch: 11,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from([
+                    grant.grant.grant_id.clone(),
+                    "other-grant".into(),
+                ]),
+            },
+            1_000,
+            31_000,
+        );
+        let signed_drifted = SignedFinalUseRevocationUpdate {
+            signature: distributor
+                .sign(&drifted.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            update: drifted,
+        };
+        assert_eq!(
+            FinalUseRevocationAck::for_applied_update(
+                "node-a".into(),
+                &signed_drifted,
+                &receipt,
+                1_600,
+            ),
+            Err(FinalUseControlError::InvalidRevocationAck)
         );
     }
 
