@@ -12,6 +12,7 @@ use crate::SupervisorError;
 use crate::SupervisorEventKind;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
+use crate::lease::read_lease;
 use crate::lease::remove_lease;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
@@ -195,6 +196,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         if runtime.lease_persisted {
             remove_lease(record.layout.run_root(), &lease)?;
+        } else if matches!(
+            read_lease(record.layout.run_root()),
+            Ok(Some(ref actual)) if actual == &lease
+        ) {
+            // write_lease may have linked the exact final lease before a
+            // directory-fsync failure. Remove only that exact identity. This
+            // cleanup is best-effort because unknown/corrupt lease state must
+            // remain fail-closed rather than being deleted speculatively.
+            let _ = remove_lease(record.layout.run_root(), &lease);
         }
         let mut generation = runtime.generation;
         if !fenced {
