@@ -787,6 +787,82 @@ mod tests {
     }
 
     #[test]
+    fn owner_evidence_set_includes_mutation_policy_and_canonical_kinds() {
+        use std::cell::RefCell;
+
+        struct RecordingResolver {
+            seen: RefCell<Vec<(PlasticityOwnerEvidenceKindV1, Digest32)>>,
+        }
+
+        impl PlasticityOwnerEvidenceResolverV1 for RecordingResolver {
+            fn resolve(
+                &self,
+                query: &PlasticityOwnerEvidenceQueryV1,
+            ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+                self.seen
+                    .borrow_mut()
+                    .push((query.kind, query.evidence_digest));
+                EchoOwnerEvidenceResolver.resolve(query)
+            }
+        }
+
+        let selected_artifact_digest = digest(b"artifact");
+        let window = ProposalWindowV2 {
+            window_id: StableId::new("window:set").expect("id"),
+            window_digest: digest(b"window"),
+        };
+        let mutation_policy = codex_hepta_plasticity::build_parameter_mutation_policy_v1(
+            StableId::new("policy:set").expect("id"),
+            selected_artifact_digest,
+            window.clone(),
+            Vec::new(),
+        )
+        .expect("mutation policy");
+        let profile = ParameterGeneratorProfileV3 {
+            selected_artifact_digest,
+            window: window.clone(),
+            norm_layers: Vec::new(),
+            update_scales: Vec::new(),
+            signals: Vec::new(),
+            mutation_policy: mutation_policy.clone(),
+        };
+        let generated = GeneratedParameterCandidateSetV3 {
+            selected_artifact_digest,
+            window,
+            norm_layers: Vec::new(),
+            candidates: Vec::new(),
+            generator_digest: digest(b"generator"),
+        };
+        let input = AgentdPlasticityAdmissionInputV1 {
+            baseline_id: StableId::new("artifact:baseline").expect("id"),
+            objective_digest: digest(b"objective"),
+            generator_profile: profile,
+            generated,
+            baseline_generation: Generation::new(7).expect("generation"),
+            candidate_generation: Generation::new(8).expect("generation"),
+            dataset_digest: digest(b"dataset"),
+            update_rule_digest: digest(b"update-rule"),
+            modulator_digest: digest(b"modulator"),
+            modulator_broadcast_digest: digest(b"broadcast"),
+            eligibility_digest: digest(b"eligibility"),
+        };
+        let resolver = RecordingResolver {
+            seen: RefCell::new(Vec::new()),
+        };
+        let set_digest =
+            resolve_agentd_plasticity_owner_evidence_set_v1(&input, &resolver, 50)
+                .expect("owner evidence set");
+        assert!(!set_digest.is_zero());
+
+        let seen = resolver.seen.borrow();
+        assert_eq!(seen.len(), 6);
+        assert!(seen.contains(&(
+            PlasticityOwnerEvidenceKindV1::MutationPolicy,
+            mutation_policy.policy_digest,
+        )));
+    }
+
+    #[test]
     fn owner_evidence_rejects_context_substitution() {
         assert_eq!(
             verify_agentd_plasticity_owner_evidence_v1(
