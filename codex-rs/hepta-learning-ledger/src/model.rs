@@ -94,6 +94,10 @@ pub struct RunStartPublicationV1 {
     /// Exact registered ObjectiveFunctionV1 canonical JSON bytes.
     pub objective_v1_json: Vec<u8>,
     pub objective_v1_digest: Digest32,
+    /// Exact immutable runtime body selected with this run. Legacy candidate
+    /// records created before this field existed decode as ZERO and are never
+    /// eligible for product runtime reconstruction.
+    pub runtime_body_digest: Digest32,
     pub admission: ObjectiveAdmissionReceiptV1,
     pub compile: ObjectiveCompileReceipt,
     pub run_start: RunStartSnapshotV1,
