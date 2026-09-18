@@ -23,6 +23,7 @@ mod segment_codec;
 mod segments;
 mod shadow;
 mod signed_evidence;
+mod trust_distribution;
 mod witness;
 
 pub use causal_v2::AuthenticatedOutcomeV1;
@@ -131,6 +132,10 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
+pub use trust_distribution::ActivatedLearningTrustV1;
+pub use trust_distribution::LearningTrustDistributionError;
+pub use trust_distribution::LearningTrustDistributionV1;
+pub use trust_distribution::activate_learning_trust;
 pub use witness::LedgerWitnessFrontier;
 pub use witness::LedgerWitnessStore;
 
