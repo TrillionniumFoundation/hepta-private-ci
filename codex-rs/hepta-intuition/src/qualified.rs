@@ -538,7 +538,8 @@ fn validate_scoring_commitment_for_request(
     if scoring.state_digest != request.state_digest {
         return Err(QualifiedCalibratedError::ScoringCommitmentMismatch("state"));
     }
-    if scoring.policy_digest != profile.policy_digest || scoring.policy_digest != request.policy_digest
+    if scoring.policy_digest != profile.policy_digest
+        || scoring.policy_digest != request.policy_digest
     {
         return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
             "policy",
@@ -628,7 +629,9 @@ fn validate_profile_shape(
             "calibration ece",
         ));
     }
-    if profile.ood_measured_false_acceptance_ppm > profile.maximum_ood_false_acceptance_ppm {
+    if profile.ood_measured_false_acceptance_ppm
+        > profile.maximum_ood_false_acceptance_ppm
+    {
         return Err(QualifiedCalibratedError::ProfileQualityInvalid(
             "ood false acceptance",
         ));
