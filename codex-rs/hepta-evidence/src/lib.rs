@@ -2,7 +2,7 @@
 
 mod authbus_control;
 mod authbus_outbox;
-mod authbus_provider_guard;
+
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
 mod authbus_store;
@@ -20,8 +20,7 @@ mod store;
 mod summary;
 
 pub use authbus_control::AuthBusControlError;
-pub use authbus_provider_guard::AuthBusProviderEffectError;
-pub use authbus_provider_guard::AuthBusProviderEffectReceipt;
+
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
