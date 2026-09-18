@@ -448,9 +448,15 @@ def verify() -> int:
         "RetentionPolicyV1",
         "current_snapshot_immutable",
         "production_activation_allowed",
-        "include_bytes!(\"../../tests/data/modality_span_v1.canonical.json\")",
     ]:
         need(token in production_source, f"production HNMF token {token}")
+    hnmf_tests = (
+        ROOT / "codex-rs/hepta-cognitive-types/src/hnmf/tests.rs"
+    ).read_text(encoding="utf-8")
+    need(
+        'include_bytes!("../../tests/data/modality_span_v1.canonical.json")' in hnmf_tests,
+        "production canonical JSON golden vector assertion",
+    )
     conformance = (
         ROOT / "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
     ).read_text(encoding="utf-8")
