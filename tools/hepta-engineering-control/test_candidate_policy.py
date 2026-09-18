@@ -52,6 +52,21 @@ class CandidatePolicyTests(unittest.TestCase):
             "src/contract.feature",
             "src/__snapshots__/feature.snap",
             "src/testdata/fixture.json",
+            "src/Cargo.toml",
+            "src/Cargo.lock",
+            "src/pyproject.toml",
+            "src/pytest.ini",
+            "src/tox.ini",
+            "src/noxfile.py",
+            "src/package.json",
+            "src/package-lock.json",
+            "src/pnpm-lock.yaml",
+            "src/yarn.lock",
+            "src/nextest.toml",
+            "src/jest.config.ts",
+            "src/vitest.config.js",
+            "src/playwright.config.ts",
+            "src/rust-toolchain.toml",
         ):
             with self.subTest(path=path):
                 with self.assertRaisesRegex(EngineeringError, "candidate_oracle_path"):
