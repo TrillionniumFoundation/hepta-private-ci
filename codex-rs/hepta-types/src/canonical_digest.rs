@@ -88,8 +88,7 @@ pub fn canonical_digest_v1(
     schema_version: u32,
     fields: &[CanonicalFieldV1<'_>],
 ) -> Result<Digest32, CanonicalDigestError> {
-    canonical_encode_v1(type_id, schema_version, fields)
-        .map(|encoded| Digest32::of_bytes(&encoded))
+    canonical_encode_v1(type_id, schema_version, fields).map(|encoded| Digest32::of_bytes(&encoded))
 }
 
 fn encode_value(
