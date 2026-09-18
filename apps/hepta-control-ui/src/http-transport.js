@@ -203,9 +203,8 @@ export class SameOriginHttpTransport {
       ? setTimeout(() => controller.abort(new Error("control transport timeout")), this.#timeoutMs)
       : null;
     timer?.unref?.();
-    let response;
     try {
-      response = await this.#fetch(target.href, {
+      const response = await this.#fetch(target.href, {
         method,
         headers,
         body: encodedBody,
@@ -215,29 +214,29 @@ export class SameOriginHttpTransport {
         referrerPolicy: "same-origin",
         signal: controller?.signal,
       });
+
+      if (response.status === 401 || response.status === 403) {
+        fail(ERROR_CODES.UNAUTHENTICATED, "control transport authentication or CSRF check failed");
+      }
+      if (!response.ok) {
+        fail(ERROR_CODES.BACKEND_UNAVAILABLE, `control transport returned HTTP ${response.status}`);
+      }
+      const contentType = response.headers?.get?.("content-type") ?? "";
+      const mediaType = contentType.split(";", 1)[0].trim().toLowerCase();
+      if (mediaType !== "application/json") {
+        fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response is not JSON");
+      }
+      const encoded = await boundedResponseText(response, maxBytes);
+      try {
+        return JSON.parse(encoded);
+      } catch {
+        fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response is invalid JSON");
+      }
     } catch (error) {
       if (error instanceof UiControlError) throw error;
       fail(ERROR_CODES.BACKEND_UNAVAILABLE, "control transport request failed");
     } finally {
       if (timer !== null) clearTimeout(timer);
-    }
-
-    if (response.status === 401 || response.status === 403) {
-      fail(ERROR_CODES.UNAUTHENTICATED, "control transport authentication or CSRF check failed");
-    }
-    if (!response.ok) {
-      fail(ERROR_CODES.BACKEND_UNAVAILABLE, `control transport returned HTTP ${response.status}`);
-    }
-    const contentType = response.headers?.get?.("content-type") ?? "";
-    const mediaType = contentType.split(";", 1)[0].trim().toLowerCase();
-    if (mediaType !== "application/json") {
-      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response is not JSON");
-    }
-    const encoded = await boundedResponseText(response, maxBytes);
-    try {
-      return JSON.parse(encoded);
-    } catch {
-      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response is invalid JSON");
     }
   }
 }
