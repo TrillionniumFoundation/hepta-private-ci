@@ -22,6 +22,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::admission::map_final_use_error;
+use crate::final_use_realization_binding;
 use crate::final_use_retire_binding;
 use crate::final_use_revoke_binding;
 use crate::AdmissionError;
@@ -125,7 +126,8 @@ impl DurablePromptRegistry {
             .map_err(DurableRegistryError::Admission)?
     }
 
-    pub fn register_realization_payload_v2(
+    #[cfg(test)]
+    pub(crate) fn register_realization_payload_v2(
         &mut self,
         binding: PromptRealizationBindingV2,
         payload: Vec<u8>,
@@ -134,6 +136,48 @@ impl DurablePromptRegistry {
         self.commit(|registry| {
             registry.register_realization_payload_v2(binding, payload, supersedes_realization_id)
         })
+    }
+
+    pub fn register_realization_payload_final_use_v2(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        actor_id: &StableId,
+        scope_digest: Digest32,
+        binding: PromptRealizationBindingV2,
+        payload: Vec<u8>,
+        supersedes_realization_id: Option<StableId>,
+    ) -> Result<RegistryReceipt, DurableRegistryError> {
+        let factor = self.registry.factor(&binding.factor_id).cloned().ok_or_else(|| {
+            DurableRegistryError::Core(Error::FactorNotFound(binding.factor_id.to_string()))
+        })?;
+        let expected = final_use_realization_binding(
+            &factor,
+            actor_id,
+            scope_digest,
+            &binding,
+            supersedes_realization_id.as_ref(),
+        )
+        .map_err(DurableRegistryError::Admission)?;
+        if Digest32::of_bytes(&payload) != binding.payload_digest {
+            return Err(DurableRegistryError::Core(Error::PayloadDigestMismatch));
+        }
+        let token = authority
+            .claim(signed, &expected)
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?;
+        authority
+            .with_verified_use(token, &expected, || {
+                self.commit(|registry| {
+                    registry.register_realization_payload_v2(
+                        binding,
+                        payload,
+                        supersedes_realization_id,
+                    )
+                })
+            })
+            .map_err(map_final_use_error)
+            .map_err(DurableRegistryError::Admission)?
     }
 
     #[cfg(test)]
