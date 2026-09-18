@@ -66,27 +66,38 @@ leakage tests.
 
 ## 3. Operation request semantics
 
-The UI does not mint `kernel.operations`' `OperationIntentV1`. The source-level
-proposal is `UiOperationProposalV1`:
+The UI does not mint `kernel.operations`' `OperationIntentV1`. A caller submits
+an authority-free operation proposal plus the exact coherent view identity that
+was displayed and confirmed:
 
 ```js
-{
+await client.submitRequest({
   operationId: "operation.123",
   subjectId: "runtime.agentd",
   action: "request_retry",
   expectedRevision: 44,
-  displayedRevision: 902
-}
+  displayedView: {
+    sessionId: "session.17",
+    connectionGeneration: 17,
+    generation: 51,
+    revision: 902,
+    digest: "<64 lowercase hex>"
+  }
+});
 ```
 
-`expectedRevision` is the target subject revision. `displayedRevision` is the
-coherent runtime view revision from which the operator confirmed the request.
-They are independent values and can differ.
+`expectedRevision` is the target subject revision. `displayedView.revision`
+is the coherent runtime view revision from which the operator confirmed the
+request; they are independent values and can differ. The remaining
+`displayedView` fields bind the confirmation to the exact session, connection,
+runtime generation and snapshot digest. A reconnect cannot make an old
+confirmation valid merely by reusing the same numeric revision.
 
-`RuntimeClient.submitRequest()` constructs the authority-free proposal itself.
-The client canonicalizes the request semantics and computes the SHA-256 semantic
-digest internally. A caller-supplied digest is never trusted as authority and
-is not used to decide semantic identity.
+`RuntimeClient.submitRequest()` constructs `UiOperationProposalV1` itself.
+The client compares the complete displayed-view binding with the current
+coherent session/snapshot before transport, canonicalizes the request semantics
+and computes the SHA-256 semantic digest internally. A caller-supplied digest is
+never trusted as authority and is not used to decide semantic identity.
 
 The transport receives:
 
@@ -96,6 +107,7 @@ The transport receives:
   sessionId,
   connectionGeneration,
   runtimeGeneration,
+  runtimeDigest,
   displayedRevision,
   operationId,
   semanticDigest,
@@ -121,7 +133,13 @@ validation and construction/admission of any canonical effect-bearing contract.
 ```js
 await client.requestStop({
   operationId: "stop.123",
-  displayedRevision: 902,
+  displayedView: {
+    sessionId: "session.17",
+    connectionGeneration: 17,
+    generation: 51,
+    revision: 902,
+    digest: "<64 lowercase hex>"
+  },
   scope: {
     scopeKind: "runtime",
     targetId: "runtime.agentd"
@@ -129,7 +147,7 @@ await client.requestStop({
 });
 ```
 
-The scope is recursively snapshotted and frozen before digesting and transport.
+The stop scope and exact displayed-view binding are both covered by the client-computed semantic digest. The scope is recursively snapshotted and frozen before digesting and transport.
 The default browser shell does not equate this request acknowledgement with a
 hardware or backend terminal stop. Only a trusted terminal observation can
 settle it.
@@ -264,7 +282,7 @@ for assistive technology, exposes pending/indeterminate state, and disables all
 mutating controls while the view is stale. The final confirmed request is the
 same immutable object passed to `RuntimeClient`.
 
-`ControlPlaneApp` collapses rapid duplicate logical actions while confirmation/acknowledgement is outstanding, exposes `aria-busy`, restores focus after confirmation/cancellation/failure, and can be externally mutation-blocked after snapshot/connectivity loss. When unresolved operations exist and the client exposes `reconcilePending`, the shell also exposes a read-only reconciliation control; explicit operator force executes only one bounded reconciliation batch and never resubmits a mutation. Confirmation is revalidated immediately before submission, so an offline/session/stale transition that occurs while the dialog is open invalidates the request instead of crossing transport. The native confirmation host displays the exact immutable request in an accessible `<dialog>`.
+`ControlPlaneApp` collapses rapid duplicate logical actions while confirmation/acknowledgement is outstanding, exposes `aria-busy`, restores focus after confirmation/cancellation/failure, and can be externally mutation-blocked after snapshot/connectivity loss. When unresolved operations exist and the client exposes `reconcilePending`, the shell also exposes a read-only reconciliation control; explicit operator force executes only one bounded reconciliation batch and never resubmits a mutation. Confirmation is revalidated against the exact session/connection/runtime-generation/revision/digest view identity immediately before submission, so an offline/reconnect/stale transition that occurs while the dialog is open invalidates the request instead of crossing transport. The native confirmation host displays the exact immutable request in an accessible `<dialog>`.
 
 The repository-owned browser host treats `offline` as an immediate mutation block, stops polling, advances a lifecycle generation fence and re-establishes an authenticated observation session after `online`, `UNAUTHENTICATED`, `NOT_CONNECTED` and BFCache/page-session resume. Snapshot responses are applied only when the captured transport/client/application and lifecycle generation are still current, so stale I/O cannot re-enable mutation or cross-bind an old transport response onto a new client. Recovery never replays unresolved mutations. Pending storage keys are SHA-256-bound to the authenticated bootstrap persistence namespace plus endpoint/protocol, so unresolved identities survive compatible manifest/path redeploys while principal/protocol domains stay isolated. A separate live runtime binding covers endpoint/protocol/manifest/basePath; if that binding drifts during a running page, recovery fails closed and requires full page reconstruction before the durable pending domain is reconciled.
 
