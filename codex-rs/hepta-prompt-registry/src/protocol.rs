@@ -268,7 +268,6 @@ impl fmt::Display for ProtocolCodecError {
 
 impl std::error::Error for ProtocolCodecError {}
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -299,8 +298,7 @@ mod tests {
                 .unwrap_or_else(|error| panic!("decode: {error}")),
             value
         );
-        let mut wire: serde_json::Value =
-            serde_json::from_slice(&bytes).expect("valid json");
+        let mut wire: serde_json::Value = serde_json::from_slice(&bytes).expect("valid json");
         wire.as_object_mut()
             .expect("object")
             .insert("unknown".to_owned(), serde_json::json!(true));

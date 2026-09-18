@@ -23,8 +23,8 @@ use serde::Serialize;
 
 use crate::AdmissionError;
 use crate::Error;
-use crate::FinalUseAdmissionAuthority;
 use crate::FactorSource;
+use crate::FinalUseAdmissionAuthority;
 use crate::Lifecycle;
 use crate::LifecycleEvent;
 use crate::LifecycleEventKind;
@@ -42,8 +42,7 @@ use crate::VerifiedAdmission;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
-const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] =
-    b"hepta.prompt-registry.legacy-context-profile.v1";
+const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
 const MIGRATION_REASON_DOMAIN: &[u8] = b"hepta.prompt-registry.migration.v1-v2";
 
 pub struct DurablePromptRegistry {
@@ -103,23 +102,14 @@ impl DurablePromptRegistry {
         reviewed_scope_digest: Digest32,
         evidence_digest: Digest32,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
-        let factor = self
-            .registry
-            .factor(factor_id)
-            .cloned()
-            .ok_or_else(|| DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string())))?;
+        let factor = self.registry.factor(factor_id).cloned().ok_or_else(|| {
+            DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string()))
+        })?;
         let admission = FinalUseAdmissionAuthority::new(authority)
-            .verify(
-                signed,
-                &factor,
-                reviewed_scope_digest,
-                evidence_digest,
-            )
+            .verify(signed, &factor, reviewed_scope_digest, evidence_digest)
             .map_err(DurableRegistryError::Admission)?;
         let verified_at_unix_ms = admission.verified_at_unix_ms();
-        self.commit(|registry| {
-            registry.admit_factor_verified(admission, verified_at_unix_ms)
-        })
+        self.commit(|registry| registry.admit_factor_verified(admission, verified_at_unix_ms))
     }
 
     pub fn register_realization_payload_v2(
@@ -129,11 +119,7 @@ impl DurablePromptRegistry {
         supersedes_realization_id: Option<StableId>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
         self.commit(|registry| {
-            registry.register_realization_payload_v2(
-                binding,
-                payload,
-                supersedes_realization_id,
-            )
+            registry.register_realization_payload_v2(binding, payload, supersedes_realization_id)
         })
     }
 
@@ -160,12 +146,7 @@ impl DurablePromptRegistry {
         let factor_id = factor_id.clone();
         let actor_id = actor_id.clone();
         self.commit(|registry| {
-            registry.revoke_factor_governed(
-                &factor_id,
-                &actor_id,
-                reason_digest,
-                cutoff_unix_ms,
-            )
+            registry.revoke_factor_governed(&factor_id, &actor_id, reason_digest, cutoff_unix_ms)
         })
     }
 
@@ -415,11 +396,7 @@ fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
                 predecessor_id: predecessor_id.to_string(),
             })
             .collect(),
-        lifecycle_events: registry
-            .lifecycle_events
-            .iter()
-            .map(stored_event)
-            .collect(),
+        lifecycle_events: registry.lifecycle_events.iter().map(stored_event).collect(),
     }
 }
 
@@ -557,8 +534,8 @@ fn migrate_v1(
         return Err(DurableRegistryError::ConfigurationMismatch);
     }
     let mut factors = BTreeMap::new();
-    let migration_actor = StableId::new("migration:v1")
-        .map_err(|_| DurableRegistryError::Corrupt)?;
+    let migration_actor =
+        StableId::new("migration:v1").map_err(|_| DurableRegistryError::Corrupt)?;
     let migration_reason = Digest32::of_bytes(MIGRATION_REASON_DOMAIN);
     let mut lifecycle_events = Vec::new();
     for stored_factor in stored.factors {
@@ -746,10 +723,7 @@ fn decode_event(stored: StoredLifecycleEvent) -> Result<LifecycleEvent, DurableR
         from: stored.from.map(decode_lifecycle).transpose()?,
         to: decode_lifecycle(stored.to)?,
         actor_id: parse_id(stored.actor_id)?,
-        admission_grant_id: stored
-            .admission_grant_id
-            .map(parse_id)
-            .transpose()?,
+        admission_grant_id: stored.admission_grant_id.map(parse_id).transpose()?,
         evidence_digest: Digest32::from_array(stored.evidence_digest),
         scope_digest: stored.scope_digest.map(Digest32::from_array),
         reason_digest: stored.reason_digest.map(Digest32::from_array),
@@ -851,7 +825,8 @@ impl Store {
         let root = prepare_directory(directory)?;
         let initialized = entry_exists(&root, "registry.lock")?;
         let lock = open_private(&root, "registry.lock", Access::Create)?;
-        lock.try_lock().map_err(|_| DurableRegistryError::StateLocked)?;
+        lock.try_lock()
+            .map_err(|_| DurableRegistryError::StateLocked)?;
         let store = Self { root, _lock: lock };
         let has_state = entry_exists(&store.root, "registry.json")?;
         if !has_state {
@@ -887,8 +862,8 @@ impl Store {
     }
 
     fn persist(&self, registry: &PromptRegistry) -> Result<(), DurableRegistryError> {
-        let bytes =
-            serde_json::to_vec(&stored_v2(registry)).map_err(|_| DurableRegistryError::Unavailable)?;
+        let bytes = serde_json::to_vec(&stored_v2(registry))
+            .map_err(|_| DurableRegistryError::Unavailable)?;
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
             return Err(DurableRegistryError::CapacityExceeded);
         }
@@ -1121,8 +1096,7 @@ mod tests {
         file.sync_all().expect("legacy fsync");
         drop(file);
 
-        let durable =
-            DurablePromptRegistry::open_state_dir(&root, 64).expect("migrate registry");
+        let durable = DurablePromptRegistry::open_state_dir(&root, 64).expect("migrate registry");
         let factor = durable.registry().factor(&id("factor:1")).expect("factor");
         assert_eq!(factor.lifecycle, Lifecycle::Revoked);
         assert_eq!(durable.registry().revocation_frontier(), 4);
@@ -1134,7 +1108,11 @@ mod tests {
             Some(false)
         );
         assert_eq!(
-            durable.registry().lifecycle_events().last().map(|event| event.kind),
+            durable
+                .registry()
+                .lifecycle_events()
+                .last()
+                .map(|event| event.kind),
             Some(LifecycleEventKind::Imported)
         );
         drop(durable);
@@ -1244,8 +1222,7 @@ mod tests {
             snapshot
         };
 
-        let reopened =
-            DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen registry");
+        let reopened = DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen registry");
         assert_eq!(
             reopened
                 .registry()
@@ -1286,10 +1263,11 @@ mod tests {
                 vec![factor.factor_id],
                 8,
             ),
-            Err(DurableRegistryError::Read(PromptRegistryV2Error::SnapshotStale))
+            Err(DurableRegistryError::Read(
+                PromptRegistryV2Error::SnapshotStale
+            ))
         ));
     }
-
 
     #[test]
     fn final_use_admission_is_scope_bound_single_use_and_revocation_aware() {
@@ -1326,9 +1304,8 @@ mod tests {
         let reviewer = id("reviewer:final-use");
         let scope = digest("scope:final-use");
         let evidence = digest("evidence:final-use");
-        let binding =
-            crate::final_use_admission_binding(&factor, &reviewer, scope, evidence)
-                .expect("binding");
+        let binding = crate::final_use_admission_binding(&factor, &reviewer, scope, evidence)
+            .expect("binding");
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("clock")
@@ -1352,13 +1329,7 @@ mod tests {
         };
 
         durable
-            .admit_factor_final_use(
-                &authority,
-                &signed,
-                &factor.factor_id,
-                scope,
-                evidence,
-            )
+            .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
             .expect("final-use admission");
         let event = durable
             .registry()
@@ -1369,19 +1340,11 @@ mod tests {
         assert_eq!(event.actor_id, reviewer);
         assert_eq!(event.scope_digest, Some(scope));
         assert_eq!(event.evidence_digest, evidence);
-        assert_eq!(
-            event.admission_grant_id,
-            Some(id("admission-final-use-1"))
-        );
+        assert_eq!(event.admission_grant_id, Some(id("admission-final-use-1")));
 
         assert!(matches!(
-            durable.admit_factor_final_use(
-                &authority,
-                &signed,
-                &factor.factor_id,
-                scope,
-                evidence,
-            ),
+            durable
+                .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence,),
             Err(DurableRegistryError::Admission(AdmissionError::AlreadyUsed))
         ));
 
@@ -1424,9 +1387,7 @@ mod tests {
             .update_revocations(FinalUseRevocations {
                 authority_epoch: 7,
                 revision: 2,
-                revoked_grant_ids: BTreeSet::from([
-                    "admission-final-use-revoked".to_owned(),
-                ]),
+                revoked_grant_ids: BTreeSet::from(["admission-final-use-revoked".to_owned()]),
             })
             .expect("revoke grant");
         assert!(matches!(
@@ -1448,7 +1409,6 @@ mod tests {
         );
     }
 
-
     #[test]
     fn reopen_rejects_resource_policy_drift() {
         let temporary = tempfile::tempdir().expect("tempdir");
@@ -1459,5 +1419,4 @@ mod tests {
             Err(DurableRegistryError::ConfigurationMismatch)
         ));
     }
-
 }

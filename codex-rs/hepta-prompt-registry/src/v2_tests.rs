@@ -187,7 +187,6 @@ fn untrusted_external_factor_cannot_obtain_v2_realization() {
     );
 }
 
-
 #[test]
 fn required_factors_are_not_starved_by_other_roles() {
     let mut registry = admitted_registry();
@@ -238,7 +237,10 @@ fn required_factors_are_not_starved_by_other_roles() {
             2,
         )
         .unwrap_or_else(|error| panic!("required factors must fit: {error}"));
-    assert_eq!(result.required_factor_ids, vec![id("factor:1"), id("factor:2")]);
+    assert_eq!(
+        result.required_factor_ids,
+        vec![id("factor:1"), id("factor:2")]
+    );
     assert_eq!(
         result
             .bindings
@@ -358,13 +360,7 @@ fn payload_registration_supersedes_and_dereferences_exact_bytes() {
         .snapshot_v2(vector, &tuple)
         .unwrap_or_else(|error| panic!("snapshot: {error}"));
     let delivery = registry
-        .dereference_realization_v2(
-            &next.realization_id,
-            &snapshot,
-            vector,
-            &tuple,
-            10,
-        )
+        .dereference_realization_v2(&next.realization_id, &snapshot, vector, &tuple, 10)
         .unwrap_or_else(|error| panic!("dereference: {error}"));
     assert_eq!(delivery.payload, next_payload);
     delivery

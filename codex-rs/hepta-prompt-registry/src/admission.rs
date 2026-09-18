@@ -131,10 +131,7 @@ impl VerifiedAdmission {
 }
 
 impl AdmissionAuthority {
-    pub fn new(
-        signer_id: StableId,
-        verifying_key: [u8; 32],
-    ) -> Result<Self, AdmissionError> {
+    pub fn new(signer_id: StableId, verifying_key: [u8; 32]) -> Result<Self, AdmissionError> {
         let key =
             VerifyingKey::from_bytes(&verifying_key).map_err(|_| AdmissionError::InvalidTrust)?;
         if key.is_weak() {
@@ -157,8 +154,8 @@ impl AdmissionAuthority {
         if signed.grant.signer_id != self.signer_id.as_str() {
             return Err(AdmissionError::SignerMismatch);
         }
-        let signature =
-            Signature::from_slice(&signed.signature).map_err(|_| AdmissionError::InvalidSignature)?;
+        let signature = Signature::from_slice(&signed.signature)
+            .map_err(|_| AdmissionError::InvalidSignature)?;
         self.key
             .verify_strict(&signing_bytes, &signature)
             .map_err(|_| AdmissionError::InvalidSignature)?;
@@ -208,7 +205,6 @@ impl AdmissionAuthority {
         })
     }
 }
-
 
 #[derive(Clone, Copy, Debug)]
 pub struct FinalUseAdmissionAuthority<'a> {
@@ -305,7 +301,9 @@ fn current_unix_ms() -> Result<u64, AdmissionError> {
 
 const fn map_final_use_error(error: FinalUseError) -> AdmissionError {
     match error {
-        FinalUseError::Unavailable | FinalUseError::StateLocked => AdmissionError::AuthorityUnavailable,
+        FinalUseError::Unavailable | FinalUseError::StateLocked => {
+            AdmissionError::AuthorityUnavailable
+        }
         FinalUseError::Revoked => AdmissionError::Revoked,
         FinalUseError::AlreadyClaimed => AdmissionError::AlreadyUsed,
         FinalUseError::NotYetValid => AdmissionError::NotYetValid,

@@ -26,9 +26,9 @@ pub use admission::AdmissionBindingV1;
 pub use admission::AdmissionError;
 pub use admission::AdmissionGrantV1;
 pub use admission::FinalUseAdmissionAuthority;
-pub use admission::final_use_admission_binding;
 pub use admission::SignedAdmissionGrantV1;
 pub use admission::VerifiedAdmission;
+pub use admission::final_use_admission_binding;
 pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;
 pub use delivery::RealizationDeliveryV2;
 pub use durable::DurablePromptRegistry;
@@ -213,7 +213,10 @@ impl PromptRegistry {
         })
     }
 
-    pub(crate) fn register_factor(&mut self, factor: PromptFactor) -> Result<RegistryReceipt, Error> {
+    pub(crate) fn register_factor(
+        &mut self,
+        factor: PromptFactor,
+    ) -> Result<RegistryReceipt, Error> {
         if factor.content_digest.is_zero() {
             return Err(Error::EmptyDigest("factor content"));
         }

@@ -150,7 +150,9 @@ fn durable_registry_payload_is_the_context_compiler_candidate() {
     );
     assert_eq!(
         output.compiled.selected_candidates[0].trusted_admission_digest,
-        registry.registry().admission_event_digest(&id("factor:verify"))
+        registry
+            .registry()
+            .admission_event_digest(&id("factor:verify"))
     );
     assert_eq!(
         Digest32::of_bytes(&output.serialized_payload),

@@ -217,7 +217,6 @@ fn exhausted_revision_preserves_realizations_during_retirement_and_revocation() 
     assert_eq!(registry, active);
 }
 
-
 #[test]
 fn signed_admission_persists_scope_evidence_and_grant_lineage() {
     let mut registry = registry();
@@ -271,7 +270,10 @@ fn signed_admission_persists_scope_evidence_and_grant_lineage() {
     assert_eq!(event.admission_grant_id, Some(id("admission:1")));
     assert_eq!(event.scope_digest, Some(digest(b"scope")));
     assert_eq!(event.evidence_digest, digest(b"evidence"));
-    assert_eq!(registry.admission_event_digest(&value.factor_id), Some(event.event_digest));
+    assert_eq!(
+        registry.admission_event_digest(&value.factor_id),
+        Some(event.event_digest)
+    );
 }
 
 #[test]
@@ -323,11 +325,12 @@ fn verified_admission_cannot_be_used_after_expiry() {
         Err(Error::InvalidTransition)
     );
     assert_eq!(
-        registry.factor(&value.factor_id).map(|factor| factor.lifecycle),
+        registry
+            .factor(&value.factor_id)
+            .map(|factor| factor.lifecycle),
         Some(Lifecycle::Draft)
     );
 }
-
 
 #[test]
 fn verified_admission_rejects_clock_rollback_between_verify_and_commit() {
@@ -378,7 +381,9 @@ fn verified_admission_rejects_clock_rollback_between_verify_and_commit() {
         Err(Error::InvalidTransition)
     );
     assert_eq!(
-        registry.factor(&value.factor_id).map(|factor| factor.lifecycle),
+        registry
+            .factor(&value.factor_id)
+            .map(|factor| factor.lifecycle),
         Some(Lifecycle::Draft)
     );
 }

@@ -126,8 +126,12 @@ impl PromptRegistry {
             ));
         }
         if self.realizations.contains_key(&binding.realization_id)
-            || self.realization_bindings.contains_key(&binding.realization_id)
-            || self.realization_payloads.contains_key(&binding.realization_id)
+            || self
+                .realization_bindings
+                .contains_key(&binding.realization_id)
+            || self
+                .realization_payloads
+                .contains_key(&binding.realization_id)
         {
             return Err(Error::RealizationConflict(
                 binding.realization_id.to_string(),
@@ -205,13 +209,10 @@ impl PromptRegistry {
             .realization_bindings
             .get(realization_id)
             .ok_or(PromptRegistryV2Error::PayloadUnavailable)?;
-        let factor_live = self
-            .factors
-            .get(&binding.factor_id)
-            .is_some_and(|factor| {
-                factor.source == FactorSource::GovernedInternal
-                    && factor.lifecycle == Lifecycle::Admitted
-            });
+        let factor_live = self.factors.get(&binding.factor_id).is_some_and(|factor| {
+            factor.source == FactorSource::GovernedInternal
+                && factor.lifecycle == Lifecycle::Admitted
+        });
         let realization_live = self
             .realizations
             .get(realization_id)

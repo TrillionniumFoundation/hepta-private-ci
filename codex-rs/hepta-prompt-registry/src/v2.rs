@@ -225,8 +225,13 @@ impl CompatibleRealizationSetV2 {
             return Err(PromptRegistryV2Error::NonCanonicalRequiredFactors);
         }
         if self.bindings.windows(2).any(|window| {
-            (window[0].factor_id.clone(), window[0].realization_id.clone())
-                >= (window[1].factor_id.clone(), window[1].realization_id.clone())
+            (
+                window[0].factor_id.clone(),
+                window[0].realization_id.clone(),
+            ) >= (
+                window[1].factor_id.clone(),
+                window[1].realization_id.clone(),
+            )
         }) {
             return Err(PromptRegistryV2Error::NonCanonicalBindings);
         }
@@ -413,7 +418,9 @@ impl PromptRegistry {
             bindings.extend(eligible.into_iter().take(maximum_results));
         } else {
             for factor_id in &factor_filter {
-                let Some(binding) = eligible.iter().find(|binding| &binding.factor_id == factor_id)
+                let Some(binding) = eligible
+                    .iter()
+                    .find(|binding| &binding.factor_id == factor_id)
                 else {
                     return Err(PromptRegistryV2Error::RequiredFactorUnavailable);
                 };
