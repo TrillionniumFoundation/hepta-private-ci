@@ -69,12 +69,12 @@ class KeyCustodyReceipt:
 
 
 _FACT_ISSUERS = {
-    "independent_review_accepted": frozenset({"independent_review_authority"}),
-    "authorized_handoff": frozenset({"deployment_handoff_authority"}),
-    "strong_sandbox_observed": frozenset({"sandbox_qualification_authority"}),
-    "deployment_observed": frozenset({"deployment_authority"}),
-    "rollback_rehearsed": frozenset({"rollback_authority"}),
-    "distributed_fencing_verified": frozenset({"coordination_authority"}),
+    "independent_review_accepted": frozenset({"independent_evaluator"}),
+    "authorized_handoff": frozenset({"external_deployment_handoff_authority"}),
+    "strong_sandbox_observed": frozenset({"ci_executor"}),
+    "deployment_observed": frozenset({"external_deployment_authority"}),
+    "rollback_rehearsed": frozenset({"external_rollback_authority"}),
+    "distributed_fencing_verified": frozenset({"external_coordination_authority"}),
 }
 _ALLOWED_FACTS = frozenset(_FACT_ISSUERS)
 
@@ -160,7 +160,7 @@ def verify_audit_anchor(
         or receipt.audit_head_digest != expected_head_digest
     ):
         raise EngineeringError("audit_anchor_mismatch")
-    if receipt.issuer != "audit_anchor_authority":
+    if receipt.issuer != "external_audit_anchor_authority":
         raise EngineeringError("audit_anchor_issuer_role")
     if not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now):
         raise EngineeringError("audit_anchor_stale")
@@ -188,7 +188,7 @@ def verify_key_custody(
         raise EngineeringError("invalid_key_custody_role")
     if not set(roles).issubset(set(receipt.allowed_roles)):
         raise EngineeringError("key_custody_role_missing")
-    if receipt.issuer != "key_custody_authority":
+    if receipt.issuer != "external_key_custody_authority":
         raise EngineeringError("key_custody_issuer_role")
     if not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now):
         raise EngineeringError("key_custody_receipt_stale")
