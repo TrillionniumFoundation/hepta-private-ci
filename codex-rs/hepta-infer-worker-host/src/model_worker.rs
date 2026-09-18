@@ -21,7 +21,6 @@ pub struct ModelManifest {
     pub maximum_tokens: u32,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
 /// Resource limits after an authoritative boundary has admitted this worker.
 ///
 /// This is an in-process representation, not a self-authenticating wire credential.
@@ -29,6 +28,7 @@ pub struct ModelManifest {
 /// and verify the authoritative grant before constructing this value. Validation
 /// below checks local structure/current semantics; it does not prove grant origin
 /// or perform an online authority lookup.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ResourceGrant {
     pub grant_id: String,
     pub authority_epoch: u64,
