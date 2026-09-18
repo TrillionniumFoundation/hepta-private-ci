@@ -648,7 +648,8 @@ mod tests {
         let request_bytes = serde_json::to_vec(&request).expect("serialize finalize request");
         assert!(request_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
-            serde_json::from_slice::<AgentdRequest>(&request_bytes).expect("parse finalize request"),
+            serde_json::from_slice::<AgentdRequest>(&request_bytes)
+                .expect("parse finalize request"),
             request
         );
         let payload = AgentdPayload::CognitiveContextFinalized {

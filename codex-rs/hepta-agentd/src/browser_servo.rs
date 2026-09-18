@@ -205,7 +205,9 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         let request_digest_text = payload
             .get("requestDigest")
             .and_then(Value::as_str)
-            .ok_or_else(|| BrowserServoError::Protocol("authority challenge lacks requestDigest".into()))?;
+            .ok_or_else(|| {
+                BrowserServoError::Protocol("authority challenge lacks requestDigest".into())
+            })?;
         let request_digest = parse_hex_32(request_digest_text, "requestDigest")?;
         let authority_epoch = positive_u64(
             payload.get("authorityEpoch"),
@@ -329,10 +331,10 @@ fn send_frame<T: BrowserServoTransport>(
         "payloadDigest": hex_lower(&payload_digest),
         "payload": payload,
     });
-    state.next_outgoing_sequence = state
-        .next_outgoing_sequence
-        .checked_add(1)
-        .ok_or_else(|| BrowserServoError::Unavailable("Browser output sequence exhausted".into()))?;
+    state.next_outgoing_sequence =
+        state.next_outgoing_sequence.checked_add(1).ok_or_else(|| {
+            BrowserServoError::Unavailable("Browser output sequence exhausted".into())
+        })?;
     let body = canonical_json(&frame)?.into_bytes();
     if body.is_empty() || body.len() > MAX_FRAME_BYTES {
         return Err(BrowserServoError::Protocol(
@@ -467,10 +469,11 @@ fn write_canonical(
     match value {
         Value::Null => output.push_str("null"),
         Value::Bool(value) => output.push_str(if *value { "true" } else { "false" }),
-        Value::String(value) => output.push_str(
-            &serde_json::to_string(value)
-                .map_err(|_| BrowserServoError::Protocol("Browser string encoding failed".into()))?,
-        ),
+        Value::String(value) => {
+            output.push_str(&serde_json::to_string(value).map_err(|_| {
+                BrowserServoError::Protocol("Browser string encoding failed".into())
+            })?)
+        }
         Value::Number(number) => {
             let valid = number
                 .as_u64()
@@ -522,9 +525,9 @@ fn require_plain_object<'a>(
     value: &'a Value,
     name: &str,
 ) -> Result<&'a Map<String, Value>, BrowserServoError> {
-    value.as_object().ok_or_else(|| {
-        BrowserServoError::Invalid(format!("{name} must be a JSON object"))
-    })
+    value
+        .as_object()
+        .ok_or_else(|| BrowserServoError::Invalid(format!("{name} must be a JSON object")))
 }
 
 fn positive_u64(value: Option<&Value>, name: &str) -> Result<u64, BrowserServoError> {
@@ -911,7 +914,11 @@ mod tests {
     }
 
     fn inbound_frame(sequence: u64, kind: &str, request_id: &str, payload: Value) -> Vec<u8> {
-        let payload_digest = sha256_bytes(canonical_json(&payload).expect("canonical payload").as_bytes());
+        let payload_digest = sha256_bytes(
+            canonical_json(&payload)
+                .expect("canonical payload")
+                .as_bytes(),
+        );
         let frame = json!({
             "schema": PROTOCOL_SCHEMA,
             "protocolVersion": PROTOCOL_VERSION,
@@ -937,11 +944,8 @@ mod tests {
         let invocation = harness.invocation.clone();
         let call = thread::spawn(move || {
             port.call(
-                BrowserServoCall::effect(
-                    json!({"operationId":"operation.1"}),
-                    invocation,
-                )
-                .expect("effect call"),
+                BrowserServoCall::effect(json!({"operationId":"operation.1"}), invocation)
+                    .expect("effect call"),
             )
         });
 
@@ -1030,11 +1034,8 @@ mod tests {
         let invocation = harness.invocation.clone();
         let call = thread::spawn(move || {
             port.call(
-                BrowserServoCall::effect(
-                    json!({"operationId":"operation.2"}),
-                    invocation,
-                )
-                .expect("effect call"),
+                BrowserServoCall::effect(json!({"operationId":"operation.2"}), invocation)
+                    .expect("effect call"),
             )
         });
         let _request = harness.outbound.recv().expect("request");
