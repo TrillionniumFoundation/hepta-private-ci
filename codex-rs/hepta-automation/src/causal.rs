@@ -318,7 +318,7 @@ impl AutomationStore {
     /// Commits the authoritative occurrence terminal state and only then
     /// advances the recurring schedule.  Queue admission never reaches this
     /// method implicitly.
-    pub async fn reconcile_occurrence_terminal(
+    pub(crate) async fn reconcile_occurrence_terminal(
         &self,
         task_id: AutomationTaskId,
         occurrence: u64,
