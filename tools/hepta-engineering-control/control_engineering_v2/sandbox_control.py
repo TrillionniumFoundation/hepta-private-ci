@@ -8,7 +8,6 @@ import errno
 import os
 from pathlib import Path
 import stat
-import tempfile
 from threading import BoundedSemaphore, Lock
 
 try:
@@ -21,6 +20,7 @@ from .control_plane import EngineeringError, semantic_digest
 
 MAX_PARALLEL_SANDBOXES = 8
 MAX_INFRASTRUCTURE_RETRIES = 2
+_HOST_ADMISSION_ROOT = Path("/tmp")
 _INFRASTRUCTURE_ERRORS = frozenset(
     {
         "network_isolation_unavailable",
@@ -71,7 +71,7 @@ class SandboxCoordinator:
             # This path is intentionally not caller-configurable. All cooperating
             # processes for one UID must contend on the same eight host slots.
             directory = (
-                Path(tempfile.gettempdir())
+                _HOST_ADMISSION_ROOT
                 / f"hepta-engineering-sandbox-slots-{os.getuid()}"
             )
             try:
