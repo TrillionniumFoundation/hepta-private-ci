@@ -88,7 +88,10 @@ impl Drop for Fixture {
 fn witnessed_append_persists_anchor_before_success() {
     let fixture = Fixture::new();
     let journal = must(DurableLedger::create(fixture.file("ledger"), binding(), 16));
-    let witness = must(LedgerWitnessStore::create(fixture.file("witness"), binding()));
+    let witness = must(LedgerWitnessStore::create(
+        fixture.file("witness"),
+        binding(),
+    ));
     let mut guarded = must(WitnessedLearningJournal::new(journal, witness));
 
     let receipt = must(guarded.append(Digest32::ZERO, decision()));
@@ -114,7 +117,10 @@ fn exact_retry_repairs_one_committed_frame_ahead_of_witness() {
         16,
         LedgerRecovery::Unacknowledged,
     ));
-    let witness = must(LedgerWitnessStore::create(fixture.file("witness"), binding()));
+    let witness = must(LedgerWitnessStore::create(
+        fixture.file("witness"),
+        binding(),
+    ));
     let mut guarded = must(WitnessedLearningJournal::new(recovered, witness));
 
     let retry = must(guarded.append(Digest32::ZERO, decision()));

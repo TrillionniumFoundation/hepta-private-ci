@@ -62,7 +62,11 @@ impl<J: DurableLearningJournal> WitnessedLearningJournal<J> {
                 // between journal sync and witness sync. The original operation
                 // must be replayed before any later append can be acknowledged.
             }
-            _ => return Err(WitnessedAppendError::Journal(DurableLedgerError::AnchorMismatch)),
+            _ => {
+                return Err(WitnessedAppendError::Journal(
+                    DurableLedgerError::AnchorMismatch,
+                ));
+            }
         }
         Ok(Self { journal, witness })
     }

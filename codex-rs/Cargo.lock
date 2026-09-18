@@ -3484,6 +3484,7 @@ dependencies = [
  "codex-hepta-learning-artifacts",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
+ "codex-hepta-operations",
  "codex-hepta-paths",
  "codex-hepta-supervisor",
  "codex-hepta-types",
@@ -3498,6 +3499,7 @@ dependencies = [
  "ed25519-dalek",
  "serde",
  "serde_json",
+ "sha2 0.10.9",
  "sqlx",
  "tempfile",
  "thiserror 2.0.18",
@@ -3528,7 +3530,9 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-fleet",
+ "codex-hepta-operations",
  "codex-hepta-paths",
+ "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
  "pretty_assertions",
@@ -3974,7 +3978,12 @@ dependencies = [
 name = "codex-hepta-operations"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "sqlx",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]

@@ -89,6 +89,36 @@ jobs:
           git diff --check
           printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
           printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+      - name: Prove candidate identity cannot write, administer, or mutate its PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          assert_denied() {
+            local label="$1"
+            shift
+            local output="$RUNNER_TEMP/denied-$label.txt"
+            if "$@" >"$output" 2>&1; then
+              cat "$output"
+              echo "candidate unexpectedly obtained $label authority" >&2
+              exit 1
+            fi
+            grep -Eqi '403|forbidden|resource not accessible|permission|admin rights' "$output"
+          }
+
+          main_sha="$(gh api "repos/$REPO/git/ref/heads/main" --jq '.object.sha')"
+          current_title="$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.title')"
+
+          # Same-value writes are deliberately used: a misconfigured token would
+          # not change repository semantics, but successful authorization still
+          # fails this job and proves the boundary is broken.
+          assert_denied contents-write             gh api --method PATCH "repos/$REPO/git/refs/heads/main" -f sha="$main_sha"
+          assert_denied repository-admin             gh api --method PATCH "repos/$REPO" -f default_branch=main
+          assert_denied pull-request-write             gh api --method PATCH "repos/$REPO/pulls/$PR_NUMBER" -f title="$current_title"
       - name: Test execution-record rejection and retained diagnostics
         run: |
           set -euo pipefail

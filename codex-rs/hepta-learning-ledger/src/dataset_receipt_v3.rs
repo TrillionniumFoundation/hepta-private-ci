@@ -64,10 +64,8 @@ pub fn freeze_dataset_receipt_from_ledger_v3(
     now: u64,
 ) -> Result<DatasetSnapshotReceiptV3, DatasetReceiptError> {
     request.ledger_head_digest = ledger_snapshot.head_digest;
-    request.source_record_digests = derive_active_source_digests(
-        ledger_snapshot,
-        request.eligible_frontier,
-    )?;
+    request.source_record_digests =
+        derive_active_source_digests(ledger_snapshot, request.eligible_frontier)?;
     freeze_dataset_receipt_v3(request, now)
 }
 
@@ -131,10 +129,8 @@ pub fn verify_dataset_snapshot_receipt_against_ledger_v3(
     if receipt.snapshot.ledger_head_digest != ledger_snapshot.head_digest {
         return Err(DatasetReceiptError::LedgerHeadMismatch);
     }
-    let expected = derive_active_source_digests(
-        ledger_snapshot,
-        receipt.snapshot.eligible_frontier,
-    )?;
+    let expected =
+        derive_active_source_digests(ledger_snapshot, receipt.snapshot.eligible_frontier)?;
     if receipt.snapshot.source_record_digests != expected {
         return Err(DatasetReceiptError::LedgerSourceSetMismatch);
     }
@@ -148,7 +144,10 @@ fn derive_active_source_digests(
     if eligible_frontier == 0 {
         return Err(DatasetReceiptError::InvalidFrontier);
     }
-    let head_sequence = snapshot.records().last().map_or(0, |record| record.sequence.get());
+    let head_sequence = snapshot
+        .records()
+        .last()
+        .map_or(0, |record| record.sequence.get());
     if eligible_frontier > head_sequence {
         return Err(DatasetReceiptError::InvalidFrontier);
     }
@@ -282,12 +281,12 @@ impl From<LedgerError> for DatasetReceiptError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_hepta_types::FixedQ32;
-    use codex_hepta_types::ProbabilityQ32;
     use crate::CandidateSetCompleteness;
     use crate::EpisodeDecision;
     use crate::LedgerEvent;
     use crate::Revocation;
+    use codex_hepta_types::FixedQ32;
+    use codex_hepta_types::ProbabilityQ32;
 
     fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).expect("valid test id")
@@ -361,8 +360,12 @@ mod tests {
     #[test]
     fn ledger_06_dataset_membership_is_derived_from_active_ledger() {
         let mut ledger = LearningLedger::new();
-        ledger.append(decision("decision-a", "episode-a")).expect("decision a");
-        ledger.append(decision("decision-b", "episode-b")).expect("decision b");
+        ledger
+            .append(decision("decision-a", "episode-a"))
+            .expect("decision a");
+        ledger
+            .append(decision("decision-b", "episode-b"))
+            .expect("decision b");
         ledger
             .append(LedgerEvent::Revocation(Revocation {
                 record_id: id("revoke-a"),
@@ -383,9 +386,14 @@ mod tests {
         assert_eq!(receipt.snapshot.ledger_head_digest, snapshot.head_digest);
 
         let mut tampered = receipt.clone();
-        tampered.snapshot.source_record_digests.push(digest("injected"));
+        tampered
+            .snapshot
+            .source_record_digests
+            .push(digest("injected"));
         tampered.snapshot.source_record_digests.sort_unstable();
-        assert!(verify_dataset_snapshot_receipt_against_ledger_v3(&tampered, &snapshot, 60).is_err());
+        assert!(
+            verify_dataset_snapshot_receipt_against_ledger_v3(&tampered, &snapshot, 60).is_err()
+        );
     }
 
     #[test]
