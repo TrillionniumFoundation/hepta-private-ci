@@ -59,7 +59,11 @@ or filesystem namespace. Those capabilities remain host-owned.
 
 Dataset-derived and dataset-independent artifacts are different provenance
 modes. A dataset-derived manifest without a source dataset, or a
-dataset-independent manifest containing one, fails.
+dataset-independent manifest containing one, fails. V2 can describe multiple
+predecessor IDs, but the current stable V1 registry can enforce only one runtime
+predecessor edge. The V3-to-V1 publication bridge therefore fails closed for
+multi-predecessor manifests instead of treating a digest commitment as lineage
+eligibility enforcement.
 
 `DatasetWithdrawalRegistry` is append-only, digest-chained and replayable from a
 snapshot. A production V3 registry is scoped by `DatasetWithdrawalDomainV1`;
