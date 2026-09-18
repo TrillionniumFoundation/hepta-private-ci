@@ -43,6 +43,7 @@ pub use closure_v2::RegistryHeadRequirementV1;
 pub use closure_v2::RegistryHeadWitnessV1;
 pub use closure_v2::ValidatedArtifactManifestV2;
 pub use closure_v2::WithdrawalAppendDispositionV1;
+pub use closure_v2::WithdrawalRegistryBindingV1;
 pub use closure_v2::validate_artifact_lifecycle_transition;
 pub use closure_v2::validate_artifact_manifest_v2;
 pub use closure_v2::validate_registry_head_witness;
