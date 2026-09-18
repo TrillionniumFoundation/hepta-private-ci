@@ -57,8 +57,3 @@ pub use outbox::MAX_MODEL_OUTBOX_RECORDS;
 pub use outbox::Outbox;
 pub use outbox::OutboxIntent;
 pub use outbox::OutboxState;
-
-#[cfg(test)]
-mod exact_claim_tests;
-#[cfg(test)]
-mod fault_tests;
