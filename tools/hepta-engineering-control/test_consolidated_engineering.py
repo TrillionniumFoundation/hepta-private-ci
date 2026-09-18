@@ -462,7 +462,12 @@ class EngineeringCliTests(unittest.TestCase):
             (first.returncode, second.returncode), (0, 0), first.stderr + second.stderr
         )
         self.assertEqual(json.loads(first.stdout), json.loads(second.stdout))
-        result = json.loads(first.stdout)["assignment"]
+        payload = json.loads(first.stdout)
+        self.assertEqual(payload["qualificationClass"], "local_compatibility_only")
+        self.assertFalse(payload["canonicalSourceAuthenticated"])
+        self.assertFalse(payload["completionAuthenticated"])
+        self.assertFalse(payload["productOrchestrationEvidence"])
+        result = payload["assignment"]
         self.assertEqual(result["assigned"], ["a"])
         self.assertEqual(result["blocked"], [["b", "missing_predecessor:a"]])
 
