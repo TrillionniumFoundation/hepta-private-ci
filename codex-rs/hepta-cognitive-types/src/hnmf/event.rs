@@ -180,11 +180,8 @@ impl MemoryEventV1 {
 
         let mut binding_ids = BTreeSet::new();
         for binding in &self.cross_modal_bindings {
-            let encoded = super::canonical_json_bytes(binding)
-                .map_err(|_| ContractErrorV1::Invalid("binding canonical encoding"))?;
-            let binding_id_key = codex_hepta_types::Digest32::of_bytes(&encoded);
-            if !binding_ids.insert(binding_id_key) {
-                return Err(ContractErrorV1::Conflict("duplicate binding"));
+            if !binding_ids.insert(binding.binding_id()) {
+                return Err(ContractErrorV1::Conflict("duplicate binding id"));
             }
             binding.validate_against(self.event_id, &spans)?;
         }
