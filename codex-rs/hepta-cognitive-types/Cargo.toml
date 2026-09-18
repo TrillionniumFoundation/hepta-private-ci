@@ -17,6 +17,3 @@ workspace = true
 codex-hepta-types = { path = "../hepta-types" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-
-[dev-dependencies]
-hepta-hnmf-contract-reference = { path = "../../qualification/hnmf-contract-reference" }
