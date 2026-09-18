@@ -331,6 +331,25 @@ fn strict_or_unregistered_comparator_is_never_approximated() {
 }
 
 #[test]
+fn source_v1_set_comparators_reject_until_the_protocol_carries_finite_values() {
+    let profile = profile();
+    for comparator in [
+        ObjectiveConstraintComparatorV1::In,
+        ObjectiveConstraintComparatorV1::NotInSet,
+    ] {
+        let mut envelope = envelope();
+        envelope.structured_intent.constraints[0].comparator = comparator;
+        refresh_intent_digest(&mut envelope);
+        let context = context(&profile, &envelope);
+
+        let error = admit_and_compile_objective_v1(&envelope, &profile, &context)
+            .expect_err("set comparator without finite values must reject");
+        assert_eq!(ObjectiveAdmissionError::UnsupportedComparator, error);
+        assert_eq!("OBJ-E002", error.code());
+    }
+}
+
+#[test]
 fn unknown_semantic_mapping_is_rejected_before_native_compile() {
     let profile = profile();
     let mut envelope = envelope();
