@@ -100,6 +100,7 @@ const [bwrapBytes, prlimitBytes] = await Promise.all([
 const root = await mkdtemp(join(tmpdir(), "hepta-browser-real-e2e-"));
 await chmod(root, 0o700);
 let forbiddenHits = 0;
+let profileACookieHeader = null;
 let profileBCookieHeader = null;
 const hanging = new Set();
 
@@ -118,10 +119,16 @@ const app = await listen((request, response) => {
     response.end("<html><body>cookie-set</body></html>");
     return;
   }
-  if (request.url === "/cookie-echo") {
+  if (request.url === "/cookie-echo-a") {
+    profileACookieHeader = request.headers.cookie ?? "";
+    response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    response.end("<html><body>cookie-echo-a</body></html>");
+    return;
+  }
+  if (request.url === "/cookie-echo-b") {
     profileBCookieHeader = request.headers.cookie ?? "";
     response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
-    response.end("<html><body>cookie-echo</body></html>");
+    response.end("<html><body>cookie-echo-b</body></html>");
     return;
   }
   if (request.url === "/never") {
@@ -321,9 +328,9 @@ try {
   };
   const isoBAction = {
     kind: "navigate",
-    url: `${origin}/cookie-echo`,
+    url: `${origin}/cookie-echo-b`,
     policyDigest: D1,
-    expectedRevision: 12,
+    expectedRevision: 13,
   };
   const isoAGrant = grant("navigate", browserActionDigest(isoAAction), origin, "iso-a");
   const isoBGrant = grant("navigate", browserActionDigest(isoBAction), origin, "iso-b");
@@ -368,6 +375,50 @@ try {
     effectGrant: isoBGrant,
   });
   assert.equal((await settle(isolationHost, isoAInput, await isolationHost.navigateOrAct(isoAInput))).status, "succeeded");
+
+  const isoAPage = await isolationHost.observePage({
+    profileId: "profile.iso.a",
+    principalId: "principal.iso.a",
+    generation: 1,
+    observationBudget: 16_384,
+  });
+  const isoAEchoAction = {
+    kind: "navigate",
+    url: `${origin}/cookie-echo-a`,
+    policyDigest: D1,
+    expectedRevision: 12,
+  };
+  const isoAEchoGrant = grant("navigate", browserActionDigest(isoAEchoAction), origin, "iso-a-echo");
+  await isolationHost.admitEffectGrant({
+    profileId: "profile.iso.a",
+    principalId: "principal.iso.a",
+    generation: 1,
+    effectGrant: isoAEchoGrant,
+  });
+  const isoAEchoInput = operation({
+    profileId: "profile.iso.a",
+    principalId: "principal.iso.a",
+    generation: 1,
+    operationId: "operation.iso.a.echo",
+    pageGeneration: isoAPage.pageGeneration,
+    typedAction: isoAEchoAction,
+    origin,
+    effectGrant: isoAEchoGrant,
+  });
+  assert.equal(
+    (await settle(
+      isolationHost,
+      isoAEchoInput,
+      await isolationHost.navigateOrAct(isoAEchoInput),
+    )).status,
+    "succeeded",
+  );
+  assert.equal(
+    profileACookieHeader?.includes("heptaProfile=alpha"),
+    true,
+    "profile A must retain its own cookie before cross-profile isolation is claimed",
+  );
+
   assert.equal((await settle(isolationHost, isoBInput, await isolationHost.navigateOrAct(isoBInput))).status, "succeeded");
   assert.equal(
     profileBCookieHeader?.includes("heptaProfile=alpha"),
