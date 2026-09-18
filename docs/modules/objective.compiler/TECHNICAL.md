@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `objective.compiler`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Focused tests, all-target compilation and strict lint are provided by the dedicated objective and Lane-D workflows; exact-head qualification remains a per-candidate evidence state and is never inferred from source presence. The current repository also contains an Agentd signed-objective product-caller candidate, but that composition does not grant runtime effect authority, independent acceptance, activation, promotion or release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -148,11 +148,13 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library; embed it at a request boundary and preserve its immutable objective/run snapshot in the owning caller. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+Stateless compiler/admission library. The current product-caller candidate is Agentd's `objective.start` capability: a registered AuthBus issuer signs a bounded structured source, Agentd selects an immutable owner profile, derives the generation/fence locally, persists one canonical `ObjectiveRunPublicationV1` atomically under the Agent home, and only then admits the immutable snapshot to `AgentRunCoordinator`. The compiler still owns no private objective database. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
 
 Current operating and state-format references:
 
 - [docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md).
+- [SEMANTIC_SUPPORT.md](SEMANTIC_SUPPORT.md) — exact Source V1 admission/support matrix and actual call graph.
+- [codex-rs/hepta-agentd/src/objective_runtime.rs](../../../codex-rs/hepta-agentd/src/objective_runtime.rs) — signed product-caller candidate, atomic publication and replay/recovery boundary.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -162,8 +164,11 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs); named case: `compilation_is_permutation_invariant`.
 - [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs); named case: `all_three_action_graphs_match_truth_table_and_have_minimal_conflicts`.
+- [codex-rs/hepta-objective/src/publication_tests.rs](../../../codex-rs/hepta-objective/src/publication_tests.rs); immutable run-publication binding and authority-deny-all cases.
+- [codex-rs/hepta-objective/src/admission_profile_json_tests.rs](../../../codex-rs/hepta-objective/src/admission_profile_json_tests.rs); strict owner-profile decoding and profile validation cases.
+- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs); durable exact replay, semantic-identity conflict and restart recovery cases.
 
-In `codex-rs`, run `just test -p codex-hepta-objective`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-objective`. Product-caller changes additionally require `just test -p codex-hepta-agentd` and the Agentd process qualification. The dedicated `.github/workflows/hepta-objective-admission.yml` binds exact source, objective package tests, all-target strict Clippy and formatting/clean state. `.github/workflows/hepta-lane-d-semantic-conformance.yml` repeats Lane-D check/test/Clippy across Linux, macOS and Windows. `.github/workflows/hepta-consolidated-source.yml` remains a repository-wide integration gate but is not the sole objective package receipt. Workflow definitions and commands are not stored pass receipts; inspect the exact candidate run.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -194,7 +199,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-0-OBJECTIVE-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; qualification: `candidate_workflows_required`; composition: `candidate_composed`; activation/release: `not_established`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -223,7 +228,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-1-OBJECTIVE-COMPILER`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; qualification: `candidate_workflows_required`; composition: `candidate_composed`; activation/release: `not_established`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -279,4 +284,4 @@ The bootstrap source-location obligation for `objective.compiler` is implemented
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked directly by `.github/workflows/hepta-objective-admission.yml` and `.github/workflows/hepta-lane-d-semantic-conformance.yml`; the consolidated source workflow supplies broader repository integration evidence. The objective-specific gates cover exact-source binding, package tests, all-target compilation/checks, strict Clippy, formatting and clean tracked state. Agentd composition additionally requires its process qualification. These receipts are source/composition evidence only and grant no model-provider, external-effect, independent-acceptance, activation, selection, promotion, merge or release authority.
