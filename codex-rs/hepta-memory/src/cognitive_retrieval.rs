@@ -92,7 +92,6 @@ pub struct RetrievalCandidate {
     pub memory: MemoryRevisionRecord,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
-    pub channel_ranks: Vec<RetrievalChannelRankObservation>,
     pub revalidation: MemoryRevalidationBinding,
 }
 
