@@ -406,7 +406,7 @@ impl ValidateHnmfV1 for MemoryEventV1 {
         for provenance in &self.provenance {
             provenance.validate()?;
             if !sources.insert((
-                provenance.source_id().to_string(),
+                provenance.source_id(),
                 provenance.source_revision(),
                 provenance.source_sha256(),
             )) {
