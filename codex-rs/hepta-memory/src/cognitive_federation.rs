@@ -834,11 +834,13 @@ impl FederationAuthorityV2 for NativeFederationAuthority<'_> {
         lease: &'a CanonicalFederatedLeaseV2,
     ) -> FederationAuthorityFutureV2<'a> {
         Box::pin(async move {
-            if self.access.agent_id != self.reader.capability.consumer_agent_id
-                || self.access.workspace_sha256
-                    != self.reader.capability.scope.consumer_workspace_sha256
+            if self.access.agent_id != self.reader.capability.consumer_agent_id {
+                return Err(FederationV2Error::IdentityMismatch("consumer"));
+            }
+            if self.access.workspace_sha256
+                != self.reader.capability.scope.consumer_workspace_sha256
             {
-                return Err(FederationV2Error::TransportRejected);
+                return Err(FederationV2Error::DigestMismatch("consumer_workspace"));
             }
             let status = self
                 .reader
