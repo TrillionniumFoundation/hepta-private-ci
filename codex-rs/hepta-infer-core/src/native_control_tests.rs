@@ -28,6 +28,7 @@ fn dispatch() -> NativeDispatch {
         context_digest: "b".repeat(64),
         codex_session_id: None,
         codex_deadline_ms: None,
+        codex_payload_digest: None,
         codex_request_digest: None,
     }
 }
