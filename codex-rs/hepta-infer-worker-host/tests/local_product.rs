@@ -5,6 +5,7 @@ use std::fs;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Write;
+use std::os::unix::fs::PermissionsExt;
 use std::os::unix::net::UnixListener;
 use std::path::PathBuf;
 use std::thread;
@@ -113,6 +114,7 @@ fn fixture() -> Fixture {
 fn signed_product_envelope_reaches_exact_local_runtime_once() {
     let fixture = fixture();
     let listener = UnixListener::bind(&fixture.socket).unwrap();
+    fs::set_permissions(&fixture.socket, fs::Permissions::from_mode(0o600)).unwrap();
     let manifest_for_server = fixture.manifest.clone();
     let server = thread::spawn(move || {
         for expected_op in ["load", "infer", "unload"] {
