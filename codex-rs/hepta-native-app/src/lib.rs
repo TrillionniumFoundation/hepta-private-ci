@@ -15,6 +15,7 @@ pub mod ui;
 
 pub use backend::AgentdBackend;
 pub use persistence::KeyringOperationStore;
+pub use persistence::ReadOnlyOperationStore;
 pub use platform::SecurePlatformAdapter;
 pub use runtime::BackendPort;
 pub use runtime::BackendSession;
