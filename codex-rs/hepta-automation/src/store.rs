@@ -233,10 +233,12 @@ impl AutomationStore {
         }
         sqlx::query(
             "UPDATE automation_runs
-             SET state = 'cancelled', lease_generation = NULL, lease_token = NULL,
-                 lease_expires_at_ms = NULL
+             SET state = 'cancelled', execution_state = 'cancelled',
+                 terminal_at_ms = COALESCE(terminal_at_ms, ?),
+                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
              WHERE task_id = ? AND state = 'pending'",
         )
+        .bind(to_i64(now_ms)?)
         .bind(task_id.to_string())
         .execute(&mut *transaction)
         .await
@@ -289,10 +291,13 @@ impl AutomationStore {
             if changed.rows_affected() == 1 {
                 sqlx::query(
                     "UPDATE automation_runs
-                     SET state = 'cancelled', lease_generation = NULL, lease_token = NULL,
+                     SET state = 'cancelled', execution_state = 'cancelled',
+                         terminal_at_ms = COALESCE(terminal_at_ms, ?),
+                         lease_generation = NULL, lease_token = NULL,
                          lease_expires_at_ms = NULL
                      WHERE task_id = ? AND state = 'pending'",
                 )
+                .bind(to_i64(now_ms)?)
                 .bind(task_id.to_string())
                 .execute(&mut *transaction)
                 .await
@@ -395,6 +400,10 @@ impl AutomationStore {
                      SELECT 1 FROM automation_tasks t
                      WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
                  ) THEN 'pending' ELSE 'cancelled' END,
+                 execution_state = CASE WHEN EXISTS (
+                     SELECT 1 FROM automation_tasks t
+                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
+                 ) THEN execution_state ELSE 'cancelled' END,
                  lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
              WHERE state = 'leased' AND lease_generation != ?
                AND EXISTS (
@@ -729,6 +738,10 @@ impl AutomationStore {
                      SELECT 1 FROM automation_tasks t
                      WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
                  ) THEN 'pending' ELSE 'cancelled' END,
+                 execution_state = CASE WHEN EXISTS (
+                     SELECT 1 FROM automation_tasks t
+                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
+                 ) THEN execution_state ELSE 'cancelled' END,
                  lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
              WHERE task_id = ? AND occurrence = ? AND state = 'leased'
                AND lease_generation = ? AND lease_token = ?
@@ -872,6 +885,10 @@ impl AutomationStore {
                      SELECT 1 FROM automation_tasks t
                      WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
                  ) THEN 'pending' ELSE 'cancelled' END,
+                 execution_state = CASE WHEN EXISTS (
+                     SELECT 1 FROM automation_tasks t
+                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
+                 ) THEN execution_state ELSE 'cancelled' END,
                  lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
              WHERE task_id = ? AND occurrence = ? AND state = 'leased'
                AND client_user_message_id = ?
@@ -1009,6 +1026,10 @@ impl AutomationStore {
                      SELECT 1 FROM automation_tasks t
                      WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
                  ) THEN 'pending' ELSE 'cancelled' END,
+                 execution_state = CASE WHEN EXISTS (
+                     SELECT 1 FROM automation_tasks t
+                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
+                 ) THEN execution_state ELSE 'cancelled' END,
                  lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
              WHERE task_id = ? AND occurrence = ? AND state = 'leased'
                AND lease_generation = ? AND lease_token = ?
