@@ -9,6 +9,60 @@ import {
 
 const MAX_CSRF_BYTES = 512;
 const DEFAULT_TIMEOUT_MS = 10_000;
+const UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
+
+async function boundedResponseText(response, maxBytes) {
+  const contentLength = Number(response.headers?.get?.("content-length"));
+  if (Number.isFinite(contentLength) && contentLength > maxBytes) {
+    fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response exceeds byte limit");
+  }
+
+  if (response.body && typeof response.body.getReader === "function") {
+    const reader = response.body.getReader();
+    const chunks = [];
+    let total = 0;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (!(value instanceof Uint8Array)) {
+          fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response body is not byte data");
+        }
+        total += value.byteLength;
+        if (total > maxBytes) {
+          try { await reader.cancel(); } catch {}
+          fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response exceeds byte limit");
+        }
+        chunks.push(value);
+      }
+    } catch (error) {
+      if (error instanceof UiControlError) throw error;
+      fail(ERROR_CODES.BACKEND_UNAVAILABLE, "control transport response body failed");
+    }
+    const bytes = new Uint8Array(total);
+    let offset = 0;
+    for (const chunk of chunks) {
+      bytes.set(chunk, offset);
+      offset += chunk.byteLength;
+    }
+    try {
+      return UTF8_DECODER.decode(bytes);
+    } catch {
+      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response is not valid UTF-8");
+    }
+  }
+
+  let encoded;
+  try {
+    encoded = await response.text();
+  } catch {
+    fail(ERROR_CODES.BACKEND_UNAVAILABLE, "control transport response body failed");
+  }
+  if (utf8Bytes(encoded) > maxBytes) {
+    fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response exceeds byte limit");
+  }
+  return encoded;
+}
 
 function loopbackHost(hostname) {
   return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
@@ -171,17 +225,11 @@ export class SameOriginHttpTransport {
       fail(ERROR_CODES.BACKEND_UNAVAILABLE, `control transport returned HTTP ${response.status}`);
     }
     const contentType = response.headers?.get?.("content-type") ?? "";
-    if (!contentType.toLowerCase().startsWith("application/json")) {
+    const mediaType = contentType.split(";", 1)[0].trim().toLowerCase();
+    if (mediaType !== "application/json") {
       fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response is not JSON");
     }
-    const contentLength = Number(response.headers?.get?.("content-length"));
-    if (Number.isFinite(contentLength) && contentLength > maxBytes) {
-      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response exceeds byte limit");
-    }
-    const encoded = await response.text();
-    if (utf8Bytes(encoded) > maxBytes) {
-      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response exceeds byte limit");
-    }
+    const encoded = await boundedResponseText(response, maxBytes);
     try {
       return JSON.parse(encoded);
     } catch {
