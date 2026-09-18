@@ -180,7 +180,8 @@ fn bare_v0_journal_is_migrated_atomically_to_store_envelope() {
         .mode(0o600)
         .open(&path)
         .expect("legacy journal");
-    file.write_all(&journal.export_bytes()).expect("legacy bytes");
+    file.write_all(&journal.export_bytes())
+        .expect("legacy bytes");
     file.sync_all().expect("legacy sync");
     drop(file);
 
