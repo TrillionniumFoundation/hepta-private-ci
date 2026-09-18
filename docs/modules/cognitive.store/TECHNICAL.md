@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs); observed identifiers include `CognitiveStore`, `append`, `get`, `snapshot_records`, `StoreReceipt`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs). The semantic crate now exports the V1 oracle, admission-gated V2 ledger, bounded ledger-root snapshot paging, hard intent/revocation budgets, image cross-integrity validation, and the compile-time `AuthoritativeCognitiveStoreOwnerV1` contract. The physical implementation of that contract is the existing [hepta-memory CognitiveStore](../../../codex-rs/hepta-memory/src/cognitive_store.rs). This source navigation binding is not activation or release evidence. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -58,9 +58,14 @@ add a second writer or synchronize a second database. The in-memory V2 store in
 this module is not a durable backend. See
 `codex-rs/hepta-memory/LANE_C_SQLITE.md` for exact ID/frontier mapping, bounded
 materialization, correction/deletion propagation, and reopen/rollback-witness
-behavior. The separate descriptor-safe `open_with_recovery` prerequisites
-remain unresolved; an ordinary reopen plus independently retained cut comparison
-must not be reported as full recovery admission.
+behavior. `ProductionDurableWriter` is the authority-gated WAL/FULL writer and
+`AgentdProductionWriterHost` is its explicit named product host; default Agentd
+startup does not install that capability. The semantic crate and physical owner
+are now compile-time bound through `AuthoritativeCognitiveStoreOwnerV1` rather
+than relying only on prose. Recovery has an independently verified current-writer
+fence entrypoint, but the descriptor-backed, non-reconnecting SQLite writer
+backend remains unavailable. An ordinary reopen plus independently retained cut
+comparison must never be reported as descriptor-safe recovery admission.
 
 Direct dependencies:
 
@@ -147,7 +152,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md). `open_with_recovery_writer` requires an exact current-cut witness plus an independently verified owner/anchor/generation/expiry/fence binding before any writer-open attempt. It then delegates to the descriptor-bound state backend and currently fails closed because that backend is still unavailable. No path-based fallback is permitted. A source library or fixture cannot stand in for that missing physical recovery backend or an external reconciler.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -163,13 +168,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) specifies this module's algorithm and pilot ceilings. V2 enforces explicit record, revocation-reserve, intent-journal and page-size bounds. Snapshot pages bind one ledger root and reject midstream mutation. The real SQLite owner includes an ignored `perf_durable_reports_write_wal_reopen_and_max_cut_metrics` qualification harness; set `HEPTA_COGNITIVE_PERF_RECORDS` (up to 16,384) and run that test on the selected host to emit machine-readable commit p50/p95/p99, WAL/checkpoint, database-size, maximum-cut, reopen and cut-revalidation measurements. Test source is not a measurement receipt.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-The physical writer remains hepta-memory::CognitiveStore and cognitive_1.sqlite3. The new crate supplies an in-memory semantic oracle and V2 types, not a replacement durable backend. Use the existing owner snapshot adapter and independent cut witness; descriptor-safe open_with_recovery still requires its unimplemented VFS/currentness prerequisites.
+The physical writer remains `hepta-memory::CognitiveStore` and `cognitive_1.sqlite3`; the new crate is the semantic contract/oracle and does not create a second database. The physical owner implements the semantic crate's authoritative-owner descriptor. `ProductionDurableWriter` adds verified external lease material, a grant-bound fencing token, WAL/FULL verification and a process-lifetime writer lock. `AgentdProductionWriterHost` is the named explicit host seam. Descriptor-safe read-only current-cut inspection exists; current-writer fencing is now required for writer recovery, while the descriptor-backed SQLite writer VFS/connection backend still fails closed.
 
 Current operating and state-format references:
 
@@ -181,8 +186,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
-- [codex-rs/hepta-cognitive-store/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-store/src/lib_tests.rs); named case: `append_and_correction_are_predecessor_fenced`.
+- [codex-rs/hepta-cognitive-store/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-store/src/v2_tests.rs): Verified-only admission, deletion reserve, image cross-integrity and ledger-root paging.
+- [codex-rs/hepta-memory/src/cognitive_store_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_store_tests.rs): durable owner integrity, owner-contract binding, WAL/reopen and ignored PERF-DURABLE profile.
+- [codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs): exact-cut recovery, hostile identity cases and current writer-fence admission.
+- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs): real SQLite writes, correction/deletion and reopen cut behavior.
+- [codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs): named Agentd/App Server product path for remember/recall/correct/forget and restart/revalidation under its explicit qualification feature.
 
 In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-store`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) separately labels target acceptance designs.
 
@@ -197,7 +205,7 @@ Applicable work packages:
 
 The bootstrap package is `MEM-1-STORE`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. The named Agentd host and production writer establish a concrete composition seam, but default activation, descriptor-safe writer recovery, target-host PERF receipts, independent acceptance and release remain distinct gates. The `sourceBase` field in implementation maps is a synchronized generated cohort baseline; it is not substituted for the current Git/CI exact-candidate receipt.
 
 ## 14. Activation, compatibility and retirement
 
@@ -219,6 +227,11 @@ For `cognitive.store`, this document grants no runtime, production, model, provi
 - Owner/deputy: `cognitive-platform` / `durability-kernel`.
 - Allowed write paths:
 - `codex-rs/hepta-cognitive-store/**`
+- `codex-rs/hepta-memory/src/cognitive_store.rs`
+- `codex-rs/hepta-memory/src/cognitive_store_recovery.rs`
+- `codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs`
+- `codex-rs/hepta-memory/src/cognitive_store_tests.rs`
+- `codex-rs/hepta-memory/src/lib.rs`
 - Development predecessors:
 - `MEM-0-TYPES`
 - Activation predecessors:
