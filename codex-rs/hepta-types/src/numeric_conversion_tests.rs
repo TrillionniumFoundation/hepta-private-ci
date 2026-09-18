@@ -262,14 +262,15 @@ fn registered_conversion_requires_resolvable_normalization_contract() {
             "normalization:identity",
             crate::IdProfileV1::Namespaced,
         )
-        .expect("normalization id"),
+        .unwrap_or_else(|error| panic!("normalization id fixture failed: {error}")),
         1,
         "scale=identity;clamp=none",
     )
-    .expect("normalization definition");
+    .unwrap_or_else(|error| panic!("normalization definition fixture failed: {error}"));
     let normalization_digest = normalization.digest();
     let registry =
-        crate::ContractRegistryV1::new(vec![normalization]).expect("contract registry");
+        crate::ContractRegistryV1::new(vec![normalization])
+            .unwrap_or_else(|error| panic!("contract registry fixture failed: {error}"));
     let mut source = signal(NumericProfileV1::HnmfPpmTowardZero, vec![1, 2]);
     source.schema.normalization_digest = normalization_digest;
     let target = NumericSignalSchemaV1 {
@@ -278,7 +279,8 @@ fn registered_conversion_requires_resolvable_normalization_contract() {
     };
     assert!(rescale_signal_registered(&source, &target, &registry).is_ok());
 
-    let empty = crate::ContractRegistryV1::new(Vec::new()).expect("empty registry");
+    let empty = crate::ContractRegistryV1::new(Vec::new())
+        .unwrap_or_else(|error| panic!("empty registry fixture failed: {error}"));
     assert_eq!(
         rescale_signal_registered(&source, &target, &empty),
         Err(NumericConversionError::UnknownNormalization)
