@@ -159,7 +159,13 @@ pub fn compile_prompt_registry_v2(
     request: PromptRegistryCompilationRequestV2,
 ) -> Result<PromptRegistryCompiledContextV2, PromptRegistryCompilationErrorV2> {
     exercise
-        .validate_for(candidate_set, pricing, relations, portfolio, exercise_request)
+        .validate_for(
+            candidate_set,
+            pricing,
+            relations,
+            portfolio,
+            exercise_request,
+        )
         .map_err(PromptRegistryCompilationErrorV2::Optimizer)?;
     adapter
         .authenticate_candidate_source(
