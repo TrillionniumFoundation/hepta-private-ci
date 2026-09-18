@@ -185,9 +185,7 @@ fn adapt_binding(
         .registry()
         .admission_event_digest(&binding.factor_id)
         .ok_or_else(|| {
-            PromptRegistryAdapterErrorV1::MissingAdmissionLineage(
-                binding.factor_id.to_string(),
-            )
+            PromptRegistryAdapterErrorV1::MissingAdmissionLineage(binding.factor_id.to_string())
         })?;
     let mut candidate = PromptCandidateBindingV1 {
         candidate_id: binding.realization_id.clone(),
