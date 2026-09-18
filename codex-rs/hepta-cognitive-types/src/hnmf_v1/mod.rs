@@ -441,3 +441,6 @@ fn increasing(start: u64, end: u64, name: &'static str) -> Result<(), HnmfContra
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;
