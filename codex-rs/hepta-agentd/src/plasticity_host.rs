@@ -36,6 +36,18 @@ pub enum PlasticityOwnerEvidenceKindV1 {
     ParameterSignal,
 }
 
+impl PlasticityOwnerEvidenceKindV1 {
+    const fn tag(self) -> u8 {
+        match self {
+            Self::UpdateRule => 0,
+            Self::Modulator => 1,
+            Self::ModulatorBroadcast => 2,
+            Self::Eligibility => 3,
+            Self::ParameterSignal => 4,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlasticityOwnerEvidenceQueryV1 {
     pub kind: PlasticityOwnerEvidenceKindV1,
@@ -58,13 +70,7 @@ pub fn plasticity_owner_evidence_query_digest_v1(
     query: &PlasticityOwnerEvidenceQueryV1,
 ) -> Digest32 {
     let mut bytes = b"hepta.agentd.plasticity-owner-evidence-query.v1\0".to_vec();
-    bytes.push(match query.kind {
-        PlasticityOwnerEvidenceKindV1::UpdateRule => 0,
-        PlasticityOwnerEvidenceKindV1::Modulator => 1,
-        PlasticityOwnerEvidenceKindV1::ModulatorBroadcast => 2,
-        PlasticityOwnerEvidenceKindV1::Eligibility => 3,
-        PlasticityOwnerEvidenceKindV1::ParameterSignal => 4,
-    });
+    bytes.push(query.kind.tag());
     bytes.extend_from_slice(query.evidence_digest.as_array());
     bytes.extend_from_slice(query.objective_digest.as_array());
     bytes.extend_from_slice(query.selected_artifact_digest.as_array());
@@ -168,6 +174,31 @@ impl PlasticityOwnerEvidencePolicyV1 {
             .get(&kind)
             .is_some_and(|owners| owners.contains(owner_id))
     }
+
+    #[must_use]
+    pub fn digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.agentd.plasticity-owner-evidence-policy.v1\0".to_vec();
+        for kind in [
+            PlasticityOwnerEvidenceKindV1::UpdateRule,
+            PlasticityOwnerEvidenceKindV1::Modulator,
+            PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
+            PlasticityOwnerEvidenceKindV1::Eligibility,
+            PlasticityOwnerEvidenceKindV1::ParameterSignal,
+        ] {
+            bytes.push(kind.tag());
+            if let Some(owners) = self.allowed_owners.get(&kind) {
+                bytes.extend_from_slice(
+                    &u32::try_from(owners.len()).unwrap_or(u32::MAX).to_be_bytes(),
+                );
+                for owner in owners {
+                    push_id(&mut bytes, owner);
+                }
+            } else {
+                bytes.extend_from_slice(&0_u32.to_be_bytes());
+            }
+        }
+        Digest32::of_bytes(&bytes)
+    }
 }
 
 /// Selected-host adapter to the actual owner stores. Implementations must resolve
@@ -234,14 +265,14 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
 
     pub fn propose_parameter_plasticity(
         &self,
-        request: ParameterPlasticityProductRequestV1,
+        mut request: ParameterPlasticityProductRequestV1,
         verifier: &LearningEvidenceVerifierV1,
         writer: &mut AnchoredPlasticityWriterV1,
         anchor_committer: &mut impl PlasticityAnchorCommitterV1,
         now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
         self.verify_artifact_frontier(&request)?;
-        self.verify_owner_evidence(&request, now)?;
+        request.host_evidence_verification_digest = self.verify_owner_evidence(&request, now)?;
         propose_authenticated_parameter_plasticity_v1(
             request,
             verifier,
@@ -293,9 +324,12 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
         &self,
         request: &ParameterPlasticityProductRequestV1,
         now: u64,
-    ) -> Result<(), AgentdPlasticityHostErrorV1> {
+    ) -> Result<Digest32, AgentdPlasticityHostErrorV1> {
         let admission = &request.admission;
         let mut frontier: Option<Digest32> = None;
+        let mut verification =
+            b"hepta.agentd.plasticity-owner-evidence-verification.v1\0".to_vec();
+        verification.extend_from_slice(self.evidence_policy.digest().as_array());
         for (kind, digest, layer_id, parameter_id) in [
             (
                 PlasticityOwnerEvidenceKindV1::UpdateRule,
@@ -325,6 +359,9 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
             let receipt =
                 self.resolve_one(request, kind, digest, layer_id, parameter_id, now)?;
             bind_frontier(&mut frontier, &receipt)?;
+            verification.extend_from_slice(
+                plasticity_owner_evidence_receipt_digest_v1(&receipt).as_array(),
+            );
         }
         for signal in &request.generator_profile.signals {
             let receipt = self.resolve_one(
@@ -336,11 +373,15 @@ impl<'a, R: PlasticityOwnerEvidenceResolverV1 + ?Sized> AgentdPlasticityHostV1<'
                 now,
             )?;
             bind_frontier(&mut frontier, &receipt)?;
+            verification.extend_from_slice(
+                plasticity_owner_evidence_receipt_digest_v1(&receipt).as_array(),
+            );
         }
         if frontier != Some(admission.qualification_evidence_head_digest) {
             return Err(AgentdPlasticityHostErrorV1::EvidenceFrontierMismatch);
         }
-        Ok(())
+        verification.extend_from_slice(admission.qualification_evidence_head_digest.as_array());
+        Ok(Digest32::of_bytes(&verification))
     }
 
     fn resolve_one(
@@ -404,6 +445,20 @@ pub fn artifact_frontier_binding_v1(manifest: &ArtifactManifest, head: Digest32)
     bytes.extend_from_slice(manifest.support_digest.as_array());
     bytes.extend_from_slice(manifest.compatibility_digest.as_array());
     bytes.extend_from_slice(head.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn plasticity_owner_evidence_receipt_digest_v1(
+    receipt: &PlasticityOwnerEvidenceReceiptV1,
+) -> Digest32 {
+    let mut bytes = b"hepta.agentd.plasticity-owner-evidence-receipt.v1\0".to_vec();
+    bytes.extend_from_slice(receipt.evidence_digest.as_array());
+    bytes.extend_from_slice(receipt.query_digest.as_array());
+    push_id(&mut bytes, &receipt.owner_id);
+    bytes.extend_from_slice(receipt.owner_receipt_digest.as_array());
+    bytes.extend_from_slice(receipt.frontier_head_digest.as_array());
+    bytes.extend_from_slice(&receipt.observed_at.to_be_bytes());
+    bytes.extend_from_slice(&receipt.expires_at.to_be_bytes());
     Digest32::of_bytes(&bytes)
 }
 
