@@ -131,7 +131,9 @@
     "agentdCallerStack": "codex-rs/hepta-agentd persistent runtime owner",
     "liveFinalUseChallengeRequired": true,
     "dispatchBoundaryAcknowledgementRequired": true,
-    "longRunningAuthorityOwnerActivated": true
+    "longRunningAuthorityOwnerActivated": false,
+    "longRunningAuthorityOwnerSourcePresent": true,
+    "agentdControlClient": "codex-rs/hepta-agentd/src/client.rs::browser_servo"
   },
   "evidencePaths": [
     "third_party/servo-patches/MANIFEST.json",
