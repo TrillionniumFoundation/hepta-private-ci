@@ -253,6 +253,12 @@
           "status": "implemented"
         },
         {
+          "operation": "FencedFinalHoldoutOwnerV1::reconcile_pending",
+          "nativeSymbol": "codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::reconcile_pending",
+          "source": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+          "status": "implemented"
+        },
+        {
           "operation": "decide_with_signed_evidence_v2",
           "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_evidence_v2",
           "source": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs",
@@ -273,7 +279,8 @@
         "pending_reservation_blocks_another_owner",
         "lost_commit_acknowledgement_poison_fences_handle",
         "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
-        "invalid_authentication_artifact_or_dataset_never_calls_any_port"
+        "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+        "pending_reservation_reconciles_before_or_after_journal_sync"
       ],
       "stageResourceBounds": {
         "pointOpeRows": 1000000,
