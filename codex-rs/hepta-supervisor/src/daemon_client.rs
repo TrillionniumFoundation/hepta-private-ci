@@ -12,6 +12,7 @@ use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::time::timeout;
 
+use crate::ProductionMutationReceipt;
 use crate::SupervisorError;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
@@ -63,6 +64,19 @@ impl SupervisordClient {
         agent_id: AgentId,
     ) -> Result<SupervisordAgentStatus, SupervisorError> {
         self.agent(SupervisordMethod::Snapshot { agent_id }).await
+    }
+
+    pub async fn production_mutation_status(
+        &self,
+        agent_id: AgentId,
+    ) -> Result<Option<ProductionMutationReceipt>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ProductionMutationStatus { agent_id })
+            .await?
+        {
+            SupervisordPayload::ProductionMutationStatus { receipt } => Ok(receipt),
+            payload => unexpected(payload),
+        }
     }
 
     pub async fn start(
