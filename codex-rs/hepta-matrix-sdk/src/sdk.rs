@@ -370,8 +370,11 @@ impl MatrixOutboundTransport for MatrixSdkClient {
                 .with_transaction_id(&txn_id)
                 .await
                 .map_err(|error| classify_sdk_send_error(&error))?;
+            // A server response means the request may already have crossed
+            // the effect boundary. If its event id is unusable, preserve the
+            // stable transaction as indeterminate and reconcile/retry it.
             let event_id = MatrixEventId::parse(response.response.event_id.as_str())
-                .map_err(|_| MatrixTransportError::Permanent)?;
+                .map_err(|_| MatrixTransportError::Retryable)?;
             #[cfg(feature = "qualification-failpoints")]
             if crate::qualification::consume_post_send_pre_mark_ack_drop(
                 self.paths.root(),
@@ -418,7 +421,10 @@ fn classify_sdk_send_error(error: &MatrixSdkTransportError) -> MatrixTransportEr
         MatrixSdkTransportError::Timeout | MatrixSdkTransportError::ConcurrentRequestFailed => {
             MatrixTransportError::Retryable
         }
-        _ => MatrixTransportError::Permanent,
+        // Any SDK error not proven pre-dispatch or an explicit server
+        // rejection is conservatively uncertain. Retrying the same Matrix
+        // transaction is idempotent and preserves reconciliation identity.
+        _ => MatrixTransportError::Retryable,
     }
 }
 
