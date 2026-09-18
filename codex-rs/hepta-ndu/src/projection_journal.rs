@@ -188,12 +188,9 @@ impl NduProjectionJournalV1 {
             }
             match entry.kind {
                 NduProjectionKindV1::SelectedProjection => {
-                    selected = (!self.is_revoked(
-                        objective_digest,
-                        subject_digest,
-                        entry.payload_digest,
-                    ))
-                    .then_some(entry.payload_digest);
+                    selected =
+                        (!self.is_revoked(objective_digest, subject_digest, entry.payload_digest))
+                            .then_some(entry.payload_digest);
                 }
                 NduProjectionKindV1::Revocation if selected == Some(entry.payload_digest) => {
                     selected = None;
