@@ -170,8 +170,7 @@ fn validate(model: &TabularWorldModelV1) -> Result<(), WorldModelPayloadError> {
     for estimate in &model.estimates {
         if estimate.sample_count == 0
             || estimate.estimate_digest.is_zero()
-            || !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw())
-                .contains(&estimate.mean_outcome.raw())
+            || !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw()).contains(&estimate.mean_outcome.raw())
             || estimate.branches.is_empty()
             || estimate.branches.len() > MAX_BRANCHES_PER_ESTIMATE
         {
@@ -243,10 +242,7 @@ fn push_id_u32(bytes: &mut Vec<u8>, id: &StableId) -> Result<(), WorldModelPaylo
     Ok(())
 }
 
-fn take<'a>(
-    bytes: &mut &'a [u8],
-    count: usize,
-) -> Result<&'a [u8], WorldModelPayloadError> {
+fn take<'a>(bytes: &mut &'a [u8], count: usize) -> Result<&'a [u8], WorldModelPayloadError> {
     let (head, tail) = bytes
         .split_at_checked(count)
         .ok_or(WorldModelPayloadError::Encoding)?;
@@ -266,8 +262,7 @@ fn read_id(bytes: &mut &[u8]) -> Result<StableId, WorldModelPayloadError> {
         return Err(WorldModelPayloadError::Bounds);
     }
     StableId::new(
-        std::str::from_utf8(take(bytes, size)?)
-            .map_err(|_| WorldModelPayloadError::Encoding)?,
+        std::str::from_utf8(take(bytes, size)?).map_err(|_| WorldModelPayloadError::Encoding)?,
     )
     .map_err(|_| WorldModelPayloadError::Encoding)
 }
@@ -352,7 +347,10 @@ mod tests {
         let model = crate::world_model::fit_transition_model(
             id("world-model"),
             digest("dataset"),
-            vec![sample("sample-a", "state-b", 10), sample("sample-b", "state-c", 20)],
+            vec![
+                sample("sample-a", "state-b", 10),
+                sample("sample-b", "state-c", 20),
+            ],
         )
         .expect("fit");
         let bytes = encode_world_model_payload_v1(&model).expect("encode");
