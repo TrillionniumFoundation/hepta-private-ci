@@ -164,11 +164,8 @@ impl LongHorizonSegmentedLedgerV1 {
         initialize_profile(&index_root, binding, limits)?;
         let predecessor = empty_anchor();
         segment_codec::initialize(&mut active, binding, limits, 0, predecessor)?;
-        let semantic = PersistentIndexedLearningLedgerV1::open(
-            &index_root,
-            cache_limit,
-            predecessor,
-        )?;
+        let semantic =
+            PersistentIndexedLearningLedgerV1::open(&index_root, cache_limit, predecessor)?;
         Ok(Self {
             _owner: owner,
             active,
@@ -278,8 +275,7 @@ impl LongHorizonSegmentedLedgerV1 {
         };
         if self.sealed
             || self.semantic.retained_record_count() >= self.limits.records
-            || self.length + frame.len() as u64 + segment_codec::FOOTER as u64
-                > self.limits.bytes
+            || self.length + frame.len() as u64 + segment_codec::FOOTER as u64 > self.limits.bytes
         {
             self.semantic.cancel_prepared(prepared);
             return Err(DurableLedgerError::Capacity.into());
@@ -377,9 +373,7 @@ impl LongHorizonSegmentedLedgerV1 {
         Ok(self.checkpoint()?)
     }
 
-    pub fn checkpoint(
-        &self,
-    ) -> Result<LongHorizonLedgerCheckpointV1, LongHorizonLedgerErrorV1> {
+    pub fn checkpoint(&self) -> Result<LongHorizonLedgerCheckpointV1, LongHorizonLedgerErrorV1> {
         self.ready()?;
         Ok(LongHorizonLedgerCheckpointV1 {
             active_segment: self.index,
@@ -394,10 +388,7 @@ impl LongHorizonSegmentedLedgerV1 {
         self.semantic.head_anchor()
     }
 
-    pub fn contains_anchor(
-        &self,
-        anchor: LedgerAnchor,
-    ) -> Result<bool, LongHorizonLedgerErrorV1> {
+    pub fn contains_anchor(&self, anchor: LedgerAnchor) -> Result<bool, LongHorizonLedgerErrorV1> {
         self.ready()?;
         self.semantic.contains_anchor(anchor).map_err(Into::into)
     }
@@ -568,7 +559,9 @@ fn parse_active_segment(
         let mut frame = vec![0_u8; total];
         frame[..8].copy_from_slice(&prefix);
         file.read_exact(&mut frame[8..])?;
-        if Digest32::of_bytes(&frame[..total - 32]).as_array().as_slice()
+        if Digest32::of_bytes(&frame[..total - 32])
+            .as_array()
+            .as_slice()
             != &frame[total - 32..]
         {
             return Err(DurableLedgerError::Corrupt);
@@ -662,10 +655,12 @@ fn validate_minimum(
         }
     }
     if minimum.sealed {
-        let final_anchor = records.last().map_or(minimum.archived_anchor, |record| LedgerAnchor {
-            sequence: record.sequence.get(),
-            chain_digest: record.chain_digest,
-        });
+        let final_anchor = records
+            .last()
+            .map_or(minimum.archived_anchor, |record| LedgerAnchor {
+                sequence: record.sequence.get(),
+                chain_digest: record.chain_digest,
+            });
         if !sealed || final_anchor != minimum.head_anchor {
             return Err(DurableLedgerError::AcknowledgedHistoryMissing.into());
         }
@@ -718,7 +713,8 @@ fn initialize_profile(
                 PersistentIndexErrorV1::from(error)
             }
         })?;
-    file.write_all(&bytes).map_err(PersistentIndexErrorV1::from)?;
+    file.write_all(&bytes)
+        .map_err(PersistentIndexErrorV1::from)?;
     file.sync_all().map_err(PersistentIndexErrorV1::from)?;
     File::open(root)
         .and_then(|directory| directory.sync_all())
@@ -762,9 +758,9 @@ fn persist_archive_catalog(
     records: &[LedgerRecord],
 ) -> Result<(), LongHorizonLedgerErrorV1> {
     if records.is_empty()
-        || records.first().is_none_or(|record| {
-            record.sequence.get() != predecessor.sequence.saturating_add(1)
-        })
+        || records
+            .first()
+            .is_none_or(|record| record.sequence.get() != predecessor.sequence.saturating_add(1))
         || records.last().is_none_or(|record| {
             record.sequence.get() != anchor.sequence || record.chain_digest != anchor.chain_digest
         })
@@ -810,14 +806,17 @@ fn write_immutable(path: &Path, bytes: &[u8]) -> Result<(), LongHorizonLedgerErr
         .write(true)
         .open(&temp)
         .map_err(PersistentIndexErrorV1::from)?;
-    file.write_all(bytes).map_err(PersistentIndexErrorV1::from)?;
+    file.write_all(bytes)
+        .map_err(PersistentIndexErrorV1::from)?;
     file.sync_all().map_err(PersistentIndexErrorV1::from)?;
     fs::rename(&temp, path).map_err(PersistentIndexErrorV1::from)?;
     Ok(())
 }
 
 fn record_location_path(directory: &Path, record_id: &StableId) -> PathBuf {
-    directory.join(hex(Digest32::of_bytes(&record_location_key(record_id)).as_array()))
+    directory.join(hex(
+        Digest32::of_bytes(&record_location_key(record_id)).as_array()
+    ))
 }
 
 fn record_location_key(record_id: &StableId) -> Vec<u8> {
