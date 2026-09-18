@@ -121,8 +121,18 @@ pub fn prepare_artifact_publication_transaction_v1(
         || bridge.producer_id != v2.producer_id
         || bridge.compatibility_digest != v2.compatibility_digest
         || bridge.encoded_size_bytes != v2.encoded_size_bytes
+        || !candidate_registry.is_eligible(&v2.artifact_id)
     {
         return Err(ArtifactPublicationError::ManifestBridgeMismatch);
+    }
+    match &bridge.predecessor_id {
+        Some(predecessor) if !v2.predecessor_ids.contains(predecessor) => {
+            return Err(ArtifactPublicationError::ManifestBridgeMismatch);
+        }
+        None if !v2.predecessor_ids.is_empty() => {
+            return Err(ArtifactPublicationError::ManifestBridgeMismatch);
+        }
+        Some(_) | None => {}
     }
 
     let predecessor_registry_head_digest = current_registry.snapshot().head_digest;
@@ -400,6 +410,47 @@ mod tests {
         let transaction = prepared();
         assert!(!transaction.transaction_digest.is_zero());
         assert!(!transaction.authority.grants_any());
+    }
+
+    #[test]
+    fn publication_transaction_rejects_candidate_that_revokes_admitted_artifact() {
+        let withdrawal = DatasetWithdrawalRegistry::new();
+        let domain = domain();
+        let withdrawal_head = withdrawal_head_digest_v3(&withdrawal, &domain).unwrap();
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &withdrawal,
+            &domain,
+            withdrawal_head,
+            manifest_v2(),
+            20,
+        )
+        .unwrap();
+        let current = base_registry();
+        let mut candidate = candidate_registry(&current);
+        candidate
+            .append(ArtifactEvent::Revoke(crate::StateChange {
+                event_id: id("revoke-artifact"),
+                artifact_id: id("artifact"),
+                evaluator_id: id("independent-evaluator"),
+                reason_digest: digest("revoke-reason"),
+            }))
+            .unwrap();
+        let predecessor_head = current.snapshot().head_digest;
+        let witness = witness(2, candidate.snapshot().head_digest, predecessor_head);
+
+        assert_eq!(
+            prepare_artifact_publication_transaction_v1(
+                &admission,
+                &domain,
+                &withdrawal,
+                &current,
+                &candidate,
+                &witness,
+                &requirement(2, predecessor_head),
+                20,
+            ),
+            Err(ArtifactPublicationError::ManifestBridgeMismatch)
+        );
     }
 
     #[test]
