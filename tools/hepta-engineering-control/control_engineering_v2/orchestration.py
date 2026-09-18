@@ -263,6 +263,27 @@ def plan_engineering_work(
             if predecessor not in package_ids and predecessor not in completed:
                 raise EngineeringError("unknown_predecessor")
 
+    # Match the durable owner: a cycle is a malformed DAG, not merely a batch
+    # in which every package happens to be blocked on another package.
+    pending = {item.package_id: 0 for item in package_values}
+    successors: dict[str, list[str]] = {identity: [] for identity in package_ids}
+    for package in package_values:
+        for predecessor in package.predecessors:
+            if predecessor in package_ids:
+                pending[package.package_id] += 1
+                successors[predecessor].append(package.package_id)
+    ready = [identity for identity, count in pending.items() if count == 0]
+    visited = 0
+    while ready:
+        identity = ready.pop()
+        visited += 1
+        for successor in successors[identity]:
+            pending[successor] -= 1
+            if pending[successor] == 0:
+                ready.append(successor)
+    if visited != len(package_values):
+        raise EngineeringError("dependency_cycle")
+
     def score(item: EngineeringWorkPackage) -> int:
         return (
             item.expected_value_micros
