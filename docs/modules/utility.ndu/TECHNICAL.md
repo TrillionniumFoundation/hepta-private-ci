@@ -200,7 +200,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-ndu/src/projection_journal_tests.rs](../../../codex-rs/hepta-ndu/src/projection_journal_tests.rs); scoped revocation, exact reopen, checkpoint, truncation and tamper cases.
 - [codex-rs/hepta-ndu/src/covariance_tests.rs](../../../codex-rs/hepta-ndu/src/covariance_tests.rs); named case: `scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds`.
 - [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); feasibility/policy cases plus axis-semantics identity binding.
-- [codex-rs/hepta-ndu/src/stochastic_admission.rs](../../../codex-rs/hepta-ndu/src/stochastic_admission.rs); evidence completeness, expiry/objective mismatch and bound-regression cases.
+- [codex-rs/hepta-ndu/src/stochastic_admission_tests.rs](../../../codex-rs/hepta-ndu/src/stochastic_admission_tests.rs); evidence completeness, expiry/objective mismatch and bound-regression cases.
 
 In `codex-rs`, run `just test -p codex-hepta-ndu`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
 
