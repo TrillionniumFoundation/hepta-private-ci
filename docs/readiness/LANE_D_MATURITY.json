@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "lane": "LANE-D-OBJECTIVE-VALUE",
   "authorityDelta": "none",
-  "interpretation": "Each dimension is independent. A materialized source root does not imply a production caller, independent qualification, activation or release.",
+  "interpretation": "Each dimension is independent. Source and candidate product composition do not imply exact-head qualification, independent acceptance, activation or release.",
   "modules": [
     {
       "module": "objective.compiler",
@@ -40,9 +40,11 @@
           ]
         },
         "durability": {
-          "state": "not_applicable_stateless_compiler",
+          "state": "compiler_stateless_product_store_candidate_implemented",
           "evidence": [
-            "owning caller persists immutable objective and run snapshot"
+            "codex-rs/hepta-intelligence/src/objective_product.rs",
+            "DurableObjectivePublicationStoreV1",
+            "ObjectivePublicationAnchorV1"
           ]
         },
         "exactHeadSourceQualification": {
@@ -50,8 +52,11 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "candidate_composed",
+          "evidence": [
+            "codex_hepta_intelligence::ObjectiveProductCallerV1",
+            "codex-rs/hepta-intelligence/src/objective_product_tests.rs"
+          ]
         },
         "productionWriter": {
           "state": "not_applicable_stateless_compiler",

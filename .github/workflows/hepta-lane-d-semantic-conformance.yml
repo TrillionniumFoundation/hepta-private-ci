@@ -7,6 +7,9 @@ on:
   pull_request:
     paths:
       - codex-rs/hepta-objective/**
+      - codex-rs/hepta-intelligence/src/objective_product*.rs
+      - codex-rs/hepta-intelligence/src/lib.rs
+      - codex-rs/hepta-intelligence/Cargo.toml
       - codex-rs/hepta-ndu/**
       - codex-rs/hepta-control-plane/**
       - docs/contracts/OBJECTIVE_ERRORS.json
@@ -17,6 +20,7 @@ on:
       - docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json
       - docs/governance/MODULE_IMPLEMENTATION_BASELINE.md
       - docs/modules/objective.compiler/IMPLEMENTATION_MAP.json
+      - docs/modules/objective.compiler/SEMANTIC_SUPPORT.md
       - docs/modules/utility.ndu/IMPLEMENTATION_MAP.json
       - docs/modules/control.runtime/IMPLEMENTATION_MAP.json
       - qualification/module-execution-dossiers/detail/objective.compiler.md

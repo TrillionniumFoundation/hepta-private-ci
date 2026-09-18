@@ -57,12 +57,10 @@ string_enum!(trust, ObjectiveSourceTrustV1, {
     "authorized_adapter" => AuthorizedAdapter, "untrusted_evidence" => UntrustedEvidence,
 });
 string_enum!(predicate_comparator, ObjectivePredicateComparatorV1, {
-    "eq" => Equal, "ne" => NotEqual, "lt" => LessThan, "lte" => LessThanOrEqual,
-    "gt" => GreaterThan, "gte" => GreaterThanOrEqual,
+    "eq" => Equal, "lte" => LessThanOrEqual, "gte" => GreaterThanOrEqual,
 });
 string_enum!(constraint_comparator, ObjectiveConstraintComparatorV1, {
-    "eq" => Equal, "ne" => NotEqual, "lt" => LessThan, "lte" => LessThanOrEqual,
-    "gt" => GreaterThan, "gte" => GreaterThanOrEqual, "in" => In, "not_in" => NotInSet,
+    "eq" => Equal, "lte" => LessThanOrEqual, "gte" => GreaterThanOrEqual,
 });
 string_enum!(direction, ObjectiveSoftDirectionV1, {"maximize" => Maximize, "minimize" => Minimize});
 string_enum!(risk, ObjectiveRiskClassV1, {"low" => Low, "medium" => Medium, "high" => High, "critical" => Critical});

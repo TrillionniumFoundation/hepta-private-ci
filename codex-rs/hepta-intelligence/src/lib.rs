@@ -6,6 +6,21 @@
 
 #![forbid(unsafe_code)]
 
+mod objective_product;
+
+pub use objective_product::DurableObjectivePublicationStoreV1;
+pub use objective_product::ObjectiveProductCallerV1;
+pub use objective_product::ObjectiveProductErrorV1;
+pub use objective_product::ObjectiveProductReceiptV1;
+pub use objective_product::ObjectiveProductRequestV1;
+pub use objective_product::ObjectivePublicationAnchorV1;
+pub use objective_product::ObjectivePublicationDispositionV1;
+pub use objective_product::ObjectivePublicationRecoveryV1;
+pub use objective_product::ObjectivePublicationStoreErrorV1;
+pub use objective_product::ObjectivePublicationV1;
+pub use objective_product::RunStartBindingsV1;
+pub use objective_product::RunStartSnapshotV1;
+
 mod evaluated_shadow;
 
 pub use evaluated_shadow::EvaluatedShadowError;
