@@ -788,7 +788,7 @@ test("automated reconciliation preserves persistence failure error truth", async
     load: () => [],
     save: () => {
       saves += 1;
-      if (saves >= 3) throw new Error("delete persistence failed");
+      if (saves >= 4) throw new Error("delete persistence failed");
     },
   };
   let terminal = false;
