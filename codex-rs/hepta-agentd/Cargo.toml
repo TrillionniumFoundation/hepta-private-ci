@@ -20,6 +20,11 @@ name = "codex-hepta-agentd"
 path = "src/main.rs"
 test = false
 
+[[bin]]
+name = "hepta-agentd-browser"
+path = "src/bin/hepta-agentd-browser.rs"
+test = false
+
 [lints]
 workspace = true
 
@@ -39,7 +44,6 @@ codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-evidence = { workspace = true }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
-codex-hepta-cognitive-store = { path = "../hepta-cognitive-store" }
 codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
@@ -55,6 +59,7 @@ codex-state = { workspace = true }
 ed25519-dalek = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = [
     "fs",
