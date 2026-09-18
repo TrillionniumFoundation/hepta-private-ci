@@ -204,6 +204,7 @@ pub struct ProductionRecoveryDecision {
     pub expected_control_revision: u64,
     pub expected_lifecycle_generation: u64,
     pub authority_epoch: u64,
+    pub revocation_frontier: u64,
     pub signer_id: String,
     pub signer_epoch: u64,
     pub issued_at_unix_seconds: u64,
@@ -222,6 +223,7 @@ impl ProductionRecoveryDecision {
             || self.namespace != PRODUCTION_RECOVERY_NAMESPACE
             || self.expected_lifecycle_generation == 0
             || self.authority_epoch == 0
+            || self.revocation_frontier == 0
             || self.signer_epoch == 0
         {
             return Err(ProductionAuthorityError::RecoveryBinding);
@@ -270,6 +272,7 @@ impl ProductionRecoveryDecision {
             self.expected_control_revision,
             self.expected_lifecycle_generation,
             self.authority_epoch,
+            self.revocation_frontier,
             self.signer_epoch,
             self.issued_at_unix_seconds,
             self.expires_at_unix_seconds,
@@ -376,6 +379,7 @@ impl H7H89ProductionGrantSigner {
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         authority_epoch: u64,
+        revocation_frontier: u64,
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     ) -> Result<H7H89ProductionGrant, ProductionAuthorityError> {
@@ -398,12 +402,6 @@ impl H7H89ProductionGrantSigner {
         }
         validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
         release_selection.validate()?;
-        if release_selection.revocation_frontier != authority_epoch {
-            return Err(ProductionAuthorityError::AuthorityEpochFence {
-                expected: authority_epoch,
-                actual: release_selection.revocation_frontier,
-            });
-        }
         let mut grant = H7H89ProductionGrant {
             schema_version: SIGNED_AUTHORITY_SCHEMA_VERSION,
             namespace: SIGNED_AUTHORITY_NAMESPACE.to_string(),
@@ -417,6 +415,7 @@ impl H7H89ProductionGrantSigner {
             expected_control_revision,
             expected_lifecycle_generation,
             authority_epoch,
+            revocation_frontier,
             signer_id: self.signer_id.clone(),
             signer_epoch: self.signer_epoch,
             issued_at_unix_seconds,
@@ -460,7 +459,10 @@ impl H7H89ProductionGrantSigner {
         if let Some(digest) = observed_matrixd_sha256.as_ref() {
             parse_digest(digest, "recovery observed matrixd")?;
         }
-        if expected_lifecycle_generation == 0 || authority_epoch == 0 {
+        if expected_lifecycle_generation == 0
+            || authority_epoch == 0
+            || revocation_frontier == 0
+        {
             return Err(ProductionAuthorityError::RecoveryBinding);
         }
         validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
@@ -585,6 +587,7 @@ impl H7H89ProductionGrantVerifier {
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         expected_authority_epoch: u64,
+        expected_revocation_frontier: u64,
         now_unix_seconds: u64,
     ) -> Result<(), ProductionAuthorityError> {
         grant.validate_shape(h7_envelope)?;
@@ -690,6 +693,9 @@ impl H7H89ProductionGrantVerifier {
                 expected: expected_authority_epoch,
                 actual: decision.authority_epoch,
             });
+        }
+        if decision.revocation_frontier != expected_revocation_frontier {
+            return Err(ProductionAuthorityError::Compatibility);
         }
         if decision.signer_id != self.signer_id {
             return Err(ProductionAuthorityError::SignerMismatch);
