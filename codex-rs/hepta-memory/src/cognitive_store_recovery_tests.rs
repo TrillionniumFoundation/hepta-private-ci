@@ -152,11 +152,9 @@ async fn writer_recovery_requires_current_anchor_bound_fence_before_descriptor_b
         valid_until_unix_seconds: 1_000,
         fence_digest: Sha256Digest::for_bytes(b"externally-current-writer-fence"),
     };
-    let verifier = |
-        fence: &CognitiveRecoveryWriterFence,
-        expected: &CognitiveRecoveryAnchor,
-        expected_owner: &AgentId,
-    | {
+    let verifier = |fence: &CognitiveRecoveryWriterFence,
+                    expected: &CognitiveRecoveryAnchor,
+                    expected_owner: &AgentId| {
         if fence.owner_agent_id == *expected_owner
             && fence.anchor_state_digest == expected.state_digest
             && fence.generation == 7
@@ -212,11 +210,10 @@ async fn writer_recovery_requires_current_anchor_bound_fence_before_descriptor_b
         Err(CognitiveRecoveryError::AccessDenied(_))
     ));
 
-    let rejecting_verifier = |
-        _fence: &CognitiveRecoveryWriterFence,
-        _expected: &CognitiveRecoveryAnchor,
-        _owner: &AgentId,
-    | Err("revoked by current authority owner".to_string());
+    let rejecting_verifier =
+        |_fence: &CognitiveRecoveryWriterFence,
+         _expected: &CognitiveRecoveryAnchor,
+         _owner: &AgentId| Err("revoked by current authority owner".to_string());
     assert!(matches!(
         CognitiveStore::open_with_recovery_writer(
             &layout(&temp, &owner),
