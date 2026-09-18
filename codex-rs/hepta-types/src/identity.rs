@@ -19,7 +19,7 @@ impl StableId {
     /// Validate a borrowed identifier before allocating its bounded owned form.
     pub fn parse(value: &str) -> Result<Self, IdentityError> {
         validate_stable_id(value)?;
-        let value = BoundedText::from_str(value).map_err(IdentityError::Bounded)?;
+        let value = BoundedText::try_from_str(value).map_err(IdentityError::Bounded)?;
         Ok(Self(value))
     }
 
