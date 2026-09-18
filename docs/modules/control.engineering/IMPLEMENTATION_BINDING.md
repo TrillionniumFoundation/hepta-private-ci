@@ -39,6 +39,13 @@ independent reviewer, authorized handoff, external hardware-backed key custody,
 strong sandbox observation, distributed fencing, an externally retained immutable
 audit anchor, observed target deployment and a rollback rehearsal. The
 projection grants no authority and cannot authenticate those external receipts.
+The local CLI therefore exposes only a non-authoritative `readiness-projection`
+view. The historical `production-readiness` exit-gate spelling fails closed:
+caller-supplied JSON booleans and digest-shaped strings are never sufficient to
+certify implementation or deployment readiness. A real deployment composition
+must invoke the typed signature verifiers (including distributed fencing,
+external audit anchoring and external hardware-backed key custody) before passing
+verified facts into the projection.
 
 Owner work stops at durable assignments, candidate qualification, signed review
 eligibility or a dormant external-system proposal. Independent key custody,
