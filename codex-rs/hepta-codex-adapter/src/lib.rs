@@ -158,7 +158,10 @@ pub fn adapt(
     if intent.protocol_version == 0 {
         return Err(Error::InvalidProtocolVersion);
     }
-    if now_ms >= intent.deadline_ms {
+    // The deadline fences new dispatch/admission. It must never erase a real
+    // terminal fact observed after the local deadline: late completion,
+    // failure, or interruption remains provider truth and is safe to record.
+    if observation.is_none() && now_ms >= intent.deadline_ms {
         return Err(Error::DeadlineExpired);
     }
 
