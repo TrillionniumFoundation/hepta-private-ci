@@ -198,7 +198,7 @@ async fn crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable(
             &operation.destination,
             &stable_id("worker:one"),
             generation(1),
-            Duration::from_millis(1),
+            Duration::from_secs(30),
         )
         .await
         .expect("claim")
@@ -209,8 +209,20 @@ async fn crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable(
         .await
         .expect("authorize dispatch");
     drop(authorized);
+    // Expire only after the durable dispatch admission. Do not race a 1ms
+    // lease against authority initialization, signing and filesystem sync.
+    sqlx::query(
+        "UPDATE cross_owner_outbox SET lease_until_ms = ?
+         WHERE destination = ? AND scope_id = ? AND operation_id = ?",
+    )
+    .bind(now_millis().expect("expiry clock"))
+    .bind(operation.destination.as_str())
+    .bind(operation.scope_id.as_str())
+    .bind(operation.operation_id.as_str())
+    .execute(&store.pool)
+    .await
+    .expect("expire admitted dispatch fixture");
     store.close().await;
-    tokio::time::sleep(Duration::from_millis(5)).await;
 
     let reopened = DurableOperationStore::open(&path).await.expect("reopen");
     let record = reopened
@@ -515,12 +527,15 @@ async fn retirement_cutoff_range_never_retires_pending_work_or_relaxes_batch_lim
         );
     }
     for limit in [0, MAX_DURABLE_CLAIM_BATCH + 1] {
-        assert_eq!(
+        assert!(matches!(
             store.prune_terminal(u64::MAX, limit).await,
             Err(DurableOperationError::Invalid("prune limit"))
-        );
+        ));
     }
     // The query-bound rule is not a permissive replacement for value storage.
-    assert_eq!(to_i64(u64::MAX), Err(DurableOperationError::Capacity));
+    assert!(matches!(
+        to_i64(u64::MAX),
+        Err(DurableOperationError::Capacity)
+    ));
     store.close().await;
 }
