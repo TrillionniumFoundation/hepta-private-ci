@@ -90,12 +90,7 @@ where
         // append its step intent/claim before provider contact.
         let taskflow = self
             .store
-            .prepare_occurrence_taskflow(
-                &occurrence,
-                &lease,
-                now_ms,
-                self.lease_duration_ms,
-            )
+            .prepare_occurrence_taskflow(&occurrence, &lease, now_ms, self.lease_duration_ms)
             .await
             .map_err(|_| AutomationError::Unavailable)?;
 
@@ -145,12 +140,7 @@ where
             .await?;
         let admission_digest = admission_receipt_digest(&admitted);
         self.store
-            .mark_occurrence_taskflow_admitted(
-                &admitted,
-                &taskflow,
-                &admission_digest,
-                now_ms,
-            )
+            .mark_occurrence_taskflow_admitted(&admitted, &taskflow, &admission_digest, now_ms)
             .await
             .map_err(|_| AutomationError::Unavailable)?;
 
