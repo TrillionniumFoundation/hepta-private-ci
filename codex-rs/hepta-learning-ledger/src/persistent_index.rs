@@ -330,6 +330,31 @@ impl PersistentHistoricalIndexV1 {
         self.put(REVOKED_NAMESPACE, record_id.as_str().as_bytes(), b"1")
     }
 
+    fn get_readonly(
+        &self,
+        namespace: &str,
+        logical_key: &[u8],
+    ) -> Result<Option<Vec<u8>>, PersistentIndexErrorV1> {
+        let path = self.path(namespace, logical_key);
+        let mut file = match File::open(path) {
+            Ok(file) => file,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+            Err(error) => return Err(error.into()),
+        };
+        let length = usize::try_from(file.metadata()?.len())
+            .map_err(|_| PersistentIndexErrorV1::ValueTooLarge)?;
+        if length > MAX_INDEX_VALUE_BYTES {
+            return Err(PersistentIndexErrorV1::ValueTooLarge);
+        }
+        let mut bytes = Vec::with_capacity(length);
+        file.read_to_end(&mut bytes)?;
+        let (stored_key, value) = decode_envelope(&bytes)?;
+        if stored_key != logical_key {
+            return Err(PersistentIndexErrorV1::HashCollision);
+        }
+        Ok(Some(value.to_vec()))
+    }
+
     fn get(
         &mut self,
         namespace: &str,
@@ -619,6 +644,26 @@ impl PersistentIndexedLearningLedgerV1 {
     ) -> Result<Option<Digest32>, PersistentIndexedLedgerErrorV1> {
         self.ready()?;
         self.history.sequence_digest(sequence).map_err(Into::into)
+    }
+
+    pub fn contains_anchor(
+        &self,
+        anchor: LedgerAnchor,
+    ) -> Result<bool, PersistentIndexedLedgerErrorV1> {
+        self.ready()?;
+        if anchor.sequence == 0 {
+            return Ok(anchor.chain_digest.is_zero());
+        }
+        let key = anchor.sequence.to_be_bytes();
+        let Some(bytes) = self.history.get_readonly(SEQUENCE_NAMESPACE, &key)? else {
+            return Ok(false);
+        };
+        if bytes.len() != 32 {
+            return Err(PersistentIndexErrorV1::Corrupt.into());
+        }
+        let mut digest = [0_u8; 32];
+        digest.copy_from_slice(&bytes);
+        Ok(Digest32::from_array(digest) == anchor.chain_digest)
     }
 
     pub(crate) fn historical_record_index(
