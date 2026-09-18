@@ -46,7 +46,10 @@ impl Digest32 {
                 return Ok(Self(value));
             }
             if count as u64 > remaining {
-                return Err(io::Error::new(io::ErrorKind::InvalidData, "digest input limit"));
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "digest input limit",
+                ));
             }
             remaining -= count as u64;
             hasher.update(&buffer[..count]);

@@ -83,7 +83,10 @@ fn committed_transition_retries_are_exactly_idempotent() {
         .expect("reserve replay");
     assert!(reserve_replay.idempotent);
     assert_eq!(reserve_replay.revision, reserved.revision);
-    assert_eq!(fs::read(&path).expect("reserve replay bytes"), after_reserve);
+    assert_eq!(
+        fs::read(&path).expect("reserve replay bytes"),
+        after_reserve
+    );
 
     let assigned = control
         .assign("request.1", 2, assignment())

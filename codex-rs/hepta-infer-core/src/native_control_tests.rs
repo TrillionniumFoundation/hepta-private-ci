@@ -142,7 +142,19 @@ fn compaction_archives_full_history_and_preserves_indeterminate_fences() {
     let archive = control.compact_with_archive().unwrap();
     assert!(archive.is_file());
     assert_eq!(std::fs::read(&archive).unwrap(), bytes_before);
-    assert!(std::fs::metadata(&path).unwrap().len() < bytes_before.len() as u64);
+    // Small histories can grow by the fixed checkpoint/header overhead.
+    // Require canonical bounded state here; growth tests separately require
+    // byte reduction for histories large enough to amortize that overhead.
+    let checkpoint = std::fs::read_to_string(&path).unwrap();
+    assert_eq!(checkpoint.lines().count(), 3);
+    assert_eq!(
+        checkpoint
+            .lines()
+            .filter(|line| line.starts_with(CHECKPOINT_PREFIX))
+            .count(),
+        2
+    );
+    assert!(!checkpoint.lines().any(|line| line.starts_with(JOURNAL_PREFIX)));
 
     drop(control);
     let mut reopened = DurableInferenceControl::open(&path, 16).unwrap();

@@ -316,7 +316,10 @@ impl DurableInferenceControl {
             return Err(Error::Conflict);
         }
         let archive_stamp = maintenance::verify_archive(
-            &path, compaction_archive_digest.as_deref(), None, &maintenance,
+            &path,
+            compaction_archive_digest.as_deref(),
+            None,
+            &maintenance,
         )?;
         let cached_stamp = file_stamp(&file)?;
         #[cfg(unix)]
@@ -489,7 +492,10 @@ impl DurableInferenceControl {
             // same-size edits and generation changes take full replay. Archive
             // disappearance still fails closed.
             self.archive_stamp = maintenance::verify_archive(
-                &self.path, self.archive_digest.as_deref(), self.archive_stamp, &self.maintenance,
+                &self.path,
+                self.archive_digest.as_deref(),
+                self.archive_stamp,
+                &self.maintenance,
             )?;
             self.file = current_file;
             self.replay_stats.unchanged_reuses =
@@ -516,7 +522,10 @@ impl DurableInferenceControl {
                 return Err(Error::CapacityExceeded);
             }
             self.archive_stamp = maintenance::verify_archive(
-                &self.path, self.archive_digest.as_deref(), self.archive_stamp, &self.maintenance,
+                &self.path,
+                self.archive_digest.as_deref(),
+                self.archive_stamp,
+                &self.maintenance,
             )?;
 
             let mut staged_records = BTreeMap::new();
@@ -546,8 +555,7 @@ impl DurableInferenceControl {
                 if line.last() == Some(&b'\r') {
                     line.pop();
                 }
-                let line =
-                    std::str::from_utf8(&line).map_err(|_| Error::CorruptJournal("utf8"))?;
+                let line = std::str::from_utf8(&line).map_err(|_| Error::CorruptJournal("utf8"))?;
                 if line.is_empty() {
                     continue;
                 }
@@ -675,7 +683,10 @@ impl DurableInferenceControl {
             return Err(Error::Conflict);
         }
         let archive_stamp = maintenance::verify_archive(
-            &self.path, compaction_archive_digest.as_deref(), None, &self.maintenance,
+            &self.path,
+            compaction_archive_digest.as_deref(),
+            None,
+            &self.maintenance,
         )?;
         self.records = records;
         self.native = native;
@@ -734,8 +745,14 @@ impl DurableInferenceControl {
                 .ok_or(Error::RequestNotFound)?;
             let added = self.persist_released_native_record(record)?;
             if added > 0 {
-                inventory.bytes = inventory.bytes.checked_add(added).ok_or(Error::ArithmeticOverflow)?;
-                inventory.records = inventory.records.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
+                inventory.bytes = inventory
+                    .bytes
+                    .checked_add(added)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                inventory.records = inventory
+                    .records
+                    .checked_add(1)
+                    .ok_or(Error::ArithmeticOverflow)?;
             }
         }
         sync_released_archive_dir(&self.path)?;
@@ -781,7 +798,8 @@ impl DurableInferenceControl {
             return Err(Error::CorruptJournal("native released archive size"));
         }
         let mut bytes = Vec::new();
-        file.take(MAX_JOURNAL_LINE_BYTES as u64 + 1).read_to_end(&mut bytes)?;
+        file.take(MAX_JOURNAL_LINE_BYTES as u64 + 1)
+            .read_to_end(&mut bytes)?;
         if bytes.len() > MAX_JOURNAL_LINE_BYTES {
             return Err(Error::CapacityExceeded);
         }
@@ -952,7 +970,10 @@ impl DurableInferenceControl {
         validate_private_file(&self.file)?;
         self.cached_stamp = file_stamp(&self.file)?;
         self.archive_stamp = maintenance::verify_archive(
-            &self.path, Some(&archive_digest), None, &self.maintenance,
+            &self.path,
+            Some(&archive_digest),
+            None,
+            &self.maintenance,
         )?;
         self.archive_digest = Some(archive_digest);
         self.journal_bytes = compacted_bytes;
@@ -1165,7 +1186,9 @@ fn compaction_archives(path: &Path) -> Result<Vec<(String, PathBuf, u64)>, Error
         };
         validate_digest(digest, "compaction archive")?;
         if !entry.file_type()?.is_file() {
-            return Err(Error::InvalidIdentity("compaction archive must be a regular file"));
+            return Err(Error::InvalidIdentity(
+                "compaction archive must be a regular file",
+            ));
         }
         verify_archive_file(&entry.path(), digest)?;
         let bytes = entry.metadata()?.len();
@@ -1183,14 +1206,18 @@ fn ensure_released_archive_dir(path: &Path) -> Result<(), Error> {
     let directory = released_archive_dir(path);
     match fs::symlink_metadata(&directory) {
         Ok(metadata) if !metadata.is_dir() => {
-            return Err(Error::InvalidIdentity("native released archive must be a directory"));
+            return Err(Error::InvalidIdentity(
+                "native released archive must be a directory",
+            ));
         }
         Ok(metadata) => {
             #[cfg(unix)]
             {
                 use std::os::unix::fs::PermissionsExt;
                 if metadata.permissions().mode() & 0o077 != 0 {
-                    return Err(Error::InvalidIdentity("native released archive must be owner-only"));
+                    return Err(Error::InvalidIdentity(
+                        "native released archive must be owner-only",
+                    ));
                 }
             }
         }
