@@ -38,6 +38,8 @@ class ProductionReadinessTests(unittest.TestCase):
             deployment_receipt_digest="9" * 64,
             rollback_rehearsed=True,
             rollback_receipt_digest="a" * 64,
+            external_audit_anchor=True,
+            audit_anchor_receipt_digest="b" * 64,
         )
 
     def test_complete_verified_fact_set_closes_both_readiness_dimensions(self) -> None:
@@ -129,6 +131,24 @@ class ProductionReadinessTests(unittest.TestCase):
             decision.implementation_blockers,
         )
         self.assertIn("deployment_target_invalid", decision.deployment_blockers)
+
+    def test_missing_external_audit_anchor_blocks_deployment(self) -> None:
+        facts = replace(
+            self.facts(),
+            external_audit_anchor=False,
+            audit_anchor_receipt_digest="",
+        )
+        decision = evaluate_production_readiness(facts)
+        self.assertTrue(decision.production_implementation_ready)
+        self.assertFalse(decision.deployment_readiness_ready)
+        self.assertIn("external_audit_anchor_missing", decision.deployment_blockers)
+        self.assertIn("audit_anchor_receipt_invalid", decision.deployment_blockers)
+
+    def test_distributed_mode_requires_fencing_receipt(self) -> None:
+        facts = replace(self.facts(), distributed_mode=True)
+        decision = evaluate_production_readiness(facts)
+        self.assertFalse(decision.deployment_readiness_ready)
+        self.assertIn("distributed_fencing_not_verified", decision.deployment_blockers)
 
 
 if __name__ == "__main__":
