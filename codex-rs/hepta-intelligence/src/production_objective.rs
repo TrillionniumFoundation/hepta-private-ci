@@ -173,8 +173,7 @@ impl ProductionObjectiveStartReceiptV1 {
         self.run_start
             .validate_for_objective(&self.objective.objective)
             .map_err(ProductionObjectiveError::RunStart)?;
-        if self.objective.objective.source_digest
-            != self.objective_admission.admitted_source_digest
+        if self.objective.objective.source_digest != self.objective_admission.admitted_source_digest
         {
             return Err(ProductionObjectiveError::AdmissionBindingMismatch);
         }
@@ -232,21 +231,32 @@ impl fmt::Display for ProductionObjectiveError {
             Self::CompiledObjective(error) => {
                 write!(formatter, "compiled objective validation failed: {error}")
             }
-            Self::Durable(error) => write!(formatter, "durable run-start publication failed: {error}"),
-            Self::AuthorityEscalation => formatter.write_str("objective host envelope grants authority"),
+            Self::Durable(error) => {
+                write!(formatter, "durable run-start publication failed: {error}")
+            }
+            Self::AuthorityEscalation => {
+                formatter.write_str("objective host envelope grants authority")
+            }
             Self::InvalidPublishedDisposition => {
                 formatter.write_str("published objective is not a compiled disposition")
             }
             Self::AdmissionBindingMismatch => {
                 formatter.write_str("published objective is not bound to admitted source")
             }
-            Self::HostBindingMismatch => {
-                formatter.write_str("runtime host envelope differs from durable publication receipt")
+            Self::HostBindingMismatch => formatter
+                .write_str("runtime host envelope differs from durable publication receipt"),
+            Self::EmptyHostDigest(field) => {
+                write!(formatter, "host envelope {field} digest is zero")
             }
-            Self::EmptyHostDigest(field) => write!(formatter, "host envelope {field} digest is zero"),
-            Self::InvalidDurableSequence => formatter.write_str("host envelope durable sequence is zero"),
-            Self::RunStartDigestMismatch => formatter.write_str("host envelope run-start digest mismatch"),
-            Self::EnvelopeDigestMismatch => formatter.write_str("objective host envelope digest mismatch"),
+            Self::InvalidDurableSequence => {
+                formatter.write_str("host envelope durable sequence is zero")
+            }
+            Self::RunStartDigestMismatch => {
+                formatter.write_str("host envelope run-start digest mismatch")
+            }
+            Self::EnvelopeDigestMismatch => {
+                formatter.write_str("objective host envelope digest mismatch")
+            }
         }
     }
 }
@@ -296,10 +306,7 @@ pub fn prepare_intelligence_run_v1<J: DurableLearningJournal>(
         }
     };
     if compile.disposition == CompileDisposition::ExplicitAbstain {
-        return Ok(ProductionObjectiveDispositionV1::ExplicitAbstain {
-            admission,
-            compile,
-        });
+        return Ok(ProductionObjectiveDispositionV1::ExplicitAbstain { admission, compile });
     }
 
     validate_compiled_objective_v1(&compile.objective)
