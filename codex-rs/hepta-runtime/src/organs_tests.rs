@@ -3,6 +3,7 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
 use crate::RuntimeStateStatus;
+use codex_hepta_wire::WireEnvelopeV2;
 
 #[derive(Debug)]
 struct ObservedAdapter(Arc<AtomicUsize>);
@@ -99,5 +100,36 @@ fn status_consumer_checks_the_complete_hierarchy_without_direct_adapter_fallback
         assert_eq!(calls.load(Ordering::SeqCst), 1);
         assert_eq!(report["state"]["runtime_snapshot_generation"], 9);
     }
+    Ok(())
+}
+
+#[test]
+fn live_status_wire_v2_wraps_one_exact_status_observation() -> Result<()> {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let root = HeptaStateRoot::parse(std::env::temp_dir().join("hepta-organ-wire-request"))?;
+    let runtime =
+        crate::HeptaRuntime::from_adapter(root, Arc::new(ObservedAdapter(Arc::clone(&calls))));
+
+    let frame = runtime.status_wire_v2()?;
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    let envelope = WireEnvelopeV2::decode(&frame)?;
+    assert_eq!(
+        envelope.schema().as_str(),
+        crate::RUNTIME_STATUS_WIRE_SCHEMA
+    );
+    assert_eq!(
+        envelope.producer().as_str(),
+        crate::RUNTIME_STATUS_WIRE_PRODUCER
+    );
+    assert_eq!(
+        envelope.generation().get(),
+        crate::RUNTIME_STATUS_WIRE_GENERATION
+    );
+    let report: serde_json::Value = serde_json::from_slice(envelope.payload())?;
+    assert_eq!(report["state"]["runtime_snapshot_generation"], 9);
+    assert_eq!(
+        report["authority"],
+        serde_json::to_value(RuntimeAuthorityStatus::default())?
+    );
     Ok(())
 }

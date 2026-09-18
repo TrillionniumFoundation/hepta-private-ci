@@ -22,7 +22,7 @@ use tokio::net::TcpStream;
 pub const DEFAULT_LISTEN_ADDR: &str = "127.0.0.1:7373";
 pub const CANARY_LISTEN_ADDR: &str = "127.0.0.1:17373";
 pub const LIVE_SHELL_CONTRACT_ARG: &str = "--hepta-vnext-live-shell-contract-v1";
-pub const LIVE_SHELL_CONTRACT_JSON: &str = r#"{"schema":"hepta_vnext_live_shell_contract_v1","status":"ready","protocol_version":1,"routes":["GET /","GET /api/hepta/runtime","GET /healthz"],"runtime":{"loopback_only":true,"read_only":true,"open_mode":"immutable-query-only-open-existing","schema_version":5,"requires_empty_wal":true,"keyed_integrity_required":true},"authority":{"telegram":false,"outbound":false,"model_invocation":false,"operator_mutation":false,"enforce":false,"promotion":false,"retirement":false,"automatic_transition":false}}"#;
+pub const LIVE_SHELL_CONTRACT_JSON: &str = r#"{"schema":"hepta_vnext_live_shell_contract_v1","status":"ready","protocol_version":1,"routes":["GET /","GET /api/hepta/runtime","GET /api/hepta/runtime.hpta","GET /healthz"],"runtime":{"loopback_only":true,"read_only":true,"open_mode":"immutable-query-only-open-existing","schema_version":5,"requires_empty_wal":true,"keyed_integrity_required":true},"authority":{"telegram":false,"outbound":false,"model_invocation":false,"operator_mutation":false,"enforce":false,"promotion":false,"retirement":false,"automatic_transition":false}}"#;
 const MAX_REQUEST_BYTES: usize = 32 * 1024;
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(5);
 const RESPONSE_TIMEOUT: Duration = Duration::from_secs(5);
@@ -268,6 +268,17 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
                 ))
             }
         },
+        "/api/hepta/runtime.hpta" => match runtime.status_wire_v2() {
+            Ok(body) => Ok(response("200 OK", "application/vnd.hepta.hpta", &body)),
+            Err(error) => {
+                eprintln!("Hepta HPTA status unavailable: {error:#}");
+                Ok(response(
+                    "503 Service Unavailable",
+                    "application/json; charset=utf-8",
+                    br#"{"error":"runtime wire status unavailable"}"#,
+                ))
+            }
+        },
         "/" => Ok(response(
             "200 OK",
             "text/html; charset=utf-8",
@@ -456,7 +467,7 @@ mod tests {
     fn live_shell_contract_is_exact_and_all_authority_is_closed() -> Result<()> {
         let value: serde_json::Value = serde_json::from_str(LIVE_SHELL_CONTRACT_JSON)?;
         assert_eq!(value["schema"], "hepta_vnext_live_shell_contract_v1");
-        assert_eq!(value["routes"].as_array().map(Vec::len), Some(3));
+        assert_eq!(value["routes"].as_array().map(Vec::len), Some(4));
         assert_eq!(value["runtime"]["loopback_only"], true);
         assert_eq!(value["runtime"]["read_only"], true);
         assert_eq!(value["runtime"]["schema_version"], 5);

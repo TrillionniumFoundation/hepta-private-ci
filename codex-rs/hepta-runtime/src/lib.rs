@@ -25,6 +25,9 @@ use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_paths::HeptaStateLayout;
 use codex_hepta_paths::HeptaStateRoot;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use codex_hepta_wire::WireEnvelopeV2;
 use hmac::Hmac;
 use hmac::Mac;
 use serde::Deserialize;
@@ -39,6 +42,9 @@ use zeroize::Zeroizing;
 
 pub const EXISTING_SCHEMA_VERSION: i64 = 5;
 pub const RUNTIME_SNAPSHOT_VERSION: u64 = 1;
+pub const RUNTIME_STATUS_WIRE_SCHEMA: &str = "hepta.runtime.status.v1";
+pub const RUNTIME_STATUS_WIRE_PRODUCER: &str = "runtime.codex";
+pub const RUNTIME_STATUS_WIRE_GENERATION: u64 = 1;
 const INTEGRITY_ALGORITHM: &str = "hmac-sha256-v1";
 const KEY_ID_DOMAIN: &[u8] = b"hepta.memory.durable-integrity.key-id.v1";
 const ROW_MAC_DOMAIN: &[u8] = b"hepta.memory.durable-integrity.row-mac.v1";
@@ -101,6 +107,20 @@ impl HeptaRuntime {
     /// The wire payload is unchanged; no mutable or external organ is admitted.
     pub fn status_json(&self) -> Result<Vec<u8>> {
         self.organs.status_json()
+    }
+
+    /// Wrap one exact read-only status observation in the current HPTA V2
+    /// contract. The envelope generation identifies this wire contract; the
+    /// payload retains the independently observed runtime/state generations.
+    pub fn status_wire_v2(&self) -> Result<Vec<u8>> {
+        let payload = self.status_json()?;
+        let envelope = WireEnvelopeV2::new(
+            StableId::new(RUNTIME_STATUS_WIRE_SCHEMA)?,
+            StableId::new(RUNTIME_STATUS_WIRE_PRODUCER)?,
+            Generation::new(RUNTIME_STATUS_WIRE_GENERATION)?,
+            payload,
+        )?;
+        Ok(envelope.encode())
     }
 
     pub fn status(&self) -> RuntimeStatus {
