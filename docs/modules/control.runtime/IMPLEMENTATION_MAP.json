@@ -338,8 +338,8 @@
       "sourcePathExists": true
     },
     {
-      "operation": "claim_final_use_for_grant_request_v1",
-      "nativeSymbol": "codex_hepta_control_plane::claim_final_use_for_grant_request_v1",
+      "operation": "with_authorized_grant_request_v1",
+      "nativeSymbol": "codex_hepta_control_plane::with_authorized_grant_request_v1",
       "sourcePath": "codex-rs/hepta-control-plane/src/authority_bridge.rs",
       "inputs": [
         "GrantRequestV1",
@@ -347,26 +347,28 @@
         "independently signed FinalUseGrant"
       ],
       "outputs": [
-        "kernel.authority VerifiedUseToken"
+        "effect adapter result after FinalUseAuthority final revalidation"
       ],
-      "state": "source_implemented_independent_authority_bridge_not_effect_dispatch",
+      "state": "source_implemented_independent_authority_bridge_with_final_fence_not_named_product_dispatch",
       "authority": "independent_kernel_authority_only",
       "tests": [
         {
           "path": "codex-rs/hepta-control-plane/src/authority_bridge_tests.rs",
-          "symbol": "independent_authority_claims_exact_planner_binding"
+          "symbol": "final_boundary_helper_revalidates_and_consumes_authority_once"
         },
         {
           "path": "codex-rs/hepta-control-plane/src/authority_bridge_tests.rs",
           "symbol": "payload_drift_is_rejected_by_independent_authority_binding"
         }
       ],
-      "designOperation": "claim_final_use_for_grant_request_v1",
+      "designOperation": "with_authorized_grant_request_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
-        "kernel.authority::FinalUseAuthority"
+        "kernel.authority::FinalUseAuthority::claim",
+        "kernel.authority::FinalUseAuthority::with_verified_use"
       ],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "nonClaim": "control.runtime neither signs FinalUseGrant nor constructs VerifiedUseToken directly"
     }
   ],
   "canonicalDomainContracts": [
