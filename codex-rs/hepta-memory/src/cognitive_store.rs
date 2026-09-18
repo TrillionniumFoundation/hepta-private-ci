@@ -1153,13 +1153,12 @@ async fn verify_current_projection_contents(
         )?;
         let predecessor_v2 = if generation > 1 {
             let previous_generation = generation - 1;
-            let (previous_input, previous_nodes, previous_edges) =
-                load_persisted_projection_tx(
-                    &mut transaction,
-                    &projection_scope,
-                    previous_generation,
-                )
-                .await?;
+            let (previous_input, previous_nodes, previous_edges) = load_persisted_projection_tx(
+                &mut transaction,
+                &projection_scope,
+                previous_generation,
+            )
+            .await?;
             Some(build_v2_generation(
                 previous_generation,
                 &projection_scope,
@@ -1170,8 +1169,7 @@ async fn verify_current_projection_contents(
         } else {
             None
         };
-        let publication_v2 =
-            qualify_v2_transition(predecessor_v2.as_ref(), &current_v2)?;
+        let publication_v2 = qualify_v2_transition(predecessor_v2.as_ref(), &current_v2)?;
 
         let stored_source_snapshot: String = current
             .try_get("source_snapshot_digest")
@@ -1182,27 +1180,25 @@ async fn verify_current_projection_contents(
         let stored_graph_profile: String = current
             .try_get("graph_profile_digest")
             .map_err(unavailable)?;
-        let stored_generation_digest: String = current
-            .try_get("generation_digest")
-            .map_err(unavailable)?;
-        let stored_publication_digest: String = current
-            .try_get("publication_digest")
-            .map_err(unavailable)?;
+        let stored_generation_digest: String =
+            current.try_get("generation_digest").map_err(unavailable)?;
+        let stored_publication_digest: String =
+            current.try_get("publication_digest").map_err(unavailable)?;
         let stored_v2_sqlite_output: String = current
             .try_get("sqlite_output_sha256")
             .map_err(unavailable)?;
         let stored_predecessor_generation: Option<i64> = current
             .try_get("predecessor_generation")
             .map_err(unavailable)?;
-        let stored_predecessor_digest: Option<String> = current
-            .try_get("predecessor_digest")
-            .map_err(unavailable)?;
+        let stored_predecessor_digest: Option<String> =
+            current.try_get("predecessor_digest").map_err(unavailable)?;
 
         let expected_predecessor_generation = publication_v2
             .predecessor_generation
             .map(|value| i64::try_from(value.get()).unwrap_or(i64::MAX));
-        let expected_predecessor_digest =
-            publication_v2.predecessor_digest.map(|value| value.to_string());
+        let expected_predecessor_digest = publication_v2
+            .predecessor_digest
+            .map(|value| value.to_string());
         if stored_source_snapshot != current_v2.source_snapshot_digest.to_string()
             || stored_generation_vector != current_v2.generation_vector_digest.to_string()
             || stored_graph_profile != current_v2.graph_profile_digest.to_string()
