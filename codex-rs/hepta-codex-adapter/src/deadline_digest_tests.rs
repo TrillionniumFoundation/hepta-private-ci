@@ -21,12 +21,12 @@ fn intent(deadline_ms: u64) -> CodexOperationIntent {
         subject_id: id("agent:deadline"),
         destination_id: id("agent:deadline/app-server:9"),
         thread_id: id("thread:deadline"),
-        client_message_id: id("client:deadline"),
+        client_message_id: "client:deadline".to_string(),
         method_id: id("turn/start"),
         payload_digest,
         lease_payload_digest: payload_digest,
+        input_digest: turn_input_digest(&params),
         scope_digest: digest(b"scope"),
-        authority_epoch: 4,
         session_generation: 9,
         protocol_version: 2,
         deadline_ms,
@@ -53,21 +53,14 @@ fn deadline_is_bound_into_the_codex_request_digest() {
 }
 
 #[test]
-fn authority_session_protocol_and_client_identity_are_bound_into_request_digest() {
+fn scope_session_protocol_and_client_identity_are_bound_into_request_digest() {
     let base = intent(2_000);
 
     let mut changed_client = base.clone();
-    changed_client.client_message_id = id("client:other");
+    changed_client.client_message_id = "client:other".to_string();
     assert_ne!(
         must_adapt(base.clone()).request_digest,
         must_adapt(changed_client).request_digest
-    );
-
-    let mut changed_authority = base.clone();
-    changed_authority.authority_epoch += 1;
-    assert_ne!(
-        must_adapt(base.clone()).request_digest,
-        must_adapt(changed_authority).request_digest
     );
 
     let mut changed_generation = base.clone();
