@@ -515,12 +515,9 @@ mod tests {
             registry_event_digest: digest("registry-event"),
             snapshot_binding: binding,
         };
-        let mut transaction = recover_artifact_publication_v1(
-            contract,
-            Some(snapshot_receipt(binding)),
-            None,
-        )
-        .expect("snapshot recovery");
+        let mut transaction =
+            recover_artifact_publication_v1(contract, Some(snapshot_receipt(binding)), None)
+                .expect("snapshot recovery");
 
         let (mut wrong_registry, _) = witness(binding);
         wrong_registry.registry_id = id("other-artifacts");
@@ -639,8 +636,7 @@ mod tests {
     #[test]
     fn multi_predecessor_manifest_is_not_silently_downgraded_to_v1_lineage() {
         let mut multi = admission();
-        multi.validated_manifest.manifest.predecessor_ids =
-            vec![id("parent-a"), id("parent-b")];
+        multi.validated_manifest.manifest.predecessor_ids = vec![id("parent-a"), id("parent-b")];
         multi.validated_manifest.manifest.rollback_predecessor = Some(id("parent-a"));
         assert_eq!(
             artifact_registry_event_for_admission_v3(id("operation"), &multi),
