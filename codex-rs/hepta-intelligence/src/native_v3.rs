@@ -149,10 +149,7 @@ impl<'a> NativeCompositionPortsV3<'a> {
         self.decision.as_ref()
     }
 
-    fn ensure_run_binding(
-        &self,
-        input: &CompositionPortInputV3,
-    ) -> Result<(), PortFailureV1> {
+    fn ensure_run_binding(&self, input: &CompositionPortInputV3) -> Result<(), PortFailureV1> {
         if self.candidate_set.digest() != input.candidate_set_digest
             || self.candidate_set.state_digest != input.snapshot_digest
         {
@@ -203,10 +200,7 @@ impl<'a> NativeCompositionPortsV3<'a> {
             .ok_or_else(|| native_failure(input, PortFailureClassV1::Rejected, label))
     }
 
-    fn objective_digest(
-        &self,
-        input: &CompositionPortInputV3,
-    ) -> Result<Digest32, PortFailureV1> {
+    fn objective_digest(&self, input: &CompositionPortInputV3) -> Result<Digest32, PortFailureV1> {
         self.ensure_run_binding(input)?;
         self.objective
             .as_ref()
@@ -303,9 +297,8 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         for contribution in &mut contributions.contributions {
             contribution.objective_digest = objective_digest;
         }
-        let abstain = StableId::new("abstain").map_err(|_| {
-            native_failure(input, PortFailureClassV1::Rejected, "abstain-id")
-        })?;
+        let abstain = StableId::new("abstain")
+            .map_err(|_| native_failure(input, PortFailureClassV1::Rejected, "abstain-id"))?;
         let mut expected = self
             .candidate_set
             .candidates
@@ -325,13 +318,9 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
                 "ndu-candidate-set",
             ));
         }
-        let receipt = evaluate_candidates_with_policy(
-            contributions,
-            profile,
-            scalarization,
-            policy,
-        )
-        .map_err(|_| native_failure(input, PortFailureClassV1::Rejected, "ndu-error"))?;
+        let receipt =
+            evaluate_candidates_with_policy(contributions, profile, scalarization, policy)
+                .map_err(|_| native_failure(input, PortFailureClassV1::Rejected, "ndu-error"))?;
         let output = receipt.evaluation_digest_v2;
         let evidence = receipt.evaluation_policy_digest;
         self.utility = Some(receipt);
@@ -350,16 +339,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
     ) -> Result<CompositionPortReceiptV3, PortFailureV1> {
         let mut neuron = {
             let inputs = self.inputs_mut(input, "missing-neuron-input")?;
-            inputs
-                .neuron
-                .take()
-                .ok_or_else(|| {
-                    native_failure(
-                        input,
-                        PortFailureClassV1::Unavailable,
-                        "neuron-not-configured",
-                    )
-                })?
+            inputs.neuron.take().ok_or_else(|| {
+                native_failure(
+                    input,
+                    PortFailureClassV1::Unavailable,
+                    "neuron-not-configured",
+                )
+            })?
         };
         let required_generation = self.required_generation(input)?;
         if neuron.request.generation != required_generation {
@@ -392,16 +378,13 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         let objective_digest = self.objective_digest(input)?;
         let mut request = {
             let inputs = self.inputs_mut(input, "missing-prompt-input")?;
-            inputs
-                .prompt
-                .take()
-                .ok_or_else(|| {
-                    native_failure(
-                        input,
-                        PortFailureClassV1::Unavailable,
-                        "prompt-not-configured",
-                    )
-                })?
+            inputs.prompt.take().ok_or_else(|| {
+                native_failure(
+                    input,
+                    PortFailureClassV1::Unavailable,
+                    "prompt-not-configured",
+                )
+            })?
         };
         request.decision_id = input.run_id.clone();
         request.objective_digest = objective_digest;
@@ -458,11 +441,7 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
             ));
         }
         let utility = self.utility.as_ref().ok_or_else(|| {
-            native_failure(
-                input,
-                PortFailureClassV1::Rejected,
-                "utility-not-evaluated",
-            )
+            native_failure(input, PortFailureClassV1::Rejected, "utility-not-evaluated")
         })?;
         for candidate in &request.candidates {
             let Some(ndu_candidate) = utility
@@ -495,13 +474,7 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         };
         let output = receipt.receipt_digest;
         self.intuition = Some(receipt);
-        native_receipt(
-            input,
-            "intuition.policy",
-            output,
-            output,
-            decision,
-        )
+        native_receipt(input, "intuition.policy", output, output, decision)
     }
 
     fn compile_context(
@@ -517,11 +490,7 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         request.objective_digest = objective_digest;
         let receipt = compile(request)
             .map_err(|_| native_failure(input, PortFailureClassV1::Rejected, "context-error"))?;
-        let evidence = native_evidence_digest(
-            input,
-            "context-receipt",
-            receipt.context_digest,
-        );
+        let evidence = native_evidence_digest(input, "context-receipt", receipt.context_digest);
         let output = receipt.context_digest;
         self.context = Some(receipt);
         native_receipt(
@@ -551,11 +520,7 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         }
         request.objective_digest = objective_digest;
         request.candidate_producer_id = StableId::new("intelligence.control").map_err(|_| {
-            native_failure(
-                input,
-                PortFailureClassV1::Rejected,
-                "producer-identity",
-            )
+            native_failure(input, PortFailureClassV1::Rejected, "producer-identity")
         })?;
         let receipt = evaluate(request)
             .map_err(|_| native_failure(input, PortFailureClassV1::Rejected, "evaluation-error"))?;
@@ -583,11 +548,7 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         let objective_digest = self.objective_digest(input)?;
         let (selected, propensity, intuition_digest, requires_evaluation) = {
             let intuition = self.intuition.as_ref().ok_or_else(|| {
-                native_failure(
-                    input,
-                    PortFailureClassV1::Rejected,
-                    "intuition-not-decided",
-                )
+                native_failure(input, PortFailureClassV1::Rejected, "intuition-not-decided")
             })?;
             let (selected, propensity, requires_evaluation) = match &intuition.disposition {
                 CalibratedDispositionV1::Selected(candidate) => {
@@ -614,11 +575,7 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
                 ),
             };
             let propensity = propensity.filter(|value| value.raw() > 0).ok_or_else(|| {
-                native_failure(
-                    input,
-                    PortFailureClassV1::Rejected,
-                    "missing-propensity",
-                )
+                native_failure(input, PortFailureClassV1::Rejected, "missing-propensity")
             })?;
             (
                 selected,
@@ -653,12 +610,10 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
                 inputs.expected_ledger_head,
             )
         };
-        let abstain = StableId::new("abstain").map_err(|_| {
-            native_failure(input, PortFailureClassV1::Rejected, "abstain-id")
-        })?;
-        let slow_path = StableId::new("shadow:slow-path").map_err(|_| {
-            native_failure(input, PortFailureClassV1::Rejected, "slow-path-id")
-        })?;
+        let abstain = StableId::new("abstain")
+            .map_err(|_| native_failure(input, PortFailureClassV1::Rejected, "abstain-id"))?;
+        let slow_path = StableId::new("shadow:slow-path")
+            .map_err(|_| native_failure(input, PortFailureClassV1::Rejected, "slow-path-id"))?;
         let mut candidates = self
             .candidate_set
             .candidates
@@ -711,13 +666,8 @@ fn native_receipt(
     evidence_digest: Digest32,
     decision: PortDecisionV1,
 ) -> Result<CompositionPortReceiptV3, PortFailureV1> {
-    let producer = StableId::new(producer).map_err(|_| {
-        native_failure(
-            input,
-            PortFailureClassV1::Rejected,
-            "producer-identity",
-        )
-    })?;
+    let producer = StableId::new(producer)
+        .map_err(|_| native_failure(input, PortFailureClassV1::Rejected, "producer-identity"))?;
     Ok(CompositionPortReceiptV3 {
         stage: input.stage,
         producer,
