@@ -3281,6 +3281,88 @@
         "current_run_artifact_immutable",
         "correction_deletion_and_revocation_lineage_preserved"
       ]
+    },
+    {
+      "id": "IntelligenceHostEnvelopeV1",
+      "contractId": "IntelligenceHostEnvelopeV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 32768,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "runStart",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "profileDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "intentDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "admittedSourceDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "deadlineUnixMicros",
+          "type": "u64",
+          "required": false
+        },
+        {
+          "name": "durableSequence",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "durableEventDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "durableChainDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "runStartDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "envelopeDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "authorityPosture",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 1024
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_posture_deny_all",
+        "run_start_digest_recomputed_before_runtime_use"
+      ]
     }
   ],
   "subordinateProtocolRegistries": [
