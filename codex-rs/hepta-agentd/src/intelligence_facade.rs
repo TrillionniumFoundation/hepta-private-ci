@@ -38,12 +38,14 @@ impl<'a> AgentdIntelligenceCaller<'a> {
             .validate()
             .map_err(IntelligenceFacadeCallerError::Envelope)?;
 
-        let deadline_ms = envelope
-            .deadline_micros
+        // Never widen an intelligence deadline while adapting micros to the
+        // existing millisecond Agentd coordinator.  Floor the deadline and
+        // ceil the observation time so the adapter can only fail earlier.
+        let deadline_ms = envelope.deadline_micros / 1_000;
+        let now_ms = now_micros
             .checked_add(999)
             .ok_or(IntelligenceFacadeCallerError::Arithmetic)?
             / 1_000;
-        let now_ms = now_micros / 1_000;
 
         let started = self
             .coordinator
