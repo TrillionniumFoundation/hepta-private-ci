@@ -16,6 +16,7 @@ use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 use codex_hepta_learning_ledger::DurableLedger;
+use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_ndu::AggregationOperator;
 use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
@@ -468,3 +469,88 @@ fn v3_native_adapters_traverse_real_owner_libraries_and_durable_ledger() {
     drop(ports);
     assert_eq!(ledger.records().expect("ledger records").len(), 1);
 }
+
+#[test]
+fn v3_native_abstention_is_durable_without_context_or_evaluation() {
+    let objective = compile_objective(objective_source())
+        .expect("objective compile")
+        .expect("objective conflict");
+    let objective_digest = objective.objective.semantic_digest;
+    let snapshot = snapshot(objective_digest);
+    let candidate_set = LegalActionCandidateSetV1::new(
+        id("candidate-set-abstain"),
+        snapshot.digest(),
+        id("intelligence.control"),
+        digest("grammar"),
+        vec![LegalActionCandidateV1 {
+            candidate_id: id("read-local"),
+            support_digest: digest("legal-support"),
+            support_ppm: 1_000_000,
+        }],
+        500_000,
+    )
+    .expect("candidate set");
+
+    let temp = tempfile::tempdir().expect("tempdir");
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(temp.path().join("learning-ledger-abstain"))
+        .expect("ledger file");
+    let mut ledger = DurableLedger::create(file, digest("ledger-binding"), 8).expect("ledger");
+
+    let mut inputs = native_inputs(snapshot.digest(), objective_digest);
+    inputs.intuition.candidates[0].legal = false;
+    inputs.intuition.completeness.candidate_set_digest =
+        canonical_candidate_set_digest_v1(&inputs.intuition.candidates)
+            .expect("candidate digest");
+    inputs.intuition.completeness.canonical_order_digest =
+        canonical_candidate_order_digest_v1(&inputs.intuition.candidates)
+            .expect("order digest");
+
+    let mut ports =
+        NativeCompositionPortsV3::new(candidate_set.clone(), inputs, &mut ledger);
+    let request = CompositionRunRequestV3 {
+        run_id: id("run:native-v3-abstain"),
+        request_digest: digest("request-abstain"),
+        snapshot,
+        body_digest: digest("body"),
+        artifact_set_digest: digest("artifacts"),
+        started_at_micros: 1_000,
+        deadline_micros: 10_000,
+        budget: CompositionBudgetV3 {
+            total_micros: 2_000,
+            evidence_floor_micros: 100,
+            recovery_floor_micros: 100,
+            objective_micros: 100,
+            legal_set_micros: 100,
+            utility_micros: 100,
+            neural_micros: 100,
+            prompt_micros: 100,
+            intuition_micros: 100,
+            context_micros: 100,
+            evaluation_micros: 100,
+            ledger_micros: 100,
+        },
+        candidate_set,
+    };
+
+    let prepared = prepare_intelligence_run_v3(request, &mut ports, &FixedControl(1_000))
+        .expect("native abstention");
+    assert_eq!(prepared.disposition, CompositionDispositionV3::Abstained);
+    assert!(prepared.envelope.is_none());
+    assert!(ports.context_receipt().is_none());
+    assert!(ports.evaluation_receipt().is_none());
+    assert!(ports.decision_append().is_some());
+    drop(ports);
+
+    let records = ledger.records().expect("ledger records");
+    assert_eq!(records.len(), 1);
+    let LedgerEvent::Decision(decision) = &records[0].event else {
+        panic!("expected durable Decision");
+    };
+    assert_eq!(decision.selected_candidate_id, id("abstain"));
+    assert!(decision.selected_propensity.raw() > 0);
+}
+
