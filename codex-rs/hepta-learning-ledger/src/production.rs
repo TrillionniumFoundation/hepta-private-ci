@@ -14,7 +14,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
-use crate::AppendDisposition;
+use crate::ActivatedLearningTrustV1;
 use crate::AppendReceipt;
 use crate::AuthenticatedDecisionRecordV2;
 use crate::AuthenticatedOutcomeRecordV2;
@@ -147,30 +147,30 @@ impl LedgerBackend {
 pub struct LedgerWriter {
     backend: LedgerBackend,
     witness: LedgerWitnessStore,
-    verifier: LearningEvidenceVerifierV1,
+    trust: ActivatedLearningTrustV1,
 }
 
 impl LedgerWriter {
     pub fn from_durable(
         ledger: DurableLedger,
         witness: LedgerWitnessStore,
-        verifier: LearningEvidenceVerifierV1,
+        trust: ActivatedLearningTrustV1,
     ) -> Result<Self, ProductionLedgerError> {
-        Self::new(LedgerBackend::Durable(ledger), witness, verifier)
+        Self::new(LedgerBackend::Durable(ledger), witness, trust)
     }
 
     pub fn from_segmented(
         ledger: SegmentedLedger,
         witness: LedgerWitnessStore,
-        verifier: LearningEvidenceVerifierV1,
+        trust: ActivatedLearningTrustV1,
     ) -> Result<Self, ProductionLedgerError> {
-        Self::new(LedgerBackend::Segmented(ledger), witness, verifier)
+        Self::new(LedgerBackend::Segmented(ledger), witness, trust)
     }
 
     fn new(
         backend: LedgerBackend,
         witness: LedgerWitnessStore,
-        verifier: LearningEvidenceVerifierV1,
+        trust: ActivatedLearningTrustV1,
     ) -> Result<Self, ProductionLedgerError> {
         if backend.binding() != witness.binding() {
             return Err(ProductionLedgerError::Binding("ledger/witness binding"));
@@ -182,13 +182,23 @@ impl LedgerWriter {
         Ok(Self {
             backend,
             witness,
-            verifier,
+            trust,
         })
     }
 
     #[must_use]
     pub fn verifier(&self) -> &LearningEvidenceVerifierV1 {
-        &self.verifier
+        self.trust.verifier()
+    }
+
+    #[must_use]
+    pub fn trust_distribution_digest(&self) -> Digest32 {
+        self.trust.distribution_digest()
+    }
+
+    #[must_use]
+    pub const fn trust_generation(&self) -> u64 {
+        self.trust.generation()
     }
 
     pub fn snapshot(&self) -> Result<LedgerSnapshot, ProductionLedgerError> {
@@ -211,7 +221,7 @@ impl LedgerWriter {
             .verifier
             .verify(LearningEvidenceRoleV1::Generator, evidence, &payload, now)?;
         require_role(&verified, LearningEvidenceRoleV1::Generator)?;
-        if request.objective_digest != self.verifier.objective_digest()
+        if request.objective_digest != self.trust.verifier().objective_digest()
             || request.completeness.generator_id != verified.principal().principal_id
         {
             return Err(ProductionLedgerError::Binding(
@@ -261,7 +271,7 @@ impl LedgerWriter {
 
         let snapshot = self.backend.snapshot()?;
         let decision = find_authenticated_decision(&snapshot, &outcome.episode_id)?;
-        if decision.objective_digest != self.verifier.objective_digest() {
+        if decision.objective_digest != self.trust.verifier().objective_digest() {
             return Err(ProductionLedgerError::Binding("outcome objective"));
         }
         ensure_independent_from_decision(decision, &verified)?;
@@ -307,7 +317,7 @@ impl LedgerWriter {
             .sort_by_key(|allocation| allocation.target_id.clone());
         let finalized = finalize_credit_batch(batch.clone(), now)?;
         let payload = credit_batch_signing_payload_v2(&batch, finalized.batch_digest);
-        let verified = self.verifier.verify(
+        let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::CreditAllocator,
             evidence,
             &payload,
@@ -352,7 +362,7 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<UnlearningLineageReceiptV1, ProductionLedgerError> {
         let payload = unlearning_signing_payload_v1(&request);
-        let verified = self.verifier.verify(
+        let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::UnlearningAuthority,
             evidence,
             &payload,
@@ -390,7 +400,7 @@ impl LedgerWriter {
     ) -> Result<DatasetSnapshotReceiptV3, ProductionLedgerError> {
         let snapshot = self.backend.snapshot()?;
         let payload = dataset_freeze_signing_payload_v2(&snapshot, &plan)?;
-        let verified = self.verifier.verify(
+        let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::Evaluator,
             evidence,
             &payload,
