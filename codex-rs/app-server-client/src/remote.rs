@@ -793,6 +793,16 @@ impl RemoteAppServerClient {
         self.event_rx.recv().await
     }
 
+    /// Reads the next event and, when it is a real v2 `turn/completed`
+    /// notification from this connection, mints an opaque terminal witness.
+    pub async fn next_event_with_terminal_witness(
+        &mut self,
+    ) -> Option<(AppServerEvent, Option<crate::TerminalTurnWitness>)> {
+        let event = self.next_event().await?;
+        let witness = crate::terminal_turn_witness_from_event(&event);
+        Some((event, witness))
+    }
+
     pub async fn shutdown(self) -> IoResult<()> {
         let Self {
             command_tx,
