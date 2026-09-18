@@ -22,8 +22,8 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
-pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 16_384;
-pub const MAX_GENERATION_BOUND_RESULTS: usize = 256;
+pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 512;
+pub const MAX_GENERATION_BOUND_RESULTS: usize = 16;
 const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
 const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
 const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
@@ -47,6 +47,32 @@ pub struct MemoryCueV1 {
     pub approved_context_digest: Digest32,
     pub snapshot_key: CognitiveSnapshotKeyV1,
     pub cue_profile_digest: Digest32,
+}
+
+/// Validated inputs for compiling one generation-bound retrieval cue.
+///
+/// The caller must obtain the snapshot key from the owning coherent-read path.
+/// This constructor does not mint authority, infer missing generations or
+/// fabricate model/profile identities.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompileCueRequestV1 {
+    pub cue_id: StableId,
+    pub objective_digest: Digest32,
+    pub approved_context_digest: Digest32,
+    pub snapshot_key: CognitiveSnapshotKeyV1,
+    pub cue_profile_digest: Digest32,
+}
+
+pub fn compile_cue(request: CompileCueRequestV1) -> Result<MemoryCueV1, RecallErrorV1> {
+    let cue = MemoryCueV1 {
+        cue_id: request.cue_id,
+        objective_digest: request.objective_digest,
+        approved_context_digest: request.approved_context_digest,
+        snapshot_key: request.snapshot_key,
+        cue_profile_digest: request.cue_profile_digest,
+    };
+    cue.validate()?;
+    Ok(cue)
 }
 
 impl MemoryCueV1 {
@@ -508,15 +534,24 @@ pub fn recall(
 ) -> Result<RecallPacketV1, RecallErrorV1> {
     let union = build_candidate_union(cue, policy, candidates)?;
     let minimum_channels = usize::try_from(policy.minimum_distinct_channels).unwrap_or(usize::MAX);
-    let observed_channels = usize::try_from(union.distinct_channels).unwrap_or(0);
-    let contradiction_count = contradiction_population_count(&union.entries);
-    let maximum_ood = union
-        .entries
+    let maximum_results = usize::try_from(policy.maximum_results).unwrap_or(0);
+    // Risk is evaluated only over the bounded selection frontier.  A low-ranked
+    // candidate that cannot be delivered must not poison an otherwise valid
+    // recall through OOD or contradiction metadata.  The complete union remains
+    // digest-bound for audit and omission accounting.
+    let risk_entries = &union.entries[..union.entries.len().min(maximum_results)];
+    let observed_channels = risk_entries
+        .iter()
+        .flat_map(|entry| entry.channels.iter().copied())
+        .collect::<BTreeSet<_>>()
+        .len();
+    let contradiction_count = contradiction_population_count(risk_entries);
+    let maximum_ood = risk_entries
         .iter()
         .map(|entry| entry.maximum_ood)
         .max()
         .unwrap_or(ProbabilityQ32::ZERO);
-    let reason = if union.entries.is_empty() {
+    let reason = if risk_entries.is_empty() {
         Some(RecallAbstentionReasonV1::NoCandidate)
     } else if observed_channels < minimum_channels {
         Some(RecallAbstentionReasonV1::InsufficientChannelCoverage)
@@ -524,13 +559,11 @@ pub fn recall(
         Some(RecallAbstentionReasonV1::ContradictoryEvidence)
     } else if maximum_ood > policy.maximum_ood {
         Some(RecallAbstentionReasonV1::OutOfDistribution)
-    } else if union.entries[0].weighted_score < policy.minimum_total_score {
+    } else if risk_entries[0].weighted_score < policy.minimum_total_score {
         Some(RecallAbstentionReasonV1::ScoreBelowFloor)
     } else {
         None
     };
-
-    let maximum_results = usize::try_from(policy.maximum_results).unwrap_or(0);
     let (disposition, selections, omitted_count) = match reason {
         Some(reason) => (RecallDispositionV1::Abstained(reason), Vec::new(), 0),
         None => {
@@ -565,7 +598,7 @@ pub fn recall(
         disposition,
         selections,
         omitted_count,
-        distinct_channels: union.distinct_channels,
+        distinct_channels: u32::try_from(observed_channels).unwrap_or(u32::MAX),
         packet_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };

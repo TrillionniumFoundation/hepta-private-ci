@@ -12,6 +12,7 @@ use codex_hepta_memory::SourceDraft;
 use codex_hepta_paths::HeptaFleetRoot;
 
 use super::read;
+use super::read_with_test_hook;
 
 #[path = "cognitive_context_budget_tests.rs"]
 mod budget;
@@ -82,4 +83,82 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     assert_ne!(withdrawn.snapshot_digest, context.snapshot_digest);
     let other = AgentId::parse("00000000-0000-4000-8000-000000000120").unwrap();
     assert!(read(&store, &other, 1, "lemon", 4, None).await.is_err());
+}
+
+
+#[tokio::test]
+async fn post_ranking_tombstone_fails_closed_before_context_delivery() {
+    let temp = tempfile::tempdir().unwrap();
+    let fleet = temp.path().join("fleet");
+    std::fs::create_dir_all(&fleet).unwrap();
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000121").unwrap();
+    let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope: scope.clone(),
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "post-ranking-revocation".to_string(),
+                content: b"verified lemon recall target".to_vec(),
+                observed_at_unix_seconds: 100,
+            },
+        )
+        .await
+        .unwrap();
+    let memory = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "post-ranking-target".to_string(),
+                revision: MemoryRevisionDraft {
+                    scope: scope.clone(),
+                    content: "verified lemon recall target".to_string(),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: 100,
+                    valid_to_unix_seconds: None,
+                    citations: vec![citation.clone()],
+                },
+            },
+        )
+        .await
+        .unwrap();
+
+    let result = read_with_test_hook(
+        &store,
+        &owner,
+        1,
+        "lemon",
+        4,
+        None,
+        || {
+            let store = &store;
+            let access = access.clone();
+            let scope = scope.clone();
+            let citation = citation.clone();
+            let memory_id = memory.id.memory_id.clone();
+            async move {
+                store
+                    .forget_memory(
+                        &access,
+                        &memory_id,
+                        1,
+                        &ForgetMemoryDraft {
+                            scope,
+                            reason: "revoked after ranking".to_string(),
+                            valid_from_unix_seconds: 200,
+                            citations: vec![citation],
+                        },
+                    )
+                    .await
+                    .unwrap();
+            }
+        },
+    )
+    .await;
+    assert!(result.is_err(), "a post-ranking tombstone must fail closed");
 }

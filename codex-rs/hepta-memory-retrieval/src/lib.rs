@@ -18,6 +18,7 @@ use codex_hepta_types::StableId;
 
 pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
+pub use generation_bound::CompileCueRequestV1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
 pub use generation_bound::MAX_GENERATION_BOUND_RESULTS;
 pub use generation_bound::MemoryCueV1;
@@ -31,12 +32,13 @@ pub use generation_bound::RetrievalChannelV1;
 pub use generation_bound::RetrievalChannelWeightV1;
 pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::build_candidate_union;
+pub use generation_bound::compile_cue;
 pub use generation_bound::recall;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 
-const MAX_CANDIDATES: usize = 16_384;
-const MAX_RESULTS: usize = 256;
+const MAX_CANDIDATES: usize = 512;
+const MAX_RESULTS: usize = 16;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RetrievalCandidate {
@@ -96,6 +98,8 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Legacy owner-local score sorter retained for byte compatibility.
+#[doc(hidden)]
 pub fn retrieve(request: RetrievalRequest) -> Result<RetrievalReceipt, Error> {
     retrieve_request(&request)
 }

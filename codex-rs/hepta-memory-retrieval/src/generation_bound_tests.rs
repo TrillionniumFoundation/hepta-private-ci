@@ -225,3 +225,69 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
         ))
     );
 }
+
+
+#[test]
+fn compile_cue_validates_and_binds_the_exact_snapshot() {
+    let expected = cue();
+    let compiled = compile_cue(CompileCueRequestV1 {
+        cue_id: expected.cue_id.clone(),
+        objective_digest: expected.objective_digest,
+        approved_context_digest: expected.approved_context_digest,
+        snapshot_key: expected.snapshot_key.clone(),
+        cue_profile_digest: expected.cue_profile_digest,
+    })
+    .unwrap_or_else(|error| panic!("valid compiled cue: {error}"));
+    assert_eq!(compiled, expected);
+
+    let mut invalid = CompileCueRequestV1 {
+        cue_id: expected.cue_id,
+        objective_digest: Digest32::ZERO,
+        approved_context_digest: expected.approved_context_digest,
+        snapshot_key: expected.snapshot_key,
+        cue_profile_digest: expected.cue_profile_digest,
+    };
+    assert_eq!(
+        compile_cue(invalid.clone()),
+        Err(RecallErrorV1::EmptyDigest("objective"))
+    );
+    invalid.objective_digest = digest("objective");
+    invalid.cue_profile_digest = Digest32::ZERO;
+    assert_eq!(
+        compile_cue(invalid),
+        Err(RecallErrorV1::EmptyDigest("cue_profile"))
+    );
+}
+
+#[test]
+fn generation_bound_limits_match_the_hot_path_contract() {
+    assert_eq!(MAX_GENERATION_BOUND_CANDIDATES, 512);
+    assert_eq!(MAX_GENERATION_BOUND_RESULTS, 16);
+    let mut invalid = policy();
+    invalid.maximum_results = 17;
+    assert_eq!(invalid.validate(), Err(RecallErrorV1::InvalidMaximumResults));
+}
+
+#[test]
+fn low_ranked_ood_candidate_cannot_poison_the_selection_frontier() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.maximum_results = 1;
+
+    let first = record(1);
+    let selected = vec![
+        candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
+        candidate(first, RetrievalChannelV1::Entity, 1),
+    ];
+    let mut poison = candidate(record(2), RetrievalChannelV1::ContradictionSupport, 1);
+    poison.ood = ProbabilityQ32::ONE;
+
+    let mut candidates = selected;
+    candidates.push(poison);
+    let packet = recall(&cue, &policy, candidates)
+        .unwrap_or_else(|error| panic!("bounded risk recall: {error}"));
+    assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(packet.selections.len(), 1);
+    assert_eq!(packet.selections[0].record_id, id("memory:1"));
+    assert_eq!(packet.distinct_channels, 2);
+}
