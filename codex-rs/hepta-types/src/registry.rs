@@ -74,8 +74,7 @@ impl RegistryDefinitionV1 {
                 value: CanonicalValueV1::U64(u64::from(version)),
             },
         ];
-        let digest =
-            canonical_digest_v1(&type_id, 1, &fields).map_err(RegistryError::Canonical)?;
+        let digest = canonical_digest_v1(&type_id, 1, &fields).map_err(RegistryError::Canonical)?;
         Ok(Self {
             kind,
             id,
@@ -166,8 +165,8 @@ impl ContractRegistryV1 {
     }
 
     pub fn registry_digest(&self) -> Result<Digest32, RegistryError> {
-        let type_id =
-            StableId::new("platform.types:contract-registry-v1").map_err(RegistryError::Identity)?;
+        let type_id = StableId::new("platform.types:contract-registry-v1")
+            .map_err(RegistryError::Identity)?;
         let values: Vec<CanonicalValueV1<'_>> = self
             .entries
             .iter()
