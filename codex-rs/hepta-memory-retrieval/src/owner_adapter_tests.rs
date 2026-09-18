@@ -90,7 +90,10 @@ fn owner_adapter_maps_physical_channels_without_inventing_causal_evidence() {
 
     assert_eq!(batches.len(), 3);
     assert_eq!(
-        batches.iter().map(|batch| batch.channel).collect::<Vec<_>>(),
+        batches
+            .iter()
+            .map(|batch| batch.channel)
+            .collect::<Vec<_>>(),
         vec![
             RetrievalChannelV1::Lexical,
             RetrievalChannelV1::Entity,
