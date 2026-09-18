@@ -135,13 +135,13 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. The source implementation now includes the dynamic SecretLease client plus a paired HeptaBao durable lease runtime; the provider persists one mutation intent before plugin entry and reopens fenced after uncertain/crashed dispatch. The paired local lease journal is deliberately single-active and HeptaBao rejects dynamic-secret configuration together with HA until a shared strongly consistent backend exists.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md). Issue/renew/revoke never auto-retry after dispatch uncertainty. Transport loss, unreadable success, post-dispatch authority loss, or a provider outcome-unknown condition remains unknown until repeatable lease/pending readback and root-authorized reconciliation close the provider fence. The current reconciliation admission trusts root/operator authority plus authoritative provider readback; it is not an unauthenticated client hint.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -163,7 +163,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the host-enrolled BaoClient consumer behind a registered trusted callback. The current integration supports the KV v2 read contract in the adapter README; the lease/renew/revoke design is a separate target. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
+Use the host-enrolled BaoClient consumer behind a registered trusted callback. The adapter now source-implements both the exact-version KV v2 read contract and dynamic lease issue/renew/revoke calls. Dynamic issuance returns generated secret bytes only through the same synchronous trusted-consumer pattern; renew/revoke return metadata. Activation of the lifecycle remains gated on the paired HeptaBao provider runtime, exact source pin, product composition and qualification. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
 
 Current operating and state-format references:
 
@@ -178,6 +178,7 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs); named case: `real_tls_read_uses_headers_exact_version_and_secret_only_consumer`.
+- [codex-rs/hepta-bao-adapter/src/lease_client.rs](../../../codex-rs/hepta-bao-adapter/src/lease_client.rs); focused binding, redaction and request-bound validation cases for the dynamic lifecycle.
 - [codex-rs/hepta-bao-adapter/src/lib_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lib_tests.rs); named case: `exact_reference_returns_only_opaque_digest`.
 
 In `codex-rs`, run `just test -p codex-hepta-bao-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) separately labels target acceptance designs.
