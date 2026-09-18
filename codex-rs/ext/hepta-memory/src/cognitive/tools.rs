@@ -860,6 +860,7 @@ fn write_receipt_output(
                 "fact_set_sha256": receipt.projection.fact_set_sha256.as_str(),
                 "input_heads_sha256": receipt.projection.input_heads_sha256.as_str(),
                 "output_sha256": receipt.projection.output_sha256.as_str(),
+                "kernel_generation_sha256": receipt.projection.kernel_generation_sha256.as_str(),
                 "entity_count": receipt.projection.entity_count,
                 "relation_count": receipt.projection.relation_count,
                 "fact_count": fact_count,
