@@ -148,10 +148,8 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let now = now_unix_seconds()?;
-        let access = FederationConsumerAccess::new(
-            self.consumer_agent_id()?,
-            workspace_digest(input.cwd),
-        );
+        let access =
+            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
         let mut explanations = Vec::with_capacity(prepared.bindings.len());
         for binding in &prepared.bindings {
             let Ok(status) = self.revalidate(&access, binding, now).await else {
@@ -409,10 +407,8 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
             let Some(consumer_agent_id) = self.consumer_agent_id() else {
                 return Ok(None);
             };
-            let access = FederationConsumerAccess::new(
-                consumer_agent_id,
-                workspace_digest(input.cwd),
-            );
+            let access =
+                FederationConsumerAccess::new(consumer_agent_id, workspace_digest(input.cwd));
             let mut explanations = Vec::with_capacity(prepared.bindings.len());
             for binding in &prepared.bindings {
                 let Ok(status) = self.revalidate(&access, binding, now).await else {
@@ -783,7 +779,7 @@ mod tests {
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_memory::CognitiveAccess;
-    use codex_hepta_memory::CognitiveScope;
+
     use codex_hepta_memory::CognitiveRuntime;
     use codex_hepta_memory::CognitiveStore;
     use codex_hepta_memory::FederationGrantRequest;
@@ -1080,10 +1076,8 @@ mod tests {
             )
             .await
             .expect("grant");
-        let runtime = CognitiveRuntime::from_open_result(Ok(consumer)).with_federation_sources(
-            consumer_id.clone(),
-            vec![owner_layout.clone()],
-        );
+        let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
+            .with_federation_sources(consumer_id.clone(), vec![owner_layout.clone()]);
         let extension = FederatedCognitiveExtension::from_runtime(runtime);
         let session_store = ExtensionData::new("session-federation");
         let thread_store = ExtensionData::new(THREAD_ID);
