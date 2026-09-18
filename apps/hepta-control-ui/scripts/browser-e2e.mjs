@@ -11,6 +11,10 @@ const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
 const D3 = "3".repeat(64);
 let requestCount = 0;
+let reconcileCount = 0;
+let connectCount = 0;
+let expireSnapshotOnce = false;
+let currentSessionId = null;
 
 function findChrome() {
   if (process.env.HEPTA_CHROME) return process.env.HEPTA_CHROME;
@@ -47,7 +51,7 @@ const securityHeaders = JSON.parse(await readFile(join(dist, "security-headers.j
 const baseIndex = await readFile(join(dist, "index.html"), "utf8");
 const e2eDriver = `
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-async function waitFor(predicate, timeout = 4000) {
+async function waitFor(predicate, timeout = 5000) {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
     const value = predicate();
@@ -56,9 +60,20 @@ async function waitFor(predicate, timeout = 4000) {
   }
   throw new Error("browser E2E wait timed out");
 }
+async function waitForAsync(predicate, timeout = 5000) {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    const value = await predicate();
+    if (value) return value;
+    await sleep(20);
+  }
+  throw new Error("browser E2E async wait timed out");
+}
+const stats = () => fetch("/api/ui-control/e2e-stats", { cache: "no-store" }).then((response) => response.json());
 try {
   const root = document.querySelector("#app");
   await waitFor(() => root.getAttribute("data-hepta-ready") === "true");
+
   const retry = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Retry "));
   if (!retry) throw new Error("retry control missing");
   retry.focus();
@@ -70,11 +85,35 @@ try {
   if (!exact || !exact.textContent.includes("request_retry")) throw new Error("exact immutable request is not visible");
   dialog.querySelector("[data-hepta-confirm-submit='true']").click();
   await waitFor(() => document.querySelector("[role='status'],[role='alert']")?.textContent.includes("pending"));
-  const stats = await fetch("/api/ui-control/e2e-stats", { cache: "no-store" }).then((response) => response.json());
-  if (stats.requestCount !== 1) throw new Error("rapid duplicate click crossed transport more than once");
+  if ((await stats()).requestCount !== 1) throw new Error("rapid duplicate click crossed transport more than once");
   const focused = document.activeElement;
   if (!focused || focused.textContent !== "Retry runtime.agentd") throw new Error("focus was not restored to the initiating action");
   if (root.getAttribute("aria-busy") !== "false") throw new Error("busy state was not cleared");
+
+  const quarantine = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Quarantine "));
+  quarantine.click();
+  const blockedDialog = await waitFor(() => document.querySelector("dialog[data-hepta-confirm='operation']"));
+  window.dispatchEvent(new Event("offline"));
+  await waitFor(() => root.getAttribute("data-hepta-ready") === "false");
+  blockedDialog.querySelector("[data-hepta-confirm-submit='true']").click();
+  await sleep(50);
+  if ((await stats()).requestCount !== 1) throw new Error("offline confirmation crossed transport");
+  const blockedButtons = [...document.querySelectorAll("#app button")];
+  if (!blockedButtons.length || blockedButtons.some((button) => !button.disabled)) {
+    throw new Error("offline event did not disable mutating controls");
+  }
+
+  window.dispatchEvent(new Event("online"));
+  await waitForAsync(async () => (await stats()).connectCount >= 2);
+  await waitFor(() => root.getAttribute("data-hepta-ready") === "true");
+  const recoveredRetry = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Retry "));
+  if (!recoveredRetry || recoveredRetry.disabled) throw new Error("online recovery did not restore coherent controls");
+
+  await fetch("/api/ui-control/e2e-expire-session", { cache: "no-store" });
+  await waitForAsync(async () => (await stats()).connectCount >= 3, 7000);
+  await waitFor(() => root.getAttribute("data-hepta-ready") === "true", 7000);
+  if ((await stats()).requestCount !== 1) throw new Error("session recovery replayed a mutation");
+
   document.body.setAttribute("data-e2e-status", "pass");
 } catch (error) {
   document.body.setAttribute("data-e2e-status", "fail");
@@ -92,7 +131,7 @@ const server = createServer(async (req, res) => {
         manifestDigest: D1,
         basePath: "/api/ui-control",
         persistenceNamespace: "e2e.operator",
-        snapshotPollMs: 60_000,
+        snapshotPollMs: 500,
         requestTimeoutMs: 5_000,
       });
     }
@@ -100,21 +139,28 @@ const server = createServer(async (req, res) => {
     if (url.pathname === "/api/ui-control/connect") {
       if (req.headers["x-hepta-csrf"] !== "e2e-csrf") return json(res, 403, { error: "csrf" });
       const body = await readJson(req);
+      connectCount += 1;
+      currentSessionId = `session.e2e.${connectCount}`;
       return json(res, 200, {
         authenticated: true,
-        sessionId: "session.e2e",
-        connectionGeneration: 1,
+        sessionId: currentSessionId,
+        connectionGeneration: connectCount,
         protocolVersion: body.protocolVersion,
       });
     }
     if (url.pathname === "/api/ui-control/snapshot") {
+      if (expireSnapshotOnce) {
+        expireSnapshotOnce = false;
+        return json(res, 401, { error: "expired" });
+      }
+      if (!currentSessionId) return json(res, 401, { error: "no session" });
       return json(res, 200, {
-        sessionId: "session.e2e",
-        connectionGeneration: 1,
-        generation: 7,
-        revision: 9,
+        sessionId: currentSessionId,
+        connectionGeneration: connectCount,
+        generation: 7 + connectCount,
+        revision: 9 + connectCount,
         digest: D2,
-        modules: [{ moduleId: "runtime.agentd", status: "ready", revision: 4, digest: D3 }],
+        modules: [{ moduleId: "runtime.agentd", status: "ready", revision: 4 + connectCount, digest: D3 }],
       });
     }
     if (url.pathname === "/api/ui-control/request") {
@@ -134,6 +180,7 @@ const server = createServer(async (req, res) => {
     if (url.pathname === "/api/ui-control/reconcile") {
       if (req.headers["x-hepta-csrf"] !== "e2e-csrf") return json(res, 403, { error: "csrf" });
       await readJson(req);
+      reconcileCount += 1;
       return json(res, 200, null);
     }
     if (url.pathname === "/api/ui-control/close") {
@@ -141,7 +188,13 @@ const server = createServer(async (req, res) => {
       await readJson(req);
       return json(res, 200, { closed: true });
     }
-    if (url.pathname === "/api/ui-control/e2e-stats") return json(res, 200, { requestCount });
+    if (url.pathname === "/api/ui-control/e2e-expire-session") {
+      expireSnapshotOnce = true;
+      return json(res, 200, { armed: true });
+    }
+    if (url.pathname === "/api/ui-control/e2e-stats") {
+      return json(res, 200, { requestCount, reconcileCount, connectCount });
+    }
     if (url.pathname === "/e2e-driver.js") {
       res.writeHead(200, { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-store" });
       return res.end(e2eDriver);
@@ -178,7 +231,7 @@ const chromeArgs = [
   "--disable-sync",
   "--metrics-recording-only",
   "--no-first-run",
-  "--virtual-time-budget=5000",
+  "--virtual-time-budget=9000",
   "--dump-dom",
   `http://127.0.0.1:${address.port}/`,
 ];
@@ -193,7 +246,7 @@ const exit = await new Promise((resolve, reject) => {
   const timeout = setTimeout(() => {
     child.kill("SIGKILL");
     reject(new Error("Chrome E2E timed out"));
-  }, 30_000);
+  }, 35_000);
   child.on("error", (error) => { clearTimeout(timeout); reject(error); });
   child.on("close", (code, signal) => { clearTimeout(timeout); resolve({ code, signal }); });
 });
