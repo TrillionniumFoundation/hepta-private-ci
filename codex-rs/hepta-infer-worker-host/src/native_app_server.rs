@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
@@ -31,12 +33,21 @@ use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
+use codex_hepta_codex_adapter::AdapterStatus;
+use codex_hepta_codex_adapter::AppServerObservation;
+use codex_hepta_codex_adapter::CodexAdapterReceipt;
+use codex_hepta_codex_adapter::CodexOperationIntent;
+use codex_hepta_codex_adapter::TerminalOutcome;
+use codex_hepta_codex_adapter::adapt;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativeCodexBoundaryReceipt;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
@@ -52,6 +63,7 @@ const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
 const MAX_MODEL_CONTEXT_BYTES: usize = 8 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
+const APP_SERVER_PROTOCOL_VERSION: u32 = 2;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
@@ -130,6 +142,7 @@ impl AppServerModelDriver {
             })
             .transpose()?;
         let ingress = owner.session_ingress().await?;
+        let ingress_socket_path = ingress.socket_path.clone();
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
         let mut client = timeout(
             RPC_TIMEOUT,
@@ -151,6 +164,11 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("App Server home does not match the owning Agent".into());
         }
+        let connection_digest = app_server_connection_digest(
+            &self.config,
+            &ingress_socket_path,
+            client.codex_home(),
+        )?;
         let started: ThreadStartResponse = timeout(
             RPC_TIMEOUT,
             client.request_typed(ClientRequest::ThreadStart {
@@ -177,12 +195,43 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
+        let payload_digest = control
+            .native_record(request_id)
+            .ok_or("native request disappeared before runtime.codex dispatch")?
+            .request
+            .payload_digest
+            .parse::<Digest32>()?;
+        let adapter_deadline_ms = unix_ms()?
+            .checked_add(u64::try_from(
+                (self.config.timeout + RPC_TIMEOUT + INTERRUPT_GRACE + RPC_TIMEOUT).as_millis(),
+            )?)
+            .ok_or("runtime.codex deadline overflow")?;
+        let adapter_intent = CodexOperationIntent {
+            operation_id: StableId::new(request_id.to_string())?,
+            thread_id: StableId::new(started.thread.id.clone())?,
+            expected_turn_id: None,
+            method_id: StableId::new("app-server:v2:turn-start".to_string())?,
+            payload_digest,
+            lease_payload_digest: payload_digest,
+            connection_digest,
+            session_generation: self.config.generation,
+            protocol_version: APP_SERVER_PROTOCOL_VERSION,
+            deadline_ms: adapter_deadline_ms,
+        };
+        // Construct and persist the exact request binding before the physical
+        // turn/start send. The adapter receipt grants no provider authority.
+        let pending_boundary = adapt(unix_ms()?, adapter_intent.clone(), None)?;
         control.dispatch_native(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
                 context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                codex_request_digest: Some(pending_boundary.request_digest.to_string()),
+                codex_connection_digest: Some(connection_digest.to_string()),
+                codex_session_generation: Some(self.config.generation),
+                codex_protocol_version: Some(APP_SERVER_PROTOCOL_VERSION),
+                codex_deadline_ms: Some(adapter_deadline_ms),
             },
         )?;
         let response = timeout(
@@ -218,6 +267,7 @@ impl AppServerModelDriver {
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
                     stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
+                    codex_boundary: Some(native_boundary_receipt(&pending_boundary)?),
                 });
             }
         };
@@ -232,6 +282,7 @@ impl AppServerModelDriver {
             terminal_observed: false,
             owner_authority: NativeOwnerAuthority::Unverified,
             stop_reason: None,
+            codex_boundary: Some(native_boundary_receipt(&pending_boundary)?),
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
             interrupt(&mut client, &output).await;
@@ -246,6 +297,7 @@ impl AppServerModelDriver {
                 deadline,
                 cancellation,
                 Some(&owner),
+                &adapter_intent,
             )
             .await;
         if let Err(reason) = result {
@@ -272,6 +324,7 @@ impl AppServerModelDriver {
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
+                    &adapter_intent,
                 )
                 .await;
             loss_recorded?;
@@ -307,6 +360,7 @@ impl AppServerModelDriver {
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
+        adapter_intent: &CodexOperationIntent,
     ) -> std::result::Result<(), String> {
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
@@ -324,7 +378,7 @@ impl AppServerModelDriver {
             };
             match event {
                 AppServerEvent::ServerNotification(notification) => {
-                    if observe_notification(output, *notification)? {
+                    if observe_notification(output, *notification, adapter_intent)? {
                         return Ok(());
                     }
                 }
@@ -396,6 +450,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 fn observe_notification(
     output: &mut NativeRunOutput,
     notification: ServerNotification,
+    adapter_intent: &CodexOperationIntent,
 ) -> std::result::Result<bool, String> {
     match notification {
         ServerNotification::AgentMessageDelta(delta)
@@ -422,12 +477,29 @@ fn observe_notification(
         ServerNotification::TurnCompleted(completed)
             if completed.thread_id == output.thread_id && completed.turn.id == output.turn_id =>
         {
-            output.status = match completed.turn.status {
-                TurnStatus::Completed => NativeRunStatus::Completed,
-                TurnStatus::Failed => NativeRunStatus::Failed,
-                TurnStatus::Interrupted => NativeRunStatus::Interrupted,
+            let outcome = match completed.turn.status {
+                TurnStatus::Completed => TerminalOutcome::Completed,
+                TurnStatus::Failed => TerminalOutcome::Failed,
+                TurnStatus::Interrupted => TerminalOutcome::Interrupted,
                 TurnStatus::InProgress => return Err("nonterminal completion event".to_string()),
             };
+            let response_digest = Digest32::of_bytes(
+                &serde_json::to_vec(&completed).map_err(|error| error.to_string())?,
+            );
+            let observation = AppServerObservation::terminal(
+                StableId::new(completed.thread_id.clone()).map_err(|error| error.to_string())?,
+                StableId::new(completed.turn.id.clone()).map_err(|error| error.to_string())?,
+                adapter_intent.session_generation,
+                adapter_intent.protocol_version,
+                adapter_intent.connection_digest,
+                outcome,
+                response_digest,
+            )
+            .map_err(|error| error.to_string())?;
+            let receipt = adapt(unix_ms().map_err(|error| error.to_string())?, adapter_intent.clone(), Some(observation))
+                .map_err(|error| error.to_string())?;
+            output.status = native_status(receipt.status)?;
+            output.codex_boundary = Some(native_boundary_receipt(&receipt)?);
             if let Some(error) = completed.turn.error {
                 // Bound the provider's diagnostic without discarding the
                 // actually observed terminal status or token count.
@@ -439,6 +511,50 @@ fn observe_notification(
         _ => {}
     }
     Ok(false)
+}
+
+fn unix_ms() -> Result<u64> {
+    Ok(u64::try_from(
+        SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis(),
+    )?)
+}
+
+fn app_server_connection_digest(
+    config: &NativeWorkerConfig,
+    socket_path: &std::path::Path,
+    codex_home: Option<&str>,
+) -> Result<Digest32> {
+    Ok(Digest32::of_bytes(&serde_json::to_vec(&(
+        "hepta.codex.app-server-connection.v1",
+        config.agent_id.to_string(),
+        config.generation,
+        socket_path.to_string_lossy().to_string(),
+        codex_home,
+        "hepta-infer-worker",
+        APP_SERVER_PROTOCOL_VERSION,
+    ))?))
+}
+
+fn native_status(status: AdapterStatus) -> std::result::Result<NativeRunStatus, String> {
+    match status {
+        AdapterStatus::Succeeded => Ok(NativeRunStatus::Completed),
+        AdapterStatus::Failed => Ok(NativeRunStatus::Failed),
+        AdapterStatus::Interrupted => Ok(NativeRunStatus::Interrupted),
+        AdapterStatus::Indeterminate => Ok(NativeRunStatus::Indeterminate),
+    }
+}
+
+fn native_boundary_receipt(
+    receipt: &CodexAdapterReceipt,
+) -> std::result::Result<NativeCodexBoundaryReceipt, String> {
+    Ok(NativeCodexBoundaryReceipt {
+        request_digest: receipt.request_digest.to_string(),
+        response_digest: receipt.response_digest.map(|digest| digest.to_string()),
+        connection_digest: receipt.connection_digest.to_string(),
+        session_generation: receipt.session_generation,
+        protocol_version: receipt.protocol_version,
+        status: native_status(receipt.status)?,
+    })
 }
 
 #[cfg(test)]
