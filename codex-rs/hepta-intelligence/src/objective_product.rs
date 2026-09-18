@@ -200,8 +200,6 @@ impl From<ObjectivePublicationStoreErrorV1> for ObjectiveProductErrorV1 {
     }
 }
 
-}
-
 pub struct ObjectiveProductCallerV1 {
     store: DurableObjectivePublicationStoreV1,
 }
