@@ -75,6 +75,19 @@ General leases are bounded at 16,384 live lease records and 16,384 revocation re
 
 FinalUse nonce/revocation history remains explicitly bounded and is cleared only by a stronger trusted epoch transition. There is no silent replay-history eviction.
 
+### Fleet revocation control-plane composition
+
+`codex-rs/hepta-fleet/src/revocation_control.rs` now composes the signed revocation feed and convergence verifier into a bounded fleet state machine. The coordinator:
+
+- authenticates every installed distributor update before adopting it;
+- treats an exact transport replay as idempotent and same epoch/revision semantic drift as a conflict;
+- resets acknowledgements on every newer head, forcing every enrolled node to catch up;
+- classifies missing nodes as `CatchingUp` before the configured convergence deadline and `Quarantined` afterwards;
+- classifies every node as `FeedStale` once the signed head expires;
+- accepts only one exact signed acknowledgement per enrolled node and rejects conflicting replacements.
+
+This closes the repository-controlled admission/convergence semantics but does not implement or claim a particular network fanout protocol. A deployed transport must deliver the signed update/ack objects without weakening these checks and must provide measured latency evidence against the configured SLA.
+
 ### Source composition
 
 The strongest source-composed boundary is the registered Bao host. It uses a crate-private typed final-delivery gate. B4 requires zero non-test product callers of the public raw `BaoClient::consume_kv_v2` closure path and independently inventories the public authority APIs.
@@ -91,7 +104,7 @@ Fleet revocation transport/fanout, target-host trusted clock/frontier backends, 
 
 - no selected product-process caller for the registered Bao host;
 - no generic `kernel.authority` composition for every target ModulePort;
-- no measured fleet revocation convergence/freshness SLA;
+- fleet revocation admission/convergence semantics are implemented, but no deployed wire fanout or measured production convergence/freshness SLA;
 - no qualified attested production clock or deployed rollback-resistant frontier store;
 - no qualified HSM/KMS custody, staged operator ceremony or compromise-response process;
 - no non-Unix durable authority backend;
