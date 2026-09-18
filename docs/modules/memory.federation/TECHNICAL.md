@@ -152,7 +152,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native federation contract validates scoped remote observations; its result does not enroll a peer or establish a network service. A deployed host must supply authenticated peer transport and current grants. Preserve partial coverage/unavailable on timeout, and invalidate cached observations on revocation or deletion.
+The canonical federation contract validates scoped remote observations and is now composed into the checked-in cognitive product read path. The native product adapter reads an already-enrolled owner's canonical SQLite store read-only, supplies live capability observations, and routes every accepted federated retrieval through V2 `execute_once`. It does not enroll peers or establish a cross-host network service. A deployed cross-host profile still must supply authenticated peer transport identity and current grants. Preserve explicit partial/unavailable coverage on timeout or source failure, and invalidate observations on revocation, generation drift or deletion.
 
 Current operating and state-format references:
 
@@ -166,9 +166,11 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-memory-federation/src/lib_tests.rs](../../../codex-rs/hepta-memory-federation/src/lib_tests.rs); named case: `missing_terminal_observation_is_indeterminate`.
-- [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs); named case: `one_attempt_returns_bounded_partial_result`.
+- [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs); cases cover bounded partial results, response tampering, query replay, expiry clamping, pre/post-I/O authority drift, timeout/cancellation and zero-frontier empty results.
+- [codex-rs/hepta-memory/src/cognitive_federation_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_federation_tests.rs); product compatibility tests cover explicit grant/scope, revoke revalidation, corrupt owner state, multi-agent isolation and explicit failed-source coverage.
+- [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs); embedded product test verifies schema-V2 coverage reaches the ephemeral model-input proposal and that revoke removes the proposal before the next physical send.
 
-In `codex-rs`, run `just test -p codex-hepta-memory-federation`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-memory-federation`, `just test -p codex-hepta-memory --lib`, and the `codex-hepta-memory-extension` package tests selected by the workspace. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.federation.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -255,3 +257,20 @@ The bootstrap source-location obligation for `memory.federation` is implemented 
 - `codex-rs/hepta-memory-federation`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Canonical V2 security invariants and product composition
+
+The following invariants are part of the checked-in V2 implementation and must not be weakened by a transport adapter:
+
+1. **Exact response binding.** A terminal response carries the request's `query_binding_digest`. Its domain-separated response digest binds peer, query binding, scope, purpose, generation vector, observed owner frontier, expiry, every evidence identity/revision/digest, completeness and terminal-observation state. A nonzero opaque digest is not sufficient.
+2. **Authority lifetime ceiling.** The admitted result expiry is `min(remote response expiry, query deadline, original lease expiry, preflight live-authority expiry, postflight live-authority expiry)`. A peer cannot extend authority by returning a longer TTL.
+3. **Two-sided authority observation.** The engine observes live authority before dispatch and again after terminal I/O. Revocation after dispatch yields no admitted items; generation drift yields stale-generation with no admitted items.
+4. **Engine-owned interruption.** `FederationTransportV2::send_once` returns a cancellation-safe future. `execute_once` races it against its own deadline and cancellation future; dropping the losing transport future must not detach an untracked retry or external effect.
+5. **No silent coverage collapse.** Compatibility aggregation records requested/completed/failed source counts. A failed peer is not converted into a valid empty peer. Coverage is serialized into federated ephemeral input schema V2 and bound into the physical-send source digest.
+6. **One canonical admission path.** `codex_hepta_memory::FederatedMemoryReader::retrieve` is a compatibility/product adapter around `codex_hepta_memory_federation::execute_once`; it is not a second authority engine. The adapter retains the existing owner store and retrieval implementation, but raw content is released only after canonical V2 admits a matching digest-only projection.
+7. **Truthful frontier.** The native adapter reports the actual owner-scope memory revision count as the observed frontier. Frontier zero is valid for a legitimate empty owner store and is distinct from unavailable/indeterminate transport.
+
+The implementation map retains the repository-wide historical `sourceBase` identity because all module maps are required to share that baseline. `memory.federation` additionally records a module-scoped source attestation for the hardened implementation commit and code paths. This avoids creating false cross-module source-base drift while still making the current implementation provenance explicit.
+
+The current checked-in product composition does **not** prove an authenticated cross-host federation deployment. External peer transport authentication, fleet enrollment, target-host execution receipts, explicit host cancellation-token wiring where the host requires it, independent acceptance, activation, canary, promotion and release remain gated separately.
+
