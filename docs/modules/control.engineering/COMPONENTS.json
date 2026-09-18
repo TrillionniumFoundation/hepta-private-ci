@@ -479,12 +479,14 @@
         "distributed_fence_revocation_frontier_older",
         "distributed_fence_outlives_revocation_frontier",
         "audit_anchor_receipt_required",
-        "audit_anchor_store_required"
+        "audit_anchor_store_required",
+        "key_custody_role_separation",
+        "key_custody_receipt_limit"
       ],
       "resourceBounds": {
         "authorityMinted": 0
       },
-      "rollback": "production admission remains blocked until fresh externally authenticated receipts exist"
+      "rollback": "production admission remains blocked until fresh externally authenticated, role-separated custody and control receipts exist"
     },
     {
       "id": "repository-product-caller",
