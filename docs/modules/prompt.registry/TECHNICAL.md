@@ -49,6 +49,7 @@ None.
 Direct dependencies:
 
 - `platform.types`
+- `kernel.authority`
 - `kernel.operations`
 
 Authoritative write domains:
@@ -71,7 +72,7 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 The bounded components are:
 
 - `deterministic registry core`
-- `signed admission verifier`
+- `signed admission verifier and kernel final-use adapter`
 - `durable schema and migration owner`
 - `transactional writer`
 - `snapshot read port`
@@ -101,6 +102,7 @@ Consumed contracts:
 
 - `DomainRead::cross_owner_outboxV1`
 - `DomainRead::operation_ledgerV1`
+- `ModulePort::kernel.authority::prompt.registry`
 - `ModulePort::kernel.operations::prompt.registry`
 - `ModulePort::platform.types::prompt.registry`
 
@@ -162,12 +164,12 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the registry owner for immutable factor/realization revisions and lifecycle updates. Optimizers receive read-only views. Revalidate revocation, context profile and exact model/tokenizer/template/tool-schema compatibility at actual payload dereference; an inserted factor is not automatically selected. Signed admission binds signer, reviewer, exact factor content, reviewed scope, evidence and a short validity interval, and admission lineage is retained in the lifecycle journal.
+Use the registry owner for immutable factor/realization revisions and lifecycle updates. Optimizers receive read-only views. Revalidate revocation, context profile and exact model/tokenizer/template/tool-schema compatibility at actual payload dereference; an inserted factor is not automatically selected. Admission supports a compatibility reviewer-signature verifier and the production-intended kernel final-use adapter. The final-use path binds reviewer, exact factor identity/content, reviewed scope and evidence to an independently signed operation grant and inherits authority epoch, revocation-head, expiry and single-use nonce fencing. Admission lineage retains reviewer, grant ID, scope and evidence in the lifecycle journal.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs) — deterministic factor/realization core and immutable lifecycle journal.
-- [codex-rs/hepta-prompt-registry/src/admission.rs](../../../codex-rs/hepta-prompt-registry/src/admission.rs) — signed admission grants and opaque verified admission.
+- [codex-rs/hepta-prompt-registry/src/admission.rs](../../../codex-rs/hepta-prompt-registry/src/admission.rs) — compatibility reviewer-signature grants, kernel final-use admission binding/verification and opaque verified admission.
 - [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs) — single-writer durable owner, reopen validation and schema migration.
 - [codex-rs/hepta-prompt-registry/src/delivery.rs](../../../codex-rs/hepta-prompt-registry/src/delivery.rs) — payload-backed realization registration, supersession and dereference.
 - [codex-rs/hepta-prompt-registry/src/protocol.rs](../../../codex-rs/hepta-prompt-registry/src/protocol.rs) — native canonical JSON codecs for `PromptFactorV1` and `PromptRealizationV1`.
@@ -182,7 +184,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named cases include `external_material_cannot_admit_itself`, signed admission lineage and expiry-at-use.
 - [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named cases cover one-revision mutations, exact tuples, required-factor starvation, canonical filter ordering, active-profile conflicts, explicit supersession and exact payload dereference.
-- [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs); unit cases cover schema migration and restart/non-resurrection of revocation.
+- [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs); unit cases cover schema migration, restart/non-resurrection of revocation, final-use nonce replay rejection and authority revocation fencing.
 - [codex-rs/hepta-prompt-registry/src/protocol.rs](../../../codex-rs/hepta-prompt-registry/src/protocol.rs); unit cases cover canonical JSON round trips and unknown-field rejection.
 - [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs); cross-crate cases bind the stored payload bytes and admission lineage into `context.compiler`.
 
