@@ -781,9 +781,16 @@
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
         "codex-rs/hepta-codex-adapter/**",
-        "codex-rs/codex-app-server/**"
+        "codex-rs/codex-app-server/**",
+        "codex-rs/app-server-client/**",
+        "codex-rs/hepta-infer-worker-host/**",
+        "codex-rs/hepta-infer-core/**",
+        "codex-rs/Cargo.lock"
       ],
-      "coOwnerModules": [],
+      "coOwnerModules": [
+        "inference.control",
+        "inference.worker"
+      ],
       "consumesContracts": [
         "CodexContextAttachmentV1",
         "ContextCompilationReceiptV1",
@@ -824,7 +831,7 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
+        "maxChangedPaths": 24,
         "maxCiMinutes": 60,
         "maxParallelAgents": 2
       },

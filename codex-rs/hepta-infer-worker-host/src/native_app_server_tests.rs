@@ -3,6 +3,33 @@ use codex_app_server_protocol::AgentMessageDeltaNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
+use codex_app_server_client::ObservedAppServerEvent;
+
+fn test_intent() -> CodexOperationIntent {
+    let payload = Digest32::of_bytes(b"native-request");
+    CodexOperationIntent {
+        operation_id: stable_id("request-1").unwrap(),
+        thread_id: stable_id("thread-a").unwrap(),
+        turn_id: Some(stable_id("turn-a").unwrap()),
+        method_id: stable_id("turn:start").unwrap(),
+        protocol_version: stable_id(APP_SERVER_V2_PROTOCOL_ID).unwrap(),
+        session_generation: 1,
+        payload_digest: payload,
+        lease_payload_digest: payload,
+        deadline_ms: u64::MAX,
+    }
+}
+
+fn observe(
+    output: &mut NativeRunOutput,
+    notification: ServerNotification,
+) -> std::result::Result<bool, String> {
+    let witnessed = ObservedAppServerEvent::from_event_for_test(
+        1,
+        AppServerEvent::ServerNotification(Box::new(notification)),
+    );
+    observe_notification(output, &test_intent(), &witnessed)
+}
 
 fn output() -> NativeRunOutput {
     NativeRunOutput {
@@ -39,14 +66,14 @@ fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification 
 fn only_the_bound_turn_can_complete_the_native_request() {
     let mut output = output();
     assert!(
-        !observe_notification(
+        !observe(
             &mut output,
             terminal("thread-b", "turn-a", TurnStatus::Completed)
         )
         .unwrap()
     );
     assert!(
-        !observe_notification(
+        !observe(
             &mut output,
             terminal("thread-a", "turn-b", TurnStatus::Completed)
         )
@@ -54,7 +81,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
     );
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_notification(
+        observe(
             &mut output,
             terminal("thread-a", "turn-a", TurnStatus::Interrupted)
         )
@@ -75,12 +102,12 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_notification(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_notification(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    observe(&mut output, delta("unrelated", "discard".to_string())).unwrap();
+    observe(&mut output, delta("thread-a", "model output".to_string())).unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_notification(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        observe(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -90,7 +117,7 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
 fn in_progress_is_not_a_terminal_observation() {
     let mut output = output();
     assert!(
-        observe_notification(
+        observe(
             &mut output,
             terminal("thread-a", "turn-a", TurnStatus::InProgress)
         )
@@ -125,11 +152,11 @@ fn actual_usage_is_bound_monotonic_and_survives_terminal_failure() {
         })
     };
     let mut output = output();
-    observe_notification(&mut output, usage("unrelated", 99)).unwrap();
+    observe(&mut output, usage("unrelated", 99)).unwrap();
     assert_eq!(output.observed_output_tokens, None);
-    observe_notification(&mut output, usage("thread-a", 42)).unwrap();
-    assert!(observe_notification(&mut output, usage("thread-a", -1)).is_err());
-    assert!(observe_notification(&mut output, usage("thread-a", 41)).is_err());
+    observe(&mut output, usage("thread-a", 42)).unwrap();
+    assert!(observe(&mut output, usage("thread-a", -1)).is_err());
+    assert!(observe(&mut output, usage("thread-a", 41)).is_err());
     assert_eq!(output.observed_output_tokens, Some(42));
     let mut failed = terminal("thread-a", "turn-a", TurnStatus::Failed);
     if let ServerNotification::TurnCompleted(ref mut notification) = failed {
@@ -139,7 +166,7 @@ fn actual_usage_is_bound_monotonic_and_survives_terminal_failure() {
             additional_details: None,
         });
     }
-    assert!(observe_notification(&mut output, failed).unwrap());
+    assert!(observe(&mut output, failed).unwrap());
     assert_eq!(output.status, NativeRunStatus::Failed);
     assert_eq!(output.observed_output_tokens, Some(42));
     assert_eq!(output.stop_reason.as_deref(), Some("provider error"));
@@ -197,7 +224,7 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
         let lost = output.owner_authority.clone();
         // Grace has no owner parameter: it can still establish provider facts.
         assert!(
-            observe_notification(
+            observe(
                 &mut output,
                 terminal("thread-a", "turn-a", TurnStatus::Completed)
             )
@@ -236,7 +263,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
             .await
             .is_err()
     );
-    observe_notification(
+    observe(
         &mut timed_out,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
@@ -254,7 +281,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     .await
     .unwrap();
     // select! can consume Completed before a simultaneously ready health tick.
-    observe_notification(
+    observe(
         &mut terminal_first,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
@@ -278,7 +305,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
 #[tokio::test]
 async fn success_requires_both_matching_completion_and_final_ready_owner() {
     let mut output = output();
-    observe_notification(
+    observe(
         &mut output,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
@@ -294,4 +321,85 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(output.succeeded());
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
+}
+
+#[test]
+fn observed_terminal_flows_through_adapter_and_durable_reopen() {
+    use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+    use codex_hepta_infer_core::durable_control::native::NativeRequest;
+    use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+
+    for (status, expected) in [
+        (TurnStatus::Completed, NativeRunStatus::Completed),
+        (TurnStatus::Failed, NativeRunStatus::Failed),
+        (TurnStatus::Interrupted, NativeRunStatus::Interrupted),
+    ] {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!(
+            "hepta-runtime-codex-terminal-{status:?}-{nonce}.journal"
+        ));
+        let intent = test_intent();
+        let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+        control
+            .reserve_native(
+                NativeRequest {
+                    request_id: intent.operation_id.to_string(),
+                    principal_id: "agent-1".to_string(),
+                    worker_generation: intent.session_generation,
+                    model: "provider-model".to_string(),
+                    payload_digest: intent.payload_digest.to_string(),
+                },
+                1,
+            )
+            .unwrap();
+        control
+            .dispatch_native(
+                intent.operation_id.as_str(),
+                NativeDispatch {
+                    thread_id: "thread-a".to_string(),
+                    model_provider: "provider".to_string(),
+                    context_digest: Digest32::of_bytes(b"context").to_string(),
+                },
+            )
+            .unwrap();
+        control
+            .native_started(intent.operation_id.as_str(), "turn-a".to_string())
+            .unwrap();
+
+        let mut output = output();
+        assert!(
+            observe(
+                &mut output,
+                terminal("thread-a", "turn-a", status),
+            )
+            .unwrap()
+        );
+        assert_eq!(output.status, expected);
+        assert!(output.terminal_observed);
+        let settled = control
+            .settle_native(intent.operation_id.as_str(), output.clone())
+            .unwrap();
+        assert_eq!(settled.state, NativeReservationState::Released);
+        assert_eq!(settled.observation, Some(output));
+        drop(control);
+
+        let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+        assert_eq!(reopened.native_record(intent.operation_id.as_str()), Some(&settled));
+        drop(reopened);
+        std::fs::remove_file(path).unwrap();
+    }
+}
+
+#[test]
+fn overload_backoff_is_bounded_deterministic_and_nonzero() {
+    for attempt in 0..=MAX_OVERLOAD_RETRIES {
+        let first = overload_backoff("request-1", attempt);
+        let second = overload_backoff("request-1", attempt);
+        assert_eq!(first, second);
+        assert!(!first.is_zero());
+        assert!(first <= MAX_OVERLOAD_BACKOFF);
+    }
 }

@@ -363,3 +363,88 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn app_server_rejection_after_dispatch_releases_without_terminal_claim() {
+    let path = path("app-server-rejected");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let rejected = control
+        .reject_native_before_start("r1", "app-server rejected turn/start".to_string())
+        .unwrap();
+    assert_eq!(rejected.state, NativeReservationState::Released);
+    assert_eq!(
+        rejected.pre_dispatch_stop.as_deref(),
+        Some("app-server rejected turn/start")
+    );
+    let observation = rejected
+        .observation
+        .as_ref()
+        .expect("pre-admission rejection uses a rollback-compatible Observe record");
+    assert_eq!(observation.status, NativeRunStatus::Indeterminate);
+    assert!(!observation.terminal_observed);
+    assert!(observation.turn_id.is_empty());
+    assert!(observation.output.is_empty());
+    assert_eq!(observation.observed_output_tokens, None);
+    assert_eq!(observation.owner_authority, NativeOwnerAuthority::Unverified);
+    assert!(
+        observation
+            .stop_reason
+            .as_deref()
+            .is_some_and(|reason| {
+                reason.starts_with(PRE_ADMISSION_REJECTION_PREFIX)
+                    && reason.ends_with("app-server rejected turn/start")
+            })
+    );
+    assert_eq!(
+        control.native_started("r1", "turn-1".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    control.reserve_native(request("r2"), 1).unwrap();
+    drop(control);
+
+    let journal = std::fs::read_to_string(&path).unwrap();
+    assert!(journal.lines().all(|line| line.starts_with(JOURNAL_PREFIX)));
+    assert!(journal.contains("\"Observe\""));
+    assert!(!journal.contains("\"Rejected\""));
+
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&rejected));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn forged_pre_admission_marker_does_not_release_capacity() {
+    let path = path("forged-rejection");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+
+    let forged = NativeRunOutput {
+        thread_id: "thread-1".to_string(),
+        turn_id: String::new(),
+        model: "actual-model".to_string(),
+        model_provider: "provider".to_string(),
+        terminal_observed: false,
+        status: NativeRunStatus::Indeterminate,
+        output: String::new(),
+        observed_output_tokens: None,
+        stop_reason: Some(format!(
+            "{PRE_ADMISSION_REJECTION_PREFIX}|wrong-request|4|actual-model|{}|thread-1|provider|{}|forged",
+            "a".repeat(64),
+            "b".repeat(64)
+        )),
+        owner_authority: NativeOwnerAuthority::Unverified,
+    };
+    let record = control.settle_native("r1", forged).unwrap();
+    assert_eq!(record.state, NativeReservationState::Indeterminate);
+    assert_eq!(record.pre_dispatch_stop, None);
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}

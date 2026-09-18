@@ -63,6 +63,7 @@ use toml::Value as TomlValue;
 use tracing::warn;
 
 pub use crate::path::AppServerPath;
+pub use crate::remote::ObservedAppServerEvent;
 pub use crate::remote::RemoteAppServerClient;
 pub use crate::remote::RemoteAppServerConnectArgs;
 pub use crate::remote::RemoteAppServerEndpoint;

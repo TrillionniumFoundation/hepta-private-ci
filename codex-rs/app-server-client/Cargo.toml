@@ -12,6 +12,12 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+default = []
+# Test-only constructor for opaque transport observations. Production users
+# never receive a way to mint ObservedAppServerEvent directly.
+test-support = []
+
 [dependencies]
 codex-app-server = { workspace = true }
 codex-app-server-protocol = { workspace = true }

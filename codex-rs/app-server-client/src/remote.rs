@@ -151,10 +151,41 @@ enum RemoteClientCommand {
     },
 }
 
+/// Opaque proof that an event was actually dequeued from one initialized
+/// RemoteAppServerClient connection. There is deliberately no public
+/// constructor: consumers may inspect or consume the event, but cannot mint a
+/// successful terminal witness from an arbitrary protocol value.
+pub struct ObservedAppServerEvent {
+    sequence: u64,
+    event: AppServerEvent,
+}
+
+impl ObservedAppServerEvent {
+    pub const fn sequence(&self) -> u64 {
+        self.sequence
+    }
+
+    pub fn event(&self) -> &AppServerEvent {
+        &self.event
+    }
+
+    pub fn into_event(self) -> AppServerEvent {
+        self.event
+    }
+
+    #[cfg(feature = "test-support")]
+    #[doc(hidden)]
+    pub fn from_event_for_test(sequence: u64, event: AppServerEvent) -> Self {
+        assert!(sequence > 0, "test witness sequence must be non-zero");
+        Self { sequence, event }
+    }
+}
+
 pub struct RemoteAppServerClient {
     command_tx: mpsc::Sender<RemoteClientCommand>,
     event_rx: RemoteEventReceiver,
     pending_events: VecDeque<AppServerEvent>,
+    observed_event_sequence: u64,
     server_version: Option<String>,
     codex_home: Option<String>,
     worker_handle: tokio::task::JoinHandle<()>,
@@ -672,6 +703,7 @@ impl RemoteAppServerClient {
             command_tx,
             event_rx,
             pending_events: pending_events.into(),
+            observed_event_sequence: 0,
             server_version,
             codex_home,
             worker_handle,
@@ -786,11 +818,25 @@ impl RemoteAppServerClient {
         })?
     }
 
+    /// Dequeues one real event and wraps it in a non-constructible witness.
+    ///
+    /// Sequence numbers are connection-local, monotonic and start at one.
+    pub async fn next_observed_event(&mut self) -> Option<ObservedAppServerEvent> {
+        let event = match self.pending_events.pop_front() {
+            Some(event) => event,
+            None => self.event_rx.recv().await?,
+        };
+        self.observed_event_sequence = self.observed_event_sequence.saturating_add(1);
+        Some(ObservedAppServerEvent {
+            sequence: self.observed_event_sequence,
+            event,
+        })
+    }
+
     pub async fn next_event(&mut self) -> Option<AppServerEvent> {
-        if let Some(event) = self.pending_events.pop_front() {
-            return Some(event);
-        }
-        self.event_rx.recv().await
+        self.next_observed_event()
+            .await
+            .map(ObservedAppServerEvent::into_event)
     }
 
     pub async fn shutdown(self) -> IoResult<()> {
@@ -798,6 +844,7 @@ impl RemoteAppServerClient {
             command_tx,
             event_rx,
             pending_events: _pending_events,
+            observed_event_sequence: _observed_event_sequence,
             server_version: _server_version,
             codex_home: _codex_home,
             worker_handle,

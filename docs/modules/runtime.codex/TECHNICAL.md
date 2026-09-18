@@ -36,9 +36,14 @@ Existing declared roots at this exact source snapshot:
 - `codex-rs/codex-app-server`
 - `codex-rs/hepta-codex-adapter`
 
-Non-authoritative implementation evidence roots:
+Co-owned implementation/composition evidence roots:
 
-None.
+- `codex-rs/app-server-client/src/remote.rs` — connection lifecycle and opaque observed-event witness minting.
+- `codex-rs/hepta-agentd/src/app_runtime.rs` — named Agentd owner of the selected App Server runtime.
+- `codex-rs/hepta-infer-worker-host/src/native_app_server.rs` — named model caller that journals dispatch, invokes `thread/start` and `turn/start`, and observes the real event stream.
+- `codex-rs/hepta-infer-core/src/native_control.rs` — durable dispatch, cancellation, indeterminate, rejection-before-start and terminal reconciliation state.
+
+These paths are co-owned composition evidence, not a transfer of their module ownership to `runtime.codex`.
 
 Declared roots not yet present:
 
@@ -76,7 +81,10 @@ The bounded components are:
 - `contract translator`
 - `authority verifier`
 - `checked effect boundary`
+- `transport provenance witness`
+- `admission / overload classifier`
 - `terminal observation mapper`
+- `durable reconciliation port`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -139,6 +147,15 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.codex.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
+The composed native caller enforces these concrete rules:
+
+- A real `turn/completed` event preserves exactly `completed`, `failed` or `interrupted`; a terminal boolean cannot manufacture success.
+- `turn/interrupt` acknowledgement is not terminal. Capacity is released only after a matching terminal observation or an independently proven pre-dispatch/pre-admission stop.
+- App Server JSON-RPC `-32001` is a proven pre-admission overload rejection. The caller may retry the same `turn/start` only with bounded exponential backoff plus deterministic jitter; an exhausted overload attempt is durably recorded using the existing `native-v1 Observe` schema with an exact correlation marker. Current readers release the local slot after validating that marker; predecessor readers remain rollback-compatible and conservatively retain it as indeterminate.
+- Transport failure, response-decode failure, timeout, disconnect, lost event delivery or lost acknowledgement after durable dispatch remains `indeterminate`/quarantined and is never automatically replayed.
+- A terminal event observed after the original dispatch deadline remains recordable as a reconciliation fact; the dispatch deadline prevents new admission, not late truth.
+- Thread id, optional/actual turn id, App Server protocol id and Agent/session generation are correlated before a terminal adapter receipt is accepted.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls
@@ -159,7 +176,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The deployed execution spine is the existing codex-app-server package under codex-rs/app-server. codex-rs/codex-app-server is a source alias, not another binary. Use its registered thread/turn APIs and observe exact admission; hepta-codex-adapter alone neither starts a model nor proves a tool effect.
+The deployed execution spine is the existing codex-app-server package under codex-rs/app-server. codex-rs/codex-app-server is a source alias, not another binary. The named source-composed caller is `hepta-infer-worker-host::AppServerModelDriver`: it connects to the Agentd-owned App Server Unix socket, journals the exact dispatch before `turn/start`, uses a bounded remote event channel, and converts matching `turn/completed` events through `runtime.codex`. `hepta-codex-adapter` alone neither starts a model nor proves a tool effect.
 
 Current operating and state-format references:
 
@@ -172,10 +189,13 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs](../../../codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs); named case: `deadline_is_bound_into_the_codex_request_digest`.
-- [codex-rs/hepta-codex-adapter/src/lib_tests.rs](../../../codex-rs/hepta-codex-adapter/src/lib_tests.rs); named case: `exact_terminal_observation_maps_without_authority`.
+- [codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs](../../../codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs); named cases include deadline binding and late-terminal reconciliation.
+- [codex-rs/hepta-codex-adapter/src/lib_tests.rs](../../../codex-rs/hepta-codex-adapter/src/lib_tests.rs); named cases cover completed/failed/interrupted, protocol/generation mismatch, overload, timeout, unavailable and quarantine semantics.
+- [codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs); named cases cover the opaque observed-event witness, exact thread/turn correlation, owner-loss fencing, and adapter-to-durable-journal terminal flow.
+- [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs); `reopened_dispatch_and_completed_duplicate_never_connect_to_provider` proves no automatic replay after a possibly admitted dispatch.
+- [codex-rs/hepta-infer-core/src/native_control_tests.rs](../../../codex-rs/hepta-infer-core/src/native_control_tests.rs); the App Server rejection case proves a known pre-start rejection releases capacity without inventing provider terminality.
 
-In `codex-rs`, run `just test -p codex-hepta-codex-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-codex-adapter`, `just test -p codex-hepta-infer-core`, and `just test -p codex-hepta-infer-worker-host`. These commands are test invocations, not stored results. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -199,7 +219,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
-For `runtime.codex`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+For `runtime.codex`, source composition now includes a named Agentd/App Server caller and durable reconciliation path. That fact does not grant runtime activation, production-writer authority, provider/tool final-use authority, independent acceptance, selection, promotion or release.
 
 ### Work-package execution envelopes
 
@@ -210,6 +230,11 @@ For `runtime.codex`, this document grants no runtime, production, model, provide
 - Allowed write paths:
 - `codex-rs/hepta-codex-adapter/**`
 - `codex-rs/codex-app-server/**`
+- `codex-rs/app-server-client/**`
+- `codex-rs/hepta-infer-worker-host/**`
+- `codex-rs/hepta-infer-core/**`
+- `codex-rs/Cargo.lock`
+- Co-owner modules: `inference.control`, `inference.worker`.
 - Development predecessors:
 - `P0.7B-B0-VERIFIED-USE`
 - Activation predecessors:
@@ -255,5 +280,7 @@ The bootstrap source-location obligation for `runtime.codex` is implemented by w
 
 - `codex-rs/codex-app-server`
 - `codex-rs/hepta-codex-adapter`
+
+Its named source-composed execution path additionally uses the co-owned `codex-rs/app-server-client`, `codex-rs/hepta-infer-worker-host`, and `codex-rs/hepta-infer-core` roots. These are dependency/composition surfaces, not new exclusive target roots.
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

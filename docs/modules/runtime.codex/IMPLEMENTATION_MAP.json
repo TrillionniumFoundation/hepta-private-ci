@@ -18,8 +18,8 @@
     "codex-rs/core/src/codex_thread.rs",
     "codex-rs/hepta-codex-adapter"
   ],
-  "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
-  "terminalObserverDisposition": "The App Server observes admission and streaming state; external tool/provider terminality remains with its effect owner.",
+  "stateOwnerDisposition": "Agentd owns the selected App Server runtime; App Server/core own thread-turn execution, while inference.control durably records pre-dispatch, dispatched, running, cancelling, indeterminate, rejected-before-start, and terminal observations for the named native caller.",
+  "terminalObserverDisposition": "RemoteAppServerClient mints opaque connection-local ObservedAppServerEvent witnesses. hepta-infer-worker-host converts matching real turn/completed events through runtime.codex; provider/tool effects outside the model turn remain with their declared effect owners.",
   "operations": [
     {
       "designOperation": "open_thread",
@@ -59,9 +59,14 @@
           "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
           "kind": "product_protocol_integration",
           "command": "just test -p codex-app-server --test all turn_start"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "kind": "named_caller_terminal_and_correlation",
+          "command": "just test -p codex-hepta-infer-worker-host observed_terminal_flows_through_adapter_and_durable_reopen"
         }
       ],
-      "sourceSemantics": "Admits a turn through the single App Server execution path.",
+      "sourceSemantics": "The named hepta-infer-worker-host caller journals dispatch before turn/start, invokes the Agentd-owned App Server, and routes exact turn/completed status through the runtime.codex adapter.",
       "operation": "submit_turn",
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
@@ -121,9 +126,14 @@
           "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
           "kind": "admission_and_delivery",
           "command": "just test -p codex-app-server --test all turn_start"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "kind": "lost_ack_non_replay",
+          "command": "just test -p codex-hepta-infer-worker-host reopened_dispatch_and_completed_duplicate_never_connect_to_provider"
         }
       ],
-      "sourceSemantics": "Admits the turn at the App Server boundary and delegates exact input admission observation to its declared codex-core dependency.",
+      "sourceSemantics": "Exact App Server observations are correlated to thread/turn/protocol/generation; unknown post-dispatch outcomes remain indeterminate and are not automatically replayed.",
       "operation": "observe_delivery",
       "nativeSymbol": "pub(crate) async fn turn_start(",
       "sourcePath": "codex-rs/app-server/src/request_processors/turn_processor.rs",
@@ -132,9 +142,10 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "named deployed Agentd caller identity",
-    "real model/provider stream observation",
-    "real tool terminal observation and acknowledgement-loss qualification"
+    "selected-host qualification of the named hepta-infer-worker-host -> Agentd-owned App Server caller",
+    "independent real provider-stream qualification on the selected deployment host",
+    "real delegated tool terminal observation and acknowledgement-loss qualification",
+    "external final-use authority composition for provider/tool effects that require VerifiedUseTokenWitnessV1"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -153,7 +164,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_qualification_pending",
   "productionWriterState": "not_established",
   "owner": "codex-integration",
   "deputy": "agent-runtime",
@@ -161,5 +172,12 @@
   "sourceRoot": [
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
-  ]
+  ],
+  "compositionEvidenceRoots": [
+    "codex-rs/app-server-client/src/remote.rs",
+    "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-core/src/native_control.rs"
+  ],
+  "compositionState": "source_composed_qualification_pending"
 }
