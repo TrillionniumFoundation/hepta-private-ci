@@ -396,8 +396,16 @@ export class RuntimeClient {
   }
 
   async close() {
+    return this.#shutdown(true);
+  }
+
+  async suspend() {
+    return this.#shutdown(false);
+  }
+
+  async #shutdown(notifyTransport) {
     if (this.#closePromise) return this.#closePromise;
-    const closing = this.#closeInternal();
+    const closing = this.#closeInternal(notifyTransport);
     this.#closePromise = closing;
     try {
       return await closing;
@@ -406,7 +414,7 @@ export class RuntimeClient {
     }
   }
 
-  async #closeInternal() {
+  async #closeInternal(notifyTransport) {
     this.#connectAttempt += 1;
     this.#closing = true;
     const closingSession = this.#session ? Object.freeze({ ...this.#session }) : null;
@@ -417,7 +425,7 @@ export class RuntimeClient {
     }
     let closeError = null;
     try {
-      if (closingSession) {
+      if (closingSession && notifyTransport) {
         await this.#transport.close(Object.freeze({ sessionId: closingSession.sessionId }));
       }
     } catch (error) {
