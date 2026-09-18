@@ -630,7 +630,7 @@ impl FinalUseAuthority {
             return Err(FinalUseError::InvalidSignature);
         }
         if let Some(replay_store) = &self.0.replay_store {
-            {
+            let before = {
                 let state = self
                     .0
                     .state
@@ -640,7 +640,21 @@ impl FinalUseAuthority {
                     return Err(FinalUseError::Unavailable);
                 }
                 validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
+                frontier_for_external_replay_state(&state)
+            };
+            let frontier_store = self
+                .0
+                .frontier_store
+                .as_ref()
+                .ok_or(FinalUseError::InvalidTrust)?;
+            if frontier_store
+                .load(&self.0.signer_id)
+                .map_err(map_trust_error)?
+                != before
+            {
+                return Err(FinalUseError::AntiRollbackViolation);
             }
+
             match replay_store
                 .claim(
                     &self.0.signer_id,
@@ -654,17 +668,30 @@ impl FinalUseAuthority {
                     return Err(FinalUseError::AlreadyClaimed);
                 }
             }
-            // The external claim is intentionally not refunded. Recheck live
-            // authority after its durable I/O before admitting dispatch.
-            let state = self
-                .0
-                .state
-                .lock()
-                .map_err(|_| FinalUseError::Unavailable)?;
-            if state.failed {
-                return Err(FinalUseError::Unavailable);
+
+            // The external claim is intentionally not refunded. Recheck both
+            // local authority and the shared head frontier after its durable
+            // I/O. A different replica that advanced same-epoch revocations
+            // therefore fences this stale replica before dispatch.
+            let after = {
+                let state = self
+                    .0
+                    .state
+                    .lock()
+                    .map_err(|_| FinalUseError::Unavailable)?;
+                if state.failed {
+                    return Err(FinalUseError::Unavailable);
+                }
+                validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
+                frontier_for_external_replay_state(&state)
+            };
+            if frontier_store
+                .load(&self.0.signer_id)
+                .map_err(map_trust_error)?
+                != after
+            {
+                return Err(FinalUseError::AntiRollbackViolation);
             }
-            validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
             return Ok(VerifiedUseToken {
                 owner: Arc::clone(&self.0),
                 grant: signed.grant.clone(),
@@ -787,8 +814,18 @@ impl FinalUseAuthority {
             if let Err(error) =
                 frontier_store.compare_and_set(&self.0.signer_id, &expected, &advanced)
             {
-                state.failed = true;
-                return Err(map_trust_error(error));
+                // Active replicas may race to apply the same authenticated
+                // head. Treat an already-advanced exact target as idempotent;
+                // any different frontier remains fail-closed.
+                let already = matches!(error, AuthorityTrustError::Conflict)
+                    && frontier_store
+                        .load(&self.0.signer_id)
+                        .map(|observed| observed == advanced)
+                        .unwrap_or(false);
+                if !already {
+                    state.failed = true;
+                    return Err(map_trust_error(error));
+                }
             }
         }
         if self.0.store.persist(&next).is_err() {
