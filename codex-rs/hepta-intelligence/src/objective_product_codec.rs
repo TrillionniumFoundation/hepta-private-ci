@@ -374,8 +374,7 @@ impl Writer {
         if value > maximum {
             return Err(ObjectivePublicationStoreErrorV1::Capacity);
         }
-        let value =
-            u32::try_from(value).map_err(|_| ObjectivePublicationStoreErrorV1::Capacity)?;
+        let value = u32::try_from(value).map_err(|_| ObjectivePublicationStoreErrorV1::Capacity)?;
         self.u32(value);
         Ok(())
     }
@@ -462,10 +461,7 @@ impl<'a> Reader<'a> {
         StableId::new(text.to_string()).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)
     }
 
-    fn count(
-        &mut self,
-        maximum: usize,
-    ) -> Result<usize, ObjectivePublicationStoreErrorV1> {
+    fn count(&mut self, maximum: usize) -> Result<usize, ObjectivePublicationStoreErrorV1> {
         let value =
             usize::try_from(self.u32()?).map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?;
         if value > maximum {
