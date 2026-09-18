@@ -121,3 +121,9 @@ fn tombstone_candidates_are_rejected_before_result_truncation() {
         );
     }
 }
+
+#[test]
+fn legacy_native_bounds_match_target_contract() {
+    assert_eq!(MAX_CANDIDATES, 512);
+    assert_eq!(MAX_RESULTS, 16);
+}
