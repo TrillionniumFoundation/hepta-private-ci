@@ -15,26 +15,60 @@ fn intent() -> CodexOperationIntent {
     CodexOperationIntent {
         operation_id: id("operation:1"),
         thread_id: id("thread:1"),
+        turn_id: id("turn:1"),
         method_id: id("method:1"),
         payload_digest: digest(b"payload"),
         lease_payload_digest: digest(b"payload"),
+        session_generation: 7,
+        protocol_version: 2,
         deadline_ms: 2_000,
     }
 }
 
-#[test]
-fn exact_terminal_observation_maps_without_authority() {
-    let observation = AppServerObservation {
-        terminal_observed: true,
+fn observation(outcome: TerminalOutcome) -> AppServerObservation {
+    AppServerObservation {
+        thread_id: id("thread:1"),
+        turn_id: id("turn:1"),
+        outcome,
         response_digest: digest(b"response"),
-    };
-    let Ok(receipt) = adapt(1_000, intent(), Some(observation)) else {
-        panic!("terminal observation must succeed");
+    }
+}
+
+#[test]
+fn completed_terminal_observation_maps_to_success_without_authority() {
+    let Ok(receipt) = adapt(
+        1_000,
+        intent(),
+        Some(observation(TerminalOutcome::Completed)),
+    ) else {
+        panic!("completed terminal observation must succeed");
     };
     assert_eq!(receipt.status, AdapterStatus::Succeeded);
     assert!(!receipt.model_authority);
     assert!(!receipt.provider_authority);
     assert!(!receipt.authority.grants_any());
+}
+
+#[test]
+fn failed_terminal_observation_is_not_success() {
+    let receipt = adapt(
+        1_000,
+        intent(),
+        Some(observation(TerminalOutcome::Failed)),
+    )
+    .expect("failed terminal observation must remain representable");
+    assert_eq!(receipt.status, AdapterStatus::Failed);
+}
+
+#[test]
+fn interrupted_terminal_observation_is_not_success() {
+    let receipt = adapt(
+        1_000,
+        intent(),
+        Some(observation(TerminalOutcome::Interrupted)),
+    )
+    .expect("interrupted terminal observation must remain representable");
+    assert_eq!(receipt.status, AdapterStatus::Interrupted);
 }
 
 #[test]
@@ -53,5 +87,35 @@ fn payload_drift_is_rejected() {
     assert_eq!(
         adapt(1_000, value, None),
         Err(Error::PayloadBindingMismatch)
+    );
+}
+
+#[test]
+fn mismatched_turn_observation_is_rejected() {
+    let mut value = observation(TerminalOutcome::Completed);
+    value.turn_id = id("turn:other");
+    assert_eq!(
+        adapt(1_000, intent(), Some(value)),
+        Err(Error::ObservationCorrelationMismatch)
+    );
+}
+
+#[test]
+fn zero_session_generation_is_rejected() {
+    let mut value = intent();
+    value.session_generation = 0;
+    assert_eq!(
+        adapt(1_000, value, None),
+        Err(Error::InvalidSessionGeneration)
+    );
+}
+
+#[test]
+fn zero_protocol_version_is_rejected() {
+    let mut value = intent();
+    value.protocol_version = 0;
+    assert_eq!(
+        adapt(1_000, value, None),
+        Err(Error::InvalidProtocolVersion)
     );
 }
