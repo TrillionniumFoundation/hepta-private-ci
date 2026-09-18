@@ -1,7 +1,7 @@
 use std::fs::OpenOptions;
 
-use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_intelligence::ProductionRunBindingsV1;
+use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_objective::ConstraintClass;
 use codex_hepta_objective::ObjectiveAbstentionRuleProfileV1;
@@ -280,7 +280,10 @@ fn durable_publication_is_required_before_agentd_run_admission() {
     };
     assert_eq!(runtime.phase, RunPhase::Admitted);
     assert!(!runtime.idempotent);
-    assert_eq!(publication.durable_append().disposition, AppendDisposition::Appended);
+    assert_eq!(
+        publication.durable_append().disposition,
+        AppendDisposition::Appended
+    );
     assert_eq!(ledger.records().expect("records").len(), 1);
 
     let replay = prepare_and_start_intelligence_run_v1(
@@ -349,7 +352,6 @@ fn durable_publication_is_required_before_agentd_run_admission() {
     );
     assert_eq!(ledger.records().expect("records").len(), 1);
 }
-
 
 #[test]
 fn product_objective_agentd_end_to_end_named_host_measurement_receipt() {
