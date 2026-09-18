@@ -31,9 +31,10 @@ signing key. The host pins the public key, epoch and revocation head; request
 JSON must never supply or replace these trust inputs.
 
 After the network response and digest/version validation, the kernel checks
-current time, epoch and revocation again. The synchronous consumer executes
-under that revocation lock. It must be bounded, must not reenter the authority,
-and must not copy secret bytes into model context, logs or receipts. Response
+current time, epoch and revocation again immediately before consumer entry.
+The callback is not executed while holding the authority mutex; the live check
+is the consumer-entry linearization point. The callback must be bounded and
+must not copy secret bytes into model context, logs or receipts. Response
 buffers and decoded secret strings are zeroized on drop; TLS/HTTP libraries
 may retain internal copies, so this is not a locked-memory guarantee.
 
@@ -66,6 +67,55 @@ The config contains `endpoint`, `ca_pem_file`, `signer_id`, `verifying_key`
 and `expected_secret_sha256` (32-byte array). Public trust configuration must
 be delivered through the host's protected configuration channel.
 
+## Dynamic SecretLease lifecycle
+
+The adapter now also exposes a provider-native lease control plane through the
+registered host:
+
+- `request_secret_lease` reads an enrolled dynamic-secret endpoint
+  `GET /v1/{mount}/{path}`, persists only provider lease metadata, and delivers
+  the returned credential JSON only to the registered final-use consumer;
+- `renew_secret_lease` uses `POST /v1/sys/leases/renew`;
+- `revoke_secret_lease` uses synchronous
+  `POST /v1/sys/leases/revoke` with `sync=true`;
+- `reconcile_secret_lease` uses `POST /v1/sys/leases/lookup` to settle an
+  indeterminate renew or revoke.
+
+`SecretLeaseStore` owns the local durable registry in
+`heptabao_leases_1.sqlite3`. It records provider lease identity, namespace,
+registered consumer, bound request/scope digests, TTL, renewable bit, monotone
+rotation generation, state and revision. It never stores provider credential
+JSON. Operations are recorded separately as `prepared`, `dispatching`,
+`applied`, `not_applied` or `indeterminate`.
+
+The dispatch rule is fail closed: the operation becomes `dispatching` in a
+durable SQLite transaction before the network call. A process restart that
+finds `dispatching` or `indeterminate` never automatically resends the
+provider operation. Transport failure, timeout, malformed success or an
+ambiguous server failure after that line remains indeterminate. Renew/revoke
+ambiguity also fences the local lease from use until provider lookup settles it.
+
+Dynamic issuance has a harder ambiguity: if the provider created a credential
+but the caller never received the response, there may be no lease ID available
+for `/sys/leases/lookup`. That state is intentionally not auto-retried.
+`SecretLeaseStore::reconcile_issue_observation` accepts only an independently
+trusted provider/audit observation proving applied/not-applied; otherwise the
+operation stays indeterminate.
+
+Secret-derived metadata uses a host-provisioned `BaoReceiptKey`. The store
+retains `fingerprint_key_id` and an HMAC-SHA-256 fingerprint of the raw
+provider `data` object instead of a plain SHA-256 value fingerprint. This
+reduces offline enumeration risk for low-entropy credentials. The HMAC key is
+a protected host input, is never serialized by the adapter, and `Debug`
+redacts it. Fingerprints are still sensitive correlation metadata and should
+follow the host's retention and access policy.
+
+The dynamic response body is capped at one mebibyte and held in a zeroizing
+buffer. The credential `data` object is borrowed from that buffer and crosses
+only the final-use callback. This is application-buffer hygiene, not a claim
+that TLS, HTTP, allocator or operating-system internals never hold transient
+plaintext copies.
+
 ## Independent issuer and revocation
 
 The separate `hepta-final-use-signer` binary in `hepta-supervisor` is enabled
@@ -95,23 +145,31 @@ Storage errors fence that authority instance until recovery. Preserve this
 state across deployments; deleting or restoring it from an old backup is an
 authority reset and requires an independently changed issuer trust/epoch.
 Other platforms fail closed until an equivalent owner ACL store exists.
-The 16,384-entry registry never evicts claims silently; exhaustion rejects new
-dispatch until a trusted epoch transition. A failed/timeout request does not
-refund its nonce or retry automatically. A new grant requires owner action.
+The current kernel authority replay store still has a 16,384-claim-per-epoch
+local compatibility ceiling and rewrites its local snapshot on claim. That
+shared-kernel limitation is not hidden by the SecretLease registry and is being
+handled at the `kernel.authority` owner boundary. A failed/timeout request
+does not refund its nonce or retry automatically. A new grant requires owner
+action.
 
 Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
 malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+Dynamic lease issue/renew/revoke operations therefore use their own durable
+operation ledger and reconciliation rules; they do not reuse the KV-read retry
+model. A callback failure after dynamic issuance remains indeterminate from the
+consumer's point of view even though the provider lease metadata is durable.
 
 ## Verification
 
 Targeted tests cover a real loopback TLS exchange, exact request headers and
 version, forged signature rejection, nonce replay rejection, provider denial,
 revocation during a network wait, incorrect trust root and response bounds.
-Kernel tests cover signed-field changes, wrong issuer, expiry and epoch fences.
+Lease tests cover dynamic credential delivery without persistence, keyed
+fingerprints, durable dispatch ambiguity, restart recovery, monotone rotation
+generation, renew reconciliation and terminal revoke fencing. Kernel tests
+cover signed-field changes, wrong issuer, expiry and epoch fences.
 Run `just test -p codex-hepta-bao-adapter -p codex-hepta-contracts` in the normal
 workspace and the repository formatting/lint gates before merging.
 

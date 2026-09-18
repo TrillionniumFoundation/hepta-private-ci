@@ -21,7 +21,15 @@ use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
 use crate::BaoClient;
 use crate::BaoClientError;
 use crate::BaoReadRequest;
+use crate::BaoLeaseError;
+use crate::BaoReceiptKey;
+use crate::BaoSecretLeaseReconcileRequest;
+use crate::BaoSecretLeaseRenewRequest;
+use crate::BaoSecretLeaseRequest;
+use crate::BaoSecretLeaseRevokeRequest;
 use crate::BaoSecretReceipt;
+use crate::SecretLeaseMetadataV1;
+use crate::SecretLeaseStore;
 
 pub type BaoConsumerCallback = Arc<dyn Fn(&[u8]) -> Result<(), ()> + Send + Sync + 'static>;
 
@@ -144,6 +152,100 @@ impl BaoFinalUseHost {
             .await
             .map_err(BaoFinalUseHostError::Client)
     }
+
+    /// Issue one provider-native dynamic secret lease. Independent approval is
+    /// verified before the durable operation crosses its dispatch boundary.
+    /// Provider credential data is delivered only to the registered callback;
+    /// the returned value is metadata-only.
+    pub async fn request_secret_lease(
+        &self,
+        store: &SecretLeaseStore,
+        client: &BaoClient,
+        grant: &SignedFinalUseGrant,
+        approval: &SignedFinalUseApproval,
+        request: &BaoSecretLeaseRequest,
+        receipt_key: &BaoReceiptKey,
+    ) -> Result<SecretLeaseMetadataV1, BaoFinalUseHostError> {
+        self.approval_verifier
+            .verify(grant, approval)
+            .map_err(BaoFinalUseHostError::Control)?;
+        let consumer = self
+            .consumers
+            .get(&request.consumer_id)
+            .cloned()
+            .ok_or(BaoFinalUseHostError::UnregisteredConsumer)?;
+        client
+            .request_secret_lease(
+                store,
+                &self.authority,
+                grant,
+                request,
+                receipt_key,
+                move |secret| consumer(secret),
+            )
+            .await
+            .map_err(BaoFinalUseHostError::Lease)
+    }
+
+    pub async fn renew_secret_lease(
+        &self,
+        store: &SecretLeaseStore,
+        client: &BaoClient,
+        grant: &SignedFinalUseGrant,
+        approval: &SignedFinalUseApproval,
+        request: &BaoSecretLeaseRenewRequest,
+    ) -> Result<SecretLeaseMetadataV1, BaoFinalUseHostError> {
+        self.approval_verifier
+            .verify(grant, approval)
+            .map_err(BaoFinalUseHostError::Control)?;
+        if !self.consumers.contains_key(&request.consumer_id) {
+            return Err(BaoFinalUseHostError::UnregisteredConsumer);
+        }
+        client
+            .renew_secret_lease(store, &self.authority, grant, request)
+            .await
+            .map_err(BaoFinalUseHostError::Lease)
+    }
+
+    pub async fn revoke_secret_lease(
+        &self,
+        store: &SecretLeaseStore,
+        client: &BaoClient,
+        grant: &SignedFinalUseGrant,
+        approval: &SignedFinalUseApproval,
+        request: &BaoSecretLeaseRevokeRequest,
+    ) -> Result<SecretLeaseMetadataV1, BaoFinalUseHostError> {
+        self.approval_verifier
+            .verify(grant, approval)
+            .map_err(BaoFinalUseHostError::Control)?;
+        if !self.consumers.contains_key(&request.consumer_id) {
+            return Err(BaoFinalUseHostError::UnregisteredConsumer);
+        }
+        client
+            .revoke_secret_lease(store, &self.authority, grant, request)
+            .await
+            .map_err(BaoFinalUseHostError::Lease)
+    }
+
+    pub async fn reconcile_secret_lease(
+        &self,
+        store: &SecretLeaseStore,
+        client: &BaoClient,
+        grant: &SignedFinalUseGrant,
+        approval: &SignedFinalUseApproval,
+        request: &BaoSecretLeaseReconcileRequest,
+    ) -> Result<SecretLeaseMetadataV1, BaoFinalUseHostError> {
+        self.approval_verifier
+            .verify(grant, approval)
+            .map_err(BaoFinalUseHostError::Control)?;
+        if !self.consumers.contains_key(&request.consumer_id) {
+            return Err(BaoFinalUseHostError::UnregisteredConsumer);
+        }
+        client
+            .reconcile_secret_lease(store, &self.authority, grant, request)
+            .await
+            .map_err(BaoFinalUseHostError::Lease)
+    }
 }
 
 fn consumer_id(value: &str) -> bool {
@@ -164,6 +266,7 @@ pub enum BaoFinalUseHostError {
     UnregisteredConsumer,
     Control(FinalUseControlError),
     Client(BaoClientError),
+    Lease(BaoLeaseError),
 }
 
 impl fmt::Display for BaoFinalUseHostError {
