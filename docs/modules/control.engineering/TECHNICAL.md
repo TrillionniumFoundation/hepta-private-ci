@@ -404,7 +404,8 @@ None.
 - Allowed write paths:
 - `tools/hepta-engineering-control/**`
 - Development predecessors:
-- `DOC-2-DEFAULT-BRANCH-SELECTION`
+- `DOC-3C-MODULE-DOC-CLOSED-WORLD`
+- `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`
 - Activation predecessors:
 - `DOC-2-DEFAULT-BRANCH-SELECTION`
 - Required deliverables:
