@@ -81,6 +81,110 @@ async fn serving_agent_survives_unrelated_registry_corruption() {
     );
 }
 
+#[tokio::test]
+async fn live_control_routes_run_lifecycle_through_agentd_state() {
+    let (_temp, _registry, state) = fixture().expect("runtime fixture");
+    let now_ms = u64::try_from(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("clock")
+            .as_millis(),
+    )
+    .expect("millisecond clock");
+    let snapshot = RunSnapshot {
+        run_id: "run.live.1".to_string(),
+        request_digest: "1".repeat(64),
+        objective_digest: "2".repeat(64),
+        body_digest: "3".repeat(64),
+        artifact_set_digest: "4".repeat(64),
+        authority_epoch: 2,
+        deadline_ms: now_ms + 60_000,
+    };
+    let start = state
+        .response(
+            10,
+            1,
+            crate::AgentdMethod::RunStart {
+                snapshot: snapshot.clone(),
+            },
+        )
+        .await
+        .expect("run start");
+    let admitted = match start.payload {
+        AgentdPayload::RunReceipt(receipt) => receipt,
+        payload => panic!("unexpected start payload: {payload:?}"),
+    };
+    assert_eq!(admitted.phase, RunPhase::Admitted);
+
+    let attachment = ContextAttachment {
+        run_id: snapshot.run_id.clone(),
+        request_digest: snapshot.request_digest,
+        objective_digest: snapshot.objective_digest,
+        body_digest: snapshot.body_digest,
+        artifact_set_digest: snapshot.artifact_set_digest,
+        authority_epoch: snapshot.authority_epoch,
+        deadline_ms: snapshot.deadline_ms,
+        context_digest: "5".repeat(64),
+        compilation_receipt_digest: "6".repeat(64),
+    };
+    let attached = state
+        .response(
+            11,
+            1,
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision: admitted.revision,
+                attachment,
+            },
+        )
+        .await
+        .expect("attach context");
+    let attached = match attached.payload {
+        AgentdPayload::RunReceipt(receipt) => receipt,
+        payload => panic!("unexpected attach payload: {payload:?}"),
+    };
+    assert_eq!(attached.phase, RunPhase::ContextAttached);
+
+    let dispatched = state
+        .response(
+            12,
+            1,
+            crate::AgentdMethod::RunMarkDispatched {
+                run_id: "run.live.1".to_string(),
+                expected_revision: attached.revision,
+            },
+        )
+        .await
+        .expect("mark dispatched");
+    let dispatched = match dispatched.payload {
+        AgentdPayload::RunReceipt(receipt) => receipt,
+        payload => panic!("unexpected dispatch payload: {payload:?}"),
+    };
+    assert_eq!(dispatched.phase, RunPhase::Dispatched);
+
+    state.mark_draining().expect("begin drain");
+    let new_snapshot = RunSnapshot {
+        run_id: "run.live.2".to_string(),
+        request_digest: "a".repeat(64),
+        objective_digest: "b".repeat(64),
+        body_digest: "c".repeat(64),
+        artifact_set_digest: "d".repeat(64),
+        authority_epoch: 2,
+        deadline_ms: now_ms + 60_000,
+    };
+    assert!(
+        state
+            .response(
+                13,
+                1,
+                crate::AgentdMethod::RunStart {
+                    snapshot: new_snapshot,
+                },
+            )
+            .await
+            .is_err()
+    );
+}
+
 #[test]
 fn missing_local_record_immediately_fences_the_serving_agent() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
