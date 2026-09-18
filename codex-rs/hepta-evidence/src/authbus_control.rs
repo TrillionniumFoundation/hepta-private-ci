@@ -27,6 +27,8 @@ pub enum AuthBusControlError {
     QuotaExceeded,
     #[error("AuthBus control identity was reused with different semantics")]
     IdempotencyConflict,
+    #[error("AuthBus restore checkpoint indicates rollback or drift")]
+    RollbackDetected,
     #[error("AuthBus reservation was not found")]
     NotFound,
     #[error("AuthBus reservation state does not permit this transition")]
