@@ -147,6 +147,8 @@ mod tests {
     fn op_05_indexed_prediction_uses_canonical_grid() {
         let artifact = fit_tabular_operator_strict_v2(plan()).expect("strict fit succeeds");
         let pin = TabularArtifactPinV1 {
+            payload_digest: crate::tabular_artifact_payload_digest_v1(&artifact)
+                .expect("payload digest"),
             artifact_digest: artifact.artifact_digest,
             objective_digest: artifact.objective_digest,
             dataset_digest: artifact.dataset_digest,
