@@ -126,7 +126,7 @@ Read-only data dependencies:
 
 None.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation. Online lease pruning may reclaim expired unrevoked payloads, but it retains the last lease revision in a bounded, frontier-covered retired-id lineage. Same-epoch reuse of a pruned lease id must advance from that revision; GC never resets an authority identity to revision 1.
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
@@ -156,13 +156,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.authority.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-contracts/src/final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs), [authority_lease.rs](../../../codex-rs/hepta-contracts/src/authority_lease.rs) and the linked implementation components. General lease capacity independently bounds live leases, revocations and compact retired-id lineage; exhaustion fails closed and requires bounded pruning or a stronger epoch rollover rather than silent history eviction.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Embed authority owners behind a trusted host boundary. Production-oriented construction binds an `AuthorityClock` plus an externally durable CAS `AuthorityFrontierStore`; the owner-only local directory remains the crash-durable state store and must not be treated as the rollback oracle. A restored local snapshot behind the external frontier fails closed. Compatibility constructors without external trust are not production qualification.
+Embed authority owners behind a trusted host boundary. Production construction binds an `AuthorityClock` plus an externally durable CAS `AuthorityFrontierStore`; the owner-only local directory remains the crash-durable state store and must not be treated as the rollback oracle. The convenience constructor that supplies only an external frontier still uses `SystemAuthorityClock` and is rollback-hardened compatibility, not trusted-time production composition. A restored local snapshot behind the external frontier fails closed. Compatibility constructors without external trust are not production qualification.
 
 Current operating and state-format references:
 
