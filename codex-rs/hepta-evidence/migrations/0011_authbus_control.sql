@@ -3,6 +3,7 @@
 CREATE TABLE authbus_policy_heads (
     policy_id TEXT PRIMARY KEY NOT NULL,
     revision BLOB NOT NULL CHECK(length(revision) = 8),
+    policy_digest BLOB NOT NULL CHECK(length(policy_digest) = 32),
     revoked INTEGER NOT NULL CHECK(revoked IN (0,1)),
     updated_at_ms INTEGER NOT NULL
 ) WITHOUT ROWID;
