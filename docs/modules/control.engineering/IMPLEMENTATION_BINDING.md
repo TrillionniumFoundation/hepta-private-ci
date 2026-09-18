@@ -8,7 +8,11 @@ admission and resource-aware planning; `candidate.py` is the sole candidate work
 owner; `sandbox_control.py` owns sandbox admission/retry ceilings; `mutation_testing.py`
 owns evaluator mutation testing; `external_controls.py` verifies distributed fencing,
 external audit anchoring and HSM/KMS custody; and `product_gate.py` is the named
-repository CI product caller. `hepta_engineering_control.py` is compatibility-only
+repository CI product caller. The package-root API intentionally does not export
+`facade.issue_work_envelope` or `facade.schedule_ready_packages`; those remain explicit
+local compatibility primitives and do not authenticate canonical source/completion facts.
+New composition uses `issue_repository_work_envelope` or `issue_signed_work_envelope`
+plus `plan_engineering_work`. `hepta_engineering_control.py` is compatibility-only
 and is not a native mapping or supported integration surface for new callers.
 
 [COMPONENTS.json](COMPONENTS.json) and [TRACEABILITY.json](TRACEABILITY.json) are
