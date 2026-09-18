@@ -3,6 +3,7 @@
 mod cognitive_compact;
 mod cognitive_federation;
 mod cognitive_intelligence_writer;
+mod cognitive_kg_kernel;
 mod cognitive_kg_store;
 mod cognitive_memory_store;
 mod cognitive_model;

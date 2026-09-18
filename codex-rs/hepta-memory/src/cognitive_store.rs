@@ -19,6 +19,9 @@ use sqlx::Transaction;
 use crate::cognitive_intelligence_writer::occurrence_edge_id;
 use crate::cognitive_intelligence_writer::occurrence_node_id;
 use crate::cognitive_intelligence_writer::verify_revision_fact_digests;
+use crate::cognitive_kg_kernel::backfill_kernel_receipts;
+use crate::cognitive_kg_kernel::build_kernel_generation;
+use crate::cognitive_kg_kernel::support_fact_digests;
 use crate::cognitive_kg_store::MAX_PROJECTION_SCOPES;
 use crate::cognitive_kg_store::MAX_SCOPE_EDGES;
 use crate::cognitive_kg_store::MAX_SCOPE_HEADS;
@@ -220,6 +223,11 @@ impl CognitiveStore {
         .execute(&pool)
         .await
         .map_err(unavailable)?;
+        // Migration 0011 introduces the canonical hepta-kg receipt sidecar.
+        // Rebuild every historical append-only generation in order before any
+        // product read can observe this store, so legacy databases have no
+        // permanent compatibility escape hatch from the V2 semantics.
+        backfill_kernel_receipts(&pool).await?;
         verify_store(&pool, layout.agent_id()).await?;
         Ok(Self {
             pool,
@@ -663,6 +671,22 @@ async fn verify_store(pool: &SqlitePool, owner: &AgentId) -> Result<(), Cognitiv
             "KG current projection pointer has no complete immutable receipt".to_string(),
         ));
     }
+    let missing_kernel_receipts: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM kg_projection_generation_receipts r
+         LEFT JOIN kg_projection_kernel_receipts k
+           ON k.projection_scope = r.projection_scope
+          AND k.generation = r.generation
+         WHERE k.projection_scope IS NULL",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if missing_kernel_receipts != 0 {
+        return Err(CognitiveStoreError::Corrupt(
+            "KG durable generation is missing its canonical hepta-kg receipt".to_string(),
+        ));
+    }
     verify_revision_fact_digests(pool, owner).await?;
     verify_current_projection_contents(pool, owner).await?;
     crate::logical_turn_registry::verify_logical_turn_registry(pool, owner).await?;
@@ -719,10 +743,11 @@ async fn verify_migration_ledger(pool: &SqlitePool) -> Result<(), CognitiveStore
             (8, true),
             (9, true),
             (10, true),
+            (11, true),
         ]
     {
         return Err(CognitiveStoreError::Corrupt(format!(
-            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010 set: {migrations:?}"
+            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011 set: {migrations:?}"
         )));
     }
 
@@ -1104,6 +1129,30 @@ async fn verify_current_projection_contents(
         if expected_output.as_str() != stored_output {
             return Err(CognitiveStoreError::Corrupt(format!(
                 "KG current projection `{projection_scope}` output digest failed canonical recomputation"
+            )));
+        }
+        let expected_kernel = build_kernel_generation(
+            u64::try_from(generation).map_err(|_| {
+                CognitiveStoreError::Corrupt("negative KG generation".to_string())
+            })?,
+            &stored_input,
+            &expected_nodes,
+            &expected_edges,
+            &support_fact_digests(&heads),
+        )?;
+        let stored_kernel: String = sqlx::query_scalar(
+            "SELECT generation_sha256
+             FROM kg_projection_kernel_receipts
+             WHERE projection_scope = ? AND generation = ?",
+        )
+        .bind(&projection_scope)
+        .bind(generation)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if stored_kernel != expected_kernel.generation_digest.to_string() {
+            return Err(CognitiveStoreError::Corrupt(format!(
+                "KG current projection `{projection_scope}` hepta-kg digest failed canonical recomputation"
             )));
         }
     }
