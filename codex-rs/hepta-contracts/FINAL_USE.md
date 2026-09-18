@@ -227,7 +227,8 @@ rejection.
 Adapter tests cover real loopback TLS, exact headers/version, bad trust,
 forged/denied grants, response bounds, revocation during network wait, timeout
 and consumer uncertainty. Registered-host tests cover closed and unique
-consumer identities. Test fixtures explicitly create private directories;
+consumer identities plus a feed that expires during provider I/O: the final
+registered-consumer gate denies release with `StaleRevocationFeed`. Test fixtures explicitly create private directories;
 timeout cleanup cancels its local test server even when cancellation happened
 before TCP accept.
 
