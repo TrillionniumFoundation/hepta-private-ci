@@ -5,7 +5,7 @@
 This document defines the production-oriented qualification boundary implemented by
 `codex-rs/hepta-intuition/src/qualified/`. It closes the earlier gap in which a request could
 name calibration, OOD and completeness digests without the policy crate authenticating the
-named qualification material.
+named qualification material. The qualified boundary also authenticates the exact assignment plan so caller-controlled exploration probabilities, random-stream identity, draw, or abstain mass cannot drift after qualification.
 
 The authenticated path is `qualified::decide_qualified_v1`. Historical
 `decide_calibrated` remains available for V1 receipt replay. The bound V2 path,
@@ -22,11 +22,12 @@ Qualification uses HMAC-SHA256 over canonical payload digests. The implementatio
 uses the repository SHA-256 digest primitive, so the crate adds no new cryptographic dependency
 or lockfile edge.
 
-Two trusted keys are required and MUST be independently provisioned by the host:
+Three trusted keys are required and MUST be independently provisioned by the host:
 
 - **artifact qualification key** — authenticates the canonical policy profile, calibration
   artifact, OOD artifact and decision-specific candidate completeness receipt;
-- **learned scorer key** — authenticates the decision-specific learned-scorer output batch.
+- **learned scorer key** — authenticates the decision-specific learned-scorer output batch;
+- **assignment key** — authenticates the decision-specific action-assignment plan, including ordered candidate probabilities, assignment mode, random-stream identity, exact draw and abstain probability.
 
 Each key carries a stable key identifier, key epoch and revocation state. The MAC envelope also
 binds the subject, artifact class/scope, canonical payload digest, policy generation and valid
@@ -51,6 +52,7 @@ digests:
    decision sequence
 5. `LearnedScorerContractV1`
 6. the per-decision ordered `LearnedScoreEvidenceV1` batch
+7. the exact decision-specific assignment commitment produced by `canonical_assignment_digest_v1`
 
 The authenticated profile transitively binds the learned-scorer contract. The scorer contract
 binds the exact model artifact, feature schema, score semantics, calibration artifact, OOD
@@ -84,6 +86,14 @@ set `require_zero_omissions = true` and rejects non-zero omission before artifac
 Consumer-side checks remain useful defense in depth but are no longer the primary enforcement
 point.
 
+## Assignment provenance
+
+`canonical_assignment_digest_v1` binds the assignment authority to the exact decision context: decision/state/objective/policy identity, authenticated policy profile, authenticated scorer output, policy generation and sequence, ordered candidate assignment probabilities, assignment mode, random-stream digest, exact draw and abstain probability. The resulting digest is authenticated with the independently provisioned assignment key and is valid only for the exact decision sequence.
+
+Candidate completeness already commits the complete candidate-set bytes, including candidate-level assignment probabilities, but completeness authority is not treated as assignment authority. The separate assignment envelope makes ownership explicit and additionally binds counter-based randomness that is not part of the candidate set. Changing a normalized distribution from 50/50 to 100/0, swapping the random stream, or changing the draw therefore invalidates assignment authentication before policy execution.
+
+The assignment authority attests that the supplied distribution/random draw is the approved one for the decision. Correct generation of the random stream remains a responsibility of the trusted assignment issuer and host random-stream boundary; a nonzero digest alone is never accepted as that proof.
+
 ## Current-generation rule
 
 The trusted host supplies `QualificationTrustV1::expected_generation`. The profile and scorer
@@ -116,7 +126,7 @@ artifacts → policy-decision chain.
 
 ## Key rotation and revocation
 
-A production host should treat `(key_id, key_epoch)` as the admitted key identity. Rotation
+A production host should treat `(key_id, key_epoch)` as the admitted key identity for each of the artifact, scorer and assignment roles. The three roles require distinct key identifiers. Rotation
 increments the epoch or changes the key identifier. Old epochs are not accepted by a trust
 configuration holding the new epoch. Emergency revocation sets the trusted key record to
 revoked; both issuance helpers and verification then fail closed.

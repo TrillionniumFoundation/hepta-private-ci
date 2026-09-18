@@ -122,7 +122,11 @@ a different sequence, state or decision id produces a different canonical digest
 sequence window.
 
 The scorer key must be provisioned from trusted host configuration and may be independently
-rotated/revoked. Request data can never introduce a trusted scorer key.
+rotated/revoked. Request data can never introduce a trusted scorer key. Scorer authentication
+deliberately does not authorize exploration probabilities, abstain mass, random-stream identity or
+the exact draw. Those values are committed by `canonical_assignment_digest_v1` and authenticated
+under the independent assignment key, so learned scoring and action assignment remain separate
+trust roles.
 
 ## Calibration semantics
 

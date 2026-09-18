@@ -3,8 +3,8 @@
 ## Scope
 
 The fast-path gate measures the **authenticated qualified decision path**, not only the inner
-argmax/assignment selector. Each timed operation therefore includes canonical scorer-output
-binding, five qualification-envelope verifications, V2 complete-request binding, calibrated
+argmax/assignment selector. Each timed operation therefore includes canonical scorer-output and assignment
+binding, six qualification-envelope verifications, V2 complete-request binding, calibrated
 policy gates and receipt construction.
 
 The benchmark lives at `codex-rs/hepta-intuition/tests/fast_benchmark_gate.rs` and is executed in
