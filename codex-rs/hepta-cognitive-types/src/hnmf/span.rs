@@ -225,13 +225,25 @@ pub struct ModalitySpanRefV1 {
     range: SpanRangeV1,
     #[serde(with = "super::wire::digest")]
     preprocessor_manifest_sha256: Digest32,
-    #[serde(with = "super::wire::option_digest")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "super::wire::option_digest"
+    )]
     feature_blob_sha256: Option<Digest32>,
-    #[serde(with = "super::wire::option_digest")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "super::wire::option_digest"
+    )]
     symbolic_projection_sha256: Option<Digest32>,
     uncertainty_ppm: u32,
     privacy_class: PrivacyClassV1,
-    #[serde(with = "super::wire::option_digest")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "super::wire::option_digest"
+    )]
     redaction_mask_sha256: Option<Digest32>,
 }
 
