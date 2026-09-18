@@ -57,6 +57,11 @@ impl<'a> AgentdIntelligenceCaller<'a> {
                     objective_digest: envelope.objective_digest.to_string(),
                     body_digest: envelope.body_digest.to_string(),
                     artifact_set_digest: envelope.artifact_set_digest.to_string(),
+                    intelligence_envelope_digest: Some(envelope.envelope_digest.to_string()),
+                    expected_context_digest: Some(envelope.context_digest.to_string()),
+                    expected_context_receipt_digest: Some(
+                        envelope.context_receipt_digest.to_string(),
+                    ),
                     authority_epoch: envelope.authority_epoch,
                     deadline_ms,
                 },
@@ -87,8 +92,13 @@ impl<'a> AgentdIntelligenceCaller<'a> {
         envelope
             .validate()
             .map_err(IntelligenceFacadeCallerError::Envelope)?;
+        let envelope_digest = envelope.envelope_digest.to_string();
         self.coordinator
-            .mark_dispatched(envelope.run_id.as_str(), expected_revision)
+            .mark_dispatched_with_intelligence_envelope(
+                envelope.run_id.as_str(),
+                expected_revision,
+                &envelope_digest,
+            )
             .map_err(IntelligenceFacadeCallerError::Runtime)
     }
 }
