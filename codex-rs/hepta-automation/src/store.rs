@@ -19,6 +19,7 @@ use crate::AutomationTask;
 use crate::AutomationTaskDraft;
 use crate::AutomationTaskId;
 use crate::AutomationTaskState;
+use crate::TimerPhase;
 use crate::model::client_message_id;
 use crate::taskflow::TaskFlowError;
 use crate::taskflow::verify_taskflow_store;
@@ -29,9 +30,10 @@ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone)]
 pub struct AutomationStore {
-    pool: SqlitePool,
-    owner_agent_id: AgentId,
-    path: PathBuf,
+    pub(super) pool: SqlitePool,
+    pub(super) owner_agent_id: AgentId,
+    pub(super) path: PathBuf,
+    pub(super) timer_epoch: i64,
 }
 
 impl AutomationStore {
@@ -43,7 +45,10 @@ impl AutomationStore {
         .await
     }
 
-    async fn open_root(root: PathBuf, owner_agent_id: AgentId) -> Result<Self, AutomationError> {
+    pub(super) async fn open_root(
+        root: PathBuf,
+        owner_agent_id: AgentId,
+    ) -> Result<Self, AutomationError> {
         create_private_directory(&root)?;
         let path = root.join(AUTOMATION_DB_FILENAME);
         let sqlite_home = AbsolutePathBuf::try_from(root).map_err(|_| AutomationError::Invalid)?;
@@ -66,10 +71,17 @@ impl AutomationStore {
         .await
         .map_err(unavailable)?;
         verify_store(&pool, &owner_agent_id).await?;
+        let timer_epoch: i64 = sqlx::query_scalar(
+            "SELECT writer_epoch FROM automation_timer_lifecycle WHERE singleton = 1",
+        )
+        .fetch_one(&pool)
+        .await
+        .map_err(unavailable)?;
         Ok(Self {
             pool,
             owner_agent_id,
             path,
+            timer_epoch,
         })
     }
 
@@ -99,6 +111,10 @@ impl AutomationStore {
     ) -> Result<AutomationTask, AutomationError> {
         draft.validate()?;
         let (schedule_kind, interval_ms) = schedule_columns(draft.schedule)?;
+        let (mut transaction, phase) = self.begin_timer_write().await?;
+        if phase != TimerPhase::Active {
+            return Err(AutomationError::Conflict);
+        }
         let result = sqlx::query(
             "INSERT INTO automation_tasks (
                 task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
@@ -114,13 +130,15 @@ impl AutomationStore {
         .bind(to_i64(draft.first_run_at_ms)?)
         .bind(to_i64(draft.created_at_ms)?)
         .bind(to_i64(draft.created_at_ms)?)
-        .execute(&self.pool)
+        .execute(&mut *transaction)
         .await;
         match result {
-            Ok(_) => self
-                .task(draft.task_id)
-                .await?
-                .ok_or(AutomationError::Corrupt),
+            Ok(_) => {
+                transaction.commit().await.map_err(unavailable)?;
+                self.task(draft.task_id)
+                    .await?
+                    .ok_or(AutomationError::Corrupt)
+            }
             Err(error) if is_constraint(&error) => Err(AutomationError::Conflict),
             Err(error) => Err(unavailable(error)),
         }
@@ -208,7 +226,7 @@ impl AutomationStore {
         task_id: AutomationTaskId,
         now_ms: u64,
     ) -> Result<AutomationTask, AutomationError> {
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let changed = sqlx::query(
             "UPDATE automation_tasks
              SET state = 'cancelled', next_run_at_ms = NULL, updated_at_ms = ?
@@ -244,7 +262,10 @@ impl AutomationStore {
         resume_at_ms: Option<u64>,
         now_ms: u64,
     ) -> Result<AutomationTask, AutomationError> {
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, phase) = self.begin_timer_write().await?;
+        if enabled && phase != TimerPhase::Active {
+            return Err(AutomationError::Conflict);
+        }
         let changed = if enabled {
             let resume_at_ms = resume_at_ms.ok_or(AutomationError::Invalid)?;
             sqlx::query(
@@ -308,6 +329,7 @@ impl AutomationStore {
         if current_generation == 0 {
             return Err(AutomationError::Invalid);
         }
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let recovered = sqlx::query(
             "UPDATE automation_runs
              SET state = CASE WHEN EXISTS (
@@ -330,9 +352,10 @@ impl AutomationStore {
         )
         .bind(to_i64(current_generation)?)
         .bind(self.owner_agent_id.as_str())
-        .execute(&self.pool)
+        .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
+        transaction.commit().await.map_err(unavailable)?;
         Ok(recovered.rows_affected())
     }
 
@@ -348,7 +371,10 @@ impl AutomationStore {
         let lease_expires_at_ms = now_ms
             .checked_add(lease_duration_ms)
             .ok_or(AutomationError::Invalid)?;
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, phase) = self.begin_timer_write().await?;
+        if phase != TimerPhase::Active {
+            return Ok(None);
+        }
 
         let reclaim = sqlx::query(
             "SELECT r.task_id, r.occurrence, r.scheduled_for_ms, r.client_user_message_id
@@ -485,7 +511,7 @@ impl AutomationStore {
         if lease.task.owner_agent_id != self.owner_agent_id {
             return Err(AutomationError::AccessDenied);
         }
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let updated = sqlx::query(
             "UPDATE automation_runs
              SET state = 'leased'
@@ -566,7 +592,7 @@ impl AutomationStore {
         if lease.task.owner_agent_id != self.owner_agent_id {
             return Err(AutomationError::AccessDenied);
         }
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let removed = sqlx::query(
             "DELETE FROM automation_dispatch_outcomes
              WHERE task_id = ? AND occurrence = ?
@@ -627,7 +653,7 @@ impl AutomationStore {
             return Err(AutomationError::Invalid);
         }
         to_i64(submitted_at_ms)?;
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let row = sqlx::query(
             "SELECT r.scheduled_for_ms, r.state, o.client_user_message_id,
                     o.outcome, r.client_user_message_id AS run_client_id,
@@ -738,7 +764,7 @@ impl AutomationStore {
         occurrence: u64,
         client_user_message_id: &str,
     ) -> Result<(), AutomationError> {
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let updated = sqlx::query(
             "UPDATE automation_runs
              SET state = CASE WHEN EXISTS (
@@ -794,7 +820,7 @@ impl AutomationStore {
         {
             return Err(AutomationError::AccessDenied);
         }
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let run = sqlx::query(
             "UPDATE automation_runs
              SET state = 'submitted', lease_generation = NULL, lease_token = NULL,
@@ -913,6 +939,7 @@ impl AutomationStore {
         if lease.task.owner_agent_id != self.owner_agent_id {
             return Err(AutomationError::AccessDenied);
         }
+        let (mut transaction, _) = self.begin_timer_write().await?;
         let updated = sqlx::query(
             "UPDATE automation_runs
              SET state = CASE WHEN EXISTS (
@@ -934,12 +961,13 @@ impl AutomationStore {
         .bind(to_i64(lease.lease_generation)?)
         .bind(&lease.lease_token)
         .bind(&lease.client_user_message_id)
-        .execute(&self.pool)
+        .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
         if updated.rows_affected() != 1 {
             return Err(AutomationError::Conflict);
         }
+        transaction.commit().await.map_err(unavailable)?;
         Ok(())
     }
 }
@@ -1113,6 +1141,9 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     if invalid_outcomes != 0 {
         return Err(AutomationError::Corrupt);
     }
+    let mut lifecycle = pool.begin().await.map_err(unavailable)?;
+    crate::timer_lifecycle::read_status(&mut lifecycle).await?;
+    lifecycle.commit().await.map_err(unavailable)?;
     verify_taskflow_store(pool, owner_agent_id)
         .await
         .map_err(map_taskflow_verify_error)?;
