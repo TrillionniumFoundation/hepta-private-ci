@@ -1,8 +1,8 @@
 use std::time::Instant;
 
 use codex_hepta_control_plane::ObservedContextV1;
+#[cfg(unix)]
 use codex_hepta_control_plane::PlannerJournalStoreV1;
-use codex_hepta_control_plane::PlannerJournalV1;
 use codex_hepta_control_plane::plan_observed_context;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -40,7 +40,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(unix)]
     let store_metrics = profile_store(&last_plan.evaluation.plan)?;
     #[cfg(not(unix))]
-    let store_metrics = StoreMetrics::default();
+    let store_metrics = {
+        let _ = &last_plan;
+        StoreMetrics::default()
+    };
 
     let planning = summarize(&mut planning_micros);
     let sha = std::env::var("GITHUB_SHA").unwrap_or_else(|_| "local".to_string());
@@ -163,5 +166,3 @@ fn escape(value: &str) -> String {
     value.replace('\\', "\\\\").replace('"', "\\\"")
 }
 
-#[allow(dead_code)]
-fn _journal_type_anchor(_: &PlannerJournalV1) {}
