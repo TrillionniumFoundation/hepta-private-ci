@@ -946,6 +946,7 @@ fn push_authenticated_outcome(bytes: &mut Vec<u8>, value: &AuthenticatedOutcomeR
     push_id(bytes, &value.outcome_id);
     push_id(bytes, &value.episode_id);
     push_id(bytes, &value.observer_id);
+    push_id(bytes, &value.observer_controller_id);
     push_digest(bytes, value.observer_credential_chain_digest);
     push_digest(bytes, value.observer_signing_key_digest);
     push_digest(bytes, value.observer_scope_digest);
@@ -980,6 +981,7 @@ fn push_credit_batch(bytes: &mut Vec<u8>, value: &CreditAllocationBatchRecordV2)
     push_id(bytes, &value.episode_id);
     push_id(bytes, &value.outcome_id);
     push_id(bytes, &value.allocator_id);
+    push_id(bytes, &value.allocator_controller_id);
     push_digest(bytes, value.allocator_credential_chain_digest);
     push_digest(bytes, value.allocator_signing_key_digest);
     push_digest(bytes, value.allocator_scope_digest);
