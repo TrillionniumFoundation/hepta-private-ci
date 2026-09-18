@@ -58,7 +58,7 @@ pub struct ObjectiveConstraintWireV1 {
     pub constraint_id: String,
     pub class: String,
     pub axis: String,
-    pub relation: &'static str,
+    pub relation: String,
     pub bound_q32: i64,
     pub evidence_source_id: String,
 }
