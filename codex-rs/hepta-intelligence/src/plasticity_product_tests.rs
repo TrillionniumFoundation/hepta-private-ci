@@ -300,6 +300,7 @@ impl Fixture {
                     evaluator_bundle,
                 },
             }],
+            host_evidence_verification_digest: digest("host-evidence-verification"),
             expected_registry_predecessor: Digest32::ZERO,
         }
     }
