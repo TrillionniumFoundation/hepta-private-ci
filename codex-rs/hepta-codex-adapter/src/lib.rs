@@ -21,6 +21,9 @@ use codex_hepta_types::StableId;
 pub const APP_SERVER_PROTOCOL_V2: u16 = 2;
 pub const TURN_START_METHOD_ID: &str = "turn:start";
 pub const OVERLOADED_ERROR_CODE: i64 = -32001;
+const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
+const METHOD_NOT_FOUND_ERROR_CODE: i64 = -32601;
+const INVALID_PARAMS_ERROR_CODE: i64 = -32602;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {
@@ -61,6 +64,7 @@ pub enum FailureKind {
     ResponseTooManyFailedAttempts,
     ActiveTurnNotSteerable,
     JsonRpcRejected,
+    JsonRpcIndeterminate,
     Other,
 }
 
@@ -68,6 +72,7 @@ pub enum FailureKind {
 pub enum ObservationKind {
     Terminal(TerminalOutcome),
     RequestRejected,
+    RequestIndeterminate,
     TimedOut,
     TransportLost,
 }
@@ -170,15 +175,29 @@ impl AppServerObservation {
         if intent.method_id.as_str() != TURN_START_METHOD_ID {
             return Err(Error::UnsupportedRequestObservation);
         }
-        let failure_kind = if error.code == OVERLOADED_ERROR_CODE {
-            FailureKind::ServerOverloaded
+        let (kind, failure_kind) = if error.code == OVERLOADED_ERROR_CODE {
+            (
+                ObservationKind::RequestRejected,
+                FailureKind::ServerOverloaded,
+            )
+        } else if matches!(
+            error.code,
+            INVALID_REQUEST_ERROR_CODE | METHOD_NOT_FOUND_ERROR_CODE | INVALID_PARAMS_ERROR_CODE
+        ) {
+            (
+                ObservationKind::RequestRejected,
+                FailureKind::JsonRpcRejected,
+            )
         } else {
-            FailureKind::JsonRpcRejected
+            (
+                ObservationKind::RequestIndeterminate,
+                FailureKind::JsonRpcIndeterminate,
+            )
         };
         let response_digest = request_error_digest(error.code, &error.message, failure_kind);
         Ok(Self {
             request_digest,
-            kind: ObservationKind::RequestRejected,
+            kind,
             turn_id: None,
             response_digest: Some(response_digest),
             failure_kind: Some(failure_kind),
@@ -302,6 +321,13 @@ pub fn adapt(
                     value.failure_kind,
                 )
             }
+            ObservationKind::RequestIndeterminate => (
+                AdapterStatus::Indeterminate,
+                ReplayDisposition::ReconcileOnly,
+                None,
+                value.response_digest,
+                value.failure_kind,
+            ),
             ObservationKind::TimedOut => (
                 AdapterStatus::TimedOut,
                 ReplayDisposition::ReconcileOnly,
@@ -435,7 +461,8 @@ impl FailureKind {
             Self::ResponseTooManyFailedAttempts => 14,
             Self::ActiveTurnNotSteerable => 15,
             Self::JsonRpcRejected => 16,
-            Self::Other => 17,
+            Self::JsonRpcIndeterminate => 17,
+            Self::Other => 18,
         }
     }
 }
