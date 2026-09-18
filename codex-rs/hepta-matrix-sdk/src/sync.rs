@@ -370,16 +370,23 @@ impl MatrixSyncComposer<'_> {
                         .map(MatrixTransactionId::parse)
                         .transpose()
                         .map_err(|_| MatrixSdkError::Sync)?;
-                    return Ok(vec![MatrixSyncMutationV2 {
-                        source_event_id,
-                        room_id: room_id.clone(),
-                        sender,
-                        binding_revision: self.config.binding.revision,
-                        generation: self.config.matrix_generation,
-                        origin_server_ts_ms,
-                        received_at_ms,
-                        body: MatrixSyncMutationBodyV2::OutboundObservation { transaction_id },
-                    }]);
+                    mutations.insert(
+                        0,
+                        MatrixSyncMutationV2 {
+                            source_event_id,
+                            room_id: room_id.clone(),
+                            sender,
+                            binding_revision: self.config.binding.revision,
+                            generation: self.config.matrix_generation,
+                            origin_server_ts_ms,
+                            received_at_ms,
+                            body: MatrixSyncMutationBodyV2::OutboundObservation { transaction_id },
+                        },
+                    );
+                    for mutation in &mutations {
+                        mutation.validate().map_err(|_| MatrixSdkError::Sync)?;
+                    }
+                    return Ok(mutations);
                 }
                 if !matches!(&event.content.msgtype, MessageType::Text(_)) {
                     self.ingress

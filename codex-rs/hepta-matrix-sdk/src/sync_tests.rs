@@ -7,7 +7,10 @@ use codex_hepta_matrix_protocol::MatrixBindingV1;
 use codex_hepta_matrix_protocol::MatrixDeviceId;
 use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
 use codex_hepta_matrix_store::InboxDraft;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
+use codex_hepta_matrix_store::OutboxDraft;
+use codex_hepta_matrix_store::OutboxKind;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
@@ -168,6 +171,65 @@ async fn self_authored_room_message_becomes_outbound_observation_not_user_ingres
             .await?
             .is_none()
     );
+    Ok(())
+}
+#[tokio::test]
+async fn redacted_self_event_preserves_dispatch_redaction_evidence() -> TestResult {
+    let fixture = Fixture::new().await?;
+    let room_id = MatrixRoomId::parse(ROOM)?;
+    let txn_id = transaction_id("sdk-self-redacted", 1)?;
+    fixture
+        .store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: "sdk-self-redacted".to_string(),
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"self redacted".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?;
+    fixture.store.claim_outbox(10, 30, 1).await?;
+    let event_id = MatrixEventId::parse("$self-redacted")?;
+    fixture
+        .store
+        .mark_outbox_accepted(&txn_id, 1, &event_id, 11)
+        .await?;
+
+    let mut nested = redaction("$self-redaction", "$self-redacted");
+    nested["content"] = json!({});
+    let event = json!({
+        "event_id":"$self-redacted",
+        "sender":AGENT,
+        "origin_server_ts":10,
+        "type":"m.room.message",
+        "content":{},
+        "unsigned":{
+            "transaction_id":txn_id.as_str(),
+            "redacted_because":nested
+        }
+    });
+    fixture
+        .composer()
+        .commit_response(
+            &response(vec![event])?,
+            /*checkpoint*/ None,
+            /*observed_at_ms*/ 20,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let dispatch = fixture
+        .store
+        .dispatch_record(&txn_id)
+        .await?
+        .ok_or("redacted self dispatch missing")?;
+    assert_eq!(dispatch.state, MatrixDispatchState::Redacted);
+    assert_eq!(dispatch.terminal_event_id.as_ref(), Some(&event_id));
+    assert!(dispatch.redaction_observation_digest.is_some());
+    fixture.store.close().await;
     Ok(())
 }
 #[tokio::test]
