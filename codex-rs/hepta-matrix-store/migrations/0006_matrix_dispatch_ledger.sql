@@ -21,17 +21,6 @@ CREATE TABLE matrix_dispatch_ledger (
         verified_grant_expires_at_ms IS NULL OR verified_grant_expires_at_ms > 0
     ),
     reconciliation_deadline_ms INTEGER NOT NULL CHECK (reconciliation_deadline_ms >= 0),
-    CHECK (
-        (
-            verified_grant_id IS NULL
-            AND verified_grant_payload_digest IS NULL
-            AND verified_grant_expires_at_ms IS NULL
-        ) OR (
-            verified_grant_id IS NOT NULL
-            AND verified_grant_payload_digest IS NOT NULL
-            AND verified_grant_expires_at_ms IS NOT NULL
-        )
-    ),
     state TEXT NOT NULL CHECK (
         state IN (
             'prepared', 'dispatched', 'accepted', 'indeterminate',
@@ -74,6 +63,17 @@ CREATE TABLE matrix_dispatch_ledger (
     CHECK (
         (state = 'failed' AND send_observation_digest IS NOT NULL)
         OR state != 'failed'
+    ),
+    CHECK (
+        (
+            verified_grant_id IS NULL
+            AND verified_grant_payload_digest IS NULL
+            AND verified_grant_expires_at_ms IS NULL
+        ) OR (
+            verified_grant_id IS NOT NULL
+            AND verified_grant_payload_digest IS NOT NULL
+            AND verified_grant_expires_at_ms IS NOT NULL
+        )
     )
 ) STRICT;
 
