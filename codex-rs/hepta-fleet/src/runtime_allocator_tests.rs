@@ -275,12 +275,12 @@ fn capacity_shrink_below_live_commitment_fails_without_persisting_overcommit() {
         .host(&allocator.host_id)
         .expect("host")
         .capacity;
-    assert_eq!(
+    assert!(matches!(
         allocator.maintain(&[agent.to_string()], 10_000),
         Err(FleetRuntimeAllocatorError::Lease(
             LeaseError::CapacityExceeded
         ))
-    );
+    ));
     assert_eq!(
         allocator
             .state()
