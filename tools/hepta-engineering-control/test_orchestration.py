@@ -82,11 +82,45 @@ class OrchestrationTests(unittest.TestCase):
             "ci",
             self.now,
             self.now + 100,
+            True,
         )
         return replace(
             value,
             signature=self.trust.sign(value, value.issuer, value.signing_identity),
         )
+
+    def test_signed_failed_completion_cannot_advance_predecessor_frontier(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                receipt = self.completion(store, "predecessor", "src/predecessor")
+                failed = replace(receipt, passed=False, signature="")
+                failed = replace(
+                    failed,
+                    signature=self.trust.sign(
+                        failed, failed.issuer, failed.signing_identity
+                    ),
+                )
+                package = EngineeringWorkPackage(
+                    0,
+                    "dependent",
+                    ("predecessor",),
+                    ("src/dependent",),
+                )
+                with self.assertRaisesRegex(
+                    ValueError, "completion_not_successful"
+                ):
+                    plan_engineering_work(
+                        store,
+                        self.envelope,
+                        (package,),
+                        (WorkerProfile("worker", (), 1, ("src",)),),
+                        (failed,),
+                        self.trust,
+                        EngineeringCapacity(1, ()),
+                        generation_id="failed-completion",
+                        now_ns=self.now + 1,
+                    )
 
     def test_package_root_does_not_export_unauthenticated_scheduler_aliases(self):
         self.assertFalse(hasattr(control_engineering_v2, "issue_work_envelope"))
