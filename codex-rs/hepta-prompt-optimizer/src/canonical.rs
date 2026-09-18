@@ -526,6 +526,7 @@ pub struct SelectedPromptPortfolioV1 {
     pub receipt: PromptPortfolioReceiptV1,
     pub selected: Vec<PromptCandidateBindingV1>,
     pub state_digest: Digest32,
+    pub model_tuple: PromptModelTupleV2,
     pub model_tuple_digest: Digest32,
     pub generation_vector_digest: Digest32,
     pub pricing_set_digest: Digest32,
@@ -797,6 +798,7 @@ pub fn select_portfolio_v1(
         },
         selected: selected_bindings,
         state_digest: priced.candidates.receipt.state_digest,
+        model_tuple: priced.candidates.model_tuple.clone(),
         model_tuple_digest: priced.candidates.model_tuple.digest(),
         generation_vector_digest: priced.candidates.generation_vector_digest,
         pricing_set_digest: priced.pricing_set_digest,
@@ -873,6 +875,7 @@ pub fn exercise_v1(
     } else if request.now_unix_ms >= portfolio.receipt.valid_until_unix_ms
         || request.current_state_digest != portfolio.state_digest
         || request.generation_vector_digest != portfolio.generation_vector_digest
+        || request.model_tuple != portfolio.model_tuple
         || request.model_tuple.digest() != portfolio.model_tuple_digest
     {
         PromptExerciseActionV1::RejectStale
