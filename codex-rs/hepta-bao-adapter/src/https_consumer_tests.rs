@@ -527,11 +527,12 @@ async fn dynamic_lease_issue_delivers_only_to_consumer_and_returns_opaque_metada
         role: "read-only".into(),
     };
     let binding = client.secret_lease_binding(&request).unwrap();
-    let (authority, signed, _directory) =
+    let (authority, signed, directory) =
         lease_grant(&client, binding, "lease-issue", [21; 32]).unwrap();
+    let registry = crate::SecretLeaseRegistry::open(directory.path()).await.unwrap();
     let mut consumed = false;
     let outcome = client
-        .request_secret_lease(&authority, &signed, &request, |secret| {
+        .request_secret_lease(&authority, &signed, &registry, &request, |secret| {
             let text = std::str::from_utf8(secret).unwrap();
             assert!(text.contains("dynamic-user"));
             assert!(text.contains("dynamic-password"));
@@ -544,8 +545,12 @@ async fn dynamic_lease_issue_delivers_only_to_consumer_and_returns_opaque_metada
     let crate::SecretLeaseIssueOutcome::Delivered { handle, metadata } = outcome else {
         panic!("expected delivered dynamic lease");
     };
-    assert_ne!(handle.lease_id_sha256(), [0; 32]);
+    let lease_digest = handle.lease_id_sha256();
+    assert_ne!(lease_digest, [0; 32]);
     assert!(metadata.renewable);
+    let recovered = registry.recover_lease(lease_digest).await.unwrap().unwrap();
+    assert_eq!(recovered.handle.lease_id_sha256(), lease_digest);
+    assert_eq!(recovered.state, crate::RegisteredSecretLeaseState::Active);
     let metadata_json = serde_json::to_string(&metadata).unwrap();
     assert!(!metadata_json.contains("provider-lease-123"));
     assert!(!metadata_json.contains("dynamic-password"));
@@ -585,21 +590,26 @@ async fn dynamic_lease_body_timeout_is_indeterminate_and_burns_grant() {
         role: "read-only".into(),
     };
     let binding = client.secret_lease_binding(&request).unwrap();
-    let (authority, signed, _directory) =
+    let (authority, signed, directory) =
         lease_grant(&client, binding, "lease-timeout", [22; 32]).unwrap();
+    let registry = crate::SecretLeaseRegistry::open(directory.path()).await.unwrap();
     let outcome = client
-        .request_secret_lease(&authority, &signed, &request, |_| {
+        .request_secret_lease(&authority, &signed, &registry, &request, |_| {
             panic!("ambiguous lease response must not deliver secret")
         })
         .await
         .unwrap();
-    assert!(matches!(
-        outcome,
-        crate::SecretLeaseIssueOutcome::Indeterminate { .. }
-    ));
+    let operation_sha256 = match outcome {
+        crate::SecretLeaseIssueOutcome::Indeterminate { operation_sha256 } => operation_sha256,
+        other => panic!("expected indeterminate lease, got {other:?}"),
+    };
+    assert_eq!(
+        registry.operation_state(operation_sha256).await.unwrap(),
+        Some(crate::SecretLeaseOperationState::Indeterminate)
+    );
     assert!(matches!(
         client
-            .request_secret_lease(&authority, &signed, &request, |_| Ok(()))
+            .request_secret_lease(&authority, &signed, &registry, &request, |_| Ok(()))
             .await,
         Err(BaoClientError::Authority(FinalUseError::AlreadyClaimed))
     ));
