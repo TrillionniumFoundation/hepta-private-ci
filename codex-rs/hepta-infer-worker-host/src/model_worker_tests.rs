@@ -8,10 +8,15 @@ struct Driver {
 }
 
 impl ModelDriver for Driver {
-    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+    fn load(
+        &mut self,
+        manifest: &ModelManifest,
+        _grant: &ResourceGrant,
+    ) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
         Ok(DriverModelHandle {
             opaque_id: format!("handle.{}", manifest.model_id),
+            reserved_memory_bytes: 2_048,
             observed_memory_bytes: 1_024,
         })
     }
