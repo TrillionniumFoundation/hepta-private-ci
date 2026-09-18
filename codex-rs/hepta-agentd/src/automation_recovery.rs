@@ -130,11 +130,14 @@ async fn reconcile_one_unknown_dispatch(
                 .await?;
         }
         ThreadQueueReconcileOutcome::Missing => {
+            let proof_digest = observation_digest(&response)?;
             store
                 .reconcile_uncertain_occurrence_absent(
                     uncertain.task_id,
                     uncertain.occurrence,
                     &uncertain.client_user_message_id,
+                    &proof_digest,
+                    now_ms,
                 )
                 .await?;
         }
