@@ -13,6 +13,7 @@ use crate::AUTOMATION_SCHEMA_VERSION;
 use crate::AutomationDispatchUncertainty;
 use crate::AutomationError;
 use crate::AutomationLease;
+use crate::AutomationOccurrenceId;
 use crate::AutomationQueueReceipt;
 use crate::AutomationSchedule;
 use crate::AutomationTask;
@@ -99,6 +100,7 @@ impl AutomationStore {
     ) -> Result<AutomationTask, AutomationError> {
         draft.validate()?;
         let (schedule_kind, interval_ms) = schedule_columns(draft.schedule)?;
+        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
         let result = sqlx::query(
             "INSERT INTO automation_tasks (
                 task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
@@ -114,16 +116,39 @@ impl AutomationStore {
         .bind(to_i64(draft.first_run_at_ms)?)
         .bind(to_i64(draft.created_at_ms)?)
         .bind(to_i64(draft.created_at_ms)?)
-        .execute(&self.pool)
+        .execute(&mut *transaction)
         .await;
-        match result {
-            Ok(_) => self
-                .task(draft.task_id)
-                .await?
-                .ok_or(AutomationError::Corrupt),
-            Err(error) if is_constraint(&error) => Err(AutomationError::Conflict),
-            Err(error) => Err(unavailable(error)),
+        if let Err(error) = result {
+            return if is_constraint(&error) {
+                Err(AutomationError::Conflict)
+            } else {
+                Err(unavailable(error))
+            };
         }
+        sqlx::query(
+            "INSERT INTO automation_schedule_revisions (
+                 task_id, revision, owner_agent_id, schedule_kind, interval_ms, timezone,
+                 overlap_policy, missed_run_policy, registered_at_ms
+             ) VALUES (?, 1, ?, ?, ?, 'UTC', 'forbid', 'coalesce_latest', ?)",
+        )
+        .bind(draft.task_id.to_string())
+        .bind(self.owner_agent_id.as_str())
+        .bind(schedule_kind)
+        .bind(interval_ms.map(to_i64).transpose()?)
+        .bind(to_i64(draft.created_at_ms)?)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|error| {
+            if is_constraint(&error) {
+                AutomationError::Conflict
+            } else {
+                unavailable(error)
+            }
+        })?;
+        transaction.commit().await.map_err(unavailable)?;
+        self.task(draft.task_id)
+            .await?
+            .ok_or(AutomationError::Corrupt)
     }
 
     pub async fn task(
