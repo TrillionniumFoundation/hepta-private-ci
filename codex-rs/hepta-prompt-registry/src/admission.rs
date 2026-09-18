@@ -321,7 +321,6 @@ pub fn final_use_admission_binding(
     })
 }
 
-
 pub fn final_use_realization_binding(
     factor: &PromptFactor,
     actor_id: &StableId,
@@ -335,7 +334,9 @@ pub fn final_use_realization_binding(
     {
         return Err(AdmissionError::ScopeMismatch);
     }
-    binding.validate().map_err(|_| AdmissionError::InvalidGrant)?;
+    binding
+        .validate()
+        .map_err(|_| AdmissionError::InvalidGrant)?;
     let mut request = FINAL_USE_REALIZATION_REQUEST_DOMAIN.to_vec();
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
