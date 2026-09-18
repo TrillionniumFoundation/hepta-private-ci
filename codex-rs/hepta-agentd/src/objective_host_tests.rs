@@ -1,8 +1,7 @@
 use std::fs::OpenOptions;
 
-use codex_hepta_intelligence::ProductionObjectiveDispositionV1;
+use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_intelligence::ProductionRunBindingsV1;
-use codex_hepta_intelligence::prepare_intelligence_run_v1;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_objective::ConstraintClass;
 use codex_hepta_objective::ObjectiveAbstentionRuleProfileV1;
@@ -36,7 +35,10 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use tempfile::tempdir;
 
-use super::start_published_intelligence_run_v1;
+use super::ObjectiveProductRunDispositionV1;
+use super::ObjectiveProductRunError;
+use super::ObjectiveProductRunRequestV1;
+use super::prepare_and_start_intelligence_run_v1;
 use crate::AgentRunCoordinator;
 use crate::AgentRunError;
 use crate::ObjectiveHostError;
@@ -233,29 +235,18 @@ fn durable_publication_is_required_before_agentd_run_admission() {
             source_digest: source.structured_intent.provenance.source_digest,
         },
     };
-    let publication = prepare_intelligence_run_v1(
-        &mut ledger,
-        &source,
-        &profile,
-        &context,
-        ProductionRunBindingsV1 {
-            record_id: id("run-start-record-agentd"),
-            run_id: id("run-agentd"),
-            preference_state_digest: digest("preference"),
-            model_tuple_digest: digest("model"),
-            prompt_registry_digest: digest("prompt"),
-            artifact_set_digest: digest("artifacts"),
-            authority_epoch: 11,
-            generation: 3,
-            fence_digest: digest("runtime-fence"),
-            expected_ledger_predecessor: Digest32::ZERO,
-        },
-    )
-    .expect("publish objective");
-    let ProductionObjectiveDispositionV1::Published(publication) = publication else {
-        panic!("expected published objective");
+    let bindings = || ProductionRunBindingsV1 {
+        record_id: id("run-start-record-agentd"),
+        run_id: id("run-agentd"),
+        preference_state_digest: digest("preference"),
+        model_tuple_digest: digest("model"),
+        prompt_registry_digest: digest("prompt"),
+        artifact_set_digest: digest("artifacts"),
+        authority_epoch: 11,
+        generation: 3,
+        fence_digest: digest("runtime-fence"),
+        expected_ledger_predecessor: Digest32::ZERO,
     };
-    assert_eq!(ledger.records().expect("records").len(), 1);
 
     let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.1".to_string(),
@@ -267,24 +258,57 @@ fn durable_publication_is_required_before_agentd_run_admission() {
         fence_digest: digest("runtime-fence").to_string(),
     })
     .expect("runtime composition");
-    let first = start_published_intelligence_run_v1(
+    let first = prepare_and_start_intelligence_run_v1(
         &mut coordinator,
-        NOW_MICROS / 1_000,
-        &publication,
-        digest("body"),
+        ObjectiveProductRunRequestV1 {
+            now_ms: NOW_MICROS / 1_000,
+            body_digest: digest("body"),
+            journal: &mut ledger,
+            source: &source,
+            profile: &profile,
+            context: &context,
+            bindings: bindings(),
+        },
     )
-    .expect("start published run");
-    assert_eq!(first.phase, RunPhase::Admitted);
-    assert!(!first.idempotent);
+    .expect("prepare and start published run");
+    let ObjectiveProductRunDispositionV1::Started {
+        publication,
+        runtime,
+    } = first
+    else {
+        panic!("expected started product run");
+    };
+    assert_eq!(runtime.phase, RunPhase::Admitted);
+    assert!(!runtime.idempotent);
+    assert_eq!(publication.durable_append().disposition, AppendDisposition::Appended);
+    assert_eq!(ledger.records().expect("records").len(), 1);
 
-    let replay = start_published_intelligence_run_v1(
+    let replay = prepare_and_start_intelligence_run_v1(
         &mut coordinator,
-        NOW_MICROS / 1_000,
-        &publication,
-        digest("body"),
+        ObjectiveProductRunRequestV1 {
+            now_ms: NOW_MICROS / 1_000,
+            body_digest: digest("body"),
+            journal: &mut ledger,
+            source: &source,
+            profile: &profile,
+            context: &context,
+            bindings: bindings(),
+        },
     )
-    .expect("idempotent runtime replay");
-    assert!(replay.idempotent);
+    .expect("idempotent product replay");
+    let ObjectiveProductRunDispositionV1::Started {
+        publication: replay_publication,
+        runtime: replay_runtime,
+    } = replay
+    else {
+        panic!("expected replayed product run");
+    };
+    assert!(replay_runtime.idempotent);
+    assert_eq!(
+        replay_publication.durable_append().disposition,
+        AppendDisposition::IdempotentReplay
+    );
+    assert_eq!(ledger.records().expect("records").len(), 1);
 
     let mut stale = AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.2".to_string(),
@@ -296,15 +320,32 @@ fn durable_publication_is_required_before_agentd_run_admission() {
         fence_digest: digest("runtime-fence").to_string(),
     })
     .expect("stale runtime composition");
+    let error = prepare_and_start_intelligence_run_v1(
+        &mut stale,
+        ObjectiveProductRunRequestV1 {
+            now_ms: NOW_MICROS / 1_000,
+            body_digest: digest("body"),
+            journal: &mut ledger,
+            source: &source,
+            profile: &profile,
+            context: &context,
+            bindings: bindings(),
+        },
+    )
+    .expect_err("stale runtime must reject after idempotent durable publication");
     assert!(matches!(
-        start_published_intelligence_run_v1(
-            &mut stale,
-            NOW_MICROS / 1_000,
-            &publication,
-            digest("body"),
-        ),
-        Err(ObjectiveHostError::Runtime(
-            AgentRunError::RuntimeBindingMismatch
-        ))
+        error,
+        ObjectiveProductRunError::Runtime {
+            error: ObjectiveHostError::Runtime(AgentRunError::RuntimeBindingMismatch),
+            ..
+        }
     ));
+    let retained = error
+        .durable_publication()
+        .expect("runtime failure retains durable publication");
+    assert_eq!(
+        retained.durable_append().disposition,
+        AppendDisposition::IdempotentReplay
+    );
+    assert_eq!(ledger.records().expect("records").len(), 1);
 }
