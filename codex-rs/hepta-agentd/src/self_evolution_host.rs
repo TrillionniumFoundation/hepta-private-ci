@@ -150,6 +150,13 @@ impl AgentdSelfEvolutionHostV1 {
         disposition: &[u8],
         evidence: &VerifiedLearningEvidenceV1,
     ) -> Result<(), AgentdSelfEvolutionError> {
+        if evidence_digest.is_zero()
+            || self.runtime.active_candidate_id() != &selection.candidate_id
+            || self.runtime.generation() != selection.candidate_generation
+            || self.runtime.artifact_digest() != selection.candidate_artifact_digest
+        {
+            return Err(AgentdSelfEvolutionError::EvidenceBinding);
+        }
         if evidence.role() != LearningEvidenceRoleV1::Evaluator {
             return Err(AgentdSelfEvolutionError::EvidenceRole);
         }
