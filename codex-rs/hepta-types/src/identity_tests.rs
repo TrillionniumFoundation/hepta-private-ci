@@ -70,7 +70,7 @@ fn stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation() {
                 value.push(char::from(byte));
             }
             assert_eq!(
-                StableId::new(value.clone()),
+                StableId::new(value.as_str()),
                 validate_id(&value, IdProfileV1::Stable),
                 "owned and borrowed stable-ID admission diverged for {value:?}"
             );
