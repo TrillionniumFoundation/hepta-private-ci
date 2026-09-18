@@ -432,12 +432,12 @@ def generate_candidates(
     seen: set[str] = set()
     for mutation in (Mutation("no_change"), *supplied):
         if mutation.operation != "no_change":
-            if is_oracle_path(mutation.path):
-                raise EngineeringError("protected_oracle_path")
             if not path_is_within(mutation.path, roots):
                 raise EngineeringError("path_outside_candidate_envelope")
             if path_is_within(mutation.path, protected):
                 raise EngineeringError("protected_path")
+            if is_oracle_path(mutation.path):
+                raise EngineeringError("protected_oracle_path")
         candidate_id, digest = _candidate_identity(envelope, mutation)
         if digest in seen:
             continue
@@ -1048,10 +1048,10 @@ def _sandbox_candidate_once(
             raise EngineeringError("changed_file_limit")
         if any(not path_is_within(path, roots) for path in changed):
             raise EngineeringError("sandbox_path_escape")
-        if any(is_oracle_path(path) for path in changed):
-            raise EngineeringError("protected_oracle_path")
         if any(path_is_within(path, protected) for path in changed):
             raise EngineeringError("protected_path")
+        if any(is_oracle_path(path) for path in changed):
+            raise EngineeringError("protected_oracle_path")
         if (
             _changed_byte_budget(base_manifest, candidate_manifest, changed)
             > envelope.maximum_diff_bytes
@@ -1119,10 +1119,10 @@ def _sandbox_candidate_once(
             raise EngineeringError("source_tree_mutated")
         if any(not path_is_within(path, roots) for path in post_changed):
             raise EngineeringError("sandbox_path_escape")
-        if any(is_oracle_path(path) for path in post_changed):
-            raise EngineeringError("protected_oracle_path")
         if any(path_is_within(path, protected) for path in post_changed):
             raise EngineeringError("protected_path")
+        if any(is_oracle_path(path) for path in post_changed):
+            raise EngineeringError("protected_oracle_path")
         source_after = _git(root, "rev-parse", f"{envelope.base_commit}^{{tree}}")
         if source_after != source_tree:
             raise EngineeringError("source_tree_mutated")
