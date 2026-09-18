@@ -6,7 +6,10 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
+use codex_hepta_authbus::AuthBusReplayCheckpoint;
+use codex_hepta_authbus::AuthBusTrustHead;
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::VerifyingKey;
@@ -17,14 +20,24 @@ use crate::AgentdIdentity;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
+struct ReplayCheckpointProjection {
+    generation: u64,
+    replay_digest_hex: String,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct TextTrust {
     schema_version: u32,
+    trust_revision: u64,
     agent_id: String,
     issuer_id: String,
     key_epoch: u64,
     public_key_hex: String,
     revoked: bool,
     thread_ids: Vec<String>,
+    #[serde(default)]
+    replay_checkpoint: Option<ReplayCheckpointProjection>,
 }
 
 impl TextTrust {
@@ -33,7 +46,8 @@ impl TextTrust {
     pub fn load(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
         let bytes = read_owner_file(path, identity)?;
         let trust: Self = serde_json::from_slice(&bytes)?;
-        if trust.schema_version != 1
+        if trust.schema_version != 2
+            || trust.trust_revision == 0
             || trust.agent_id != identity.agent_id.as_str()
             || trust.thread_ids.len() > 16
             || trust
@@ -59,6 +73,37 @@ impl TextTrust {
                 .map_err(|_| invalid("invalid registered Ed25519 public key"))?,
             revoked: self.revoked,
         })
+    }
+
+    pub fn trust_head(&self) -> Result<AuthBusTrustHead, AgentdError> {
+        let issuer = self.issuer()?;
+        Ok(AuthBusTrustHead {
+            issuer_id: issuer.issuer_id,
+            revision: self.trust_revision,
+            key_epoch: issuer.key_epoch.get(),
+            verifying_key_digest: Digest32::of_bytes(issuer.verifying_key.as_bytes()),
+            revoked: issuer.revoked,
+        })
+    }
+
+    pub fn replay_checkpoint(&self) -> Result<Option<AuthBusReplayCheckpoint>, AgentdError> {
+        self.replay_checkpoint
+            .as_ref()
+            .map(|checkpoint| {
+                if checkpoint.generation == 0 {
+                    return Err(invalid("replay checkpoint generation must be nonzero"));
+                }
+                let digest = hex_bytes::<32>(&checkpoint.replay_digest_hex)?;
+                let replay_digest = Digest32::from_array(digest);
+                if replay_digest.is_zero() {
+                    return Err(invalid("replay checkpoint digest must be nonzero"));
+                }
+                Ok(AuthBusReplayCheckpoint {
+                    generation: checkpoint.generation,
+                    replay_digest,
+                })
+            })
+            .transpose()
     }
 
     pub fn permits(&self, thread_id: &str) -> bool {
