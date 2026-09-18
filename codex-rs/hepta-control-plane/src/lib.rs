@@ -40,6 +40,7 @@ pub use authority_bridge::AuthorityBridgeError;
 pub use authority_bridge::claim_final_use_for_grant_request_v1;
 pub use authority_bridge::final_use_binding_for_grant_request_v1;
 pub use authority_bridge::grant_request_digest_v1;
+pub use authority_bridge::with_authorized_grant_request_v1;
 pub use global_plane::AdmittedOwnerSummaryV1;
 pub use global_plane::FLEET_ACCELERATOR_MILLIS_AXIS;
 pub use global_plane::FLEET_CPU_MILLIS_AXIS;
