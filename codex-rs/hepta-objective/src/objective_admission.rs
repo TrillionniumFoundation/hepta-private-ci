@@ -417,9 +417,27 @@ pub fn canonical_objective_intent_digest_v1(
     Ok(intent_digest_unchecked(envelope))
 }
 
-/// Admit a complete source envelope and invoke the existing deterministic
-/// compiler without dropping any represented source field.
-pub fn admit_and_compile_objective_v1(
+/// Opaque source that has crossed the full authenticated admission boundary.
+///
+/// Its native compiler envelope is private, so supplied trust labels, digests,
+/// or legacy normalized IR cannot be promoted into an admitted value by callers.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AdmittedObjectiveV1 {
+    source: ObjectiveSourceEnvelope,
+    receipt: ObjectiveAdmissionReceiptV1,
+}
+
+impl AdmittedObjectiveV1 {
+    #[must_use]
+    pub fn receipt(&self) -> &ObjectiveAdmissionReceiptV1 {
+        &self.receipt
+    }
+}
+
+/// Authenticate, normalize and bind a complete source envelope without compiling it.
+///
+/// This is the only public constructor for `AdmittedObjectiveV1`.
+pub fn admit_objective_v1(
     envelope: &ObjectiveSourceEnvelopeV1,
     profile: &ObjectiveAdmissionProfileV1,
     context: &ObjectiveAdmissionContextV1,
@@ -499,8 +517,8 @@ pub fn admit_and_compile_objective_v1(
     let admitted_source_digest =
         admitted_source_digest(envelope, profile_digest, &context.source_authentication);
     let source = adapt_source(envelope, profile, context, admitted_source_digest)?;
-    let compile_result = crate::compile(source)?;
-    Ok(ObjectiveAdmissionOutcomeV1 {
+    Ok(AdmittedObjectiveV1 {
+        source,
         receipt: ObjectiveAdmissionReceiptV1 {
             profile_id: profile.profile_id.clone(),
             profile_revision: profile.profile_revision,
@@ -512,8 +530,27 @@ pub fn admit_and_compile_objective_v1(
             deadline_unix_micros,
             authority: AuthorityPosture::DENY_ALL,
         },
+    })
+}
+
+/// Compile only a value that has already crossed the authenticated admission boundary.
+pub fn compile_admitted_objective_v1(
+    admitted: AdmittedObjectiveV1,
+) -> Result<ObjectiveAdmissionOutcomeV1, ObjectiveAdmissionError> {
+    let compile_result = crate::compiler::compile(admitted.source)?;
+    Ok(ObjectiveAdmissionOutcomeV1 {
+        receipt: admitted.receipt,
         compile_result,
     })
+}
+
+/// Convenience composition of authenticated admission followed by admitted-only compile.
+pub fn admit_and_compile_objective_v1(
+    envelope: &ObjectiveSourceEnvelopeV1,
+    profile: &ObjectiveAdmissionProfileV1,
+    context: &ObjectiveAdmissionContextV1,
+) -> Result<ObjectiveAdmissionOutcomeV1, ObjectiveAdmissionError> {
+    compile_admitted_objective_v1(admit_objective_v1(envelope, profile, context)?)
 }
 
 fn validate_authentication(
