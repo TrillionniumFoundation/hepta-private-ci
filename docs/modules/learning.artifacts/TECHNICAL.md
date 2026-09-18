@@ -481,11 +481,11 @@ The crate does not claim that two independent files are a single filesystem tran
 
 1. the V3 admission digest and validated manifest digest;
 2. the withdrawal domain and exact withdrawal head;
-3. the exact artifact-registry append event, sequence and predecessor/successor heads;
+3. the artifact-registry namespace identity plus the exact append event, sequence and predecessor/successor heads;
 4. the snapshot binding and durable snapshot receipt;
 5. the independently validated current-head witness.
 
-`artifact_registry_event_for_admission_v3` is the only crate-defined V3-to-V1 publication projection. The publication operation ID becomes the V1 `Register` event ID; payload, objective, producer, compatibility, generation and operational predecessor are projected from the normalized V2 manifest; and the V1 `support_digest` is the exact V3 admission digest. That admission digest commits the full normalized V2 manifest plus withdrawal domain, withdrawal head and admission time. `prepare_artifact_publication_v1` recomputes the projected event digest and the predecessor/sequence/event chain digest and rejects a receipt from any different registry event or chain. This prevents a host from pairing a valid V3 admission with an unrelated V1 append receipt.
+`artifact_registry_event_for_admission_v3` is the only crate-defined V3-to-V1 publication projection. The publication operation ID becomes the V1 `Register` event ID; payload, objective, producer, compatibility, generation and operational predecessor are projected from the normalized V2 manifest; and the V1 `support_digest` is the exact V3 admission digest. That admission digest commits the full normalized V2 manifest plus withdrawal domain, withdrawal head and admission time. `prepare_artifact_publication_v1` binds the intended artifact-registry identity, recomputes the projected event digest and the predecessor/sequence/event chain digest, and rejects a receipt from any different registry event or chain. Recovery rejects a current-head witness from another registry namespace even when head bytes otherwise match. This prevents a host from pairing a valid V3 admission with an unrelated V1 append receipt or witness.
 
 The host may acknowledge the producer/source only after the current-head witness is durable. Restart recovery reconstructs phase from durable receipts; a snapshot without its current witness is not published state, and a witness without its bound snapshot is rejected. Product composition must execute these transitions under one authenticated writer fence and must synchronize containing directories according to the selected filesystem contract.
 
@@ -493,7 +493,7 @@ The host may acknowledge the producer/source only after the current-head witness
 
 The authoritative in-memory record ceiling and canonical file snapshot ceiling are aligned at 4096 records so the owner cannot accept a state that its supported snapshot writer is guaranteed to reject solely because of record count.
 
-`write_dataset_withdrawal_snapshot` / `read_dataset_withdrawal_snapshot` and `write_lifecycle_journal_snapshot` / `read_lifecycle_journal_snapshot` use create-only files, bounded reads, independent receipts, canonical re-encoding and full replay validation. These adapters establish a crate-native restart proof for the two auxiliary histories; they do not provide newest-generation discovery or product-level writer fencing.
+`write_dataset_withdrawal_snapshot` / `read_dataset_withdrawal_snapshot` and `write_lifecycle_journal_snapshot` / `read_lifecycle_journal_snapshot` use create-only files, bounded reads, independent receipts, canonical re-encoding and full replay validation. Lifecycle restart rebuilds the recorded snapshot through historical replay validation: actor evidence must have been valid for the recorded event time, while current-time credential validity is required only for a new append. These adapters establish a crate-native restart proof for the two auxiliary histories; they do not provide newest-generation discovery or product-level writer fencing.
 
 ### 18.4 Governed iteration
 
@@ -509,7 +509,6 @@ These helpers do not replace directory-handle/`openat2`-equivalent containment a
 
 The following items remain open and must not be inferred closed from the source additions above:
 
-- historical lifecycle replay still uses the replay caller's `now` when rebuilding records; a credential that was valid when an event was recorded can therefore fail replay after later expiry. Historical replay must validate historical evidence time separately from authorization for a new mutation;
 - no authenticated product host currently composes the publication contract, writer fence, current-witness service, source acknowledgement and directory durability as one production path;
 - exact-head, strict-lint and synthetic-merge qualification must be green for the candidate being accepted;
 - target-OS directory-handle containment and power-loss behavior require platform qualification.
