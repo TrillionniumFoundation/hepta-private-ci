@@ -6,9 +6,9 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "implementationHead": {
-    "commit": "4533bb7e6e7e5f69077026e31818c953afecefca",
+    "commit": "8b682607b935c2999469ea794bd19c4814e4078d",
     "branch": "fix/learning-artifacts-closure-20260918",
-    "note": "Module-specific source closure head including historical lifecycle replay, scoped V3 admission/publication, durable withdrawal/lifecycle snapshots, lossless stable-V1 projection guards, lexical create-only containment, read-only orphan reconciliation and DENY_ALL admin inspection. sourceBase remains the shared repository-wide implementation-map generation baseline."
+    "note": "Module-specific source closure head including historical lifecycle replay, scoped V3 admission, type-state-gated durable publication, durable withdrawal/lifecycle snapshots, lossless stable-V1 projection guards, lexical create-only containment, read-only orphan reconciliation and DENY_ALL admin inspection. sourceBase remains the shared repository-wide implementation-map generation baseline."
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -31,7 +31,8 @@
     "lifecycleJournal": "create_only_snapshot_with_historical_time_replay",
     "sharedHistoryLimit": 4096,
     "publicationCommitPoint": "host_published_registry_snapshot_and_current_head_witness",
-    "crossStoreAtomicity": "bounded_saga_with_digest_bound_transaction_and_prepublication_revalidation"
+    "crossStoreAtomicity": "bounded_saga_with_digest_bound_transaction_and_prepublication_revalidation",
+    "publicationAccess": "prepared_transaction_then_consuming_revalidation_then_revalidated_snapshot_token"
   },
   "operations": [
     {
@@ -158,9 +159,9 @@
     },
     {
       "operation": "revalidate_artifact_publication_v3",
-      "nativeSymbol": "revalidate_artifact_publication_v3",
+      "nativeSymbol": "revalidate_artifact_publication_v3 -> RevalidatedArtifactPublicationV3",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_type_state_gates_durable_snapshot_access",
       "authority": "none",
       "tests": [
         "art_07_publication_revalidation_closes_withdrawal_race"
