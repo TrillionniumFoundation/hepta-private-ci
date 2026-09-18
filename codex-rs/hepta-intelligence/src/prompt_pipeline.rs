@@ -12,17 +12,28 @@ use codex_hepta_context_compiler::{
     ContextCompilerV2Error, ContextModelProfileV2, ContextRoleV2, MandatoryContextGroupV2,
     TokenizationReceiptV2, compile_v2,
 };
+use codex_hepta_learning_ledger::{
+    LearningEvidenceRoleV1, LearningEvidenceVerifierV1, SignedEvidenceError,
+    SignedLearningEvidenceV1,
+};
 use codex_hepta_prompt_optimizer::canonical::{
     CandidateEvidenceV1, CanonicalError, ExerciseBoundaryV1, ExerciseDispositionV1,
     PortfolioBudgetV1, PortfolioRelationV1, PromptCandidateSetReceiptV1,
     PromptExerciseDecisionV1, PromptPortfolioReceiptV1, PromptPricingReceiptV1,
-    enumerate_factors, exercise, price_factors, select_portfolio,
+    candidate_evidence_signing_bytes, enumerate_factors, exercise, price_factors,
+    select_portfolio,
 };
 use codex_hepta_prompt_registry::{
     PromptModelTupleV2, PromptRegistry, PromptRegistrySnapshotV2, PromptRegistryV2Error,
     PromptRoleV2,
 };
 use codex_hepta_types::{Digest32, FixedQ32, StableId};
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SignedCandidatePricingEvidenceV1 {
+    pub pricing: CandidateEvidenceV1,
+    pub signed: SignedLearningEvidenceV1,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CanonicalPromptContextReceiptV1 {
@@ -47,7 +58,8 @@ pub struct CanonicalPromptContextRequestV1<'a> {
     pub prompt_truncation_digest: Digest32,
     pub context_truncation_digest: Digest32,
     pub now_unix_ms: u64,
-    pub evidence: Vec<CandidateEvidenceV1>,
+    pub evidence_verifier: &'a LearningEvidenceVerifierV1,
+    pub evidence: Vec<SignedCandidatePricingEvidenceV1>,
     pub relations: Vec<PortfolioRelationV1>,
     pub portfolio_budget: PortfolioBudgetV1,
     pub context_token_budget: u64,
@@ -60,6 +72,7 @@ pub enum CanonicalPromptContextErrorV1 {
     Registry(PromptRegistryV2Error),
     Prompt(CanonicalError),
     Context(ContextCompilerV2Error),
+    SignedEvidence(SignedEvidenceError),
     ModelProfileMismatch,
     StaleAtExercise,
     SelectedCandidateMissing(String),
@@ -97,8 +110,22 @@ pub fn run_canonical_prompt_context_v1(
         request.prompt_truncation_digest,
     )
     .map_err(CanonicalPromptContextErrorV1::Prompt)?;
-    let pricing =
-        price_factors(&candidates, request.evidence).map_err(CanonicalPromptContextErrorV1::Prompt)?;
+    let mut admitted_evidence = Vec::with_capacity(request.evidence.len());
+    for evidence in request.evidence {
+        let payload = candidate_evidence_signing_bytes(&evidence.pricing);
+        request
+            .evidence_verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &evidence.signed,
+                &payload,
+                request.now_unix_ms,
+            )
+            .map_err(CanonicalPromptContextErrorV1::SignedEvidence)?;
+        admitted_evidence.push(evidence.pricing);
+    }
+    let pricing = price_factors(&candidates, admitted_evidence)
+        .map_err(CanonicalPromptContextErrorV1::Prompt)?;
     let portfolio = select_portfolio(&pricing, request.relations, request.portfolio_budget)
         .map_err(CanonicalPromptContextErrorV1::Prompt)?;
     let exercise_receipt = exercise(
