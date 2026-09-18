@@ -526,6 +526,22 @@ async fn renew_and_revoke_are_generation_bound_and_deduplicated() -> Result<(), 
         Some(BaoSecretLeaseState::Revoked)
     );
     assert_eq!(provider.dispatches(), 3);
+
+    let duplicate_revoke_binding =
+        coordinator.binding(&BaoLeaseRequest::Revoke(revoke.clone()), revoke_payload)?;
+    let duplicate_revoke_grant =
+        signed_grant(duplicate_revoke_binding, 25, "grant-life-revoke-2")?;
+    let duplicate_revoke = coordinator
+        .revoke(
+            &authority,
+            &duplicate_revoke_grant,
+            &revoke,
+            revoke_payload,
+        )
+        .await?;
+    assert_eq!(duplicate_revoke.state, ProviderEffectState::Completed);
+    assert!(!duplicate_revoke.physical_dispatch_attempted);
+    assert_eq!(provider.dispatches(), 3);
     Ok(())
 }
 
