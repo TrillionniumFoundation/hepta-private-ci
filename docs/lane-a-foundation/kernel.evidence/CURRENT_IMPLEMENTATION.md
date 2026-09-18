@@ -8,8 +8,8 @@ provider intent/terminal/effect records, bounded summaries and integrity-aware
 open paths. Equal content is idempotent; reused identity with different content
 conflicts.
 
-The checked-in migration lineage is exactly `0001` through `0010` as documented
-in `STORE_V1.md`. Migration `0009` adds the AuthBus signed-admission replay table; `0010` adds its bounded transactional message outbox, immutable payloads and fenced leases.
+The checked-in migration lineage is exactly `0001` through `0011` as documented
+in `STORE_V1.md`. Migration `0009` adds the AuthBus signed-admission replay table; `0010` adds its bounded transactional message outbox, immutable payloads and fenced leases. Migration `0011` adds the secret-free `SecretLeaseRecord` CAS registry used by `secrets.heptabao`; provider lease IDs are privileged metadata, while raw secret values remain outside this store.
 
 ## Public symbols and source bindings
 
