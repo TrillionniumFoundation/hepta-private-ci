@@ -206,6 +206,61 @@ fn truncation_and_tampering_fail_closed() {
 }
 
 #[test]
+fn direct_append_cannot_bypass_selection_semantics() {
+    let mut journal = PlannerJournalV1::new();
+    assert_eq!(
+        journal
+            .append(
+                PlannerJournalKindV1::SelectedPlan,
+                digest("forged-selection"),
+                digest("unknown-decision"),
+            )
+            .expect_err("raw selected-plan append must require a decision"),
+        PlannerJournalError::DecisionNotRecorded
+    );
+
+    let receipt = receipt();
+    must(journal.record_decision(&receipt));
+    must(journal.revoke(digest("revoke-before-select"), receipt.receipt_digest()));
+    assert_eq!(
+        journal
+            .append(
+                PlannerJournalKindV1::SelectedPlan,
+                digest("forged-selection-after-revoke"),
+                receipt.receipt_digest(),
+            )
+            .expect_err("raw selected-plan append must respect revocation"),
+        PlannerJournalError::RevokedPlan
+    );
+}
+
+#[test]
+fn reopen_rejects_hash_valid_semantically_invalid_selection() {
+    let identity = digest("forged-selection");
+    let payload = digest("unknown-decision");
+    let sequence = 1_u64;
+    let predecessor = Digest32::ZERO;
+    let kind = PlannerJournalKindV1::SelectedPlan;
+    let entry_digest = super::digest_entry(sequence, kind, identity, payload, predecessor);
+
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(super::MAGIC);
+    bytes.extend_from_slice(&1_u32.to_be_bytes());
+    bytes.extend_from_slice(&sequence.to_be_bytes());
+    bytes.push(kind.tag());
+    bytes.extend_from_slice(identity.as_array());
+    bytes.extend_from_slice(payload.as_array());
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(entry_digest.as_array());
+
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes)
+            .expect_err("hash-valid selection without decision must fail semantic replay"),
+        PlannerJournalError::DecisionNotRecorded
+    );
+}
+
+#[test]
 fn revocation_clears_selection_and_prevents_reselection() {
     let mut journal = PlannerJournalV1::new();
     let receipt = receipt();
