@@ -21,9 +21,13 @@ The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-cont
 `AgentdMethod::CognitiveContext { query, limit }` and `AgentdClient::cognitive_context` use the normal owner/generation-fenced local protocol. The host selects its own Agent identity and private scope; callers cannot supply another scope or a success receipt.
 
 1. Obtain a read transaction cut through `CognitiveStore::lane_c_snapshot`.
-2. Execute the new bounded `ReadRequestV2` port on that cut.
-3. Rank with the existing SQLite retrieval provider and accept only exact record ID, revision and content digest matches admitted by the cut.
-4. Return the original verified memory text, then revalidate the owner cut and runtime generation before response publication.
+2. Execute the bounded `ReadRequestV2` port on that cut.
+3. Generate a bounded owner-native candidate window with the existing SQLite RRF provider and accept only exact record ID, revision and content digest matches admitted by the cut.
+4. Pass the complete admitted owner window through `codex-hepta-memory-retrieval::retrieve_v2`, which binds the full input (including later omissions) and provides deterministic ordering. The retrieval crate does not own the SQLite index or mint freshness/authority.
+5. If configured, apply `PinnedCognitiveRanker` only as a downstream permutation of those already admitted records; it cannot add a record or bypass the deterministic binding.
+6. Apply response byte/result budgets, then revalidate the owner cut, ranker view and runtime generation before response publication.
+
+The owner supplies at most sixteen candidates to the product-composed retrieval bridge; the legacy direct owner API remains top-four for compatibility. Full generation-bound `compile_cue -> build_candidate_union -> recall` composition remains separate because its `CognitiveSnapshotKeyV1` also binds external model/tokenizer/template/tool-schema generations that Agentd must not fabricate. Native vector, causal and procedural generators likewise remain explicit integration work.
 
 The query is 1–2048 bytes and the requested result limit is 1–4. The Lane C read admits at most 1024 records and 1 MiB of canonical encoding. Intersecting that bounded record prefix with search candidates can omit relevant records outside the prefix; `omitted_records` reports the read truncation. The complete context payload is bounded to 24 KiB of JSON encoding, including escaping and its envelope. Oversized items are omitted, not silently truncated. This is verified memory retrieval, not evidence of learned model weights or complete recall.
 
