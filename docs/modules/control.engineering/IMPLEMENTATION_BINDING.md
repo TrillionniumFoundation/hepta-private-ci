@@ -20,6 +20,8 @@ files, actual job logs and signed execution receipts establish qualification;
 a document's description of a historical workflow does not.
 
 Owner work stops at durable assignments, candidate qualification, signed review
-eligibility or a dormant external-system proposal. Independent key custody,
-production callers and adapters, measured benefit, real target operation,
-reviewer acceptance and deployment remain separate deliverables.
+eligibility or a dormant external-system proposal. The repository production
+caller is the read-only `engineering-product-gate`, which is admitted only after
+strong sandbox and qualification jobs and emits no merge/release authority.
+Independent reviewer key custody, live external adapters, measured benefit, real
+target operation, reviewer acceptance and deployment remain separate deliverables.

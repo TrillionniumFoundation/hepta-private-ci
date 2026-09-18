@@ -12,6 +12,18 @@ receipts before implementing or merging the code that will consume them.
 
 Choose one exact reviewed upstream source for a bounded integration candidate. Record source commit/tree, actual target commit/tree, ordered merge parents and all canonical registry digests in external evidence. Do not infer selection from branch names, recency, equal document bytes or administrative privileges. A new source stack must preserve predecessor fixes; unrelated implementation branches are compared and integrated through separately reviewed changes, not overlaid. The current candidate's parent is in Git history, not a mutable pointer here.
 
+The repository handoff workflow reconstructs pull-request merge candidates with the
+same shared `.github/actions/hepta-synthetic-merge` inputs used by source
+qualification and the `control.engineering` product caller. The inventory binds
+`sourceCommit`/`sourceTree`, `testedCommit`/`testedTree`,
+`candidateMode` and ordered merge parents. A matching tree with a different
+synthetic commit identity is not interchangeable evidence.
+
+`production_implementation=true` is a repository-composition fact. The
+deployment inventory separately keeps `productionCallerVerified=false` until a
+real target host, consumer callsite and authenticated observer are externally
+supplied and witnessed.
+
 Run `python3 tools/hepta-engineering-control/deployment_inventory.py --base FULL_SHA` on the exact candidate. Output is derived solely from committed blobs. It maps all module source roots and Cargo packages to organ roles, canonical schema owners, authoritative writers and readers. HNMF reference is explicitly not a 41st product module. A present crate is NOT a running process. No host, process, physical database, production caller or independent acceptance is invented. The output is an audit artifact, not a new authority registry.
 
 ## 2. Required deployment binding per module and organ instance

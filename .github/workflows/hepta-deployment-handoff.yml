@@ -29,21 +29,33 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Bind exact source and actual-base synthetic merge
+      - name: Bind exact source identity
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test "$BASE_SHA" != "$SOURCE_SHA"
+      - name: Reconstruct the exact qualified synthetic merge
+        id: synthetic
+        if: matrix.lane == 'synthetic-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Confirm tested candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$SOURCE_SHA"
           if [ '${{ matrix.lane }}' = synthetic-merge ]; then
-            TREE=$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")
-            export GIT_AUTHOR_NAME=hepta-qualification GIT_COMMITTER_NAME=hepta-qualification
-            export GIT_AUTHOR_EMAIL=qualification@invalid GIT_COMMITTER_EMAIL=qualification@invalid
-            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
-            MERGE=$(printf '%s\n' 'Qualification only, no selection' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
-            test "$(git show -s --format=%P "$MERGE")" = "$BASE_SHA $SOURCE_SHA"
-            git checkout --detach "$MERGE"
+            expected='${{ steps.synthetic.outputs.sha }}'
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
           fi
+          test "$(git rev-parse HEAD)" = "$expected"
           git rev-parse HEAD HEAD^{tree}
       - name: Validate inventory behavior (full engineering suite belongs to scoped discovery)
         run: python3 -m unittest discover -s tools/hepta-engineering-control -p 'test_deployment_inventory.py' -v
@@ -51,8 +63,44 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 tools/hepta-engineering-control/deployment_inventory.py --base "$BASE_SHA" > "$RUNNER_TEMP/deployment-inventory.json"
-          python3 -c 'import json,os; p=json.load(open(os.environ["RUNNER_TEMP"]+"/deployment-inventory.json")); assert {m["id"] for m in p["modules"]} == {m["id"] for m in json.load(open("docs/modules/MODULES.json"))["modules"]}; assert {o["id"] for o in p["organs"]} == {o["id"] for o in json.load(open("docs/cns/CNS_ARCHITECTURE.json"))["organs"]}; assert not p["runtimeAuthority"]; print(json.dumps(p,indent=2))'
+          mode=source-head
+          if [ '${{ matrix.lane }}' = synthetic-merge ]; then
+            mode=base-merge
+          fi
+          export CANDIDATE_MODE="$mode"
+          python3 tools/hepta-engineering-control/deployment_inventory.py \
+            --base "$BASE_SHA" \
+            --source "$SOURCE_SHA" \
+            --mode "$mode" > "$RUNNER_TEMP/deployment-inventory.json"
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+
+          path = os.path.join(os.environ["RUNNER_TEMP"], "deployment-inventory.json")
+          with open(path, encoding="utf-8") as handle:
+              payload = json.load(handle)
+          with open("docs/modules/MODULES.json", encoding="utf-8") as handle:
+              modules = json.load(handle)["modules"]
+          with open("docs/cns/CNS_ARCHITECTURE.json", encoding="utf-8") as handle:
+              organs = json.load(handle)["organs"]
+          assert {row["id"] for row in payload["modules"]} == {row["id"] for row in modules}
+          assert {row["id"] for row in payload["organs"]} == {row["id"] for row in organs}
+          assert payload["sourceCommit"] == os.environ["SOURCE_SHA"]
+          assert payload["testedCommit"] == subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          assert payload["candidateMode"] == os.environ["CANDIDATE_MODE"]
+          if os.environ["CANDIDATE_MODE"] == "base-merge":
+              assert payload["orderedMergeParents"] == [
+                  os.environ["BASE_SHA"],
+                  os.environ["SOURCE_SHA"],
+              ]
+          else:
+              assert payload["orderedMergeParents"] == []
+          assert not payload["runtimeAuthority"]
+          print(json.dumps(payload, indent=2))
+          PY
       - name: Ensure tests did not rewrite tracked source
         if: always()
         run: |

@@ -140,6 +140,48 @@ install an adapter into Debian, execute a production Debian lifecycle or teach a
 arbitrary external application to evolve. Those require real adapter/runtime work
 and its own measured acceptance evidence.
 
+## Repository product caller and operational runbook
+
+The repository production caller is the read-only GitHub Actions job
+`engineering-product-gate` in
+`.github/workflows/hepta-consolidated-source.yml`. It is downstream of the full `workspace-regression` gate, the real
+Linux/Bubblewrap `engineering-sandbox` job and the repository `qualification`
+matrix. If any prerequisite fails, the product caller does not issue a receipt.
+
+The caller executes the SQLite v5 control plane in a disposable owner database,
+publishes a bounded assignment generation, reads back its exact assignment
+frontier, and on pull requests binds the deterministic synthetic-merge identity
+through `decide_integration`. The retained
+`hepta.control-engineering-product-execution.v1` receipt records source/tested
+commit and tree identities, the durable generation/frontier identity, ordered
+merge parents when applicable, and an explicit zero authority ceiling. It never
+contains credentials and never grants runtime, merge, activation, promotion or
+release authority.
+
+Operational failure and recovery are fail-closed:
+
+- a Bubblewrap admission or namespace failure fails `engineering-sandbox` and
+  therefore blocks product-receipt issuance;
+- source, tree or ordered-parent drift fails the product caller rather than
+  rebinding a stale result;
+- a failed workspace/package qualification blocks the downstream product caller;
+- registry/caller/test drift is rejected by
+  `scripts/hepta_source_registry_closure.py` and implementation-map verification;
+- recovery always uses a new exact candidate SHA and new CI execution. A failed
+  or stale receipt is never edited or promoted into a passing receipt.
+
+For the current repository caller the SQLite database is intentionally disposable;
+the durable operational evidence is the exact CI log plus the uploaded product
+receipt, retained by the workflow for 30 days. A future long-lived deployment of
+the SQLite owner must add target-specific backup/restore, WAL sizing, audit
+anchoring, availability and restore-drill evidence before activation. Those
+requirements are not satisfied by copying the disposable CI database.
+
+Independent reviewer key custody, authorized target-host attachment, canary,
+promotion, release and rollback selection remain external gates. A repository
+administrator or workflow token is not automatically an independent reviewer or
+deployment authority.
+
 ## Local CLI
 
 From the repository root, use the module without installing dependencies:

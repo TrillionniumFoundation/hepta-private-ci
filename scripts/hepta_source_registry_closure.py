@@ -114,6 +114,93 @@ def _declared_roots(module: dict[str, Any]) -> tuple[str, ...]:
     return tuple(roots)
 
 
+PRODUCTION_EVIDENCE_SCHEMA = "hepta.module-production-implementation-evidence.v1"
+
+
+def _production_implementation_proved(module_id: str) -> bool:
+    """Return the repository-verifiable production implementation fact."""
+    path = ROOT / "docs" / "modules" / module_id / "PRODUCTION_IMPLEMENTATION.json"
+    if not path.is_file():
+        return False
+    document = _load_json(path)
+    if document.get("schema") != PRODUCTION_EVIDENCE_SCHEMA or document.get("schemaVersion") != 1:
+        raise RegistryClosureError(f"invalid production implementation evidence schema: {module_id}")
+    if document.get("module") != module_id:
+        raise RegistryClosureError(f"production implementation evidence identity mismatch: {module_id}")
+
+    caller = document.get("productCaller")
+    if not isinstance(caller, dict):
+        raise RegistryClosureError(f"production implementation caller is missing: {module_id}")
+    for field in ("path", "job", "pythonModule"):
+        if not isinstance(caller.get(field), str) or not caller[field]:
+            raise RegistryClosureError(f"production implementation caller {field} is invalid: {module_id}")
+    upstream = caller.get("upstreamRequiredJobs")
+    if not isinstance(upstream, list) or not upstream or not all(isinstance(item, str) and item for item in upstream):
+        raise RegistryClosureError(f"production implementation upstream jobs are invalid: {module_id}")
+    if len(upstream) != len(set(upstream)):
+        raise RegistryClosureError(f"production implementation upstream jobs contain duplicates: {module_id}")
+
+    workflow_path = ROOT / caller["path"]
+    if not workflow_path.is_file():
+        raise RegistryClosureError(f"production implementation caller workflow is missing: {module_id}")
+    workflow_text = workflow_path.read_text(encoding="utf-8")
+    if f"  {caller['job']}:" not in workflow_text:
+        raise RegistryClosureError(f"production implementation caller job is not registered: {module_id}")
+    if caller["pythonModule"] not in workflow_text:
+        raise RegistryClosureError(f"production implementation Python caller is not invoked: {module_id}")
+    for job in upstream:
+        if job not in workflow_text:
+            raise RegistryClosureError(f"production implementation upstream job is not wired: {module_id}:{job}")
+
+    entrypoints = document.get("implementationEntrypoints")
+    if not isinstance(entrypoints, list) or not entrypoints:
+        raise RegistryClosureError(f"production implementation entrypoints are missing: {module_id}")
+    for entrypoint in entrypoints:
+        if not isinstance(entrypoint, dict):
+            raise RegistryClosureError(f"production implementation entrypoint is invalid: {module_id}")
+        source = entrypoint.get("path")
+        symbol = entrypoint.get("symbol")
+        if not isinstance(source, str) or not source or not isinstance(symbol, str) or not symbol:
+            raise RegistryClosureError(f"production implementation entrypoint is incomplete: {module_id}")
+        source_path = ROOT / source
+        if not source_path.is_file():
+            raise RegistryClosureError(f"production implementation entrypoint source is missing: {module_id}:{source}")
+        if symbol not in source_path.read_text(encoding="utf-8"):
+            raise RegistryClosureError(f"production implementation entrypoint symbol is missing: {module_id}:{symbol}")
+
+    tests = document.get("productTests")
+    if not isinstance(tests, list) or not tests or len(tests) != len(set(tests)):
+        raise RegistryClosureError(f"production implementation product tests are invalid: {module_id}")
+    for test in tests:
+        if not isinstance(test, str) or not test or not (ROOT / test).is_file():
+            raise RegistryClosureError(f"production implementation product test is missing: {module_id}:{test}")
+
+    runtime = document.get("runtimeRequirements")
+    if not isinstance(runtime, dict):
+        raise RegistryClosureError(f"production implementation runtime requirements are missing: {module_id}")
+    strong_job = runtime.get("strongSandboxJob")
+    if runtime.get("operatingSystem") != "linux" or runtime.get("bubblewrapRequired") is not True:
+        raise RegistryClosureError(f"production implementation strong sandbox requirement is invalid: {module_id}")
+    if not isinstance(strong_job, str) or strong_job not in upstream:
+        raise RegistryClosureError(f"production implementation strong sandbox job is not upstream: {module_id}")
+    if "HEPTA_REQUIRE_STRONG_SANDBOX" not in workflow_text or "bubblewrap" not in workflow_text:
+        raise RegistryClosureError(f"production implementation strong sandbox enforcement is missing: {module_id}")
+
+    boundary = document.get("authorityBoundary")
+    denied = (
+        "runtimeAuthority",
+        "mergeAuthority",
+        "promotionAuthority",
+        "releaseAuthority",
+        "independentAcceptance",
+        "activation",
+        "externalEffectAuthority",
+    )
+    if not isinstance(boundary, dict) or any(boundary.get(field) is not False for field in denied):
+        raise RegistryClosureError(f"production implementation authority boundary is widened: {module_id}")
+    return True
+
+
 def _write_json(
     path: Path,
     document: dict[str, Any],
@@ -389,15 +476,16 @@ def normalize() -> bool:
                     f"materialized source root is missing: {root}"
                 )
 
+        production_implementation = _production_implementation_proved(module_id)
         module["sourceStatus"] = SOURCE_STATUS
         module["source_root_present"] = True
-        module["production_implementation"] = False
+        module["production_implementation"] = production_implementation
         module["sourceEvidenceRoots"] = list(expected_roots)
         module["missingDeclaredRoots"] = []
 
         binding["sourceStatus"] = SOURCE_STATUS
         binding["source_root_present"] = True
-        binding["production_implementation"] = False
+        binding["production_implementation"] = production_implementation
         binding["existingDeclaredRoots"] = list(expected_roots)
         binding["sourceEvidenceRoots"] = list(expected_roots)
         binding["missingDeclaredRoots"] = []
@@ -461,8 +549,9 @@ def verify() -> list[str]:
         return [str(error)]
 
     bootstrap_packages: dict[str, str] = {}
-    # Presence of a declared root is a repository fact. It must never be
-    # interpreted as a production caller or executable product implementation.
+    # Presence of a declared root is a repository fact. Production
+    # implementation is a separate evidence-backed fact and never follows from
+    # source presence alone.
     for module_id, module in modules_by_id.items():
         binding = bindings_by_id.get(module_id)
         if binding is None:
@@ -506,9 +595,14 @@ def verify() -> list[str]:
             failures.append(f"module source status is not closed: {module_id}")
         if module.get("source_root_present") is not True:
             failures.append(f"module source root is not present: {module_id}")
-        if module.get("production_implementation") is not False:
+        try:
+            expected_production_implementation = _production_implementation_proved(module_id)
+        except RegistryClosureError as error:
+            failures.append(str(error))
+            expected_production_implementation = False
+        if module.get("production_implementation") is not expected_production_implementation:
             failures.append(
-                f"module production implementation is overstated: {module_id}"
+                f"module production implementation evidence mismatch: {module_id}"
             )
         if module.get("sourceEvidenceRoots") != list(expected_roots):
             failures.append(f"module source evidence roots are incorrect: {module_id}")
@@ -519,9 +613,9 @@ def verify() -> list[str]:
             failures.append(f"binding source status is not closed: {module_id}")
         if binding.get("source_root_present") is not True:
             failures.append(f"binding source root is not present: {module_id}")
-        if binding.get("production_implementation") is not False:
+        if binding.get("production_implementation") is not expected_production_implementation:
             failures.append(
-                f"binding production implementation is overstated: {module_id}"
+                f"binding production implementation evidence mismatch: {module_id}"
             )
         if binding.get("declaredRoots") != list(expected_roots):
             failures.append(f"binding declared roots are incorrect: {module_id}")

@@ -17,8 +17,8 @@
     "tools/hepta-engineering-control"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productionImplementation": true,
+  "productCallerState": "repository_product_caller_bound",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -56,21 +56,40 @@
       "designOperation": "debiansandboxadapter",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "build_product_receipt",
+      "nativeSymbol": "build_product_receipt",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
+      "state": "repository_product_caller_bound",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_product_gate.py"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "build_product_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "control_engineering_v2.control_plane.EngineeringStore.schedule_ready_packages",
+        "hepta_engineering_control.decide_integration"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Keep the repository CI caller bound to exact source and deterministic synthetic-merge identities.",
+    "Preserve the strong Linux/Bubblewrap qualification prerequisite before product receipt issuance."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "independent semantic review and protected reviewer identity",
+    "authorized target-host deployment and operator acceptance",
+    "canary, promotion, release, rollback witness, and longitudinal operation"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,

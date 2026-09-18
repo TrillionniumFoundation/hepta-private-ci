@@ -31,6 +31,7 @@ class MappingTests(unittest.TestCase):
         self.assertEqual(row["writerDomains"], ["facts"])
         self.assertEqual(row["organs"], ["memory"])
         self.assertIsNone(row["hostBinding"])
+        self.assertFalse(row["repositoryProductImplementation"])
         self.assertFalse(row["productionCallerVerified"])
         self.assertEqual(result["dataDomains"][0]["authoritativeWriter"], "store")
 
@@ -115,6 +116,13 @@ class MappingTests(unittest.TestCase):
             run("commit", "-m", "fixture")
             head = run("rev-parse", "HEAD").decode().strip()
             first = inventory(root, head)
+            bound = inventory(root, head, source=head, mode="source-head")
+            self.assertEqual(bound["sourceCommit"], head)
+            self.assertEqual(bound["testedCommit"], head)
+            self.assertEqual(bound["sourceTree"], bound["testedTree"])
+            self.assertEqual(bound["orderedMergeParents"], [])
+            with self.assertRaises(InventoryError):
+                inventory(root, head, source="f" * 40, mode="source-head")
             package.write_text("malformed dirty content")
             (root / "docs/data/DATA_AUTHORITY.json").write_text("bad")
             self.assertEqual(first, inventory(root, head))
