@@ -106,7 +106,9 @@ impl std::fmt::Display for ObjectiveProjectionError {
             }
             Self::InvalidDigest(field) => write!(formatter, "invalid {field} digest"),
             Self::FieldTooLarge(field) => write!(formatter, "{field} exceeds V1 encoded bound"),
-            Self::EncodedTooLarge => formatter.write_str("ObjectiveFunctionV1 exceeds 262144 bytes"),
+            Self::EncodedTooLarge => {
+                formatter.write_str("ObjectiveFunctionV1 exceeds 262144 bytes")
+            }
             Self::Encoding => formatter.write_str("ObjectiveFunctionV1 JSON encoding failed"),
             Self::NonCanonicalEncoding => {
                 formatter.write_str("ObjectiveFunctionV1 bytes are not canonical")
