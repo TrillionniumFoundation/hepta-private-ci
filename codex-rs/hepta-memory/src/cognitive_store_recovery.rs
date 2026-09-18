@@ -23,12 +23,19 @@ use sqlx::SqliteConnection;
 use sqlx::TypeInfo;
 use sqlx::ValueRef;
 
-use super::COGNITIVE_DB_FILENAME;
 use super::CognitiveStore;
 use super::CognitiveStoreError;
+use super::CognitiveStoreOpenGuard;
+use super::protect_database_file;
+use super::publish_active_database;
+use super::recovered_database_filename;
+use super::resolve_active_database_path;
+use super::verify_store;
 use super::REQUIRED_SCHEMA_OBJECTS;
 use super::REQUIRED_SCHEMA_ORACLE_SHA256;
 use super::unavailable;
+use crate::ProductionAuthorityLease;
+use crate::ProductionAuthorityVerifier;
 use crate::framing::frame_part;
 
 #[path = "cognitive_store_recovery_read_only.rs"]
@@ -56,8 +63,9 @@ pub struct CognitiveRecoveryAnchor {
 
 /// Current recovery disposition supplied by the trusted host. Revocation wins
 /// before any filesystem access. An exact witness is an integrity input, not a
-/// grant. Cold-image reads require an exact comparison; writer recovery remains
-/// unavailable until a descriptor-safe writer backend and fence exist.
+/// grant. Writable recovery additionally requires the externally verified
+/// production authority lease supplied to `open_with_recovery`; its
+/// grant-bound fencing digest is part of the recovered generation identity.
 pub enum CognitiveRecoveryRequirement<'a> {
     ExactCurrentCut(&'a CognitiveRecoveryAnchor),
     Revoked,
@@ -95,28 +103,208 @@ impl CognitiveStore {
         Ok(anchor)
     }
 
-    /// Validate an existing database's filesystem identity, then fail closed.
+    /// Recover one exact current owner cut into a new writable generation.
     ///
-    /// The current state backend has no descriptor-backed SQLite VFS, current
-    /// writer-fence input, or non-reconnecting connection. Consequently even
-    /// an exact current-cut witness cannot enable recovery. This function never
-    /// opens SQLite, begins a transaction, queries state, or mutates sidecars.
-    pub async fn open_with_recovery(
+    /// Source SQLite paths are never reopened by SQLite. A shared lock is held
+    /// by every ordinary `CognitiveStore::open`; recovery obtains the
+    /// corresponding exclusive lock, captures database/WAL/journal bytes from
+    /// retained descriptors, and materializes those bytes into a fresh private
+    /// generation. SQLite may recover the COPY, never the suspect source.
+    ///
+    /// The candidate generation becomes active only after full schema/integrity
+    /// verification, exact current-cut equality, a FULL checkpoint, and
+    /// independent production-authority verification. Activation is one atomic
+    /// pointer rename; the predecessor database is left untouched.
+    pub async fn open_with_recovery<V>(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
-    ) -> Result<Self, CognitiveRecoveryError> {
-        validate_requirement(layout, requirement)?;
-        let path = layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
-        let sqlite_home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
+        authority: &ProductionAuthorityLease,
+        verifier: &V,
+    ) -> Result<Self, CognitiveRecoveryError>
+    where
+        V: ProductionAuthorityVerifier + ?Sized,
+    {
+        let expected = validate_requirement(layout, requirement)?;
+        verifier
+            .verify(authority, layout.agent_id())
+            .map_err(CognitiveRecoveryError::AccessDenied)?;
+        authority
+            .validate_for_agent(layout.agent_id())
+            .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
+        let writer_fence = authority
+            .fencing_token_digest()
+            .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))?;
+
+        let root = layout.cognitive_root();
+        let canonical_root = super::canonical_path_without_redirection(root)
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
+            .ok_or_else(|| {
+                CognitiveRecoveryError::Unavailable(
+                    "cognitive recovery root does not exist".to_string(),
+                )
+            })?;
+        if canonical_root != root {
+            return Err(CognitiveRecoveryError::Indeterminate(
+                "cognitive recovery root is redirected".to_string(),
+            ));
+        }
+        let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
+            .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+        let source_path = resolve_active_database_path(&canonical_root)
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let sqlite_home = AbsolutePathBuf::try_from(canonical_root.clone())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
-        let guard = SqliteConfig::from_sqlite_home(sqlite_home)
-            .bind_existing_recovery_database(&path)
+        let config = SqliteConfig::from_sqlite_home(sqlite_home);
+        let source_guard = config
+            .bind_existing_recovery_database(&source_path)
             .map_err(recovery_error)?;
-        guard
-            .verify_inspection_unchanged()
+
+        let candidate = canonical_root.join(recovered_database_filename(expected, &writer_fence));
+        config
+            .materialize_identity_bound_recovery_copy(&source_guard, &candidate)
             .map_err(recovery_error)?;
-        Err(recovery_error(SqliteRecoveryError::Unavailable))
+
+        let result = async {
+            let pool = config
+                .open_durable_evidence_pool(&candidate)
+                .await
+                .map_err(recovery_error)?;
+            let authenticated = async {
+                verify_store(&pool, layout.agent_id())
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+                let mut transaction = pool
+                    .begin_with("BEGIN IMMEDIATE")
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+                let observed = capture(&mut transaction, layout.agent_id())
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+                if observed != *expected {
+                    return Err(CognitiveRecoveryError::AccessDenied(
+                        "recovery candidate differs from independently retained current cut"
+                            .to_string(),
+                    ));
+                }
+                let integrity: Vec<String> = sqlx::query_scalar("PRAGMA integrity_check(1)")
+                    .fetch_all(&mut *transaction)
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+                if integrity != ["ok"] {
+                    return Err(CognitiveRecoveryError::Indeterminate(
+                        "recovery candidate failed SQLite integrity_check".to_string(),
+                    ));
+                }
+                transaction
+                    .commit()
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+
+                sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+                    .execute(&pool)
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+                let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode=DELETE")
+                    .fetch_one(&pool)
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+                if !journal_mode.eq_ignore_ascii_case("delete") {
+                    return Err(CognitiveRecoveryError::Unavailable(
+                        "recovery candidate could not checkpoint to a single-file cut".to_string(),
+                    ));
+                }
+                Ok(())
+            }
+            .await;
+            if let Err(error) = authenticated {
+                pool.close().await;
+                return Err(error);
+            }
+            pool.close().await;
+
+            cleanup_candidate_sidecars(&candidate)?;
+            protect_database_file(&candidate)
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            std::fs::File::open(&candidate)
+                .and_then(|file| file.sync_all())
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            std::fs::File::open(&canonical_root)
+                .and_then(|directory| directory.sync_all())
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+
+            let pool = config
+                .open_durable_evidence_pool(&candidate)
+                .await
+                .map_err(recovery_error)?;
+            let final_check = async {
+                verify_store(&pool, layout.agent_id())
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+                let mut transaction = pool
+                    .begin_with("BEGIN IMMEDIATE")
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+                let observed = capture(&mut transaction, layout.agent_id())
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+                transaction
+                    .commit()
+                    .await
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+                if observed != *expected {
+                    return Err(CognitiveRecoveryError::Indeterminate(
+                        "recovered generation changed during checkpoint/reopen".to_string(),
+                    ));
+                }
+                Ok(())
+            }
+            .await;
+            if let Err(error) = final_check {
+                pool.close().await;
+                return Err(error);
+            }
+
+            publish_active_database(&canonical_root, &candidate)
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            let open_guard = exclusive_guard
+                .downgrade_shared()
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            Ok(CognitiveStore {
+                pool,
+                owner_agent_id: layout.agent_id().clone(),
+                path: candidate.clone(),
+                _open_guard: Some(open_guard),
+            })
+        }
+        .await;
+
+        if result.is_err() {
+            cleanup_recovery_candidate(&candidate);
+        }
+        result
     }
+}
+
+fn cleanup_candidate_sidecars(path: &std::path::Path) -> Result<(), CognitiveRecoveryError> {
+    for suffix in ["-wal", "-shm", "-journal"] {
+        let mut name = path.as_os_str().to_os_string();
+        name.push(suffix);
+        match std::fs::remove_file(std::path::PathBuf::from(name)) {
+            Ok(()) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => {
+                return Err(CognitiveRecoveryError::Unavailable(format!(
+                    "cannot remove recovered SQLite sidecar: {error}"
+                )));
+            }
+        }
+    }
+    Ok(())
+}
+
+fn cleanup_recovery_candidate(path: &std::path::Path) {
+    let _ = cleanup_candidate_sidecars(path);
+    let _ = std::fs::remove_file(path);
 }
 
 fn validate_requirement<'a>(
