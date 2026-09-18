@@ -226,6 +226,37 @@ impl DurableFinalHoldoutJournalV1 {
             head: self.journal.head_digest(),
         }
     }
+
+    /// Validate a prospective consume without mutating the journal. This is
+    /// crate-private so the multi-host fenced owner can reserve an externally
+    /// linearizable fence only after deterministic semantic/capacity checks pass.
+    pub(crate) fn preview_consume(
+        &self,
+        expected: HoldoutAnchorV1,
+        plan: &CrossFoldPlanReceiptV1,
+    ) -> Result<FinalHoldoutJournalReceiptV1, DurableHoldoutError> {
+        if self.poisoned {
+            return Err(DurableHoldoutError::Poisoned);
+        }
+        if expected != self.anchor() {
+            return Err(DurableHoldoutError::Conflict);
+        }
+        if self.file.metadata()?.len() != self.length {
+            return Err(DurableHoldoutError::Indeterminate);
+        }
+        let mut candidate = self.journal.clone();
+        let receipt = candidate
+            .consume(expected.head, plan)
+            .map_err(|_| DurableHoldoutError::Semantic)?;
+        if receipt.disposition == HoldoutUseDispositionV1::Recorded {
+            let payload = encode_holdout_plan(plan).map_err(|_| DurableHoldoutError::Semantic)?;
+            let length = self.length + 4 + payload.len() as u64 + 32;
+            if payload.len() > MAX_FRAME || length > MAX_BYTES {
+                return Err(DurableHoldoutError::Capacity);
+            }
+        }
+        Ok(receipt)
+    }
 }
 
 fn acquire(file: &File, binding: Digest32) -> Result<(), DurableHoldoutError> {
