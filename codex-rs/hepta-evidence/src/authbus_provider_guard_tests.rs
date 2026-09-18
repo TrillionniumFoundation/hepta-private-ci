@@ -56,7 +56,10 @@ impl ProviderEffectAdapter for GuardProbeAdapter {
         let result = self.dispatch_result.clone();
         let observed = Arc::clone(&self.saw_reserved_before_dispatch);
         Box::pin(async move {
-            let snapshot = store.quota_snapshot(&quota_key).await.expect("quota snapshot");
+            let snapshot = store
+                .quota_snapshot(&quota_key)
+                .await
+                .expect("quota snapshot");
             observed.store(snapshot.reserved == expected, Ordering::SeqCst);
             result
         })
@@ -121,9 +124,7 @@ fn ack(intent: &ProviderEffectIntent, status: ProviderEffectAckStatus) -> Provid
     )
 }
 
-async fn provision(
-    store: &HeptaEvidenceStore,
-) -> (StableId, StableId, StableId, Digest32, u64) {
+async fn provision(store: &HeptaEvidenceStore) -> (StableId, StableId, StableId, Digest32, u64) {
     let principal = id("principal:guard");
     let action = id("action:provider");
     let quota = id("quota:guard");
@@ -178,7 +179,11 @@ fn admission(
 #[tokio::test]
 async fn guarded_dispatch_reserves_before_adapter_and_holds_completed_cost_until_settlement() {
     let temp = TempDir::new().expect("temp");
-    let store = Arc::new(HeptaEvidenceStore::open(&config(&temp)).await.expect("store"));
+    let store = Arc::new(
+        HeptaEvidenceStore::open(&config(&temp))
+            .await
+            .expect("store"),
+    );
     let (principal, action, quota, scope, end) = provision(&store).await;
     let intent = intent("guarded-completed");
     let completed = ack(&intent, ProviderEffectAckStatus::Completed);
@@ -191,7 +196,14 @@ async fn guarded_dispatch_reserves_before_adapter_and_holds_completed_cost_until
         lookup_result: ProviderEffectLookup::Ack(completed),
         saw_reserved_before_dispatch: Arc::clone(&observed),
     };
-    let request = admission(intent.key.as_str(), principal, action, quota.clone(), scope, end);
+    let request = admission(
+        intent.key.as_str(),
+        principal,
+        action,
+        quota.clone(),
+        scope,
+        end,
+    );
 
     let receipt = store
         .dispatch_provider_effect_guarded_qualification(&adapter, &intent, &request)
@@ -220,7 +232,11 @@ async fn guarded_dispatch_reserves_before_adapter_and_holds_completed_cost_until
 #[tokio::test]
 async fn terminal_rejected_ack_releases_reserved_quota_without_consumption() {
     let temp = TempDir::new().expect("temp");
-    let store = Arc::new(HeptaEvidenceStore::open(&config(&temp)).await.expect("store"));
+    let store = Arc::new(
+        HeptaEvidenceStore::open(&config(&temp))
+            .await
+            .expect("store"),
+    );
     let (principal, action, quota, scope, end) = provision(&store).await;
     let intent = intent("guarded-rejected");
     let rejected = ack(&intent, ProviderEffectAckStatus::Rejected);
@@ -233,7 +249,14 @@ async fn terminal_rejected_ack_releases_reserved_quota_without_consumption() {
         lookup_result: ProviderEffectLookup::Ack(rejected),
         saw_reserved_before_dispatch: Arc::clone(&observed),
     };
-    let request = admission(intent.key.as_str(), principal, action, quota.clone(), scope, end);
+    let request = admission(
+        intent.key.as_str(),
+        principal,
+        action,
+        quota.clone(),
+        scope,
+        end,
+    );
 
     let receipt = store
         .dispatch_provider_effect_guarded_qualification(&adapter, &intent, &request)
@@ -242,14 +265,21 @@ async fn terminal_rejected_ack_releases_reserved_quota_without_consumption() {
     assert!(observed.load(Ordering::SeqCst));
     assert_eq!(receipt.reservation.state, ReservationState::Cancelled);
     let quota = store.quota_snapshot(&quota).await.expect("quota released");
-    assert_eq!((quota.reserved, quota.consumed, quota.available()), (0, 0, 10));
+    assert_eq!(
+        (quota.reserved, quota.consumed, quota.available()),
+        (0, 0, 10)
+    );
 }
 
 
 #[tokio::test]
 async fn guarded_dispatch_rejects_operation_identity_drift_before_reserving_or_sending() {
     let temp = TempDir::new().expect("temp");
-    let store = Arc::new(HeptaEvidenceStore::open(&config(&temp)).await.expect("store"));
+    let store = Arc::new(
+        HeptaEvidenceStore::open(&config(&temp))
+            .await
+            .expect("store"),
+    );
     let (principal, action, quota, scope, end) = provision(&store).await;
     let intent = intent("guarded-identity-drift");
     let observed = Arc::new(AtomicBool::new(false));
@@ -278,5 +308,8 @@ async fn guarded_dispatch_rejects_operation_identity_drift_before_reserving_or_s
     ));
     assert!(!observed.load(Ordering::SeqCst));
     let quota = store.quota_snapshot(&quota).await.expect("quota unchanged");
-    assert_eq!((quota.reserved, quota.consumed, quota.available()), (0, 0, 10));
+    assert_eq!(
+        (quota.reserved, quota.consumed, quota.available()),
+        (0, 0, 10)
+    );
 }
