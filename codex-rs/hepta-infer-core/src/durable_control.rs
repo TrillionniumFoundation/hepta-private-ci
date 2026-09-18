@@ -9,6 +9,8 @@ use std::fs::{self};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -183,6 +185,31 @@ pub struct DurableInferenceControl {
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
+    cached_stamp: Option<FileStamp>,
+    archive_digest: Option<String>,
+    archive_stamp: Option<FileStamp>,
+    replay_stats: JournalReplayStats,
+}
+
+/// Local work counters, not a throughput claim or a durable fact.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct JournalReplayStats {
+    pub full_replays: u64,
+    pub replayed_bytes: u64,
+    pub unchanged_reuses: u64,
+}
+
+/// A cache discriminator for cooperating writers in a host-owned directory.
+/// This is not authentication against a privileged filesystem writer. Non-Unix
+/// platforms deliberately take the full-replay path rather than trust mtimes.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct FileStamp {
+    device: u64,
+    inode: u64,
+    length: u64,
+    modified: (i64, i64),
+    changed: (i64, i64),
+    mode: u32,
 }
 
 impl DurableInferenceControl {
@@ -201,10 +228,11 @@ impl DurableInferenceControl {
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
         }
-        let file = options.open(&path)?;
-        // A stable sidecar lock survives journal compaction/rename. Lock only
-        // while replaying or mutating; model/provider execution never holds it.
+        // Lock BEFORE resolving the journal inode: a peer may publish a
+        // compacted generation between open and lock acquisition otherwise.
         let lock_file = acquire_writer_lock(&path)?;
+        let file = options.open(&path)?;
+        validate_regular_file(&file)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
@@ -254,13 +282,16 @@ impl DurableInferenceControl {
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
-            {
+            if records.len() + native.records.len() > capacity {
                 return Err(Error::CapacityExceeded);
             }
         }
-        verify_compaction_archive(&path, compaction_archive_digest.as_deref())?;
+        if records.keys().any(|id| native.records.contains_key(id)) {
+            return Err(Error::Conflict);
+        }
+        let archive_stamp =
+            verify_compaction_archive(&path, compaction_archive_digest.as_deref())?;
+        let cached_stamp = file_stamp(&file)?;
         #[cfg(unix)]
         {
             let parent = path
@@ -278,6 +309,14 @@ impl DurableInferenceControl {
             capacity,
             journal_bytes,
             poisoned: false,
+            cached_stamp,
+            archive_digest: compaction_archive_digest,
+            archive_stamp,
+            replay_stats: JournalReplayStats {
+                full_replays: 1,
+                replayed_bytes: journal_bytes,
+                unchanged_reuses: 0,
+            },
         })
     }
 
@@ -375,6 +414,10 @@ impl DurableInferenceControl {
         &self.path
     }
 
+    pub fn replay_stats(&self) -> JournalReplayStats {
+        self.replay_stats
+    }
+
     /// The active journal reserves enough headroom for dispatch/cancel metadata
     /// plus one maximal terminal observation. Callers may compact before new
     /// admission when this returns true; compaction preserves the full previous
@@ -396,13 +439,35 @@ impl DurableInferenceControl {
         // stable sidecar fence is held so replay and the next append target the
         // same current inode.
         let mut options = OpenOptions::new();
-        options.create(true).append(true).read(true);
+        options.append(true).read(true);
         #[cfg(unix)]
         {
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
         }
         let current_file = options.open(&self.path)?;
+        validate_regular_file(&current_file)?;
+        let current_stamp = file_stamp(&current_file)?;
+        if let (Some(cached), Some(current)) = (self.cached_stamp, current_stamp)
+            && cached == current
+        {
+            // Only reuse a cut whose inode, length, mtime AND ctime are
+            // unchanged. Peer appends, same-size edits and generation changes
+            // all take full replay. Archive disappearance still fails closed.
+            if let Some(digest) = &self.archive_digest {
+                let archive = File::open(archive_path(&self.path, digest)?)?;
+                validate_private_file(&archive)?;
+                let stamp = file_stamp(&archive)?;
+                if stamp.is_none() || stamp != self.archive_stamp {
+                    self.archive_stamp =
+                        verify_compaction_archive(&self.path, Some(digest))?;
+                }
+            }
+            self.file = current_file;
+            self.replay_stats.unchanged_reuses =
+                self.replay_stats.unchanged_reuses.saturating_add(1);
+            return Ok(lock_file);
+        }
 
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
@@ -428,8 +493,7 @@ impl DurableInferenceControl {
             if line.last() == Some(&b'\r') {
                 line.pop();
             }
-            let line =
-                std::str::from_utf8(&line).map_err(|_| Error::CorruptJournal("utf8"))?;
+            let line = std::str::from_utf8(&line).map_err(|_| Error::CorruptJournal("utf8"))?;
             if line.is_empty() {
                 continue;
             }
@@ -452,20 +516,25 @@ impl DurableInferenceControl {
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > self.capacity
-                || records.keys().any(|id| native.records.contains_key(id))
-            {
+            if records.len() + native.records.len() > self.capacity {
                 return Err(Error::CapacityExceeded);
             }
         }
-        verify_compaction_archive(
-            &self.path,
-            compaction_archive_digest.as_deref(),
-        )?;
+        if records.keys().any(|id| native.records.contains_key(id)) {
+            return Err(Error::Conflict);
+        }
+        let archive_stamp =
+            verify_compaction_archive(&self.path, compaction_archive_digest.as_deref())?;
         self.records = records;
         self.native = native;
         self.journal_bytes = journal_bytes;
         self.file = current_file;
+        self.cached_stamp = current_stamp;
+        self.archive_digest = compaction_archive_digest;
+        self.archive_stamp = archive_stamp;
+        self.replay_stats.full_replays = self.replay_stats.full_replays.saturating_add(1);
+        self.replay_stats.replayed_bytes =
+            self.replay_stats.replayed_bytes.saturating_add(journal_bytes);
         Ok(lock_file)
     }
 
@@ -476,76 +545,62 @@ impl DurableInferenceControl {
     /// replayable or releases their capacity.
     pub fn compact_with_archive(&mut self) -> Result<PathBuf, Error> {
         let _writer_fence = self.reload_locked()?;
-
-        let original = fs::read(&self.path)?;
-        let archive_digest = digest_hex(Digest32::of_bytes(&original));
+        let mut source = File::open(&self.path)?;
+        let archive_digest = digest_hex(Digest32::of_reader(&mut source, MAX_JOURNAL_BYTES)?);
         let archive = archive_path(&self.path, &archive_digest)?;
         if archive.exists() {
             verify_archive_file(&archive, &archive_digest)?;
         } else {
             let archive_tmp = sibling_temp_path(&archive, "tmp");
-            let mut archived = OpenOptions::new()
-                .create_new(true)
-                .write(true)
-                .open(&archive_tmp)?;
-            archived.write_all(&original)?;
+            let mut archived = fresh_private_temporary(&archive_tmp)?;
+            source.seek(SeekFrom::Start(0))?;
+            let copied = std::io::copy(&mut source.take(MAX_JOURNAL_BYTES + 1), &mut archived)?;
+            if copied > MAX_JOURNAL_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
             archived.flush()?;
             archived.sync_all()?;
+            verify_archive_file(&archive_tmp, &archive_digest)?;
             fs::rename(&archive_tmp, &archive)?;
-            let parent = self
-                .path
-                .parent()
-                .filter(|parent| !parent.as_os_str().is_empty())
-                .unwrap_or_else(|| Path::new("."));
-            File::open(parent)?.sync_all()?;
+            sync_parent(&self.path)?;
         }
 
-        let mut compacted = format!("{COMPACTION_PREFIX}{archive_digest}\n").into_bytes();
+        // Emit one bounded record at a time. Do not hold both the complete
+        // source stream and the complete checkpoint image in memory.
+        let tmp = sibling_temp_path(&self.path, "compact");
+        let mut compact_file = fresh_private_temporary(&tmp)?;
+        let mut compacted_bytes = 0;
+        write_checkpoint_line(
+            &mut compact_file,
+            &mut compacted_bytes,
+            &format!("{COMPACTION_PREFIX}{archive_digest}\n"),
+        )?;
         for record in self.records.values() {
             let json = serde_json::to_string(record)
                 .map_err(|_| Error::CorruptJournal("legacy checkpoint encode"))?;
-            let line = format!("{LEGACY_CHECKPOINT_PREFIX}{json}\n");
-            if line.len() > MAX_JOURNAL_LINE_BYTES {
-                return Err(Error::CapacityExceeded);
-            }
-            compacted.extend_from_slice(line.as_bytes());
+            write_checkpoint_line(
+                &mut compact_file,
+                &mut compacted_bytes,
+                &format!("{LEGACY_CHECKPOINT_PREFIX}{json}\n"),
+            )?;
         }
-        for line in self.native.checkpoint_lines()? {
-            if line.len() > MAX_JOURNAL_LINE_BYTES {
-                return Err(Error::CapacityExceeded);
-            }
-            compacted.extend_from_slice(line.as_bytes());
+        for line in self.native.checkpoint_lines() {
+            write_checkpoint_line(&mut compact_file, &mut compacted_bytes, &line?)?;
         }
-        if compacted.len() as u64 > MAX_JOURNAL_BYTES {
-            return Err(Error::CapacityExceeded);
-        }
-
-        let tmp = sibling_temp_path(&self.path, "compact");
-        let mut compact_file = OpenOptions::new()
-            .create(true)
-            .truncate(true)
-            .write(true)
-            .open(&tmp)?;
-        compact_file.write_all(&compacted)?;
         compact_file.flush()?;
         compact_file.sync_all()?;
-        fs::rename(&tmp, &self.path)?;
-        let parent = self
-            .path
-            .parent()
-            .filter(|parent| !parent.as_os_str().is_empty())
-            .unwrap_or_else(|| Path::new("."));
-        File::open(parent)?.sync_all()?;
 
-        let mut options = OpenOptions::new();
-        options.create(true).append(true).read(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.mode(0o600);
-        }
-        self.file = options.open(&self.path)?;
-        self.journal_bytes = compacted.len() as u64;
+        // Once publication is attempted, any I/O error requires reopen. Never
+        // continue through an old inode after an uncertain rename/dir fsync.
+        self.poisoned = true;
+        fs::rename(&tmp, &self.path)?;
+        sync_parent(&self.path)?;
+        self.file = OpenOptions::new().append(true).read(true).open(&self.path)?;
+        validate_private_file(&self.file)?;
+        self.cached_stamp = file_stamp(&self.file)?;
+        self.archive_stamp = verify_compaction_archive(&self.path, Some(&archive_digest))?;
+        self.archive_digest = Some(archive_digest);
+        self.journal_bytes = compacted_bytes;
         self.poisoned = false;
         Ok(archive)
     }
@@ -558,12 +613,18 @@ impl DurableInferenceControl {
         if let Some(existing) = self.validate_latest_event(&event)? {
             return Ok(existing);
         }
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
+        let request_id = event.request_id().to_string();
+        // Preparation copies only the affected record; the durable append
+        // still precedes publication and validation failures leave state alone.
+        let mut prepared = BTreeMap::new();
+        if let Some(record) = self.records.get(&request_id) {
+            prepared.insert(request_id.clone(), record.clone());
+        }
+        apply_event(&mut prepared, &event, /*replay*/ false)?;
+        let next = prepared.remove(&request_id).ok_or(Error::RequestNotFound)?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
-        let request_id = event.request_id().to_string();
-        self.records = next;
+        self.records.insert(request_id.clone(), next);
         let record = self
             .records
             .get(&request_id)
@@ -628,7 +689,10 @@ impl DurableInferenceControl {
             } => {
                 let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
                 require_revision(record, *expected_revision, /*replay*/ false)?;
-                if matches!(record.state, RequestState::Cancelled | RequestState::Cancelling) {
+                if matches!(
+                    record.state,
+                    RequestState::Cancelled | RequestState::Cancelling
+                ) {
                     return Ok(Some(receipt(record, /*idempotent*/ true)));
                 }
                 if record.state.terminal() {
@@ -697,6 +761,13 @@ impl DurableInferenceControl {
             return Err(error.into());
         }
         self.journal_bytes = next_bytes;
+        match file_stamp(&self.file) {
+            Ok(stamp) => self.cached_stamp = stamp,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        }
         Ok(())
     }
 }
@@ -742,22 +813,111 @@ fn archive_path(path: &Path, digest: &str) -> Result<PathBuf, Error> {
     Ok(path.with_file_name(format!("{file_name}.{ARCHIVE_SUFFIX_PREFIX}{digest}")))
 }
 
-fn verify_archive_file(path: &Path, expected_digest: &str) -> Result<(), Error> {
-    let bytes = fs::read(path)?;
-    if digest_hex(Digest32::of_bytes(&bytes)) != expected_digest {
-        return Err(Error::CorruptJournal("compaction archive digest"));
+fn validate_regular_file(file: &File) -> Result<(), Error> {
+    if !file.metadata()?.is_file() {
+        return Err(Error::InvalidIdentity("journal must be a regular file"));
     }
     Ok(())
 }
 
-fn verify_compaction_archive(path: &Path, expected_digest: Option<&str>) -> Result<(), Error> {
+fn validate_private_file(file: &File) -> Result<(), Error> {
+    validate_regular_file(file)?;
+    let metadata = file.metadata()?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if metadata.permissions().mode() & 0o077 != 0 {
+            return Err(Error::InvalidIdentity("journal must be owner-only"));
+        }
+    }
+    Ok(())
+}
+
+fn file_stamp(file: &File) -> Result<Option<FileStamp>, Error> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let metadata = file.metadata()?;
+        // Legacy journals may be readable with broader modes. They never
+        // earn a cached cut; native writes still require owner-only access.
+        if metadata.mode() & 0o077 != 0 {
+            return Ok(None);
+        }
+        Ok(Some(FileStamp {
+            device: metadata.dev(),
+            inode: metadata.ino(),
+            length: metadata.len(),
+            modified: (metadata.mtime(), metadata.mtime_nsec()),
+            changed: (metadata.ctime(), metadata.ctime_nsec()),
+            mode: metadata.mode(),
+        }))
+    }
+    #[cfg(not(unix))]
+    {
+        file.metadata()?;
+        Ok(None)
+    }
+}
+
+fn sync_parent(path: &Path) -> Result<(), Error> {
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    File::open(parent)?.sync_all()?;
+    Ok(())
+}
+
+fn fresh_private_temporary(path: &Path) -> Result<File, Error> {
+    // The caller holds the stable owner fence. A regular temporary left by a
+    // killed compactor is not authoritative history; never follow a symlink.
+    match fs::symlink_metadata(path) {
+        Ok(metadata) if metadata.is_file() => fs::remove_file(path)?,
+        Ok(_) => return Err(Error::InvalidIdentity("non-regular compaction temporary")),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Err(error) => return Err(error.into()),
+    }
+    let mut options = OpenOptions::new();
+    options.create_new(true).write(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    Ok(options.open(path)?)
+}
+
+fn write_checkpoint_line(file: &mut File, total: &mut u64, line: &str) -> Result<(), Error> {
+    let next = total
+        .checked_add(line.len() as u64)
+        .ok_or(Error::ArithmeticOverflow)?;
+    if line.len() > MAX_JOURNAL_LINE_BYTES || next > MAX_JOURNAL_BYTES {
+        return Err(Error::CapacityExceeded);
+    }
+    file.write_all(line.as_bytes())?;
+    *total = next;
+    Ok(())
+}
+
+fn verify_archive_file(path: &Path, expected_digest: &str) -> Result<Option<FileStamp>, Error> {
+    let mut file = File::open(path)?;
+    validate_private_file(&file)?;
+    if digest_hex(Digest32::of_reader(&mut file, MAX_JOURNAL_BYTES)?) != expected_digest {
+        return Err(Error::CorruptJournal("compaction archive digest"));
+    }
+    file_stamp(&file)
+}
+
+fn verify_compaction_archive(
+    path: &Path,
+    expected_digest: Option<&str>,
+) -> Result<Option<FileStamp>, Error> {
     let Some(expected_digest) = expected_digest else {
-        return Ok(());
+        return Ok(None);
     };
     let archive = archive_path(path, expected_digest)?;
     verify_archive_file(&archive, expected_digest)
 }
-
 
 fn validate_checkpoint_record(record: &RequestRecord) -> Result<(), Error> {
     validate_request(0, &record.request)?;
@@ -1199,3 +1359,7 @@ fn parse_u32(value: &str) -> Result<u32, Error> {
 #[cfg(test)]
 #[path = "durable_control_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_scalability_tests.rs"]
+mod scalability_tests;

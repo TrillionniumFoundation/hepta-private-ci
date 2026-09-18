@@ -118,6 +118,9 @@ pub struct NativeRunRecord {
 #[serde(deny_unknown_fields)]
 pub(super) struct NativeJournal {
     maximum_in_flight: Option<usize>,
+    /// Derived during replay. Never trusted from a checkpoint or wire payload.
+    #[serde(skip)]
+    active_count: usize,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
 }
 
@@ -166,13 +169,6 @@ impl DurableInferenceControl {
     ) -> Result<NativeRunRecord, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
-        }
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            if self.file.metadata()?.permissions().mode() & 0o077 != 0 {
-                return Err(Error::InvalidIdentity("native journal must be owner-only"));
-            }
         }
         let id = request.request_id.clone();
         self.commit_native(
@@ -277,7 +273,7 @@ impl DurableInferenceControl {
     }
 
     fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
-        // This exclusive owner serializes active calls. Leave room for bounded
+        // A short writer transaction serializes mutations. Leave room for bounded
         // dispatch/cancel metadata and the next maximal observed output before
         // admitting a new external execution. This is not an archival policy.
         if self.journal_bytes > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
@@ -289,21 +285,43 @@ impl DurableInferenceControl {
 
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
         let _writer_fence = self.reload_locked()?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if self.file.metadata()?.permissions().mode() & 0o077 != 0 {
+                return Err(Error::InvalidIdentity("native journal must be owner-only"));
+            }
+        }
         if let Some(existing) = self.validate_latest_native_event(&event)? {
             return Ok(existing);
         }
-        self.ensure_native_dispatch_space()?;
-        let mut next = self.native.clone();
+        // Headroom protects NEW dispatches. Terminal/cancel/reconciliation
+        // writes must still be allowed to use that reserved space.
+        if matches!(event, Event::Reserve { .. } | Event::Dispatch { .. }) {
+            self.ensure_native_dispatch_space()?;
+        }
+        let mut next = NativeJournal {
+            maximum_in_flight: self.native.maximum_in_flight,
+            active_count: self.native.active_count,
+            records: BTreeMap::new(),
+        };
+        if let Some(record) = self.native.records.get(request_id) {
+            next.records.insert(request_id.to_string(), record.clone());
+        }
         next.apply(event.clone())?;
+        let record = next
+            .records
+            .remove(request_id)
+            .ok_or(Error::RequestNotFound)?;
         let json =
             serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
         self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
-        self.native = next;
+        self.native.maximum_in_flight = next.maximum_in_flight;
+        self.native.active_count = next.active_count;
         self.native
             .records
-            .get(request_id)
-            .cloned()
-            .ok_or(Error::RequestNotFound)
+            .insert(request_id.to_string(), record.clone());
+        Ok(record)
     }
 
     fn validate_latest_native_event(&self, event: &Event) -> Result<Option<NativeRunRecord>, Error> {
@@ -334,16 +352,14 @@ impl DurableInferenceControl {
                     return Err(Error::CapacityExceeded);
                 }
             }
-            Event::Dispatch { request_id, dispatch } => {
-                if let Some(record) = self.native.records.get(request_id) {
-                    if record.state == NativeReservationState::Dispatching
-                        && record.dispatch.as_ref() == Some(dispatch)
-                    {
-                        return Ok(Some(record.clone()));
-                    }
-                }
-            }
-            Event::Started { request_id, turn_id } => {
+            // Dispatch is an execution claim, not a repeatable observation.
+            // A second successful claim could let a second caller send the
+            // same external effect. The state machine admits Reserved once.
+            Event::Dispatch { .. } => {}
+            Event::Started {
+                request_id,
+                turn_id,
+            } => {
                 if let Some(record) = self.native.records.get(request_id) {
                     if record.state == NativeReservationState::Running
                         && record.turn_id.as_ref() == Some(turn_id)
@@ -390,24 +406,25 @@ impl DurableInferenceControl {
 }
 
 impl NativeJournal {
-    pub(super) fn checkpoint_lines(&self) -> Result<Vec<String>, Error> {
-        let mut lines = Vec::with_capacity(self.records.len());
-        for record in self.records.values() {
+    pub(super) fn checkpoint_lines(&self) -> impl Iterator<Item = Result<String, Error>> + '_ {
+        self.records.values().map(|record| {
             let checkpoint = NativeCheckpointV1 {
                 maximum_in_flight: self.maximum_in_flight,
                 record: record.clone(),
             };
             let json = serde_json::to_string(&checkpoint)
                 .map_err(|_| Error::CorruptJournal("native checkpoint encode"))?;
-            lines.push(format!("{CHECKPOINT_PREFIX}{json}\n"));
-        }
-        Ok(lines)
+            Ok(format!("{CHECKPOINT_PREFIX}{json}\n"))
+        })
     }
 
     pub(super) fn replay_checkpoint(&mut self, json: &str) -> Result<(), Error> {
         let checkpoint: NativeCheckpointV1 = serde_json::from_str(json)
             .map_err(|_| Error::CorruptJournal("native checkpoint decode"))?;
-        if checkpoint.maximum_in_flight.is_some_and(|limit| !(1..=256).contains(&limit)) {
+        if checkpoint
+            .maximum_in_flight
+            .is_some_and(|limit| !(1..=256).contains(&limit))
+        {
             return Err(Error::CorruptJournal("native checkpoint capacity"));
         }
         if self
@@ -418,6 +435,7 @@ impl NativeJournal {
             return Err(Error::CorruptJournal("native checkpoint capacity drift"));
         }
         validate_checkpoint(&checkpoint.record)?;
+        let is_active = checkpoint.record.state != NativeReservationState::Released;
         if self
             .records
             .insert(
@@ -429,13 +447,8 @@ impl NativeJournal {
             return Err(Error::CorruptJournal("duplicate native checkpoint"));
         }
         self.maximum_in_flight = checkpoint.maximum_in_flight.or(self.maximum_in_flight);
-        if self.maximum_in_flight.is_some_and(|limit| {
-            self.records
-                .values()
-                .filter(|record| record.state != NativeReservationState::Released)
-                .count()
-                > limit
-        }) {
+        self.active_count += usize::from(is_active);
+        if self.maximum_in_flight.is_none_or(|limit| self.active_count > limit) {
             return Err(Error::CorruptJournal("native checkpoint in-flight capacity"));
         }
         Ok(())
@@ -472,16 +485,11 @@ impl NativeJournal {
             {
                 return Err(Error::Conflict);
             }
-            if self
-                .records
-                .values()
-                .filter(|record| record.state != NativeReservationState::Released)
-                .count()
-                >= maximum_in_flight
-            {
+            if self.active_count >= maximum_in_flight {
                 return Err(Error::CapacityExceeded);
             }
             self.maximum_in_flight = Some(maximum_in_flight);
+            self.active_count += 1;
             self.records.insert(
                 request.request_id.clone(),
                 NativeRunRecord {
@@ -506,6 +514,7 @@ impl NativeJournal {
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
+        let was_active = record.state != NativeReservationState::Released;
         match event {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
             Event::Dispatch { dispatch, .. } => {
@@ -556,6 +565,21 @@ impl NativeJournal {
             .revision
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
+        let is_active = record.state != NativeReservationState::Released;
+        if was_active && !is_active {
+            self.active_count = self
+                .active_count
+                .checked_sub(1)
+                .ok_or(Error::ArithmeticOverflow)?;
+        } else if !was_active && is_active {
+            self.active_count = self
+                .active_count
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
+            if self.maximum_in_flight.is_none_or(|limit| self.active_count > limit) {
+                return Err(Error::CapacityExceeded);
+            }
+        }
         Ok(())
     }
 }
