@@ -223,12 +223,18 @@ impl CognitiveStore {
         .fetch_one(&mut *transaction)
         .await
         .map_err(unavailable)?;
-        let graph_generation: Option<i64> =
-            sqlx::query_scalar("SELECT generation FROM kg_projection WHERE projection_scope = ?")
-                .bind(scope.projection_key())
-                .fetch_optional(&mut *transaction)
-                .await
-                .map_err(unavailable)?;
+        let graph_generation: Option<i64> = sqlx::query_scalar(
+            "SELECT p.generation
+             FROM kg_projection p
+             JOIN kg_projection_v2_publications v
+               ON v.projection_scope = p.projection_scope
+              AND v.generation = p.generation
+             WHERE p.projection_scope = ?",
+        )
+        .bind(scope.projection_key())
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
         let memory_frontier = rows.len() as u64;
         let mut tombstones = 0_u64;
         let mut previous: Option<MemoryRecord> = None;
