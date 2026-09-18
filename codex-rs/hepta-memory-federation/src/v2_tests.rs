@@ -260,6 +260,30 @@ async fn one_attempt_returns_bounded_partial_result() {
 }
 
 #[tokio::test]
+async fn empty_remote_store_may_report_zero_frontier() {
+    let query = query();
+    let mut response = terminal_response(&query);
+    response.items.clear();
+    response.observed_frontier = 0;
+    response.completeness = FederatedCompletenessV2::Empty;
+    response.response_digest = response.compute_response_digest();
+    let transport =
+        FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
+    let result = run(
+        &transport,
+        query.clone(),
+        &lease(&query),
+        &FixtureAuthority::current(&query),
+    )
+    .await
+    .expect("empty store is a valid terminal result");
+    assert!(result.items.is_empty());
+    assert_eq!(result.observed_frontier, Some(0));
+    assert_eq!(result.completeness, FederatedCompletenessV2::Empty);
+    assert_eq!(result.validity, FederatedValidityV2::Valid);
+}
+
+#[tokio::test]
 async fn nonterminal_attempt_is_explicitly_indeterminate_without_retry() {
     let query = query();
     let transport = FixtureTransport::immediate(FederationTransportResultV2::NonTerminal(
