@@ -48,28 +48,28 @@ fn digest(value: &str) -> Digest32 {
 fn fit(generation: u64, value: i64) -> TabularOperatorArtifactV1 {
     checked(
         fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
-        artifact_id: id(&format!("tabular-{generation}")),
-        producer_id: id("fixture-trainer"),
-        generation: checked(Generation::new(generation), "generation"),
-        objective_digest: digest("fixed-external-task"),
-        dataset_digest: digest(&format!("dataset-{generation}")),
-        sensor_core_digest: digest("fixed-grid"),
-        training_profile_digest: digest("strict-tabular"),
-        minimum_samples_per_cell: 2,
-        sensor_ids: vec![id("state")],
-        action_ids: vec![id("read")],
-        samples: [value - 2, value + 2]
-            .into_iter()
-            .enumerate()
-            .map(|(i, target)| TabularOperatorSampleV1 {
-                sample_id: id(&format!("sample-{i}")),
-                sensor_id: id("state"),
-                action_id: id("read"),
-                target: FixedQ32::from_raw(target),
-                evidence_digest: digest(&format!("fixture-observation-{generation}-{i}")),
-            })
-            .collect(),
-    }),
+            artifact_id: id(&format!("tabular-{generation}")),
+            producer_id: id("fixture-trainer"),
+            generation: checked(Generation::new(generation), "generation"),
+            objective_digest: digest("fixed-external-task"),
+            dataset_digest: digest(&format!("dataset-{generation}")),
+            sensor_core_digest: digest("fixed-grid"),
+            training_profile_digest: digest("strict-tabular"),
+            minimum_samples_per_cell: 2,
+            sensor_ids: vec![id("state")],
+            action_ids: vec![id("read")],
+            samples: [value - 2, value + 2]
+                .into_iter()
+                .enumerate()
+                .map(|(i, target)| TabularOperatorSampleV1 {
+                    sample_id: id(&format!("sample-{i}")),
+                    sensor_id: id("state"),
+                    action_id: id("read"),
+                    target: FixedQ32::from_raw(target),
+                    evidence_digest: digest(&format!("fixture-observation-{generation}-{i}")),
+                })
+                .collect(),
+        }),
         "strict learner",
     )
 }
@@ -136,7 +136,10 @@ fn worker() {
             registry_receipt: RegistrySnapshotReceipt {
                 binding: checked(request.binding.parse(), "binding"),
                 head_digest: checked(request.head.parse(), "head"),
-                file_digest: checked(request.snapshot_digest.parse(), "snapshot digest"),
+                file_digest: checked(
+                    request.snapshot_digest.parse(),
+                    "snapshot digest",
+                ),
                 records: request.records,
                 encoded_bytes: request.snapshot_bytes,
             },
@@ -153,8 +156,14 @@ fn worker() {
             let model = LoadedTabularOperatorV1::from_pinned_payload(
                 bytes.bytes(),
                 &TabularPayloadPinV1 {
-                    payload_digest: checked(request.payload_digest.parse(), "payload digest"),
-                    artifact_digest: checked(request.artifact_digest.parse(), "artifact digest"),
+                    payload_digest: checked(
+                        request.payload_digest.parse(),
+                        "payload digest",
+                    ),
+                    artifact_digest: checked(
+                        request.artifact_digest.parse(),
+                        "artifact digest",
+                    ),
                     objective_digest: digest("fixed-external-task"),
                     dataset_digest: digest(&format!("dataset-{}", request.generation)),
                     sensor_core_digest: digest("fixed-grid"),
