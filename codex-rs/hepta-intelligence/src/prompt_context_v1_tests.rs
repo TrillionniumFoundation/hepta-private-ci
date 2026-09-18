@@ -196,6 +196,7 @@ fn exercised_portfolio_compiles_as_atomic_trusted_context() {
         &portfolio,
         &exercise,
         &exercise_request,
+        &Accept,
         PromptContextPreparationRequestV1 {
             compilation_id: id("compilation:prompt"),
             serialization_id: id("serialization:prompt"),
@@ -243,6 +244,7 @@ fn invalidated_or_no_intervention_exercise_cannot_compile_prompt_context() {
         &portfolio,
         &exercise,
         &exercise_request,
+        &Accept,
         PromptContextPreparationRequestV1 {
             compilation_id: id("compilation:invalid"),
             serialization_id: id("serialization:invalid"),
