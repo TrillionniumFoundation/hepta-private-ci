@@ -10,10 +10,28 @@ CREATE TABLE matrix_dispatch_ledger (
     payload_digest TEXT NOT NULL CHECK (
         length(payload_digest) = 64 AND payload_digest NOT GLOB '*[^0-9a-f]*'
     ),
-    grant_payload_digest TEXT NOT NULL CHECK (
-        length(grant_payload_digest) = 64 AND grant_payload_digest NOT GLOB '*[^0-9a-f]*'
+    verified_grant_id TEXT,
+    verified_grant_payload_digest TEXT CHECK (
+        verified_grant_payload_digest IS NULL OR (
+            length(verified_grant_payload_digest) = 64
+            AND verified_grant_payload_digest NOT GLOB '*[^0-9a-f]*'
+        )
     ),
-    deadline_ms INTEGER NOT NULL CHECK (deadline_ms >= 0),
+    verified_grant_expires_at_ms INTEGER CHECK (
+        verified_grant_expires_at_ms IS NULL OR verified_grant_expires_at_ms > 0
+    ),
+    reconciliation_deadline_ms INTEGER NOT NULL CHECK (reconciliation_deadline_ms >= 0),
+    CHECK (
+        (
+            verified_grant_id IS NULL
+            AND verified_grant_payload_digest IS NULL
+            AND verified_grant_expires_at_ms IS NULL
+        ) OR (
+            verified_grant_id IS NOT NULL
+            AND verified_grant_payload_digest IS NOT NULL
+            AND verified_grant_expires_at_ms IS NOT NULL
+        )
+    ),
     state TEXT NOT NULL CHECK (
         state IN (
             'prepared', 'dispatched', 'accepted', 'indeterminate',

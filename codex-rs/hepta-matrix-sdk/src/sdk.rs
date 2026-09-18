@@ -369,6 +369,9 @@ impl MatrixOutboundTransport for MatrixSdkClient {
             session_generation: self.config.matrix_generation,
             authority_identity,
             authority_epoch: self.config.binding.revision,
+            verified_grant_id: None,
+            verified_grant_payload_digest: None,
+            verified_grant_expires_at_ms: None,
         })
     }
 

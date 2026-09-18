@@ -25,6 +25,11 @@ pub struct MatrixDispatchContext {
     pub session_generation: u64,
     pub authority_identity: String,
     pub authority_epoch: u64,
+    /// Populated only by a caller that has already consumed an independently
+    /// issued final-use grant. MatrixSdkClient currently supplies none.
+    pub verified_grant_id: Option<String>,
+    pub verified_grant_payload_digest: Option<String>,
+    pub verified_grant_expires_at_ms: Option<u64>,
 }
 
 pub trait MatrixOutboundTransport: Send + Sync {
@@ -135,9 +140,13 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             session_generation: context.session_generation,
             authority_identity: context.authority_identity,
             authority_epoch: context.authority_epoch,
-            payload_digest: payload_digest.clone(),
-            grant_payload_digest: payload_digest,
-            deadline_ms: record
+            payload_digest,
+            verified_grant_id: context.verified_grant_id,
+            verified_grant_payload_digest: context.verified_grant_payload_digest,
+            verified_grant_expires_at_ms: context.verified_grant_expires_at_ms,
+            // A retry/reconciliation horizon, deliberately not an authority
+            // lifetime. Real final-use grant expiry is stored separately.
+            reconciliation_deadline_ms: record
                 .created_at_ms
                 .checked_add(100 * 365 * 24 * 60 * 60 * 1_000)
                 .ok_or(OutboxDispatchError::Invalid)?,

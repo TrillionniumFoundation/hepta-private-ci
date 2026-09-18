@@ -21,8 +21,10 @@ pub struct SendIntent {
     pub authority_identity: String,
     pub authority_epoch: u64,
     pub payload_digest: String,
-    pub grant_payload_digest: String,
-    pub deadline_ms: u64,
+    pub verified_grant_id: Option<String>,
+    pub verified_grant_payload_digest: Option<String>,
+    pub verified_grant_expires_at_ms: Option<u64>,
+    pub reconciliation_deadline_ms: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -84,6 +86,9 @@ pub struct SendReceipt {
     pub operation_id: String,
     pub transaction_id: String,
     pub state: SendState,
+    pub authority_identity: String,
+    pub authority_epoch: u64,
+    pub verified_grant_id: Option<String>,
     pub server_event_id: Option<String>,
     pub transport_observation_digest: Option<String>,
     pub send_observation_digest: Option<String>,
@@ -104,7 +109,7 @@ pub enum MatrixDispatchError {
     DeadlineExpired,
     #[error("Matrix unresolved send capacity exceeded")]
     CapacityExceeded,
-    #[error("Matrix send payload does not match the grant-bound payload")]
+    #[error("Matrix send payload does not match the supplied verified-grant payload")]
     PayloadMismatch,
     #[error("Matrix operation or transaction identity conflicts with durable state")]
     OperationConflict,
@@ -176,9 +181,10 @@ impl MatrixDurableStore {
             "INSERT INTO matrix_dispatch_ledger (
                 operation_id, stable_txn_id, homeserver_id, room_id, device_id,
                 session_generation, authority_identity, authority_epoch,
-                payload_digest, grant_payload_digest, deadline_ms, state,
+                payload_digest, verified_grant_id, verified_grant_payload_digest,
+                verified_grant_expires_at_ms, reconciliation_deadline_ms, state,
                 created_at_ms, updated_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'prepared', ?, ?)",
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'prepared', ?, ?)",
         )
         .bind(&intent.operation_id)
         .bind(&intent.transaction_id)
@@ -189,8 +195,15 @@ impl MatrixDurableStore {
         .bind(&intent.authority_identity)
         .bind(to_i64(intent.authority_epoch)?)
         .bind(&intent.payload_digest)
-        .bind(&intent.grant_payload_digest)
-        .bind(to_i64(intent.deadline_ms)?)
+        .bind(&intent.verified_grant_id)
+        .bind(&intent.verified_grant_payload_digest)
+        .bind(
+            intent
+                .verified_grant_expires_at_ms
+                .map(to_i64)
+                .transpose()?,
+        )
+        .bind(to_i64(intent.reconciliation_deadline_ms)?)
         .bind(to_i64(now_ms)?)
         .bind(to_i64(now_ms)?)
         .execute(&mut *transaction)
@@ -1050,7 +1063,8 @@ async fn load_record_tx(
     let row = sqlx::query(
         "SELECT operation_id, stable_txn_id, homeserver_id, room_id, device_id,
                 session_generation, authority_identity, authority_epoch,
-                payload_digest, grant_payload_digest, deadline_ms, state,
+                payload_digest, verified_grant_id, verified_grant_payload_digest,
+                verified_grant_expires_at_ms, reconciliation_deadline_ms, state,
                 server_event_id, transport_observation_digest,
                 send_observation_digest, redaction_observation_digest
          FROM matrix_dispatch_ledger WHERE operation_id = ?",
@@ -1079,13 +1093,26 @@ fn dispatch_record_from_row(
         authority_identity: row.try_get("authority_identity").map_err(store_error)?,
         authority_epoch: from_i64(row.try_get("authority_epoch").map_err(store_error)?)?,
         payload_digest: row.try_get("payload_digest").map_err(store_error)?,
-        grant_payload_digest: row.try_get("grant_payload_digest").map_err(store_error)?,
-        deadline_ms: from_i64(row.try_get("deadline_ms").map_err(store_error)?)?,
+        verified_grant_id: row.try_get("verified_grant_id").map_err(store_error)?,
+        verified_grant_payload_digest: row
+            .try_get("verified_grant_payload_digest")
+            .map_err(store_error)?,
+        verified_grant_expires_at_ms: row
+            .try_get::<Option<i64>, _>("verified_grant_expires_at_ms")
+            .map_err(store_error)?
+            .map(from_i64)
+            .transpose()?,
+        reconciliation_deadline_ms: from_i64(
+            row.try_get("reconciliation_deadline_ms").map_err(store_error)?,
+        )?,
     };
     let receipt = SendReceipt {
         operation_id,
         transaction_id,
         state,
+        authority_identity: intent.authority_identity.clone(),
+        authority_epoch: intent.authority_epoch,
+        verified_grant_id: intent.verified_grant_id.clone(),
         server_event_id: row.try_get("server_event_id").map_err(store_error)?,
         transport_observation_digest: row
             .try_get("transport_observation_digest")
@@ -1133,14 +1160,30 @@ fn validate_intent(now_ms: u64, value: &SendIntent) -> Result<(), MatrixDispatch
         validate_identity(field, name)?;
     }
     validate_digest(&value.payload_digest, "payload")?;
-    validate_digest(&value.grant_payload_digest, "grant payload")?;
-    if value.payload_digest != value.grant_payload_digest {
-        return Err(MatrixDispatchError::PayloadMismatch);
+    match (
+        &value.verified_grant_id,
+        &value.verified_grant_payload_digest,
+        value.verified_grant_expires_at_ms,
+    ) {
+        (None, None, None) => {}
+        (Some(grant_id), Some(grant_payload_digest), Some(expires_at_ms)) => {
+            validate_identity(grant_id, "verified grant")?;
+            validate_digest(grant_payload_digest, "verified grant payload")?;
+            if grant_payload_digest != &value.payload_digest {
+                return Err(MatrixDispatchError::PayloadMismatch);
+            }
+            if expires_at_ms <= now_ms || expires_at_ms > i64::MAX as u64 {
+                return Err(MatrixDispatchError::DeadlineExpired);
+            }
+        }
+        _ => return Err(MatrixDispatchError::ObservationMismatch),
     }
     if value.session_generation == 0 || value.authority_epoch == 0 {
         return Err(MatrixDispatchError::InvalidGeneration);
     }
-    if value.deadline_ms <= now_ms || value.deadline_ms > i64::MAX as u64 {
+    if value.reconciliation_deadline_ms <= now_ms
+        || value.reconciliation_deadline_ms > i64::MAX as u64
+    {
         return Err(MatrixDispatchError::DeadlineExpired);
     }
     Ok(())

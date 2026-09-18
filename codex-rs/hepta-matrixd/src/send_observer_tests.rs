@@ -52,8 +52,10 @@ fn intent() -> SendIntent {
         authority_identity: "a".repeat(64),
         authority_epoch: 7,
         payload_digest: "1".repeat(64),
-        grant_payload_digest: "1".repeat(64),
-        deadline_ms: 10_000,
+        verified_grant_id: None,
+        verified_grant_payload_digest: None,
+        verified_grant_expires_at_ms: None,
+        reconciliation_deadline_ms: 10_000,
     }
 }
 
@@ -113,7 +115,9 @@ async fn lost_ack_survives_reopen_and_reconciles_to_server_event() -> TestResult
 async fn payload_drift_and_transaction_reuse_are_rejected() -> TestResult {
     let fixture = Fixture::new().await?;
     let mut changed = intent();
-    changed.grant_payload_digest = "2".repeat(64);
+    changed.verified_grant_id = Some("grant.1".to_string());
+    changed.verified_grant_payload_digest = Some("2".repeat(64));
+    changed.verified_grant_expires_at_ms = Some(5_000);
     assert_eq!(
         fixture.observer.prepare_send(100, changed).await,
         Err(Error::PayloadMismatch)

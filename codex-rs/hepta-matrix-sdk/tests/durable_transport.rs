@@ -169,6 +169,9 @@ fn test_dispatch_context() -> MatrixDispatchContext {
         session_generation: 1,
         authority_identity: "a".repeat(64),
         authority_epoch: 1,
+        verified_grant_id: None,
+        verified_grant_payload_digest: None,
+        verified_grant_expires_at_ms: None,
     }
 }
 
