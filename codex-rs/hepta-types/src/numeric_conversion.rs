@@ -1,5 +1,6 @@
-use crate::AuthorityPosture;
+use crate::ContractRegistryV1;
 use crate::Digest32;
+use crate::NonAuthorizingPosture;
 use crate::NumericConversionError;
 use crate::NumericProfileV1;
 use crate::NumericRoundingV1;
@@ -28,7 +29,7 @@ pub struct NumericConversionReceiptV1 {
     pub output_digest: Digest32,
     pub absolute_error_bound: NumericErrorBoundV1,
     pub evidence_digest: Digest32,
-    pub authority: AuthorityPosture,
+    pub authority: NonAuthorizingPosture,
 }
 
 /// Rescales bounded numeric signals with the target profile's rounding.
@@ -122,9 +123,21 @@ pub fn rescale_signal(
         output_digest,
         absolute_error_bound,
         evidence_digest: Digest32::of_bytes(&bytes),
-        authority: AuthorityPosture::DENY_ALL,
+        authority: NonAuthorizingPosture::DENY_ALL,
     };
     Ok((output, receipt))
+}
+
+/// Registry-gated variant for consumers that require normalization provenance,
+/// not just digest equality.
+pub fn rescale_signal_registered(
+    source: &NumericSignalV1,
+    target: &NumericSignalSchemaV1,
+    registry: &ContractRegistryV1,
+) -> Result<(NumericSignalV1, NumericConversionReceiptV1), NumericConversionError> {
+    source.schema.validate_with_registry(registry)?;
+    target.validate_with_registry(registry)?;
+    rescale_signal(source, target)
 }
 
 fn signal_digest(signal: &NumericSignalV1) -> Digest32 {
