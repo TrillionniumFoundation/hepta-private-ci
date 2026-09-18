@@ -253,24 +253,19 @@ fn digest_binds_numerical_profile_shape_range_units_and_normalization() {
     }
 }
 
-
 #[test]
 fn registered_conversion_requires_resolvable_normalization_contract() {
     let normalization = crate::RegistryDefinitionV1::new(
         crate::RegistryKindV1::Normalization,
-        crate::validate_id(
-            "normalization:identity",
-            crate::IdProfileV1::Namespaced,
-        )
-        .unwrap_or_else(|error| panic!("normalization id fixture failed: {error}")),
+        crate::validate_id("normalization:identity", crate::IdProfileV1::Namespaced)
+            .unwrap_or_else(|error| panic!("normalization id fixture failed: {error}")),
         1,
         "scale=identity;clamp=none",
     )
     .unwrap_or_else(|error| panic!("normalization definition fixture failed: {error}"));
     let normalization_digest = normalization.digest();
-    let registry =
-        crate::ContractRegistryV1::new(vec![normalization])
-            .unwrap_or_else(|error| panic!("contract registry fixture failed: {error}"));
+    let registry = crate::ContractRegistryV1::new(vec![normalization])
+        .unwrap_or_else(|error| panic!("contract registry fixture failed: {error}"));
     let mut source = signal(NumericProfileV1::HnmfPpmTowardZero, vec![1, 2]);
     source.schema.normalization_digest = normalization_digest;
     let target = NumericSignalSchemaV1 {
