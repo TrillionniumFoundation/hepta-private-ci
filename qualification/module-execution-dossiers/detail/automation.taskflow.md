@@ -32,7 +32,7 @@ Queue admission is an intermediate observation, never execution success. `Automa
 4. Append and claim the durable TaskFlow step intent before provider contact.
 5. Persist dispatch uncertainty and cross the owning App Server queue through `thread/queue/reconcile(AllowIfAbsent)` using one stable `client_user_message_id` and canonical payload digest.
 6. Record Core admission without declaring the occurrence terminal.
-7. On subsequent ticks, reconcile lost replies with `ReconcileOnly`; `Missing` is the only automatic path that releases the same occurrence for retry.
+7. On subsequent ticks, reconcile lost replies with `ReconcileOnly`; `Missing` is the only automatic path that appends `requeued_proven_absent`, releases the same occurrence/client identity, and permits a new step attempt.
 8. Bind a persisted Core turn ID, observe its terminal status through a bounded persisted-turn scan, reconcile the durable TaskFlow step/run, then terminalize the automation occurrence.
 9. Advance recurrence according to the frozen overlap/missed-run policy. `forbid` parks the timer until occurrence terminalization; `allow` preserves the historical behavior of advancing after durable Core admission while retaining the earlier occurrence as non-terminal.
 
@@ -73,7 +73,7 @@ Source implementation does not by itself authorize a concrete external provider,
 
 ## 8. Current native implementation
 
-- **Schedule/occurrence owner:** `codex-rs/hepta-automation/src/store.rs`, `src/lifecycle.rs`, migrations `0004`-`0009`. Schedule revision, deterministic occurrence identity, missed-run/overlap policy and append-only occurrence events are durable.
+- **Schedule/occurrence owner:** `codex-rs/hepta-automation/src/store.rs`, `src/lifecycle.rs`, migrations `0004`-`0010`. Schedule revision, deterministic occurrence identity, missed-run/overlap policy and append-only occurrence events are durable.
 - **Scheduler composition:** `codex-rs/hepta-automation/src/scheduler.rs` freezes occurrence/TaskFlow intent before App Server contact. The public legacy `AutomationTick::Submitted` now means durable Core queue admission only; it is not occurrence terminality.
 - **TaskFlow durable chain:** `src/automation_taskflow.rs`, `src/taskflow.rs`, `src/taskflow_step.rs`, `src/taskflow_recovery.rs`. Every materialized automation occurrence gets one deterministic TaskFlow run and versioned step-attempt chain; indeterminate effects are reconciled before terminal propagation.
 - **Stable queue recovery and terminal observer:** `codex-rs/hepta-agentd/src/automation.rs` uses `thread/queue/reconcile(AllowIfAbsent)` for first admission. `src/automation_recovery.rs` uses `ReconcileOnly` after lost acknowledgement and observes bounded persisted turn history before publishing terminality.
