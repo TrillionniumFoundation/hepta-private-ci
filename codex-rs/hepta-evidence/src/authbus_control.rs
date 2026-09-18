@@ -99,8 +99,11 @@ impl HeptaEvidenceStore {
         revision: u64,
         revoked: bool,
     ) -> Result<(), AuthBusControlError> {
+        if !revoked {
+            return Err(AuthBusControlError::Invalid("policy revocation is monotonic"));
+        }
         let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(classify_sqlx_error)?;
-        require_policy_head(&mut tx, policy_id, revision, None).await?;
+        require_policy_head(&mut tx, policy_id, revision, Some(false)).await?;
         sqlx::query("UPDATE authbus_policy_heads SET revoked = ?, updated_at_ms = ? WHERE policy_id = ?")
             .bind(if revoked { 1_i64 } else { 0_i64 })
             .bind(now_millis()?)
@@ -519,7 +522,8 @@ async fn require_policy_head(
         return Err(AuthBusControlError::StaleRevision);
     }
     let current_revoked: i64 = row.try_get("revoked").map_err(classify_sqlx_error)?;
-    if revoked.is_some_and(|expected| current_revoked != if expected { 1_i64 } else { 0_i64 }) || current_revoked != 0 {
+    let expected_revoked = revoked.map(|expected| if expected { 1_i64 } else { 0_i64 });
+    if expected_revoked.is_some_and(|expected| current_revoked != expected) || current_revoked != 0 {
         return Err(AuthBusControlError::Denied);
     }
     Ok(())
