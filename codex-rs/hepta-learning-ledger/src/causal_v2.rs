@@ -238,6 +238,113 @@ pub fn validate_candidate_set_completeness(
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptPortfolioExposureV1 {
+    pub exposure_id: StableId,
+    pub episode_id: StableId,
+    pub objective_digest: Digest32,
+    pub candidate_set_digest: Digest32,
+    pub pricing_receipt_digest: Digest32,
+    pub portfolio_receipt_digest: Digest32,
+    pub exercise_receipt_digest: Digest32,
+    pub context_compilation_receipt_digest: Digest32,
+    pub delivery_observation_digest: Digest32,
+    pub selected_factor_ids: Vec<StableId>,
+    pub selected_realization_ids: Vec<StableId>,
+    pub observed_payload_digest: Digest32,
+    pub observed_unix_ms: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptPortfolioExposureReceiptV1 {
+    pub exposure_id: StableId,
+    pub selected_count: u32,
+    pub exposure_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+pub fn validate_prompt_portfolio_exposure(
+    exposure: &PromptPortfolioExposureV1,
+) -> Result<PromptPortfolioExposureReceiptV1, CausalV2Error> {
+    if exposure.selected_factor_ids.is_empty()
+        || exposure.selected_factor_ids.len() > MAX_CANDIDATES as usize
+        || exposure.selected_factor_ids.len() != exposure.selected_realization_ids.len()
+    {
+        return Err(CausalV2Error::CandidateLimit);
+    }
+    if exposure.observed_unix_ms == 0 {
+        return Err(CausalV2Error::InvalidWatermark);
+    }
+    for (label, digest) in [
+        ("prompt objective", exposure.objective_digest),
+        ("prompt candidate set", exposure.candidate_set_digest),
+        ("prompt pricing receipt", exposure.pricing_receipt_digest),
+        ("prompt portfolio receipt", exposure.portfolio_receipt_digest),
+        ("prompt exercise receipt", exposure.exercise_receipt_digest),
+        (
+            "context compilation receipt",
+            exposure.context_compilation_receipt_digest,
+        ),
+        ("prompt delivery observation", exposure.delivery_observation_digest),
+        ("observed prompt payload", exposure.observed_payload_digest),
+    ] {
+        require_digest(digest, label)?;
+    }
+    let mut factor_ids = exposure.selected_factor_ids.clone();
+    let mut realization_ids = exposure.selected_realization_ids.clone();
+    factor_ids.sort();
+    realization_ids.sort();
+    for adjacent in factor_ids.windows(2) {
+        if adjacent[0] == adjacent[1] {
+            return Err(CausalV2Error::DuplicateCreditTarget(
+                adjacent[0].to_string(),
+            ));
+        }
+    }
+    for adjacent in realization_ids.windows(2) {
+        if adjacent[0] == adjacent[1] {
+            return Err(CausalV2Error::DuplicateCreditTarget(
+                adjacent[0].to_string(),
+            ));
+        }
+    }
+
+    let mut bytes = b"hepta.learning-ledger.prompt-portfolio-exposure.v1".to_vec();
+    push_id(&mut bytes, &exposure.exposure_id);
+    push_id(&mut bytes, &exposure.episode_id);
+    for digest in [
+        exposure.objective_digest,
+        exposure.candidate_set_digest,
+        exposure.pricing_receipt_digest,
+        exposure.portfolio_receipt_digest,
+        exposure.exercise_receipt_digest,
+        exposure.context_compilation_receipt_digest,
+        exposure.delivery_observation_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.extend_from_slice(
+        &u32::try_from(exposure.selected_factor_ids.len())
+            .map_err(|_| CausalV2Error::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for factor_id in &exposure.selected_factor_ids {
+        push_id(&mut bytes, factor_id);
+    }
+    for realization_id in &exposure.selected_realization_ids {
+        push_id(&mut bytes, realization_id);
+    }
+    bytes.extend_from_slice(exposure.observed_payload_digest.as_array());
+    bytes.extend_from_slice(&exposure.observed_unix_ms.to_be_bytes());
+    Ok(PromptPortfolioExposureReceiptV1 {
+        exposure_id: exposure.exposure_id.clone(),
+        selected_count: u32::try_from(exposure.selected_factor_ids.len())
+            .map_err(|_| CausalV2Error::Arithmetic)?,
+        exposure_digest: Digest32::of_bytes(&bytes),
+        authority: AuthorityPosture::DENY_ALL,
+    })
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CreditAllocationV1 {
     pub target_id: StableId,
     pub credit: FixedQ32,
