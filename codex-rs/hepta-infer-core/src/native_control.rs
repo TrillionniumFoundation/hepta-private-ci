@@ -179,6 +179,19 @@ impl DurableInferenceControl {
                 Err(Error::Conflict)
             };
         }
+        if let Some(record) = self.archived_native_record(&request.request_id)? {
+            return if record.request == request {
+                Ok(record)
+            } else {
+                Err(Error::Conflict)
+            };
+        }
+        if self.records.len() + self.native.records.len() >= self.capacity
+            || self.journal_bytes
+                > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
+        {
+            self.archive_released_native()?;
+        }
         if self.records.len() + self.native.records.len() >= self.capacity {
             return Err(Error::CapacityExceeded);
         }
@@ -342,6 +355,20 @@ impl DurableInferenceControl {
             .cloned()
             .ok_or(Error::RequestNotFound)
     }
+}
+
+pub(super) fn journal_event_request_id(json: &str) -> Result<String, Error> {
+    let event: Event =
+        serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
+    let request_id = match event {
+        Event::Reserve { request, .. } => request.request_id,
+        Event::Dispatch { request_id, .. }
+        | Event::Started { request_id, .. }
+        | Event::Cancel { request_id }
+        | Event::Stop { request_id, .. }
+        | Event::Observe { request_id, .. } => request_id,
+    };
+    Ok(request_id)
 }
 
 impl NativeJournal {
