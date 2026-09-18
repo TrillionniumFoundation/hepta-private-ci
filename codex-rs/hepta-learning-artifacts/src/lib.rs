@@ -20,6 +20,7 @@ mod publication;
 mod registry;
 mod service;
 mod storage;
+mod storage_hygiene;
 
 pub use admission_v3::ArtifactAdmissionError;
 pub use admission_v3::WithdrawalAuthorityDomainV1;
@@ -116,3 +117,7 @@ pub use storage::write_prepared_registry_head_witness_v1;
 pub use storage::write_prepared_registry_snapshot_v1;
 pub use storage::write_registry_head_witness;
 pub use storage::write_registry_snapshot;
+pub use storage_hygiene::{
+    ArtifactStorageAdminV1, OrphanCleanupDispositionV1, StorageEntryInspectionV1,
+    StorageHygieneError,
+};
