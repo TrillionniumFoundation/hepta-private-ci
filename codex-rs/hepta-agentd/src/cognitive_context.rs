@@ -290,10 +290,10 @@ fn authoritative_host_context(
     // records. Their vector slots therefore use explicit fixed not-consumed
     // sentinels rather than pretending to observe those owners. The fields
     // actually consumed by this path are bound to stable profile identities.
-    let not_consumed_generation = Generation::new(1)
-        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let not_consumed_revision = Revision::new(1)
-        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    let not_consumed_generation =
+        Generation::new(1).map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+    let not_consumed_revision =
+        Revision::new(1).map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
     let model_digest = ranker.map_or_else(
         || Digest32::of_bytes(b"hepta.agentd.cognitive-context.no-ranker.v1"),
         |ranker| ranker.model_digest(),
@@ -311,15 +311,9 @@ fn authoritative_host_context(
         ),
         authority_epoch,
         model_digest,
-        tokenizer_digest: Digest32::of_bytes(
-            b"hepta.agentd.cognitive-context.no-tokenizer.v1",
-        ),
-        template_digest: Digest32::of_bytes(
-            b"hepta.agentd.cognitive-context.json-envelope.v1",
-        ),
-        tool_schema_digest: Digest32::of_bytes(
-            b"hepta.agentd.control.cognitive-context.v1",
-        ),
+        tokenizer_digest: Digest32::of_bytes(b"hepta.agentd.cognitive-context.no-tokenizer.v1"),
+        template_digest: Digest32::of_bytes(b"hepta.agentd.cognitive-context.json-envelope.v1"),
+        tool_schema_digest: Digest32::of_bytes(b"hepta.agentd.control.cognitive-context.v1"),
     })
 }
 
