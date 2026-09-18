@@ -251,12 +251,14 @@ pub struct FederatedRetrievalCoverage {
     pub requested_sources: u32,
     pub completed_sources: u32,
     pub failed_sources: u32,
+    pub partial_sources: u32,
     pub discovery_failures: u32,
 }
 
 impl FederatedRetrievalCoverage {
     pub fn is_partial(&self) -> bool {
         self.failed_sources > 0
+            || self.partial_sources > 0
             || self.discovery_failures > 0
             || self.completed_sources.saturating_add(self.failed_sources) < self.requested_sources
     }
@@ -701,6 +703,7 @@ impl FederatedMemoryReader {
                 requested_sources: 1,
                 completed_sources: 1,
                 failed_sources: 0,
+                partial_sources: 0,
                 discovery_failures: 0,
             },
         })
@@ -909,12 +912,15 @@ impl FederatedRecallSet {
         let readers = current.readers;
         let mut completed_sources = 0u32;
         let mut failed_sources = 0u32;
+        let mut partial_sources = 0u32;
         let mut candidates = Vec::new();
         for reader in &readers {
             let attempt = self.attempt_counter.fetch_add(1, Ordering::Relaxed);
             match retrieve_reader_through_canonical_v2(reader, access, request, attempt).await {
                 Ok(batch) => {
                     completed_sources = completed_sources.saturating_add(1);
+                    partial_sources =
+                        partial_sources.saturating_add(batch.coverage.partial_sources);
                     candidates.extend(batch.candidates);
                 }
                 Err(_) => {
@@ -951,6 +957,7 @@ impl FederatedRecallSet {
                 requested_sources,
                 completed_sources,
                 failed_sources,
+                partial_sources,
                 discovery_failures,
             },
         })
@@ -1195,11 +1202,15 @@ async fn retrieve_reader_through_canonical_v2(
     if result.validity != CanonicalValidityV2::Valid {
         return Err(CanonicalFederationError::TransportRejected);
     }
-    batch
+    let mut batch = batch
         .lock()
         .await
         .take()
-        .ok_or(CanonicalFederationError::TransportRejected)
+        .ok_or(CanonicalFederationError::TransportRejected)?;
+    if result.completeness == CanonicalCompletenessV2::Partial {
+        batch.coverage.partial_sources = 1;
+    }
+    Ok(batch)
 }
 
 fn canonical_query_and_lease(
