@@ -47,7 +47,10 @@ pub fn freeze_cross_fold_plan_v2(
     Ok(receipt)
 }
 
-/// Evaluate using the exact roles frozen by [`freeze_cross_fold_plan_v2`].
+/// Trusted-only deterministic core using the exact roles frozen by
+/// [`freeze_cross_fold_plan_v2`]. It validates supplied identity fields but does
+/// not authenticate an external caller. Production/external qualification must
+/// use `decide_with_signed_evidence_v2` (or signed V3 for longitudinal claims).
 /// All V1 evidence, role-separation, holdout and absolute-bound checks apply.
 /// No role or margin can be changed after freezing without a new plan digest.
 pub fn decide_independently_v2(
