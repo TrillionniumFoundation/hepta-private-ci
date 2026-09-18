@@ -93,9 +93,9 @@ where
             // Owner/generation fencing is not a transient dispatch failure.
             // Agentd performs this check before the queue seam, so remove the
             // pre-admission intent before returning the fence to the caller.
-            Ok(Err(AutomationError::AccessDenied)) => {
+            Ok(Err(error @ (AutomationError::AccessDenied | AutomationError::TimerFenced))) => {
                 self.store.abort_dispatch_before_admission(&lease).await?;
-                return Err(AutomationError::AccessDenied);
+                return Err(error);
             }
             Ok(Err(AutomationError::DispatchUnknown)) | Err(_) => {
                 self.store.record_dispatch_uncertain(&lease, now_ms).await?;
