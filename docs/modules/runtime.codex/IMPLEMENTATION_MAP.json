@@ -130,7 +130,10 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "The native App Server caller does not yet consume kernel.authority's non-constructible VerifiedUseToken immediately before turn/start; CodexOperationIntent currently receives an equal caller-supplied lease_payload_digest rather than an authority-authenticated final-use capability.",
+    "The authority binding for model dispatch must cover the actual final TurnStart payload, including the runtime-selected model and compiled additional context, rather than only the pre-context native request digest."
+  ],
   "externalEvidenceGates": [
     "authenticated target-host Agentd/App Server execution receipt",
     "real model/provider terminal stream observation under the target deployment",
@@ -141,7 +144,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -154,7 +157,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "composed",
+  "productCallerState": "composed_authority_gate_pending",
   "productionWriterState": "existing_app_server_owner",
   "owner": "codex-integration",
   "deputy": "agent-runtime",
@@ -169,7 +172,7 @@
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "symbol": "pub(super) async fn run_once(",
       "buildTarget": "codex-hepta-infer-worker-host",
-      "semantics": "Sends real v2 thread/start and turn/start requests, routes typed turn/start errors and matching TurnCompleted notifications through hepta-codex-adapter, and never replays an unknown turn/start acknowledgement."
+      "semantics": "Sends real v2 thread/start and turn/start requests, routes typed turn/start errors and matching TurnCompleted notifications through hepta-codex-adapter, and never replays an unknown turn/start acknowledgement. Source composition exists, but this caller is not production-authorized until it consumes a kernel.authority final-use capability bound to the exact final TurnStart payload."
     },
     {
       "role": "durable_reconciler",
