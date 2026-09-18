@@ -156,7 +156,10 @@ The in-process `HmacTrustStore` is a reference verifier, not production key
 custody. Production signing keys remain outside this module under an independently
 controlled keystore/HSM or equivalent custody boundary. Production readiness
 requires a fresh `KeyCustodyReceipt` asserting a hardware-backed, non-exportable
-verification key. The module verifies that receipt but cannot self-issue it.
+key and binding its subject signing identity, algorithm, public-key digest and
+hardware-attestation digest. The production `CustodiedSignatureProvider` must
+present the same subject signing identity. The module verifies that receipt but
+cannot self-issue it or extract the private key.
 
 A key rotation must:
 
@@ -183,16 +186,21 @@ hash-linked audit rows in place to make verification pass.
 ### External coordinator or fencing unavailable
 
 For multi-host execution, stop new worker writes when the external coordinator is
-unavailable, its receipt is stale, or the leader/fencing token does not advance.
-Do not fall back to the local SQLite lease as proof of a distributed fence. A
-single-host deployment may continue only if its declared host profile explicitly
-remains single-host.
+unavailable, its receipt is stale, or its leader/fencing frontier is older than the
+persisted `distributed_write_frontiers` row for that worker. Every admitted newer
+grant must advance or idempotently match the persisted frontier; a conflicting
+same-token grant or any older token fails closed after restart. Do not fall back to
+the local path lease as proof of distributed consensus. A single-host deployment
+may continue only if its declared host profile explicitly remains single-host.
 
 ### External audit anchor unavailable
 
 Continue local append-only coordination only within the selected operational policy,
 but do not advance deployment readiness while the external anchor is missing or
-stale. Never replace an external anchor with the in-database hash chain itself.
+stale. The retained receipt must match both the current audit sequence/digest and
+the deterministic `store_snapshot_digest` of authoritative owner tables. A receipt
+that verifies cryptographically but no longer matches current state is rejected.
+Never replace an external anchor with the in-database hash chain itself.
 
 ### Strong sandbox unavailable
 
