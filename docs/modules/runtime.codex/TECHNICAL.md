@@ -151,7 +151,7 @@ The composed native caller enforces these concrete rules:
 
 - A real `turn/completed` event preserves exactly `completed`, `failed` or `interrupted`; a terminal boolean cannot manufacture success.
 - `turn/interrupt` acknowledgement is not terminal. Capacity is released only after a matching terminal observation or an independently proven pre-dispatch/pre-admission stop.
-- App Server JSON-RPC `-32001` is a proven pre-admission overload rejection. The caller may retry the same `turn/start` only with bounded exponential backoff plus deterministic jitter; an exhausted overload attempt is durably recorded as rejected-before-start.
+- App Server JSON-RPC `-32001` is a proven pre-admission overload rejection. The caller may retry the same `turn/start` only with bounded exponential backoff plus deterministic jitter; an exhausted overload attempt is durably recorded using the existing `native-v1 Observe` schema with an exact correlation marker. Current readers release the local slot after validating that marker; predecessor readers remain rollback-compatible and conservatively retain it as indeterminate.
 - Transport failure, response-decode failure, timeout, disconnect, lost event delivery or lost acknowledgement after durable dispatch remains `indeterminate`/quarantined and is never automatically replayed.
 - A terminal event observed after the original dispatch deadline remains recordable as a reconciliation fact; the dispatch deadline prevents new admission, not late truth.
 - Thread id, optional/actual turn id, App Server protocol id and Agent/session generation are correlated before a terminal adapter receipt is accepted.
