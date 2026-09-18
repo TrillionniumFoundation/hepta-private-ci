@@ -444,10 +444,7 @@ fn require_digest(digest: Digest32) -> Result<(), SelfEvolutionSelectionError> {
     Ok(())
 }
 
-fn push_id(
-    bytes: &mut Vec<u8>,
-    id: &StableId,
-) -> Result<(), SelfEvolutionSelectionError> {
+fn push_id(bytes: &mut Vec<u8>, id: &StableId) -> Result<(), SelfEvolutionSelectionError> {
     let raw = id.as_str().as_bytes();
     bytes.extend_from_slice(
         &u32::try_from(raw.len())
@@ -597,22 +594,44 @@ mod tests {
 
         let scope = digest("selection-scope");
         let roles = [
-            ("generator", "controller-generator", LearningEvidenceRoleV1::Generator, 11_u8),
-            ("evaluator", "controller-evaluator", LearningEvidenceRoleV1::Evaluator, 22_u8),
-            ("observer", "controller-observer", LearningEvidenceRoleV1::Observer, 33_u8),
-            ("selector", "controller-selector", LearningEvidenceRoleV1::Selector, 44_u8),
+            (
+                "generator",
+                "controller-generator",
+                LearningEvidenceRoleV1::Generator,
+                11_u8,
+            ),
+            (
+                "evaluator",
+                "controller-evaluator",
+                LearningEvidenceRoleV1::Evaluator,
+                22_u8,
+            ),
+            (
+                "observer",
+                "controller-observer",
+                LearningEvidenceRoleV1::Observer,
+                33_u8,
+            ),
+            (
+                "selector",
+                "controller-selector",
+                LearningEvidenceRoleV1::Selector,
+                44_u8,
+            ),
         ];
         let keys = roles.map(|(_, _, _, seed)| SigningKey::from_bytes(&[seed; 32]));
         let signers = roles
             .iter()
             .zip(keys.iter())
-            .map(|((name, controller, role, _), key)| TrustedLearningSignerV1 {
-                principal: principal(name, scope, key),
-                controller_id: id(controller),
-                verifying_key: key.verifying_key().to_bytes(),
-                roles: vec![*role],
-                revoked_at: None,
-            })
+            .map(
+                |((name, controller, role, _), key)| TrustedLearningSignerV1 {
+                    principal: principal(name, scope, key),
+                    controller_id: id(controller),
+                    verifying_key: key.verifying_key().to_bytes(),
+                    roles: vec![*role],
+                    revoked_at: None,
+                },
+            )
             .collect();
         let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
             scope_digest: scope,
@@ -682,13 +701,9 @@ mod tests {
             LearningEvidenceRoleV1::Selector,
             &selector_payload,
         );
-        let selected = admit_self_evolution_selection_v1(
-            prepared,
-            &selector_evidence,
-            &verifier,
-            50,
-        )
-        .expect("independent selection");
+        let selected =
+            admit_self_evolution_selection_v1(prepared, &selector_evidence, &verifier, 50)
+                .expect("independent selection");
         assert_eq!(selected.selector_id(), &id("selector"));
 
         let regression = digest("observed-regression");
