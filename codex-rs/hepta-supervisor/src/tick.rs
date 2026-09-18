@@ -50,6 +50,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 self.start_release_slot(agent_id, slot, release, now)?;
             }
         }
+        if slot.runtime.is_none() && slot.release_change.is_none() && !slot.restart_pending {
+            self.start_due_fault_restart(agent_id, slot, now)?;
+        }
         self.tick_matrix_companion(agent_id, slot, now)
     }
 
@@ -83,7 +86,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| driver_error(agent_id, error))?;
         self.push_logs(slot, observation.logs);
         if let ProcessState::Exited(exit) = observation.state {
+            let unexpected_failure = !runtime.fenced
+                && matches!(
+                    runtime.phase,
+                    RuntimePhase::AwaitingHealth { .. } | RuntimePhase::Running
+                );
+            let should_restart = runtime.restart_on_failure_exit || unexpected_failure;
             self.finalize_exit(agent_id, slot, runtime, exit)?;
+            if should_restart && slot.release_change.is_none() && !slot.restart_pending {
+                self.schedule_fault_restart(agent_id, slot, now)?;
+            }
             return Ok(false);
         }
         if runtime.fenced {
@@ -102,6 +114,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )?;
                 runtime.generation = next.generation;
                 runtime.phase = RuntimePhase::Running;
+                runtime.restart_on_failure_exit = false;
+                if slot.fault_restart_attempts > 0 {
+                    slot.fault_restart_healthy_since = Some(now);
+                }
                 slot.event(
                     next.generation,
                     SupervisorEventKind::Lifecycle(AgentLifecycle::Running),
@@ -116,6 +132,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     AgentLifecycle::Failed,
                 )?;
                 runtime.generation = next.generation;
+                runtime.restart_on_failure_exit = true;
                 runtime.phase = RuntimePhase::Stopping {
                     deadline: deadline(now, self.config.stop_grace)?,
                 };
@@ -207,6 +224,90 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         slot.event(generation, SupervisorEventKind::Exited(exit));
         Ok(())
+    }
+
+    fn schedule_fault_restart(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        if slot.runtime.is_some()
+            || slot.release_change.is_some()
+            || slot.restart_pending
+            || (slot.active_release.is_none() && slot.last_command.is_none())
+        {
+            return Ok(());
+        }
+
+        if slot.fault_restart_healthy_since.is_some_and(|healthy_since| {
+            now.saturating_duration_since(healthy_since) >= self.config.restart_recovery_window
+        }) {
+            slot.fault_restart_attempts = 0;
+        }
+        slot.fault_restart_healthy_since = None;
+
+        let generation = self.record(agent_id)?.lifecycle.generation;
+        if slot.fault_restart_attempts >= self.config.restart_attempt_budget {
+            slot.fault_restart_retry_at = None;
+            slot.event(
+                generation,
+                SupervisorEventKind::FaultRestartBudgetExhausted {
+                    attempts: slot.fault_restart_attempts,
+                },
+            );
+            return Ok(());
+        }
+
+        slot.fault_restart_attempts = slot.fault_restart_attempts.saturating_add(1);
+        let shift = slot.fault_restart_attempts.saturating_sub(1).min(31);
+        let delay = self
+            .config
+            .restart_backoff_min
+            .checked_mul(1_u32 << shift)
+            .unwrap_or(self.config.restart_backoff_max)
+            .min(self.config.restart_backoff_max);
+        let retry_at = now.checked_add(delay).ok_or_else(|| {
+            SupervisorError::Invalid("fault restart deadline overflow".to_string())
+        })?;
+        slot.fault_restart_retry_at = Some(retry_at);
+        slot.event(
+            generation,
+            SupervisorEventKind::FaultRestartScheduled {
+                attempt: slot.fault_restart_attempts,
+                delay_ms: u64::try_from(delay.as_millis()).unwrap_or(u64::MAX),
+            },
+        );
+        Ok(())
+    }
+
+    fn start_due_fault_restart(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        let Some(retry_at) = slot.fault_restart_retry_at else {
+            return Ok(());
+        };
+        if now < retry_at {
+            return Ok(());
+        }
+        slot.fault_restart_retry_at = None;
+        let release = slot.active_release.clone().or_else(|| {
+            slot.last_command
+                .clone()
+                .and_then(|command| crate::AgentRelease::unversioned(command).ok())
+        });
+        let release =
+            release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
+        match self.start_release_slot(agent_id, slot, release, now) {
+            Ok(()) => Ok(()),
+            Err(error) => {
+                self.schedule_fault_restart(agent_id, slot, now)?;
+                Err(error)
+            }
+        }
     }
 
     fn push_logs(&self, slot: &mut AgentSlot<D::Process>, logs: Vec<ProcessLog>) {

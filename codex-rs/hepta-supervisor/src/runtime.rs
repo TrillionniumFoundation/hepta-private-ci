@@ -38,6 +38,9 @@ pub(crate) struct AgentRuntime<P> {
     pub phase: RuntimePhase,
     pub healthy: bool,
     pub fenced: bool,
+    /// Set when a process failure (rather than an operator stop/drain/kill)
+    /// should enter the bounded automatic restart policy after terminal exit.
+    pub restart_on_failure_exit: bool,
     /// True only after the process identity is durably published in the
     /// supervisor lease. A spawned child whose lease publication fails stays
     /// tracked in memory until terminal observation instead of becoming an
@@ -146,6 +149,9 @@ pub(crate) struct AgentSlot<P> {
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
     pub restart_pending: bool,
+    pub fault_restart_attempts: u32,
+    pub fault_restart_retry_at: Option<Instant>,
+    pub fault_restart_healthy_since: Option<Instant>,
     pub active_release: Option<AgentRelease>,
     pub previous_release: Option<AgentRelease>,
     pub release_change: Option<ReleaseChange>,
@@ -166,6 +172,9 @@ impl<P> AgentSlot<P> {
             deferred_agent_action: None,
             last_command: None,
             restart_pending: false,
+            fault_restart_attempts: 0,
+            fault_restart_retry_at: None,
+            fault_restart_healthy_since: None,
             active_release: None,
             previous_release: None,
             release_change: None,

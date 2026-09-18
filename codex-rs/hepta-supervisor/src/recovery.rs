@@ -158,6 +158,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 phase: RuntimePhase::Killing,
                 healthy: false,
                 fenced: false,
+                restart_on_failure_exit: false,
                 lease_persisted,
             });
             if cleanup_error.is_none() {
@@ -173,6 +174,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
+        slot.fault_restart_retry_at = None;
+        slot.fault_restart_healthy_since = None;
         slot.runtime = Some(AgentRuntime {
             process: spawned.process,
             identity: spawned.identity,
@@ -184,6 +187,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             },
             healthy: false,
             fenced: false,
+            restart_on_failure_exit: false,
             lease_persisted: true,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
@@ -278,6 +282,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     phase,
                     healthy: false,
                     fenced: false,
+                    restart_on_failure_exit: false,
                     lease_persisted: true,
                 });
                 slot.event(

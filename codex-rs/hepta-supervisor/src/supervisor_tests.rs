@@ -132,6 +132,10 @@ fn config() -> SupervisorConfig {
         health_timeout: Duration::from_millis(10),
         drain_timeout: Duration::from_millis(10),
         stop_grace: Duration::from_millis(10),
+        restart_backoff_min: Duration::from_millis(10),
+        restart_backoff_max: Duration::from_millis(40),
+        restart_recovery_window: Duration::from_millis(100),
+        restart_attempt_budget: 3,
         event_capacity: 8,
         log_capacity: 3,
         max_log_bytes: 8,
@@ -673,6 +677,144 @@ fn restart_drains_one_agent_and_spawns_a_new_generation() -> Result<(), Supervis
             .lifecycle,
         AgentLifecycle::Starting
     );
+    Ok(())
+}
+
+#[test]
+fn unexpected_agent_failure_uses_bounded_exponential_restart_budget()
+-> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(9)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(10)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    control.set_healthy(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(10)),
+        TickReport::default()
+    );
+
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(10)),
+        TickReport::default()
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(29)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(30)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 3);
+    control.set_healthy(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(30)),
+        TickReport::default()
+    );
+
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(30)),
+        TickReport::default()
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(69)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 3);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(70)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+    control.set_healthy(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(70)),
+        TickReport::default()
+    );
+
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(70)),
+        TickReport::default()
+    );
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(1)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+    assert!(supervisor
+        .snapshot(&fleet.first)
+        .unwrap()
+        .events
+        .iter()
+        .any(|event| matches!(
+            event.kind,
+            SupervisorEventKind::FaultRestartBudgetExhausted { attempts: 3 }
+        )));
+    Ok(())
+}
+
+#[test]
+fn stable_recovery_window_replenishes_fault_restart_budget() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(10)),
+        TickReport::default()
+    );
+    control.set_healthy(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(10)),
+        TickReport::default()
+    );
+
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(111)),
+        TickReport::default()
+    );
+    let slot = supervisor.slots.get(&fleet.first).expect("agent slot");
+    assert_eq!(slot.fault_restart_attempts, 1);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(120)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(121)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&fleet.first), 3);
     Ok(())
 }
 
