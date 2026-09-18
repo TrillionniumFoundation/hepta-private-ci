@@ -88,6 +88,9 @@ host reserves a create-only artifact identity
      predecessor head, sequence and successor-chain digest
   -> ArtifactPublicationTransactionV1 derives snapshot_binding from operation,
      admission/manifest, withdrawal frontier and exact registry append
+  -> a retry under an existing operation ID must match the prior immutable
+     contract via validate_artifact_publication_retry_v1 (or equivalent durable
+     operation-ledger enforcement)
   -> registry snapshot is durably published with that binding
   -> independent RegistryHeadWitnessV1 binds generation, predecessor head and
      authority epoch
