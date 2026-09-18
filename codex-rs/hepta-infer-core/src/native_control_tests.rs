@@ -198,51 +198,53 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
 }
 
 #[test]
-fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
-    use std::io::Write;
+fn journal_compaction_preserves_exact_state_and_bounds_archives() {
     let path = path("byte-budget");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     start(&mut control, "r1");
     let mut observed = output(NativeRunStatus::Completed, Some(0));
     observed.output = "x".repeat(1024 * 1024);
-    for tokens in 0..128 {
+    for tokens in 0..80 {
         observed.observed_output_tokens = Some(tokens);
-        let before = control.native_record("r1").unwrap().clone();
-        let bytes_before = std::fs::metadata(&path).unwrap().len();
-        match control.settle_native("r1", observed.clone()) {
-            Ok(_) => continue,
-            Err(error) => {
-                assert_eq!(error, Error::CapacityExceeded);
-                assert_eq!(control.native_record("r1"), Some(&before));
-                assert_eq!(std::fs::metadata(&path).unwrap().len(), bytes_before);
-                assert!(bytes_before > super::super::MAX_JOURNAL_BYTES / 2);
-                break;
-            }
-        }
+        control.settle_native("r1", observed.clone()).unwrap();
     }
     let expected = control.native_record("r1").unwrap().clone();
+    let before = std::fs::metadata(&path).unwrap().len();
+    let receipt = control.compact_native_journal(/*retain_archives*/ 2).unwrap();
+    assert_eq!(receipt.before_bytes, before);
+    assert!(receipt.after_bytes < receipt.before_bytes);
+    assert_eq!(receipt.archive_sha256.len(), 64);
+    assert!(receipt.archive_path.is_file());
+
+    let parent = path.parent().unwrap();
+    let file_name = path.file_name().unwrap().to_string_lossy();
+    let archive_prefix = format!("{file_name}.hepta-archive-");
+    let archives = std::fs::read_dir(parent)
+        .unwrap()
+        .filter_map(Result::ok)
+        .filter(|entry| {
+            entry
+                .file_name()
+                .to_str()
+                .is_some_and(|name| name.starts_with(&archive_prefix))
+        })
+        .count();
+    assert!(archives <= 2);
+
     drop(control);
     let control = DurableInferenceControl::open(&path, 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&expected));
     drop(control);
-    // A syntactically valid extra observation still exceeds the total budget.
-    let event = Event::Observe {
-        request_id: "r1".to_string(),
-        output: observed,
-    };
-    let json = serde_json::to_string(&event).unwrap();
-    let mut file = std::fs::OpenOptions::new()
-        .append(true)
-        .open(&path)
-        .unwrap();
-    writeln!(file, "{JOURNAL_PREFIX}{json}").unwrap();
-    drop(file);
-    let oversized_bytes = std::fs::metadata(&path).unwrap().len();
-    assert!(matches!(
-        DurableInferenceControl::open(&path, 8),
-        Err(Error::CapacityExceeded)
-    ));
-    assert_eq!(std::fs::metadata(&path).unwrap().len(), oversized_bytes);
+
+    for entry in std::fs::read_dir(parent).unwrap().filter_map(Result::ok) {
+        if entry
+            .file_name()
+            .to_str()
+            .is_some_and(|name| name.starts_with(&archive_prefix))
+        {
+            let _ = std::fs::remove_file(entry.path());
+        }
+    }
     std::fs::remove_file(path).unwrap();
 }
 

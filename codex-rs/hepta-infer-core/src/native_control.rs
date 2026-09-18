@@ -199,6 +199,12 @@ pub(super) struct NativeJournal {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 enum Event {
+    /// Compaction-only canonical record. Live mutation rejects this variant;
+    /// replay validates the complete record before accepting it.
+    Snapshot {
+        record: NativeRunRecord,
+        maximum_in_flight: usize,
+    },
     Reserve {
         request: NativeRequest,
         maximum_in_flight: usize,
@@ -362,12 +368,17 @@ impl DurableInferenceControl {
         self.native.records.get(request_id)
     }
 
-    fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
-        // This exclusive owner serializes active calls. Leave room for bounded
-        // dispatch/cancel metadata and the next maximal observed output before
-        // admitting a new external execution. This is not an archival policy.
-        if self.journal_bytes > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
-        {
+    fn ensure_native_dispatch_space(&mut self) -> Result<(), Error> {
+        // This exclusive owner serializes active calls. Before refusing a new
+        // external execution because event history consumed the headroom,
+        // compact native-v1 events under the same locked owner. The complete
+        // predecessor remains in a bounded private content-addressed archive.
+        let high_water =
+            super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64;
+        if self.journal_bytes > high_water {
+            self.compact_native_journal(/*retain_archives*/ 4)?;
+        }
+        if self.journal_bytes > high_water {
             return Err(Error::CapacityExceeded);
         }
         Ok(())
@@ -375,10 +386,20 @@ impl DurableInferenceControl {
 
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
         let mut next = self.native.clone();
-        next.apply(event.clone())?;
+        next.apply(event.clone(), /*replay*/ false)?;
         let json =
             serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
-        self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
+        let encoded = format!("{JOURNAL_PREFIX}{json}\n");
+        let high_water =
+            super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64;
+        let next_bytes = self
+            .journal_bytes
+            .checked_add(encoded.len() as u64)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if next_bytes > high_water {
+            self.compact_native_journal(/*retain_archives*/ 4)?;
+        }
+        self.append(&encoded)?;
         self.native = next;
         self.native
             .records
@@ -392,10 +413,58 @@ impl NativeJournal {
     pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
         let event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
-        self.apply(event)
+        self.apply(event, /*replay*/ true)
     }
 
-    fn apply(&mut self, event: Event) -> Result<(), Error> {
+    pub(super) fn snapshot_lines(&self) -> Result<Vec<String>, Error> {
+        let Some(maximum_in_flight) = self.maximum_in_flight else {
+            return if self.records.is_empty() {
+                Ok(Vec::new())
+            } else {
+                Err(Error::CorruptJournal("native slot limit"))
+            };
+        };
+        let mut replayed = NativeJournal::default();
+        let mut lines = Vec::with_capacity(self.records.len());
+        for record in self.records.values() {
+            let event = Event::Snapshot {
+                record: record.clone(),
+                maximum_in_flight,
+            };
+            replayed.apply(event.clone(), /*replay*/ true)?;
+            let json = serde_json::to_string(&event)
+                .map_err(|_| Error::CorruptJournal("native encode"))?;
+            lines.push(format!("{JOURNAL_PREFIX}{json}\n"));
+        }
+        if replayed.records != self.records
+            || replayed.maximum_in_flight != self.maximum_in_flight
+        {
+            return Err(Error::CorruptJournal("native snapshot mismatch"));
+        }
+        Ok(lines)
+    }
+
+    fn apply(&mut self, event: Event, replay: bool) -> Result<(), Error> {
+        if let Event::Snapshot {
+            record,
+            maximum_in_flight,
+        } = event
+        {
+            if !replay {
+                return Err(Error::InvalidTransition);
+            }
+            validate_snapshot_record(&record, maximum_in_flight)?;
+            if self
+                .maximum_in_flight
+                .is_some_and(|limit| limit != maximum_in_flight)
+                || self.records.contains_key(&record.request.request_id)
+            {
+                return Err(Error::Conflict);
+            }
+            self.maximum_in_flight = Some(maximum_in_flight);
+            self.records.insert(record.request.request_id.clone(), record);
+            return Ok(());
+        }
         if let Event::Reserve {
             request,
             maximum_in_flight,
@@ -411,7 +480,9 @@ impl NativeJournal {
                 return Err(Error::InvalidIdentity("native worker/model"));
             }
             validate_admission_binding(&request)?;
-            enforce_quota(&self.records, &request)?;
+            if !replay {
+                enforce_quota(&self.records, &request)?;
+            }
             if !(1..=256).contains(&maximum_in_flight) {
                 return Err(Error::CapacityExceeded);
             }
@@ -448,7 +519,9 @@ impl NativeJournal {
             return Ok(());
         }
         let id = match &event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Snapshot { .. } | Event::Reserve { .. } => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
@@ -457,7 +530,9 @@ impl NativeJournal {
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Snapshot { .. } | Event::Reserve { .. } => {
+                return Err(Error::InvalidTransition);
+            }
             Event::Dispatch { dispatch, .. } => {
                 if record.state != NativeReservationState::Reserved {
                     return Err(Error::InvalidTransition);
@@ -506,6 +581,128 @@ impl NativeJournal {
             .ok_or(Error::ArithmeticOverflow)?;
         Ok(())
     }
+}
+
+fn validate_snapshot_record(
+    record: &NativeRunRecord,
+    maximum_in_flight: usize,
+) -> Result<(), Error> {
+    if !(1..=256).contains(&maximum_in_flight) || record.revision == 0 {
+        return Err(Error::CapacityExceeded);
+    }
+    validate_identity(&record.request.request_id, "native request")?;
+    validate_identity(&record.request.principal_id, "native principal")?;
+    validate_digest(&record.request.payload_digest, "native payload")?;
+    if record.request.worker_generation == 0
+        || record.request.model.is_empty()
+        || record.request.model.len() > 256
+    {
+        return Err(Error::InvalidIdentity("native worker/model"));
+    }
+    validate_admission_binding(&record.request)?;
+
+    match record.state {
+        NativeReservationState::Reserved => {
+            if record.dispatch.is_some()
+                || record.turn_id.is_some()
+                || record.cancel_requested
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native reserved snapshot"));
+            }
+        }
+        NativeReservationState::Dispatching => {
+            if record.dispatch.is_none()
+                || record.turn_id.is_some()
+                || record.cancel_requested
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native dispatch snapshot"));
+            }
+        }
+        NativeReservationState::Running => {
+            if record.dispatch.is_none()
+                || record.turn_id.is_none()
+                || record.cancel_requested
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native running snapshot"));
+            }
+        }
+        NativeReservationState::Cancelling => {
+            if record.dispatch.is_none()
+                || !record.cancel_requested
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native cancelling snapshot"));
+            }
+        }
+        NativeReservationState::Indeterminate => {
+            if record.dispatch.is_none()
+                || record.pre_dispatch_stop.is_some()
+                || record
+                    .observation
+                    .as_ref()
+                    .is_none_or(|output| output.terminal_observed)
+            {
+                return Err(Error::CorruptJournal("native indeterminate snapshot"));
+            }
+        }
+        NativeReservationState::Released => {
+            let local_stop = record.pre_dispatch_stop.is_some()
+                && record.dispatch.is_none()
+                && record.observation.is_none();
+            let terminal = record.pre_dispatch_stop.is_none()
+                && record.dispatch.is_some()
+                && record
+                    .observation
+                    .as_ref()
+                    .is_some_and(|output| output.terminal_observed);
+            if !local_stop && !terminal {
+                return Err(Error::CorruptJournal("native released snapshot"));
+            }
+        }
+    }
+
+    if let Some(dispatch) = &record.dispatch {
+        validate_identity(&dispatch.thread_id, "native thread")?;
+        validate_identity(&dispatch.model_provider, "native provider")?;
+        validate_digest(&dispatch.context_digest, "native context")?;
+        validate_dispatch_authority(record, dispatch)?;
+    }
+    if let Some(turn_id) = &record.turn_id {
+        validate_identity(turn_id, "native turn")?;
+    }
+    if let Some(reason) = &record.pre_dispatch_stop
+        && (reason.is_empty() || reason.len() > 4096)
+    {
+        return Err(Error::CorruptJournal("native stop snapshot"));
+    }
+    if let Some(output) = &record.observation {
+        let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
+        if output.thread_id != dispatch.thread_id
+            || output.model_provider != dispatch.model_provider
+            || output.model != record.request.model
+            || record
+                .turn_id
+                .as_ref()
+                .is_some_and(|turn| turn != &output.turn_id)
+            || output.output.len() > 1024 * 1024
+            || output
+                .stop_reason
+                .as_ref()
+                .is_some_and(|reason| reason.len() > 4096)
+            || output.terminal_observed == (output.status == NativeRunStatus::Indeterminate)
+        {
+            return Err(Error::CorruptJournal("native observation snapshot"));
+        }
+        validate_final_use_observation(record, output)?;
+    }
+    Ok(())
 }
 
 fn validate_admission_binding(request: &NativeRequest) -> Result<(), Error> {

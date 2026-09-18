@@ -5,12 +5,16 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-inferd/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
+      - "scripts/hepta-inference-control-boundary.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
@@ -19,12 +23,16 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-inferd/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
+      - "scripts/hepta-inference-control-boundary.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
@@ -61,6 +69,8 @@ jobs:
           python3 scripts/hepta-lane-b-truth.py self-test
           python3 -m unittest scripts/test_hepta_lane_b_truth.py
           python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta-inference-control-boundary.py self-test
+          python3 scripts/hepta-inference-control-boundary.py verify
           git diff --check
 
       - name: Verify JavaScript runtime boundaries
@@ -83,8 +93,11 @@ jobs:
           cargo test -p codex-hepta-supervisor --lib
           cargo test -p codex-hepta-agentd --lib
           cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
+          cargo test -p codex-hepta-infer-core --lib
           cargo test -p codex-hepta-infer-core --bin hepta-infer-control
+          cargo test -p codex-hepta-infer-worker-host --lib
           cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
+          cargo test -p codex-hepta-inferd --lib
           cargo test -p codex-hepta-automation --lib
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
           cargo test -p codex-hepta-matrixd --lib
@@ -130,6 +143,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
+          python3 scripts/hepta-inference-control-boundary.py verify
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cd ..
           git diff --check
