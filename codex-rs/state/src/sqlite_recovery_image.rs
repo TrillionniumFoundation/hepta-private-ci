@@ -1,8 +1,12 @@
-//! A bounded copy of a retained cold descriptor, never a source-file writer.
+//! Descriptor-bound SQLite recovery-image helpers.
 //!
-//! Identity checks detect drift, not an atomic snapshot. The consumer MUST
-//! validate a complete independent current-cut witness on the immutable copy
-//! before trusting any result. No WAL/journal replay or source mutation occurs.
+//! Identity checks detect drift, not currentness. Read-only cold-image opening
+//! accepts only a single retained database descriptor with no sidecars. Writable
+//! recovery materialization may copy retained database, WAL, and rollback-journal
+//! bytes into a fresh private generation; SQLite is allowed to replay only that
+//! copy. The source path is never reopened by SQLite and is never mutated.
+//! Consumers still MUST authenticate a complete independently retained current
+//! cut before trusting or activating any recovered generation.
 
 use super::ExistingSqliteRecoveryGuard;
 use super::SqliteConfig;
@@ -10,19 +14,14 @@ use super::SqliteRecoveryError;
 use sqlx::SqlitePool;
 
 impl SqliteConfig {
-    /// Copy at most 128 MiB from the retained descriptor, with no sidecars
-    /// present, into a read-only SQLite memory image. Unix only.
-    ///
-    /// This low-level pool does not authenticate its contents or grant recovery
-    /// authority. Every replacement connection receives the SAME copied bytes;
-    /// no connection ever reopens the source filename. Its main database cannot
-    /// be written even if query_only is disabled. The trusted consumer must keep
-    /// the pool private and compare the complete canonical cut before use.
-    /// The 128 MiB limit is on input bytes, not total memory: the retained copy
-    /// and SQLite-owned copy consume up to 256 MiB together, plus SQLite caches,
-    /// query results and validation allocations. It is not a latency guarantee.
-    /// Materialize one identity-bound recovery candidate from retained
+    /// Materialize one identity-bound writable recovery candidate from retained
     /// descriptors into a new private path under this SQLite home.
+    ///
+    /// The database descriptor is bounded to 128 MiB, each retained WAL or
+    /// rollback journal to 128 MiB, and the aggregate retained bundle to
+    /// 256 MiB. This helper does not authenticate currentness or grant writer
+    /// authority; the cognitive owner performs exact-cut, integrity, authority,
+    /// checkpoint, and activation checks before the copy can become active.
     ///
     /// The source filename is never reopened for SQLite access. Database, WAL,
     /// and rollback-journal bytes are read from the retained descriptors into a
