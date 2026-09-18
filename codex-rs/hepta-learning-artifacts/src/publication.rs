@@ -100,7 +100,8 @@ impl ArtifactPublicationTransactionV1 {
             {
                 Ok(())
             }
-            ArtifactPublicationPhaseV1::WitnessDurable
+            ArtifactPublicationPhaseV1::SnapshotDurable
+            | ArtifactPublicationPhaseV1::WitnessDurable
             | ArtifactPublicationPhaseV1::Acknowledged => {
                 Err(ArtifactPublicationError::PhaseConflict)
             }
@@ -150,8 +151,7 @@ impl ArtifactPublicationTransactionV1 {
             ArtifactPublicationPhaseV1::Prepared => {
                 Err(ArtifactPublicationError::SnapshotNotDurable)
             }
-            ArtifactPublicationPhaseV1::SnapshotDurable
-            | ArtifactPublicationPhaseV1::WitnessDurable
+            ArtifactPublicationPhaseV1::WitnessDurable
             | ArtifactPublicationPhaseV1::Acknowledged => {
                 Err(ArtifactPublicationError::PhaseConflict)
             }
