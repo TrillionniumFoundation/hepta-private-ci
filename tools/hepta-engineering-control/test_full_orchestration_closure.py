@@ -151,6 +151,26 @@ class FullOrchestrationClosureTests(unittest.TestCase):
                     durable["plan"]["mergeQueue"][0]["package_id"], "high-value"
                 )
 
+    def test_orchestration_respects_envelope_assignment_limit(self) -> None:
+        envelope = replace(self.envelope, maximum_assignments=1)
+        packages = (
+            EngineeringWorkPackage(0, "first", (), ("src/first.py",), ("python",)),
+            EngineeringWorkPackage(1, "second", (), ("src/second.py",), ("python",)),
+        )
+        plan = plan_engineering_work(
+            envelope,
+            packages,
+            (WorkerCapacity("worker", ("python",), 2, ("src",)),),
+            (),
+            self.trust,
+            generation_id="limited-generation",
+            review_capacity=(),
+            ci_capacity_units=2,
+            now_ns=self.now + 1,
+        )
+        self.assertEqual(tuple(item.package_id for item in plan.assignments), ("first",))
+        self.assertEqual(plan.blocked, (("second", "assignment_limit"),))
+
     def test_forged_completion_receipt_fails_closed(self) -> None:
         forged = replace(self._completion(), source_tree="c" * 40)
         with self.assertRaisesRegex(EngineeringError, "completion_source_mismatch"):
@@ -177,11 +197,20 @@ class FullOrchestrationClosureTests(unittest.TestCase):
             ("src",),
             require_network_isolation=False,
         )
-        with self.assertRaisesRegex(EngineeringError, "protected_oracle_path"):
-            generate_candidates(
-                envelope,
-                (Mutation("replace_text", "src/lib_tests.rs", "old", "new"),),
-            )
+        for path in (
+            "src/lib_tests.rs",
+            "src/fixtures/input.json",
+            "src/golden/result.json",
+            "src/evaluator/policy.py",
+            "src/component.spec.ts",
+            "src/component.test.js",
+        ):
+            with self.subTest(path=path):
+                with self.assertRaisesRegex(EngineeringError, "protected_oracle_path"):
+                    generate_candidates(
+                        envelope,
+                        (Mutation("replace_text", path, "old", "new"),),
+                    )
 
     def test_multi_file_and_rename_candidate_bundle_are_content_addressed(self) -> None:
         envelope = CandidateEnvelope(
