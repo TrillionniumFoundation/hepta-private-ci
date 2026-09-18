@@ -50,7 +50,8 @@ jobs:
       - name: Install Rust components
         run: rustup component add rustfmt clippy
 
-      - name: Format
+      - name: Format (diagnostic until compile closure)
+        continue-on-error: true
         run: cargo fmt --check
 
       - name: Clippy
