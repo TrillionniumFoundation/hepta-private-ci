@@ -89,6 +89,7 @@ impl Store {
                 claim_log_bytes: 0,
             };
             store.persist_head(&state.head)?;
+            store.initialize_claim_log()?;
             state
         };
 
@@ -183,6 +184,15 @@ impl Store {
             .ok_or(FinalUseError::Unavailable)
     }
 
+    fn initialize_claim_log(&self) -> Result<(), FinalUseError> {
+        if entry_exists(&self.root, "claims.log")? {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let file = open_private(&self.root, "claims.log", Access::Create)?;
+        file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
+    }
+
     fn load_or_migrate(&self) -> Result<State, FinalUseError> {
         let bytes = read_bounded(&self.root, "authority.json")?;
         let schema: StoredSchema =
@@ -201,7 +211,11 @@ impl Store {
                 // Migration is deliberately ordered journal-first, snapshot
                 // second. A crash between them merely repeats an idempotent
                 // union on the next open; it never drops an old claim.
-                let (mut claims, _) = self.load_claims_from(0, stored.state.head.authority_epoch)?;
+                let mut claims = if entry_exists(&self.root, "claims.log")? {
+                    self.load_claims_from(0, stored.state.head.authority_epoch)?.0
+                } else {
+                    BTreeSet::new()
+                };
                 claims.extend(stored.state.used_nonces.iter().copied());
                 let end = self.replace_claims(stored.state.head.authority_epoch, &claims)?;
                 self.persist_head(&stored.state.head)?;
@@ -257,11 +271,7 @@ impl Store {
             return Err(FinalUseError::InvalidTrust);
         }
         if !entry_exists(&self.root, "claims.log")? {
-            return if start == 0 {
-                Ok((BTreeSet::new(), 0))
-            } else {
-                Err(FinalUseError::InvalidTrust)
-            };
+            return Err(FinalUseError::InvalidTrust);
         }
         let mut file = open_private(&self.root, "claims.log", Access::Read)?;
         let length = file
