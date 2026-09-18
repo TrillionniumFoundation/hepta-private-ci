@@ -162,6 +162,8 @@ class MutationSet:
                 paths.append(item.target_path)
         if len(paths) != len(set(paths)):
             raise EngineeringError("mutation_path_conflict")
+        if len(paths) > MAX_CHANGED_FILES:
+            raise EngineeringError("changed_file_limit")
         return MutationSet(values)
 
 
