@@ -549,8 +549,8 @@ impl NativeJournal {
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
                 if let Some(witness) = &dispatch.final_use_witness {
-                    validate_identity(&witness.signer_id, "native final-use signer")?;
-                    validate_identity(&witness.grant_id, "native final-use grant")?;
+                    validate_final_use_identity(&witness.signer_id, "native final-use signer")?;
+                    validate_final_use_identity(&witness.grant_id, "native final-use grant")?;
                     validate_digest(&witness.binding_digest, "native final-use binding")?;
                     if witness.authority_epoch == 0 || witness.expires_at_unix_ms == 0 {
                         return Err(Error::InvalidTime);
@@ -721,6 +721,18 @@ fn observation_output_digest(output: &NativeRunOutput) -> Result<String, Error> 
         return Ok(Digest32::of_bytes(output.output.as_bytes()).to_string());
     }
     Err(Error::CorruptJournal("missing native output digest"))
+}
+
+fn validate_final_use_identity(value: &str, field: &'static str) -> Result<(), Error> {
+    if value.is_empty()
+        || value.len() > 128
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+    {
+        return Err(Error::InvalidIdentity(field));
+    }
+    Ok(())
 }
 
 fn native_redaction_path(path: &std::path::Path) -> PathBuf {
