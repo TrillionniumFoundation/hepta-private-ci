@@ -225,3 +225,34 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
         ))
     );
 }
+
+
+#[test]
+fn compiled_cue_is_deterministic_and_generation_bound() {
+    let snapshot = snapshot_key();
+    let first = compile_cue(
+        digest("objective"),
+        digest("approved-context"),
+        snapshot.clone(),
+        digest("cue-profile"),
+    )
+    .unwrap_or_else(|error| panic!("valid compiled cue: {error}"));
+    let second = compile_cue(
+        digest("objective"),
+        digest("approved-context"),
+        snapshot,
+        digest("cue-profile"),
+    )
+    .unwrap_or_else(|error| panic!("valid compiled cue: {error}"));
+    assert_eq!(first, second);
+
+    let changed = compile_cue(
+        digest("other-objective"),
+        digest("approved-context"),
+        snapshot_key(),
+        digest("cue-profile"),
+    )
+    .unwrap_or_else(|error| panic!("valid changed cue: {error}"));
+    assert_ne!(first.cue_id, changed.cue_id);
+    assert_ne!(first.digest(), changed.digest());
+}
