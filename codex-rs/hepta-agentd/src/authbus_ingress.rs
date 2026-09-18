@@ -38,11 +38,17 @@ pub(crate) struct TextIngress {
 
 impl TextIngress {
     pub async fn open(identity: &AgentdIdentity, trust_file: PathBuf) -> Result<Self, AgentdError> {
-        TextTrust::load(&trust_file, identity)?;
+        let trust = TextTrust::load(&trust_file, identity)?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
             .await
             .map_err(|error| invalid(&error.to_string()))?;
+        if let Some((generation, digest)) = trust.restore_checkpoint()? {
+            evidence
+                .initialize_authbus_restore_checkpoint(generation, digest)
+                .await
+                .map_err(|error| invalid(&error.to_string()))?;
+        }
         Ok(Self {
             evidence,
             trust_file,
