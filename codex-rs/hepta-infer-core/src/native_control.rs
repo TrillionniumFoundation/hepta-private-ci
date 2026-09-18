@@ -171,6 +171,26 @@ impl DurableInferenceControl {
             return Err(Error::WriterUnavailable);
         }
         let id = request.request_id.clone();
+        if let Some(record) = self.archived_native_record(&id)? {
+            return if record.request == request {
+                Ok(record)
+            } else {
+                Err(Error::Conflict)
+            };
+        }
+
+        // Released runs are cold idempotence facts, not live scheduling state.
+        // Before failing a new admission on hot-record or journal capacity,
+        // move them to the owner-only released archive and publish a compact
+        // active journal. commit_native() still reloads and validates under the
+        // writer fence, so a peer mutation between maintenance and admission
+        // cannot bypass the exact-current check.
+        if self.records.len() + self.native.records.len() >= self.capacity
+            || self.needs_compaction()
+        {
+            self.archive_released_native()?;
+        }
+
         self.commit_native(
             &id,
             Event::Reserve {
@@ -347,6 +367,13 @@ impl DurableInferenceControl {
                 if let Some(record) = self.native.records.get(&request.request_id) {
                     return if record.request == *request {
                         Ok(Some(record.clone()))
+                    } else {
+                        Err(Error::Conflict)
+                    };
+                }
+                if let Some(record) = self.archived_native_record(&request.request_id)? {
+                    return if record.request == *request {
+                        Ok(Some(record))
                     } else {
                         Err(Error::Conflict)
                     };
@@ -595,7 +622,7 @@ impl NativeJournal {
     }
 }
 
-fn validate_checkpoint(record: &NativeRunRecord) -> Result<(), Error> {
+pub(super) fn validate_checkpoint(record: &NativeRunRecord) -> Result<(), Error> {
     validate_identity(&record.request.request_id, "native request")?;
     validate_identity(&record.request.principal_id, "native principal")?;
     validate_digest(&record.request.payload_digest, "native payload")?;
