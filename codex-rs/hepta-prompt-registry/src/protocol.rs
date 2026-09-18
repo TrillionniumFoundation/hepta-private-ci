@@ -101,7 +101,12 @@ impl PromptFactorV1 {
                 total.checked_add(value.as_str().len())
             })
             .ok_or(ProtocolCodecError::InvalidField)?;
-        if dimension_bytes > MAX_ELIGIBLE_DIMENSIONS_BYTES {
+        if dimension_bytes > MAX_ELIGIBLE_DIMENSIONS_BYTES
+            || self
+                .eligible_objective_dimensions
+                .windows(2)
+                .any(|window| window[0] >= window[1])
+        {
             return Err(ProtocolCodecError::InvalidField);
         }
         Ok(())
@@ -284,6 +289,22 @@ mod tests {
         assert_eq!(
             PromptFactorV1::decode_canonical_json(&drifted),
             Err(ProtocolCodecError::InvalidJson)
+        );
+    }
+
+    #[test]
+    fn prompt_factor_v1_rejects_noncanonical_dimension_order() {
+        let value = PromptFactorV1 {
+            factor_id: id("factor:2"),
+            semantic_purpose: "bounded verification".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:z"), id("dimension:a")],
+            lifecycle: Lifecycle::Admitted,
+            revision: 2,
+        };
+        assert_eq!(
+            value.encode_canonical_json(),
+            Err(ProtocolCodecError::InvalidField)
         );
     }
 
