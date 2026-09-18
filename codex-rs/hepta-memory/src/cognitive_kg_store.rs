@@ -460,12 +460,12 @@ impl CognitiveStore {
             &nodes,
             &edges,
         )?;
-        if let Some(stored) = stored_kernel_digest
-            && stored != kernel_generation.generation_digest.to_string()
-        {
-            return Err(CognitiveStoreError::Corrupt(format!(
-                "KG projection `{projection_scope}` kernel digest failed canonical recomputation"
-            )));
+        if let Some(stored) = stored_kernel_digest {
+            if stored != kernel_generation.generation_digest.to_string() {
+                return Err(CognitiveStoreError::Corrupt(format!(
+                    "KG projection `{projection_scope}` kernel digest failed canonical recomputation"
+                )));
+            }
         }
 
         let mut node_index_by_id = BTreeMap::new();
