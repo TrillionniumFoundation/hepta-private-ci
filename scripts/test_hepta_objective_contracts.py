@@ -20,16 +20,22 @@ class ObjectiveContractAlignmentTests(unittest.TestCase):
         row = next(p for p in registry["protocols"] if p["id"] == "ObjectiveSourceEnvelopeV1")
         intent = next(f for f in row["fields"] if f["name"] == "structuredIntent")
         fields = {f["name"]: f for f in intent["properties"]}
-        self.assertEqual((fields["legalActionClasses"]["minItems"], fields["legalActionClasses"]["maxItems"]), (0, 127))
+        self.assertEqual(
+            (
+                fields["legalActionClasses"]["minItems"],
+                fields["legalActionClasses"]["maxItems"],
+            ),
+            (0, 127),
+        )
         self.assertEqual(fields["confirmationActionClasses"]["maxItems"], 127)
         self.assertEqual(fields["constraints"]["maxItems"], 246)
+        # The canonical protocol now records cross-field capacity as a compact
+        # invariant instead of duplicating the same fact in an aggregateBounds
+        # presentation object. Guard the actual invariant that the native
+        # lowering relies on, not a redundant document shape.
         self.assertIn(
-            {
-                "fields": ["successPredicates", "terminalConditions", "evidenceRequirements"],
-                "maxTotalItems": 128,
-                "reason": "native ObjectiveFunction success-predicate capacity is shared by all three lowered V1 source arrays",
-            },
-            row["aggregateBounds"],
+            "successPredicates+terminalConditions+evidenceRequirements<=128",
+            row["invariants"],
         )
 
     def test_objective_semantics_do_not_redefine_wire_fields(self):
@@ -39,13 +45,13 @@ class ObjectiveContractAlignmentTests(unittest.TestCase):
 
         objectives = load("docs/control-plane/OBJECTIVES.json")
         contract = objectives["objectiveFunctionContract"]
-        self.assertEqual(
-            contract["fieldShapeAuthority"],
-            "docs/contracts/PROTOCOL_SCHEMAS.json::ObjectiveFunctionV1",
-        )
-        self.assertEqual(contract["immutableWireFields"], wire_fields)
-        self.assertNotIn("allowedActionClasses", contract["immutableWireFields"])
-        self.assertNotIn("abstentionThreshold", contract["immutableWireFields"])
+        self.assertEqual(contract["schema"], "ObjectiveFunctionV1")
+        # registeredV1Fields is the compact semantic projection of the
+        # canonical wire schema. Requiring a second fieldShapeAuthority string
+        # and immutableWireFields copy only recreated the same source of truth.
+        self.assertEqual(contract["registeredV1Fields"], wire_fields)
+        self.assertNotIn("allowedActionClasses", contract["registeredV1Fields"])
+        self.assertNotIn("abstentionThreshold", contract["registeredV1Fields"])
 
 
 if __name__ == "__main__":
