@@ -1,18 +1,17 @@
 //! Authoritative snapshot acquisition boundary for `cognitive.read`.
 //!
-//! The legacy read functions intentionally validate only caller-supplied bytes.
-//! This module adds the missing provider boundary: a product adapter must acquire
-//! one coherent, scope-bound generation vector from an authoritative owner before
-//! any read result can be attached to downstream context.
+//! The lower-level read projection validates only caller-supplied immutable
+//! snapshot bytes. Product callers must instead acquire an owner-created cut,
+//! bind the exact read-relevant owner/host generations, and revalidate that
+//! authority immediately before the result is consumed.
 
 use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_cognitive_types::CognitiveSnapshot;
-use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
-use codex_hepta_cognitive_types::lane_c::LaneCContractError;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::ReadRequestV2;
@@ -20,8 +19,58 @@ use crate::ReadResultV2;
 use crate::ReadV2Error;
 use crate::read_v2;
 
+const GENERATION_VECTOR_DOMAIN: &[u8] = b"hepta.cognitive.read-generation-vector.v1";
 const SNAPSHOT_RECEIPT_DOMAIN: &[u8] = b"hepta.cognitive.authoritative-snapshot.v1";
 const AUTHORITATIVE_READ_DOMAIN: &[u8] = b"hepta.cognitive.authoritative-read.v1";
+
+/// The minimum coherent state that `cognitive.read` actually consumes.
+///
+/// This deliberately does not copy the broader Lane-C generation vector. Prompt,
+/// compact, model, tokenizer, template, and tool-schema generations are owned by
+/// other components and must not be invented merely to authorize a memory read.
+/// A product host binds those systems independently at their own consumption
+/// boundaries.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AuthoritativeReadGenerationVectorV1 {
+    pub scope_id: StableId,
+    pub purpose_id: StableId,
+    pub memory_ledger_frontier: u64,
+    pub source_ledger_frontier: u64,
+    pub tombstone_frontier: u64,
+    pub knowledge_fact_frontier: u64,
+    pub knowledge_graph_generation: Generation,
+    pub consumer_profile_digest: Digest32,
+    pub authority_epoch: u64,
+}
+
+impl AuthoritativeReadGenerationVectorV1 {
+    pub fn validate(&self) -> Result<(), SnapshotProviderError> {
+        if self.consumer_profile_digest.is_zero() {
+            return Err(SnapshotProviderError::InvalidRequest(
+                "consumer_profile_digest",
+            ));
+        }
+        if self.authority_epoch == 0 {
+            return Err(SnapshotProviderError::InvalidRequest("authority_epoch"));
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn digest(&self) -> Digest32 {
+        let mut bytes = GENERATION_VECTOR_DOMAIN.to_vec();
+        push_id(&mut bytes, &self.scope_id);
+        push_id(&mut bytes, &self.purpose_id);
+        push_u64(&mut bytes, self.memory_ledger_frontier);
+        push_u64(&mut bytes, self.source_ledger_frontier);
+        push_u64(&mut bytes, self.tombstone_frontier);
+        push_u64(&mut bytes, self.knowledge_fact_frontier);
+        push_u64(&mut bytes, self.knowledge_graph_generation.get());
+        bytes.extend_from_slice(self.consumer_profile_digest.as_array());
+        push_u64(&mut bytes, self.authority_epoch);
+        Digest32::of_bytes(&bytes)
+    }
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SnapshotAcquisitionRequestV1 {
@@ -29,7 +78,10 @@ pub struct SnapshotAcquisitionRequestV1 {
     pub scope_id: StableId,
     pub purpose_id: StableId,
     pub minimum_memory_frontier: u64,
+    pub minimum_source_frontier: u64,
     pub minimum_tombstone_frontier: u64,
+    pub minimum_knowledge_fact_frontier: u64,
+    pub minimum_knowledge_graph_generation: Generation,
     pub authority_epoch: u64,
     pub deadline_unix_ms: u64,
 }
@@ -52,7 +104,13 @@ impl SnapshotAcquisitionRequestV1 {
         push_id(&mut bytes, &self.scope_id);
         push_id(&mut bytes, &self.purpose_id);
         push_u64(&mut bytes, self.minimum_memory_frontier);
+        push_u64(&mut bytes, self.minimum_source_frontier);
         push_u64(&mut bytes, self.minimum_tombstone_frontier);
+        push_u64(&mut bytes, self.minimum_knowledge_fact_frontier);
+        push_u64(
+            &mut bytes,
+            self.minimum_knowledge_graph_generation.get(),
+        );
         push_u64(&mut bytes, self.authority_epoch);
         push_u64(&mut bytes, self.deadline_unix_ms);
         Digest32::of_bytes(&bytes)
@@ -62,7 +120,7 @@ impl SnapshotAcquisitionRequestV1 {
 /// Product adapters implement this trait against the canonical cognitive owner.
 ///
 /// Implementations must not manufacture a snapshot from independent reads. They
-/// acquire one owner-defined cut and return it with a lease and receipt.
+/// acquire one owner-defined cut and return it with a bounded lease and receipt.
 pub trait AuthoritativeCognitiveSnapshotProvider {
     fn acquire(
         &self,
@@ -73,7 +131,8 @@ pub trait AuthoritativeCognitiveSnapshotProvider {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AuthoritativeSnapshotV1 {
     provider_id: StableId,
-    snapshot_key: CognitiveSnapshotKeyV1,
+    generation_vector: AuthoritativeReadGenerationVectorV1,
+    generation_vector_digest: Digest32,
     snapshot: CognitiveSnapshot,
     acquired_at_unix_ms: u64,
     lease_expires_unix_ms: u64,
@@ -84,30 +143,30 @@ pub struct AuthoritativeSnapshotV1 {
 impl AuthoritativeSnapshotV1 {
     pub fn new(
         provider_id: StableId,
-        snapshot_key: CognitiveSnapshotKeyV1,
+        generation_vector: AuthoritativeReadGenerationVectorV1,
         snapshot: CognitiveSnapshot,
         acquired_at_unix_ms: u64,
         lease_expires_unix_ms: u64,
     ) -> Result<Self, SnapshotProviderError> {
-        snapshot_key
-            .validate()
-            .map_err(SnapshotProviderError::Contract)?;
+        generation_vector.validate()?;
         snapshot
             .validate_integrity()
             .map_err(|_| SnapshotProviderError::SnapshotIntegrity)?;
         if acquired_at_unix_ms == 0 || lease_expires_unix_ms <= acquired_at_unix_ms {
             return Err(SnapshotProviderError::InvalidLeaseWindow);
         }
+        let generation_vector_digest = generation_vector.digest();
         let receipt_digest = compute_snapshot_receipt_digest(
             &provider_id,
-            &snapshot_key,
+            generation_vector_digest,
             &snapshot,
             acquired_at_unix_ms,
             lease_expires_unix_ms,
         );
         Ok(Self {
             provider_id,
-            snapshot_key,
+            generation_vector,
+            generation_vector_digest,
             snapshot,
             acquired_at_unix_ms,
             lease_expires_unix_ms,
@@ -122,9 +181,7 @@ impl AuthoritativeSnapshotV1 {
         request: &SnapshotAcquisitionRequestV1,
     ) -> Result<(), SnapshotProviderError> {
         request.validate(now_unix_ms)?;
-        self.snapshot_key
-            .validate()
-            .map_err(SnapshotProviderError::Contract)?;
+        self.generation_vector.validate()?;
         self.snapshot
             .validate_integrity()
             .map_err(|_| SnapshotProviderError::SnapshotIntegrity)?;
@@ -137,24 +194,43 @@ impl AuthoritativeSnapshotV1 {
         if now_unix_ms >= self.lease_expires_unix_ms {
             return Err(SnapshotProviderError::LeaseExpired);
         }
-        if self.snapshot_key.vector.scope_id != request.scope_id {
+        if self.lease_expires_unix_ms > request.deadline_unix_ms {
+            return Err(SnapshotProviderError::InvalidLeaseWindow);
+        }
+        if self.generation_vector.scope_id != request.scope_id {
             return Err(SnapshotProviderError::ScopeMismatch);
         }
-        if self.snapshot_key.vector.purpose_id != request.purpose_id {
+        if self.generation_vector.purpose_id != request.purpose_id {
             return Err(SnapshotProviderError::PurposeMismatch);
         }
-        if self.snapshot_key.vector.authority_epoch != request.authority_epoch {
+        if self.generation_vector.authority_epoch != request.authority_epoch {
             return Err(SnapshotProviderError::AuthorityEpochMismatch);
         }
-        if self.snapshot_key.vector.memory_ledger_frontier < request.minimum_memory_frontier {
+        if self.generation_vector.memory_ledger_frontier < request.minimum_memory_frontier {
             return Err(SnapshotProviderError::StaleMemoryFrontier);
         }
-        if self.snapshot_key.vector.tombstone_frontier < request.minimum_tombstone_frontier {
+        if self.generation_vector.source_ledger_frontier < request.minimum_source_frontier {
+            return Err(SnapshotProviderError::StaleSourceFrontier);
+        }
+        if self.generation_vector.tombstone_frontier < request.minimum_tombstone_frontier {
             return Err(SnapshotProviderError::StaleTombstoneFrontier);
+        }
+        if self.generation_vector.knowledge_fact_frontier
+            < request.minimum_knowledge_fact_frontier
+        {
+            return Err(SnapshotProviderError::StaleKnowledgeFactFrontier);
+        }
+        if self.generation_vector.knowledge_graph_generation
+            < request.minimum_knowledge_graph_generation
+        {
+            return Err(SnapshotProviderError::StaleKnowledgeGraphGeneration);
+        }
+        if self.generation_vector_digest != self.generation_vector.digest() {
+            return Err(SnapshotProviderError::GenerationVectorDigestMismatch);
         }
         let expected = compute_snapshot_receipt_digest(
             &self.provider_id,
-            &self.snapshot_key,
+            self.generation_vector_digest,
             &self.snapshot,
             self.acquired_at_unix_ms,
             self.lease_expires_unix_ms,
@@ -171,8 +247,13 @@ impl AuthoritativeSnapshotV1 {
     }
 
     #[must_use]
-    pub const fn snapshot_key(&self) -> &CognitiveSnapshotKeyV1 {
-        &self.snapshot_key
+    pub const fn generation_vector(&self) -> &AuthoritativeReadGenerationVectorV1 {
+        &self.generation_vector
+    }
+
+    #[must_use]
+    pub const fn generation_vector_digest(&self) -> Digest32 {
+        self.generation_vector_digest
     }
 
     #[must_use]
@@ -246,7 +327,7 @@ pub fn read_authoritative<P: AuthoritativeCognitiveSnapshotProvider>(
     let request_digest = acquisition_request.digest();
     let read_result =
         read_v2(&envelope.snapshot, read_request).map_err(SnapshotProviderError::Read)?;
-    let generation_vector_digest = envelope.snapshot_key.vector_digest;
+    let generation_vector_digest = envelope.generation_vector_digest;
     let snapshot_receipt_digest = envelope.receipt_digest;
     let binding_digest = compute_authoritative_read_digest(
         request_digest,
@@ -266,9 +347,48 @@ pub fn read_authoritative<P: AuthoritativeCognitiveSnapshotProvider>(
     Ok(result)
 }
 
+/// Revalidate an already-computed read immediately before product consumption.
+///
+/// The original leased envelope remains the authority for the computed bytes.
+/// The current envelope is a fresh owner observation. Both must validate against
+/// the same request, and every read-relevant generation plus the immutable
+/// snapshot must remain identical. Any drift fails closed.
+pub fn revalidate_authoritative_read(
+    result: &AuthoritativeReadResultV1,
+    original: &AuthoritativeSnapshotV1,
+    current: &AuthoritativeSnapshotV1,
+    now_unix_ms: u64,
+    request: &SnapshotAcquisitionRequestV1,
+) -> Result<(), SnapshotProviderError> {
+    result.validate()?;
+    original.validate_for_request(now_unix_ms, request)?;
+    current.validate_for_request(now_unix_ms, request)?;
+    if result.request_digest != request.digest() {
+        return Err(SnapshotProviderError::RequestBindingMismatch);
+    }
+    if result.snapshot_receipt_digest != original.receipt_digest
+        || result.generation_vector_digest != original.generation_vector_digest
+    {
+        return Err(SnapshotProviderError::ReceiptDigestMismatch);
+    }
+    if original.provider_id != current.provider_id {
+        return Err(SnapshotProviderError::ProviderMismatch);
+    }
+    if original.generation_vector != current.generation_vector
+        || original.generation_vector_digest != current.generation_vector_digest
+    {
+        return Err(SnapshotProviderError::GenerationGone);
+    }
+    if original.snapshot != current.snapshot
+        || result.read_result.snapshot_digest() != original.snapshot.snapshot_digest
+    {
+        return Err(SnapshotProviderError::ReadSnapshotMismatch);
+    }
+    Ok(())
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SnapshotProviderError {
-    Contract(LaneCContractError),
     Read(ReadV2Error),
     InvalidRequest(&'static str),
     InvalidLeaseWindow,
@@ -279,10 +399,16 @@ pub enum SnapshotProviderError {
     PurposeMismatch,
     AuthorityEpochMismatch,
     StaleMemoryFrontier,
+    StaleSourceFrontier,
     StaleTombstoneFrontier,
+    StaleKnowledgeFactFrontier,
+    StaleKnowledgeGraphGeneration,
     SnapshotIntegrity,
     ReadSnapshotMismatch,
+    RequestBindingMismatch,
+    GenerationVectorDigestMismatch,
     ReceiptDigestMismatch,
+    ProviderMismatch,
     AuthorityGranted,
     EmptyDigest,
     Unavailable,
@@ -301,7 +427,7 @@ impl StdError for SnapshotProviderError {}
 
 fn compute_snapshot_receipt_digest(
     provider_id: &StableId,
-    snapshot_key: &CognitiveSnapshotKeyV1,
+    generation_vector_digest: Digest32,
     snapshot: &CognitiveSnapshot,
     acquired_at_unix_ms: u64,
     lease_expires_unix_ms: u64,
@@ -309,7 +435,7 @@ fn compute_snapshot_receipt_digest(
     let mut bytes = Vec::new();
     bytes.extend_from_slice(SNAPSHOT_RECEIPT_DOMAIN);
     push_id(&mut bytes, provider_id);
-    bytes.extend_from_slice(snapshot_key.vector_digest.as_array());
+    bytes.extend_from_slice(generation_vector_digest.as_array());
     bytes.extend_from_slice(snapshot.snapshot_digest.as_array());
     push_u64(&mut bytes, acquired_at_unix_ms);
     push_u64(&mut bytes, lease_expires_unix_ms);
