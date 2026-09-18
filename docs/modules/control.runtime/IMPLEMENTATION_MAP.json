@@ -10,8 +10,8 @@
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "narrow_read_only_context_composed_global_effect_caller_not_composed",
+  "productionWriterState": "durable_owner_local_store_implemented_not_product_composed",
   "operations": [
     {
       "operation": "collect_snapshot",
@@ -194,6 +194,202 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
+    },
+    {
+      "operation": "canonical_resource_profile_digest",
+      "nativeSymbol": "codex_hepta_control_plane::canonical_resource_profile_digest",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "ResourceReservationV1 list"
+      ],
+      "outputs": [
+        "Digest32"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "resource_profile_digest_binds_exact_reservations"
+        }
+      ],
+      "designOperation": "canonical_resource_profile_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "evaluate_prepared_plan_with_ndu",
+      "nativeSymbol": "codex_hepta_control_plane::evaluate_prepared_plan_with_ndu",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "inputs": [
+        "GlobalStateSnapshotV1",
+        "PreparedPlanInputV1",
+        "NduPlanningInputV1",
+        "monotonic time"
+      ],
+      "outputs": [
+        "EvaluatedPlanV1"
+      ],
+      "state": "source_implemented_owner_composition",
+      "authority": "deny_all",
+      "ownerBoundary": "utility.ndu computes the evaluation; control.runtime validates owner/candidate coverage and seals only the consumed projection",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+          "symbol": "owner_evaluation_composes_into_real_planner_without_self_reported_selection"
+        }
+      ],
+      "designOperation": "evaluate_prepared_plan_with_ndu",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_ndu::evaluate_candidates_with_policy"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "plan_global_v1",
+      "nativeSymbol": "codex_hepta_control_plane::plan_global_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_global.rs",
+      "inputs": [
+        "authenticated owner ports",
+        "NDU planning port",
+        "GlobalPlanningRequestV1"
+      ],
+      "outputs": [
+        "GlobalPlanningReceiptV1"
+      ],
+      "state": "source_implemented_authenticated_port_composition",
+      "authority": "deny_all",
+      "nonClaim": "owner-port traits require trusted host authentication; no physical effect or grant issuance is performed",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_global_tests.rs",
+          "symbol": "multi_owner_global_plan_runs_real_ndu_and_emits_grant_request"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_global_tests.rs",
+          "symbol": "missing_required_owner_port_fails_closed"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_global_tests.rs",
+          "symbol": "mixed_clock_binding_is_rejected_before_owner_reads"
+        }
+      ],
+      "designOperation": "plan_global_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "collect_snapshot",
+        "prepare_plan",
+        "NduPlanningPortV1::evaluate",
+        "request_execution_grants"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "plan_observed_context",
+      "nativeSymbol": "codex_hepta_control_plane::plan_observed_context",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "inputs": [
+        "ObservedContextV1"
+      ],
+      "outputs": [
+        "ObservedContextPlanV1"
+      ],
+      "state": "product_composed_read_only_bounded_adapter",
+      "authority": "deny_all",
+      "productCaller": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+          "symbol": "measured_context_is_selected_and_budget_excess_abstains"
+        }
+      ],
+      "designOperation": "plan_observed_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "plan_global_v1"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "claim_execution_grant_v1",
+      "nativeSymbol": "codex_hepta_control_plane::claim_execution_grant_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_authority.rs",
+      "inputs": [
+        "FinalUseAuthority",
+        "GrantRequestSetV1",
+        "request index",
+        "subject",
+        "destination",
+        "SignedFinalUseGrant"
+      ],
+      "outputs": [
+        "ClaimedExecutionGrantV1"
+      ],
+      "state": "source_implemented_independent_authority_bridge",
+      "authority": "independent_kernel_authority_only",
+      "nonClaim": "control.runtime does not sign grants; the opaque token is created by kernel.authority and revalidated immediately before the effect closure",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_authority_tests.rs",
+          "symbol": "independent_authority_claim_revalidates_at_effect_boundary"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_authority_tests.rs",
+          "symbol": "payload_or_scope_drift_rejects_before_nonce_claim"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_authority_tests.rs",
+          "symbol": "authority_nonce_is_single_use_even_when_effect_is_not_dispatched"
+        }
+      ],
+      "designOperation": "claim_execution_grant_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_contracts::FinalUseAuthority::claim",
+        "codex_hepta_contracts::FinalUseAuthority::with_verified_use"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "PlannerJournalStoreV1",
+      "nativeSymbol": "codex_hepta_control_plane::PlannerJournalStoreV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "inputs": [
+        "PlannerJournalV1",
+        "owner-local directory"
+      ],
+      "outputs": [
+        "fsync-backed journal envelope",
+        "committed frontier",
+        "bounded backup"
+      ],
+      "state": "source_implemented_owner_local_durable_store_candidate",
+      "authority": "none",
+      "nonClaim": "not yet attached to a production global-planner writer",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "durable_store_reopens_exact_committed_journal"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "frontier_rolls_back_only_an_uncommitted_current_replacement"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "committed_revocation_cannot_be_resurrected_from_older_backup"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "raw_v1_journal_migrates_to_store_envelope_and_frontier"
+        }
+      ],
+      "designOperation": "PlannerJournalStoreV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalDomainContracts": [
@@ -211,14 +407,18 @@
   "completion": {
     "specification": "complete",
     "nativePlanningKernel": "candidate_implemented",
-    "ownerLocalDurabilityReference": "candidate_implemented",
+    "ownerLocalDurabilityReference": "fsync_frontier_store_candidate_implemented",
     "canonicalExternalProtocolAdmission": "not_established",
-    "productionCaller": "not_established",
+    "productionCaller": "global_effect_caller_not_established",
     "productionWriter": "not_established",
-    "exactHeadQualification": "required",
+    "exactHeadQualification": "current_pull_request_required",
     "independentAcceptance": "not_established",
     "activation": "not_established",
-    "release": "not_established"
+    "release": "not_established",
+    "authenticatedGlobalComposition": "candidate_implemented",
+    "narrowProductCaller": "established_read_only_context",
+    "independentAuthorityBridge": "candidate_implemented",
+    "namedHostMeasurement": "current_pull_request_required"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -236,15 +436,21 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "narrowReadOnlyProductComposition": true,
+    "authenticatedGlobalCompositionSource": true,
+    "independentAuthorityBridgeSource": true,
+    "durableOwnerLocalStoreSource": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Attach PlannerJournalStoreV1 to the selected production global-planner writer and define its deployed state directory/backup policy.",
+    "Bind plan_global_v1 to concrete authenticated runtime.fleet and kernel.evidence producer adapters in the selected product host.",
+    "Bind claim_execution_grant_v1 to the selected physical effect adapter; control.runtime itself remains authority-free.",
+    "Pass the dedicated source-head, deterministic synthetic-merge and named-host measurement workflow at the exact candidate."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
