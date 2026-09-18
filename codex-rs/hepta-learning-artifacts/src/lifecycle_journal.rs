@@ -669,10 +669,10 @@ mod tests {
 
         let mut tampered = journal.snapshot();
         tampered.records[0].actor.verified_at = 11;
-        assert_eq!(
+        assert!(matches!(
             ArtifactLifecycleJournalV2::from_snapshot(tampered, 20),
             Err(ArtifactLifecycleJournalError::SnapshotMismatch)
-        );
+        ));
     }
 
     #[test]
