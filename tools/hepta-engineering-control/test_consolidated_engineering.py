@@ -124,7 +124,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(store.audit_projection(), before)
                 self.assertEqual(
-                    store.connection.execute("PRAGMA user_version").fetchone()[0], 5
+                    store.connection.execute("PRAGMA user_version").fetchone()[0], 6
                 )
                 self.assertEqual(
                     store.connection.execute(
