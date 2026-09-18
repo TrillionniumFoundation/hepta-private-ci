@@ -10,6 +10,7 @@ use codex_hepta_types::StableId;
 use codex_hepta_wire::WireEnvelope;
 use codex_hepta_wire::WireError;
 use serde_json::Value;
+use std::fmt::Debug;
 use std::process::Command;
 use std::process::Stdio;
 
@@ -37,6 +38,20 @@ print(json.dumps({'schema': schema, 'producer': producer, 'generation': generati
                  sort_keys=True))
 "#;
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected fixture error: {error:?}"),
+    }
+}
+
+fn some<T>(value: Option<T>, label: &str) -> T {
+    match value {
+        Some(value) => value,
+        None => panic!("missing fixture value: {label}"),
+    }
+}
+
 fn encode_hex(bytes: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut output = String::with_capacity(bytes.len() * 2);
@@ -53,40 +68,33 @@ fn run_python(frame: &[u8]) -> std::process::Output {
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
-        .spawn()
-        .expect("python3 is required for the Rust↔Python product boundary test");
+        .spawn();
+    let mut child = must(child);
     use std::io::Write;
-    child
-        .stdin
-        .take()
-        .expect("python stdin")
-        .write_all(encode_hex(frame).as_bytes())
-        .expect("write frame to python");
-    child.wait_with_output().expect("python parser result")
+    let mut stdin = some(child.stdin.take(), "python stdin");
+    must(stdin.write_all(encode_hex(frame).as_bytes()));
+    drop(stdin);
+    must(child.wait_with_output())
 }
 
 #[test]
 fn rust_python_wire_roundtrip_and_payload_fault_reject() {
-    let schema = StableId::new("hepta.integration.v1").unwrap();
-    let producer = StableId::new("hepta-shadow-qualification").unwrap();
-    let generation = Generation::new(7).unwrap();
+    let schema = must(StableId::new("hepta.integration.v1"));
+    let producer = must(StableId::new("hepta-shadow-qualification"));
+    let generation = must(Generation::new(7));
     let payload = br#"{"objective":"ndu","authority":"deny_all","step":1}"#.to_vec();
     let envelope = WireEnvelope::new(
         schema.clone(),
         producer.clone(),
         generation,
         payload.clone(),
-    )
-    .expect("valid product envelope");
+    );
+    let envelope = must(envelope);
     let frame = envelope.encode();
 
     let output = run_python(&frame);
-    assert!(
-        output.status.success(),
-        "python parser failed: {:?}",
-        output
-    );
-    let report: Value = serde_json::from_slice(&output.stdout).expect("python JSON receipt");
+    assert!(output.status.success(), "python parser failed: {output:?}");
+    let report: Value = must(serde_json::from_slice(&output.stdout));
     assert_eq!(report["schema"], schema.as_str());
     assert_eq!(report["producer"], producer.as_str());
     assert_eq!(report["generation"], generation.get());
@@ -98,8 +106,8 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
 
     // Mutating the payload without changing the signed digest must be rejected
     // by both language boundaries.
-    let mut tampered = frame.clone();
-    *tampered.last_mut().expect("non-empty payload") ^= 0x01;
+    let mut tampered = frame;
+    *some(tampered.last_mut(), "non-empty payload") ^= 0x01;
     let python_fault = run_python(&tampered);
     assert!(!python_fault.status.success());
     assert!(String::from_utf8_lossy(&python_fault.stderr).contains("digest mismatch"));
