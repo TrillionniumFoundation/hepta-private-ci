@@ -124,11 +124,9 @@ pub fn qualify(
     })
 }
 
-
 fn validate_provenance(value: &ExecutionProvenance) -> Result<Digest32, Error> {
-    let hex40 = |value: &str| {
-        value.len() == 40 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
-    };
+    let hex40 =
+        |value: &str| value.len() == 40 && value.bytes().all(|byte| byte.is_ascii_hexdigit());
     if !hex40(&value.source_sha)
         || !hex40(&value.source_tree)
         || value.binary_digest.is_zero()
