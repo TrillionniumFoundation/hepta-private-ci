@@ -19,6 +19,10 @@ fn revision(value: u64) -> Revision {
     Revision::new(value).unwrap_or_else(|error| panic!("valid revision: {error}"))
 }
 
+fn sequence(value: u64) -> LogicalSequence {
+    LogicalSequence::new(value).unwrap_or_else(|error| panic!("valid sequence: {error}"))
+}
+
 fn snapshot_key() -> CognitiveSnapshotKeyV1 {
     CognitiveSnapshotKeyV1::new(LaneCGenerationVectorV1 {
         scope_id: id("scope:store"),
@@ -127,6 +131,73 @@ fn admission_appends_full_revision_history_and_advances_frontiers() {
     assert_eq!(
         history[1].predecessor_digest,
         Some(history[0].record_digest())
+    );
+}
+
+#[test]
+fn only_verified_candidates_can_enter_the_live_ledger() {
+    for (verification, expected) in [
+        (
+            MemoryVerificationState::Unverified,
+            CognitiveStoreV2Error::UnverifiedCandidate,
+        ),
+        (
+            MemoryVerificationState::Contradicted,
+            CognitiveStoreV2Error::ContradictedCandidate,
+        ),
+        (
+            MemoryVerificationState::Revoked,
+            CognitiveStoreV2Error::RevokedCandidate,
+        ),
+    ] {
+        let mut store = store();
+        let mut value = candidate("memory:verification", "content", MemoryAdmissionKind::Inference);
+        value.verification = verification;
+        let write_intent = intent(&store, "intent:verification", &value);
+        assert_eq!(
+            store.append_admitted(&Verifier, value, write_intent),
+            Err(expected)
+        );
+        assert!(store.current_head(&id("memory:verification")).is_none());
+        assert_eq!(store.sequence(), sequence(1));
+    }
+}
+
+#[test]
+fn revocation_reserve_allows_forget_after_ordinary_capacity_is_full() {
+    let mut store =
+        AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
+            .unwrap_or_else(|error| panic!("valid tiny store: {error}"));
+    let first = candidate("memory:1", "content:v1", MemoryAdmissionKind::Observation);
+    store
+        .append_admitted(&Verifier, first.clone(), intent(&store, "intent:1", &first))
+        .unwrap_or_else(|error| panic!("fill ordinary capacity: {error}"));
+
+    let second = candidate("memory:2", "content:v1", MemoryAdmissionKind::Observation);
+    let second_intent = intent(&store, "intent:2", &second);
+    assert_eq!(
+        store.append_admitted(&Verifier, second, second_intent),
+        Err(CognitiveStoreV2Error::CapacityExceeded)
+    );
+
+    let tombstone = store
+        .forget(
+            &Verifier,
+            ForgetIntentV2 {
+                intent_id: id("forget:1"),
+                record_id: id("memory:1"),
+                expected_snapshot: store.snapshot_key().clone(),
+                writer_fence_digest: digest("writer-fence"),
+                authorization_digest: digest("authorization"),
+                reason_digest: digest("capacity-safe-delete"),
+            },
+        )
+        .unwrap_or_else(|error| panic!("revocation reserve must remain writable: {error}"));
+    assert_eq!(tombstone.disposition, MemoryWriteDisposition::Inserted);
+    assert_eq!(store.history(&id("memory:1")).expect("history").len(), 2);
+    assert_eq!(
+        store.current_head(&id("memory:1")).expect("head").state,
+        RecordState::Tombstone
     );
 }
 
@@ -265,4 +336,50 @@ fn export_reopen_and_snapshot_preserve_history_and_tombstones() {
     snapshot
         .validate(10)
         .unwrap_or_else(|error| panic!("validate snapshot: {error}"));
+}
+
+
+#[test]
+fn image_validation_rejects_journal_receipt_identity_drift_even_after_rehash() {
+    let mut store = store();
+    let first = candidate("memory:1", "content:v1", MemoryAdmissionKind::Observation);
+    store
+        .append_admitted(&Verifier, first.clone(), intent(&store, "intent:1", &first))
+        .unwrap_or_else(|error| panic!("append: {error}"));
+
+    let mut image = store.export_image().expect("image");
+    image.journal[0].receipt.intent_id = id("intent:forged");
+    image.image_digest = image.compute_image_digest();
+    assert_eq!(
+        image.validate(),
+        Err(CognitiveStoreV2Error::JournalReceiptMismatch("intent_id"))
+    );
+}
+
+#[test]
+fn image_validation_rejects_sequence_and_frontier_drift_even_after_rehash() {
+    let mut store = store();
+    let first = candidate("memory:1", "content:v1", MemoryAdmissionKind::Observation);
+    store
+        .append_admitted(&Verifier, first.clone(), intent(&store, "intent:1", &first))
+        .unwrap_or_else(|error| panic!("append: {error}"));
+
+    let mut sequence_drift = store.export_image().expect("image");
+    sequence_drift.sequence = sequence(1);
+    sequence_drift.image_digest = sequence_drift.compute_image_digest();
+    assert_eq!(
+        sequence_drift.validate(),
+        Err(CognitiveStoreV2Error::ImageSequenceMismatch)
+    );
+
+    let mut frontier_drift = store.export_image().expect("image");
+    let mut vector = frontier_drift.snapshot_key.vector.clone();
+    vector.memory_ledger_frontier = 1;
+    frontier_drift.snapshot_key =
+        CognitiveSnapshotKeyV1::new(vector).expect("structurally valid forged frontier");
+    frontier_drift.image_digest = frontier_drift.compute_image_digest();
+    assert_eq!(
+        frontier_drift.validate(),
+        Err(CognitiveStoreV2Error::ImageFrontierMismatch("memory"))
+    );
 }
