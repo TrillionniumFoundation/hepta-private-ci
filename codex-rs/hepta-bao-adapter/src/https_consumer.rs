@@ -162,6 +162,25 @@ impl BaoClient {
         request: &BaoReadRequest,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoClientError> {
+        match self
+            .consume_kv_v2_guarded(authority, grant, request, consumer)
+            .await?
+        {
+            Ok(receipt) => Ok(receipt),
+            Err(()) => Err(BaoClientError::ConsumerIndeterminate),
+        }
+    }
+
+    /// Crate-private typed final-delivery gate used by the registered host.
+    /// Provider I/O and secret validation complete first, then kernel authority
+    /// is revalidated and this gate executes at the final consumer boundary.
+    pub(crate) async fn consume_kv_v2_guarded<E>(
+        &self,
+        authority: &FinalUseAuthority,
+        grant: &SignedFinalUseGrant,
+        request: &BaoReadRequest,
+        consumer: impl FnOnce(&[u8]) -> Result<(), E>,
+    ) -> Result<Result<BaoSecretReceipt, E>, BaoClientError> {
         let binding = self.binding(request)?;
         let mut url = self.origin.clone();
         {
@@ -235,12 +254,14 @@ impl BaoClient {
             version: request.version,
             secret_bytes: secret.len(),
         };
-        deliver_final_use(authority, verified, &binding, || {
+        match deliver_final_use(authority, verified, &binding, || {
             consumer(secret.as_bytes())
         })
         .map_err(BaoClientError::Authority)?
-        .map_err(|()| BaoClientError::ConsumerIndeterminate)?;
-        Ok(receipt)
+        {
+            Ok(()) => Ok(Ok(receipt)),
+            Err(error) => Ok(Err(error)),
+        }
     }
 }
 
