@@ -1333,6 +1333,29 @@ mod tests {
     }
 
     #[test]
+    fn epoch_rollover_is_the_only_revision_lineage_reset() {
+        let (registry, _directory) = fixture();
+        let mut expired = lease();
+        expired.expires_at_unix_ms = 1_500;
+        registry.put_lease(expired, 0).unwrap();
+        assert_eq!(registry.prune_expired_leases(1), Ok(1));
+
+        let before = registry.frontier().unwrap();
+        registry.advance_epoch(before.store_revision, 8).unwrap();
+
+        let mut fresh = lease();
+        fresh.authority_epoch = 8;
+        fresh.revision = 1;
+        fresh.issued_at_unix_ms = 1_000;
+        fresh.expires_at_unix_ms = 30_000;
+        registry.put_lease(fresh, 0).unwrap();
+        assert!(registry
+            .verifier()
+            .verify_use("lease-one", 1, &binding())
+            .is_ok());
+    }
+
+    #[test]
     fn maximum_declared_state_shape_fits_restart_read_envelope() {
         let max_id = |prefix: &str, index: usize| {
             let base = format!("{prefix}{index:05}");
@@ -1340,7 +1363,10 @@ mod tests {
         };
         let mut state = State {
             authority_epoch: 7,
-            store_revision: (MAX_AUTHORITY_LEASES + MAX_CAPABILITY_REVOCATIONS + 1) as u64,
+            store_revision: (MAX_AUTHORITY_LEASES
+                + MAX_CAPABILITY_REVOCATIONS
+                + MAX_RETIRED_AUTHORITY_LEASE_IDS
+                + 1) as u64,
             leases: BTreeMap::new(),
             revocations: BTreeMap::new(),
             retired_revisions: BTreeMap::new(),
