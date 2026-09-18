@@ -181,14 +181,9 @@ fn lost_driver_terminality_is_indeterminate() {
         indeterminate: true,
         ..Driver::default()
     };
-    let mut worker = InferenceWorker::new(
-        100,
-        "worker.1".to_string(),
-        3,
-        verified_grant(100),
-        driver,
-    )
-    .expect("worker");
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, verified_grant(100), driver)
+            .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let observed = worker.run(100, "model.1", request()).expect("run");
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
