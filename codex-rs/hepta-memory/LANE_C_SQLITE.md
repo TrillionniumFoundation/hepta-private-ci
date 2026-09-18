@@ -46,10 +46,10 @@ the returned `AuthoritativeReadGuardV1`. Before delivery it reacquires a new
 single-transaction owner cut, rebuilds the same host generation vector and calls
 the guard's final-use revalidation. Exact provider identity, generation-vector
 digest, snapshot digest, authority epoch, frontiers, receipt, deadline and lease
-must remain valid. The surrounding Agentd state-control path independently
-refreshes the Running lifecycle after the async read and requires the host to
-remain ready, so lifecycle authority cannot be replaced by a caller-supplied
-vector.
+must remain valid. The surrounding Agentd state-control path passes its exact refreshed lifecycle
+`current_generation` into the read, refreshes again after the async boundary,
+requires Running+Ready and rejects any generation change, so lifecycle authority
+cannot be replaced by a caller-supplied vector.
 
 `revalidate_lane_c_snapshot` and `revalidate_lane_c_cut` remain owner-level exact
 cut fences for store/recovery use. Product authoritative delivery uses the
