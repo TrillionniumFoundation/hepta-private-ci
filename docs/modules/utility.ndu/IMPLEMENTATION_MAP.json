@@ -273,15 +273,15 @@
       "nonClaim": "digest presence and binding do not authenticate evidence or prove stochastic efficacy",
       "tests": [
         {
-          "path": "codex-rs/hepta-ndu/src/stochastic_admission.rs",
+          "path": "codex-rs/hepta-ndu/src/stochastic_admission_tests.rs",
           "symbol": "every_external_evidence_class_is_digest_bound"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/stochastic_admission.rs",
+          "path": "codex-rs/hepta-ndu/src/stochastic_admission_tests.rs",
           "symbol": "expired_or_wrong_objective_binding_rejects"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/stochastic_admission.rs",
+          "path": "codex-rs/hepta-ndu/src/stochastic_admission_tests.rs",
           "symbol": "admitted_evidence_is_bound_into_the_regression_result"
         }
       ],
