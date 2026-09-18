@@ -79,6 +79,10 @@ connections and serialize writes in SQLite. WAL disk growth, backups, external
 audit anchoring, archival retention and production availability remain operational
 work. The in-file hash chain detects accidental mutation; it is not protection
 against an administrator who can rewrite the complete database and chain.
+`store_snapshot_digest` therefore hashes every authoritative owner table
+independently of that chain; `verify_store_audit_anchor` requires an externally
+signed receipt to match both the current audit head and that deterministic state
+digest.
 
 ## Leases and scheduling
 
@@ -119,8 +123,12 @@ retains the existing SQLite generation/frontier semantics.
 A worker still acquires the normal fenced path lease before a local write. For
 multi-host execution, the real worker-write boundary additionally verifies a fresh
 signed `DistributedWriteGrant` containing leader epoch, fencing token, exact source
-identity, worker identity and path scope. The package does not pretend SQLite is a
-replicated consensus service; a selected external coordinator supplies that receipt.
+identity, worker identity and path scope. The highest admitted worker
+`(leader_epoch, fencing_token)` frontier is persisted in
+`distributed_write_frontiers` in the same owner transaction as its audit event, so
+a process restart cannot make a superseded grant current again. SQLite is still not
+a replicated consensus service; a selected external coordinator supplies leader
+consensus and the local owner only enforces the monotonic observed fence.
 
 ## Candidate qualification
 
@@ -165,13 +173,16 @@ Persisted bindings and seals commit with the decision, and seal reuse under a ne
 decision ID is rejected. Denied decisions can still be recorded without a seal.
 
 `HmacTrustStore` is the deterministic reference/test signing adapter. Production
-composition needs independent registered signing identities and protected verifier
-keys. `KeyCustodyReceipt` requires an externally controlled, hardware-backed,
-non-exportable verifier identity; the local process cannot self-attest that fact.
-Likewise the SQLite audit-chain head is exported for an externally signed
-`AuditAnchorReceipt`; the in-file hash chain alone is not administrator-tamper proof.
-Tests using fixture signers establish protocol behavior; they do not establish
-organizational evaluator independence or production key custody.
+composition needs an external signing/verifying port whose private key never enters
+this process. `KeyCustodyReceipt` now binds the custodied signing identity, key
+algorithm, public-key digest and independent hardware-attestation digest, and
+requires hardware-backed non-exportability. `CustodiedSignatureProvider` is the
+production-facing port; `verify_custodied_signature_provider` binds it to that
+receipt before use. Likewise `AuditAnchorReceipt` binds both the SQLite audit head
+and `store_snapshot_digest`, and `verify_store_audit_anchor` compares the signed
+receipt back to current authoritative state. Tests using fixture signers establish
+protocol behavior; they do not establish organizational evaluator independence or
+real production key custody.
 
 ## Authorized external-system composition
 
