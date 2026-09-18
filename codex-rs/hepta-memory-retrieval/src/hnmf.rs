@@ -266,6 +266,16 @@ pub fn recall_with_engram(
     {
         return Err(HnmfRecallErrorV1::MissingCandidateNode);
     }
+    let mut incoming = vec![Vec::new(); engram.nodes.len()];
+    for synapse in &engram.synapses {
+        let source = *node_by_record
+            .get(&synapse.from_record_id)
+            .ok_or(HnmfRecallErrorV1::UnknownSynapseEndpoint)?;
+        let destination = *node_by_record
+            .get(&synapse.to_record_id)
+            .ok_or(HnmfRecallErrorV1::UnknownSynapseEndpoint)?;
+        incoming[destination].push((source, synapse.weight, synapse.inhibitory));
+    }
 
     let entry_by_record = union
         .entries
@@ -308,18 +318,11 @@ pub fn recall_with_engram(
                 .checked_add(node.cue_bias)
                 .and_then(|value| value.checked_add(leaked))
                 .map_err(|_| HnmfRecallErrorV1::Arithmetic)?;
-            for synapse in engram
-                .synapses
-                .iter()
-                .filter(|synapse| synapse.to_record_id == node.record_id)
-            {
-                let source = *node_by_record
-                    .get(&synapse.from_record_id)
-                    .ok_or(HnmfRecallErrorV1::UnknownSynapseEndpoint)?;
-                let contribution = activation[source]
-                    .checked_mul(synapse.weight)
+            for (source, weight, inhibitory) in &incoming[index] {
+                let contribution = activation[*source]
+                    .checked_mul(*weight)
                     .map_err(|_| HnmfRecallErrorV1::Arithmetic)?;
-                value = if synapse.inhibitory {
+                value = if *inhibitory {
                     if dynamics.inhibition_enabled {
                         value
                             .checked_sub(contribution)
