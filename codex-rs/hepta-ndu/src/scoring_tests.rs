@@ -19,7 +19,7 @@ use crate::ScalarizationProfile;
 use crate::UtilityContribution;
 use crate::UtilityProfile;
 use crate::evaluate_candidates_with_policy;
-use crate::legacy_evaluation_policy;
+use crate::compatibility_evaluation_policy;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid test identifier")
@@ -64,6 +64,8 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
     ];
     let profile = UtilityProfile {
         profile_id: id("three-axis-profile"),
+        axis_registry_digest: Digest32::of_bytes(b"three-axis-registry"),
+        normalization_manifest_digest: Digest32::of_bytes(b"three-axis-normalization"),
         dimensions: axes()
             .into_iter()
             .map(|axis| (axis, AxisDirection::Maximize))
@@ -74,7 +76,7 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
             organ_ids: vec![id("observed-owner")],
         },
     };
-    let mut policy = legacy_evaluation_policy(&profile).expect("valid profile");
+    let mut policy = compatibility_evaluation_policy(&profile).expect("valid profile");
     for axis in &mut policy.pareto_absolute_tolerances {
         axis.value = FixedQ32::from_raw(1 << 30);
     }
