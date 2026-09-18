@@ -863,10 +863,14 @@ def verify_details(base: Path, run_tests: bool = True) -> int:
         raise Invalid("detailed index identity or count")
     rows = index["rows"]
     modules = {row["module"] for row in rows}
-    if len(modules) != len(rows) or any(
+    canonical_modules = {
+        row["id"]: row
+        for row in load(ROOT / "docs/modules/MODULES.json")["modules"]
+    }
+    if len(modules) != len(rows) or set(canonical_modules) != modules or any(
         value is not False for value in index["claimBoundary"].values()
     ):
-        raise Invalid("duplicate module or positive claim")
+        raise Invalid("duplicate module, module coverage, or positive global claim")
     expected_files = set()
     named_test_count = 0
     for row in rows:
@@ -882,7 +886,8 @@ def verify_details(base: Path, run_tests: bool = True) -> int:
         if (
             row["state"] != "specified"
             or row["productTestsExecuted"] is not False
-            or row["runtimeComposed"] is not False
+            or row["runtimeComposed"]
+            is not canonical_modules[mid]["production_implementation"]
             or not row["workPackages"]
             or not row["declaredRoots"]
         ):
