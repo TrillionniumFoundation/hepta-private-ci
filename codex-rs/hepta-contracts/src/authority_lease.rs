@@ -995,6 +995,15 @@ mod tests {
     use std::time::Duration;
 
     #[derive(Debug)]
+    struct FixedClock(u64);
+
+    impl AuthorityClock for FixedClock {
+        fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+            Ok(self.0)
+        }
+    }
+
+    #[derive(Debug)]
     struct MemoryFrontierStore(Mutex<AuthorityLeaseFrontier>);
 
     impl AuthorityFrontierStore<AuthorityLeaseFrontier> for MemoryFrontierStore {
@@ -1027,13 +1036,14 @@ mod tests {
         let directory = tempfile::tempdir().unwrap();
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
             .unwrap();
-        let registry = AuthorityLeaseRegistry::open_state_dir(
+        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
             AuthorityLeaseFrontier {
                 authority_epoch: 7,
                 store_revision: 1,
             },
+            Arc::new(FixedClock(2_000)),
         )
         .unwrap();
         (registry, directory)
@@ -1067,10 +1077,10 @@ mod tests {
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier
-            .verify_use("lease-one", 1, &binding(), 2_000)
+            .verify_use("lease-one", 1, &binding())
             .unwrap();
         assert_eq!(
-            verifier.with_verified_use(token, &binding(), 2_001, || 7),
+            verifier.with_verified_use(token, &binding(), || 7),
             Ok(7)
         );
         let receipt = registry
@@ -1078,7 +1088,7 @@ mod tests {
             .unwrap();
         assert_eq!(receipt.lease_revision, 2);
         assert_eq!(
-            verifier.verify_use("lease-one", 2, &binding(), 2_200).unwrap_err(),
+            verifier.verify_use("lease-one", 2, &binding()).unwrap_err(),
             AuthorityLeaseError::Revoked
         );
         let frontier = registry.frontier().unwrap();
@@ -1098,12 +1108,12 @@ mod tests {
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier
-            .verify_use("lease-one", 1, &binding(), 2_000)
+            .verify_use("lease-one", 1, &binding())
             .unwrap();
         let (tx, rx) = mpsc::channel();
         let expected = binding();
         std::thread::spawn(move || {
-            let result = verifier.with_verified_use(token, &expected, 2_001, || {
+            let result = verifier.with_verified_use(token, &expected, || {
                 registry.revoke("lease-one", 1, [8; 32], 2_002).unwrap();
                 7
             });
@@ -1131,7 +1141,7 @@ mod tests {
         assert_eq!(
             registry
                 .verifier()
-                .verify_use("lease-one", 1, &wrong, 2_000)
+                .verify_use("lease-one", 1, &wrong)
                 .unwrap_err(),
             AuthorityLeaseError::BindingMismatch
         );
@@ -1143,7 +1153,7 @@ mod tests {
         registry.put_lease(lease(), 0).unwrap();
         let verifier = registry.verifier();
         let token = verifier
-            .verify_use("lease-one", 1, &binding(), 2_000)
+            .verify_use("lease-one", 1, &binding())
             .unwrap();
         let mut replacement = lease();
         replacement.revision = 2;
@@ -1151,7 +1161,7 @@ mod tests {
         registry.put_lease(replacement, 1).unwrap();
         assert_eq!(
             verifier
-                .with_verified_use(token, &binding(), 2_001, || ())
+                .with_verified_use(token, &binding(), || ())
                 .unwrap_err(),
             AuthorityLeaseError::RevisionMismatch
         );
@@ -1179,8 +1189,10 @@ mod tests {
     #[test]
     fn bounded_prune_reclaims_only_expired_unrevoked_leases() {
         let (registry, _directory) = fixture();
-        registry.put_lease(lease(), 0).unwrap();
-        assert_eq!(registry.prune_expired_leases(30_000, 1), Ok(1));
+        let mut expired = lease();
+        expired.expires_at_unix_ms = 1_500;
+        registry.put_lease(expired, 0).unwrap();
+        assert_eq!(registry.prune_expired_leases(1), Ok(1));
         assert!(registry
             .verifier()
             .read_lease("lease-one")
@@ -1200,9 +1212,10 @@ mod tests {
                 store_revision: 1,
             },
         )));
-        let registry = AuthorityLeaseRegistry::open_state_dir_with_frontier_store(
+        let registry = AuthorityLeaseRegistry::open_state_dir_with_trust(
             directory.path(),
             "security-authority".into(),
+            Arc::new(FixedClock(2_000)),
             frontier_store.clone(),
         )
         .unwrap();
@@ -1218,9 +1231,10 @@ mod tests {
         drop(registry);
         std::fs::write(directory.path().join("authority-leases.json"), initial).unwrap();
         assert_eq!(
-            AuthorityLeaseRegistry::open_state_dir_with_frontier_store(
+            AuthorityLeaseRegistry::open_state_dir_with_trust(
                 directory.path(),
                 "security-authority".into(),
+                Arc::new(FixedClock(2_000)),
                 frontier_store,
             )
             .unwrap_err(),
