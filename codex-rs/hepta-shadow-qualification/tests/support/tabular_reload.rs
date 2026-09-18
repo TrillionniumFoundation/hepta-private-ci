@@ -39,10 +39,7 @@ fn digest(value: &str) -> Digest32 {
 }
 fn fit(generation: u64, value: i64) -> TabularOperatorArtifactV1 {
     let mut samples = Vec::new();
-    for (action, targets) in [
-        ("read", [value - 2, value + 2]),
-        ("abstain", [0, 0]),
-    ] {
+    for (action, targets) in [("read", [value - 2, value + 2]), ("abstain", [0, 0])] {
         for (replicate, target) in targets.into_iter().enumerate() {
             samples.push(TabularOperatorSampleV1 {
                 sample_id: id(&format!("sample-{action}-{replicate}")),
