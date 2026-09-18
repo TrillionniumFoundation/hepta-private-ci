@@ -9,6 +9,7 @@ use codex_hepta_matrix_protocol::MAX_MATRIX_SYNC_BATCH_PAYLOAD_BYTES_V2;
 use codex_hepta_matrix_protocol::MAX_MATRIX_SYNC_MUTATIONS_V2;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixRoomId;
+use codex_hepta_matrix_protocol::MatrixTransactionId;
 use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
 use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
@@ -295,6 +296,14 @@ impl MatrixSyncComposer<'_> {
         let redacted_because = unsigned
             .as_ref()
             .and_then(|unsigned| unsigned.get("redacted_because"));
+        let transaction_id = unsigned
+            .as_ref()
+            .and_then(|unsigned| unsigned.get("transaction_id"))
+            .map(|value| value.as_str().ok_or(MatrixSdkError::Sync))
+            .transpose()?
+            .map(MatrixTransactionId::parse)
+            .transpose()
+            .map_err(|_| MatrixSdkError::Sync)?;
         let event = match raw.deserialize() {
             Ok(event) => event,
             Err(_)
@@ -314,6 +323,11 @@ impl MatrixSyncComposer<'_> {
             MatrixEventId::parse(event.event_id().as_str()).map_err(|_| MatrixSdkError::Sync)?;
         let sender =
             MatrixUserId::parse(event.sender().as_str()).map_err(|_| MatrixSdkError::Sync)?;
+        if transaction_id.is_some() && sender != self.config.binding.expected_mxid {
+            // Matrix exposes unsigned.transaction_id only to the sending
+            // device. Treat a mismatched sender as a provenance violation.
+            return Err(MatrixSdkError::Sync);
+        }
         let origin_server_ts_ms = u64::from(event.origin_server_ts().get());
         let mut mutations = Vec::new();
         if let Some(redaction) = redacted_because {
@@ -348,6 +362,7 @@ impl MatrixSyncComposer<'_> {
                 room_id: room_id.clone(),
                 sender: MatrixUserId::parse(redaction.sender.as_str())
                     .map_err(|_| MatrixSdkError::Sync)?,
+                transaction_id: None,
                 binding_revision: self.config.binding.revision,
                 generation: self.config.matrix_generation,
                 origin_server_ts_ms: u64::from(redaction.origin_server_ts.get()),
@@ -393,7 +408,9 @@ impl MatrixSyncComposer<'_> {
                     origin_server_ts_ms,
                     received_at_ms,
                 };
-                if let Some(reason) = self.ingress.filter(&message) {
+                if transaction_id.is_none()
+                    && let Some(reason) = self.ingress.filter(&message)
+                {
                     self.ingress.record_ignored(reason);
                     return Ok(mutations);
                 }
@@ -448,10 +465,16 @@ impl MatrixSyncComposer<'_> {
             )) => return Err(MatrixSdkError::Sync),
             _ => return Ok(mutations),
         };
+        let transaction_id = if matches!(&body, MatrixSyncMutationBodyV2::Timeline { .. }) {
+            transaction_id
+        } else {
+            None
+        };
         mutations.push(MatrixSyncMutationV2 {
             source_event_id,
             room_id: room_id.clone(),
             sender,
+            transaction_id,
             binding_revision: self.config.binding.revision,
             generation: self.config.matrix_generation,
             origin_server_ts_ms,
