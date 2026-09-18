@@ -612,6 +612,34 @@ mod tests {
     }
 
     #[test]
+    fn browser_servo_control_round_trip_is_strict_and_bounded() {
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 41,
+            spawn_generation: 7,
+            method: AgentdMethod::BrowserServo {
+                request: BrowserServoControlRequest {
+                    method: BrowserServoControlMethod::ObservePage,
+                    input: serde_json::json!({
+                        "profileId": "profile.1",
+                        "principalId": "principal.1",
+                        "generation": 1,
+                        "observationBudget": 4096
+                    }),
+                    signed_grant: None,
+                    binding: None,
+                },
+            },
+        };
+        let bytes = serde_json::to_vec(&request).expect("serialize Browser request");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse Browser request"),
+            request
+        );
+    }
+
+    #[test]
     fn health_wire_round_trip_is_strict_and_bounded() {
         let request = AgentdRequest::health(7, 11);
         let request_bytes = serde_json::to_vec(&request).expect("serialize request");

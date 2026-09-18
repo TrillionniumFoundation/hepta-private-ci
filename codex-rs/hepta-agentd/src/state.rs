@@ -17,6 +17,9 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
+    pub(crate) browser_servo: std::sync::OnceLock<
+        Arc<crate::BrowserServoPort<crate::ChildBrowserTransport>>,
+    >,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -46,6 +49,7 @@ impl AgentdState {
         });
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
+            browser_servo: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,

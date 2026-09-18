@@ -43,6 +43,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    let browser_servo_config_file = config
+        .browser_servo_config_file()
+        .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -72,6 +75,22 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .authbus
             .set(Arc::new(host))
             .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+    }
+    if let Some(path) = browser_servo_config_file {
+        state.refresh_generation()?;
+        let port = crate::browser_servo::open_browser_servo_port_from_file(&path)
+            .map_err(|error| {
+                AgentdError::Invalid(format!(
+                    "Browser runtime configuration rejected: {error}"
+                ))
+            })?;
+        state.refresh_generation()?;
+        state
+            .browser_servo
+            .set(Arc::new(port))
+            .map_err(|_| {
+                AgentdError::Protocol("Browser/Servo runtime already attached".to_string())
+            })?;
     }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
