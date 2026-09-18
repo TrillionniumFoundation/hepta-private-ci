@@ -143,7 +143,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-`prepare_intelligence_run_v1` is the bounded product-caller candidate for objective admission. It owns no store: it invokes the sealed `learning.ledger` durable owner port to append one atomic `RunStartPublicationV1`, then emits a deny-all `IntelligenceHostEnvelopeV1` for Agentd. Conflict and explicit-abstain outcomes publish no runnable snapshot. The remaining state owner and transaction boundaries are described by the [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation).
+`prepare_intelligence_run_v1` is the bounded compiler caller used by the Agentd product-host candidate. It owns no store: it invokes the sealed `learning.ledger` durable owner port to append one atomic `RunStartPublicationV1`, then returns an opaque `ProductionObjectiveStartReceiptV1` whose internal deny-all host envelope is consumed only by Agentd. The named cross-owner product-host candidate is `runtime.agentd::prepare_and_start_intelligence_run_v1`. Conflict and explicit-abstain outcomes publish no runnable snapshot. The remaining state owner and transaction boundaries are described by the [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
