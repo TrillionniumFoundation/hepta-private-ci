@@ -704,23 +704,27 @@ impl AppServerModelDriver {
                 codex_request_digest: Some(exact_codex_request_digest.to_string()),
             },
         )?;
-        let pre_effect_stop = if cancellation.is_cancelled() {
-            Some("cancelled after durable dispatch but before turn/start".to_string())
+        let send_budget = if cancellation.is_cancelled() {
+            Err("cancelled after durable dispatch but before turn/start".to_string())
         } else {
             remaining_before(codex_deadline_ms)
-                .err()
-                .map(|error| error.to_string())
+                .map(|remaining| RPC_TIMEOUT.min(remaining))
+                .map_err(|error| error.to_string())
         };
-        if let Some(reason) = pre_effect_stop {
-            control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err(reason.into());
-        }
+        let send_budget = match send_budget {
+            Ok(send_budget) => send_budget,
+            Err(reason) => {
+                control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(reason.into());
+            }
+        };
         // Dropping the abort proof is the local point of no return. From this
-        // point onward, any missing acknowledgement is reconcile-only.
+        // point onward, any missing acknowledgement is reconcile-only. The
+        // monotonic timeout budget was frozen while the abort proof was live.
         drop(pre_effect_abort);
         let response = timeout(
-            RPC_TIMEOUT.min(remaining_before(codex_deadline_ms)?),
+            send_budget,
             send_authorized_turn_start(&mut client, entered_use, turn_start_params),
         )
         .await;
