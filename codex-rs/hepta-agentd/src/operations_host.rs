@@ -343,3 +343,7 @@ fn task_id_from_operation(
     let raw = value.strip_prefix("automation.task.create:")?;
     raw.parse().ok()
 }
+
+#[cfg(test)]
+#[path = "operations_host_tests.rs"]
+mod tests;
