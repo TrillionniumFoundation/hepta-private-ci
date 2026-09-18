@@ -8,6 +8,7 @@ from control_engineering_v2 import (
     EngineeringStore,
     HmacTrustStore,
     WorkEnvelope,
+    WorkPackage,
 )
 from control_engineering_v2.control_plane import DENIED_AUTHORITIES
 from control_engineering_v2.orchestration import (
@@ -47,12 +48,31 @@ class OrchestrationTests(unittest.TestCase):
             self.now + 1_000_000,
         )
 
-    def completion(self, package_id: str) -> CompletionReceipt:
+    def completion(
+        self,
+        store: EngineeringStore,
+        package_id: str,
+        write_path: str,
+    ) -> CompletionReceipt:
+        generation_id = f"completed-{package_id}"
+        store.schedule_ready_packages(
+            self.envelope.envelope_id,
+            (WorkPackage(0, package_id, (), (write_path,)),),
+            (),
+            generation_id=generation_id,
+            now_ns=self.now,
+        )
+        row = store.connection.execute(
+            "SELECT semantic_digest FROM assignment_generations WHERE generation_id=?",
+            (generation_id,),
+        ).fetchone()
+        self.assertIsNotNone(row)
         value = CompletionReceipt(
             package_id,
             self.envelope.source_commit,
             self.envelope.source_tree,
-            "previous-generation",
+            generation_id,
+            str(row[0]),
             "e" * 64,
             "ci_executor",
             "ci",
@@ -101,7 +121,7 @@ class OrchestrationTests(unittest.TestCase):
                         WorkerProfile("worker-rust", ("rust",), 4, ("src",)),
                         WorkerProfile("worker-python", ("python",), 2, ("src",)),
                     ),
-                    (self.completion("foundation"),),
+                    (self.completion(store, "foundation", "src/foundation"),),
                     self.trust,
                     EngineeringCapacity(
                         2,
@@ -121,10 +141,13 @@ class OrchestrationTests(unittest.TestCase):
         self.assertFalse(plan.merge_queue[0].merge_authority)
 
     def test_unsigned_completion_cannot_satisfy_predecessor(self):
-        receipt = replace(self.completion("foundation"), signature="0" * 64)
         with tempfile.TemporaryDirectory() as temp:
             with EngineeringStore(Path(temp) / "store.db") as store:
                 store.issue_work_envelope(self.envelope, now_ns=self.now)
+                receipt = replace(
+                    self.completion(store, "foundation", "src/foundation"),
+                    signature="0" * 64,
+                )
                 with self.assertRaisesRegex(ValueError, "completion_receipt_signature"):
                     plan_engineering_work(
                         store,
@@ -136,6 +159,40 @@ class OrchestrationTests(unittest.TestCase):
                         ),
                         (WorkerProfile("worker", (), 1, ("src",)),),
                         (receipt,),
+                        self.trust,
+                        EngineeringCapacity(1, ()),
+                        generation_id="g",
+                        now_ns=self.now,
+                    )
+
+    def test_signed_completion_requires_real_durable_assignment_generation(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                valid = self.completion(store, "foundation", "src/foundation")
+                forged = replace(
+                    valid,
+                    generation_id="missing-generation",
+                    generation_digest="f" * 64,
+                    signature="",
+                )
+                forged = replace(
+                    forged,
+                    signature=self.trust.sign(
+                        forged, forged.issuer, forged.signing_identity
+                    ),
+                )
+                with self.assertRaisesRegex(ValueError, "completion_generation_unknown"):
+                    plan_engineering_work(
+                        store,
+                        self.envelope,
+                        (
+                            EngineeringWorkPackage(
+                                0, "feature", ("foundation",), ("src/feature",)
+                            ),
+                        ),
+                        (WorkerProfile("worker", (), 1, ("src",)),),
+                        (forged,),
                         self.trust,
                         EngineeringCapacity(1, ()),
                         generation_id="g",
