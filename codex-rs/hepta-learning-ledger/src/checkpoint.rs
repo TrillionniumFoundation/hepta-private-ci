@@ -106,7 +106,7 @@ pub fn build_ledger_index_checkpoint(
     let revocation_digests = snapshot
         .records()
         .iter()
-        .filter_map(|record| match record.event {
+        .filter_map(|record| match &record.event {
             LedgerEvent::Revocation(_) | LedgerEvent::UnlearningLineageV1(_) => {
                 Some(record.event_digest)
             }
