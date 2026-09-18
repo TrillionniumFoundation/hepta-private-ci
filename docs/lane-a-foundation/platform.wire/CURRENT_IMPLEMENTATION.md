@@ -18,7 +18,8 @@ wire versions and four protocol-boundary layers.
 | Typed serialization boundary | implemented | `PayloadCodec` binds one typed codec to one stable schema ID |
 | Streaming frame read | implemented | `read_frame` reads and validates the fixed 54-byte header before allocating the bounded variable body |
 | Cross-runtime loading | qualification evidence present | Rust V2 bytes are validated and answered by a live Python process, then decoded back in Rust |
-| Production caller / activation | not established | no production effect, deployment, acceptance, promotion or release is claimed |
+| Registered product source consumers | source-composed | `runtime.codex::adapt_wire` and `context.compiler::compile_wire` consume negotiated, schema-admitted HPTA frames |
+| Deployed production activation | not established | no deployed authenticated transport, production effect, acceptance, promotion or release is claimed |
 
 V1 bytes and meanings remain governed by
 [WIRE_V1.md](WIRE_V1.md) and
@@ -45,6 +46,16 @@ V2 bytes and digest scope are governed by
 
 The crate root exports these surfaces from `codex-rs/hepta-wire/src/lib.rs`.
 
+Two registered consumers now exercise the actual source contract:
+
+- `codex-rs/hepta-codex-adapter/src/wire.rs` binds negotiated version,
+  expected producer/generation and `runtime.codex.operation-intent.v1` before
+  entering `adapt`;
+- `codex-rs/hepta-context-compiler/src/wire.rs` binds the same ingress fences
+  and `context.compiler.compilation-request.v1` before entering `compile`.
+
+These are product-source callsites, not deployment receipts.
+
 ## Durability and activation
 
 All current wire components are stateless library code. The streaming reader has
@@ -61,8 +72,8 @@ The following remain outside the current executable claim:
 
 - authenticated or keyed protection against an adversary that can rewrite a
   frame and recompute an unkeyed digest;
-- a named production consumer composed through the owning integration package
-  and qualified on its target host;
+- deployment of the source-composed consumers through their selected
+  authenticated transports and target hosts;
 - future HPTA versions beyond V2 and their migration/drain policy;
 - transport-specific asynchronous deadlines, connection lifecycle and retry
   semantics.
@@ -102,9 +113,16 @@ Protocol-layer tests in `protocol_tests.rs` cover:
   round trips.
 
 The independent frozen V1 vector remains unchanged. The V2 conformance file
-contains an independently computed 59-byte vector. The product-boundary test
-`codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs`
+contains an independently computed 59-byte vector and `protocol_tests.rs`
+freezes the same 59 bytes independently of the encoder. The product-boundary
+test `codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs`
 performs live Rust↔Python V2 verification and reply-frame loading.
+
+The registered source consumers add product-callsite tests in
+`hepta-codex-adapter/src/wire_tests.rs` and
+`hepta-context-compiler/src/wire_tests.rs`. Both reject negotiated-version
+downgrade, producer mismatch, generation mismatch, schema mismatch and malformed
+registered payloads before entering their existing domain operations.
 
 Repository qualification still decides whether exact-head, merge-candidate,
 lint and wider product suites pass for the candidate.
@@ -119,6 +137,7 @@ that policy rejects rather than downgrades.
 After framing decode, the consumer must admit the stable schema through its
 registered `SchemaRegistry` and decode with the matching `PayloadCodec`.
 Authority and domain validation occur after those steps at their owning
-boundaries. Production composition additionally requires a named authenticated
-transport/caller, exact-candidate qualification and the repository's separate
-activation/acceptance gates.
+boundaries. `runtime.codex` and `context.compiler` now provide concrete
+source-composed examples of this sequence. Production activation still requires
+their named authenticated transport/caller, exact-candidate qualification and
+the repository's separate activation/acceptance gates.
