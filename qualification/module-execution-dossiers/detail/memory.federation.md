@@ -1,7 +1,7 @@
 # memory.federation: implementation design
 
 Parent: `docs/modules/memory.federation/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: single-attempt generation-bound federated read boundary implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: canonical V2 boundary hardened and composed into the existing product cognitive-federation read path; exact-candidate CI, independent acceptance, activation/release, and a genuinely remote cross-host transport profile remain separate gates listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -20,8 +20,11 @@ No authoritative remote facts, remote writer or peer-consent store. A local boun
 
 ## 4. Deterministic algorithm and scheduling
 
-Validate enrolled destination and short-lived read grant; apply outbound payload limits; perform one bounded read; verify response producer/scope/digest/frontier; merge only via the cognitive read/retrieval contracts. Distinguish unavailable peer, partial result, stale result and valid empty result. Partial answers remain partial; a remote timeout cannot trigger an unrestricted fallback query.
+Validate enrolled destination, exact query/lease binding and current read authority before dispatch. `execute_once` owns the attempt deadline and cancellation race around the async transport future; the transport cannot silently widen the retry policy.
 
+The remote response is sealed with a domain-separated digest over query binding, peer, scope, purpose, generation, frontier, expiry, completeness and every evidence identity/digest. Re-observe authority after transport completion before releasing evidence. Revocation, authority expiry or generation drift after dispatch strips remote items and returns the corresponding non-current validity. Successful result expiry is the minimum of remote response expiry, query deadline, lease expiry and current authority expiry.
+
+The composed product adapter in `codex-rs/hepta-memory/src/cognitive_federation_v2.rs` reuses the existing SQLite capability owner and cognitive memory store. It converts the owner retrieval into digest-only V2 evidence, retains raw payload only in request-local state, and releases that payload only after V2 admission matches the exact evidence set. The multi-reader product path preserves requested/completed/failed source coverage instead of collapsing a failed peer into a valid empty result.
 ## 5. Capacity and performance profile
 
 Pilot <=16 queried peers per request, <=512 result IDs total, fixed per-peer deadlines and bounded retry only for operations whose read/idempotency profile permits it. Record remote latency, coverage, truncation, lease expiry and cache invalidation.
@@ -35,7 +38,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - FED-03: deletion/revocation invalidates caches and blocks restored stale results.
 - FED-04: a discovered peer is not automatically enrolled or sent credentials.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+These cases now have source-level implementations in `codex-rs/hepta-memory-federation/src/v2_tests.rs` and `codex-rs/hepta-memory/src/cognitive_federation_tests.rs`, including tamper/replay, timeout/cancellation, post-I/O revocation/generation drift, genuine empty-frontier and partial multi-peer coverage cases. They remain test identities until exact-candidate CI receipts and independent review are attached; source presence is not an execution receipt.
 
 ## 7. Integration, rollback and capability ceiling
 
@@ -45,8 +48,11 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `execute_once` in [codex-rs/hepta-memory-federation/src/v2.rs](../../../codex-rs/hepta-memory-federation/src/v2.rs); `observe_cancellation` in [codex-rs/hepta-memory-federation/src/v2.rs](../../../codex-rs/hepta-memory-federation/src/v2.rs). Single-attempt generation-bound federated read boundary implemented.
-- **State and recovery:** FederatedQueryV2/LeaseV2 bind peer, principal, scope, purpose, generation, epoch, nonce and deadline; results distinguish completeness, validity and indeterminate transport. The module owns no peer registry, remote writer or retry queue.
-- **Source tests:** [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/modules/memory.federation/TECHNICAL.md](../../../docs/modules/memory.federation/TECHNICAL.md).
-- **Remaining work:** A product host must supply an enrolled authenticated FederationTransportV2, current peer/revocation observations and cancellation evidence; native test transports do not establish a deployed federation.
+- **Canonical entrypoints:** `execute_once` and `observe_cancellation` in [codex-rs/hepta-memory-federation/src/v2.rs](../../../codex-rs/hepta-memory-federation/src/v2.rs). `execute_once` is async, owns timeout/cancellation admission, verifies the sealed remote-response digest, caps result expiry, and performs pre/post authority observations.
+- **Product composition:** [codex-rs/hepta-memory/src/cognitive_federation.rs](../../../codex-rs/hepta-memory/src/cognitive_federation.rs) routes `FederatedMemoryReader::retrieve` through [codex-rs/hepta-memory/src/cognitive_federation_v2.rs](../../../codex-rs/hepta-memory/src/cognitive_federation_v2.rs). The existing `CognitiveStore` remains the only durable memory/capability owner; no second database or grant authority was introduced.
+- **Physical consumer:** [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs) carries V2 coverage and admission expiry into the federated model-input payload/source binding, rechecks expiry, capability and memory currentness immediately before physical model input.
+- **State and recovery:** V2 itself owns no peer registry, remote writer, cache database or retry queue. Product authority observations come from the existing persisted federation capability heads/events. Raw owner retrieval payload is request-local and is not released to the caller until its digest-only evidence set is admitted by V2.
+- **Failure semantics:** timeout/cancellation are explicit indeterminate outcomes; revocation, generation drift and authority expiry observed after transport cannot expose remote items. Multi-peer aggregation reports requested/completed/failed coverage rather than silently turning a failed source into an empty success.
+- **Source tests:** [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), [codex-rs/hepta-memory/src/cognitive_federation_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_federation_tests.rs), and the extension tests in [codex-rs/ext/hepta-memory/src/cognitive/federation.rs](../../../codex-rs/ext/hepta-memory/src/cognitive/federation.rs). These are test identities, not pass receipts for this documentation revision.
+- **Current code-candidate attestation:** `docs/modules/memory.federation/IMPLEMENTATION_MAP.json` records the module code candidate immediately before documentation-only updates. The shared map `sourceBase` remains the repository-wide generation baseline and must stay identical across all module maps.
+- **Remaining work / claim boundary:** exact-candidate and synthetic-merge CI receipts, independent semantic/security review, target-host qualification, activation and release remain unproved. The composed product adapter uses the existing owner-store boundary; a genuinely remote authenticated cross-host transport must be separately qualified before claiming cross-host federation.
