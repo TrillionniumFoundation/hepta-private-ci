@@ -423,6 +423,12 @@ struct StoredFactor {
     factor_id: String,
     proposer_id: String,
     semantic_version: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    semantic_purpose: String,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    authority_class: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    eligible_objective_dimensions: Vec<String>,
     content_digest: [u8; 32],
     source: u8,
     lifecycle: u8,
@@ -444,6 +450,8 @@ struct StoredRealization {
 struct StoredBindingV2 {
     realization_id: String,
     factor_id: String,
+    model_id: String,
+    model_version: String,
     model_digest: [u8; 32],
     tokenizer_digest: [u8; 32],
     template_digest: [u8; 32],
@@ -518,6 +526,13 @@ fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
                 factor_id: factor.factor_id.to_string(),
                 proposer_id: factor.proposer_id.to_string(),
                 semantic_version: factor.semantic_version.to_string(),
+                semantic_purpose: factor.semantic_purpose.clone(),
+                authority_class: factor.authority_class.clone(),
+                eligible_objective_dimensions: factor
+                    .eligible_objective_dimensions
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect(),
                 content_digest: factor.content_digest.into_array(),
                 source: factor_source_code(factor.source),
                 lifecycle: lifecycle_code(factor.lifecycle),
@@ -541,6 +556,8 @@ fn stored_v2(registry: &PromptRegistry) -> StoredV2 {
             .map(|binding| StoredBindingV2 {
                 realization_id: binding.realization_id.to_string(),
                 factor_id: binding.factor_id.to_string(),
+                model_id: binding.model_id.to_string(),
+                model_version: binding.model_version.clone(),
                 model_digest: binding.model_digest.into_array(),
                 tokenizer_digest: binding.tokenizer_digest.into_array(),
                 template_digest: binding.template_digest.into_array(),
@@ -756,6 +773,9 @@ fn migrate_v1(
         let binding = PromptRealizationBindingV2 {
             realization_id: parse_id(stored_binding.realization_id)?,
             factor_id: parse_id(stored_binding.factor_id)?,
+            model_id: StableId::new("model:legacy-imported")
+                .map_err(|_| DurableRegistryError::Corrupt)?,
+            model_version: "legacy-imported".to_owned(),
             model_digest: Digest32::from_array(stored_binding.model_digest),
             tokenizer_digest: Digest32::from_array(stored_binding.tokenizer_digest),
             template_digest: Digest32::from_array(stored_binding.template_digest),
@@ -861,7 +881,7 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
                 if prior != Some(Lifecycle::Admitted)
                     || event.from != Some(Lifecycle::Admitted)
                     || event.to != Lifecycle::Retired
-                    || event.reason_digest.is_some_and(Digest32::is_zero)
+                    || event.reason_digest.is_some_and(|digest| digest.is_zero())
                 {
                     return Err(DurableRegistryError::Corrupt);
                 }
@@ -985,15 +1005,32 @@ fn validate_restored(registry: &PromptRegistry) -> Result<(), DurableRegistryErr
     Ok(())
 }
 
-fn decode_factor(stored: StoredFactor) -> Result<PromptFactor, DurableRegistryError> {
-    Ok(PromptFactor {
+fn decode_factor(mut stored: StoredFactor) -> Result<PromptFactor, DurableRegistryError> {
+    if stored.semantic_purpose.is_empty() {
+        stored.semantic_purpose =
+            "legacy imported factor; semantic purpose unavailable".to_owned();
+    }
+    if stored.authority_class.is_empty() {
+        stored.authority_class = "registered_prompt_factor".to_owned();
+    }
+    let factor = PromptFactor {
         factor_id: parse_id(stored.factor_id)?,
         proposer_id: parse_id(stored.proposer_id)?,
         semantic_version: parse_id(stored.semantic_version)?,
+        semantic_purpose: stored.semantic_purpose,
+        authority_class: stored.authority_class,
+        eligible_objective_dimensions: stored
+            .eligible_objective_dimensions
+            .into_iter()
+            .map(parse_id)
+            .collect::<Result<Vec<_>, _>>()?,
         content_digest: Digest32::from_array(stored.content_digest),
         source: decode_factor_source(stored.source)?,
         lifecycle: decode_lifecycle(stored.lifecycle)?,
-    })
+    };
+    crate::protocol::validate_factor_semantics(&factor)
+        .map_err(|_| DurableRegistryError::Corrupt)?;
+    Ok(factor)
 }
 
 fn decode_realization(
@@ -1015,6 +1052,8 @@ fn decode_binding_v2(
     Ok(PromptRealizationBindingV2 {
         realization_id: parse_id(stored.realization_id)?,
         factor_id: parse_id(stored.factor_id)?,
+        model_id: parse_id(stored.model_id)?,
+        model_version: stored.model_version,
         model_digest: Digest32::from_array(stored.model_digest),
         tokenizer_digest: Digest32::from_array(stored.tokenizer_digest),
         template_digest: Digest32::from_array(stored.template_digest),
@@ -1385,6 +1424,9 @@ mod tests {
             factor_id: "factor:1".to_owned(),
             proposer_id: "proposer:1".to_owned(),
             semantic_version: "v1".to_owned(),
+            semantic_purpose: String::new(),
+            authority_class: String::new(),
+            eligible_objective_dimensions: Vec::new(),
             content_digest: digest("factor").into_array(),
             source: 0,
             lifecycle: 3,
@@ -1469,11 +1511,16 @@ mod tests {
             factor_id: id("factor:active-reopen"),
             proposer_id: id("proposer:active-reopen"),
             semantic_version: id("v1"),
+            semantic_purpose: "verify before mutating".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
             content_digest: digest("factor:active-reopen"),
             source: FactorSource::GovernedInternal,
             lifecycle: Lifecycle::Draft,
         };
         let tuple = PromptModelTupleV2 {
+            model_id: id("model:hepta-test"),
+            model_version: "2026-09-18".to_owned(),
             model_digest: digest("model:active-reopen"),
             tokenizer_digest: digest("tokenizer:active-reopen"),
             template_digest: digest("template:active-reopen"),
@@ -1499,6 +1546,8 @@ mod tests {
             let binding = PromptRealizationBindingV2 {
                 realization_id: id("realization:active-reopen"),
                 factor_id: factor.factor_id.clone(),
+                model_id: id("model:hepta-test"),
+                model_version: "2026-09-18".to_owned(),
                 model_digest: tuple.model_digest,
                 tokenizer_digest: tuple.tokenizer_digest,
                 template_digest: tuple.template_digest,
@@ -1562,11 +1611,16 @@ mod tests {
             factor_id: id("factor:durable"),
             proposer_id: id("proposer:durable"),
             semantic_version: id("v1"),
+            semantic_purpose: "verify before mutating".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
             content_digest: digest("factor:durable"),
             source: FactorSource::GovernedInternal,
             lifecycle: Lifecycle::Draft,
         };
         let tuple = PromptModelTupleV2 {
+            model_id: id("model:hepta-test"),
+            model_version: "2026-09-18".to_owned(),
             model_digest: digest("model"),
             tokenizer_digest: digest("tokenizer"),
             template_digest: digest("template"),
@@ -1621,6 +1675,8 @@ mod tests {
             let binding = PromptRealizationBindingV2 {
                 realization_id: id("realization:durable"),
                 factor_id: factor.factor_id.clone(),
+                model_id: id("model:hepta-test"),
+                model_version: "2026-09-18".to_owned(),
                 model_digest: tuple.model_digest,
                 tokenizer_digest: tuple.tokenizer_digest,
                 template_digest: tuple.template_digest,
@@ -1720,6 +1776,9 @@ mod tests {
             factor_id: id("factor:final-use"),
             proposer_id: id("proposer:final-use"),
             semantic_version: id("v1"),
+            semantic_purpose: "verify before mutating".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
             content_digest: digest("factor:final-use"),
             source: FactorSource::GovernedInternal,
             lifecycle: Lifecycle::Draft,
@@ -1779,6 +1838,9 @@ mod tests {
             factor_id: id("factor:revoked-grant"),
             proposer_id: id("proposer:revoked-grant"),
             semantic_version: id("v1"),
+            semantic_purpose: "verify before mutating".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
             content_digest: digest("factor:revoked-grant"),
             source: FactorSource::GovernedInternal,
             lifecycle: Lifecycle::Draft,
@@ -1860,6 +1922,9 @@ mod tests {
             factor_id: id("factor:lifecycle-final-use"),
             proposer_id: id("proposer:lifecycle-final-use"),
             semantic_version: id("v1"),
+            semantic_purpose: "verify before mutating".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
             content_digest: digest("factor:lifecycle-final-use"),
             source: FactorSource::GovernedInternal,
             lifecycle: Lifecycle::Draft,
@@ -1986,6 +2051,9 @@ mod tests {
             factor_id: id("factor:indeterminate"),
             proposer_id: id("proposer:indeterminate"),
             semantic_version: id("v1"),
+            semantic_purpose: "verify before mutating".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
             content_digest: digest("factor:indeterminate"),
             source: FactorSource::GovernedInternal,
             lifecycle: Lifecycle::Draft,
@@ -2003,6 +2071,9 @@ mod tests {
                 factor_id: id("factor:must-not-write"),
                 proposer_id: id("proposer:must-not-write"),
                 semantic_version: id("v1"),
+                semantic_purpose: "verify before mutating".to_owned(),
+                authority_class: "registered_prompt_factor".to_owned(),
+                eligible_objective_dimensions: vec![id("dimension:truth")],
                 content_digest: digest("factor:must-not-write"),
                 source: FactorSource::GovernedInternal,
                 lifecycle: Lifecycle::Draft,
@@ -2013,6 +2084,8 @@ mod tests {
             durable.snapshot_v2(
                 digest("generation-vector:poisoned"),
                 &PromptModelTupleV2 {
+                    model_id: id("model:hepta-test"),
+                    model_version: "2026-09-18".to_owned(),
                     model_digest: digest("model:poisoned"),
                     tokenizer_digest: digest("tokenizer:poisoned"),
                     template_digest: digest("template:poisoned"),
