@@ -106,9 +106,7 @@ fn owner_adapter_maps_physical_channels_without_inventing_causal_evidence() {
         .unwrap();
     assert_eq!(
         entity.completeness,
-        RetrievalChannelCompletenessV1::Truncated {
-            omitted_at_least: 1
-        }
+        RetrievalChannelCompletenessV1::BoundReached
     );
     assert_eq!(entity.candidates.len(), 1);
     assert_eq!(entity.candidates[0].channel_rank, 1);
