@@ -225,7 +225,7 @@ impl SecretLeaseRegistry {
             .bind(handle.0.as_str())
             .bind(namespace)
             .bind(as_i64(metadata.expires_at_unix_ms)?)
-            .bind(i64::from(metadata.renewable))
+            .bind(if metadata.renewable { 1_i64 } else { 0_i64 })
             .bind(as_i64(now_unix_ms)?)
             .execute(&mut *tx)
             .await
@@ -269,7 +269,7 @@ impl SecretLeaseRegistry {
              WHERE lease_id_sha256=?",
         )
         .bind(as_i64(renewal.expires_at_unix_ms)?)
-        .bind(i64::from(renewal.renewable))
+        .bind(if renewal.renewable { 1_i64 } else { 0_i64 })
         .bind(as_i64(now_unix_ms)?)
         .bind(lease_id_sha256.to_vec())
         .execute(&mut *tx)
@@ -328,6 +328,55 @@ impl SecretLeaseRegistry {
         tx.commit()
             .await
             .map_err(|_| SecretLeaseRegistryError::Unavailable)
+    }
+
+
+    pub async fn observe_active(
+        &self,
+        lease_id_sha256: [u8; 32],
+        expires_at_unix_ms: u64,
+        renewable: bool,
+        now_unix_ms: u64,
+    ) -> Result<(), SecretLeaseRegistryError> {
+        let changed = sqlx::query(
+            "UPDATE heptabao_secret_leases
+             SET expires_at_unix_ms=?, renewable=?, state='active', updated_at_unix_ms=?
+             WHERE lease_id_sha256=?",
+        )
+        .bind(as_i64(expires_at_unix_ms)?)
+        .bind(if renewable { 1_i64 } else { 0_i64 })
+        .bind(as_i64(now_unix_ms)?)
+        .bind(lease_id_sha256.to_vec())
+        .execute(&self.pool)
+        .await
+        .map_err(|_| SecretLeaseRegistryError::Unavailable)?
+        .rows_affected();
+        if changed != 1 {
+            return Err(SecretLeaseRegistryError::StateConflict);
+        }
+        Ok(())
+    }
+
+    pub async fn observe_absent(
+        &self,
+        lease_id_sha256: [u8; 32],
+        now_unix_ms: u64,
+    ) -> Result<(), SecretLeaseRegistryError> {
+        let changed = sqlx::query(
+            "UPDATE heptabao_secret_leases
+             SET state='revoked', updated_at_unix_ms=?
+             WHERE lease_id_sha256=?",
+        )
+        .bind(as_i64(now_unix_ms)?)
+        .bind(lease_id_sha256.to_vec())
+        .execute(&self.pool)
+        .await
+        .map_err(|_| SecretLeaseRegistryError::Unavailable)?
+        .rows_affected();
+        if changed != 1 {
+            return Err(SecretLeaseRegistryError::StateConflict);
+        }
+        Ok(())
     }
 
     pub async fn operation_state(
