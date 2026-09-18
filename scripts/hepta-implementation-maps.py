@@ -65,6 +65,46 @@ def discover_tests_for_source(source: str | None) -> list[str]:
     return sorted(set(tests))
 
 
+def discover_companion_tests_for_source(source: str | None) -> list[str]:
+    """Return tests from the source file and its exact sibling test module.
+
+    Product callers and persistence owners often live in large source
+    directories; scanning every sibling test file would incorrectly attribute
+    unrelated module evidence.  Exact companions keep the evidence bounded.
+    """
+    if not source:
+        return []
+    source_path = ROOT / source
+    if not source_path.is_file():
+        return []
+    candidates = {source_path}
+    if source_path.suffix == ".rs":
+        companion = source_path.with_name(source_path.stem + "_tests.rs")
+        if companion.is_file():
+            candidates.add(companion)
+    pattern = re.compile(
+        r"#\[(?:tokio::)?test(?:\([^\]]*\))?\]\s*(?:async\s+)?fn\s+([A-Za-z0-9_]+)"
+    )
+    tests: list[str] = []
+    for candidate in sorted(candidates):
+        text = candidate.read_text(encoding="utf-8")
+        relative = candidate.relative_to(ROOT).as_posix()
+        tests.extend(f"{relative}::{name}" for name in pattern.findall(text))
+    return sorted(set(tests))
+
+
+def refresh_integration_evidence(row: dict) -> dict:
+    """Discover tests for explicitly composed product callers and store owners."""
+    refreshed = dict(row)
+    tests: set[str] = set()
+    for key in ("productCallers", "persistenceOwner"):
+        for binding in row.get(key, []):
+            source = binding.split("::", 1)[0]
+            tests.update(discover_companion_tests_for_source(source))
+    refreshed["integrationTests"] = sorted(tests)
+    return refreshed
+
+
 def refresh_operation_evidence(row: dict) -> dict:
     """Refresh source existence and test inventory without widening claims."""
     refreshed = dict(row)
@@ -341,9 +381,11 @@ def evidence(output: str):
         else:
             value = map_for(module, source_base, lanes)
         value = refresh_operation_evidence(value)
+        value = refresh_integration_evidence(value)
         value["sourceBase"] = source_base
         for operation in value["operations"]:
             test_inventory.update(operation.get("tests", []))
+        test_inventory.update(value.get("integrationTests", []))
         maps.append(value)
 
     payload = {
