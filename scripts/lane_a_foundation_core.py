@@ -222,32 +222,97 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
 
 
 def validate_wire_vector(root: Path = ROOT) -> None:
-    value = read_json(
+    v1 = read_json(
         root / "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json"
     )
     try:
-        frame = bytes.fromhex(value["frameHex"])
-        payload = bytes.fromhex(value["fields"]["payloadHex"])
-        payload_digest = value["fields"]["payloadSha256"]
+        v1_frame = bytes.fromhex(v1["frameHex"])
+        v1_payload = bytes.fromhex(v1["fields"]["payloadHex"])
+        v1_payload_digest = v1["fields"]["payloadSha256"]
     except (KeyError, TypeError, ValueError) as error:
         raise VerificationError(f"invalid HPTA V1 vector: {error}") from error
     if (
-        value.get("schemaVersion") != 1
-        or value.get("protocol") != "HPTA"
-        or value.get("version") != 1
-        or value.get("frameLength") != 59
-        or len(frame) != 59
-        or frame[:6] != b"HPTA\x00\x01"
-        or hashlib.sha256(frame).hexdigest() != value.get("frameSha256")
-        or hashlib.sha256(payload).hexdigest() != payload_digest
+        v1.get("schemaVersion") != 1
+        or v1.get("protocol") != "HPTA"
+        or v1.get("version") != 1
+        or v1.get("frameLength") != 59
+        or len(v1_frame) != 59
+        or v1_frame[:6] != b"HPTA\x00\x01"
+        or hashlib.sha256(v1_frame).hexdigest() != v1.get("frameSha256")
+        or hashlib.sha256(v1_payload).hexdigest() != v1_payload_digest
     ):
         raise VerificationError("HPTA V1 conformance vector mismatch")
+
+    v2 = read_json(
+        root / "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json"
+    )
+    try:
+        v2_frame = bytes.fromhex(v2["frameHex"])
+        v2_payload = bytes.fromhex(v2["fields"]["payloadHex"])
+        v2_frame_digest = v2["fields"]["frameDigestSha256"]
+        v2_domain = bytes.fromhex(v2["digestDomainHex"])
+        schema_length = int.from_bytes(v2_frame[6:8], "big")
+        producer_length = int.from_bytes(v2_frame[8:10], "big")
+        payload_length = int.from_bytes(v2_frame[50:54], "big")
+        body = v2_frame[54:]
+        schema = body[:schema_length]
+        producer = body[schema_length : schema_length + producer_length]
+        payload = body[schema_length + producer_length :]
+    except (KeyError, TypeError, ValueError) as error:
+        raise VerificationError(f"invalid HPTA V2 vector: {error}") from error
+    preimage = (
+        v2_domain
+        + v2_frame[:18]
+        + v2_frame[50:54]
+        + schema
+        + producer
+        + payload
+    )
+    if (
+        v2.get("schemaVersion") != 1
+        or v2.get("protocol") != "HPTA"
+        or v2.get("version") != 2
+        or v2.get("frameLength") != 59
+        or len(v2_frame) != 59
+        or v2_frame[:6] != b"HPTA\x00\x02"
+        or v2_domain != b"HPTA-WIRE-V2\x00"
+        or schema_length != 1
+        or producer_length != 1
+        or payload_length != 3
+        or payload != v2_payload
+        or hashlib.sha256(v2_frame).hexdigest() != v2.get("frameSha256")
+        or v2_frame[18:50].hex() != v2_frame_digest
+        or hashlib.sha256(preimage).digest() != v2_frame[18:50]
+    ):
+        raise VerificationError("HPTA V2 conformance vector mismatch")
 
 
 def validate_source_specific(root: Path = ROOT) -> None:
     required = {
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
+        "codex-rs/hepta-wire/src/v2.rs": [
+            'const WIRE_VERSION_V2: u16 = 2;',
+            "FRAME_DIGEST_DOMAIN",
+            "pub struct WireEnvelopeV2",
+            "FrameDigestMismatch",
+        ],
+        "codex-rs/hepta-wire/src/negotiation.rs": [
+            "pub fn negotiate(",
+            "FullFrameDigest",
+            "NoCompatibleVersion",
+        ],
+        "codex-rs/hepta-wire/src/schema.rs": [
+            "pub struct SchemaRegistry",
+            "pub trait TypedPayload",
+            "UnknownSchema",
+            "SchemaMismatch",
+        ],
+        "codex-rs/hepta-wire/src/stream.rs": [
+            "pub struct WireStreamDecoder",
+            "MAX_WIRE_FRAME_BYTES",
+            "expected_frame_len",
+        ],
         "codex-rs/hepta-operations/src/lib.rs": [
             "In-memory reference model",
             "does not provide durable storage",

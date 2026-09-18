@@ -16,6 +16,23 @@
 
 This stable document is the implementation guide for `platform.wire`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+### Current implementation status
+
+| Capability | Current state | Executable source |
+| --- | --- | --- |
+| HPTA V1 | implemented, frozen | `src/envelope.rs` |
+| HPTA V2 full-frame digest | implemented | `src/v2.rs` |
+| version/capability negotiation | implemented, fail-closed | `src/negotiation.rs` |
+| schema admission / typed payload codec | implemented, bounded | `src/schema.rs` |
+| incremental frame decoder | implemented for V1/V2 | `src/stream.rs` |
+| live Rust↔Python transport conformance | implemented as qualification test | `tests/cross_runtime.rs` |
+| production caller / deployment activation | not claimed | external composition gate |
+
+The current executable contract is
+[`docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md`](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md).
+The V1 and V2 byte contracts are frozen separately. Target architecture text
+below must not be read as proof of production composition.
+
 ## 1. Identity, mission and ownership
 
 Provide bounded, versioned wire representations while remaining transport and domain-runtime neutral.
@@ -46,7 +63,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs); observed identifiers include `WireEnvelope`, `WireError`, `MAX_WIRE_PAYLOAD_BYTES`, `encode`, `decode`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) for the implemented subset and remaining product work.
+The registered V1 source remains [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). The additive protocol layer is exported from [codex-rs/hepta-wire/src/lib.rs](../../../codex-rs/hepta-wire/src/lib.rs) and implemented by `v2.rs`, `negotiation.rs`, `schema.rs` and `stream.rs`. Source navigation is not proof of a production caller; read the [current executable contract](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md) and the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) together.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -96,7 +113,11 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-None.
+- `HPTA/1` frozen envelope (`WIRE_V1.md`)
+- `HPTA/2` additive full-frame-digest envelope (`WIRE_V2.md`)
+
+Domain payload schemas remain registered by the owning consumer; `platform.wire`
+provides bounded schema admission but does not own domain semantics.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -152,7 +173,10 @@ Transport-neutral codec library, embedded by the actual transport owner. Recreat
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs).
+- [docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md)
+- [docs/lane-a-foundation/platform.wire/WIRE_V1.md](../../lane-a-foundation/platform.wire/WIRE_V1.md)
+- [docs/lane-a-foundation/platform.wire/WIRE_V2.md](../../lane-a-foundation/platform.wire/WIRE_V2.md)
+- [codex-rs/hepta-wire/src/stream.rs](../../../codex-rs/hepta-wire/src/stream.rs).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -160,8 +184,13 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs); named case: `every_truncation_rejects_without_reconstructing_an_envelope`.
-- [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs); named case: `envelope_round_trip_is_exact`.
+- [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs); V1 truncation/bounds/frozen vector.
+- [codex-rs/hepta-wire/src/v2_tests.rs](../../../codex-rs/hepta-wire/src/v2_tests.rs); V2 frozen vector and metadata tamper rejection.
+- [codex-rs/hepta-wire/src/negotiation_tests.rs](../../../codex-rs/hepta-wire/src/negotiation_tests.rs); highest-common selection and downgrade prevention.
+- [codex-rs/hepta-wire/src/schema_tests.rs](../../../codex-rs/hepta-wire/src/schema_tests.rs); registry and typed payload admission.
+- [codex-rs/hepta-wire/src/stream_tests.rs](../../../codex-rs/hepta-wire/src/stream_tests.rs); bounded incremental framing.
+- [codex-rs/hepta-wire/src/property_tests.rs](../../../codex-rs/hepta-wire/src/property_tests.rs); generated valid frames and arbitrary-byte no-panic coverage.
+- [codex-rs/hepta-wire/tests/cross_runtime.rs](../../../codex-rs/hepta-wire/tests/cross_runtime.rs); live Rust→Python TCP V2 conformance.
 
 In `codex-rs`, run `just test -p codex-hepta-wire`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
 
@@ -262,7 +291,12 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `wireenvelope` | `WireEnvelope` | `codex-rs/hepta-wire/src/envelope.rs` | `pending` |
+| `wire_v1` | `WireEnvelope` | `codex-rs/hepta-wire/src/envelope.rs` | `envelope_tests.rs`, `boundary_tests.rs` |
+| `wire_v2` | `WireEnvelopeV2` | `codex-rs/hepta-wire/src/v2.rs` | `v2_tests.rs` |
+| `negotiate` | `negotiate` | `codex-rs/hepta-wire/src/negotiation.rs` | `negotiation_tests.rs` |
+| `schema_admission` | `SchemaRegistry` | `codex-rs/hepta-wire/src/schema.rs` | `schema_tests.rs` |
+| `stream_decode` | `WireStreamDecoder` | `codex-rs/hepta-wire/src/stream.rs` | `stream_tests.rs`, `property_tests.rs` |
+| `cross_runtime` | `WireEnvelopeV2` | `codex-rs/hepta-wire/tests/cross_runtime.rs` | `rust_python_live_tcp_v2_loads_and_binds_metadata_and_payload` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.

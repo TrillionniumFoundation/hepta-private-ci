@@ -1,7 +1,7 @@
 # platform.wire: implementation design
 
 Parent: `docs/modules/platform.wire/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: HPTA V1 envelope codec implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: HPTA V1 remains frozen; additive V2 integrity, negotiation, schema/typed admission and incremental decode are source-implemented. Product composition and independent acceptance remain separate gates listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,36 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `WireEnvelope` in [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). HPTA V1 envelope codec implemented.
-- **State and recovery:** Stateless HPTA binary V1 framing uses big-endian lengths/generation and a payload digest; decode rejects unsupported versions, trailing bytes, invalid IDs and payloads outside 1..1048576 bytes.
-- **Source tests:** [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs), [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/platform.wire/WIRE_V1.md](../../../docs/lane-a-foundation/platform.wire/WIRE_V1.md).
-- **Remaining work:** The target negotiate operation is not implemented by this fixed-version codec; transport negotiation and production schema admission need their owning integration.
+- **Implemented entrypoints:** `WireEnvelope` (frozen HPTA V1), `WireEnvelopeV2`,
+  `negotiate`, `SchemaRegistry`/typed payload helpers and
+  `WireStreamDecoder` are exported by
+  [codex-rs/hepta-wire/src/lib.rs](../../../codex-rs/hepta-wire/src/lib.rs).
+- **Integrity:** V1 remains payload-digest-only. V2 uses a domain-separated
+  SHA-256 digest that binds magic, version, lengths, generation, schema,
+  producer and payload. The digest is not authentication, a MAC or a signature.
+- **Compatibility:** negotiation selects the highest explicitly common V1/V2
+  version. Required capabilities are the union of both peers' requirements;
+  requiring `FullFrameDigest` prevents downgrade to V1.
+- **Schema/typed payloads:** the in-process bounded registry rejects unknown
+  schemas, duplicate registration, schema payload-limit violations and
+  validator failures. `TypedPayload` helpers require the exact compile-time
+  schema ID before decoding.
+- **Streaming:** the decoder reads and admission-checks the fixed 54-byte header
+  before reserving the bounded body and consumes at most one complete frame per
+  call, leaving bytes for a subsequent frame unconsumed.
+- **Source tests:** V1/V2 golden vectors, truncation/bounds, metadata tamper,
+  negotiation downgrade, schema confusion, incremental chunking, generated
+  round trips and arbitrary-byte no-panic coverage are present under
+  `codex-rs/hepta-wire/src/*_tests.rs`.
+- **Cross-runtime evidence:** `codex-rs/hepta-wire/tests/cross_runtime.rs`
+  transfers raw V2 bytes over loopback TCP to an independent Python runtime,
+  which reconstructs and verifies the V2 digest preimage before accepting the
+  frame.
+- **Implementation and operating references:**
+  [CURRENT_IMPLEMENTATION.md](../../../docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md),
+  [WIRE_V1.md](../../../docs/lane-a-foundation/platform.wire/WIRE_V1.md) and
+  [WIRE_V2.md](../../../docs/lane-a-foundation/platform.wire/WIRE_V2.md).
+- **Remaining work:** product-specific production caller composition,
+  authenticated session/transport binding, externally governed schema
+  distribution/revocation, exact-candidate CI receipt, independent acceptance,
+  activation and release remain separate gates.
