@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); observed identifiers include `FleetRegistry`, `FleetSnapshot`, `AgentRecord`, `initialize`, `open_existing`, `register`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) for the implemented subset and remaining product work.
+The durable registry remains [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs). Fleet allocation now also has one canonical resource model in `resource.rs`, physical/policy capacity observation in `capacity.rs`, deterministic host selection plus weighted allocation in `placement.rs`, an immutable-generation durable owner store in `allocation_store.rs`, and the supervisor-composed owner path in `runtime_allocator.rs`. The pure calculator remains authority-free; the runtime allocator binds the exact supervisor control-fence digest, writer epoch, observed host generation and resource vector before it commits a grant. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) for the remaining external authority and target-qualification boundary.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -133,7 +133,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md).
+`FleetAllocationStore` is the allocation transaction boundary. Each logical mutation creates a new versioned JSON generation under the supervisor-owned fleet state root, fsyncs the bounded temporary file, publishes it without overwrite, fsyncs the directory and links it to a predecessor revision. `FleetRuntimeAllocator` is held by the existing supervisord process; it does not start a second fleet daemon. The in-memory `LeaseLedger` is now the state machine serialized inside that durable generation, not a standalone authority.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -155,13 +155,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) specifies this module's algorithm and pilot ceilings. `FleetResourceVectorV1` fixes the V1 axes and units: concurrent turns, MiB of memory, tool-process count and turn-queue slots. Concurrent-turn and memory ceilings originate from local physical observation; tool-process and queue ceilings are explicit policy caps. The local observer uses OS CPU availability and physical memory endowment with a configured reserve. It does not infer GPU, energy, remote-host or economic capacity.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-FleetRegistry is operated by the existing supervisor owner. Open the same registry and preserve generation/fence identity during lifecycle changes. The separate lease_ledger is an in-memory component; durable resource grants and real capacity observations remain implementation work. Do not launch a second fleet writer.
+FleetRegistry and `FleetRuntimeAllocator` are operated by the existing supervisor owner under the same single-instance lifecycle. `Start` must commit a durable resource grant before child spawn; the normal supervisor tick supplies the observed active-holder set for renewal, revocation and retention. A new supervisor epoch fences live grants from the predecessor epoch before replacement grants are admitted. Capacity refresh failure or a missing current-epoch grant fails closed for active runtimes. Do not launch a second fleet writer.
 
 Current operating and state-format references:
 
@@ -175,7 +175,10 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-fleet/src/allocation_tests.rs](../../../codex-rs/hepta-fleet/src/allocation_tests.rs); named case: `weighted_allocation_reserves_minimums_and_conserves_capacity`.
-- [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs); named case: `conserves_capacity_and_reuses_identical_grant`.
+- [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs); capacity, observation revision, restart fencing and retention regressions.
+- [codex-rs/hepta-fleet/src/allocation_store.rs](../../../codex-rs/hepta-fleet/src/allocation_store.rs); durable reopen, stale-revision and tamper regressions.
+- [codex-rs/hepta-fleet/src/runtime_allocator.rs](../../../codex-rs/hepta-fleet/src/runtime_allocator.rs); restart-epoch fencing, full-budget start admission, stale-observer failure and peer-injection rejection.
+- [codex-rs/hepta-fleet/src/placement.rs](../../../codex-rs/hepta-fleet/src/placement.rs); deterministic host selection and permutation invariance.
 
 In `codex-rs`, run `just test -p codex-hepta-fleet`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) separately labels target acceptance designs.
 
@@ -259,9 +262,10 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `allocate` | `pub fn issue(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
+| `allocate` | `pub fn reserve_agent_start(` | `codex-rs/hepta-fleet/src/runtime_allocator.rs` | `codex-rs/hepta-fleet/src/runtime_allocator.rs` |
 | `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- The non-test consumer is `codex-rs/hepta-supervisor/src/daemon.rs`: ordinary `Start` admission commits a fleet grant before process spawn and the lifecycle ticker reconciles active holders.
+- Repository-controlled durable allocation and local runtime composition are implemented by this candidate. The local control fence is not relabeled as an independently issued `kernel.authority` witness.
+- Independent authority acceptance, target-host fault qualification, activation, promotion and release remain separate evidence gates.
