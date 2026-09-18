@@ -105,7 +105,7 @@ use crate::daemon_protocol::SupervisordHealth;
 use crate::daemon_protocol::SupervisordMatrixStatus;
 #[cfg(unix)]
 use crate::daemon_protocol::SupervisordMethod;
-#[cfg(unix)]
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordMutation;
 #[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordPayload;
@@ -379,6 +379,18 @@ async fn write_response(
     Ok(())
 }
 
+#[cfg(any(unix, test))]
+fn unsigned_release_transition_requires_authority(
+    production_verifier_configured: bool,
+    operation: SupervisordMutation,
+) -> bool {
+    production_verifier_configured
+        && matches!(
+            operation,
+            SupervisordMutation::Upgrade | SupervisordMutation::Rollback
+        )
+}
+
 #[cfg(unix)]
 async fn handle_request<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
@@ -513,7 +525,10 @@ async fn handle_request<D: ProcessDriver>(
             .await
         }
         SupervisordMethod::Upgrade { fence, release_id } => {
-            if state.production_grant_verifier.is_some() {
+            if unsigned_release_transition_requires_authority(
+                state.production_grant_verifier.is_some(),
+                SupervisordMutation::Upgrade,
+            ) {
                 let actual = agent_status(&state, &fence.agent_id).await.ok();
                 return error_payload(
                     "production_authority_required",
@@ -537,7 +552,10 @@ async fn handle_request<D: ProcessDriver>(
             handle_mutation(state, SupervisordMutation::Upgrade, fence, Some(target)).await
         }
         SupervisordMethod::Rollback { fence } => {
-            if state.production_grant_verifier.is_some() {
+            if unsigned_release_transition_requires_authority(
+                state.production_grant_verifier.is_some(),
+                SupervisordMutation::Rollback,
+            ) {
                 let actual = agent_status(&state, &fence.agent_id).await.ok();
                 return error_payload(
                     "production_authority_required",
@@ -1280,6 +1298,35 @@ mod tests {
             release_change_pending: false,
             state_digest: ControlStateDigest::parse(DIGEST).expect("fixed digest"),
         }
+    }
+
+    #[test]
+    fn production_configured_daemon_requires_signed_release_transitions() {
+        assert!(unsigned_release_transition_requires_authority(
+            true,
+            SupervisordMutation::Upgrade,
+        ));
+        assert!(unsigned_release_transition_requires_authority(
+            true,
+            SupervisordMutation::Rollback,
+        ));
+        for operation in [
+            SupervisordMutation::Start,
+            SupervisordMutation::Drain,
+            SupervisordMutation::Stop,
+            SupervisordMutation::Kill,
+            SupervisordMutation::Restart,
+        ] {
+            assert!(!unsigned_release_transition_requires_authority(true, operation));
+        }
+        assert!(!unsigned_release_transition_requires_authority(
+            false,
+            SupervisordMutation::Upgrade,
+        ));
+        assert!(!unsigned_release_transition_requires_authority(
+            false,
+            SupervisordMutation::Rollback,
+        ));
     }
 
     #[test]
