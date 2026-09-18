@@ -1,7 +1,7 @@
 # channel.matrix: implementation design
 
 Parent: `docs/modules/channel.matrix/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: durable Matrix runtime plus a separate send-observer component implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable Matrix runtime and dispatch ledger are integrated under MatrixDurableStore; remaining external qualification and final-use authority integration are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,9 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `process_event` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); `recover_pending` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); `observe_send` in [codex-rs/hepta-matrixd/src/send_observer.rs](../../../codex-rs/hepta-matrixd/src/send_observer.rs). Durable Matrix runtime plus a separate send-observer component implemented.
-- **State and recovery:** MatrixRuntime uses MatrixDurableStore for inbox/thread/outbox recovery. The send-observer BTreeMap separately binds operation/transaction/server/session and keeps unknown sends indeterminate; its state is not a replacement durable sender.
-- **Source tests:** [codex-rs/hepta-matrixd/src/runtime/tests.rs](../../../codex-rs/hepta-matrixd/src/runtime/tests.rs), [codex-rs/hepta-matrixd/src/send_observer_tests.rs](../../../codex-rs/hepta-matrixd/src/send_observer_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implemented entrypoints:** `process_event` and `recover_pending` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); durable `prepare_send`/`observe_send` façade methods in [codex-rs/hepta-matrixd/src/send_observer.rs](../../../codex-rs/hepta-matrixd/src/send_observer.rs); the canonical ledger lives in `MatrixDurableStore`.
+- **State and recovery:** `MatrixDurableStore` owns inbox/thread/outbox plus the durable dispatch ledger, append-only send observations and terminal archive. `stable_txn_id` is the canonical Matrix transaction identity. SDK/HTTP acceptance records an indeterminate transport observation; only a trusted homeserver event observation settles success. Retry/restart reuses the same transaction identity. Terminal rows leave the bounded unresolved working set, and redaction evidence is stored separately from the original send observation.
+- **Source tests:** [codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs](../../../codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs), [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs), [codex-rs/hepta-matrixd/src/runtime/tests.rs](../../../codex-rs/hepta-matrixd/src/runtime/tests.rs), [codex-rs/hepta-matrixd/src/send_observer_tests.rs](../../../codex-rs/hepta-matrixd/src/send_observer_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Qualification path:** `.github/workflows/hepta-matrix-real-synapse.yml` binds a manually dispatched qualification run to an exact candidate SHA/tree and seals the pinned Synapse fixture artifacts. A workflow definition is not a pass receipt.
 - **Implementation and operating references:** [docs/modules/channel.matrix/IMPLEMENTATION_MAP.json](../../../docs/modules/channel.matrix/IMPLEMENTATION_MAP.json), [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../../docs/readiness/LANE_B_RUNTIME_COMPOSITION.md).
-- **Remaining work:** Integrate send-observer state with the canonical durable transaction identity, then qualify enrolled homeserver/device transport, encryption, reconnect/redaction and restore.
+- **Remaining work:** bind a live final-use authority/grant and revocation caller to the already persisted authority fields, then obtain exact-candidate qualification for enrolled homeserver/device transport, encryption, rate limiting, reconnect/redaction and restore. Production activation and independent acceptance remain separate.
