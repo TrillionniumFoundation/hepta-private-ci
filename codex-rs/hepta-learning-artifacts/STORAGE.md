@@ -11,7 +11,10 @@ does not obtain credentials, install models or select a production artifact.
 The only safe writer capability is the opaque `CreateOnlyArtifactFile`. Its
 `create(path)` constructor opens the final component with
 `OpenOptions::create_new(true)`, read and write access, and mode `0600` on
-Unix (subject to a more restrictive umask). That atomic operation must fail with
+Unix (subject to a more restrictive umask). `create_in_directory(directory, leaf)`
+additionally requires `leaf` to be exactly one normal path component, rejecting
+absolute paths, `..` and nested subpaths before joining it to a host-authenticated
+directory. That atomic operation must fail with
 `AlreadyExists` whenever the target name already exists, including an empty
 file, an acknowledged file truncated to zero bytes, or a symbolic link.
 
@@ -107,9 +110,11 @@ Cross-store atomicity is a bounded saga; two synced files are not an atomic
 multi-store transaction. A crash before witness publication may leave an orphan
 candidate, never selected state.
 
-`create_new` protects the final path component from an existence-check race; it
-does not authenticate ancestor traversal, retain a path-to-inode binding after
-return, synchronize the parent directory or isolate hostile writers. The host
+`create_new` protects the final path component from an existence-check race and
+`create_in_directory` prevents lexical leaf escape. Neither API authenticates
+ancestor traversal, retains a path-to-inode binding after return, prevents a
+hostile ancestor rename/symlink race, synchronizes the parent directory or
+isolates hostile writers. The host
 owns trusted parent traversal, containing-directory sync, encryption,
 quota/retention, revocation freshness, physical erasure, backup deletion,
 independent witness storage and selection/rollback. File locks fence cooperative
