@@ -68,8 +68,50 @@ impl ProvenanceRefV1 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MemoryVerificationStateV1 {
+    Unverified,
+    Verified,
+    Contradicted,
+    Revoked,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "state", rename_all = "snake_case")]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct RetentionPolicyV1 {
+    policy_digest: CanonicalDigestV1,
+    retain_until_unix_ms: Option<i64>,
+}
+
+impl RetentionPolicyV1 {
+    pub fn try_new(
+        policy_digest: CanonicalDigestV1,
+        retain_until_unix_ms: Option<i64>,
+    ) -> Result<Self, ContractErrorV1> {
+        let value = Self {
+            policy_digest,
+            retain_until_unix_ms,
+        };
+        value.validate_for(i64::MIN)?;
+        Ok(value)
+    }
+
+    pub fn validate_for(&self, observed_start_unix_ms: i64) -> Result<(), ContractErrorV1> {
+        if self
+            .retain_until_unix_ms
+            .is_some_and(|end| end <= observed_start_unix_ms)
+        {
+            return Err(ContractErrorV1::Invalid(
+                "retention deadline must be after observation start",
+            ));
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, tag = "state", rename_all = "snake_case")]
 pub enum MemoryLifecycleV1 {
     Active,
     Superseded { by_event_id: EventIdV1 },
@@ -101,6 +143,8 @@ pub struct MemoryEventV1 {
     cross_modal_bindings: Vec<CrossModalBindingV1>,
     semantic_keys: BTreeSet<String>,
     provenance: Vec<ProvenanceRefV1>,
+    verification: MemoryVerificationStateV1,
+    retention_policy: RetentionPolicyV1,
     objective_digest: CanonicalDigestV1,
     ndu_state_digest: CanonicalDigestV1,
     behavior_propensity_ppm: Option<u32>,
@@ -118,6 +162,8 @@ impl MemoryEventV1 {
         cross_modal_bindings: Vec<CrossModalBindingV1>,
         semantic_keys: BTreeSet<String>,
         provenance: Vec<ProvenanceRefV1>,
+        verification: MemoryVerificationStateV1,
+        retention_policy: RetentionPolicyV1,
         objective_digest: CanonicalDigestV1,
         ndu_state_digest: CanonicalDigestV1,
         behavior_propensity_ppm: Option<u32>,
@@ -132,6 +178,8 @@ impl MemoryEventV1 {
             cross_modal_bindings,
             semantic_keys,
             provenance,
+            verification,
+            retention_policy,
             objective_digest,
             ndu_state_digest,
             behavior_propensity_ppm,
@@ -146,6 +194,8 @@ impl MemoryEventV1 {
         validate_nonzero(self.episode_id, "episode id must be non-zero")?;
         self.scope.validate()?;
         self.observed_interval.validate()?;
+        self.retention_policy
+            .validate_for(self.observed_interval.start_unix_ms())?;
         self.lifecycle.validate_for(self.event_id)?;
         if self.modality_spans.is_empty() || self.modality_spans.len() > MAX_MODALITY_SPANS {
             return Err(ContractErrorV1::BoundExceeded("event modality spans"));
@@ -223,6 +273,16 @@ impl MemoryEventV1 {
     #[must_use]
     pub fn provenance(&self) -> &[ProvenanceRefV1] {
         &self.provenance
+    }
+
+    #[must_use]
+    pub const fn verification(&self) -> MemoryVerificationStateV1 {
+        self.verification
+    }
+
+    #[must_use]
+    pub const fn retention_policy(&self) -> &RetentionPolicyV1 {
+        &self.retention_policy
     }
 
     #[must_use]
