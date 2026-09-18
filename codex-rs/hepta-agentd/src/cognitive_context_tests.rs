@@ -83,3 +83,81 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     let other = AgentId::parse("00000000-0000-4000-8000-000000000120").unwrap();
     assert!(read(&store, &other, 1, "lemon", 4, None).await.is_err());
 }
+
+#[tokio::test]
+async fn revocation_between_ranking_and_publication_fails_closed() {
+    let temp = tempfile::tempdir().unwrap();
+    let fleet = temp.path().join("fleet");
+    std::fs::create_dir_all(&fleet).unwrap();
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000121").unwrap();
+    let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope: scope.clone(),
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "ret-03".to_string(),
+                content: b"revocable ranked memory".to_vec(),
+                observed_at_unix_seconds: 100,
+            },
+        )
+        .await
+        .unwrap();
+    let memory = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "ret-03-memory".to_string(),
+                revision: MemoryRevisionDraft {
+                    scope: scope.clone(),
+                    content: "revocable ranked memory".to_string(),
+                    verification: MemoryVerification::Verified,
+                    lifecycle: MemoryLifecycleState::Active,
+                    valid_from_unix_seconds: 100,
+                    valid_to_unix_seconds: None,
+                    citations: vec![citation.clone()],
+                },
+            },
+        )
+        .await
+        .unwrap();
+
+    let result = super::read_with_before_revalidate(
+        &store,
+        &owner,
+        1,
+        "revocable",
+        4,
+        None,
+        || {
+            let store = &store;
+            let access = &access;
+            let memory_id = memory.id.memory_id.clone();
+            let scope = scope.clone();
+            let citation = citation.clone();
+            async move {
+                store
+                    .forget_memory(
+                        access,
+                        &memory_id,
+                        1,
+                        &ForgetMemoryDraft {
+                            scope,
+                            reason: "revoked after ranking".to_string(),
+                            valid_from_unix_seconds: 200,
+                            citations: vec![citation],
+                        },
+                    )
+                    .await
+                    .unwrap();
+            }
+        },
+    )
+    .await;
+
+    assert!(result.is_err(), "stale ranked context must not be published");
+}
