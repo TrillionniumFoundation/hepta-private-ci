@@ -205,6 +205,14 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "productCallerState": "not_composed",
         "productionWriterState": "not_established",
         "operations": operations,
+        **(
+            {
+                "completionStages": dict(COGNITIVE_TYPES_COMPLETION_STAGES),
+                "publicSurfaceInventoryGenerated": True,
+            }
+            if mid == "cognitive.types"
+            else {}
+        ),
         "repositoryControlledGaps": [
             "Bind every operation to an authenticated consumer callsite and owner store.",
             "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
@@ -224,6 +232,27 @@ def map_for(module: dict, source_base: dict, lanes: dict):
             "independentAcceptance": False,
             "activation": False,
             "release": False,
+            **(
+                {
+                    "nativePublicSurfaceMappingComplete": all(
+                        op["sourcePathExists"] and op["nativeSymbol"]
+                        for op in operations
+                    ),
+                    "targetContractMappingComplete": {
+                        op.get("protocolId")
+                        for op in operations
+                        if op.get("protocolId")
+                    }
+                    == set(HNMF_PROTOCOL_SOURCES),
+                    "wireContractMappingComplete": all(
+                        f"impl CanonicalJsonV1 for {protocol}"
+                        in (ROOT / source).read_text(encoding="utf-8")
+                        for protocol, source in HNMF_PROTOCOL_SOURCES.items()
+                    ),
+                }
+                if mid == "cognitive.types"
+                else {}
+            ),
         },
     }
 
@@ -322,6 +351,27 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         "independentAcceptance": bool(boundary.get("independentAcceptance", False)),
         "activation": bool(boundary.get("activation", False)),
         "release": bool(boundary.get("release", False)),
+        **(
+            {
+                "nativePublicSurfaceMappingComplete": all(
+                    bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+                    for op in operations
+                ),
+                "targetContractMappingComplete": {
+                    op.get("protocolId")
+                    for op in operations
+                    if op.get("protocolId")
+                }
+                == set(HNMF_PROTOCOL_SOURCES),
+                "wireContractMappingComplete": all(
+                    f"impl CanonicalJsonV1 for {protocol}"
+                    in (ROOT / source).read_text(encoding="utf-8")
+                    for protocol, source in HNMF_PROTOCOL_SOURCES.items()
+                ),
+            }
+            if module["id"] == "cognitive.types"
+            else {}
+        ),
     }
     migrated.setdefault(
         "repositoryControlledGaps",
@@ -449,6 +499,27 @@ def verify():
             }
             if mapped_symbols != expected_symbols:
                 failures.append(f"{mid}: public surface inventory")
+            boundary = row.get("claimBoundary") or {}
+            expected_native_complete = all(
+                bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
+                for op in cognitive_type_operations()
+            )
+            expected_target_complete = {
+                op.get("protocolId")
+                for op in cognitive_type_operations()
+                if op.get("protocolId")
+            } == set(HNMF_PROTOCOL_SOURCES)
+            expected_wire_complete = all(
+                f"impl CanonicalJsonV1 for {protocol}"
+                in (ROOT / source).read_text(encoding="utf-8")
+                for protocol, source in HNMF_PROTOCOL_SOURCES.items()
+            )
+            if boundary.get("nativePublicSurfaceMappingComplete") != expected_native_complete:
+                failures.append(f"{mid}: native public surface mapping")
+            if boundary.get("targetContractMappingComplete") != expected_target_complete:
+                failures.append(f"{mid}: target contract mapping")
+            if boundary.get("wireContractMappingComplete") != expected_wire_complete:
+                failures.append(f"{mid}: wire contract mapping")
         if not isinstance(ops, list) or not ops:
             failures.append(f"{mid}: operations")
             continue
