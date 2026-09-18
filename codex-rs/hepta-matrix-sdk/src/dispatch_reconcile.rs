@@ -2,6 +2,7 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixRoomId;
 use codex_hepta_matrix_protocol::MatrixTransactionId;
+use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use matrix_sdk::ruma::RoomId;
@@ -22,6 +23,7 @@ pub(crate) async fn reconcile_sync_dispatches(
     response: &SyncResponse,
     binding_revision: u64,
     generation: u64,
+    expected_sender: &MatrixUserId,
     observed_at_ms: u64,
 ) -> Result<(), MatrixSdkError> {
     for (native_room_id, timeline) in response
@@ -47,6 +49,7 @@ pub(crate) async fn reconcile_sync_dispatches(
                 event.raw(),
                 binding_revision,
                 generation,
+                expected_sender,
                 observed_at_ms,
             )
             .await?;
@@ -62,6 +65,7 @@ async fn reconcile_raw_event(
     raw: &Raw<AnySyncTimelineEvent>,
     binding_revision: u64,
     generation: u64,
+    expected_sender: &MatrixUserId,
     observed_at_ms: u64,
 ) -> Result<(), MatrixSdkError> {
     if raw
@@ -90,6 +94,12 @@ async fn reconcile_raw_event(
         .map_err(|_| MatrixSdkError::Sync)?;
     let raw_digest = Sha256Digest::for_bytes(raw.json().get().as_bytes());
 
+    let sender = raw
+        .get_field::<String>("sender")
+        .map_err(|_| MatrixSdkError::Sync)?
+        .ok_or(MatrixSdkError::Sync)
+        .and_then(|value| MatrixUserId::parse(&value).map_err(|_| MatrixSdkError::Sync))?;
+
     let existing = match txn_hint.as_ref() {
         Some(txn_id) => store
             .matrix_dispatch_receipt(txn_id)
@@ -108,6 +118,9 @@ async fn reconcile_raw_event(
             )
             && receipt.observed_event_id.as_ref() == Some(&event_id)
     });
+    if existing.is_some() && sender != *expected_sender {
+        return Err(MatrixSdkError::Sync);
+    }
     if !already_observed {
         store
             .observe_matrix_server_event(
