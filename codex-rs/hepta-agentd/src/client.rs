@@ -20,6 +20,7 @@ use crate::AgentdError;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
 use crate::AgentdResponse;
+use crate::AuthBusObjectiveIngress;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
@@ -27,9 +28,8 @@ use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
-use crate::SessionIngress;
-use crate::AuthBusObjectiveIngress;
 use crate::ObjectiveStartOutcome;
+use crate::SessionIngress;
 
 pub struct AgentdClient {
     socket_path: PathBuf,
