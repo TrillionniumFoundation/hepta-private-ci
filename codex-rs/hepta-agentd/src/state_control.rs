@@ -769,6 +769,33 @@ impl AgentdState {
         Ok(())
     }
 
+    /// Advance lifecycle deadlines and propagate a durable post-dispatch
+    /// cancellation intent to the exact bound Codex turn when one is known.
+    ///
+    /// State is persisted as Cancelling before the interrupt RPC. A lost or
+    /// rejected acknowledgement therefore cannot roll the lifecycle record
+    /// back to Dispatched; the normal acknowledgement deadline will move it
+    /// to Indeterminate unless a delegated terminal observation arrives.
+    pub(crate) async fn expire_run_deadlines_and_interrupt(
+        &self,
+        now_ms: u64,
+    ) -> Result<(), AgentdError> {
+        let expired = self.expire_run_deadlines(now_ms)?;
+        for receipt in expired {
+            if receipt.phase != RunPhase::Cancelling {
+                continue;
+            }
+            let Some(binding) = self.run_execution_binding(&receipt.run_id)? else {
+                // A caller can bind the exact Codex turn after the dispatch
+                // boundary. RunBindExecution observes Cancelling and issues
+                // the same interrupt then, so absence here is not terminal.
+                continue;
+            };
+            let _ = self.interrupt_codex_execution(&binding).await;
+        }
+        Ok(())
+    }
+
     fn response_with_payload(
         &self,
         request_id: u64,
