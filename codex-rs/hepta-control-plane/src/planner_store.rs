@@ -60,7 +60,9 @@ impl fmt::Display for PlannerStoreErrorV1 {
             Self::UnsupportedPlatform => {
                 formatter.write_str("durable planner store requires a Unix durability profile")
             }
-            Self::UnsafeState(message) => write!(formatter, "unsafe planner store state: {message}"),
+            Self::UnsafeState(message) => {
+                write!(formatter, "unsafe planner store state: {message}")
+            }
             Self::CorruptEnvelope => formatter.write_str("corrupt planner store envelope"),
             Self::UnsupportedVersion(version) => {
                 write!(formatter, "unsupported planner store version {version}")
@@ -156,7 +158,10 @@ impl PlannerJournalStoreV1 {
 
     #[must_use]
     pub fn trusted_head(&self) -> Option<Digest32> {
-        self.journal.entries().last().map(|entry| entry.entry_digest)
+        self.journal
+            .entries()
+            .last()
+            .map(|entry| entry.entry_digest)
     }
 
     #[must_use]
@@ -375,8 +380,7 @@ fn secure_read(path: &Path) -> Result<Vec<u8>, PlannerStoreErrorV1> {
     }
     let mut file = File::open(path)?;
     verify_private_file(path, &file)?;
-    let capacity =
-        usize::try_from(link.len()).map_err(|_| PlannerStoreErrorV1::CorruptEnvelope)?;
+    let capacity = usize::try_from(link.len()).map_err(|_| PlannerStoreErrorV1::CorruptEnvelope)?;
     let mut bytes = Vec::with_capacity(capacity);
     file.read_to_end(&mut bytes)?;
     if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > STORE_MAX_BYTES {
