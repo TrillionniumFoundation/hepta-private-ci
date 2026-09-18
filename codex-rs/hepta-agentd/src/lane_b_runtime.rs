@@ -100,6 +100,29 @@ impl AgentRunCoordinator {
             if let Some(reason) = &record.cancel_reason {
                 validate_cancel_reason(reason)?;
             }
+            let has_context = record.context_digest.is_some();
+            if has_context != record.compilation_receipt_digest.is_some() {
+                return Err(AgentRunError::InvalidTransition);
+            }
+            match record.phase {
+                RunPhase::Admitted if has_context => {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                RunPhase::ContextAttached
+                | RunPhase::Dispatched
+                | RunPhase::Cancelling
+                | RunPhase::Succeeded
+                | RunPhase::Failed
+                | RunPhase::Indeterminate
+                    if !has_context =>
+                {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                _ => {}
+            }
+            if record.phase == RunPhase::Cancelling && record.cancel_reason.is_none() {
+                return Err(AgentRunError::InvalidCancelReason);
+            }
             if record
                 .cancellation_ack_deadline_ms
                 .is_some_and(|deadline| deadline == 0)
