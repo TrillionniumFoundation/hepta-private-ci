@@ -325,7 +325,10 @@ async fn migration_prefix_sha256(
     .fetch_all(pool)
     .await
     .map_err(classify_sqlx_error)?;
-    if rows.len() != usize::try_from(count).unwrap_or(usize::MAX) {
+    let expected_count = usize::try_from(count).map_err(|_| {
+        EvidenceError::Corrupt("migration checkpoint count does not fit usize".to_string())
+    })?;
+    if rows.len() != expected_count {
         return Err(EvidenceError::Corrupt(
             "migration prefix is shorter than the external checkpoint".to_string(),
         ));
@@ -338,8 +341,8 @@ async fn migration_prefix_sha256(
             row.try_get("description").map_err(classify_sqlx_error)?;
         let checksum: Vec<u8> = row.try_get("checksum").map_err(classify_sqlx_error)?;
         hasher.update(version.to_be_bytes());
-        update_len_bytes(&mut hasher, description.as_bytes());
-        update_len_bytes(&mut hasher, &checksum);
+        update_len_bytes(&mut hasher, description.as_bytes())?;
+        update_len_bytes(&mut hasher, &checksum)?;
     }
     digest_output(hasher)
 }
@@ -363,7 +366,12 @@ async fn qualification_prefix_sha256(
     .fetch_all(pool)
     .await
     .map_err(classify_sqlx_error)?;
-    if u64::try_from(rows.len()).unwrap_or(u64::MAX) != expected_count {
+    let expected_count = usize::try_from(expected_count).map_err(|_| {
+        EvidenceError::Corrupt(
+            "qualification checkpoint receipt count does not fit usize".to_string(),
+        )
+    })?;
+    if rows.len() != expected_count {
         return Err(EvidenceError::Corrupt(
             "qualification checkpoint prefix count differs".to_string(),
         ));
@@ -376,22 +384,21 @@ async fn qualification_prefix_sha256(
         let envelope_sha256: String =
             row.try_get("envelope_sha256").map_err(classify_sqlx_error)?;
         hasher.update(seq.to_be_bytes());
-        update_len_bytes(&mut hasher, receipt_id.as_bytes());
-        update_len_bytes(&mut hasher, envelope_sha256.as_bytes());
+        update_len_bytes(&mut hasher, receipt_id.as_bytes())?;
+        update_len_bytes(&mut hasher, envelope_sha256.as_bytes())?;
     }
     digest_output(hasher)
 }
 
-fn update_len_bytes(hasher: &mut Sha256, bytes: &[u8]) {
-    hasher.update((bytes.len() as u64).to_be_bytes());
+fn update_len_bytes(hasher: &mut Sha256, bytes: &[u8]) -> Result<(), EvidenceError> {
+    let length = u64::try_from(bytes.len()).map_err(|_| {
+        EvidenceError::Corrupt("checkpoint field length does not fit u64".to_string())
+    })?;
+    hasher.update(length.to_be_bytes());
     hasher.update(bytes);
+    Ok(())
 }
 
 fn digest_output(hasher: Sha256) -> Result<Sha256Digest, EvidenceError> {
-    let output = hasher.finalize();
-    let text = output
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect::<String>();
-    Sha256Digest::parse(text).map_err(EvidenceError::Corrupt)
+    Ok(Sha256Digest::from_sha256_output(hasher.finalize()))
 }
