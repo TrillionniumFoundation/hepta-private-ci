@@ -27,6 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut request_id = None;
     let mut maximum_in_flight = None;
     let mut maximum_output_tokens = None;
+    let mut maximum_budget_units = None;
     let mut quota_reservation = None;
     let mut resource_advertisement = None;
     let mut final_use_state_dir = None;
@@ -41,7 +42,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --maximum-output-tokens N --quota-reservation PATH --resource-advertisement PATH --final-use-state-dir PATH --final-use-signer-id ID --final-use-verifying-key PATH --final-use-revocations PATH --final-use-grant PATH [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin. Quota/resource evidence is validated before admission; an independently signed final-use grant must exactly match the frozen physical turn binding before provider dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --maximum-output-tokens N --maximum-budget-units N --quota-reservation PATH --resource-advertisement PATH --final-use-state-dir PATH --final-use-signer-id ID --final-use-verifying-key PATH --final-use-revocations PATH --final-use-grant PATH [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin. Quota/resource evidence is validated before admission; an independently signed final-use grant must exactly match the frozen physical turn binding before provider dispatch."
             );
             return Ok(());
         }
@@ -57,6 +58,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--request-id" => request_id = Some(value),
             "--maximum-in-flight" => maximum_in_flight = Some(value.parse()?),
             "--maximum-output-tokens" => maximum_output_tokens = Some(value.parse()?),
+            "--maximum-budget-units" => maximum_budget_units = Some(value.parse()?),
             "--quota-reservation" => quota_reservation = Some(PathBuf::from(value)),
             "--resource-advertisement" => resource_advertisement = Some(PathBuf::from(value)),
             "--final-use-state-dir" => final_use_state_dir = Some(PathBuf::from(value)),
@@ -116,6 +118,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
         maximum_output_tokens: maximum_output_tokens
             .ok_or("--maximum-output-tokens is required")?,
+        maximum_budget_units: maximum_budget_units
+            .ok_or("--maximum-budget-units is required")?,
         policy: NativeExecutionPolicy { quota, resource },
     };
     let mut prompt = String::new();
