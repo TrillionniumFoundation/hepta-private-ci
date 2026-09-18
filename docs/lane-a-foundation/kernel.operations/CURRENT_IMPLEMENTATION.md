@@ -1,58 +1,25 @@
 # `kernel.operations` current implementation
 
-## Claim boundary
+## Current executable contract
 
-The module now has two deliberately separate native surfaces:
+The crate now has two explicitly separated executable surfaces.
 
-1. `OperationLedger` / `Outbox`: bounded in-memory deterministic reference
-   models used as semantic oracles.
-2. `DurableOperationStore`: a SQLite-backed production-oriented native
-   ledger/outbox implementation.
+The legacy `OperationLedger` and `Outbox` remain bounded in-memory
+deterministic reference models. They exercise state-machine semantics but do not
+provide persistence or production authority.
 
-This source implementation does **not** by itself establish a production caller,
-a deployed target host, independent acceptance, activation, promotion or
-release. Those remain separate evidence gates.
+`DurableOperationStore` is the repository-owned persistent implementation. It
+owns `hepta_operations_1.sqlite`, opened through the shared FULL-synchronous
+WAL SQLite shim, and atomically co-commits `operation_ledger` with
+`cross_owner_outbox` during prepare. It implements bounded expiring claim
+leases, monotonically increasing fences, bounded attempts, owner-generation plus
+authority-epoch handoff, a durable dispatch-start/no-blind-retry boundary,
+transport acknowledgement distinct from terminal observation, indeterminate
+reconciliation, and bounded terminal-outbox retention without removing the
+authoritative operation identity.
 
-## Reference executable contract
-
-The reference model covers pending, authorized, dispatched, indeterminate and
-terminal states; exact operation/payload identity; monotonic revisions;
-generation-fenced terminal observation; and a bounded in-memory outbox.
-
-All evidence digests required by reference transitions are nonzero. Exact
-command replay is idempotent; identity reuse with changed semantics conflicts.
-The `ReferenceAuthorityWitness` remains deterministic test evidence only. It is
-not authentication and must never be accepted by a production effect adapter.
-
-## Durable native contract
-
-`DurableOperationStore` owns `hepta_operations_1.sqlite` and opens it through
-the shared FULL-synchronous WAL SQLite shim. Its migration creates
-`operation_ledger` and `cross_owner_outbox`.
-
-The durable implementation provides:
-
-- one atomic `BEGIN IMMEDIATE` prepare transaction that inserts the operation
-  ledger row and the source outbox row together;
-- a stable semantic operation digest binding source owner, scope, payload,
-  destination and optional predecessor;
-- bounded active-operation capacity, claim batch, attempts and lease duration;
-- lease expiry, takeover, renewal and monotonically increasing writer fences;
-- owner-generation plus authority-epoch handoff;
-- a durable dispatch-start marker before an effect may cross the boundary;
-- no blind retry once dispatch may have happened;
-- transport acknowledgement that remains distinct from terminal effect
-  observation;
-- explicit indeterminate state and current-generation/current-epoch terminal
-  reconciliation;
-- terminal outbox compaction that retains the authoritative ledger identity and
-  therefore cannot resurrect an operation;
-- schema-object, quick-check and foreign-key validation on open;
-- a helper that consumes `kernel.authority`'s non-serializable final-use token
-  immediately around one synchronous checked effect closure.
-
-The complete storage and recovery contract is
-[`DURABLE_STORE_V1.md`](DURABLE_STORE_V1.md).
+Exact semantic replay is idempotent. Reusing an operation identity with changed
+owner/scope/payload/destination/predecessor semantics conflicts.
 
 ## Public symbols and source bindings
 
@@ -69,83 +36,100 @@ Durable surface:
 - `PreparedIntent`, `DurableOperationStore`, `DurableOperationRecord`,
   `DispatchLease`, `DispatchEnvelope`, `EffectObservation`:
   `src/durable.rs`;
-- physical schema and guards: `migrations/0001_operations.sql`;
-- stable errors: `src/error.rs`.
+- physical schema/guards: `migrations/0001_operations.sql`;
+- errors shared by the reference and durable surfaces: `src/error.rs`.
 
-## Durability and recovery
+## Durability and activation
 
-Durability is implemented for the local operation ledger/outbox database in
-this candidate source. Persistence is not inferred from cloning a reference
-model.
+Local ledger/outbox durability is implemented in source in this candidate.
+Prepare runs under one `BEGIN IMMEDIATE` transaction; a second-write failure
+rolls back the first write. Open verifies SQLite quick-check, foreign keys,
+migration state and required safety schema objects.
 
-A committed prepare survives reopen. An expired pre-dispatch lease can be
-taken over with a newer fence. A process exit after the durable dispatch-start
-marker reopens as non-dispatchable; recovery must reconcile instead of
-resending.
+A committed pre-dispatch lease can expire and be taken over under a newer fence.
+A committed dispatch-start state is never requeued after crash/reopen. A newer
+owner must reconcile it, and dispatched handoff becomes `indeterminate`.
 
-The V1 store keeps authoritative operation identities after terminal outbox
-retention. Destructive long-term ledger archival requires a separately
-versioned anti-resurrection policy.
+Activation is **not** implied. The implementation map still records no named
+product caller and no independently accepted production composition. Exact-head
+and synthetic-merge CI are separate execution evidence.
 
-## Final-use authority
+## Target-only design
 
-The reference witness remains non-authoritative.
+The remaining target composition is a named authenticated product caller plus a
+real destination owner's atomic semantic-dedupe/apply transaction and trusted
+terminal observer. Target-host disk-full, backup/restore, performance,
+independent acceptance, canary, promotion and release remain outside what
+source presence can prove.
 
-The durable dispatch helper derives an attempt-specific `FinalUseBinding`
-covering destination, scope, final payload and the operation/fence/attempt
-identity. It consumes `VerifiedUseToken` at the synchronous effect boundary.
+The detailed current storage/transaction contract is
+[`DURABLE_STORE_V1.md`](DURABLE_STORE_V1.md).
 
-The operation store does not mint authority. Owner handoff requires a newer
-authority epoch, and the external authority owner must publish that epoch
-before the new writer may dispatch.
+## Known limits and non-claims
 
-## Destination semantics
+`ReferenceAuthorityWitness` remains test/reference evidence only. It is not a
+cryptographic credential and must never be accepted by a production effect
+adapter.
 
-Destination deduplication remains destination-owned. The source ledger cannot
-claim physical exactly-once semantics for another owner's store.
+The durable dispatch path binds an attempt-specific `FinalUseBinding` to exact
+destination, scope, payload, owner generation, authority epoch, outbox fence and
+attempt. `execute_with_final_use` consumes `kernel.authority`'s
+non-serializable `VerifiedUseToken` immediately around one synchronous checked
+effect closure. The operation store does not mint authority.
 
-Native tests include a durable qualification-only filesystem destination to
-exercise source dispatch, final-use authority and destination semantic dedupe.
-It is not a product caller or production destination.
+The durable dispatch marker is committed before final-use claim. If authority
+then rejects, recovery is conservative: the operation remains dispatched and
+must be observed `NotApplied` or quarantined; it is never blindly resent.
 
-A production composition must bind one named destination owner, its atomic
-dedupe/apply transaction and its trusted terminal observer.
+Destination deduplication remains destination-owned. The durable filesystem
+destination in `durable_tests.rs` is qualification-only and is not a product
+destination or product caller.
+
+Terminal source-outbox rows may be compacted, but the authoritative operation
+identity is retained. V1 does not implement destructive long-term operation
+ledger archival.
+
+Compensation is a new authorized operation, never implicit rollback.
 
 ## Verification
 
 Reference tests:
 
-- `src/ledger_tests.rs`;
-- `src/outbox_tests.rs`.
+- `src/ledger_tests.rs`: state transitions, replay, witness binding, revision
+  exhaustion and terminal reconciliation;
+- `src/outbox_tests.rs`: claim/ack generation fencing, replay, digest and
+  capacity behavior.
 
 Durable tests:
 
-- `src/durable_tests.rs`;
-- atomic prepare rollback under injected second-write failure;
-- close/reopen idempotency and payload drift conflict;
-- expired-lease takeover and stale-token fencing;
-- owner handoff and no-blind-retry behavior;
+- atomic prepare rollback under an injected outbox-write failure;
+- semantic replay/conflict across close/reopen;
+- multi-handle live-lease exclusion and expired-lease takeover;
+- renewal and owner-handoff stale-fence rejection;
+- no blind retry after dispatch start;
 - acknowledgement versus terminal observation;
-- terminal retention without resurrection;
-- missing schema guard failure on reopen;
-- actual child-process exit after dispatch-start commit;
-- final-use authority at the qualification effect boundary.
+- terminal replay and terminal-outbox retention without resurrection;
+- fail-closed reopen when a required schema safety trigger is missing;
+- actual child-process exit after the dispatch-start commit;
+- final-use authority consumption at a qualification-only durable destination.
 
-Test source identity is not an execution receipt. Exact-head and deterministic
-synthetic-merge CI must pass for the exact candidate before repository
-qualification claims are advanced.
+Source tests are test identities, not pass receipts. Repository CI must prove the
+exact candidate.
 
-## Remaining integration work
+## Integration prerequisites
 
-The remaining repository-controlled integration work is narrower than before
-but still material:
+Before product composition may be claimed:
 
-- bind `DurableOperationStore` to a named authenticated product caller;
-- bind a real destination owner's dedupe/apply transaction and terminal
-  observer;
-- supply target-host disk-full/I/O/backup-restore measurements and fault
-  receipts;
-- independently review cross-owner semantics and the selected composition.
+1. bind `DurableOperationStore` to a named authenticated product caller;
+2. bind one real destination owner's atomic semantic-dedupe/apply operation;
+3. bind a trusted destination-owned terminal observer;
+4. preserve `kernel.authority` final-use validation at the real effect
+   boundary;
+5. retain exact-head and deterministic synthetic-merge receipts;
+6. run target-host disk-full/I/O/corruption/backup-restore and performance
+   qualification;
+7. complete independent semantic/security review and the ordinary activation,
+   canary, promotion and release gates.
 
-No production binary should treat the reference `OperationLedger` or
-`Outbox` as persistence or authority boundaries.
+No production binary may use the reference `OperationLedger` or `Outbox` as a
+durability or authority boundary.
