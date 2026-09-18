@@ -3,7 +3,7 @@ use crate::types::DecisionStatus;
 use crate::types::OperationKey;
 use crate::types::PlatformAction;
 use crate::types::PlatformDecision;
-use fs2::FileExt as _;
+use fs2::FileExt;
 use serde::Deserialize;
 use serde::Serialize;
 use std::fs::File;
