@@ -272,3 +272,25 @@ fn stale_or_changed_envelope_cannot_rebind_an_existing_run() {
         Err(IntelligenceFacadeCallerError::Envelope(_))
     ));
 }
+
+
+#[test]
+fn microsecond_deadline_is_never_widened_by_agentd_adapter() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+        agent_id: "agent-v3-deadline".to_string(),
+        supervisor_generation: 1,
+        agentd_generation: 1,
+        configuration_digest: digest("agentd-config-deadline").to_string(),
+        ports_digest: digest("ports-deadline").to_string(),
+    })
+    .expect("runtime");
+    let envelope = envelope();
+    let now_micros = envelope.deadline_micros - 1;
+    let mut caller = AgentdIntelligenceCaller::new(&mut coordinator);
+    assert_eq!(
+        caller.admit(now_micros, &envelope),
+        Err(IntelligenceFacadeCallerError::Runtime(
+            AgentRunError::InvalidDeadline
+        ))
+    );
+}
