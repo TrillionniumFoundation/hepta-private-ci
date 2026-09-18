@@ -17,6 +17,7 @@ use serde_json::json;
 
 use crate::FixedPointRoundingV1;
 use crate::FixedPointScaleV1;
+use crate::LocalModelRuntimeReceiptV1;
 use crate::NeuronEligibilityProfileV1;
 use crate::NeuronFixedPointProfileV1;
 use crate::NeuronHomeostasisProfileV1;
@@ -29,7 +30,6 @@ use crate::NeuronTickReceiptV1;
 use crate::NeuronTopKPolicyV1;
 use crate::ProtocolError;
 use crate::TopKTieBreakV1;
-use crate::LocalModelRuntimeReceiptV1;
 
 const MAX_PROTOCOL_BYTES: usize = 262_144;
 
@@ -89,7 +89,12 @@ pub fn decode_neuron_runtime_config_v1(
     let state = strict_object(
         field(object, "stateDimensions")?,
         "stateDimensions",
-        &["temporalState", "activation", "modulators", "inhibitionEdges"],
+        &[
+            "temporalState",
+            "activation",
+            "modulators",
+            "inhibitionEdges",
+        ],
         &[],
     )?;
     let fixed = strict_object(
@@ -159,10 +164,7 @@ pub fn decode_neuron_runtime_config_v1(
             temporal_state: bounded_u32(unsigned(state, "temporalState")?, "temporalState")?,
             activation: bounded_u32(unsigned(state, "activation")?, "activation")?,
             modulators: bounded_u32(unsigned(state, "modulators")?, "modulators")?,
-            inhibition_edges: bounded_u32(
-                unsigned(state, "inhibitionEdges")?,
-                "inhibitionEdges",
-            )?,
+            inhibition_edges: bounded_u32(unsigned(state, "inhibitionEdges")?, "inhibitionEdges")?,
         },
         fixed_point_profile: NeuronFixedPointProfileV1 {
             state_scale: match string(fixed, "stateScale")? {
@@ -178,14 +180,8 @@ pub fn decode_neuron_runtime_config_v1(
             checked_wide_intermediates: boolean(fixed, "checkedWideIntermediates")?,
         },
         top_k_policy: NeuronTopKPolicyV1 {
-            minimum_ratio_ppm: bounded_u32(
-                unsigned(top_k, "minimumRatioPpm")?,
-                "minimumRatioPpm",
-            )?,
-            maximum_ratio_ppm: bounded_u32(
-                unsigned(top_k, "maximumRatioPpm")?,
-                "maximumRatioPpm",
-            )?,
+            minimum_ratio_ppm: bounded_u32(unsigned(top_k, "minimumRatioPpm")?, "minimumRatioPpm")?,
+            maximum_ratio_ppm: bounded_u32(unsigned(top_k, "maximumRatioPpm")?, "maximumRatioPpm")?,
             tie_break: match string(top_k, "tieBreak")? {
                 "canonical_unit_id" => TopKTieBreakV1::CanonicalUnitId,
                 _ => return Err(NeuronWireError::InvalidValue("tieBreak")),
@@ -494,7 +490,10 @@ fn strict_object<'a>(
         }
     }
     let allowed: BTreeSet<&str> = required.iter().chain(optional).copied().collect();
-    if let Some(field) = object.keys().find(|field| !allowed.contains(field.as_str())) {
+    if let Some(field) = object
+        .keys()
+        .find(|field| !allowed.contains(field.as_str()))
+    {
         return Err(NeuronWireError::UnknownField(field.clone()));
     }
     Ok(object)
@@ -516,10 +515,7 @@ fn string<'a>(
         .ok_or(NeuronWireError::InvalidType(name))
 }
 
-fn unsigned(
-    object: &Map<String, Value>,
-    name: &'static str,
-) -> Result<u64, NeuronWireError> {
+fn unsigned(object: &Map<String, Value>, name: &'static str) -> Result<u64, NeuronWireError> {
     field(object, name)?
         .as_u64()
         .ok_or(NeuronWireError::InvalidType(name))
@@ -531,17 +527,15 @@ fn signed(object: &Map<String, Value>, name: &'static str) -> Result<i64, Neuron
         .ok_or(NeuronWireError::InvalidType(name))
 }
 
-fn boolean(
-    object: &Map<String, Value>,
-    name: &'static str,
-) -> Result<bool, NeuronWireError> {
+fn boolean(object: &Map<String, Value>, name: &'static str) -> Result<bool, NeuronWireError> {
     field(object, name)?
         .as_bool()
         .ok_or(NeuronWireError::InvalidType(name))
 }
 
 fn parse_id(value: &str) -> Result<StableId, NeuronWireError> {
-    StableId::new(value.to_string()).map_err(|error| NeuronWireError::InvalidIdentity(error.to_string()))
+    StableId::new(value.to_string())
+        .map_err(|error| NeuronWireError::InvalidIdentity(error.to_string()))
 }
 
 fn parse_generation(value: u64) -> Result<Generation, NeuronWireError> {
@@ -557,7 +551,8 @@ fn bounded_u32(value: u64, name: &'static str) -> Result<u32, NeuronWireError> {
 }
 
 fn parse_timestamp_micros(value: &str) -> Result<u64, NeuronWireError> {
-    let parsed = DateTime::parse_from_rfc3339(value).map_err(|_| NeuronWireError::InvalidTimestamp)?;
+    let parsed =
+        DateTime::parse_from_rfc3339(value).map_err(|_| NeuronWireError::InvalidTimestamp)?;
     u64::try_from(parsed.timestamp_micros()).map_err(|_| NeuronWireError::InvalidTimestamp)
 }
 
@@ -568,8 +563,8 @@ fn format_timestamp_micros(value: u64) -> Result<String, NeuronWireError> {
     let nanos = u32::try_from(micros)
         .map_err(|_| NeuronWireError::InvalidTimestamp)?
         .saturating_mul(1_000);
-    let timestamp = DateTime::<Utc>::from_timestamp(seconds, nanos)
-        .ok_or(NeuronWireError::InvalidTimestamp)?;
+    let timestamp =
+        DateTime::<Utc>::from_timestamp(seconds, nanos).ok_or(NeuronWireError::InvalidTimestamp)?;
     Ok(timestamp.to_rfc3339_opts(SecondsFormat::Micros, true))
 }
 
