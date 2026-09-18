@@ -162,6 +162,18 @@ jobs:
             worker-evidence/hepta-servo-worker \
             | tee deployment-evidence/real-worker-smoke.json
 
+      - name: Re-run bounded Browser resource soak on trusted target
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/real-browser-soak.js worker-evidence/hepta-servo-worker | tee deployment-evidence/real-browser-soak.json
+          python3 - <<'PY'
+          import json, pathlib
+          result = json.loads(pathlib.Path("deployment-evidence/real-browser-soak.json").read_text())
+          assert result["cycles"] == 32
+          assert result["boundedFdGrowth"] is True
+          PY
+
       - name: Record target qualification receipt
         shell: bash
         run: |
@@ -179,6 +191,7 @@ jobs:
               'workerSha256': os.environ['EXPECTED_WORKER_SHA256'],
               'sandboxProbeSha256': digest(root / 'linux-sandbox-probe.json'),
               'realWorkerSmokeSha256': digest(root / 'real-worker-smoke.json'),
+              'realBrowserSoakSha256': digest(root / 'real-browser-soak.json'),
               'operatorAcceptance': False,
               'promotion': False,
               'releaseQualified': False,

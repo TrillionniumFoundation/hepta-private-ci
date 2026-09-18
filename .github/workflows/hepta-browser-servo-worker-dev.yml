@@ -191,6 +191,19 @@ jobs:
           assert result["persistedCrashReconciliation"] is True
           PY
 
+      - name: Run bounded real-worker resource soak
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/real-browser-soak.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-browser-soak.json
+          python3 - <<'PY'
+          import json, pathlib
+          result = json.loads(pathlib.Path("worker-evidence/real-browser-soak.json").read_text())
+          assert result["cycles"] == 32
+          assert result["boundedFdGrowth"] is True
+          assert result["rssKiB"]["max"] >= result["rssKiB"]["min"] > 0
+          PY
+
       - name: Generate deterministic SPDX 2.3 SBOM and build receipt
         shell: bash
         run: |
@@ -222,6 +235,7 @@ jobs:
               'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
               'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
               'realBrowserE2E': json.loads((root / 'real-browser-e2e.json').read_text()),
+              'realBrowserSoak': json.loads((root / 'real-browser-soak.json').read_text()),
           }
           (root / 'build-receipt.json').write_text(json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
           PY
