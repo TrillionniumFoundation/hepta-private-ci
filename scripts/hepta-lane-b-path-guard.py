@@ -63,7 +63,12 @@ def canonical_path(root: Path, value: Any, label: str, *, require_file: bool | N
         and resolved.relative_to(root).as_posix() == value,
         f"{label}: aliased path {value!r}",
     )
-    exists = path.is_file() if require_file is True else path.is_dir() if require_file is False else (path.is_file() or path.is_dir())
+    if require_file is True:
+        exists = path.is_file()
+    elif require_file is False:
+        exists = path.is_dir()
+    else:
+        exists = path.is_file() or path.is_dir()
     need(exists, f"{label}: missing path {value}")
     return path
 
