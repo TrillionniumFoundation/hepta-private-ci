@@ -70,9 +70,10 @@
         "read_only_ci"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 32,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 32,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -167,9 +168,10 @@
         "merge_candidate_docs_verifier_pass"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 32,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 32,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -276,9 +278,10 @@
         "all_authority_flags_false"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 40,
         "maxCiMinutes": 90,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 40,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -371,9 +374,10 @@
         "default_branch_contains_only_v8_document_set"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 1,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 1,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -480,9 +484,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -597,9 +602,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -709,9 +715,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -824,9 +831,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -934,9 +942,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -1043,9 +1052,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -1158,9 +1168,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -1269,9 +1280,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -1384,9 +1396,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -1502,9 +1515,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -1620,9 +1634,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -1739,9 +1754,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -1848,9 +1864,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -1946,9 +1963,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2044,9 +2062,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2155,9 +2174,10 @@
         "source_binding_registry_updated"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2248,9 +2268,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2346,9 +2367,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2449,9 +2471,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2543,9 +2566,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2645,9 +2669,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2752,9 +2777,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2858,9 +2884,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -2964,9 +2991,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -3075,9 +3103,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -3209,9 +3238,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -3340,9 +3370,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -3462,9 +3493,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -3588,9 +3620,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -3706,9 +3739,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -3815,9 +3849,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -3946,9 +3981,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -4064,9 +4100,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -4192,9 +4229,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -4327,9 +4365,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -4446,9 +4485,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -4578,9 +4618,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -4699,9 +4740,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -4824,9 +4866,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -4950,9 +4993,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -5073,9 +5117,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -5201,9 +5246,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -5313,9 +5359,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -5415,9 +5462,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -5532,9 +5580,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -5654,9 +5703,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -5765,9 +5815,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -5871,9 +5922,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -5990,9 +6042,10 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -6120,9 +6173,10 @@
         "zero_memory_kg_effect"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -6248,9 +6302,10 @@
         "subgroup_and_safety_floor"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -6384,9 +6439,10 @@
         "crash_reopen"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -6510,9 +6566,10 @@
         "confidence_bounds"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -6637,9 +6694,10 @@
         "adapter_retirement"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -6766,9 +6824,10 @@
         "rebuild_excludes_deleted"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -6906,9 +6965,10 @@
         "no_central_hot_path_rpc"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -7048,9 +7108,10 @@
         "stability_under_replay"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -7184,9 +7245,10 @@
         "deletion_eligibility"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -7309,9 +7371,10 @@
         "dreamed_and_real_trajectory_separation"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -7441,9 +7504,10 @@
         "next_snapshot_only"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -7568,9 +7632,10 @@
         "rollback"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -7695,9 +7760,10 @@
         "no_runtime_graph_mutation"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -7817,9 +7883,10 @@
         "rollback_plan"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -7920,9 +7987,10 @@
         "release"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 1,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 1,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8047,9 +8115,10 @@
         "rollback_rehearsal"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8169,9 +8238,10 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8258,9 +8328,10 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8357,9 +8428,10 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8453,9 +8525,10 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8544,9 +8617,10 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8645,9 +8719,10 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8739,9 +8814,10 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8834,9 +8910,10 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -8934,9 +9011,10 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
         "maxCiMinutes": 30,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 8,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9033,9 +9111,10 @@
         "browser_source_conflict_reclassified"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 64,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 64,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9125,9 +9204,10 @@
         "no_versioned_module_plan_files"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 64,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 64,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9218,9 +9298,10 @@
         "exact_head_and_merge_candidate_validation"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 64,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 64,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9330,9 +9411,10 @@
         "documentation_closure_does_not_advance_runtime_or_efficacy_claims"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 96,
         "maxCiMinutes": 90,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 96,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9426,9 +9508,10 @@
         "no_protocol_grants_effect_authority"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 16,
         "maxCiMinutes": 45,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 16,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9523,9 +9606,10 @@
         "deletion_and_correction_do_not_resurrect_projections"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 3
+        "maxParallelAgents": 3,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9629,9 +9713,10 @@
         "generation_or_payload_drift_rejects_before_adapter_entry"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 32,
         "maxCiMinutes": 90,
-        "maxParallelAgents": 3
+        "maxParallelAgents": 3,
+        "maxAutonomousChangedPaths": 32,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9743,9 +9828,10 @@
         "rollback_and_recovery_are_rehearsed"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 32,
         "maxCiMinutes": 120,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 32,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9849,9 +9935,10 @@
         "protocols_do_not_grant_host_enrollment_or_external_effect"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 20,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 2
+        "maxParallelAgents": 2,
+        "maxAutonomousChangedPaths": 20,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -9941,9 +10028,10 @@
         "contract_synthesis_outputs_candidates_only"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 60,
-        "maxParallelAgents": 3
+        "maxParallelAgents": 3,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -10051,9 +10139,10 @@
         "no_cross_host_or_autonomous_propagation_path_exists"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 32,
         "maxCiMinutes": 120,
-        "maxParallelAgents": 4
+        "maxParallelAgents": 4,
+        "maxAutonomousChangedPaths": 32,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -10166,9 +10255,10 @@
         "evaluator_cannot_select_or_activate_candidate"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 36,
         "maxCiMinutes": 120,
-        "maxParallelAgents": 3
+        "maxParallelAgents": 3,
+        "maxAutonomousChangedPaths": 36,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -10274,9 +10364,10 @@
         "retirement_reconciles_operations_and_preserves_evidence"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
         "maxCiMinutes": 90,
-        "maxParallelAgents": 3
+        "maxParallelAgents": 3,
+        "maxAutonomousChangedPaths": 24,
+        "pathBudgetScope": "autonomous_candidate_execution_only"
       },
       "rollback": {
         "required": true,
@@ -10350,5 +10441,10 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
+  },
+  "ordinaryPullRequestPolicy": {
+    "hardChangedPathLimit": null,
+    "rule": "owner-authorized ordinary development is bounded by semantic ownership, authority/data-domain review and affected tests; autonomous candidate execution retains bounded changed-path envelopes",
+    "crossOwnerIntegration": "allowed with explicit co-owners or coordinated integration review"
   }
 }
