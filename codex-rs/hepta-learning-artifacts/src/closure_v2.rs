@@ -193,6 +193,16 @@ impl DatasetWithdrawalRegistrySnapshotV1 {
     pub fn records(&self) -> &[DatasetWithdrawalRecordV1] {
         &self.records
     }
+
+    pub(crate) fn from_parts(
+        records: Vec<DatasetWithdrawalRecordV1>,
+        head_digest: Digest32,
+    ) -> Self {
+        Self {
+            records,
+            head_digest,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default)]
