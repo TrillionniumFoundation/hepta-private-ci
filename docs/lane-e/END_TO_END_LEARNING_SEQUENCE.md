@@ -81,14 +81,17 @@ host reserves a create-only artifact identity
      exact withdrawal-domain digest and withdrawal head
   -> artifact_registry_event_for_admission_v3 maps that exact admission into
      one V1 Register event; for one-source dataset-derived artifacts the V1
-     support digest remains the exact dataset digest, while the event ID is
-     derived from publication operation ID + admission digest; multi-dataset or
-     multi-predecessor V2 manifests fail closed at this V1 bridge
+     support digest remains the exact dataset digest and the event ID remains
+     the exact publication operation ID; multi-dataset or multi-predecessor V2
+     manifests fail closed at this V1 bridge
   -> registry append receipt is verified against the projected event digest,
      predecessor head, sequence and successor-chain digest
-  -> registry snapshot is durably published
+  -> ArtifactPublicationTransactionV1 derives snapshot_binding from operation,
+     admission/manifest, withdrawal frontier and exact registry append
+  -> registry snapshot is durably published with that binding
   -> independent RegistryHeadWitnessV1 binds generation, predecessor head and
      authority epoch
+  -> the current-head witness receipt must carry the same contract binding
   -> ArtifactPublicationTransactionV1 advances Prepared -> SnapshotDurable ->
      WitnessDurable
   -> producer is acknowledged only after WitnessDurable
