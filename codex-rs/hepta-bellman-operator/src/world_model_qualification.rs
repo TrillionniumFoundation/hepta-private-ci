@@ -214,7 +214,12 @@ fn digest_assessment(assessment: &WorldModelQualificationAssessmentV1) -> Digest
     }
     bytes.extend_from_slice(&assessment.profile.minimum_effective_samples.to_be_bytes());
     bytes.extend_from_slice(&assessment.profile.minimum_heldout_samples.to_be_bytes());
-    bytes.extend_from_slice(&assessment.profile.minimum_independent_snapshots.to_be_bytes());
+    bytes.extend_from_slice(
+        &assessment
+            .profile
+            .minimum_independent_snapshots
+            .to_be_bytes(),
+    );
     bytes.extend_from_slice(&assessment.profile.minimum_future_windows.to_be_bytes());
     for value in [
         assessment.profile.maximum_heldout_mae,
