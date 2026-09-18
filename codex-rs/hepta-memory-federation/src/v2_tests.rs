@@ -173,6 +173,41 @@ impl FederationAttemptControlV2 for FixtureControl {
     }
 }
 
+#[derive(Clone)]
+struct SequencedControl {
+    first: FixtureControl,
+    later: FixtureControl,
+    calls: Arc<AtomicUsize>,
+}
+
+impl SequencedControl {
+    fn new(first: FixtureControl, later: FixtureControl) -> Self {
+        Self {
+            first,
+            later,
+            calls: Arc::new(AtomicUsize::new(0)),
+        }
+    }
+}
+
+impl FederationAttemptControlV2 for SequencedControl {
+    fn wait_for_stop<'a>(
+        &'a self,
+        _query: &'a FederatedQueryV2,
+        _lease: &'a FederatedLeaseV2,
+    ) -> FederationStopFuture<'a> {
+        let selected = if self.calls.fetch_add(1, Ordering::SeqCst) == 0 {
+            self.first
+        } else {
+            self.later
+        };
+        match selected {
+            FixtureControl::Pending => Box::pin(future::pending()),
+            FixtureControl::Stop(reason) => Box::pin(future::ready(reason)),
+        }
+    }
+}
+
 fn current_authority() -> FixtureAuthority {
     FixtureAuthority {
         state: FederationAuthorityStateV2::Current,
@@ -362,7 +397,10 @@ fn preflight_revocation_blocks_transport_dispatch() {
 fn deadline_control_interrupts_pending_transport() {
     let query = query();
     let authority = current_authority();
-    let control = FixtureControl::Stop(FederationStopReasonV2::DeadlineExpired);
+    let control = SequencedControl::new(
+        FixtureControl::Pending,
+        FixtureControl::Stop(FederationStopReasonV2::DeadlineExpired),
+    );
     assert_eq!(
         block_on(execute_once(
             &PendingTransport,
@@ -380,7 +418,10 @@ fn deadline_control_interrupts_pending_transport() {
 fn cancellation_control_interrupts_pending_transport() {
     let query = query();
     let authority = current_authority();
-    let control = FixtureControl::Stop(FederationStopReasonV2::Cancelled);
+    let control = SequencedControl::new(
+        FixtureControl::Pending,
+        FixtureControl::Stop(FederationStopReasonV2::Cancelled),
+    );
     assert_eq!(
         block_on(execute_once(
             &PendingTransport,
