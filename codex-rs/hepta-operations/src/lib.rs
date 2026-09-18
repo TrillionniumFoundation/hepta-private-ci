@@ -34,6 +34,7 @@ pub use durable::MAX_DURABLE_ACTIVE_OPERATIONS;
 pub use durable::MAX_DURABLE_CLAIM_BATCH;
 pub use durable::MAX_DURABLE_OUTBOX_ATTEMPTS;
 pub use durable::MAX_DURABLE_OUTBOX_LEASE_MS;
+pub use durable::MAX_DURABLE_PAYLOAD_BYTES;
 pub use durable::PreparedIntent;
 pub use durable::execute_with_final_use;
 pub use error::OperationError;
