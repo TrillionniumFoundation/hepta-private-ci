@@ -48,9 +48,9 @@ use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
-use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -73,9 +73,7 @@ const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 fn codex_deadline(timeout: Duration) -> Result<(u64, u64)> {
-    let now_ms = SystemTime::now()
-        .duration_since(UNIX_EPOCH)?
-        .as_millis();
+    let now_ms = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis();
     let now_ms = u64::try_from(now_ms).map_err(|_| "system time does not fit u64 milliseconds")?;
     let timeout_ms = u64::try_from(timeout.as_millis())
         .map_err(|_| "native worker timeout does not fit u64 milliseconds")?;
@@ -93,10 +91,7 @@ fn codex_intent(
     owner_generation: u64,
     deadline_ms: u64,
 ) -> Result<CodexOperationIntent> {
-    let operation_id = StableId::new(format!(
-        "codex:{}",
-        control::digest(request_id.as_bytes())
-    ))?;
+    let operation_id = StableId::new(format!("codex:{}", control::digest(request_id.as_bytes())))?;
     let session_id = StableId::new(session_id.to_string())?;
     let thread_id = StableId::new(thread_id.to_string())?;
     let method_id = StableId::new(TURN_START_METHOD_ID.to_string())?;
@@ -145,12 +140,9 @@ fn bind_terminal_codex_receipt(
     }
     let expected_turn_id =
         StableId::new(output.turn_id.clone()).map_err(|error| error.to_string())?;
-    let observation = AppServerObservation::from_turn_completed(
-        intent,
-        &expected_turn_id,
-        completed,
-    )
-    .map_err(|error| error.to_string())?;
+    let observation =
+        AppServerObservation::from_turn_completed(intent, &expected_turn_id, completed)
+            .map_err(|error| error.to_string())?;
     // A real terminal event remains evidence even if it arrives after the
     // caller deadline. runtime.codex intentionally accepts that late fact.
     let receipt = adapt_codex(intent.deadline_ms, intent.clone(), Some(observation))
@@ -225,16 +217,11 @@ impl AppServerModelDriver {
         let Some(dispatch) = record.dispatch.as_ref() else {
             return Ok(None);
         };
-        let (
-            Some(session_id),
-            Some(deadline_ms),
-            Some(expected_request_digest),
-        ) = (
+        let (Some(session_id), Some(deadline_ms), Some(expected_request_digest)) = (
             dispatch.codex_session_id.as_deref(),
             dispatch.codex_deadline_ms,
             dispatch.codex_request_digest.as_deref(),
-        )
-        else {
+        ) else {
             // Historical dispatches predate exact runtime.codex correlation.
             return Ok(None);
         };
@@ -548,9 +535,9 @@ impl AppServerModelDriver {
             Ok(Err(error)) => {
                 let reason = error.to_string();
                 let observation = match &error {
-                    TypedRequestError::Server { source, .. } => {
-                        Some(AppServerObservation::from_request_error(&codex_intent, source)?)
-                    }
+                    TypedRequestError::Server { source, .. } => Some(
+                        AppServerObservation::from_request_error(&codex_intent, source)?,
+                    ),
                     TypedRequestError::Transport { .. } => {
                         Some(AppServerObservation::transport_lost(&codex_intent)?)
                     }
@@ -580,8 +567,7 @@ impl AppServerModelDriver {
             }
             Err(_) => {
                 let observation = AppServerObservation::timed_out(&codex_intent)?;
-                let receipt =
-                    adapt_codex(codex_now_ms, codex_intent.clone(), Some(observation))?;
+                let receipt = adapt_codex(codex_now_ms, codex_intent.clone(), Some(observation))?;
                 let status = native_status_from_pre_turn_receipt(&receipt)?;
                 let mut output = NativeRunOutput {
                     thread_id: started.thread.id,
@@ -595,7 +581,10 @@ impl AppServerModelDriver {
                     codex_request_digest: None,
                     codex_receipt_digest: None,
                     owner_authority: NativeOwnerAuthority::Unverified,
-                    stop_reason: Some("turn/start acknowledgement timed out; reconcile, do not replay".to_string()),
+                    stop_reason: Some(
+                        "turn/start acknowledgement timed out; reconcile, do not replay"
+                            .to_string(),
+                    ),
                 };
                 bind_codex_receipt(&mut output, &receipt);
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
