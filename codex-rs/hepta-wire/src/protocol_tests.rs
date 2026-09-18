@@ -154,6 +154,27 @@ fn v2_complete_frame_digest_binds_metadata_and_payload() -> Result<(), Box<dyn E
 }
 
 #[test]
+fn v2_frame_matches_frozen_bytes_not_only_its_own_encoder() -> Result<(), Box<dyn Error>> {
+    // Independently computed HPTA V2 vector:
+    // schema=s, producer=p, generation=1, payload=010203.
+    let golden: [u8; 59] = [
+        0x48, 0x50, 0x54, 0x41, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x01, 0x11, 0x1f, 0x5b, 0xfd, 0x88, 0x14, 0x5a, 0x71, 0x5c, 0x61, 0xa8, 0xd0,
+        0x90, 0xbf, 0x0e, 0xe8, 0x20, 0xb9, 0x24, 0xd4, 0x64, 0x96, 0x16, 0x04, 0x73, 0xc8, 0x47,
+        0x05, 0x73, 0xb6, 0x31, 0x5d, 0x00, 0x00, 0x00, 0x03, b's', b'p', 0x01, 0x02, 0x03,
+    ];
+    let expected = WireEnvelopeV2::new(
+        StableId::new("s")?,
+        StableId::new("p")?,
+        Generation::new(1)?,
+        vec![1, 2, 3],
+    )?;
+    assert_eq!(expected.encode(), golden);
+    assert_eq!(WireEnvelopeV2::decode(&golden)?, expected);
+    Ok(())
+}
+
+#[test]
 fn negotiation_selects_highest_common_and_prevents_required_feature_downgrade(
 ) -> Result<(), Box<dyn Error>> {
     let local = WireOffer::hpta_supported();
