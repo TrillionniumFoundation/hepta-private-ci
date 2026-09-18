@@ -30,6 +30,7 @@ const MODEL_PROFILE_DOMAIN: &[u8] = b"hepta.context-model-profile.proof-v2.1";
 const ADMISSION_SNAPSHOT_DOMAIN: &[u8] = b"hepta.context-admission-snapshot.proof-v2.1";
 const ADMISSION_PROOF_DOMAIN: &[u8] = b"hepta.context-admission-proof.proof-v2.1";
 const MANDATORY_GROUPS_DOMAIN: &[u8] = b"hepta.context-mandatory-groups.proof-v2.1";
+const CANDIDATE_PROOF_SET_DOMAIN: &[u8] = b"hepta.context-candidate-proof-set.proof-v2.1";
 const SELECTED_BINDING_DOMAIN: &[u8] = b"hepta.context-selected-binding.proof-v2.1";
 const COMPILATION_RECEIPT_DOMAIN: &[u8] = b"hepta.context-compilation-receipt.proof-v2.1";
 const REALIZATION_DOMAIN: &[u8] = b"hepta.context-realization.proof-v2.1";
@@ -223,11 +224,6 @@ pub struct ContextAdmissionRecordV2 {
 
 impl ContextAdmissionRecordV2 {
     fn validate(&self) -> Result<(), ContextCompilerV2Error> {
-        if self.role == ContextRoleV2::UntrustedEvidence {
-            return Err(ContextCompilerV2Error::AdmissionRoleNotTrusted(
-                self.item_id.to_string(),
-            ));
-        }
         for (name, digest) in [
             ("admitted_content", self.content_digest),
             ("admitted_source", self.source_digest),
@@ -394,7 +390,7 @@ impl ContextAdmissionSnapshotV2 {
         Ok(())
     }
 
-    pub fn verify_trusted_binding(
+    pub fn verify_binding(
         &self,
         item_id: &StableId,
         role: ContextRoleV2,
@@ -402,11 +398,6 @@ impl ContextAdmissionSnapshotV2 {
         source_digest: Digest32,
     ) -> Result<VerifiedContextAdmissionV2, ContextCompilerV2Error> {
         self.validate()?;
-        if role == ContextRoleV2::UntrustedEvidence {
-            return Err(ContextCompilerV2Error::AdmissionRoleNotTrusted(
-                item_id.to_string(),
-            ));
-        }
         let record = self
             .records
             .get(item_id)
@@ -544,7 +535,7 @@ impl VerifiedContextAdmissionV2 {
             return Err(ContextCompilerV2Error::DigestMismatch("admission_proof"));
         }
         snapshot
-            .verify_trusted_binding(
+            .verify_binding(
                 &candidate.item_id,
                 candidate.role,
                 candidate.content_digest,
@@ -591,7 +582,7 @@ pub struct ContextCandidateV2 {
     generation_vector_digest: Digest32,
     tokenization: TokenizationReceiptV2,
     expected_value: FixedQ32,
-    trusted_admission: Option<VerifiedContextAdmissionV2>,
+    admission: VerifiedContextAdmissionV2,
     contains_secret: bool,
 }
 
@@ -604,7 +595,7 @@ impl ContextCandidateV2 {
         generation_vector_digest: Digest32,
         tokenization: TokenizationReceiptV2,
         expected_value: FixedQ32,
-        trusted_admission: Option<VerifiedContextAdmissionV2>,
+        admission: VerifiedContextAdmissionV2,
         contains_secret: bool,
     ) -> Result<Self, ContextCompilerV2Error> {
         let candidate = Self {
@@ -615,7 +606,7 @@ impl ContextCandidateV2 {
             generation_vector_digest,
             tokenization,
             expected_value,
-            trusted_admission,
+            admission,
             contains_secret,
         };
         candidate.validate_shape()?;
@@ -648,22 +639,6 @@ impl ContextCandidateV2 {
                 self.item_id.to_string(),
             ));
         }
-        match self.role {
-            ContextRoleV2::TrustedInstruction | ContextRoleV2::Schema => {
-                if self.trusted_admission.is_none() {
-                    return Err(ContextCompilerV2Error::MissingTrustedAdmission(
-                        self.item_id.to_string(),
-                    ));
-                }
-            }
-            ContextRoleV2::UntrustedEvidence => {
-                if self.trusted_admission.is_some() {
-                    return Err(ContextCompilerV2Error::EvidenceRoleConfusion(
-                        self.item_id.to_string(),
-                    ));
-                }
-            }
-        }
         Ok(())
     }
 
@@ -684,22 +659,7 @@ impl ContextCandidateV2 {
                 self.item_id.to_string(),
             ));
         }
-        match (&self.trusted_admission, self.role) {
-            (Some(admission), ContextRoleV2::TrustedInstruction | ContextRoleV2::Schema) => {
-                admission.validate_for(self, snapshot)?;
-            }
-            (None, ContextRoleV2::UntrustedEvidence) => {}
-            (None, _) => {
-                return Err(ContextCompilerV2Error::MissingTrustedAdmission(
-                    self.item_id.to_string(),
-                ));
-            }
-            (Some(_), ContextRoleV2::UntrustedEvidence) => {
-                return Err(ContextCompilerV2Error::EvidenceRoleConfusion(
-                    self.item_id.to_string(),
-                ));
-            }
-        }
+        self.admission.validate_for(self, snapshot)?;
         Ok(())
     }
 
@@ -712,10 +672,12 @@ impl ContextCandidateV2 {
             generation_vector_digest: self.generation_vector_digest,
             tokenization: self.tokenization.to_legacy()?,
             expected_value: self.expected_value,
-            trusted_admission_digest: self
-                .trusted_admission
-                .as_ref()
-                .map(VerifiedContextAdmissionV2::proof_digest),
+            trusted_admission_digest: match self.role {
+                ContextRoleV2::TrustedInstruction | ContextRoleV2::Schema => {
+                    Some(self.admission.proof_digest())
+                }
+                ContextRoleV2::UntrustedEvidence => None,
+            },
             contains_secret: self.contains_secret,
         })
     }
@@ -937,6 +899,7 @@ pub fn compile_v2(
     }
 
     normalize_mandatory_groups(&mut request.mandatory_groups, &by_id)?;
+    let candidate_set_digest = compute_candidate_proof_set_digest(by_id.values());
     let mandatory_groups_digest = compute_mandatory_groups_digest(&request.mandatory_groups);
     let legacy_candidates = by_id
         .values()
@@ -980,7 +943,7 @@ pub fn compile_v2(
         admission_verifier_digest: request.admission_snapshot.verifier_digest,
         admission_verification_digest: request.admission_snapshot.verification_digest,
         admission_observed_unix_ms: request.admission_snapshot.observed_unix_ms,
-        candidate_set_digest: selection.receipt.candidate_set_digest,
+        candidate_set_digest,
         mandatory_groups_digest,
         selected_binding_digest,
         selected_item_ids: selection.receipt.selected_item_ids,
@@ -1349,17 +1312,12 @@ pub fn build_attachment(
 
     let mut current_proofs = Vec::new();
     for candidate in &compiled.selected_candidates {
-        if matches!(
+        current_proofs.push(current_admission_snapshot.verify_binding(
+            &candidate.item_id,
             candidate.role,
-            ContextRoleV2::TrustedInstruction | ContextRoleV2::Schema
-        ) {
-            current_proofs.push(current_admission_snapshot.verify_trusted_binding(
-                &candidate.item_id,
-                candidate.role,
-                candidate.content_digest,
-                candidate.source_digest,
-            )?);
-        }
+            candidate.content_digest,
+            candidate.source_digest,
+        )?);
     }
 
     let receipt = serialized.receipt;
@@ -1666,6 +1624,25 @@ fn compute_admission_snapshot_digest<'a>(
     Digest32::of_bytes(&bytes)
 }
 
+fn compute_candidate_proof_set_digest<'a>(
+    candidates: impl IntoIterator<Item = &'a ContextCandidateV2>,
+) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(CANDIDATE_PROOF_SET_DOMAIN);
+    for candidate in candidates {
+        push_id(&mut bytes, &candidate.item_id);
+        bytes.push(role_code(candidate.role));
+        push_digest(&mut bytes, candidate.content_digest);
+        push_digest(&mut bytes, candidate.source_digest);
+        push_digest(&mut bytes, candidate.generation_vector_digest);
+        push_digest(&mut bytes, candidate.tokenization.receipt_digest);
+        push_i64(&mut bytes, candidate.expected_value.raw());
+        push_digest(&mut bytes, candidate.admission.proof_digest);
+        bytes.push(u8::from(candidate.contains_secret));
+    }
+    Digest32::of_bytes(&bytes)
+}
+
 fn compute_mandatory_groups_digest(groups: &[MandatoryContextGroupV2]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(MANDATORY_GROUPS_DOMAIN);
@@ -1688,13 +1665,8 @@ fn compute_selected_binding_digest(candidates: &[ContextCandidateV2]) -> Digest3
         push_digest(&mut bytes, candidate.content_digest);
         push_digest(&mut bytes, candidate.source_digest);
         push_digest(&mut bytes, candidate.tokenization.receipt_digest);
-        push_optional_digest(
-            &mut bytes,
-            candidate
-                .trusted_admission
-                .as_ref()
-                .map(VerifiedContextAdmissionV2::proof_digest),
-        );
+        push_digest(&mut bytes, candidate.admission.proof_digest);
+
     }
     Digest32::of_bytes(&bytes)
 }
@@ -1844,6 +1816,10 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 }
 
 fn push_u64(bytes: &mut Vec<u8>, value: u64) {
+    bytes.extend_from_slice(&value.to_be_bytes());
+}
+
+fn push_i64(bytes: &mut Vec<u8>, value: i64) {
     bytes.extend_from_slice(&value.to_be_bytes());
 }
 
