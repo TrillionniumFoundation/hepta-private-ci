@@ -33,6 +33,8 @@ const VECTOR_DOMAIN: &[u8] = b"hepta:cognitive:kg-generation-vector:v2";
 const NODE_PAYLOAD_DOMAIN: &[u8] = b"hepta:cognitive:kg-node-payload:v2";
 const NODE_VALIDITY_DOMAIN: &[u8] = b"hepta:cognitive:kg-node-validity:v2";
 const EDGE_VALIDITY_DOMAIN: &[u8] = b"hepta:cognitive:kg-edge-validity:v2";
+const NODE_SUPPORT_DOMAIN: &[u8] = b"hepta:cognitive:kg-node-support:v2";
+const EDGE_SUPPORT_DOMAIN: &[u8] = b"hepta:cognitive:kg-edge-support:v2";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct NodeMetadataV2 {
@@ -418,11 +420,20 @@ fn adapt_node(
         "KG node kind",
         failure_class,
     )?;
+    let node_validity = validity_digest(NODE_VALIDITY_DOMAIN, node.valid_from, node.valid_to);
+    let source_fact_digest = framed_digest(
+        NODE_SUPPORT_DOMAIN,
+        &[
+            fact_set_sha256.as_bytes(),
+            node.canonical_entity_id.as_bytes(),
+            node.node_id.as_bytes(),
+        ],
+    );
     let support = support(
         &node.source_id,
         node.source_revision,
-        fact_set_sha256,
-        validity_digest(NODE_VALIDITY_DOMAIN, node.valid_from, node.valid_to),
+        source_fact_digest,
+        node_validity,
         failure_class,
     )?;
     Ok(KnowledgeNodeV2 {
@@ -476,7 +487,14 @@ fn adapt_edge(
         supports: vec![support(
             &edge.source_id,
             edge.source_revision,
-            fact_set_sha256,
+            framed_digest(
+                EDGE_SUPPORT_DOMAIN,
+                &[
+                    fact_set_sha256.as_bytes(),
+                    edge.canonical_relation_id.as_bytes(),
+                    edge.edge_id.as_bytes(),
+                ],
+            ),
             validity_digest,
             failure_class,
         )?],
@@ -486,7 +504,7 @@ fn adapt_edge(
 fn support(
     source_id: &str,
     source_revision: i64,
-    fact_set_sha256: &str,
+    source_fact_digest: Digest32,
     validity_digest: Digest32,
     failure_class: FailureClass,
 ) -> Result<KnowledgeSupportV2, CognitiveStoreError> {
@@ -504,7 +522,7 @@ fn support(
                 format!("invalid KG source revision: {error}"),
             )
         })?,
-        source_fact_digest: parse_digest(fact_set_sha256, failure_class)?,
+        source_fact_digest,
         validity_digest,
         tombstoned: false,
     })
