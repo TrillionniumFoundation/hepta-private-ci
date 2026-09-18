@@ -27,28 +27,37 @@ use super::validate_text;
     deny_unknown_fields
 )]
 pub enum SpanRangeV1 {
+    #[non_exhaustive]
     ByteRange { start: u64, end: u64 },
+    #[non_exhaustive]
     PixelRect {
         x: u32,
         y: u32,
         width: u32,
         height: u32,
     },
+    #[non_exhaustive]
     SampleRange {
         start: u64,
         end: u64,
         sample_rate_hz: u32,
     },
+    #[non_exhaustive]
     FrameRange {
         start: u64,
         end: u64,
         timebase_num: u32,
         timebase_den: u32,
     },
+    #[non_exhaustive]
     AstPath { path: String },
+    #[non_exhaustive]
     GuiNode { stable_node_id: String },
+    #[non_exhaustive]
     EventRange { start: u64, end: u64 },
+    #[non_exhaustive]
     JsonPointer { pointer: String },
+    #[non_exhaustive]
     SensorRange {
         start: u64,
         end: u64,
@@ -57,6 +66,100 @@ pub enum SpanRangeV1 {
 }
 
 impl SpanRangeV1 {
+    pub fn byte_range(start: u64, end: u64) -> Result<Self, HnmfContractError> {
+        let value = Self::ByteRange { start, end };
+        value.validate_for(ModalityKindV1::Text)?;
+        Ok(value)
+    }
+
+    pub fn pixel_rect(
+        x: u32,
+        y: u32,
+        width: u32,
+        height: u32,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::PixelRect {
+            x,
+            y,
+            width,
+            height,
+        };
+        value.validate_for(ModalityKindV1::Image)?;
+        Ok(value)
+    }
+
+    pub fn sample_range(
+        start: u64,
+        end: u64,
+        sample_rate_hz: u32,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::SampleRange {
+            start,
+            end,
+            sample_rate_hz,
+        };
+        value.validate_for(ModalityKindV1::Audio)?;
+        Ok(value)
+    }
+
+    pub fn frame_range(
+        start: u64,
+        end: u64,
+        timebase_num: u32,
+        timebase_den: u32,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::FrameRange {
+            start,
+            end,
+            timebase_num,
+            timebase_den,
+        };
+        value.validate_for(ModalityKindV1::Video)?;
+        Ok(value)
+    }
+
+    pub fn ast_path(path: impl Into<String>) -> Result<Self, HnmfContractError> {
+        let value = Self::AstPath { path: path.into() };
+        value.validate_for(ModalityKindV1::CodeAst)?;
+        Ok(value)
+    }
+
+    pub fn gui_node(stable_node_id: impl Into<String>) -> Result<Self, HnmfContractError> {
+        let value = Self::GuiNode {
+            stable_node_id: stable_node_id.into(),
+        };
+        value.validate_for(ModalityKindV1::GuiState)?;
+        Ok(value)
+    }
+
+    pub fn event_range(start: u64, end: u64) -> Result<Self, HnmfContractError> {
+        let value = Self::EventRange { start, end };
+        value.validate_for(ModalityKindV1::ToolTrajectory)?;
+        Ok(value)
+    }
+
+    pub fn json_pointer(pointer: impl Into<String>) -> Result<Self, HnmfContractError> {
+        let value = Self::JsonPointer {
+            pointer: pointer.into(),
+        };
+        value.validate_for(ModalityKindV1::StructuredData)?;
+        Ok(value)
+    }
+
+    pub fn sensor_range(
+        start: u64,
+        end: u64,
+        unit: impl Into<String>,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::SensorRange {
+            start,
+            end,
+            unit: unit.into(),
+        };
+        value.validate_for(ModalityKindV1::Sensor)?;
+        Ok(value)
+    }
+
     pub fn validate_for(&self, modality: ModalityKindV1) -> Result<(), HnmfContractError> {
         match (modality, self) {
             (ModalityKindV1::Text, Self::ByteRange { start, end })
