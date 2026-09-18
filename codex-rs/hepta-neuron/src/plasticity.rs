@@ -67,6 +67,7 @@ pub enum PlasticityError {
     HistoryOutOfRange,
     DimensionMismatch,
     EmptyDigest,
+    DuplicateCheckpoint,
     EligibilityNormExceeded,
     ModulatorOutOfRange,
     GroupCountOutOfRange,
@@ -104,8 +105,12 @@ pub fn accumulate_plasticity(
     if eligibility_width == 0 || !(1..=MAX_MODULATORS).contains(&modulator_width) {
         return Err(PlasticityError::DimensionMismatch);
     }
+    let mut checkpoints = BTreeSet::new();
     for sample in history {
         validate_sample(sample, eligibility_width, modulator_width)?;
+        if !checkpoints.insert(sample.checkpoint_digest) {
+            return Err(PlasticityError::DuplicateCheckpoint);
+        }
     }
 
     let canonical_groups = canonical_groups(groups, eligibility_width)?;
@@ -225,7 +230,13 @@ fn canonical_groups(
             return Err(PlasticityError::EmptyGroup(group.group_id.to_string()));
         }
         group.eligibility_indices.sort_unstable();
-        group.eligibility_indices.dedup();
+        if group
+            .eligibility_indices
+            .windows(2)
+            .any(|pair| pair[0] == pair[1])
+        {
+            return Err(PlasticityError::EligibilityIndexReused);
+        }
         for index in &group.eligibility_indices {
             let index =
                 usize::try_from(*index).map_err(|_| PlasticityError::EligibilityIndexOutOfRange)?;
