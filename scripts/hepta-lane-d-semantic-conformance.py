@@ -204,6 +204,7 @@ def verify() -> int:
             "AuthenticatedOwnerPortV1",
             "NduPlanningPortV1",
             "plan_global_v1",
+            "plan_global_and_record_v1",
             "MissingOwnerPort",
             "request_execution_grants",
         ],
