@@ -262,25 +262,21 @@ pub fn run_update_helper(path: &Path) -> Result<(), NativeError> {
         }
 
         std::thread::sleep(Duration::from_millis(1200));
-        rename_retry(&job.current_path, &job.backup_path)?;
-        if let Err(error) = rename_retry(&job.staged_path, &job.current_path) {
-            let _ = rename_retry(&job.backup_path, &job.current_path);
-            return Err(error);
-        }
-
-        let probe = Command::new(&job.current_path)
-            .args(&job.signed.manifest.restart_args)
-            .arg("--post-update-probe")
-            .status()
-            .map_err(|error| NativeError::Update(format!("run post-update probe: {error}")))?;
-        if !probe.success() {
-            let failed = job.current_path.with_extension("failed-update");
-            let _ = std::fs::rename(&job.current_path, failed);
-            rename_retry(&job.backup_path, &job.current_path)?;
-            return Err(NativeError::Update(format!(
-                "post-update probe failed with {probe}; predecessor restored"
-            )));
-        }
+        replace_with_probe(
+            &job.staged_path,
+            &job.current_path,
+            &job.backup_path,
+            |current| {
+                let status = Command::new(current)
+                    .args(&job.signed.manifest.restart_args)
+                    .arg("--post-update-probe")
+                    .status()
+                    .map_err(|error| {
+                        NativeError::Update(format!("run post-update probe: {error}"))
+                    })?;
+                Ok(status.success())
+            },
+        )?;
         Command::new(&job.current_path)
             .args(&job.signed.manifest.restart_args)
             .spawn()
@@ -417,6 +413,42 @@ fn private_json<T: Serialize>(path: &Path, value: &T) -> Result<(), NativeError>
 }
 
 #[cfg(unix)]
+fn replace_with_probe<F>(
+    staged: &Path,
+    current: &Path,
+    backup: &Path,
+    probe: F,
+) -> Result<(), NativeError>
+where
+    F: FnOnce(&Path) -> Result<bool, NativeError>,
+{
+    rename_retry(current, backup)?;
+    if let Err(error) = rename_retry(staged, current) {
+        let _restore = rename_retry(backup, current);
+        return Err(error);
+    }
+
+    let probe_result = probe(current);
+    match probe_result {
+        Ok(true) => Ok(()),
+        Ok(false) => {
+            rename_retry(current, staged)?;
+            rename_retry(backup, current)?;
+            Err(NativeError::Update(
+                "post-update probe failed; predecessor restored".to_string(),
+            ))
+        }
+        Err(error) => {
+            rename_retry(current, staged)?;
+            rename_retry(backup, current)?;
+            Err(NativeError::Update(format!(
+                "post-update probe errored and predecessor was restored: {error}"
+            )))
+        }
+    }
+}
+
+#[cfg(unix)]
 fn rename_retry(from: &Path, to: &Path) -> Result<(), NativeError> {
     let mut last = None;
     for _ in 0..40 {
@@ -488,6 +520,36 @@ mod tests {
     use super::*;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+
+    #[cfg(unix)]
+    #[test]
+    fn failed_post_update_probe_restores_predecessor_without_losing_candidate(
+    ) -> Result<(), NativeError> {
+        let temp = tempfile::TempDir::new()
+            .map_err(|error| NativeError::Update(format!("create temp dir: {error}")))?;
+        let current = temp.path().join("hepta-native");
+        let staged = temp.path().join("staged");
+        let backup = temp.path().join("backup");
+        std::fs::write(&current, b"old")
+            .map_err(|error| NativeError::Update(format!("write predecessor: {error}")))?;
+        std::fs::write(&staged, b"new")
+            .map_err(|error| NativeError::Update(format!("write candidate: {error}")))?;
+
+        let result = replace_with_probe(&staged, &current, &backup, |_new_binary| Ok(false));
+        assert!(result.is_err());
+        assert_eq!(
+            std::fs::read(&current)
+                .map_err(|error| NativeError::Update(format!("read predecessor: {error}")))?,
+            b"old"
+        );
+        assert_eq!(
+            std::fs::read(&staged)
+                .map_err(|error| NativeError::Update(format!("read staged candidate: {error}")))?,
+            b"new"
+        );
+        assert!(!backup.exists());
+        Ok(())
+    }
 
     #[test]
     fn signature_binds_manifest_and_independent_selector() -> Result<(), NativeError> {
