@@ -466,9 +466,13 @@ export async function startControlPlane({
 
   const resumePage = (reason) => {
     if (disposed) return;
-    suspended = false;
+    const resumeGeneration = lifecycleGeneration;
     void suspensionPromise
-      .then(() => recoverSession(reason))
+      .then(() => {
+        if (disposed || lifecycleGeneration !== resumeGeneration) return null;
+        suspended = false;
+        return recoverSession(reason);
+      })
       .catch(() => {});
   };
 
