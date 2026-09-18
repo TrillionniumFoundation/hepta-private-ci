@@ -80,6 +80,13 @@ where
         else {
             return Ok(AutomationTick::Idle);
         };
+        // The occurrence must have a durable TaskFlow identity before any App
+        // Server admission can happen. This reuses the existing TaskFlow ledger;
+        // it does not install another scheduler or execution engine.
+        self.store
+            .ensure_occurrence_taskflow(&lease, now_ms, self.lease_duration_ms)
+            .await?;
+
         // Persist the dispatch intent before crossing the App Server seam.
         // If this process dies after admission (or while the request is still
         // in flight) the successor must observe a durable unknown outcome and
