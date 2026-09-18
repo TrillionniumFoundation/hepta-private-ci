@@ -28,24 +28,33 @@ use crate::AuthBusTextStatus;
 use crate::authbus_trust::TextTrust;
 use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
+use crate::authbus_trust::load_external_replay_checkpoint;
 
 pub(crate) struct TextIngress {
+    pub identity: AgentdIdentity,
     pub evidence: HeptaEvidenceStore,
     pub trust_file: PathBuf,
+    pub replay_checkpoint_file: Option<PathBuf>,
     pub subject: StableId,
     pub scope: Digest32,
 }
 
 impl TextIngress {
-    pub async fn open(identity: &AgentdIdentity, trust_file: PathBuf) -> Result<Self, AgentdError> {
+    pub async fn open(
+        identity: &AgentdIdentity,
+        trust_file: PathBuf,
+        replay_checkpoint_file: Option<PathBuf>,
+    ) -> Result<Self, AgentdError> {
         let trust = TextTrust::load(&trust_file, identity)?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
             .await
             .map_err(|error| invalid(&error.to_string()))?;
         let ingress = Self {
+            identity: identity.clone(),
             evidence,
             trust_file,
+            replay_checkpoint_file,
             subject: subject(&identity.agent_id)?,
             scope: scope(&identity.agent_id),
         };
@@ -64,13 +73,26 @@ impl TextIngress {
             .observe_authbus_trust_head(&trust.trust_head()?)
             .await
             .map_err(|error| invalid(&error.to_string()))?;
-        if let Some(checkpoint) = trust.replay_checkpoint()? {
+        let embedded = trust.replay_checkpoint()?;
+        let external = self
+            .replay_checkpoint_file
+            .as_deref()
+            .map(|path| load_external_replay_checkpoint(path, self.identity_for_checkpoint()?))
+            .transpose()?;
+        if embedded.is_some() && external.is_some() && embedded != external {
+            return Err(invalid("embedded and external replay checkpoints disagree"));
+        }
+        if let Some(checkpoint) = external.or(embedded) {
             self.evidence
                 .verify_authbus_replay_checkpoint(&checkpoint)
                 .await
                 .map_err(|error| invalid(&error.to_string()))?;
         }
         Ok(())
+    }
+
+    fn identity_for_checkpoint(&self) -> Result<&AgentdIdentity, AgentdError> {
+        Ok(&self.identity)
     }
 
     #[cfg(test)]
