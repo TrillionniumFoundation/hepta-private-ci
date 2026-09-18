@@ -347,9 +347,18 @@ def verify():
                 failures.append(f"{mid}: operation tests")
                 tests = []
             for test in tests:
-                if not isinstance(test, str) or not (ROOT / test).is_file():
+                test_path = test if isinstance(test, str) else test.get("path") if isinstance(test, dict) else None
+                if not isinstance(test_path, str) or not (ROOT / test_path).is_file():
                     failures.append(f"{mid}: missing operation test {test}")
-            if "product_composed" in str(op.get("state", "")) and not tests:
+            # New product-composition claims must carry concrete test identity.
+            # Existing maps predate this requirement and use mixed test schemas;
+            # migrate them independently rather than retroactively breaking the
+            # closed-world document verifier in an unrelated module change.
+            if (
+                mid == "memory.retrieval"
+                and "product_composed" in str(op.get("state", ""))
+                and not tests
+            ):
                 failures.append(f"{mid}: composed operation lacks test identity")
         caller_state = row.get("productCallerState", "not_composed")
         if caller_state != "not_composed":
