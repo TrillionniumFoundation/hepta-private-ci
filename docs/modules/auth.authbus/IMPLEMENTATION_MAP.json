@@ -20,8 +20,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "narrow_agentd_signed_text_composed_general_effect_control_not_activated",
+  "productionWriterState": "durable_control_writer_source_implemented_not_activated",
   "operations": [
     {
       "operation": "authenticate",
@@ -58,11 +58,138 @@
       "designOperation": "enqueue_authbus_message",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "authorize",
+      "nativeSymbol": "authorize",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_implemented_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorize",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authorize_and_reserve",
+      "nativeSymbol": "authorize_and_reserve",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_implemented_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorize_and_reserve",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "begin_reserved_effect",
+      "nativeSymbol": "begin_reserved_effect",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_implemented_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "begin_reserved_effect",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "settle_reservation",
+      "nativeSymbol": "settle_reservation",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_implemented_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "settle_reservation",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reconcile_reservation",
+      "nativeSymbol": "reconcile_reservation",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_implemented_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reconcile_reservation",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "dispatch_provider_effect_guarded_qualification",
+      "nativeSymbol": "dispatch_provider_effect_guarded_qualification",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_provider_guard.rs",
+      "state": "qualification_composed_not_production_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/provider_effect_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "dispatch_provider_effect_guarded_qualification",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_authbus_replay_checkpoint",
+      "nativeSymbol": "verify_authbus_replay_checkpoint",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_implemented_external_anchor_required",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_authbus_replay_checkpoint",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "retire_authbus_replay_epoch",
+      "nativeSymbol": "retire_authbus_replay_epoch",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_implemented_external_checkpoint_required",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retire_authbus_replay_epoch",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "submit_authbus_text",
+      "nativeSymbol": "submit",
+      "sourcePath": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+      "state": "narrow_product_composed_not_general_effect_authority",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/authbus_text_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "submit_authbus_text",
+      "mappingClass": "delegated_owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind guarded policy/quota/reservation control to a named production effect adapter; the current provider facade remains qualification-only.",
+    "Retain exact-head and deterministic synthetic-merge execution receipts, including the native Agentd product test.",
+    "Provision an independently retained replay checkpoint and managed trust/key lifecycle before production activation."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -81,5 +208,22 @@
   "sourceRoot": [
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
-  ]
+  ],
+  "sourceBaseRole": "shared_implementation_map_migration_baseline_not_current_head",
+  "composition": {
+    "coreSourceOwner": {
+      "package": "codex-rs/hepta-authbus",
+      "role": "domain contracts, signed authentication and deny-all admission receipts"
+    },
+    "durableStateOwner": {
+      "package": "codex-rs/hepta-evidence",
+      "role": "policy revisions, quota ledger, reservations, replay checkpoints, retired epochs and guarded effect coordination"
+    },
+    "hostIntegration": {
+      "package": "codex-rs/hepta-agentd",
+      "role": "explicitly enrolled signed-text host with monotonic trust projection"
+    },
+    "productComposition": "signed_text_narrow_path_only",
+    "guardedEffectComposition": "qualification_only_until_named_production_adapter_activation"
+  }
 }
