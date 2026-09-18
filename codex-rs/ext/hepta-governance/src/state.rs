@@ -16,15 +16,13 @@ use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceDispositionV1;
 use codex_hepta_evidence::EvidenceError;
 use codex_hepta_evidence::EvidenceExternalCheckpointV1;
-use codex_hepta_evidence::EvidenceIssuerRevocationsV1;
+use codex_hepta_evidence::EvidenceIssuerAuthorityV1;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
 use codex_hepta_evidence::EvidenceReferenceV1;
-use codex_hepta_evidence::EvidenceTrustRootV1;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_evidence::SignedEvidenceIssuerCertificateV1;
 use codex_hepta_evidence::SignedEvidenceIssuerKeyRevocationV1;
 use codex_hepta_evidence::SignedQualificationEvidenceEnvelopeV1;
-use codex_hepta_evidence::authenticate_evidence_issuer;
 
 #[derive(Default)]
 pub(crate) struct InProcessClaims {
@@ -41,6 +39,7 @@ pub struct GovernanceState {
     pub(crate) enabled: bool,
     pub(crate) mode: GovernanceMode,
     pub(crate) evidence: Result<Arc<HeptaEvidenceStore>, Arc<str>>,
+    pub(crate) qualification_authority: Option<Arc<EvidenceIssuerAuthorityV1>>,
     pub(crate) claims: Mutex<InProcessClaims>,
 }
 
@@ -50,6 +49,7 @@ impl GovernanceState {
             enabled: false,
             mode: GovernanceMode::Shadow,
             evidence: Err(Arc::from("governance disabled")),
+            qualification_authority: None,
             claims: Mutex::new(InProcessClaims::default()),
         }
     }
@@ -62,9 +62,25 @@ impl GovernanceState {
             enabled: true,
             mode,
             evidence,
+            qualification_authority: None,
             claims: Mutex::new(InProcessClaims::default()),
         }
     }
+
+    pub(crate) fn enabled_with_qualification_authority(
+        mode: GovernanceMode,
+        evidence: Result<Arc<HeptaEvidenceStore>, Arc<str>>,
+        qualification_authority: Arc<EvidenceIssuerAuthorityV1>,
+    ) -> Self {
+        Self {
+            enabled: true,
+            mode,
+            evidence,
+            qualification_authority: Some(qualification_authority),
+            claims: Mutex::new(InProcessClaims::default()),
+        }
+    }
+
     fn qualification_store(&self) -> Result<Arc<HeptaEvidenceStore>, EvidenceError> {
         if !self.enabled {
             return Err(EvidenceError::Unavailable(
@@ -80,8 +96,6 @@ impl GovernanceState {
 
     pub fn authenticate_qualification_issuer(
         &self,
-        root: &EvidenceTrustRootV1,
-        revocations: &EvidenceIssuerRevocationsV1,
         signed: SignedEvidenceIssuerCertificateV1,
         now_unix_ms: u64,
     ) -> Result<AuthenticatedEvidenceIssuerV1, EvidenceError> {
@@ -90,7 +104,13 @@ impl GovernanceState {
                 "governance product host is disabled".to_string(),
             ));
         }
-        authenticate_evidence_issuer(root, revocations, signed, now_unix_ms)
+        let authority = self.qualification_authority.as_ref().ok_or_else(|| {
+            EvidenceError::Unavailable(
+                "qualification issuer trust root is not configured by the product host"
+                    .to_string(),
+            )
+        })?;
+        authority.authenticate(signed, now_unix_ms)
     }
 
     pub async fn append_qualification_receipt(
