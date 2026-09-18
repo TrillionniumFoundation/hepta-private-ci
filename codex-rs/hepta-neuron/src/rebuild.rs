@@ -111,7 +111,7 @@ pub fn rebuild_after_deletion(
     if request
         .revoked_source_digests
         .iter()
-        .any(Digest32::is_zero)
+        .any(|digest| digest.is_zero())
     {
         return Err(RebuildError::InvalidSource);
     }

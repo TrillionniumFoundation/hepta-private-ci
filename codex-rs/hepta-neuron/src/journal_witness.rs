@@ -35,6 +35,7 @@ pub enum WitnessError {
     Journal(JournalError),
     InvalidLimit,
     InvalidContext,
+    AcknowledgedHistoryMissing,
     Corrupt,
     Conflict,
     Capacity,
@@ -243,8 +244,12 @@ impl ManagedSparseJournal {
         scope: JournalScope,
         max_records: usize,
     ) -> Result<Self, WitnessError> {
+        let journal_length = journal_file.metadata()?.len();
         let witness = AnchorWitnessStore::open(witness_file, &config, scope, max_records)?;
         let anchor = witness.current()?;
+        if anchor.is_none() && journal_length > HEADER as u64 {
+            return Err(WitnessError::AcknowledgedHistoryMissing);
+        }
         let journal = match anchor {
             Some(value) => SparseJournal::open_anchored(
                 journal_file,
@@ -271,8 +276,12 @@ impl ManagedSparseJournal {
         max_records: usize,
         seed: crate::SparseCheckpoint,
     ) -> Result<Self, WitnessError> {
+        let journal_length = journal_file.metadata()?.len();
         let witness = AnchorWitnessStore::open(witness_file, &config, scope, max_records)?;
         let anchor = witness.current()?;
+        if anchor.is_none() && journal_length > HEADER as u64 {
+            return Err(WitnessError::AcknowledgedHistoryMissing);
+        }
         let journal = match anchor {
             Some(value) => SparseJournal::open_seeded_anchored(
                 journal_file,

@@ -158,3 +158,67 @@ fn generation_rollover_seed_preserves_temporal_state() {
     let receipt = checked(host.commit(seed.digest(), &tick(1, 2)));
     assert_eq!(receipt.checkpoint_before, seed.digest());
 }
+
+
+#[test]
+fn managed_reopen_refuses_committed_journal_when_witness_is_missing() {
+    let fixture = Fixture::new();
+    let receipt = {
+        let mut journal = checked(SparseJournal::open(
+            fixture.file("journal"),
+            config(1),
+            scope(),
+            16,
+        ));
+        checked(journal.commit(Digest32::ZERO, &tick(1, 1)))
+    };
+    assert!(!receipt.checkpoint_after.is_zero());
+    assert!(checked(fs::metadata(fixture.0.join("journal"))).len() > HEADER as u64);
+    assert_eq!(
+        ManagedSparseJournal::open(
+            fixture.file("journal"),
+            fixture.file("witness"),
+            config(1),
+            scope(),
+            16,
+        )
+        .err(),
+        Some(WitnessError::AcknowledgedHistoryMissing)
+    );
+}
+
+#[test]
+fn seeded_journal_reopens_with_seeded_magic_and_witness() {
+    let old_config = config(1);
+    let (old_state, _) = checked(sparse_tick(
+        &old_config,
+        &tick(1, 1),
+        None,
+    ));
+    let next_config = config(2);
+    let seed = checked(crate::rollover_seed(&old_state, &old_config, &next_config));
+    let fixture = Fixture::new();
+    let receipt = {
+        let mut host = checked(ManagedSparseJournal::open_seeded(
+            fixture.file("journal"),
+            fixture.file("witness"),
+            next_config.clone(),
+            scope(),
+            16,
+            seed.clone(),
+        ));
+        checked(host.commit(seed.digest(), &tick(1, 2)))
+    };
+    let reopened = checked(ManagedSparseJournal::open_seeded(
+        fixture.file("journal"),
+        fixture.file("witness"),
+        next_config,
+        scope(),
+        16,
+        seed,
+    ));
+    assert_eq!(
+        checked(reopened.current()).map(SparseCheckpoint::digest),
+        Some(receipt.checkpoint_after)
+    );
+}

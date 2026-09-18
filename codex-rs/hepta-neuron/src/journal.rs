@@ -234,7 +234,8 @@ impl SparseJournal {
             }
             let mut actual = [0; HEADER];
             file.read_exact(&mut actual)?;
-            if &actual[..8] != MAGIC
+            let expected_magic = if seed.is_some() { SEEDED_MAGIC } else { MAGIC };
+            if &actual[..8] != expected_magic
                 || Digest32::of_bytes(&actual[..HEADER - 32]).as_array() != &actual[HEADER - 32..]
             {
                 return Err(JournalError::Corrupt);
