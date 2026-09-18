@@ -1,3 +1,4 @@
+use codex_hepta_intelligence::IntuitionQualificationError;
 use codex_hepta_intelligence::IntuitionQualificationEvidenceV1;
 use codex_hepta_intelligence::decide_authenticated_intuition_v1;
 use codex_hepta_intuition::AssignmentModeV1;
@@ -14,7 +15,10 @@ use codex_hepta_intuition::RiskClass;
 use codex_hepta_intuition::canonical_candidate_order_digest_v1;
 use codex_hepta_intuition::canonical_candidate_set_digest_v1;
 use codex_hepta_intuition::canonical_completeness_evidence_payload_v1;
-use codex_hepta_intuition::canonical_qualification_evidence_payload_v1;
+use codex_hepta_intuition::canonical_profile_qualification_evidence_payload_v1;
+use codex_hepta_intuition::canonical_random_assignment_evidence_payload_v1;
+use codex_hepta_intuition::canonical_scoring_evidence_payload_v1;
+use codex_hepta_intuition::scoring_commitment_for_request_v1;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -105,7 +109,11 @@ fn score(model: LinearScorer, x_q16: i64, y_q16: i64) -> Score {
 fn calibration_ece_ppm(model: LinearScorer) -> (u32, Digest32) {
     let mut bins = [(0_u64, 0_u64, 0_u64); 5];
     let mut rows = 0_u64;
-    for line in CALIBRATION_CSV.lines().skip(1).filter(|line| !line.is_empty()) {
+    for line in CALIBRATION_CSV
+        .lines()
+        .skip(1)
+        .filter(|line| !line.is_empty())
+    {
         let fields = line.split(',').collect::<Vec<_>>();
         let x: i64 = fields[1].parse().unwrap();
         let y: i64 = fields[2].parse().unwrap();
@@ -127,7 +135,9 @@ fn calibration_ece_ppm(model: LinearScorer) -> (u32, Digest32) {
         let mean_label_ppm = label_sum * 1_000_000 / count;
         let gap = mean_prediction.abs_diff(mean_label_ppm);
         weighted_error += u128::from(gap) * u128::from(count);
-        audit.push_str(&format!("{index}:{count}:{mean_prediction}:{mean_label_ppm};"));
+        audit.push_str(&format!(
+            "{index}:{count}:{mean_prediction}:{mean_label_ppm};"
+        ));
     }
     (
         u32::try_from(weighted_error / u128::from(rows)).unwrap(),
@@ -180,27 +190,28 @@ fn sign(
 }
 
 #[test]
-fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
+fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
     let model = parse_model();
-    let model_digest = Digest32::of_bytes(MODEL_BYTES);
+    let model_artifact_digest = Digest32::of_bytes(MODEL_BYTES);
+    let policy_digest = digest("policy:intuition-qualified-v3");
+    assert_ne!(policy_digest, model_artifact_digest);
+
     let calibration_dataset_digest = Digest32::of_bytes(CALIBRATION_CSV.as_bytes());
     let ood_dataset_digest = Digest32::of_bytes(OOD_CSV.as_bytes());
     let (measured_ece_ppm, subgroup_audit_digest) = calibration_ece_ppm(model);
     let maximum_in_domain_ppm = 750_000;
     let measured_false_acceptance_ppm =
         ood_false_acceptance_ppm(model, maximum_in_domain_ppm);
-
-    // These ceilings are frozen independently from the measurements. Changing
-    // either fixture without requalification must fail this test.
     assert!(measured_ece_ppm <= 400_000, "ECE {measured_ece_ppm}");
     assert_eq!(measured_false_acceptance_ppm, 0);
 
     let calibration_artifact_bytes = format!(
-        "hepta.intuition.calibration-artifact.v1|model={model_digest:?}|dataset={calibration_dataset_digest:?}|ece_ppm={measured_ece_ppm}|subgroup={subgroup_audit_digest:?}"
+        "hepta.intuition.calibration-artifact.v2|policy={policy_digest:?}|model={model_artifact_digest:?}|dataset={calibration_dataset_digest:?}|ece_ppm={measured_ece_ppm}|subgroup={subgroup_audit_digest:?}"
     );
     let calibration_artifact_digest = Digest32::of_bytes(calibration_artifact_bytes.as_bytes());
+    let ood_detector_digest = digest("linear-scorer:ood-head:v1");
     let ood_artifact_bytes = format!(
-        "hepta.intuition.ood-artifact.v1|model={model_digest:?}|dataset={ood_dataset_digest:?}|far_ppm={measured_false_acceptance_ppm}|max_in_domain_ppm={maximum_in_domain_ppm}"
+        "hepta.intuition.ood-artifact.v2|policy={policy_digest:?}|model={model_artifact_digest:?}|dataset={ood_dataset_digest:?}|far_ppm={measured_false_acceptance_ppm}|max_in_domain_ppm={maximum_in_domain_ppm}|detector={ood_detector_digest:?}"
     );
     let ood_artifact_digest = Digest32::of_bytes(ood_artifact_bytes.as_bytes());
 
@@ -210,6 +221,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         ("candidate:a", score(model, 65_536, 0)),
         ("candidate:b", score(model, 131_072, 0)),
     ];
+    let half = ProbabilityQ32::from_raw(ProbabilityQ32::ONE.raw() / 2).unwrap();
     let candidates = scored
         .into_iter()
         .map(|(candidate_id, value)| CalibratedActionCandidateV1 {
@@ -219,14 +231,14 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
             utility: value.utility,
             calibrated_confidence: probability_ppm(value.confidence_ppm),
             ood_score: probability_ppm(value.ood_score_ppm),
-            assignment_probability: ProbabilityQ32::ZERO,
+            assignment_probability: half,
             support_digest: digest(&format!("support:{candidate_id}")),
         })
         .collect::<Vec<_>>();
     let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates).unwrap();
     let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates).unwrap();
     let generator_digest = digest("legal-candidate-generator:v1");
-    let mut completeness_bytes = b"hepta.test.complete-set.v1".to_vec();
+    let mut completeness_bytes = b"hepta.test.complete-set.v2".to_vec();
     completeness_bytes.extend_from_slice(generator_digest.as_array());
     completeness_bytes.extend_from_slice(candidate_set_digest.as_array());
     completeness_bytes.extend_from_slice(canonical_order_digest.as_array());
@@ -238,7 +250,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         objective_digest,
         objective_class_digest,
         state_digest: digest("state:frozen-qualification"),
-        policy_digest: model_digest,
+        policy_digest,
         policy_generation: 3,
         sequence: 7,
         minimum_confidence: probability_ppm(600_000),
@@ -258,7 +270,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         },
         calibration: CalibrationArtifactV1 {
             artifact_digest: calibration_artifact_digest,
-            policy_digest: model_digest,
+            policy_digest,
             objective_class_digest,
             generation: 3,
             valid_from_sequence: 1,
@@ -268,8 +280,8 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         },
         ood: OodArtifactV1 {
             artifact_digest: ood_artifact_digest,
-            policy_digest: model_digest,
-            detector_digest: digest("linear-scorer:ood-head:v1"),
+            policy_digest,
+            detector_digest: ood_detector_digest,
             support_digest: ood_dataset_digest,
             generation: 3,
             valid_from_sequence: 1,
@@ -277,14 +289,18 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
             maximum_in_domain_score: probability_ppm(maximum_in_domain_ppm),
             measured_false_acceptance_ppm,
         },
-        assignment: AssignmentModeV1::Deterministic,
+        assignment: AssignmentModeV1::CounterBased {
+            random_stream_digest: digest("rng:intuition-frozen-v1"),
+            draw: half,
+            abstain_probability: ProbabilityQ32::ZERO,
+        },
         candidates,
     };
 
     let model_text = std::str::from_utf8(MODEL_BYTES).unwrap();
     let profile = CanonicalPolicyProfileV1 {
-        profile_id: id("profile:intuition-frozen-v1"),
-        policy_digest: model_digest,
+        profile_id: id("profile:intuition-frozen-v2"),
+        policy_digest,
         objective_class_digest,
         generation: 3,
         valid_from_sequence: 1,
@@ -295,7 +311,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         maximum_in_domain_score: probability_ppm(maximum_in_domain_ppm),
         risk_rule: CanonicalRiskRuleV1::HighOnlySlowPath,
         scorer: LearnedScorerContractV1 {
-            model_digest,
+            model_artifact_digest,
             feature_schema_digest: Digest32::of_bytes(
                 model_text
                     .lines()
@@ -317,38 +333,54 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
                     .unwrap()
                     .as_bytes(),
             ),
-            scorer_contract_digest: digest("hepta.intuition.learned-scorer-contract.v1"),
+            scorer_contract_digest: digest("hepta.intuition.learned-scorer-contract.v2"),
         },
         calibration_dataset_digest,
         ood_dataset_digest,
         calibration_artifact_digest,
+        calibration_measured_ece_ppm: measured_ece_ppm,
+        calibration_subgroup_audit_digest: subgroup_audit_digest,
+        calibration_valid_from_sequence: 1,
+        calibration_expires_after_sequence: 100,
         ood_artifact_digest,
+        ood_measured_false_acceptance_ppm: measured_false_acceptance_ppm,
+        ood_detector_digest,
+        ood_support_digest: ood_dataset_digest,
+        ood_valid_from_sequence: 1,
+        ood_expires_after_sequence: 100,
     };
+    let scoring = scoring_commitment_for_request_v1(
+        &request,
+        &profile,
+        digest("feature-snapshot:frozen-candidates-v1"),
+    )
+    .unwrap();
 
     let keys = [
         SigningKey::from_bytes(&[31; 32]),
+        SigningKey::from_bytes(&[37; 32]),
         SigningKey::from_bytes(&[47; 32]),
+        SigningKey::from_bytes(&[53; 32]),
     ];
     let principals = [
-        AuthenticatedPrincipalV1 {
-            principal_id: id("intuition-candidate-generator"),
-            credential_chain_digest: digest("generator-credentials"),
-            signing_key_digest: Digest32::of_bytes(&keys[0].verifying_key().to_bytes()),
-            scope_digest: digest("intuition-qualification-scope"),
-            authority_epoch: 12,
-            authenticated_at: 50,
-            expires_at: 250,
-        },
-        AuthenticatedPrincipalV1 {
-            principal_id: id("intuition-independent-evaluator"),
-            credential_chain_digest: digest("evaluator-credentials"),
-            signing_key_digest: Digest32::of_bytes(&keys[1].verifying_key().to_bytes()),
-            scope_digest: digest("intuition-qualification-scope"),
-            authority_epoch: 12,
-            authenticated_at: 50,
-            expires_at: 250,
-        },
-    ];
+        ("intuition-candidate-generator", "generator-credentials"),
+        ("intuition-learned-scorer", "scorer-credentials"),
+        ("intuition-independent-evaluator", "evaluator-credentials"),
+        ("intuition-random-source", "random-source-credentials"),
+    ]
+    .into_iter()
+    .enumerate()
+    .map(|(index, (principal_id, credentials))| AuthenticatedPrincipalV1 {
+        principal_id: id(principal_id),
+        credential_chain_digest: digest(credentials),
+        signing_key_digest: Digest32::of_bytes(&keys[index].verifying_key().to_bytes()),
+        scope_digest: digest("intuition-qualification-scope"),
+        authority_epoch: 12,
+        authenticated_at: 50,
+        expires_at: 250,
+    })
+    .collect::<Vec<_>>();
+
     let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
         scope_digest: digest("intuition-qualification-scope"),
         objective_digest,
@@ -363,17 +395,37 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
             },
             TrustedLearningSignerV1 {
                 principal: principals[1].clone(),
-                controller_id: id("independent-evaluator-controller"),
+                controller_id: id("scorer-controller"),
                 verifying_key: keys[1].verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Scorer],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: principals[2].clone(),
+                controller_id: id("independent-evaluator-controller"),
+                verifying_key: keys[2].verifying_key().to_bytes(),
                 roles: vec![LearningEvidenceRoleV1::Evaluator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: principals[3].clone(),
+                controller_id: id("random-source-controller"),
+                verifying_key: keys[3].verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::RandomSource],
                 revoked_at: None,
             },
         ],
     })
     .unwrap();
+
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request).unwrap();
-    let qualification_payload =
-        canonical_qualification_evidence_payload_v1(&request, &profile).unwrap();
+    let scoring_payload = canonical_scoring_evidence_payload_v1(&scoring).unwrap();
+    let profile_payload =
+        canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
+    let assignment_payload = canonical_random_assignment_evidence_payload_v1(&request)
+        .unwrap()
+        .unwrap();
+
     let completeness_evidence = sign(
         &verifier,
         &principals[0],
@@ -383,25 +435,46 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         objective_digest,
         &completeness_payload,
     );
-    let qualification_evidence = sign(
+    let scoring_evidence = sign(
         &verifier,
         &principals[1],
         &keys[1],
-        LearningEvidenceRoleV1::Evaluator,
-        "evidence:intuition-qualification",
+        LearningEvidenceRoleV1::Scorer,
+        "evidence:intuition-scoring",
         objective_digest,
-        &qualification_payload,
+        &scoring_payload,
+    );
+    let profile_evidence = sign(
+        &verifier,
+        &principals[2],
+        &keys[2],
+        LearningEvidenceRoleV1::Evaluator,
+        "evidence:intuition-profile-qualification",
+        objective_digest,
+        &profile_payload,
+    );
+    let assignment_evidence = sign(
+        &verifier,
+        &principals[3],
+        &keys[3],
+        LearningEvidenceRoleV1::RandomSource,
+        "evidence:intuition-random-assignment",
+        objective_digest,
+        &assignment_payload,
     );
 
-    let mut tampered_qualification = qualification_evidence.clone();
-    tampered_qualification.signature[0] ^= 1;
+    let mut tampered_scoring = scoring_evidence.clone();
+    tampered_scoring.signature[0] ^= 1;
     assert!(
         decide_authenticated_intuition_v1(
             request.clone(),
             profile.clone(),
+            scoring.clone(),
             IntuitionQualificationEvidenceV1 {
                 completeness: &completeness_evidence,
-                qualification: &tampered_qualification,
+                scoring: &tampered_scoring,
+                profile_qualification: &profile_evidence,
+                assignment: Some(&assignment_evidence),
             },
             &verifier,
             150,
@@ -409,12 +482,32 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
         .is_err()
     );
 
+    assert_eq!(
+        decide_authenticated_intuition_v1(
+            request.clone(),
+            profile.clone(),
+            scoring.clone(),
+            IntuitionQualificationEvidenceV1 {
+                completeness: &completeness_evidence,
+                scoring: &scoring_evidence,
+                profile_qualification: &profile_evidence,
+                assignment: None,
+            },
+            &verifier,
+            150,
+        ),
+        Err(IntuitionQualificationError::MissingRandomSourceEvidence)
+    );
+
     let receipt = decide_authenticated_intuition_v1(
         request,
         profile,
+        scoring,
         IntuitionQualificationEvidenceV1 {
             completeness: &completeness_evidence,
-            qualification: &qualification_evidence,
+            scoring: &scoring_evidence,
+            profile_qualification: &profile_evidence,
+            assignment: Some(&assignment_evidence),
         },
         &verifier,
         150,
@@ -426,4 +519,7 @@ fn frozen_model_and_data_produce_signed_current_generation_policy_decision() {
     );
     assert!(!receipt.authentication_digest.is_zero());
     assert!(!receipt.profile_digest.is_zero());
+    assert!(!receipt.exact_request_digest.is_zero());
+    assert!(!receipt.scoring_payload_digest.is_zero());
+    assert!(!receipt.assignment_payload_digest.is_zero());
 }
