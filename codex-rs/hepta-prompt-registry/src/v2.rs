@@ -446,6 +446,8 @@ pub enum PromptRegistryV2Error {
     ReadLimitExceeded,
     DuplicateFactorFilter(String),
     RequiredFactorUnavailable,
+    PayloadUnavailable,
+    PayloadDigestMismatch,
     SnapshotStale,
     AuthorityGranted,
 }
