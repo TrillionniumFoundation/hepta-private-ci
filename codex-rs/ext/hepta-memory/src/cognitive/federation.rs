@@ -476,13 +476,20 @@ fn combine_cognitive_materials(
     let local_value = serde_json::from_str::<Value>(&local.content).ok()?;
     let federated_value = serde_json::from_str::<Value>(&federated.content).ok()?;
     let local_memory = compact_local_memory(local_value.get("memories")?.as_array()?.first()?)?;
-    let federated_memory =
-        compact_federated_memory(federated_value.get("memories")?.as_array()?.first()?)?;
     let federated_coverage = compact_federated_coverage(federated_value.get("coverage")?)?;
+    let mut memories = vec![local_memory];
+    if let Some(federated_memory) = federated_value
+        .get("memories")?
+        .as_array()?
+        .first()
+        .and_then(compact_federated_memory)
+    {
+        memories.push(federated_memory);
+    }
     let content = serde_json::to_string(&json!({
         "s": "verified_cognitive_v2",
         "fc": federated_coverage,
-        "m": [local_memory, federated_memory],
+        "m": memories,
     }))
     .ok()?;
     let claimed_token_count = u32::try_from(content.len()).ok()?;
@@ -830,6 +837,63 @@ mod tests {
         assert!(
             super::compile_retrieval_batch(&not_configured, 16 * 1024, 4 * 1024).is_none()
         );
+    }
+
+    #[test]
+    fn combined_material_preserves_local_memory_with_coverage_only_federation() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().canonicalize().expect("workspace");
+        let session_store = ExtensionData::new("coverage-only-combined-session");
+        let thread_store = ExtensionData::new(THREAD_ID);
+        thread_store.insert(HeptaMemoryThreadState::for_cognitive_test(true));
+        let turn_store = ExtensionData::new("coverage-only-combined-turn");
+        let base_logical_request_sha256 =
+            ModelProviderSha256Digest::parse("13".repeat(32)).expect("base digest");
+        let input = EphemeralModelInputContext {
+            schema_version: EPHEMERAL_MODEL_INPUT_SCHEMA_VERSION,
+            session_store: &session_store,
+            thread_store: &thread_store,
+            turn_store: &turn_store,
+            attempt_id: 1,
+            base_logical_request_sha256: &base_logical_request_sha256,
+            thread_id: THREAD_ID,
+            turn_id: "coverage-only-combined-turn",
+            cwd: &workspace,
+            request_kind: ModelProviderRequestKind::Turn,
+            generate: true,
+            model_context_window: Some(16_384),
+            max_content_bytes: EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES,
+            max_content_tokens: EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS,
+        };
+        let local = local_material(0);
+        let federated_content = serde_json::to_string(&serde_json::json!({
+            "schema_version": 2,
+            "source": "explicit_federated_verified_memory",
+            "coverage": {
+                "requested_sources": 1,
+                "completed_sources": 0,
+                "failed_sources": 1,
+                "discovery_failures": 0
+            },
+            "memories": []
+        }))
+        .expect("coverage-only federated content");
+        let federated = CognitiveProposalMaterial {
+            source: FEDERATED_COGNITIVE_SOURCE,
+            source_binding_sha256: Sha256Digest::for_bytes(b"coverage-only-source"),
+            content_sha256: Sha256Digest::for_bytes(federated_content.as_bytes()),
+            claimed_token_count: u32::try_from(federated_content.len()).expect("content len"),
+            content: federated_content,
+        };
+        let combined = combine_cognitive_materials(&input, local, federated)
+            .expect("coverage-only combined material");
+        let payload = serde_json::from_str::<serde_json::Value>(&combined.content)
+            .expect("combined payload");
+        assert_eq!(payload["s"], "verified_cognitive_v2");
+        assert_eq!(payload["fc"]["r"], 1);
+        assert_eq!(payload["fc"]["c"], 0);
+        assert_eq!(payload["fc"]["f"], 1);
+        assert_eq!(payload["m"].as_array().expect("memories").len(), 1);
     }
 
     #[test]
