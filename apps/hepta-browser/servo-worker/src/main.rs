@@ -260,7 +260,8 @@ impl Browser {
             .unwrap_or(0)
             != 0
         {
-            self.verify_action_surface()?;
+            let observation = self.verify_action_surface()?;
+            validate_action_target(action, &observation)?;
         }
         self.operations.insert(
             operation_id.to_string(),
@@ -324,7 +325,7 @@ impl Browser {
         Ok(receipt)
     }
 
-    fn verify_action_surface(&mut self) -> Result<(), String> {
+    fn verify_action_surface(&mut self) -> Result<Value, String> {
         let expected = self
             .last_action_surface_digest
             .clone()
@@ -349,7 +350,7 @@ impl Browser {
         if action_surface_digest(&observation)? != expected {
             return Err("worker action surface drifted before dispatch".to_string());
         }
-        Ok(())
+        Ok(observation)
     }
 
     fn invalidate_observation_after_effect(&mut self, action: &str) -> Result<(), String> {
@@ -795,7 +796,7 @@ const clean=(value,max)=>String(value??"").replace(/\s+/g," ").trim().slice(0,ma
 const selectorFor=(el)=>{
   const parts=[];
   let node=el;
-  for(let depth=0;node&&node.nodeType===1&&depth<8;depth+=1,node=node.parentElement){
+  for(let depth=0;node&&node.nodeType===1&&depth<64;depth+=1,node=node.parentElement){
     const tag=node.tagName.toLowerCase();
     let index=1;
     for(let sibling=node.previousElementSibling;sibling;sibling=sibling.previousElementSibling){
@@ -803,23 +804,36 @@ const selectorFor=(el)=>{
     }
     parts.push(`${tag}:nth-of-type(${index})`);
   }
-  return parts.reverse().join(">").slice(0,2048);
+  const selector=parts.reverse().join(">");
+  if(!selector||selector.length>2048) return "";
+  try{return document.querySelector(selector)===el?selector:"";}catch{return "";}
+};
+const visible=(el)=>{
+  if(!el||typeof el.getClientRects!=="function"||el.getClientRects().length===0) return false;
+  const style=getComputedStyle(el);
+  return style.display!=="none"&&style.visibility!=="hidden"&&style.visibility!=="collapse";
 };
 const links=[];
 for(const a of Array.from(document.querySelectorAll("a[href]")).slice(0,128)){
+  if(!visible(a)) continue;
+  const selector=selectorFor(a);
+  if(!selector) continue;
   try{
     const u=new URL(a.href,document.baseURI);
     if(u.protocol!=="http:"&&u.protocol!=="https:") continue;
-    links.push({text:clean(a.innerText||a.textContent,512),href:u.href.slice(0,4096),selector:selectorFor(a)});
+    links.push({text:clean(a.innerText||a.textContent,512),href:u.href.slice(0,4096),selector});
   }catch{}
 }
 const controls=[];
 const nodes=document.querySelectorAll("a[href],button,input:not([type=password]),textarea,select,[role=button],[tabindex]");
 for(const el of Array.from(nodes).slice(0,256)){
+  if(!visible(el)) continue;
+  const selector=selectorFor(el);
+  if(!selector) continue;
   const type=clean(el.getAttribute("type"),64).toLowerCase();
   if(type==="password") continue;
   controls.push({
-    selector:selectorFor(el),
+    selector,
     tag:clean(el.tagName,32).toLowerCase(),
     role:clean(el.getAttribute("role"),64),
     type,
@@ -832,9 +846,12 @@ for(const el of Array.from(nodes).slice(0,256)){
 }
 const forms=[];
 for(const form of Array.from(document.forms).slice(0,64)){
+  if(!visible(form)) continue;
+  const selector=selectorFor(form);
+  if(!selector) continue;
   let action="";
   try{const u=new URL(form.action||document.URL,document.baseURI);if(u.protocol==="http:"||u.protocol==="https:") action=u.href.slice(0,4096);}catch{}
-  forms.push({method:clean(form.method||"get",16).toLowerCase(),action,controlCount:Math.min(form.elements?.length||0,4096),selector:selectorFor(form)});
+  forms.push({method:clean(form.method||"get",16).toLowerCase(),action,controlCount:Math.min(form.elements?.length||0,4096),selector});
 }
 const out={
   schema:"hepta.browser.semantic-observation.v1",
@@ -913,18 +930,18 @@ fn failed(action: &str, reason: &str) -> Value {
 
 fn fixed_click(action: &Map<String, Value>) -> Result<String, String> {
     let selector = json_string(action, "selector")?;
-    Ok(format!("(()=>{{const e=document.querySelector({selector});if(!e)return false;e.click();return true;}})()"))
+    Ok(format!("(()=>{{const e=document.querySelector({selector});if(!e||e.disabled===true||e.getClientRects().length===0)return false;const s=getComputedStyle(e);if(s.display===\"none\"||s.visibility===\"hidden\"||s.visibility===\"collapse\")return false;e.click();return true;}})()"))
 }
 
 fn fixed_focus(action: &Map<String, Value>) -> Result<String, String> {
     let selector = json_string(action, "selector")?;
-    Ok(format!("(()=>{{const e=document.querySelector({selector});if(!e)return false;e.focus();return true;}})()"))
+    Ok(format!("(()=>{{const e=document.querySelector({selector});if(!e||e.disabled===true||e.getClientRects().length===0)return false;const s=getComputedStyle(e);if(s.display===\"none\"||s.visibility===\"hidden\"||s.visibility===\"collapse\")return false;e.focus();return true;}})()"))
 }
 
 fn fixed_type(action: &Map<String, Value>) -> Result<String, String> {
     let selector = json_string(action, "selector")?;
     let text = json_string(action, "text")?;
-    Ok(format!("(()=>{{const e=document.querySelector({selector});if(!e||!(\"value\" in e))return false;e.focus();e.value={text};e.dispatchEvent(new Event(\"input\",{{bubbles:true}}));e.dispatchEvent(new Event(\"change\",{{bubbles:true}}));return true;}})()"))
+    Ok(format!("(()=>{{const e=document.querySelector({selector});if(!e||!(\"value\" in e)||e.disabled===true||String(e.type||\"\").toLowerCase()===\"password\"||e.getClientRects().length===0)return false;const s=getComputedStyle(e);if(s.display===\"none\"||s.visibility===\"hidden\"||s.visibility===\"collapse\")return false;e.focus();e.value={text};e.dispatchEvent(new Event(\"input\",{{bubbles:true}}));e.dispatchEvent(new Event(\"change\",{{bubbles:true}}));return true;}})()"))
 }
 
 fn fixed_scroll(action: &Map<String, Value>) -> Result<String, String> {
@@ -977,6 +994,68 @@ fn action_surface_digest(observation: &Value) -> Result<String, String> {
     });
     validate_safe_json(&surface, 0)?;
     Ok(sha256_hex(canonical_json(&surface).as_bytes()))
+}
+
+fn observed_control<'a>(
+    observation: &'a Value,
+    selector: &str,
+) -> Result<Option<&'a Map<String, Value>>, String> {
+    let controls = observation
+        .get("controls")
+        .and_then(Value::as_array)
+        .ok_or_else(|| "semantic observation lacks controls".to_string())?;
+    for value in controls {
+        let control = value
+            .as_object()
+            .ok_or_else(|| "semantic observation control must be an object".to_string())?;
+        if control.get("selector").and_then(Value::as_str) == Some(selector) {
+            return Ok(Some(control));
+        }
+    }
+    Ok(None)
+}
+
+fn validate_action_target(
+    action: &Map<String, Value>,
+    observation: &Value,
+) -> Result<(), String> {
+    let kind = action
+        .get("kind")
+        .and_then(Value::as_str)
+        .ok_or_else(|| "typedAction.kind must be a string".to_string())?;
+    if !matches!(kind, "click" | "type" | "focus") {
+        return Ok(());
+    }
+    let selector = action
+        .get("selector")
+        .and_then(Value::as_str)
+        .ok_or_else(|| format!("{kind}.selector must be a string"))?;
+    let control = observed_control(observation, selector)?
+        .ok_or_else(|| "typed action selector is not in the admitted action surface".to_string())?;
+    let disabled = control
+        .get("disabled")
+        .and_then(Value::as_bool)
+        .ok_or_else(|| "semantic observation control.disabled must be boolean".to_string())?;
+    if disabled {
+        return Err("typed action selector is disabled in the admitted action surface".to_string());
+    }
+    if kind == "type" {
+        let tag = control
+            .get("tag")
+            .and_then(Value::as_str)
+            .ok_or_else(|| "semantic observation control.tag must be a string".to_string())?;
+        let input_type = control
+            .get("type")
+            .and_then(Value::as_str)
+            .ok_or_else(|| "semantic observation control.type must be a string".to_string())?;
+        if !matches!(tag, "input" | "textarea") {
+            return Err("type action target is not a text-entry control".to_string());
+        }
+        if input_type.eq_ignore_ascii_case("password") {
+            return Err("generic type action cannot target a password control".to_string());
+        }
+    }
+    Ok(())
 }
 
 fn validate_dispatch_snapshot_state(
@@ -1195,6 +1274,56 @@ mod tests {
             action_surface_digest(&base).expect("base digest"),
             action_surface_digest(&control_changed).expect("control digest"),
         );
+    }
+
+    #[test]
+    fn page_local_action_selector_must_be_observed_and_sensitive_targets_fail_closed() {
+        let observation = json!({
+            "controls": [
+                {"selector":"button:nth-of-type(1)","tag":"button","type":"","disabled":false},
+                {"selector":"input:nth-of-type(1)","tag":"input","type":"text","disabled":false},
+                {"selector":"input:nth-of-type(2)","tag":"input","type":"password","disabled":false},
+                {"selector":"input:nth-of-type(3)","tag":"input","type":"text","disabled":true}
+            ]
+        });
+
+        let click_value = json!({"kind":"click","selector":"button:nth-of-type(1)"});
+        assert!(validate_action_target(
+            click_value.as_object().expect("click object"),
+            &observation,
+        ).is_ok());
+
+        let missing_value = json!({"kind":"click","selector":"#not-observed"});
+        assert!(validate_action_target(
+            missing_value.as_object().expect("missing object"),
+            &observation,
+        )
+        .unwrap_err()
+        .contains("not in the admitted action surface"));
+
+        let password_value = json!({
+            "kind":"type",
+            "selector":"input:nth-of-type(2)",
+            "text":"secret"
+        });
+        assert!(validate_action_target(
+            password_value.as_object().expect("password object"),
+            &observation,
+        )
+        .unwrap_err()
+        .contains("password"));
+
+        let disabled_value = json!({
+            "kind":"type",
+            "selector":"input:nth-of-type(3)",
+            "text":"blocked"
+        });
+        assert!(validate_action_target(
+            disabled_value.as_object().expect("disabled object"),
+            &observation,
+        )
+        .unwrap_err()
+        .contains("disabled"));
     }
 
     #[test]

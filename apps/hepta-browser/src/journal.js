@@ -189,6 +189,35 @@ function profilePrefix(profileId, generation) {
   return `${profileId}\u0000${generation}\u0000`;
 }
 
+function assertGenerationHistoryClear(records, profileId, generation) {
+  stableId(profileId, "profileId");
+  positiveInteger(generation, "generation");
+  const sameGenerationPrefix = profilePrefix(profileId, generation);
+  const profileIdPrefix = `${profileId}\u0000`;
+  let sameGenerationHistory = false;
+  let unresolvedOtherGeneration = false;
+  for (const [key, record] of records) {
+    if (!key.startsWith(profileIdPrefix)) continue;
+    if (key.startsWith(sameGenerationPrefix)) {
+      sameGenerationHistory = true;
+      continue;
+    }
+    if (record.terminalObserved !== true) {
+      unresolvedOtherGeneration = true;
+    }
+  }
+  if (sameGenerationHistory) {
+    throw new TypeError(
+      "profile generation has durable operation history and cannot be reopened",
+    );
+  }
+  if (unresolvedOtherGeneration) {
+    throw new TypeError(
+      "profile has unresolved durable effects from another generation",
+    );
+  }
+}
+
 function assertGenerationAvailable(retired, profileId, generation) {
   stableId(profileId, "profileId");
   positiveInteger(generation, "generation");
@@ -230,11 +259,13 @@ function envelopeLine(type, record) {
 }
 
 export class MemoryBrowserOperationJournal {
+  durable = false;
   #records = new Map();
   #retired = new Map();
 
   async assertProfileGenerationAvailable(profileId, generation) {
     assertGenerationAvailable(this.#retired, profileId, generation);
+    assertGenerationHistoryClear(this.#records, profileId, generation);
   }
 
   async recordDispatch(record) {
@@ -290,6 +321,7 @@ export class MemoryBrowserOperationJournal {
 }
 
 export class FileBrowserOperationJournal {
+  durable = true;
   #path;
   #retiredPath;
   #tail = Promise.resolve();
@@ -307,6 +339,8 @@ export class FileBrowserOperationJournal {
     return this.#serialize(async () => {
       const retired = await this.#loadRetired();
       assertGenerationAvailable(retired, profileId, generation);
+      const records = await this.#load();
+      assertGenerationHistoryClear(records, profileId, generation);
     });
   }
 

@@ -165,6 +165,7 @@ async function preparedHost(options = {}) {
     authority: finalAuthority,
     journal,
     clock,
+    allowVolatileJournalForTests: true,
     driverCallTimeoutMs: options.driverCallTimeoutMs ?? 50,
   });
   const session = await host.openProfile(options.profileInput ?? input());
@@ -176,6 +177,20 @@ async function preparedHost(options = {}) {
   });
   return { host, fakeDriver, finalAuthority, journal, session, page };
 }
+
+test("effect owner rejects volatile journals unless a test explicitly opts in", () => {
+  assert.throws(
+    () =>
+      new BrowserProfileHost({
+        driver: driver(),
+        authority: authority(),
+        journal: new MemoryBrowserOperationJournal(),
+        clock: () => 1_000,
+        driverCallTimeoutMs: 50,
+      }),
+    /requires a durable operation journal/,
+  );
+});
 
 test("global active profile capacity rejects a second worker before start", async () => {
   const fakeDriver = driver();
@@ -190,6 +205,7 @@ test("global active profile capacity rejects a second worker before start", asyn
     authority: authority(),
     journal: new MemoryBrowserOperationJournal(),
     clock: () => 1_000,
+    allowVolatileJournalForTests: true,
     driverCallTimeoutMs: 50,
     maxActiveProfiles: 1,
   });
@@ -254,6 +270,7 @@ test("semantic observation digest and budget fail closed", async () => {
     authority: authority(),
     journal: new MemoryBrowserOperationJournal(),
     clock: () => 1_000,
+    allowVolatileJournalForTests: true,
     driverCallTimeoutMs: 50,
   });
   await host.openProfile(input());
@@ -287,6 +304,38 @@ test("same operation is single-flight and never double-dispatches", async () => 
   const [left, right] = await Promise.all([first, second]);
   assert.equal(fakeDriver.dispatchCalls, 1);
   assert.equal(left.semanticDigest, right.semanticDigest);
+});
+
+test("one-WebView driver ceiling blocks another effect while the prior one is unknown", async () => {
+  let pageGeneration = 0;
+  const fakeDriver = driver({
+    terminalOnReconcile: false,
+    observeImpl: async () => ({
+      pageGeneration: ++pageGeneration,
+      documentDigest: D3,
+      semanticDigest: SEMANTIC_DIGEST,
+      semanticObservation: SEMANTIC,
+      origin: "https://example.com",
+    }),
+  });
+  fakeDriver.maxOutstandingOperations = 1;
+  const { host } = await preparedHost({ driver: fakeDriver });
+  const first = await host.navigateOrAct(operation());
+  assert.equal(first.status, "indeterminate");
+  const refreshed = await host.observePage({
+    profileId: "profile.1",
+    principalId: "principal.1",
+    generation: 1,
+    observationBudget: 2048,
+  });
+  assert.equal(refreshed.pageGeneration, 2);
+  await assert.rejects(
+    host.navigateOrAct(
+      operation({ operationId: "operation.2", pageGeneration: 2 }),
+    ),
+    /profile operation capacity is exhausted/,
+  );
+  assert.equal(fakeDriver.dispatchCalls, 1);
 });
 
 test("driver throw after dispatch boundary becomes indeterminate and retry never redispatches", async () => {
@@ -514,6 +563,7 @@ test("delayed final-use authority cannot enter the effect boundary after Browser
     authority: delayedAuthority,
     journal: new MemoryBrowserOperationJournal(),
     clock: () => now,
+    allowVolatileJournalForTests: true,
     driverCallTimeoutMs: 50,
   });
   await host.openProfile(input());
@@ -559,6 +609,7 @@ test("disallowed observed origin is quarantined and cannot authorize an action",
     authority: finalAuthority,
     journal: new MemoryBrowserOperationJournal(),
     clock: () => 1_000,
+    allowVolatileJournalForTests: true,
     driverCallTimeoutMs: 50,
   });
   await host.openProfile(input());
@@ -588,17 +639,41 @@ test("persisted indeterminate operation reconciles after host process loss witho
   assert.equal(firstDriver.dispatchCalls, 1);
 
   const secondDriver = driver();
+  const blockedHost = new BrowserProfileHost({
+    driver: secondDriver,
+    authority: authority(),
+    journal,
+    clock: () => 1_000,
+    allowVolatileJournalForTests: true,
+    driverCallTimeoutMs: 50,
+  });
+  await assert.rejects(
+    blockedHost.openProfile(input()),
+    /durable operation history/,
+  );
+  await assert.rejects(
+    blockedHost.openProfile(input({ generation: 2 })),
+    /unresolved durable effects/,
+  );
+
   const recoveredHost = new BrowserProfileHost({
     driver: secondDriver,
     authority: authority(),
     journal,
     clock: () => 20_000,
+    allowVolatileJournalForTests: true,
     driverCallTimeoutMs: 50,
   });
   const recovered = await recoveredHost.reconcilePersistedOperation(operation());
   assert.equal(recovered.status, "succeeded");
   assert.equal(recovered.terminalObserved, true);
   assert.equal(secondDriver.dispatchCalls, 0);
+  assert.deepEqual(await journal.listOperations("profile.1", 1), []);
+  await assert.rejects(
+    journal.assertProfileGenerationAvailable("profile.1", 1),
+    /already been retired/,
+  );
+  await journal.assertProfileGenerationAvailable("profile.1", 2);
 });
 
 test("terminal operation retention uses durable tombstones instead of exhausting active capacity", async () => {
@@ -627,6 +702,7 @@ test("effect grants can be admitted after profile open without widening final-us
     authority: authority(),
     journal: new MemoryBrowserOperationJournal(),
     clock: () => 1_000,
+    allowVolatileJournalForTests: true,
     driverCallTimeoutMs: 50,
   });
   await host.openProfile(input({ effectGrants: [] }));

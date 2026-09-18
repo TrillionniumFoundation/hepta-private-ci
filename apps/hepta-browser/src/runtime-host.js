@@ -43,6 +43,7 @@ export class BrowserProfileHost {
   #clock;
   #driverCallTimeoutMs;
   #maxActiveProfiles;
+  #maxOutstandingOperations;
   #profiles = new Map();
   #openingProfiles = new Set();
   #locks = new Map();
@@ -54,6 +55,7 @@ export class BrowserProfileHost {
     clock = () => Date.now(),
     driverCallTimeoutMs = DEFAULT_DRIVER_CALL_TIMEOUT_MS,
     maxActiveProfiles = DEFAULT_MAX_ACTIVE_PROFILES,
+    allowVolatileJournalForTests = false,
   }) {
     requireRecord(driver, "driver");
     for (const method of [
@@ -88,6 +90,22 @@ export class BrowserProfileHost {
         throw new TypeError(`journal.${method} must be a function`);
       }
     }
+    if (typeof allowVolatileJournalForTests !== "boolean") {
+      throw new TypeError("allowVolatileJournalForTests must be boolean");
+    }
+    if (journal.durable !== true && allowVolatileJournalForTests !== true) {
+      throw new TypeError(
+        "browser effect owner requires a durable operation journal",
+      );
+    }
+    const driverOutstandingLimit =
+      driver.maxOutstandingOperations ?? MAX_OUTSTANDING_OPERATIONS;
+    positiveInteger(driverOutstandingLimit, "driver.maxOutstandingOperations");
+    if (driverOutstandingLimit > MAX_OUTSTANDING_OPERATIONS) {
+      throw new TypeError(
+        "driver.maxOutstandingOperations exceeds Browser hard ceiling",
+      );
+    }
     if (typeof clock !== "function") {
       throw new TypeError("clock must be a function");
     }
@@ -104,6 +122,7 @@ export class BrowserProfileHost {
     this.#clock = clock;
     this.#driverCallTimeoutMs = driverCallTimeoutMs;
     this.#maxActiveProfiles = maxActiveProfiles;
+    this.#maxOutstandingOperations = driverOutstandingLimit;
   }
 
   async openProfile(input) {
@@ -366,7 +385,7 @@ export class BrowserProfileHost {
         }
         return prior.receipt;
       }
-      if (this.#activeOperationCount(state) >= MAX_OUTSTANDING_OPERATIONS) {
+      if (this.#activeOperationCount(state) >= this.#maxOutstandingOperations) {
         throw new TypeError("profile operation capacity is exhausted");
       }
 
@@ -422,11 +441,20 @@ export class BrowserProfileHost {
               };
               await this.#journal.recordDispatch(this.#durableRecord(state, entry));
               state.operations.set(operationId, entry);
-              return this.#callDriver(
-                "dispatch",
-                semantics,
-                requestSemantics.deadlineMs,
-              );
+              try {
+                const dispatchObservation = await this.#callDriver(
+                  "dispatch",
+                  semantics,
+                  requestSemantics.deadlineMs,
+                );
+                state.documentDigest = null;
+                return dispatchObservation;
+              } catch (error) {
+                if (error?.code !== "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
+                  state.documentDigest = null;
+                }
+                throw error;
+              }
             },
           ),
           "driver dispatch observation",
@@ -578,7 +606,9 @@ export class BrowserProfileHost {
         );
       }
       if (durable.terminalObserved === true) {
-        return this.#receiptFromDurable(durable);
+        const receipt = this.#receiptFromDurable(durable);
+        await this.#retireRecoveredGenerationIfTerminal(profileId, generation);
+        return receipt;
       }
       const effectSemantics = Object.freeze({
         ...semantics,
@@ -620,6 +650,9 @@ export class BrowserProfileHost {
         terminalObserved: receipt.terminalObserved,
         observationReason: receipt.observationReason,
       });
+      if (receipt.terminalObserved) {
+        await this.#retireRecoveredGenerationIfTerminal(profileId, generation);
+      }
       return receipt;
     });
   }
@@ -677,6 +710,26 @@ export class BrowserProfileHost {
         terminalObserved: true,
       });
     });
+  }
+
+  async #retireRecoveredGenerationIfTerminal(profileId, generation) {
+    const records = await this.#journal.listOperations(profileId, generation);
+    if (
+      records.length === 0 ||
+      records.some((record) => record.terminalObserved !== true)
+    ) {
+      return;
+    }
+    try {
+      await this.#journal.retireProfile(profileId, generation);
+    } catch (cause) {
+      const error = new Error(
+        "recovered browser generation became terminal but journal retirement failed",
+        { cause },
+      );
+      error.name = "BrowserJournalRetirementError";
+      throw error;
+    }
   }
 
   #profile(input, requireLiveGrant) {

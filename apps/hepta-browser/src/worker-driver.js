@@ -480,6 +480,7 @@ class PrivateWorkerClient {
 
 export class SubprocessBrowserDriver {
   supportsAbort = true;
+  maxOutstandingOperations = 1;
 
   #workerPath;
   #workerDigest;

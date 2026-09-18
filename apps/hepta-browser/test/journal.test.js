@@ -121,6 +121,34 @@ test("explicit compaction preserves latest immutable operations", async () => {
   assert.equal((await reopened.getOperation("profile.1", 1, "operation.0")).status, "succeeded");
 });
 
+test("durable history blocks generation resurrection and unresolved cross-generation advance", async () => {
+  const { journal } = await journalFixture();
+  await journal.recordDispatch(record({ operationId: "operation.unknown" }));
+  await assert.rejects(
+    journal.assertProfileGenerationAvailable("profile.1", 1),
+    /durable operation history/,
+  );
+  await assert.rejects(
+    journal.assertProfileGenerationAvailable("profile.1", 2),
+    /unresolved durable effects/,
+  );
+
+  await journal.recordObservation(
+    record({
+      operationId: "operation.unknown",
+      status: "succeeded",
+      outcomeDigest: D1,
+      terminalObserved: true,
+      observationReason: "terminal_observed",
+    }),
+  );
+  await journal.assertProfileGenerationAvailable("profile.1", 2);
+  await assert.rejects(
+    journal.assertProfileGenerationAvailable("profile.1", 1),
+    /durable operation history/,
+  );
+});
+
 test("profile retirement removes records and durably fences generation resurrection", async () => {
   const { path, journal } = await journalFixture();
   await journal.recordDispatch(record({ operationId: "operation.old" }));
