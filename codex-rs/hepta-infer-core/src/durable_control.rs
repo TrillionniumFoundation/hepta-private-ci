@@ -468,8 +468,9 @@ impl DurableInferenceControl {
             && cached == current
         {
             // Only reuse a cut whose inode, length, mtime AND ctime are
-            // unchanged. Peer appends, same-size edits and generation changes
-            // all take full replay. Archive disappearance still fails closed.
+            // unchanged. Peer appends use validated suffix replay below;
+            // same-size edits and generation changes take full replay. Archive
+            // disappearance still fails closed.
             if let Some(digest) = &self.archive_digest {
                 let archive = File::open(archive_path(&self.path, digest)?)?;
                 validate_private_file(&archive)?;
