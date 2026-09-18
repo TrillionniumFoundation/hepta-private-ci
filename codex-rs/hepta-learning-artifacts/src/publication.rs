@@ -773,11 +773,17 @@ mod tests {
             ArtifactPublicationPhaseV1::Prepared
         );
         assert_eq!(
-            staged.transaction().contract().registry_predecessor_head_digest,
+            staged
+                .transaction()
+                .contract()
+                .registry_predecessor_head_digest,
             Digest32::ZERO
         );
         assert_eq!(
-            staged.transaction().contract().registry_successor_head_digest,
+            staged
+                .transaction()
+                .contract()
+                .registry_successor_head_digest,
             staged.append_receipt().chain_digest
         );
     }
