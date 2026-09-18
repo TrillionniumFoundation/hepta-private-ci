@@ -344,6 +344,28 @@ fn lock(file: File, kind: LockKind) -> Result<LockedFile, ArtifactStorageError> 
     }
 }
 
+pub(crate) fn write_create_only_blob(
+    file: CreateOnlyArtifactFile,
+    bytes: &[u8],
+) -> Result<(), ArtifactStorageError> {
+    write_new(file, bytes)
+}
+
+pub(crate) fn read_bounded_blob(
+    file: File,
+    limit: usize,
+    expected_bytes: usize,
+) -> Result<Vec<u8>, ArtifactStorageError> {
+    let expected_bytes =
+        u64::try_from(expected_bytes).map_err(|_| ArtifactStorageError::Capacity)?;
+    read_bounded(
+        file,
+        limit,
+        expected_bytes,
+        ArtifactStorageError::Corrupt,
+    )
+}
+
 fn write_new(file: CreateOnlyArtifactFile, bytes: &[u8]) -> Result<(), ArtifactStorageError> {
     let mut guard = lock(file.0, LockKind::Exclusive)?;
     if guard.0.metadata()?.len() != 0 {
