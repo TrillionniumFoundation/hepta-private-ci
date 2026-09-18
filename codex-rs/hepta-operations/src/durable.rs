@@ -785,6 +785,79 @@ impl DurableOperationStore {
         Ok(updated)
     }
 
+    /// Persist uncertainty discovered after reopening a committed dispatch.
+    ///
+    /// This recovery path deliberately does not require the original in-process
+    /// `DispatchLease`: a crashed worker cannot possess it. The current owner
+    /// generation and authority epoch are rechecked instead, and the operation
+    /// remains non-dispatchable. This method never requeues or executes an
+    /// effect.
+    pub async fn mark_recovered_indeterminate(
+        &self,
+        operation_id: &StableId,
+        reason_digest: Digest32,
+        observer_generation: Generation,
+        authority_epoch: Generation,
+    ) -> Result<DurableOperationRecord, OperationError> {
+        if reason_digest.is_zero() {
+            return Err(OperationError::InvalidDigest("indeterminate reason"));
+        }
+        let now = now_millis()?;
+        let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)?;
+        let record = load_required_operation(&mut tx, operation_id).await?;
+        require_owner(&record, observer_generation, authority_epoch)?;
+        if record.state == DurableOperationState::Indeterminate
+            && record.indeterminate_reason_digest == Some(reason_digest)
+        {
+            tx.commit().await.map_err(storage)?;
+            return Ok(record);
+        }
+        if record.state.is_terminal() {
+            return Err(OperationError::Terminal);
+        }
+        if record.state != DurableOperationState::Dispatched {
+            return Err(OperationError::InvalidTransition {
+                from: record.state.label(),
+                to: "indeterminate",
+            });
+        }
+        let outbox = load_required_outbox(&mut tx, operation_id).await?;
+        if outbox.state != "dispatched"
+            || outbox.fence != record.writer_fence
+            || outbox.attempts != record.attempts
+        {
+            return Err(OperationError::Corrupt(
+                "recovered dispatch/outbox fence mismatch".into(),
+            ));
+        }
+        let revision = next_revision(record.revision, operation_id)?;
+        sqlx::query(
+            "UPDATE operation_ledger SET state = 'indeterminate',
+                indeterminate_reason_digest = ?, revision = ?, updated_at_ms = ?
+             WHERE operation_id = ?",
+        )
+        .bind(reason_digest.as_array().as_slice())
+        .bind(revision.get().to_be_bytes().as_slice())
+        .bind(now)
+        .bind(operation_id.as_str())
+        .execute(&mut *tx)
+        .await
+        .map_err(storage)?;
+        sqlx::query(
+            "UPDATE cross_owner_outbox SET state = 'indeterminate',
+                worker_id = NULL, lease_until_ms = NULL, updated_at_ms = ?
+             WHERE operation_id = ?",
+        )
+        .bind(now)
+        .bind(operation_id.as_str())
+        .execute(&mut *tx)
+        .await
+        .map_err(storage)?;
+        let updated = load_required_operation(&mut tx, operation_id).await?;
+        tx.commit().await.map_err(storage)?;
+        Ok(updated)
+    }
+
     pub async fn observe_terminal(
         &self,
         operation_id: &StableId,
