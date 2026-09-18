@@ -1,0 +1,139 @@
+{
+  "schema": "hepta.objective-semantic-support.v1",
+  "schemaVersion": 1,
+  "module": "objective.compiler",
+  "sourceProtocol": "ObjectiveSourceEnvelopeV1",
+  "admissionEntrypoint": "admit_and_compile_objective_v1",
+  "constraintComparators": [
+    {
+      "source": "eq",
+      "state": "supported",
+      "nativeIr": "ConstraintRelation::Equal",
+      "feasibility": "ScalarInterval"
+    },
+    {
+      "source": "lte",
+      "state": "supported",
+      "nativeIr": "ConstraintRelation::AtMost",
+      "feasibility": "ScalarInterval"
+    },
+    {
+      "source": "gte",
+      "state": "supported",
+      "nativeIr": "ConstraintRelation::AtLeast",
+      "feasibility": "ScalarInterval"
+    },
+    {
+      "source": "ne",
+      "state": "deterministic_reject",
+      "error": "OBJ-E002",
+      "reason": "native V1 scalar constraint has no disequality representation"
+    },
+    {
+      "source": "lt",
+      "state": "deterministic_reject",
+      "error": "OBJ-E002",
+      "reason": "strict inequality is not approximated"
+    },
+    {
+      "source": "gt",
+      "state": "deterministic_reject",
+      "error": "OBJ-E002",
+      "reason": "strict inequality is not approximated"
+    },
+    {
+      "source": "in",
+      "state": "deterministic_reject",
+      "error": "OBJ-E002",
+      "reason": "ObjectiveSourceConstraintV1 has no bounded set payload; typed feasibility API supports Include directly"
+    },
+    {
+      "source": "not_in",
+      "state": "deterministic_reject",
+      "error": "OBJ-E002",
+      "reason": "ObjectiveSourceConstraintV1 has no bounded set payload; typed feasibility API supports Exclude directly"
+    }
+  ],
+  "predicateComparators": [
+    {
+      "source": "eq",
+      "state": "supported",
+      "nativeIr": "ConstraintRelation::Equal"
+    },
+    {
+      "source": "lte",
+      "state": "supported",
+      "nativeIr": "ConstraintRelation::AtMost"
+    },
+    {
+      "source": "gte",
+      "state": "supported",
+      "nativeIr": "ConstraintRelation::AtLeast"
+    },
+    {
+      "source": "ne",
+      "state": "deterministic_reject",
+      "error": "OBJ-E002"
+    },
+    {
+      "source": "lt",
+      "state": "deterministic_reject",
+      "error": "OBJ-E002"
+    },
+    {
+      "source": "gt",
+      "state": "deterministic_reject",
+      "error": "OBJ-E002"
+    }
+  ],
+  "typedFeasibilityApi": [
+    {
+      "atom": "ScalarInterval",
+      "state": "supported"
+    },
+    {
+      "atom": "Include",
+      "state": "supported"
+    },
+    {
+      "atom": "Exclude",
+      "state": "supported"
+    },
+    {
+      "atom": "RequireAction",
+      "state": "supported"
+    },
+    {
+      "atom": "ForbidAction",
+      "state": "supported"
+    },
+    {
+      "atom": "Implies",
+      "state": "supported",
+      "restriction": "positive bounded action implication only"
+    },
+    {
+      "atom": "IdentityEqual",
+      "state": "supported"
+    },
+    {
+      "atom": "Unsupported",
+      "state": "deterministic_reject"
+    }
+  ],
+  "actualCallGraph": [
+    "decode_source_envelope_json_v1",
+    "ObjectiveSourceEnvelopeV1::validate_structure",
+    "canonical_objective_intent_digest_v1",
+    "admit_and_compile_objective_v1",
+    "adapt_source",
+    "compile",
+    "scalar_conflict",
+    "check_feasibility_v1"
+  ],
+  "determinism": {
+    "admittedCompiler": "semantic result is deterministic; legacy scalar compatibility uses Duration::MAX",
+    "explicitFeasibility": "solver is deterministic for a fixed candidate set and call budget, but a finite wall_time may convert an otherwise semantic result to Exhausted; elapsed is observational"
+  },
+  "claim": "Every represented V1 field has a deterministic disposition: supported mapping or explicit rejection. Syntax acceptance does not imply end-to-end semantic support."
+}
