@@ -11,9 +11,12 @@ use std::error::Error;
 use std::fmt;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
 use crate::ArtifactAdmissionError;
+use crate::ArtifactEvent;
+use crate::ArtifactManifest;
 use crate::DatasetWithdrawalRegistry;
 use crate::RegistryAppendReceipt;
 use crate::RegistryHeadRequirementV1;
@@ -21,6 +24,8 @@ use crate::RegistryHeadWitnessReceipt;
 use crate::RegistryHeadWitnessV1;
 use crate::RegistrySnapshotReceipt;
 use crate::WithdrawalBoundArtifactAdmissionV3;
+use crate::registry::digest_chain;
+use crate::registry::digest_event;
 use crate::validate_artifact_publication_v3;
 use crate::validate_registry_head_witness;
 
@@ -41,6 +46,7 @@ pub struct ArtifactPublicationContractV1 {
     pub withdrawal_head_digest: Digest32,
     pub registry_predecessor_head_digest: Digest32,
     pub registry_successor_head_digest: Digest32,
+    pub registry_sequence: LogicalSequence,
     pub registry_event_digest: Digest32,
     pub snapshot_binding: Digest32,
 }
@@ -172,6 +178,44 @@ impl ArtifactPublicationTransactionV1 {
     }
 }
 
+/// Deterministic V1 registry projection of an admitted V3 artifact.
+///
+/// The stable V1 registry cannot encode the complete V2 manifest shape. Its
+/// support digest therefore carries the exact V3 admission digest, which in
+/// turn binds the normalized V2 manifest, withdrawal domain, withdrawal head
+/// and admission time. The V1 predecessor is the explicit rollback predecessor
+/// when present, otherwise the sole predecessor when there is exactly one.
+/// Complete multi-predecessor lineage remains committed by the admission digest.
+#[must_use]
+pub fn artifact_registry_event_for_admission_v3(
+    operation_id: StableId,
+    admission: &WithdrawalBoundArtifactAdmissionV3,
+) -> ArtifactEvent {
+    let manifest = &admission.validated_manifest.manifest;
+    let predecessor_id = manifest.rollback_predecessor.clone().or_else(|| {
+        if manifest.predecessor_ids.len() == 1 {
+            manifest.predecessor_ids.first().cloned()
+        } else {
+            None
+        }
+    });
+    ArtifactEvent::Register {
+        event_id: operation_id,
+        manifest: ArtifactManifest {
+            artifact_id: manifest.artifact_id.clone(),
+            kind: manifest.kind,
+            generation: manifest.generation,
+            predecessor_id,
+            content_digest: manifest.bytes_digest,
+            objective_digest: manifest.objective_class_digest,
+            support_digest: admission.admission_digest,
+            producer_id: manifest.producer_id.clone(),
+            compatibility_digest: manifest.compatibility_digest,
+            encoded_size_bytes: manifest.encoded_size_bytes,
+        },
+    }
+}
+
 pub fn prepare_artifact_publication_v1(
     operation_id: StableId,
     admission: &WithdrawalBoundArtifactAdmissionV3,
@@ -189,6 +233,19 @@ pub fn prepare_artifact_publication_v1(
     {
         return Err(ArtifactPublicationError::InvalidBinding);
     }
+    let expected_event = artifact_registry_event_for_admission_v3(operation_id.clone(), admission);
+    let expected_event_digest = digest_event(&expected_event);
+    if append_receipt.event_digest != expected_event_digest {
+        return Err(ArtifactPublicationError::RegistryEventMismatch);
+    }
+    let expected_chain_digest = digest_chain(
+        registry_predecessor_head_digest,
+        append_receipt.sequence,
+        expected_event_digest,
+    );
+    if append_receipt.chain_digest != expected_chain_digest {
+        return Err(ArtifactPublicationError::RegistryChainMismatch);
+    }
     Ok(ArtifactPublicationTransactionV1 {
         contract: ArtifactPublicationContractV1 {
             operation_id,
@@ -198,6 +255,7 @@ pub fn prepare_artifact_publication_v1(
             withdrawal_head_digest: admission.withdrawal_head_digest,
             registry_predecessor_head_digest,
             registry_successor_head_digest: append_receipt.chain_digest,
+            registry_sequence: append_receipt.sequence,
             registry_event_digest: append_receipt.event_digest,
             snapshot_binding,
         },
@@ -231,6 +289,8 @@ pub fn recover_artifact_publication_v1(
 pub enum ArtifactPublicationError {
     Admission(ArtifactAdmissionError),
     InvalidBinding,
+    RegistryEventMismatch,
+    RegistryChainMismatch,
     SnapshotReceiptMismatch,
     WitnessReceiptMismatch,
     SnapshotNotDurable,
@@ -313,12 +373,19 @@ mod tests {
         .expect("scoped registry")
     }
 
-    fn append_receipt() -> RegistryAppendReceipt {
+    fn append_receipt(
+        operation_id: StableId,
+        admission: &WithdrawalBoundArtifactAdmissionV3,
+        predecessor: Digest32,
+    ) -> RegistryAppendReceipt {
+        let sequence = LogicalSequence::new(1).expect("sequence");
+        let event = artifact_registry_event_for_admission_v3(operation_id, admission);
+        let event_digest = digest_event(&event);
         RegistryAppendReceipt {
             disposition: RegistryAppendDisposition::Appended,
-            sequence: LogicalSequence::new(1).expect("sequence"),
-            event_digest: digest("registry-event"),
-            chain_digest: digest("registry-head"),
+            sequence,
+            event_digest,
+            chain_digest: digest_chain(predecessor, sequence, event_digest),
         }
     }
 
@@ -377,6 +444,7 @@ mod tests {
             withdrawal_head_digest: Digest32::ZERO,
             registry_predecessor_head_digest: digest("previous-head"),
             registry_successor_head_digest: digest("registry-head"),
+            registry_sequence: LogicalSequence::new(1).expect("sequence"),
             registry_event_digest: digest("registry-event"),
             snapshot_binding: binding,
         };
@@ -430,6 +498,7 @@ mod tests {
             withdrawal_head_digest: Digest32::ZERO,
             registry_predecessor_head_digest: digest("previous-head"),
             registry_successor_head_digest: digest("registry-head"),
+            registry_sequence: LogicalSequence::new(1).expect("sequence"),
             registry_event_digest: digest("registry-event"),
             snapshot_binding: binding,
         };
@@ -440,18 +509,83 @@ mod tests {
     }
 
     #[test]
+    fn prepare_binds_admission_to_exact_registry_event_and_chain() {
+        let registry = scoped_registry();
+        let head = registry.snapshot().head_digest;
+        let admitted = crate::admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            head,
+            admission().validated_manifest.manifest,
+            20,
+        )
+        .expect("admission");
+        let operation_id = id("operation");
+        let predecessor = digest("previous-head");
+        let receipt = append_receipt(operation_id.clone(), &admitted, predecessor);
+        let transaction = prepare_artifact_publication_v1(
+            operation_id.clone(),
+            &admitted,
+            &registry,
+            20,
+            predecessor,
+            &receipt,
+            digest("binding"),
+        )
+        .expect("publication contract");
+        assert_eq!(transaction.contract().operation_id, operation_id);
+        assert_eq!(transaction.contract().registry_sequence, receipt.sequence);
+        assert_eq!(
+            transaction.contract().registry_event_digest,
+            receipt.event_digest
+        );
+
+        let mut wrong_event = receipt.clone();
+        wrong_event.event_digest = digest("other-event");
+        assert_eq!(
+            prepare_artifact_publication_v1(
+                id("operation"),
+                &admitted,
+                &registry,
+                20,
+                predecessor,
+                &wrong_event,
+                digest("binding"),
+            ),
+            Err(ArtifactPublicationError::RegistryEventMismatch)
+        );
+
+        let mut wrong_chain = receipt.clone();
+        wrong_chain.chain_digest = digest("other-chain");
+        assert_eq!(
+            prepare_artifact_publication_v1(
+                id("operation"),
+                &admitted,
+                &registry,
+                20,
+                predecessor,
+                &wrong_chain,
+                digest("binding"),
+            ),
+            Err(ArtifactPublicationError::RegistryChainMismatch)
+        );
+    }
+
+    #[test]
     fn prepare_requires_current_domain_bound_admission() {
         let binding = digest("binding");
         let registry = scoped_registry();
         let stale = admission();
+        let operation_id = id("operation");
+        let predecessor = digest("previous-head");
+        let receipt = append_receipt(operation_id.clone(), &stale, predecessor);
         assert!(matches!(
             prepare_artifact_publication_v1(
-                id("operation"),
+                operation_id,
                 &stale,
                 &registry,
                 20,
-                digest("previous-head"),
-                &append_receipt(),
+                predecessor,
+                &receipt,
                 binding,
             ),
             Err(ArtifactPublicationError::Admission(_))
