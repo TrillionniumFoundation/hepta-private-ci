@@ -24,6 +24,7 @@ pub(crate) const MAX_FAULT_BYTES: usize = 512;
 pub(crate) enum RuntimePhase {
     AwaitingHealth { deadline: Instant },
     Running,
+    Unhealthy { deadline: Instant },
     Draining { deadline: Instant },
     Stopping { deadline: Instant },
     Killing,
@@ -38,6 +39,10 @@ pub(crate) struct AgentRuntime<P> {
     pub phase: RuntimePhase,
     pub healthy: bool,
     pub fenced: bool,
+    /// True only after the process identity lease was durably published.
+    /// A false value means the child is retained solely for bounded cleanup
+    /// after a lease-publication failure and must never be treated as adopted.
+    pub lease_persisted: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -140,7 +145,16 @@ pub(crate) struct AgentSlot<P> {
     pub matrix: MatrixCompanionSlot<P>,
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
+    /// Explicit operator-requested restart after the current process exits.
     pub restart_pending: bool,
+    /// Automatic fault-recovery attempts used in the current recovery window.
+    pub automatic_restart_attempt: u32,
+    /// Earliest monotonic time at which the next automatic restart may begin.
+    pub automatic_restart_retry_at: Option<Instant>,
+    /// Monotonic start of the current restart accounting window.
+    pub automatic_restart_window_started_at: Option<Instant>,
+    /// Monotonic time at which the current process first became healthy.
+    pub healthy_since: Option<Instant>,
     pub active_release: Option<AgentRelease>,
     pub previous_release: Option<AgentRelease>,
     pub release_change: Option<ReleaseChange>,
@@ -161,6 +175,10 @@ impl<P> AgentSlot<P> {
             deferred_agent_action: None,
             last_command: None,
             restart_pending: false,
+            automatic_restart_attempt: 0,
+            automatic_restart_retry_at: None,
+            automatic_restart_window_started_at: None,
+            healthy_since: None,
             active_release: None,
             previous_release: None,
             release_change: None,
