@@ -131,6 +131,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
         stop_reason: Some("observed terminal failure".to_string()),
         codex_boundary: Some(NativeCodexBoundaryReceipt {
             request_digest: "c".repeat(64),
+            context_digest: "b".repeat(64),
             response_digest: Some("e".repeat(64)),
             connection_digest: "d".repeat(64),
             session_generation: 1,
