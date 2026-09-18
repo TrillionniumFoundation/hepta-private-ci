@@ -87,6 +87,15 @@ impl<D: ProcessDriver> Supervisor<D> {
                     registry: registry_generation,
                 },
             );
+        } else if matches!(runtime.phase, RuntimePhase::Killing) && !runtime.lease_persisted {
+            // Lease publication failed after spawn. Keep kill pressure ahead
+            // of observation so a failing poll cannot strand an untracked
+            // child behind the telemetry path.
+            runtime
+                .process
+                .kill()
+                .map_err(|error| driver_error(agent_id, error))?;
+            slot.event(runtime.generation, SupervisorEventKind::KillRequested);
         }
         let observation = runtime
             .process
@@ -153,17 +162,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             RuntimePhase::Stopping { deadline: limit } if now >= limit => {
                 runtime.phase = RuntimePhase::Killing;
-                runtime
-                    .process
-                    .kill()
-                    .map_err(|error| driver_error(agent_id, error))?;
-                slot.event(runtime.generation, SupervisorEventKind::KillRequested);
-            }
-            RuntimePhase::Killing if !runtime.lease_persisted => {
-                // A child whose durable lease could not be published remains
-                // under active kill pressure until we observe its exit. This
-                // prevents a one-shot kill failure from turning into an
-                // untracked live process.
                 runtime
                     .process
                     .kill()
