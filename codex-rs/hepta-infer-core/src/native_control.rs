@@ -4,6 +4,7 @@
 //! Unknown execution retains that slot; unknown token usage remains `None`.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -122,6 +123,13 @@ pub(super) struct NativeJournal {
     #[serde(skip)]
     active_count: usize,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
+}
+
+pub(super) struct NativeSuffixDelta {
+    pub(super) maximum_in_flight: Option<usize>,
+    pub(super) active_count: usize,
+    pub(super) records: BTreeMap<String, NativeRunRecord>,
+    pub(super) new_ids: usize,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -436,6 +444,65 @@ impl DurableInferenceControl {
 }
 
 impl NativeJournal {
+    /// Validate an append-only peer suffix without cloning the complete hot
+    /// journal. Only request records touched by the suffix are staged. The
+    /// caller publishes the returned delta only after legacy/native cross-map
+    /// capacity and identity checks also succeed.
+    pub(super) fn stage_replay_suffix(
+        &self,
+        json_lines: &[String],
+    ) -> Result<NativeSuffixDelta, Error> {
+        let mut events = Vec::with_capacity(json_lines.len());
+        let mut touched = BTreeSet::new();
+        for json in json_lines {
+            let event: Event =
+                serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
+            let request_id = match &event {
+                Event::Reserve { request, .. } => &request.request_id,
+                Event::Dispatch { request_id, .. }
+                | Event::Started { request_id, .. }
+                | Event::Cancel { request_id }
+                | Event::Stop { request_id, .. }
+                | Event::Observe { request_id, .. } => request_id,
+            };
+            touched.insert(request_id.clone());
+            events.push(event);
+        }
+
+        let mut staged = NativeJournal {
+            maximum_in_flight: self.maximum_in_flight,
+            active_count: self.active_count,
+            records: BTreeMap::new(),
+        };
+        for request_id in &touched {
+            if let Some(record) = self.records.get(request_id) {
+                staged.records.insert(request_id.clone(), record.clone());
+            }
+        }
+        for event in events {
+            staged.apply(event)?;
+        }
+        let new_ids = staged
+            .records
+            .keys()
+            .filter(|request_id| !self.records.contains_key(*request_id))
+            .count();
+        Ok(NativeSuffixDelta {
+            maximum_in_flight: staged.maximum_in_flight,
+            active_count: staged.active_count,
+            records: staged.records,
+            new_ids,
+        })
+    }
+
+    pub(super) fn apply_replay_suffix(&mut self, delta: NativeSuffixDelta) {
+        self.maximum_in_flight = delta.maximum_in_flight;
+        self.active_count = delta.active_count;
+        for (request_id, record) in delta.records {
+            self.records.insert(request_id, record);
+        }
+    }
+
     pub(super) fn checkpoint_lines(&self) -> impl Iterator<Item = Result<String, Error>> + '_ {
         self.records.values().map(|record| {
             let checkpoint = NativeCheckpointV1 {
