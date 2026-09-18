@@ -53,13 +53,25 @@ changes invalidate the candidate. Readers and rollback must use the current
 witness and revocation history, never an old snapshot plus its old receipt.
 No selected artifact or running process is changed by preparation or persistence.
 
-## Explicit remaining limits
+## Persistent withdrawal frontier and remaining limits
 
-This is a snapshot-local invalidation batch, NOT a persistent dataset tombstone.
-The host must retain the source withdrawal and deny new dataset-dependent artifact
-admission; otherwise an entirely new artifact could be registered later. A retry
-against a newer head can invalidate newly discovered direct targets, but cannot
-prove that all external caches, models or backups were covered. Rebuilding without
+`prepare_dataset_revocation` itself is a snapshot-local invalidation batch; it
+does not become a tombstone merely because its staged V1 artifact registry is
+persisted. The separate `DatasetWithdrawalRegistry` is the persistent admission
+frontier. Production V3 admission requires that registry to be created with
+`DatasetWithdrawalDomainV1`, which binds registry identity, host-authenticated
+scope and authority domain into the withdrawal chain and admission receipt.
+Comparing only a head digest is insufficient namespace proof.
+
+The scoped withdrawal registry can be persisted with
+`write_dataset_withdrawal_snapshot` and reopened with
+`read_dataset_withdrawal_snapshot`. The source withdrawal must be appended there
+before a later dataset-derived manifest can be admitted. The host still owns
+authentication of the source notice and current-generation discovery.
+
+A retry against a newer artifact-registry head can invalidate newly discovered
+direct targets, but neither history proves that all external caches, models or
+backups were covered. Rebuilding without
 the dataset, exact source membership, independent credentials, production rollout,
 physical erasure and backup non-resurrection remain separate gates.
 
