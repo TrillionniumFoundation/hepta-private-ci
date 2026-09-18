@@ -115,10 +115,7 @@ impl AppServerModelDriver {
             Some(query) => Some(owner.cognitive_context(query.clone(), /*limit*/ 4).await?),
             None => None,
         };
-        let mut additional_context = context
-            .as_ref()
-            .map(context_attachment)
-            .transpose()?;
+        let mut additional_context = context.as_ref().map(context_attachment).transpose()?;
         let ingress = owner.session_ingress().await?;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
         let mut client = timeout(
@@ -391,7 +388,9 @@ fn ensure_context_selection_current(
         || expected_plan.read_allowed != current_plan.read_allowed
         || expected_plan.evaluated_context_digest != current_plan.evaluated_context_digest
     {
-        return Err("cognitive context source cut or selection changed before model dispatch".into());
+        return Err(
+            "cognitive context source cut or selection changed before model dispatch".into(),
+        );
     }
     Ok(())
 }
