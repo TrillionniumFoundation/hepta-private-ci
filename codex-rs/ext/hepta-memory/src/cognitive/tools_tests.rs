@@ -338,7 +338,12 @@ async fn exact_remember_and_correct_are_verified_and_forget_is_cas_tombstone() {
     assert_eq!(value["projection"]["fact_count"], 3);
     assert!(!value.to_string().contains("Hepta Project"));
     assert!(value["projection"]["generation"].as_u64().is_some());
-    for digest in ["fact_set_sha256", "input_heads_sha256", "output_sha256"] {
+    for digest in [
+        "fact_set_sha256",
+        "input_heads_sha256",
+        "output_sha256",
+        "kernel_generation_sha256",
+    ] {
         assert_eq!(
             value["projection"][digest]
                 .as_str()
