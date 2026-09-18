@@ -79,13 +79,16 @@ host reserves a create-only artifact identity
      withdrawal-authority domain and is checked before V3 admission
   -> WithdrawalBoundArtifactAdmissionV3 binds the normalized manifest to the
      exact withdrawal-domain digest and withdrawal head
-  -> artifact_registry_event_for_admission_v3 maps that exact admission into
-     one V1 Register event; for one-source dataset-derived artifacts the V1
-     support digest remains the exact dataset digest and the event ID remains
-     the exact publication operation ID; multi-dataset or multi-predecessor V2
-     manifests fail closed at this V1 bridge
-  -> registry append receipt is verified against the projected event digest,
-     predecessor head, sequence and successor-chain digest
+  -> stage_artifact_publication_v1 clones the current V1 registry, revalidates
+     the exact V3 withdrawal frontier, projects and appends one V1 Register
+     event only to that staged copy; staging failure leaves the current registry
+     untouched
+  -> for one-source dataset-derived artifacts the V1 support digest remains the
+     exact dataset digest and the event ID remains the exact publication
+     operation ID; multi-dataset or multi-predecessor V2 manifests fail closed
+     at this V1 bridge
+  -> the staged registry append receipt is verified against the projected event
+     digest, predecessor head, sequence and successor-chain digest
   -> ArtifactPublicationTransactionV1 derives snapshot_binding from operation,
      admission/manifest, withdrawal frontier and exact registry append
   -> a retry under an existing operation ID must match the prior immutable
