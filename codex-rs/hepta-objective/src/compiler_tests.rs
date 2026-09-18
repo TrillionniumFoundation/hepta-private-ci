@@ -306,3 +306,33 @@ fn maximum_scalar_conflict_is_deterministic_at_numeric_extremes() {
         vec![id("maximum-bound"), id("minimum-bound")]
     );
 }
+
+
+#[test]
+fn compiled_objective_revalidates_before_publication() {
+    let receipt = must(must(compile(envelope())));
+    assert_eq!(
+        crate::validate_compiled_objective_v1(&receipt.objective),
+        Ok(())
+    );
+}
+
+#[test]
+fn compiled_objective_digest_drift_is_rejected() {
+    let mut receipt = must(must(compile(envelope())));
+    receipt.objective.semantic_digest = Digest32::of_bytes(b"tampered");
+    assert_eq!(
+        crate::validate_compiled_objective_v1(&receipt.objective),
+        Err(ObjectiveError::DigestMismatch("objective semantic"))
+    );
+}
+
+#[test]
+fn compiled_objective_noncanonical_order_is_rejected() {
+    let mut receipt = must(must(compile(envelope())));
+    receipt.objective.constraints.reverse();
+    assert_eq!(
+        crate::validate_compiled_objective_v1(&receipt.objective),
+        Err(ObjectiveError::NonCanonicalOutput("constraints"))
+    );
+}
