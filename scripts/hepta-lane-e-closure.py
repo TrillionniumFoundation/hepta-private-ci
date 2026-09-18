@@ -201,6 +201,29 @@ def verify_matrix(
                     "missing_matrix_path",
                     f"{module}.{key} does not exist: {path.relative_to(ROOT)}",
                 )
+        if module == "learning.eval":
+            contract_path = relative_path(
+                item.get("productionContract"),
+                findings,
+                "learning.eval.productionContract",
+            )
+            if contract_path is not None:
+                findings.require(
+                    contract_path == PRODUCTION_CONTRACT_PATH and contract_path.is_file(),
+                    "production_contract_matrix_binding",
+                    "learning.eval must bind the canonical production contract",
+                )
+            findings.require(
+                item.get("implementationState") == "source_implemented",
+                "learning_eval_source_state",
+                "learning.eval source implementation must be recorded separately from CI",
+            )
+            findings.require(
+                item.get("qualificationState")
+                == "exact_head_and_synthetic_merge_evidence_required",
+                "learning_eval_qualification_state",
+                "learning.eval dynamic qualification evidence state is missing",
+            )
         findings.require(
             item.get("remainingRepositoryGaps") == [],
             "repository_gap_open",
@@ -645,6 +668,20 @@ def write_receipt(kind: str, expected_sha: str, output: Path) -> None:
         "traceabilitySha256": sha256_file(TRACE_PATH),
         "implementationMatrixSha256": sha256_file(MATRIX_PATH),
         "qualificationInputSha256": qualification_input_digest(),
+        "coverageArtifactSha256": (
+            sha256_file(ROOT / ".hepta-evidence/learning-eval-source.lcov")
+            if (ROOT / ".hepta-evidence/learning-eval-source.lcov").is_file()
+            else ""
+        ),
+        "evidenceProfile": [
+            "locked_all_target_compilation",
+            "owner_regression_tests",
+            "signed_evaluated_shadow_end_to_end",
+            "durable_holdout_reopen_replay_stress",
+            "cross_crate_causal_chain",
+            "cross_language_wire_fault",
+            "strict_clippy_rustfmt_clean_tree",
+        ],
         "claims": {
             "repositorySourceClosureEvidence": True,
             "independentAcceptance": False,
