@@ -40,8 +40,11 @@ lock-before-bootstrap and external-anchor posture as parameter proposals.
 
 `StructuralCanaryControllerV1` is an observation-only bounded state machine. It
 cannot apply topology. Safety violation, lineage mismatch, excess regression or an
-unverified rollback causes terminal abort. An Accepted source receipt is still not
-activation authority and is not evidence of a real host canary run.
+unverified rollback causes terminal abort. The receipt binds a digest of the complete
+canary plan and a rolling chain over every observation; reaching the minimum
+successful-step threshold remains `Running` until an explicit `finish()` transition.
+An Accepted source receipt is still not activation authority and is not evidence of a
+real host canary run.
 
 ## Required events
 

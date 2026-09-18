@@ -252,11 +252,12 @@
       "operation": "structural_canary_controller",
       "nativeSymbol": "StructuralCanaryControllerV1",
       "sourcePath": "codex-rs/hepta-plasticity/src/topology_canary.rs",
-      "state": "source_implemented_observation_only_no_topology_apply_authority",
+      "state": "source_implemented_plan_history_bound_observation_only_no_topology_apply_authority",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::canary_accepts_only_after_bounded_success_and_verified_rollback",
-        "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::any_safety_violation_aborts_terminally"
+        "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::any_safety_violation_aborts_terminally",
+        "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::receipt_binds_the_full_plan_and_observation_history"
       ],
       "sourcePathExists": true,
       "designOperation": "structural_canary_controller",
