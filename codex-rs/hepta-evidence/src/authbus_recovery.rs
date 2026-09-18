@@ -131,13 +131,18 @@ impl HeptaEvidenceStore {
         checkpoint_generation: u64,
         checkpoint_digest: Digest32,
     ) -> Result<u64, AuthBusControlError> {
-        self.verify_authbus_restore_checkpoint(checkpoint_generation, checkpoint_digest)
-            .await?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        verify_checkpoint_in_tx(
+            &mut tx,
+            checkpoint_generation,
+            checkpoint_digest,
+        )
+        .await?;
+
         let active: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM authbus_outbox
              WHERE issuer_id=? AND key_epoch=? AND state IN ('queued','leased')",
@@ -150,20 +155,46 @@ impl HeptaEvidenceStore {
         if active != 0 {
             return Err(AuthBusControlError::InvalidTransition);
         }
-        sqlx::query(
-            "INSERT INTO authbus_retired_epochs
-             (issuer_id,key_epoch,checkpoint_generation,checkpoint_digest,retired_at_ms)
-             VALUES(?,?,?,?,?)
-             ON CONFLICT(issuer_id,key_epoch) DO NOTHING",
+
+        let existing = sqlx::query(
+            "SELECT checkpoint_generation, checkpoint_digest
+             FROM authbus_retired_epochs WHERE issuer_id=? AND key_epoch=?",
         )
         .bind(issuer_id.as_str())
         .bind(key_epoch.get().to_be_bytes().as_slice())
-        .bind(checkpoint_generation.to_be_bytes().as_slice())
-        .bind(checkpoint_digest.as_array().as_slice())
-        .bind(now_millis()?)
-        .execute(&mut *tx)
+        .fetch_optional(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
+        if let Some(existing) = existing {
+            let generation = decode_u64(
+                existing
+                    .try_get("checkpoint_generation")
+                    .map_err(classify_sqlx_error)?,
+            )?;
+            let digest = digest(
+                existing
+                    .try_get("checkpoint_digest")
+                    .map_err(classify_sqlx_error)?,
+            )?;
+            if generation != checkpoint_generation || digest != checkpoint_digest {
+                return Err(AuthBusControlError::IdempotencyConflict);
+            }
+        } else {
+            sqlx::query(
+                "INSERT INTO authbus_retired_epochs
+                 (issuer_id,key_epoch,checkpoint_generation,checkpoint_digest,retired_at_ms)
+                 VALUES(?,?,?,?,?)",
+            )
+            .bind(issuer_id.as_str())
+            .bind(key_epoch.get().to_be_bytes().as_slice())
+            .bind(checkpoint_generation.to_be_bytes().as_slice())
+            .bind(checkpoint_digest.as_array().as_slice())
+            .bind(now_millis()?)
+            .execute(&mut *tx)
+            .await
+            .map_err(classify_sqlx_error)?;
+        }
+
         let removed =
             sqlx::query("DELETE FROM authbus_replay_sequences WHERE issuer_id=? AND key_epoch=?")
                 .bind(issuer_id.as_str())
@@ -175,6 +206,30 @@ impl HeptaEvidenceStore {
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(removed)
     }
+}
+
+async fn verify_checkpoint_in_tx(
+    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    generation: u64,
+    checkpoint_digest: Digest32,
+) -> Result<(), AuthBusControlError> {
+    let row = sqlx::query(
+        "SELECT generation, checkpoint_digest FROM authbus_restore_checkpoint WHERE singleton=1",
+    )
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(classify_sqlx_error)?
+    .ok_or(AuthBusControlError::RollbackDetected)?;
+    let stored_generation =
+        decode_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?;
+    let stored_digest = digest(
+        row.try_get("checkpoint_digest")
+            .map_err(classify_sqlx_error)?,
+    )?;
+    if stored_generation != generation || stored_digest != checkpoint_digest {
+        return Err(AuthBusControlError::RollbackDetected);
+    }
+    Ok(())
 }
 
 fn decode_u64(bytes: Vec<u8>) -> Result<u64, AuthBusControlError> {
