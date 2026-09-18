@@ -32,7 +32,7 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::DurableInferenceControlStore;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
@@ -89,7 +89,7 @@ impl AppServerModelDriver {
     /// must never be automatically replayed as a fresh request.
     async fn run_once(
         &self,
-        control: &mut DurableInferenceControl,
+        store: &DurableInferenceControlStore,
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
@@ -182,14 +182,18 @@ impl AppServerModelDriver {
         // a process loss cannot make a potentially submitted turn replayable.
         // A later proven stop can still release this slot while turn/start is
         // known not to have been sent.
-        control.dispatch_native(
-            request_id,
-            NativeDispatch {
-                thread_id: started.thread.id.clone(),
-                model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
-            },
-        )?;
+        store.with_control(|control| {
+            control
+                .dispatch_native(
+                    request_id,
+                    NativeDispatch {
+                        thread_id: started.thread.id.clone(),
+                        model_provider: started.model_provider.clone(),
+                        context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                    },
+                )
+                .map(|_| ())
+        })?;
         // The original context receipt is only a historical observation. Ask the
         // owning Agent to reacquire the canonical Lane C cut and reproduce both
         // digests after the durable dispatch intent and immediately before
@@ -203,16 +207,22 @@ impl AppServerModelDriver {
                 .chars()
                 .take(1024)
                 .collect();
-            let stopped = control.stop_native_before_turn_start(request_id, reason);
+            let stopped = store.with_control(|control| {
+                control.stop_native_before_turn_start(request_id, reason).map(|_| ())
+            });
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             stopped?;
             return Err(error.into());
         }
         if cancellation.is_cancelled() {
-            let stopped = control.stop_native_before_turn_start(
-                request_id,
-                "cancelled before model dispatch".to_string(),
-            );
+            let stopped = store.with_control(|control| {
+                control
+                    .stop_native_before_turn_start(
+                        request_id,
+                        "cancelled before model dispatch".to_string(),
+                    )
+                    .map(|_| ())
+            });
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             stopped?;
             return Err("cancelled before model dispatch".into());
@@ -265,7 +275,11 @@ impl AppServerModelDriver {
             owner_authority: NativeOwnerAuthority::Unverified,
             stop_reason: None,
         };
-        if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
+        if let Err(error) = store.with_control(|control| {
+            control
+                .native_started(request_id, output.turn_id.clone())
+                .map(|_| ())
+        }) {
             interrupt(&mut client, &output).await;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(error.into());
@@ -288,13 +302,17 @@ impl AppServerModelDriver {
             // a process crash must not erase it from a later settlement.
             let loss_recorded =
                 if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-                    control
-                        .settle_native(request_id, output.clone())
-                        .map(|_| ())
+                    store.with_control(|control| {
+                        control
+                            .settle_native(request_id, output.clone())
+                            .map(|_| ())
+                    })
                 } else {
                     Ok(())
                 };
-            let cancel_recorded = control.cancel_native(request_id);
+            let cancel_recorded = store.with_control(|control| {
+                control.cancel_native(request_id).map(|_| ())
+            });
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
             let _ = self
