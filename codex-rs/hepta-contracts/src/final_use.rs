@@ -16,7 +16,7 @@ use serde::Serialize;
 #[path = "final_use_store.rs"]
 mod store;
 
-const MAX_CLAIMS: usize = 16_384;
+const MAX_REVOCATIONS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
 
 /// Exact operation identity signed by the authority owner. Digests must bind
@@ -102,8 +102,9 @@ struct Inner {
     store: store::Store,
 }
 
-/// Host-configured authority owner. Clone shares the same revocation and
-/// single-use registry; there is deliberately no permissive default.
+/// Host-configured authority owner. Clones share the in-process cache; separate
+/// processes may safely open the same qualified state directory because every
+/// mutation and final-use callback is fenced by the same OS lock.
 #[derive(Clone)]
 pub struct FinalUseAuthority(Arc<Inner>);
 
@@ -149,6 +150,10 @@ impl FinalUseAuthority {
 
     /// Called only by the trusted host, not from a provider response or grant.
     /// Revocations are monotonic within an epoch and are never silently dropped.
+    ///
+    /// The cross-process lock is held from disk refresh through durable head
+    /// publication, so two active owners sharing one state directory cannot
+    /// race a revocation update or claim against stale local state.
     pub fn update_revocations(&self, head: FinalUseRevocations) -> Result<(), FinalUseError> {
         let mut state = self
             .0
@@ -158,22 +163,33 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
+        let _guard = self
+            .0
+            .store
+            .lock_mutation()
+            .inspect_err(|_| state.failed = true)?;
+        let current = self
+            .0
+            .store
+            .load()
+            .inspect_err(|_| state.failed = true)?;
         if !valid_head(&head)
-            || head.authority_epoch < state.head.authority_epoch
-            || head.revision <= state.head.revision
-            || (head.authority_epoch == state.head.authority_epoch
+            || head.authority_epoch < current.head.authority_epoch
+            || head.revision <= current.head.revision
+            || (head.authority_epoch == current.head.authority_epoch
                 && !head
                     .revoked_grant_ids
-                    .is_superset(&state.head.revoked_grant_ids))
+                    .is_superset(&current.head.revoked_grant_ids))
         {
+            *state = current;
             return Err(FinalUseError::StaleRevocationHead);
         }
-        let mut next = state.clone();
+        let mut next = current;
         if head.authority_epoch > next.head.authority_epoch {
             next.used_nonces.clear();
         }
         next.head = head;
-        if self.0.store.persist(&next).is_err() {
+        if self.0.store.persist_head(&next.head).is_err() {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
@@ -184,6 +200,9 @@ impl FinalUseAuthority {
     /// Atomically validate and claim one nonce immediately before dispatch.
     /// A failed or uncertain dispatch does not refund the nonce: retry needs a
     /// new owner-signed grant, after the caller has reconciled any unknown effect.
+    ///
+    /// Claims are appended to a checksummed journal. There is no fixed
+    /// per-epoch claim count; storage exhaustion or corruption fails closed.
     pub fn claim(
         &self,
         signed: &SignedFinalUseGrant,
@@ -199,6 +218,7 @@ impl FinalUseAuthority {
             .key
             .verify_strict(&input, &signature)
             .map_err(|_| FinalUseError::InvalidSignature)?;
+
         let mut state = self
             .0
             .state
@@ -207,21 +227,36 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        validate_live(&signed.grant, &state.head)?;
-        if state.used_nonces.contains(&signed.grant.nonce) {
+        let _guard = self
+            .0
+            .store
+            .lock_mutation()
+            .inspect_err(|_| state.failed = true)?;
+        let mut current = self
+            .0
+            .store
+            .load()
+            .inspect_err(|_| state.failed = true)?;
+        validate_live(&signed.grant, &current.head)?;
+        if current.used_nonces.contains(&signed.grant.nonce) {
+            *state = current;
             return Err(FinalUseError::AlreadyClaimed);
         }
-        if state.used_nonces.len() >= MAX_CLAIMS {
-            return Err(FinalUseError::CapacityExceeded);
-        }
-        state.used_nonces.insert(signed.grant.nonce);
-        if self.0.store.persist(&state).is_err() {
+        if self
+            .0
+            .store
+            .append_claim(signed.grant.authority_epoch, signed.grant.nonce)
+            .is_err()
+        {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
+        current.used_nonces.insert(signed.grant.nonce);
         // Persistence can outlast a short grant. Never admit a dispatch using
         // the time sampled before that I/O; its nonce stays consumed on expiry.
-        validate_live(&signed.grant, &state.head)?;
+        let live = validate_live(&signed.grant, &current.head);
+        *state = current;
+        live?;
         Ok(VerifiedUseToken {
             owner: Arc::clone(&self.0),
             grant: signed.grant.clone(),
@@ -229,8 +264,9 @@ impl FinalUseAuthority {
     }
 
     /// Revalidate live authority after asynchronous work and before releasing a
-    /// secret to its consumer. The consumer runs under the revocation fence, so
-    /// a successful revocation update cannot race between check and delivery.
+    /// secret to its consumer. The consumer runs under both the in-process and
+    /// cross-process revocation fence, so a successful revocation update cannot
+    /// race between this check and callback entry.
     pub fn with_verified_use<T>(
         &self,
         token: VerifiedUseToken,
@@ -240,7 +276,7 @@ impl FinalUseAuthority {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
-        let state = self
+        let mut state = self
             .0
             .state
             .lock()
@@ -248,9 +284,19 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        validate_live(&token.grant, &state.head)?;
+        let _guard = self
+            .0
+            .store
+            .lock_mutation()
+            .inspect_err(|_| state.failed = true)?;
+        let current = self
+            .0
+            .store
+            .load()
+            .inspect_err(|_| state.failed = true)?;
+        validate_live(&token.grant, &current.head)?;
+        *state = current;
         let result = consumer();
-        drop(state);
         Ok(result)
     }
 }
@@ -258,7 +304,7 @@ impl FinalUseAuthority {
 fn valid_head(head: &FinalUseRevocations) -> bool {
     head.authority_epoch > 0
         && head.revision > 0
-        && head.revoked_grant_ids.len() <= MAX_CLAIMS
+        && head.revoked_grant_ids.len() <= MAX_REVOCATIONS
         && head.revoked_grant_ids.iter().all(|id| identifier(id))
 }
 
@@ -302,9 +348,13 @@ pub enum FinalUseError {
     NotYetValid,
     Expired,
     AlreadyClaimed,
+    /// Retained for wire/source compatibility with older callers. The
+    /// append-only replay journal no longer emits this for ordinary claims.
     CapacityExceeded,
     Unavailable,
     UnsafeStateDirectory,
+    /// Retained for source compatibility. Shared-state owners now serialize
+    /// individual mutations instead of rejecting concurrent process opens.
     StateLocked,
 }
 
