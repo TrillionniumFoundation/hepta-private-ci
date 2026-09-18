@@ -586,6 +586,63 @@ async fn handle_request<D: ProcessDriver>(
             )
             .await
         }
+        SupervisordMethod::ResolveProductionRecovery { fence, decision } => {
+            handle_recovery_resolution(state, fence, decision).await
+        }
+    }
+}
+
+#[cfg(unix)]
+async fn handle_recovery_resolution<D: ProcessDriver>(
+    state: Arc<DaemonState<D>>,
+    fence: SupervisordControlFence,
+    decision: crate::ProductionRecoveryDecision,
+) -> SupervisordPayload {
+    if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production recovery is disabled in this build",
+            /*actual*/ None,
+        );
+    }
+    let Some(verifier) = state.production_grant_verifier.clone() else {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production recovery requires an externally pinned verifier",
+            /*actual*/ None,
+        );
+    };
+    let agent_id = fence.agent_id.clone();
+    let mut supervisor = state.supervisor.lock().await;
+    let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
+        Ok(actual) => actual,
+        Err(error) => {
+            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
+        }
+    };
+    if !control_fence_matches(&fence, &actual.control_fence) {
+        return error_payload(
+            "stale_control_fence",
+            "selected Agent changed; refresh before recovery",
+            Some(actual),
+        );
+    }
+    let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
+    let receipt = match supervisor.resolve_production_recovery(
+        &agent_id,
+        &decision,
+        &verifier,
+        authority_epoch,
+        unix_seconds_now(),
+    ) {
+        Ok(receipt) => receipt,
+        Err(error) => {
+            let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
+            return safe_rejection(error, post.or(Some(actual)), /*mutation_started*/ false);
+        }
+    };
+    SupervisordPayload::ProductionMutationStatus {
+        receipt: Some(receipt),
     }
 }
 
