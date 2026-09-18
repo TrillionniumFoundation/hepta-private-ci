@@ -822,4 +822,3 @@ mod pre_turn_stop_tests {
         std::fs::remove_file(path).unwrap();
     }
 }
-

@@ -366,4 +366,3 @@ fn public_admission_returns_inclusion_minimal_profile_bound_conflict() {
         conflict.source_digest
     );
 }
-
