@@ -4,12 +4,78 @@
 //! structural candidate carries a concrete migration/writer-handoff design
 //! whose digest matches the proposal. They do not execute the handoff.
 
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_types::{Digest32, Generation, StableId};
 
-use crate::{TopologyCandidateKindV2, TopologyProposalV2, verify_topology_proposal_v2};
+use crate::{
+    TopologyCandidateKindV2, TopologyChangeV2, TopologyProposalV2, verify_topology_proposal_v2,
+};
+
+const MAX_PROTECTED_TOPOLOGY_MODULES: usize = 256;
+
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum ProtectedTopologyClassV1 {
+    Authority,
+    Evaluator,
+    Evidence,
+    Deletion,
+    Privacy,
+    Secret,
+    Release,
+    RuntimeHost,
+}
+
+impl ProtectedTopologyClassV1 {
+    const fn tag(self) -> u8 {
+        match self {
+            Self::Authority => 0,
+            Self::Evaluator => 1,
+            Self::Evidence => 2,
+            Self::Deletion => 3,
+            Self::Privacy => 4,
+            Self::Secret => 5,
+            Self::Release => 6,
+            Self::RuntimeHost => 7,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub struct ProtectedTopologyModuleV1 {
+    pub module_id: StableId,
+    pub class: ProtectedTopologyClassV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TopologyMutationPolicyV1 {
+    pub policy_id: StableId,
+    pub selected_artifact_digest: Digest32,
+    pub revision: u64,
+    pub protected_modules: Vec<ProtectedTopologyModuleV1>,
+    pub policy_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum TopologyMutationPolicyErrorV1 {
+    EmptyArtifactDigest,
+    InvalidRevision,
+    ProtectedLimitExceeded,
+    DuplicateProtectedModule(String),
+    DigestMismatch,
+    ArtifactMismatch,
+    ProtectedModuleTargeted(String),
+    Arithmetic,
+}
+
+impl fmt::Display for TopologyMutationPolicyErrorV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+impl StdError for TopologyMutationPolicyErrorV1 {}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TopologyWriterHandoffV1 {
@@ -50,6 +116,126 @@ impl From<crate::TopologyProposalErrorV2> for TopologyGovernanceErrorV1 {
     fn from(value: crate::TopologyProposalErrorV2) -> Self {
         Self::Proposal(value)
     }
+}
+
+/// Construct a canonical protected-surface policy for structural proposals.
+pub fn build_topology_mutation_policy_v1(
+    policy_id: StableId,
+    selected_artifact_digest: Digest32,
+    revision: u64,
+    mut protected_modules: Vec<ProtectedTopologyModuleV1>,
+) -> Result<TopologyMutationPolicyV1, TopologyMutationPolicyErrorV1> {
+    canonicalize_topology_policy(
+        selected_artifact_digest,
+        revision,
+        &mut protected_modules,
+    )?;
+    let mut policy = TopologyMutationPolicyV1 {
+        policy_id,
+        selected_artifact_digest,
+        revision,
+        protected_modules,
+        policy_digest: Digest32::ZERO,
+    };
+    policy.policy_digest = digest_topology_policy(&policy)?;
+    Ok(policy)
+}
+
+pub fn verify_topology_mutation_policy_v1(
+    policy: &TopologyMutationPolicyV1,
+) -> Result<(), TopologyMutationPolicyErrorV1> {
+    let mut protected = policy.protected_modules.clone();
+    canonicalize_topology_policy(
+        policy.selected_artifact_digest,
+        policy.revision,
+        &mut protected,
+    )?;
+    if protected != policy.protected_modules
+        || policy.policy_digest.is_zero()
+        || policy.policy_digest != digest_topology_policy(policy)?
+    {
+        return Err(TopologyMutationPolicyErrorV1::DigestMismatch);
+    }
+    Ok(())
+}
+
+pub fn verify_topology_changes_against_policy_v1(
+    selected_artifact_digest: Digest32,
+    changes: &[TopologyChangeV2],
+    policy: &TopologyMutationPolicyV1,
+) -> Result<(), TopologyMutationPolicyErrorV1> {
+    verify_topology_mutation_policy_v1(policy)?;
+    if selected_artifact_digest != policy.selected_artifact_digest {
+        return Err(TopologyMutationPolicyErrorV1::ArtifactMismatch);
+    }
+    let protected = policy
+        .protected_modules
+        .iter()
+        .map(|entry| entry.module_id.clone())
+        .collect::<BTreeSet<_>>();
+    for change in changes {
+        if protected.contains(&change.module_id) {
+            return Err(TopologyMutationPolicyErrorV1::ProtectedModuleTargeted(
+                change.module_id.to_string(),
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn canonicalize_topology_policy(
+    selected_artifact_digest: Digest32,
+    revision: u64,
+    protected_modules: &mut Vec<ProtectedTopologyModuleV1>,
+) -> Result<(), TopologyMutationPolicyErrorV1> {
+    if selected_artifact_digest.is_zero() {
+        return Err(TopologyMutationPolicyErrorV1::EmptyArtifactDigest);
+    }
+    if revision == 0 {
+        return Err(TopologyMutationPolicyErrorV1::InvalidRevision);
+    }
+    if protected_modules.len() > MAX_PROTECTED_TOPOLOGY_MODULES {
+        return Err(TopologyMutationPolicyErrorV1::ProtectedLimitExceeded);
+    }
+    protected_modules.sort();
+    let mut module_ids = BTreeSet::new();
+    for protected in protected_modules {
+        if !module_ids.insert(protected.module_id.clone()) {
+            return Err(TopologyMutationPolicyErrorV1::DuplicateProtectedModule(
+                protected.module_id.to_string(),
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn digest_topology_policy(
+    policy: &TopologyMutationPolicyV1,
+) -> Result<Digest32, TopologyMutationPolicyErrorV1> {
+    let mut bytes = b"hepta.plasticity.topology-mutation-policy.v1\0".to_vec();
+    push_policy_id(&mut bytes, &policy.policy_id)?;
+    bytes.extend_from_slice(policy.selected_artifact_digest.as_array());
+    bytes.extend_from_slice(&policy.revision.to_be_bytes());
+    let count = u32::try_from(policy.protected_modules.len())
+        .map_err(|_| TopologyMutationPolicyErrorV1::Arithmetic)?;
+    bytes.extend_from_slice(&count.to_be_bytes());
+    for protected in &policy.protected_modules {
+        push_policy_id(&mut bytes, &protected.module_id)?;
+        bytes.push(protected.class.tag());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn push_policy_id(
+    bytes: &mut Vec<u8>,
+    value: &StableId,
+) -> Result<(), TopologyMutationPolicyErrorV1> {
+    let raw = value.as_str().as_bytes();
+    let length =
+        u32::try_from(raw.len()).map_err(|_| TopologyMutationPolicyErrorV1::Arithmetic)?;
+    bytes.extend_from_slice(&length.to_be_bytes());
+    bytes.extend_from_slice(raw);
+    Ok(())
 }
 
 /// Construct the canonical handoff digest. The caller must then place this exact
@@ -348,5 +534,35 @@ mod tests {
         let set_digest =
             verify_topology_writer_handoffs_v1(&proposal, &[first, second]).expect("handoffs");
         assert!(!set_digest.is_zero());
+    }
+
+    #[test]
+    fn topology_policy_rejects_protected_evaluator_surface() {
+        let selected = digest("artifact:policy");
+        let policy = build_topology_mutation_policy_v1(
+            id("topology-policy:1"),
+            selected,
+            1,
+            vec![ProtectedTopologyModuleV1 {
+                module_id: id("learning.eval"),
+                class: ProtectedTopologyClassV1::Evaluator,
+            }],
+        )
+        .expect("policy");
+        let protected_change = TopologyChangeV2 {
+            module_id: id("learning.eval"),
+            operation: TopologyOperationV2::Rewire,
+            predecessor_digest: Some(digest("eval:old")),
+            candidate_digest: Some(digest("eval:new")),
+            migration_digest: digest("eval:migration"),
+            rollback_digest: digest("eval:rollback"),
+            writer_handoff_digest: digest("eval:handoff"),
+            evidence_digest: digest("eval:evidence"),
+        };
+        assert!(matches!(
+            verify_topology_changes_against_policy_v1(selected, &[protected_change], &policy),
+            Err(TopologyMutationPolicyErrorV1::ProtectedModuleTargeted(module))
+                if module == "learning.eval"
+        ));
     }
 }
