@@ -18,6 +18,7 @@ fn fixture(label: &str) -> (AppServerModelDriver, PathBuf) {
         agent_id: AgentId::parse("00000000-0000-4000-8000-000000000001").unwrap(),
         generation: 1,
         model: "model".to_string(),
+        model_provider: "provider".to_string(),
         timeout: Duration::from_secs(5),
     })
     .unwrap();
@@ -43,8 +44,8 @@ fn request(driver: &AppServerModelDriver) -> NativeRequest {
     }
 }
 
-fn admission() -> NativeAdmission {
-    NativeAdmission {
+fn admission() -> NativeLocalSlotAdmission {
+    NativeLocalSlotAdmission {
         request_id: "r1".to_string(),
         maximum_in_flight: 1,
     }
@@ -62,6 +63,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
                 thread_id: "thread-1".to_string(),
                 model_provider: "provider".to_string(),
                 context_digest: "a".repeat(64),
+                final_use_witness: None,
             },
         )
         .unwrap();
@@ -73,6 +75,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
         .run(
             &mut control,
             admission(),
+            None,
             "prompt".to_string(),
             None,
             &cancellation,
@@ -91,6 +94,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
             .run(
                 &mut control,
                 admission(),
+                None,
                 "prompt".to_string(),
                 None,
                 &cancellation
@@ -104,6 +108,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
             .run(
                 &mut control,
                 admission(),
+                None,
                 "changed prompt".to_string(),
                 None,
                 &cancellation
@@ -127,6 +132,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
             .run(
                 &mut control,
                 admission(),
+                None,
                 "prompt".to_string(),
                 None,
                 &cancellation
