@@ -351,6 +351,7 @@ class PrivateWorkerClient {
         cleanup: null,
         requestKind: kind,
         requestPayloadDigest: frame.payloadDigest,
+        requestSequence: sequence,
         onDispatchBoundary,
         dispatchBoundaryObserved: false,
       };
@@ -446,7 +447,8 @@ class PrivateWorkerClient {
       const payload = requireRecord(frame.payload, "worker response payload");
       if (
         payload.requestKind !== pending.requestKind ||
-        payload.requestPayloadDigest !== pending.requestPayloadDigest
+        payload.requestPayloadDigest !== pending.requestPayloadDigest ||
+        payload.requestSequence !== pending.requestSequence
       ) {
         this.#failAll(
           new TypeError("browser worker response did not bind the exact request"),
@@ -460,6 +462,7 @@ class PrivateWorkerClient {
           "localDispatchCrossed",
           "requestKind",
           "requestPayloadDigest",
+          "requestSequence",
         ].sort();
         if (
           pending.requestKind !== "dispatch" ||
@@ -491,6 +494,40 @@ class PrivateWorkerClient {
         this.#child.kill("SIGKILL");
         return;
       }
+
+      const responseKeys = Object.keys(payload).sort();
+      const expectedResponseKeys =
+        payload.ok === true
+          ? [
+              "observation",
+              "ok",
+              "requestKind",
+              "requestPayloadDigest",
+              "requestSequence",
+            ].sort()
+          : payload.ok === false
+            ? [
+                "error",
+                "ok",
+                "requestKind",
+                "requestPayloadDigest",
+                "requestSequence",
+              ].sort()
+            : null;
+      if (
+        expectedResponseKeys === null ||
+        responseKeys.length !== expectedResponseKeys.length ||
+        responseKeys.some((key, index) => key !== expectedResponseKeys[index])
+      ) {
+        this.#failAll(
+          new TypeError(
+            "browser worker response payload contains missing or unknown fields",
+          ),
+        );
+        this.#child.kill("SIGKILL");
+        return;
+      }
+
       if (
         pending.requestKind === "dispatch" &&
         pending.dispatchBoundaryObserved !== true

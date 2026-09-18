@@ -39,7 +39,7 @@ Every admitted semantic observation advances page generation and records an acti
 
 ## Worker and sandbox boundary
 
-The private worker protocol uses a four-byte length prefix plus <=1 MiB canonical JSON. Frames bind protocol version, session, generation, monotonic sequence, request identity and payload digest. A dispatch receives a dedicated worker-originated `dispatch_boundary` only after worker-side stale-state validation and operation reservation; ordinary responses additionally echo the original request kind and request payload digest. Binding drift terminates/fails the private channel.
+The private worker protocol uses a four-byte length prefix plus <=1 MiB canonical JSON. Frames bind protocol version, session, generation, monotonic sequence, request identity and payload digest. A dispatch receives a dedicated worker-originated `dispatch_boundary` only after worker-side stale-state validation and operation reservation; ordinary responses additionally echo the original request kind, request payload digest and original request sequence, with exact-key success/error payloads. Binding drift or unknown response fields terminate/fail the private channel.
 
 Worker stderr is always drained but is not copied into receipts or journals, avoiding both pipe deadlock and accidental persistence of page/worker secrets.
 

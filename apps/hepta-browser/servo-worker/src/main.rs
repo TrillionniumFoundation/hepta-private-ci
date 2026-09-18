@@ -611,6 +611,7 @@ fn run() -> Result<(), String> {
                                         "localDispatchCrossed": true,
                                         "requestKind": frame.kind,
                                         "requestPayloadDigest": frame.payload_digest,
+                                        "requestSequence": frame.sequence,
                                     }),
                                 )?;
                                 response_sequence = response_sequence
@@ -636,12 +637,14 @@ fn run() -> Result<(), String> {
                         "ok": true,
                         "requestKind": frame.kind,
                         "requestPayloadDigest": frame.payload_digest,
+                        "requestSequence": frame.sequence,
                         "observation": observation,
                     }),
                     Err(error) => json!({
                         "ok": false,
                         "requestKind": frame.kind,
                         "requestPayloadDigest": frame.payload_digest,
+                        "requestSequence": frame.sequence,
                         "error": error,
                     }),
                 };

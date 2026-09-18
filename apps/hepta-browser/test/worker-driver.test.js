@@ -62,6 +62,8 @@ function fakeLauncher({
   rejectDispatchBeforeBoundary = false,
   capture = null,
   corruptResponseBinding = false,
+  corruptResponseSequence = false,
+  extraResponseField = false,
 } = {}) {
   return {
     async verify() {},
@@ -108,6 +110,7 @@ function fakeLauncher({
                   localDispatchCrossed: true,
                   requestKind: request.kind,
                   requestPayloadDigest: request.payloadDigest,
+                  requestSequence: request.sequence,
                 },
               }),
             );
@@ -155,7 +158,11 @@ function fakeLauncher({
                       ok: false,
                       requestKind: request.kind,
                       requestPayloadDigest: request.payloadDigest,
+                      requestSequence: corruptResponseSequence
+                        ? request.sequence + 1
+                        : request.sequence,
                       error: "worker page generation drifted before dispatch",
+                      ...(extraResponseField ? { unexpected: true } : {}),
                     }
                   : {
                       ok: true,
@@ -163,7 +170,11 @@ function fakeLauncher({
                       requestPayloadDigest: corruptResponseBinding
                         ? D1
                         : request.payloadDigest,
+                      requestSequence: corruptResponseSequence
+                        ? request.sequence + 1
+                        : request.sequence,
                       observation,
+                      ...(extraResponseField ? { unexpected: true } : {}),
                     },
             }),
           );
@@ -442,6 +453,44 @@ test("worker response must echo exact request kind and payload digest", async ()
     launcher: fakeLauncher({ capture, corruptResponseBinding: true }),
   });
   await assert.rejects(driver.start(startInput()), /did not bind the exact request/);
+  assert.equal(capture.child.killed, true);
+});
+
+test("subprocess driver rejects response sequence drift", async () => {
+  const capture = {};
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-sequence-"));
+  const workerPath = join(root, "worker.bin");
+  const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
+  await writeFile(workerPath, workerBytes, { mode: 0o700 });
+  const driver = new SubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(workerBytes),
+    profileRoot: join(root, "profiles"),
+    launcher: fakeLauncher({ capture, corruptResponseSequence: true }),
+  });
+  await assert.rejects(
+    driver.start(startInput()),
+    /did not bind the exact request/,
+  );
+  assert.equal(capture.child.killed, true);
+});
+
+test("subprocess driver rejects unknown response payload fields", async () => {
+  const capture = {};
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-response-fields-"));
+  const workerPath = join(root, "worker.bin");
+  const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
+  await writeFile(workerPath, workerBytes, { mode: 0o700 });
+  const driver = new SubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(workerBytes),
+    profileRoot: join(root, "profiles"),
+    launcher: fakeLauncher({ capture, extraResponseField: true }),
+  });
+  await assert.rejects(
+    driver.start(startInput()),
+    /missing or unknown fields/,
+  );
   assert.equal(capture.child.killed, true);
 });
 
