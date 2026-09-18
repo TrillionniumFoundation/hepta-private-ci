@@ -178,9 +178,7 @@ pub fn build_candidate_union_from_batches(
     for batch in batches {
         batch.validate()?;
         if !seen.insert(batch.channel) {
-            return Err(ChannelContractErrorV1::DuplicateChannelBatch(
-                batch.channel,
-            ));
+            return Err(ChannelContractErrorV1::DuplicateChannelBatch(batch.channel));
         }
         total_candidates = total_candidates
             .checked_add(batch.candidates.len())
