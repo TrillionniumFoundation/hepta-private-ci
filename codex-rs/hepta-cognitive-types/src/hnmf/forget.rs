@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -36,7 +38,7 @@ impl ForgetRequestV1 {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct RetiredSynapseV1 {
     source_node_id: NodeIdV1,
@@ -50,18 +52,30 @@ impl RetiredSynapseV1 {
         target_node_id: NodeIdV1,
         relation: SynapseRelationV1,
     ) -> Result<Self, ContractErrorV1> {
-        validate_nonzero(source_node_id, "retired synapse source must be non-zero")?;
-        validate_nonzero(target_node_id, "retired synapse target must be non-zero")?;
-        if source_node_id == target_node_id {
+        let value = Self {
+            source_node_id,
+            target_node_id,
+            relation,
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn validate(&self) -> Result<(), ContractErrorV1> {
+        validate_nonzero(
+            self.source_node_id,
+            "retired synapse source must be non-zero",
+        )?;
+        validate_nonzero(
+            self.target_node_id,
+            "retired synapse target must be non-zero",
+        )?;
+        if self.source_node_id == self.target_node_id {
             return Err(ContractErrorV1::Invalid(
                 "retired synapse endpoints must be distinct",
             ));
         }
-        Ok(Self {
-            source_node_id,
-            target_node_id,
-            relation,
-        })
+        Ok(())
     }
 }
 
@@ -121,6 +135,13 @@ impl ForgetPropagationReceiptV1 {
         nodes.dedup();
         if nodes.len() != self.retired_node_ids.len() {
             return Err(ContractErrorV1::Conflict("duplicate retired node id"));
+        }
+        let mut synapses = BTreeSet::new();
+        for synapse in &self.retired_synapses {
+            synapse.validate()?;
+            if !synapses.insert(synapse.clone()) {
+                return Err(ContractErrorV1::Conflict("duplicate retired synapse"));
+            }
         }
         if !self.projection_rebuild_required || !self.artifact_revocation_required {
             return Err(ContractErrorV1::AuthorityBoundary);
