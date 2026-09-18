@@ -271,7 +271,7 @@ impl DurableFinalHoldoutJournalV1 {
         Ok(receipt)
     }
 
-    /// Consume through the durable adapter and return a non-forgeable proof
+    /// Consume through the durable adapter and return a non-directly-constructible proof
     /// suitable for the production signed-admission entrypoints.
     pub fn consume_proven(
         &mut self,
