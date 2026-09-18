@@ -38,19 +38,42 @@ pub(crate) struct TextIngress {
 
 impl TextIngress {
     pub async fn open(identity: &AgentdIdentity, trust_file: PathBuf) -> Result<Self, AgentdError> {
-        TextTrust::load(&trust_file, identity)?;
+        let trust = TextTrust::load(&trust_file, identity)?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
             .await
             .map_err(|error| invalid(&error.to_string()))?;
-        Ok(Self {
+        let ingress = Self {
             evidence,
             trust_file,
             subject: subject(&identity.agent_id)?,
             scope: scope(&identity.agent_id),
-        })
+        };
+        ingress.verify_trust(&trust).await?;
+        Ok(ingress)
     }
 
+    pub async fn current_trust(&self, state: &AgentdState) -> Result<TextTrust, AgentdError> {
+        let trust = TextTrust::load(&self.trust_file, state.identity())?;
+        self.verify_trust(&trust).await?;
+        Ok(trust)
+    }
+
+    async fn verify_trust(&self, trust: &TextTrust) -> Result<(), AgentdError> {
+        self.evidence
+            .observe_authbus_trust_head(&trust.trust_head()?)
+            .await
+            .map_err(|error| invalid(&error.to_string()))?;
+        if let Some(checkpoint) = trust.replay_checkpoint()? {
+            self.evidence
+                .verify_authbus_replay_checkpoint(&checkpoint)
+                .await
+                .map_err(|error| invalid(&error.to_string()))?;
+        }
+        Ok(())
+    }
+
+    #[cfg(test)]
     pub fn trust(&self, state: &AgentdState) -> Result<TextTrust, AgentdError> {
         TextTrust::load(&self.trust_file, state.identity())
     }
@@ -86,7 +109,7 @@ pub(crate) async fn submit(
 ) -> Result<AuthBusTextStatus, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
-    let trust = host.trust(state)?;
+    let trust = host.current_trust(state).await?;
     if !trust.permits(&request.body.thread_id)
         || request.body.spawn_generation != state.identity().spawn_generation
     {
@@ -109,7 +132,7 @@ pub(crate) async fn submit(
     // If authority changed during admission, preserve the committed message but
     // refuse to report readiness. The worker independently refreshes all gates.
     require_ready(state)?;
-    let current = host.trust(state)?;
+    let current = host.current_trust(state).await?;
     message
         .authenticate(
             &current.issuer()?,
