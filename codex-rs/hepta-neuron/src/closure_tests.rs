@@ -471,19 +471,19 @@ impl LineagePolicy for Lineage {
 #[test]
 fn runtime_executes_model_commits_witness_and_rotates_without_state_reset() {
     let fixture = Fixture::new();
-    let config = config();
-    let scope = scope();
-    let config_digest = checked(runtime_profile_digest(&config, &native()));
+    let runtime_config = config();
+    let runtime_scope = scope();
+    let config_digest = checked(runtime_profile_digest(&runtime_config, &native()));
     let witness = checked(open_file_witness(
         fixture.file("witness"),
         config_digest,
-        &scope,
+        &runtime_scope,
     ));
     let mut runtime = checked(NeuronRuntimeHost::open(
         fixture.file("segment-1"),
-        config,
+        runtime_config.clone(),
         native(),
-        scope,
+        runtime_scope.clone(),
         1,
         Executor {
             execution: model_execution(),
