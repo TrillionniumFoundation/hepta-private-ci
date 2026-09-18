@@ -12,7 +12,7 @@
 
 This specification defines a deterministic implementation baseline and a separately qualified stochastic candidate. It does not establish dynamic-preference efficacy, production activation, biological equivalence, or autonomous software evolution. The four-level hierarchy, event sourcing and deployment controls are Hepta engineering extensions. `docs/evidence/CLAIMS.json` and current independent evidence govern capability claims.
 
-Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include `evaluate_candidates`, `solve_preference_target`, `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. Reuse compatible primitives and add owner-scoped adapters; a symbol inventory proves neither a real consumer nor an implemented stochastic solver.
+Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include `evaluate_candidates_with_policy`, `solve_preference_target`, `solve_preference_target_with_context_digest`, `validate_staged_updates`, `evaluate_recursive_utility`, `convert_q32_to_q24` and `mul_q32_ties_even`. The old evaluator entrypoint is removed so all evaluation flows through an explicit policy. Reuse compatible primitives and add owner-scoped adapters; a symbol inventory proves neither activation nor stochastic efficacy.
 
 ## 2. Symbols, dimensions, units and normalization
 
@@ -34,7 +34,7 @@ Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` in
 
 Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`. `COST_k` is not the covariance matrix. Convert microseconds to the declared solver time unit with checked arithmetic; never silently treat microseconds as seconds. Reject invalid dimensions, non-finite numbers, unknown units and missing profiles. Pre-clipping violations and projection counts remain observable.
 
-Signed Q32 and Q24 are distinct from the HNMF ppm/toward-zero reference. Conversion records bind both profiles, rounding, units, source/output digests and absolute error. Identifier, authority, deletion, fence and deadline fields are exact; they never pass through approximate numerical conversion.
+Signed Q32 and Q24 are distinct from the HNMF ppm/toward-zero reference. `convert_q32_to_q24` implements nearest/ties-even conversion and emits `NduCoordinateConversionReceiptV1`, binding source/target profiles, rounding profile, units, source/output digests and maximum Q32 reconstruction error. Identifier, authority, deletion, fence and deadline fields are exact; they never pass through approximate numerical conversion.
 
 ## 3. Formal model and invariants
 
@@ -92,7 +92,7 @@ Feasibility precedes scoring. Missing support/units is unavailable, not zero cos
 
 `NDU-GV-001`: P0=0; two unit steps; drifts 0.25,-0.5; instantaneous utilities 0.5,0.25; discount 0.8; terminal utility 1. Expected real values are P=[0,0.25,-0.25], U=[1.34,1.05,1]. Q32 nearest/ties-to-even goldens are P=[0,1073741824,-1073741824], U=[5755256177,4509715661,4294967296]. Canonical reference goldens are exact; the separate adaptive zero-noise comparison uses the declared tolerance.
 
-The deterministic fixed-point solve has at most 64 iterations and residual <=2^-20; exhaustion reports unavailable. Damping, clipping or a bounded iteration count alone does not prove convergence.
+The deterministic fixed-point solve has at most 64 iterations and residual <=2^-20; exhaustion returns `PreferenceSolveResult::Unavailable` and deliberately exposes no publishable candidate state. Preference vectors are rejected outside 1–64 dimensions or `[-1,1]`. An already-converged state is a zero-iteration no-op and preserves its revision. Damping, clipping or a bounded iteration count alone does not prove convergence.
 
 ## 5. Trainable or estimated algorithm
 
@@ -110,7 +110,7 @@ Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` a
 
 `NduCoefficientManifestV1` binds artifact, subject/objective class, dimensions, fixed-point scales, bounds, normalization, runtime, predecessor, expiry and rollback. The integration package must register a versioned coefficient-profile reference for the covariance/conditioning convention before admitting a stochastic implementation that needs it. An incompatible existing consumer returns unavailable; it cannot silently assume identity covariance.
 
-`NduWellPosednessCertificateV1` binds operating domain, coefficient boundedness and Lipschitz assumptions, square integrability, conditional means, generator monotonicity/dissipativity, Z growth, terminal conditions, continuity scope, solver stability and independent decision. An empirical local spectral-radius estimate is a diagnostic, not a universal well-posedness or global stability proof.
+`NduWellPosednessCertificateV1` binds operating domain, coefficient boundedness and Lipschitz assumptions, square integrability, conditional means, generator monotonicity/dissipativity, Z growth, terminal conditions, continuity scope, solver stability and independent decision. `learning.eval` now source-implements issuance and current-context validation of `NduConvergenceCertificateV1`; self-evaluation rejects, missing independent support is unavailable, the spectral-radius upper 95% boundary is strict, and stale objective-class/solver/initialization contexts cannot reuse an accepted certificate. `utility.ndu::admit_stochastic_profile_v1` additionally requires digest-bound coefficient, covariance, coordinate-conversion, conditional-identification, well-posedness and accepted convergence evidence before producing an authority-free stochastic admission. An empirical local spectral-radius estimate is a diagnostic, not a universal well-posedness or global stability proof.
 
 `NduUpdateReceiptV1` binds subject, old/new revision, event, objective, coefficient, duration, before/after/utility digests, uncertainty, projection count, boundary and conservation residuals and disposition. The full idempotency identity is subject + objective + predecessor + event + coefficient within principal scope. A shorter local key is valid only inside an object whose immutable scope already binds the omitted fields; cross-run collision tests are mandatory.
 
