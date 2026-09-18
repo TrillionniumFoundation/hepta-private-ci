@@ -85,6 +85,7 @@ pub enum SignRequest {
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         authority_epoch: u64,
+        revocation_frontier: u64,
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     },
@@ -304,6 +305,7 @@ pub fn sign_request(
             expected_control_revision,
             expected_lifecycle_generation,
             authority_epoch,
+            revocation_frontier,
             issued_at_unix_seconds,
             expires_at_unix_seconds,
         } => {
@@ -328,6 +330,7 @@ pub fn sign_request(
                     *expected_control_revision,
                     *expected_lifecycle_generation,
                     *authority_epoch,
+                    *revocation_frontier,
                     *issued_at_unix_seconds,
                     *expires_at_unix_seconds,
                 )
