@@ -1,6 +1,7 @@
 import { ERROR_CODES, UiControlError, fail, requireRecord, stableId, utf8Bytes } from "./protocol.js";
 
 const MAX_BOOTSTRAP_BYTES = 16 * 1024;
+const DEFAULT_BOOTSTRAP_TIMEOUT_MS = 10_000;
 const UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
 
 async function boundedBootstrapText(response) {
@@ -62,9 +63,13 @@ export async function loadBrowserBootstrap({
   url = "/api/ui-control/bootstrap",
   origin = globalThis.location?.origin,
   fetchImpl = globalThis.fetch?.bind(globalThis),
+  timeoutMs = DEFAULT_BOOTSTRAP_TIMEOUT_MS,
 } = {}) {
   if (typeof origin !== "string" || typeof fetchImpl !== "function") {
     fail(ERROR_CODES.TRANSPORT_SECURITY_VIOLATION, "bootstrap requires browser origin and fetch");
+  }
+  if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 120_000) {
+    fail(ERROR_CODES.INVALID_INPUT, "bootstrap timeoutMs must be between 1 and 120000 ms");
   }
   let target;
   let current;
@@ -81,39 +86,51 @@ export async function loadBrowserBootstrap({
     fail(ERROR_CODES.TRANSPORT_SECURITY_VIOLATION, "bootstrap requires HTTPS outside loopback");
   }
 
-  let response;
+  const controller = typeof AbortController === "function" ? new AbortController() : null;
+  const timer = controller
+    ? setTimeout(() => controller.abort(new Error("control bootstrap timeout")), timeoutMs)
+    : null;
+  timer?.unref?.();
   try {
-    response = await fetchImpl(target.href, {
+    const response = await fetchImpl(target.href, {
       method: "GET",
       credentials: "same-origin",
       cache: "no-store",
       redirect: "error",
       referrerPolicy: "same-origin",
       headers: { accept: "application/json" },
+      signal: controller?.signal,
     });
-  } catch {
+    if (response.status === 401 || response.status === 403) {
+      fail(ERROR_CODES.UNAUTHENTICATED, "control bootstrap is not authenticated");
+    }
+    if (!response.ok) {
+      fail(ERROR_CODES.BACKEND_UNAVAILABLE, `control bootstrap returned HTTP ${response.status}`);
+    }
+    const contentType = response.headers?.get?.("content-type") ?? "";
+    const mediaType = contentType.split(";", 1)[0].trim().toLowerCase();
+    if (mediaType !== "application/json") {
+      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap response is not JSON");
+    }
+    const encoded = await boundedBootstrapText(response);
+    let config;
+    try {
+      config = JSON.parse(encoded);
+    } catch {
+      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap is invalid JSON");
+    }
+    requireRecord(config, "control bootstrap");
+    stableId(config.persistenceNamespace, "persistenceNamespace");
+    if (typeof config.basePath !== "string" || config.basePath.length === 0 || config.basePath.length > 256) {
+      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap basePath is invalid");
+    }
+    return Object.freeze(config);
+  } catch (error) {
+    if (error instanceof UiControlError) throw error;
     fail(ERROR_CODES.BACKEND_UNAVAILABLE, "control bootstrap request failed");
+  } finally {
+    if (timer !== null) clearTimeout(timer);
   }
-  if (response.status === 401 || response.status === 403) {
-    fail(ERROR_CODES.UNAUTHENTICATED, "control bootstrap is not authenticated");
-  }
-  if (!response.ok) {
-    fail(ERROR_CODES.BACKEND_UNAVAILABLE, `control bootstrap returned HTTP ${response.status}`);
-  }
-  const contentType = response.headers?.get?.("content-type") ?? "";
-  const mediaType = contentType.split(";", 1)[0].trim().toLowerCase();
-  if (mediaType !== "application/json") {
-    fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap response is not JSON");
-  }
-  const encoded = await boundedBootstrapText(response);
-  let config;
-  try { config = JSON.parse(encoded); } catch { fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap is invalid JSON"); }
-  requireRecord(config, "control bootstrap");
-  stableId(config.persistenceNamespace, "persistenceNamespace");
-  if (typeof config.basePath !== "string" || config.basePath.length === 0 || config.basePath.length > 256) {
-    fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap basePath is invalid");
-  }
-  return Object.freeze(config);
 }
 
 export function createAccessibleConfirmAction({ document, mount = document?.body } = {}) {
