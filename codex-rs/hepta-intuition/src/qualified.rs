@@ -76,8 +76,9 @@ pub struct CanonicalPolicyProfileV1 {
     pub ood_expires_after_sequence: u64,
 }
 
-/// Exact upstream scoring commitment for one decision. It intentionally excludes
-/// assignment probabilities/draws: those belong to the random-source owner.
+/// Exact upstream scorer/policy-output commitment for one decision. It binds
+/// assignment probabilities as policy outputs but excludes the random draw; the
+/// RandomSource separately authenticates the stream/counter/draw context.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ScoringCommitmentV1 {
     pub commitment_digest: Digest32,
