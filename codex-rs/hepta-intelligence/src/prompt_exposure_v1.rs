@@ -173,6 +173,10 @@ impl PromptExposureAssignmentV1 {
     }
 }
 
+/// Appends a validated prompt-exposure decision to the learning owner.
+///
+/// Implementations must preserve the learning ledger's idempotency and durable
+/// predecessor semantics; this façade never bypasses the ledger owner.
 pub trait PromptExposureSinkV1 {
     fn append_prompt_exposure(
         &mut self,
