@@ -256,7 +256,7 @@ The native source must pass, at minimum:
 - terminal replay is exact-tuple idempotent;
 - terminal outbox compaction cannot resurrect an operation;
 - missing required schema guard fails closed on reopen;
-- actual process exit after dispatch-start commit reopens as non-dispatchable;
+- actual process exit after dispatch-start commit reopens as non-dispatchable and can be moved to indeterminate by the current owner without reconstructing the lost lease;
 - final-use authority is consumed at the checked effect boundary;
 - destination duplicate apply is idempotent under the same semantic identity.
 
