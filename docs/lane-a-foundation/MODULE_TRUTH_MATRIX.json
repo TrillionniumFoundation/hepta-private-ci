@@ -233,7 +233,7 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0010",
+        "durability": "sqlite_migrations_0001_0011",
         "qualification": "source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
@@ -284,6 +284,14 @@
           "mustContain": [
             "CREATE TABLE authbus_outbox",
             "authbus_outbox_active_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_secret_lease_registry.sql",
+          "mustContain": [
+            "CREATE TABLE secret_lease_records",
+            "secret_lease_records_transition",
+            "secret_lease_records_no_delete"
           ]
         }
       ]
