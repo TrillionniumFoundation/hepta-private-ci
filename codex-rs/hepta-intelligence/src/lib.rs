@@ -25,10 +25,16 @@ pub use capability_snapshot::CapabilitySnapshotV2;
 
 mod pipeline_v2;
 
+mod prompt_context_v1;
+
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
 pub use pipeline_v2::run_shadow_pipeline_v2;
+pub use prompt_context_v1::PromptContextCompositionErrorV1;
+pub use prompt_context_v1::PromptContextPreparationRequestV1;
+pub use prompt_context_v1::PromptContextPreparationV1;
+pub use prompt_context_v1::prepare_prompt_context_v1;
 
 mod pipeline;
 
