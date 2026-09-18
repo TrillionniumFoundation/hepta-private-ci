@@ -397,11 +397,12 @@
         {
           "path": "codex-rs/hepta-evidence/migrations/0011_authbus_control.sql",
           "mustContain": [
-            "CREATE TABLE authbus_auth_policy_history",
+            "CREATE TABLE authbus_policy_history",
             "CREATE TABLE authbus_quota_registry",
             "CREATE TABLE authbus_quota_reservations",
             "CREATE TABLE authbus_trust_heads",
-            "CREATE TABLE authbus_retired_epochs"
+            "CREATE TABLE authbus_retired_epochs",
+            "CREATE TABLE authbus_replay_checkpoint"
           ]
         },
         {
