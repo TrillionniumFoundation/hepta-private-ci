@@ -813,9 +813,8 @@ mod tests {
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_memory::CognitiveAccess;
     use codex_hepta_memory::CognitiveScope;
+    use codex_hepta_memory::CognitiveRuntime;
     use codex_hepta_memory::CognitiveStore;
-    use codex_hepta_memory::FederatedMemoryReader;
-    use codex_hepta_memory::FederatedRecallSet;
     use codex_hepta_memory::FederationGrantRequest;
     use codex_hepta_memory::FederationGrantScope;
     use codex_hepta_memory::LedgerSourceKind;
@@ -1022,9 +1021,13 @@ mod tests {
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");
         let owner_layout = fleet.agent(&owner_id);
+        let consumer_layout = fleet.agent(&consumer_id);
         let owner = CognitiveStore::open(&owner_layout)
             .await
             .expect("owner store");
+        let consumer = CognitiveStore::open(&consumer_layout)
+            .await
+            .expect("consumer store");
         let owner_access = CognitiveAccess::agent_private(owner_id.clone());
         let now = now_unix_seconds().expect("time");
         let citation = owner
@@ -1076,12 +1079,11 @@ mod tests {
             )
             .await
             .expect("grant");
-        let readers = FederatedMemoryReader::discover(&owner_layout, &consumer_id, now)
-            .await
-            .expect("discover");
-        let extension = FederatedCognitiveExtension::new(std::sync::Arc::new(
-            FederatedRecallSet::new(consumer_id, readers).expect("recall set"),
-        ));
+        let runtime = CognitiveRuntime::from_open_result(Ok(consumer)).with_federation_sources(
+            consumer_id.clone(),
+            vec![owner_layout.clone()],
+        );
+        let extension = FederatedCognitiveExtension::from_runtime(runtime);
         let session_store = ExtensionData::new("session-federation");
         let thread_store = ExtensionData::new(THREAD_ID);
         thread_store.insert(HeptaMemoryThreadState::for_cognitive_test(true));
@@ -1142,7 +1144,9 @@ mod tests {
         .expect("contributor")
         .expect("proposal before revoke");
         assert_eq!(first.source().as_str(), FEDERATED_COGNITIVE_SOURCE);
-        assert!(first.into_content().contains(OWNER_ID));
+        let first_content = first.into_content();
+        assert!(first_content.contains(OWNER_ID));
+        assert!(first_content.contains("\"coverage\":[1,1,0,0]"));
 
         owner
             .revoke_federated_recall(&owner_access, &capability, now)
