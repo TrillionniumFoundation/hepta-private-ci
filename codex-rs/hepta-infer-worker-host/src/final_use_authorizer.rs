@@ -23,8 +23,8 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::time::timeout;
 
-use crate::native_app_server::TurnStartAuthorizer;
 use crate::native_app_server::TurnStartAuthorityFuture;
+use crate::native_app_server::TurnStartAuthorizer;
 
 const AUTHORITY_PORT_SCHEMA_VERSION: u32 = 1;
 const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
