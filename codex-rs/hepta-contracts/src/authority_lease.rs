@@ -12,6 +12,8 @@ use crate::AuthorityTrustError;
 use crate::SystemAuthorityClock;
 use serde::Deserialize;
 use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 use std::collections::BTreeMap;
 use std::fmt;
 use std::fs::File;
@@ -67,6 +69,22 @@ pub struct CapabilityRevocation {
 pub struct AuthorityLeaseFrontier {
     pub authority_epoch: u64,
     pub store_revision: u64,
+    pub state_sha256: [u8; 32],
+}
+
+impl AuthorityLeaseFrontier {
+    pub fn for_empty_epoch(authority_epoch: u64) -> Result<Self, AuthorityLeaseError> {
+        if authority_epoch == 0 {
+            return Err(AuthorityLeaseError::InvalidTrust);
+        }
+        Ok(frontier_for_state(&State {
+            authority_epoch,
+            store_revision: 1,
+            leases: BTreeMap::new(),
+            revocations: BTreeMap::new(),
+            failed: false,
+        }))
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -215,6 +233,7 @@ impl AuthorityLeaseRegistry {
         if !identifier(&owner_id)
             || trusted_frontier.authority_epoch == 0
             || trusted_frontier.store_revision == 0
+            || trusted_frontier.state_sha256 == [0; 32]
         {
             return Err(AuthorityLeaseError::InvalidTrust);
         }
@@ -254,6 +273,7 @@ impl AuthorityLeaseRegistry {
         if !identifier(&owner_id)
             || trusted_frontier.authority_epoch == 0
             || trusted_frontier.store_revision == 0
+            || trusted_frontier.state_sha256 == [0; 32]
         {
             return Err(AuthorityLeaseError::InvalidTrust);
         }
@@ -281,14 +301,14 @@ impl AuthorityLeaseRegistry {
         let trusted_frontier = frontier_store
             .load(&owner_id)
             .map_err(map_trust_error)?;
-        if trusted_frontier.authority_epoch == 0 || trusted_frontier.store_revision == 0 {
+        if trusted_frontier.authority_epoch == 0
+            || trusted_frontier.store_revision == 0
+            || trusted_frontier.state_sha256 == [0; 32]
+        {
             return Err(AuthorityLeaseError::InvalidTrust);
         }
         let (store, state) = Store::open(directory, &owner_id, trusted_frontier)?;
-        let observed = AuthorityLeaseFrontier {
-            authority_epoch: state.authority_epoch,
-            store_revision: state.store_revision,
-        };
+        let observed = frontier_for_state(&state);
         if observed != trusted_frontier {
             return Err(AuthorityLeaseError::AntiRollbackViolation);
         }
@@ -311,10 +331,7 @@ impl AuthorityLeaseRegistry {
 
     pub fn frontier(&self) -> Result<AuthorityLeaseFrontier, AuthorityLeaseError> {
         let state = self.lock_state()?;
-        Ok(AuthorityLeaseFrontier {
-            authority_epoch: state.authority_epoch,
-            store_revision: state.store_revision,
-        })
+        Ok(frontier_for_state(&state))
     }
 
     pub fn capacity(&self) -> Result<AuthorityCapacity, AuthorityLeaseError> {
@@ -517,10 +534,7 @@ impl AuthorityLeaseRegistry {
         next.leases.clear();
         next.revocations.clear();
         self.persist_or_fence(&mut state, next)?;
-        Ok(AuthorityLeaseFrontier {
-            authority_epoch: state.authority_epoch,
-            store_revision: state.store_revision,
-        })
+        Ok(frontier_for_state(&state))
     }
 
     fn lock_state(&self) -> Result<std::sync::MutexGuard<'_, State>, AuthorityLeaseError> {
@@ -541,14 +555,8 @@ impl AuthorityLeaseRegistry {
         next: State,
     ) -> Result<(), AuthorityLeaseError> {
         if let Some(frontier_store) = &self.0.frontier_store {
-            let expected = AuthorityLeaseFrontier {
-                authority_epoch: state.authority_epoch,
-                store_revision: state.store_revision,
-            };
-            let advanced = AuthorityLeaseFrontier {
-                authority_epoch: next.authority_epoch,
-                store_revision: next.store_revision,
-            };
+            let expected = frontier_for_state(state);
+            let advanced = frontier_for_state(&next);
             if let Err(error) =
                 frontier_store.compare_and_set(&self.0.owner_id, &expected, &advanced)
             {
@@ -572,10 +580,7 @@ impl AuthorityLeaseVerifier {
 
     pub fn frontier(&self) -> Result<AuthorityLeaseFrontier, AuthorityLeaseError> {
         let state = self.lock_state()?;
-        Ok(AuthorityLeaseFrontier {
-            authority_epoch: state.authority_epoch,
-            store_revision: state.store_revision,
-        })
+        Ok(frontier_for_state(&state))
     }
 
     pub fn capacity(&self) -> Result<AuthorityCapacity, AuthorityLeaseError> {
@@ -784,11 +789,8 @@ impl Store {
             {
                 return Err(AuthorityLeaseError::InvalidTrust);
             }
-            let persisted = AuthorityLeaseFrontier {
-                authority_epoch: stored.state.authority_epoch,
-                store_revision: stored.state.store_revision,
-            };
-            if frontier_behind(persisted, trusted_frontier) {
+            let persisted = frontier_for_state(&stored.state);
+            if frontier_conflicts(persisted, trusted_frontier) {
                 return Err(AuthorityLeaseError::AntiRollbackViolation);
             }
             stored.state
@@ -803,6 +805,9 @@ impl Store {
                 revocations: BTreeMap::new(),
                 failed: false,
             };
+            if frontier_for_state(&state) != trusted_frontier {
+                return Err(AuthorityLeaseError::AntiRollbackViolation);
+            }
             store.persist(&state)?;
             state
         };
@@ -829,10 +834,31 @@ impl Store {
     }
 }
 
-fn frontier_behind(persisted: AuthorityLeaseFrontier, trusted: AuthorityLeaseFrontier) -> bool {
+fn frontier_conflicts(
+    persisted: AuthorityLeaseFrontier,
+    trusted: AuthorityLeaseFrontier,
+) -> bool {
     persisted.authority_epoch < trusted.authority_epoch
         || (persisted.authority_epoch == trusted.authority_epoch
             && persisted.store_revision < trusted.store_revision)
+        || (persisted.authority_epoch == trusted.authority_epoch
+            && persisted.store_revision == trusted.store_revision
+            && persisted.state_sha256 != trusted.state_sha256)
+}
+
+fn frontier_for_state(state: &State) -> AuthorityLeaseFrontier {
+    let mut hash = Sha256::new();
+    hash.update(b"hepta.kernel.authority.lease-frontier.v1\0");
+    hash.update(state.authority_epoch.to_le_bytes());
+    hash.update(state.store_revision.to_le_bytes());
+    let bytes = serde_json::to_vec(state)
+        .expect("serializing validated in-memory authority lease state cannot fail");
+    hash.update(bytes);
+    AuthorityLeaseFrontier {
+        authority_epoch: state.authority_epoch,
+        store_revision: state.store_revision,
+        state_sha256: hash.finalize().into(),
+    }
 }
 
 fn state_valid(state: &State) -> bool {
@@ -1041,10 +1067,7 @@ mod tests {
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier {
-                authority_epoch: 7,
-                store_revision: 1,
-            },
+            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
             Arc::new(FixedClock(2_000)),
         )
         .unwrap();
@@ -1206,10 +1229,7 @@ mod tests {
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
             .unwrap();
         let frontier_store = Arc::new(MemoryFrontierStore(Mutex::new(
-            AuthorityLeaseFrontier {
-                authority_epoch: 7,
-                store_revision: 1,
-            },
+            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
         )));
         let registry = AuthorityLeaseRegistry::open_state_dir_with_trust(
             directory.path(),
@@ -1222,10 +1242,7 @@ mod tests {
         registry.put_lease(lease(), 0).unwrap();
         assert_eq!(
             frontier_store.load("security-authority").unwrap(),
-            AuthorityLeaseFrontier {
-                authority_epoch: 7,
-                store_revision: 2,
-            }
+            registry.frontier().unwrap()
         );
         drop(registry);
         std::fs::write(directory.path().join("authority-leases.json"), initial).unwrap();
