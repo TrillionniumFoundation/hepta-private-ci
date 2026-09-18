@@ -224,6 +224,23 @@ impl<'a> FinalUseAdmissionAuthority<'a> {
         expected_reviewed_scope_digest: Digest32,
         expected_evidence_digest: Digest32,
     ) -> Result<VerifiedAdmission, AdmissionError> {
+        self.with_verified_admission(
+            signed,
+            factor,
+            expected_reviewed_scope_digest,
+            expected_evidence_digest,
+            |admission| admission,
+        )
+    }
+
+    pub fn with_verified_admission<T>(
+        &self,
+        signed: &SignedFinalUseGrant,
+        factor: &PromptFactor,
+        expected_reviewed_scope_digest: Digest32,
+        expected_evidence_digest: Digest32,
+        consumer: impl FnOnce(VerifiedAdmission) -> T,
+    ) -> Result<T, AdmissionError> {
         let reviewer_id = StableId::new(signed.grant.binding.subject_id.clone())
             .map_err(|_| AdmissionError::InvalidGrant)?;
         let expected = final_use_admission_binding(
@@ -236,23 +253,24 @@ impl<'a> FinalUseAdmissionAuthority<'a> {
             .authority
             .claim(signed, &expected)
             .map_err(map_final_use_error)?;
-        self.authority
-            .with_verified_use(token, &expected, || ())
-            .map_err(map_final_use_error)?;
         let verified_at_unix_ms = current_unix_ms()?;
         let grant_id = StableId::new(signed.grant.grant_id.clone())
             .map_err(|_| AdmissionError::InvalidGrant)?;
-        Ok(VerifiedAdmission {
-            grant_id,
-            factor_id: factor.factor_id.clone(),
-            factor_content_digest: factor.content_digest,
-            reviewer_id,
-            reviewed_scope_digest: expected_reviewed_scope_digest,
-            evidence_digest: expected_evidence_digest,
-            not_before_unix_ms: signed.grant.not_before_unix_ms,
-            verified_at_unix_ms,
-            expires_at_unix_ms: signed.grant.expires_at_unix_ms,
-        })
+        self.authority
+            .with_verified_use(token, &expected, || {
+                consumer(VerifiedAdmission {
+                    grant_id,
+                    factor_id: factor.factor_id.clone(),
+                    factor_content_digest: factor.content_digest,
+                    reviewer_id,
+                    reviewed_scope_digest: expected_reviewed_scope_digest,
+                    evidence_digest: expected_evidence_digest,
+                    not_before_unix_ms: signed.grant.not_before_unix_ms,
+                    verified_at_unix_ms,
+                    expires_at_unix_ms: signed.grant.expires_at_unix_ms,
+                })
+            })
+            .map_err(map_final_use_error)
     }
 }
 
