@@ -4,6 +4,8 @@ use std::sync::Mutex;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::RuntimeModuleSetV1;
+use codex_hepta_fleet::runtime_module_binding_digest_v1;
 use codex_hepta_memory::CognitiveStore;
 
 use crate::AgentdError;
@@ -27,6 +29,7 @@ pub(crate) struct AgentdState {
     automation: Mutex<Option<AutomationStore>>,
     automation_operations: std::sync::OnceLock<Arc<AgentdOperationsHost>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    runtime_modules: Mutex<RuntimeModuleSetV1>,
 }
 
 struct RuntimeState {
@@ -48,6 +51,25 @@ impl AgentdState {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
+        let mut runtime_modules = RuntimeModuleSetV1::new(identity.spawn_generation)
+            .map_err(runtime_module_error)?;
+        let agent_id = identity.agent_id.to_string();
+        let generation = identity.spawn_generation.to_string();
+        runtime_modules
+            .ensure_active(
+                "runtime.agentd",
+                identity.spawn_generation,
+                runtime_module_binding_digest_v1(&["runtime.agentd", &agent_id, &generation]),
+            )
+            .map_err(runtime_module_error)?;
+        runtime_modules
+            .ensure_registered(
+                "runtime.codex",
+                identity.spawn_generation,
+                runtime_module_binding_digest_v1(&["runtime.codex", &agent_id, &generation]),
+            )
+            .map_err(runtime_module_error)?;
+
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             objective_ingress: std::sync::OnceLock::new(),
@@ -64,6 +86,7 @@ impl AgentdState {
             automation: Mutex::new(None),
             automation_operations: std::sync::OnceLock::new(),
             cognitive: Mutex::new(None),
+            runtime_modules: Mutex::new(runtime_modules),
         })
     }
 
@@ -83,6 +106,8 @@ impl AgentdState {
             ));
         }
         *cognitive = Some(store);
+        drop(cognitive);
+        self.activate_runtime_module("cognitive.store")?;
         Ok(())
     }
 
@@ -102,6 +127,8 @@ impl AgentdState {
             ));
         }
         *automation = Some(store);
+        drop(automation);
+        self.activate_runtime_module("automation.taskflow")?;
         Ok(())
     }
 
@@ -119,7 +146,8 @@ impl AgentdState {
             AgentdError::Protocol(
                 "automation operations host was attached more than once".to_string(),
             )
-        })
+        })?;
+        self.activate_runtime_module("kernel.operations")
     }
 
     pub(crate) fn automation_operations(&self) -> Option<Arc<AgentdOperationsHost>> {
@@ -233,7 +261,8 @@ impl AgentdState {
                 .map_err(poisoned_state)?
                 .push(AgentdEventKind::AppServerReady);
         }
-        Ok(())
+        drop(runtime);
+        self.activate_runtime_module("runtime.codex")
     }
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
@@ -243,13 +272,21 @@ impl AgentdState {
             .lock()
             .map_err(poisoned_state)?
             .push(AgentdEventKind::Draining);
-        Ok(())
+        drop(runtime);
+        self.runtime_modules
+            .lock()
+            .map_err(poisoned_state)?
+            .begin_drain_all()
+            .map_err(runtime_module_error)
     }
 
     pub(crate) fn mark_fenced(&self) {
         if let Ok(mut runtime) = self.runtime.lock() {
             runtime.app_server_ready = false;
             runtime.fenced = true;
+        }
+        if let Ok(mut modules) = self.runtime_modules.lock() {
+            let _ = modules.quarantine_all();
         }
         if let Ok(mut events) = self.events.lock() {
             events.push(AgentdEventKind::GenerationFenced);
@@ -260,6 +297,21 @@ impl AgentdState {
         Ok(self.runtime.lock().map_err(poisoned_state)?.fenced)
     }
 
+    pub(crate) fn activate_runtime_module(&self, module_id: &str) -> Result<(), AgentdError> {
+        let agent_id = self.identity.agent_id.to_string();
+        let generation = self.identity.spawn_generation.to_string();
+        self.runtime_modules
+            .lock()
+            .map_err(poisoned_state)?
+            .ensure_active(
+                module_id,
+                self.identity.spawn_generation,
+                runtime_module_binding_digest_v1(&[module_id, &agent_id, &generation]),
+            )
+            .map(|_| ())
+            .map_err(runtime_module_error)
+    }
+
     pub(crate) fn automation_admission_ready(&self) -> Result<bool, AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -267,6 +319,10 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+}
+
+fn runtime_module_error(error: codex_hepta_fleet::RuntimeModuleErrorV1) -> AgentdError {
+    AgentdError::Protocol(format!("runtime module lifecycle: {error}"))
 }
 
 fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {

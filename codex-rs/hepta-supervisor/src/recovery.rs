@@ -2,6 +2,8 @@ use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::RuntimeModuleSetV1;
+use codex_hepta_fleet::runtime_module_binding_digest_v1;
 use codex_hepta_fleet::AgentRecord;
 
 use crate::AdoptSpec;
@@ -146,6 +148,26 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
+        let mut runtime_modules = RuntimeModuleSetV1::new(starting.generation)
+            .map_err(|error| SupervisorError::Invalid(format!("runtime module catalog: {error}")))?;
+        let agent = agent_id.to_string();
+        let release_identity = lease.release_id.to_string();
+        let module_generation = starting.generation.to_string();
+        for module in ["runtime.agentd", "runtime.codex"] {
+            runtime_modules
+                .ensure_registered(
+                    module,
+                    starting.generation,
+                    runtime_module_binding_digest_v1(&[
+                        module,
+                        &agent,
+                        &release_identity,
+                        &module_generation,
+                    ]),
+                )
+                .map_err(|error| SupervisorError::Invalid(format!("runtime module lifecycle: {error}")))?;
+        }
+        slot.runtime_modules = Some(runtime_modules);
         slot.runtime = Some(AgentRuntime {
             process: spawned.process,
             identity: spawned.identity,
@@ -244,6 +266,41 @@ impl<D: ProcessDriver> Supervisor<D> {
                         RuntimePhase::Killing
                     }
                 };
+                let mut runtime_modules = RuntimeModuleSetV1::new(lease.spawn_generation)
+                    .map_err(|error| SupervisorError::Invalid(format!("runtime module catalog: {error}")))?;
+                let agent = agent_id.to_string();
+                let release_identity = lease.release_id.to_string();
+                let module_generation = lease.spawn_generation.to_string();
+                for module in ["runtime.agentd", "runtime.codex"] {
+                    runtime_modules
+                        .ensure_registered(
+                            module,
+                            lease.spawn_generation,
+                            runtime_module_binding_digest_v1(&[
+                                module,
+                                &agent,
+                                &release_identity,
+                                &module_generation,
+                            ]),
+                        )
+                        .map_err(|error| SupervisorError::Invalid(format!("runtime module lifecycle: {error}")))?;
+                }
+                match record.lifecycle.lifecycle {
+                    AgentLifecycle::Running => runtime_modules
+                        .activate_all()
+                        .map_err(|error| SupervisorError::Invalid(format!("runtime module lifecycle: {error}")))?,
+                    AgentLifecycle::Draining => {
+                        runtime_modules
+                            .activate_all()
+                            .and_then(|_| runtime_modules.begin_drain_all())
+                            .map_err(|error| SupervisorError::Invalid(format!("runtime module lifecycle: {error}")))?;
+                    }
+                    AgentLifecycle::Failed | AgentLifecycle::Stopped => runtime_modules
+                        .retire_all()
+                        .map_err(|error| SupervisorError::Invalid(format!("runtime module lifecycle: {error}")))?,
+                    AgentLifecycle::Starting => {}
+                }
+                slot.runtime_modules = Some(runtime_modules);
                 slot.runtime = Some(AgentRuntime {
                     process,
                     identity: lease.identity,

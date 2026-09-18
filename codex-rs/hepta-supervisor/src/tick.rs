@@ -39,13 +39,20 @@ impl<D: ProcessDriver> Supervisor<D> {
             };
             if keep {
                 slot.runtime = Some(runtime);
-            } else if !self.continue_release_change_after_exit(agent_id, slot, now)? {
-                if slot.restart_after_exit {
+            } else {
+                if let Some(modules) = slot.runtime_modules.as_mut() {
+                    modules
+                        .retire_all()
+                        .map_err(|error| SupervisorError::Invalid(format!("runtime module lifecycle: {error}")))?;
+                }
+                if !self.continue_release_change_after_exit(agent_id, slot, now)? {
+                    if slot.restart_after_exit {
                     slot.restart_after_exit = false;
                     let generation = self.record(agent_id)?.lifecycle.generation;
                     self.schedule_automatic_restart(agent_id, slot, generation, now)?;
                 }
-                self.start_pending_restart(agent_id, slot, now)?;
+                    self.start_pending_restart(agent_id, slot, now)?;
+                }
             }
         } else {
             self.start_pending_restart(agent_id, slot, now)?;
@@ -205,6 +212,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )?;
                 runtime.generation = next.generation;
                 runtime.phase = RuntimePhase::Running;
+                if let Some(modules) = slot.runtime_modules.as_mut() {
+                    modules
+                        .activate_all()
+                        .map_err(|error| SupervisorError::Invalid(format!("runtime module lifecycle: {error}")))?;
+                }
                 slot.event(
                     next.generation,
                     SupervisorEventKind::Lifecycle(AgentLifecycle::Running),

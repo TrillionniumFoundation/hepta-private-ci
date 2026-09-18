@@ -6,6 +6,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::ReleaseId;
+use codex_hepta_fleet::RuntimeModuleSetV1;
 
 use crate::AgentCommand;
 use crate::AgentRelease;
@@ -164,6 +165,8 @@ pub(crate) struct AgentSlot<P> {
     /// Durable witness for the one externally-authorized release mutation
     /// currently being processed, if any.
     pub signed_intent: Option<SignedSupervisorIntent>,
+    /// Generic runtime-module projection for the child process generation.
+    pub runtime_modules: Option<RuntimeModuleSetV1>,
 }
 
 impl<P> AgentSlot<P> {
@@ -189,6 +192,7 @@ impl<P> AgentSlot<P> {
             events: BoundedQueue::new(config.event_capacity),
             logs: BoundedQueue::new(config.log_capacity),
             signed_intent: None,
+            runtime_modules: None,
         }
     }
 

@@ -83,6 +83,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .authbus
             .set(Arc::new(host))
             .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+        state.activate_runtime_module("auth.authbus")?;
     }
     if let Some(profile_file) = objective_profile_file {
         state.refresh_generation()?;
@@ -95,6 +96,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         state.objective_ingress.set(Arc::new(host)).map_err(|_| {
             AgentdError::Protocol("Objective ingress host already attached".to_string())
         })?;
+        state.activate_runtime_module("objective.compiler")?;
     }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {

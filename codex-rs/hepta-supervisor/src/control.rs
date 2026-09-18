@@ -49,6 +49,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 lifecycle.lifecycle
             )));
         }
+        if let Some(modules) = slot.runtime_modules.as_mut() {
+            modules
+                .begin_drain_all()
+                .map_err(|error| SupervisorError::Invalid(format!("runtime module lifecycle: {error}")))?;
+        }
         let generation = {
             let runtime = active_runtime(agent_id, slot)?;
             runtime.phase = RuntimePhase::Draining {
