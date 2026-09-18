@@ -4,52 +4,28 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
+use serde::Deserialize;
+use serde::Serialize;
+
+use crate::FleetResourceVectorV1;
+
 const MAX_HOSTS: usize = 256;
 const MAX_ACTIVE_GRANTS: usize = 16_384;
+const MAX_RETAINED_GRANTS: usize = 32_768;
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct Resources {
-    pub cpu_millis: u64,
-    pub memory_bytes: u64,
-    pub accelerator_millis: u64,
-}
+pub type Resources = FleetResourceVectorV1;
 
-impl Resources {
-    pub fn checked_add(self, other: Self) -> Result<Self, Error> {
-        Ok(Self {
-            cpu_millis: self
-                .cpu_millis
-                .checked_add(other.cpu_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-            memory_bytes: self
-                .memory_bytes
-                .checked_add(other.memory_bytes)
-                .ok_or(Error::ArithmeticOverflow)?,
-            accelerator_millis: self
-                .accelerator_millis
-                .checked_add(other.accelerator_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-        })
-    }
-
-    pub fn fits(self, capacity: Self) -> bool {
-        self.cpu_millis <= capacity.cpu_millis
-            && self.memory_bytes <= capacity.memory_bytes
-            && self.accelerator_millis <= capacity.accelerator_millis
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 pub struct HostObservation {
     pub host_id: String,
     pub failure_domain_id: String,
     pub generation: u64,
     pub observed_at_ms: u64,
     pub valid_until_ms: u64,
-    pub capacity: Resources,
+    pub capacity: FleetResourceVectorV1,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 pub struct AllocationGrant {
     pub allocation_id: String,
     pub request_id: String,
@@ -60,7 +36,7 @@ pub struct AllocationGrant {
     pub authority_epoch: u64,
     pub lease_generation: u64,
     pub expires_at_ms: u64,
-    pub resources: Resources,
+    pub resources: FleetResourceVectorV1,
     pub semantic_digest: String,
     pub revoked: bool,
 }
@@ -115,24 +91,23 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct LeaseLedger {
     hosts: BTreeMap<String, HostObservation>,
     grants: BTreeMap<String, AllocationGrant>,
 }
 
-impl Default for LeaseLedger {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl LeaseLedger {
     pub fn new() -> Self {
-        Self {
-            hosts: BTreeMap::new(),
-            grants: BTreeMap::new(),
-        }
+        Self::default()
+    }
+
+    pub fn hosts(&self) -> impl Iterator<Item = &HostObservation> {
+        self.hosts.values()
+    }
+
+    pub fn grants(&self) -> impl Iterator<Item = &AllocationGrant> {
+        self.grants.values()
     }
 
     pub fn admit_host(&mut self, observation: HostObservation) -> Result<(), Error> {
@@ -140,7 +115,7 @@ impl LeaseLedger {
         validate_identity(&observation.failure_domain_id, "failure domain")?;
         if observation.generation == 0
             || observation.observed_at_ms >= observation.valid_until_ms
-            || observation.capacity == Resources::default()
+            || observation.capacity.is_zero()
         {
             return Err(Error::HostCapacity);
         }
@@ -166,6 +141,7 @@ impl LeaseLedger {
         now_ms: u64,
         mut grant: AllocationGrant,
     ) -> Result<LeaseReceipt, Error> {
+        self.prune_expired(now_ms);
         validate_grant(&grant)?;
         let host = self.hosts.get(&grant.host_id).ok_or(Error::HostNotFound)?;
         if now_ms < host.observed_at_ms || now_ms >= host.valid_until_ms {
@@ -185,17 +161,39 @@ impl LeaseLedger {
             }
             return Err(Error::Conflict);
         }
-        if self.grants.len() >= MAX_ACTIVE_GRANTS {
+        let active_grants = self
+            .grants
+            .values()
+            .filter(|current| !current.revoked && current.expires_at_ms > now_ms)
+            .count();
+        if active_grants >= MAX_ACTIVE_GRANTS || self.grants.len() >= MAX_RETAINED_GRANTS {
             return Err(Error::GrantCapacityExceeded);
         }
         let committed = self.committed_resources(&grant.host_id, now_ms)?;
-        if !committed.checked_add(grant.resources)?.fits(host.capacity) {
+        let Some(total) = committed.checked_add(grant.resources) else {
+            return Err(Error::ArithmeticOverflow);
+        };
+        if !total.fits(host.capacity) {
             return Err(Error::CapacityExceeded);
         }
         grant.revoked = false;
         let result = receipt(&grant, LeaseOutcome::Issued);
         self.grants.insert(grant.allocation_id.clone(), grant);
         Ok(result)
+    }
+
+    pub fn issue_batch(
+        &mut self,
+        now_ms: u64,
+        grants: Vec<AllocationGrant>,
+    ) -> Result<Vec<LeaseReceipt>, Error> {
+        let mut candidate = self.clone();
+        let mut receipts = Vec::with_capacity(grants.len());
+        for grant in grants {
+            receipts.push(candidate.issue(now_ms, grant)?);
+        }
+        *self = candidate;
+        Ok(receipts)
     }
 
     pub fn renew_or_revoke(
@@ -207,6 +205,7 @@ impl LeaseLedger {
         semantic_digest: &str,
         disposition: LeaseDisposition,
     ) -> Result<LeaseReceipt, Error> {
+        self.prune_expired(now_ms);
         validate_identity(allocation_id, "allocation")?;
         validate_digest(semantic_digest)?;
         let current = self
@@ -270,14 +269,60 @@ impl LeaseLedger {
         self.grants.get(allocation_id)
     }
 
-    fn committed_resources(&self, host_id: &str, now_ms: u64) -> Result<Resources, Error> {
+    pub fn available_resources(
+        &self,
+        host_id: &str,
+        now_ms: u64,
+    ) -> Result<FleetResourceVectorV1, Error> {
+        let host = self.hosts.get(host_id).ok_or(Error::HostNotFound)?;
+        if now_ms < host.observed_at_ms || now_ms >= host.valid_until_ms {
+            return Err(Error::StaleHost);
+        }
+        let committed = self.committed_resources(host_id, now_ms)?;
+        host.capacity
+            .checked_sub(committed)
+            .ok_or(Error::ArithmeticOverflow)
+    }
+
+    pub fn enforce(
+        &self,
+        now_ms: u64,
+        allocation_id: &str,
+        host_id: &str,
+        principal_id: &str,
+        lease_generation: u64,
+    ) -> Result<&AllocationGrant, Error> {
+        let grant = self.grants.get(allocation_id).ok_or(Error::AllocationNotFound)?;
+        if grant.revoked || grant.expires_at_ms <= now_ms {
+            return Err(Error::Revoked);
+        }
+        if grant.host_id != host_id || grant.principal_id != principal_id {
+            return Err(Error::Conflict);
+        }
+        if grant.lease_generation != lease_generation {
+            return Err(Error::StaleLease);
+        }
+        Ok(grant)
+    }
+
+    pub fn prune_expired(&mut self, now_ms: u64) -> usize {
+        let before = self.grants.len();
+        self.grants.retain(|_, grant| grant.expires_at_ms > now_ms);
+        before - self.grants.len()
+    }
+
+    fn committed_resources(
+        &self,
+        host_id: &str,
+        now_ms: u64,
+    ) -> Result<FleetResourceVectorV1, Error> {
         self.grants
             .values()
             .filter(|grant| {
                 grant.host_id == host_id && !grant.revoked && grant.expires_at_ms > now_ms
             })
-            .try_fold(Resources::default(), |sum, grant| {
-                sum.checked_add(grant.resources)
+            .try_fold(FleetResourceVectorV1::default(), |sum, grant| {
+                sum.checked_add(grant.resources).ok_or(Error::ArithmeticOverflow)
             })
     }
 }
@@ -320,7 +365,7 @@ fn validate_grant(grant: &AllocationGrant) -> Result<(), Error> {
     if grant.host_generation == 0 || grant.authority_epoch == 0 || grant.lease_generation == 0 {
         return Err(Error::InvalidGeneration);
     }
-    if grant.resources == Resources::default() {
+    if grant.resources.is_zero() {
         return Err(Error::HostCapacity);
     }
     Ok(())
