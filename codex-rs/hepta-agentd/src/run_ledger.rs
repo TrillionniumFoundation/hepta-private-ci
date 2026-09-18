@@ -94,8 +94,10 @@ impl RunLedger {
         let mut next = self.coordinator.clone();
         let result = operation(&mut next).map_err(run_error)?;
         next.validate_recovered_state().map_err(run_error)?;
-        self.persist_value(&next)?;
-        self.coordinator = next;
+        if next != self.coordinator {
+            self.persist_value(&next)?;
+            self.coordinator = next;
+        }
         Ok(result)
     }
 
