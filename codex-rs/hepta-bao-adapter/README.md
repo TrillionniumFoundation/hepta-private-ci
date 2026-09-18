@@ -71,11 +71,7 @@ a stable idempotency key and supports durable status lookup. Until then the
 operation remains `Indeterminate` and owner/operator reconciliation is
 required before issuing another unrestricted credential.
 
-The adapter currently keeps known lease handles in the trusted host process;
-it does not yet own a durable lease registry. Product composition must persist
-the required lease identity/state before claiming crash/reopen lifecycle
-recovery. This source-level API therefore closes the typed lifecycle seam, not
-the remaining durable-registry or external-provider qualification gates.
+Dynamic mutation entrypoints require `SecretLeaseRegistry`, an owner-private SQLite registry. It writes an operation fence before provider mutation, persists an issued handle before secret callback entry, records renew/revoke transitions, and retains `Indeterminate` operations across reopen so the same occurrence cannot be blindly dispatched again. The registry uses DELETE journaling and FULL synchronous mode and keeps the database inside a private Unix directory/file boundary. This closes the local known-identity crash/reopen seam; it still cannot recover a provider lease ID that was never received because an issuance response was lost.
 
 ## Host integration
 
@@ -147,7 +143,7 @@ Dynamic lease mutation APIs now exist, but they deliberately do not reuse read r
 
 ## Verification
 
-Targeted tests cover a real loopback TLS exchange, exact KV request headers and version, dynamic lease issuance with secret-only callback delivery, dynamic response-body timeout becoming indeterminate, forged signature rejection, nonce replay rejection, provider denial, revocation during a network wait, incorrect trust root and response bounds.
+Targeted tests cover a real loopback TLS exchange, exact KV request headers and version, dynamic lease issuance with secret-only callback delivery, dynamic response-body timeout becoming durable indeterminate state, registry reopen/recovery, renew/revoke TLS endpoints and persisted lifecycle transitions, forged signature rejection, nonce replay rejection, provider denial, revocation during a network wait, incorrect trust root and response bounds.
 Kernel tests cover signed-field changes, wrong issuer, expiry and epoch fences.
 Run `just test -p codex-hepta-bao-adapter -p codex-hepta-contracts` in the normal
 workspace and the repository formatting/lint gates before merging.
