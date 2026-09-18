@@ -230,7 +230,8 @@
       "tests": [
         "ExternalControlTests.test_external_fence_binds_local_token_epoch_paths_and_source",
         "ExternalControlTests.test_audit_anchor_must_match_current_store_head",
-        "ExternalControlTests.test_key_custody_requires_hardware_external_boundary_and_roles"
+        "ExternalControlTests.test_key_custody_requires_hardware_external_boundary_and_roles",
+        "ExternalControlTests.test_empty_audit_chain_cannot_be_externally_attested_as_valid"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "admission verification only; no external authority minted"
