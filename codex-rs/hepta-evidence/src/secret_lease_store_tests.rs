@@ -19,6 +19,7 @@ fn requesting() -> SecretLeaseRecord {
     SecretLeaseRecord::requesting(
         "lease:database:reader:one".into(),
         "provider:heptabao".into(),
+        "team/one".into(),
         "database/creds/reader".into(),
         Sha256Digest::for_bytes(b"logical-request"),
         "operation:issue:one".into(),
@@ -32,6 +33,7 @@ fn active(previous: &SecretLeaseRecord) -> SecretLeaseRecord {
         schema_version: previous.schema_version,
         lease_key: previous.lease_key.clone(),
         provider_id: previous.provider_id.clone(),
+        provider_namespace: previous.provider_namespace.clone(),
         provider_path: previous.provider_path.clone(),
         request_sha256: previous.request_sha256.clone(),
         provider_lease_id: Some("database/creds/reader/provider-lease-one".into()),
@@ -87,6 +89,7 @@ async fn changed_create_conflicts_and_cas_rejects_stale_revision() {
     let changed = SecretLeaseRecord::requesting(
         record.lease_key.clone(),
         record.provider_id.clone(),
+        record.provider_namespace.clone(),
         "database/creds/other".into(),
         Sha256Digest::for_bytes(b"other-logical-request"),
         "operation:issue:other".into(),
