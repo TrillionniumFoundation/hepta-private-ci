@@ -104,7 +104,8 @@ from .hardening import (
 )
 
 # The store owns its schema and transactions directly. Public composition uses
-# authenticated evidence; candidate.py remains the sole sandbox executor.
+# authenticated evidence; candidate.py owns exact materialization/execution
+# primitives and composite_candidate.py composes those primitives atomically.
 from .closure import prepare_assimilation_candidate
 from .seal import (
     SealedCandidateEvidence,
