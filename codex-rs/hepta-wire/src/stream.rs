@@ -39,11 +39,24 @@ pub struct StreamProgress {
 pub struct WireStreamDecoder {
     buffer: Vec<u8>,
     expected_len: Option<usize>,
+    expected_version: Option<WireVersion>,
 }
 
 impl WireStreamDecoder {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn for_version(version: WireVersion) -> Self {
+        Self {
+            buffer: Vec::new(),
+            expected_len: None,
+            expected_version: Some(version),
+        }
+    }
+
+    pub const fn negotiated_version(&self) -> Option<WireVersion> {
+        self.expected_version
     }
 
     pub fn buffered_len(&self) -> usize {
@@ -82,7 +95,7 @@ impl WireStreamDecoder {
                     });
                 }
 
-                let expected = expected_frame_len(&self.buffer)?;
+                let expected = expected_frame_len(&self.buffer, self.expected_version)?;
                 self.buffer.reserve(expected - self.buffer.len());
                 self.expected_len = Some(expected);
             }
@@ -113,7 +126,10 @@ impl WireStreamDecoder {
     }
 }
 
-fn expected_frame_len(header: &[u8]) -> Result<usize, StreamDecodeError> {
+fn expected_frame_len(
+    header: &[u8],
+    expected_version: Option<WireVersion>,
+) -> Result<usize, StreamDecodeError> {
     if header.len() < HEADER_FIXED_BYTES {
         return Err(StreamDecodeError::TruncatedHeader);
     }
@@ -121,7 +137,16 @@ fn expected_frame_len(header: &[u8]) -> Result<usize, StreamDecodeError> {
         return Err(StreamDecodeError::Magic);
     }
     let version = read_u16(header, 4)?;
-    WireVersion::try_from(version).map_err(|_| StreamDecodeError::Version(version))?;
+    let observed =
+        WireVersion::try_from(version).map_err(|_| StreamDecodeError::Version(version))?;
+    if let Some(expected) = expected_version {
+        if observed != expected {
+            return Err(StreamDecodeError::NegotiatedVersionMismatch {
+                expected,
+                observed,
+            });
+        }
+    }
     let schema_length = usize::from(read_u16(header, 6)?);
     let producer_length = usize::from(read_u16(header, 8)?);
     if !(1..=MAX_ID_BYTES).contains(&schema_length)
@@ -201,6 +226,10 @@ pub enum StreamDecodeError {
     TruncatedHeader,
     Magic,
     Version(u16),
+    NegotiatedVersionMismatch {
+        expected: WireVersion,
+        observed: WireVersion,
+    },
     IdentityLength,
     Generation,
     PayloadLength,
