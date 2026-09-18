@@ -10,6 +10,7 @@ on:
       - codex-rs/hepta-learning-artifacts/**
       - codex-rs/hepta-bellman-operator/**
       - codex-rs/hepta-intelligence-eval/**
+      - codex-rs/hepta-intelligence/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
       - qualification/lane-e/**
@@ -75,6 +76,8 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets
 
@@ -86,6 +89,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
       - name: Trusted-only legacy evaluation compatibility regression
         working-directory: codex-rs
         run: >-
@@ -156,6 +160,8 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets -- -D warnings
 
@@ -169,6 +175,7 @@ jobs:
             --package codex-hepta-learning-artifacts \
             --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
             --package codex-hepta-shadow-qualification \
             -- --check
           git diff --check
@@ -280,6 +287,8 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets
 
@@ -291,6 +300,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
       - name: Test merged trusted-only legacy evaluation compatibility
         working-directory: codex-rs
         run: >-
@@ -330,6 +340,7 @@ jobs:
             --package codex-hepta-learning-artifacts \
             --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
             --package codex-hepta-shadow-qualification \
             -- --check
           git diff --cached --check
