@@ -247,6 +247,61 @@ fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
 }
 
 #[test]
+fn released_runs_archive_compact_and_preserve_exact_replay_across_reopen() {
+    let path = path("archive");
+    let mut control = DurableInferenceControl::open(&path, 2).unwrap();
+    start(&mut control, "r1");
+    let settled = control
+        .settle_native("r1", output(NativeRunStatus::Completed, Some(11)))
+        .unwrap();
+    let before = std::fs::metadata(&path).unwrap().len();
+    let receipt = control.archive_released_native().unwrap();
+    assert_eq!(receipt.archived, 1);
+    assert_eq!(receipt.remaining_native, 0);
+    assert!(receipt.journal_bytes < before);
+    assert!(control.native_record("r1").is_none());
+    assert_eq!(control.reserve_native(request("r1"), 1).unwrap(), settled);
+    let mut drift = request("r1");
+    drift.payload_digest = "c".repeat(64);
+    assert_eq!(control.reserve_native(drift, 1), Err(Error::Conflict));
+    control.reserve_native(request("r2"), 1).unwrap();
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 2).unwrap();
+    assert_eq!(reopened.reserve_native(request("r1"), 1).unwrap(), settled);
+    assert!(reopened.native_record("r1").is_none());
+    assert!(reopened.native_record("r2").is_some());
+    drop(reopened);
+
+    let archive_dir = super::super::companion_path(&path, ".archive");
+    assert!(archive_dir.is_dir());
+    std::fs::remove_dir_all(archive_dir).unwrap();
+    std::fs::remove_file(super::super::companion_path(&path, ".lock")).unwrap();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn indeterminate_runs_are_never_archived_or_compacted_away() {
+    let path = path("archive-indeterminate");
+    let mut control = DurableInferenceControl::open(&path, 2).unwrap();
+    start(&mut control, "r1");
+    let unknown = control
+        .settle_native("r1", output(NativeRunStatus::Indeterminate, None))
+        .unwrap();
+    let bytes = std::fs::read(&path).unwrap();
+    let receipt = control.archive_released_native().unwrap();
+    assert_eq!(receipt.archived, 0);
+    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    assert_eq!(control.native_record("r1"), Some(&unknown));
+    drop(control);
+    let reopened = DurableInferenceControl::open(&path, 2).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&unknown));
+    drop(reopened);
+    std::fs::remove_file(super::super::companion_path(&path, ".lock")).unwrap();
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn oversized_and_incomplete_lines_are_rejected_without_truncation() {
     let path = path("line-budget");
     let mut oversized = vec![b'x'; super::super::MAX_JOURNAL_LINE_BYTES + 1];
