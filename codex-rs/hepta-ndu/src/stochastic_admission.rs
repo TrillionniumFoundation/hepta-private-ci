@@ -76,10 +76,7 @@ pub fn admit_stochastic_evidence_binding_v1(
     expected_objective_class_digest: Digest32,
     now_unix_ms: u64,
 ) -> Result<AdmittedNduStochasticEvidenceV1, NduStochasticAdmissionError> {
-    require_digest(
-        expected_objective_class_digest,
-        "expected_objective_class",
-    )?;
+    require_digest(expected_objective_class_digest, "expected_objective_class")?;
     for (digest, field) in [
         (binding.objective_class_digest, "objective_class"),
         (binding.coefficient_manifest_digest, "coefficient_manifest"),
@@ -267,9 +264,7 @@ mod tests {
                 1_000,
             )
             .expect_err("missing identification evidence must reject"),
-            NduStochasticAdmissionError::MissingDigest(
-                "conditional_identification_evidence",
-            )
+            NduStochasticAdmissionError::MissingDigest("conditional_identification_evidence",)
         );
     }
 
@@ -328,15 +323,11 @@ mod tests {
             Ok(value) => value,
             Err(error) => panic!("unexpected admission error: {error:?}"),
         };
-        let bound = match solve_backward_regression_with_admission(
-            &moments,
-            &profile,
-            &admitted,
-            1_500,
-        ) {
-            Ok(value) => value,
-            Err(error) => panic!("unexpected regression error: {error:?}"),
-        };
+        let bound =
+            match solve_backward_regression_with_admission(&moments, &profile, &admitted, 1_500) {
+                Ok(value) => value,
+                Err(error) => panic!("unexpected regression error: {error:?}"),
+            };
         assert_eq!(bound.stochastic_admission_digest, admitted.admission_digest);
         assert!((bound.estimate.z[0][0] - 3.0).abs() < 1e-12);
     }
