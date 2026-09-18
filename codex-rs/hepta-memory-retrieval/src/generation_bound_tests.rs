@@ -226,7 +226,6 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
     );
 }
 
-
 #[test]
 fn compiled_cue_is_deterministic_and_generation_bound() {
     let snapshot = snapshot_key();
