@@ -205,12 +205,15 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>> {
         .custom_flags(libc::O_NOFOLLOW)
         .open(path)?;
     let metadata = file.metadata()?;
+    let effective_uid = rustix::process::geteuid().as_raw();
     if !metadata.is_file()
-        || metadata.mode() & 0o077 != 0
+        || metadata.mode() & 0o022 != 0
         || metadata.nlink() != 1
-        || metadata.uid() != rustix::process::geteuid().as_raw()
+        || (metadata.uid() != 0 && metadata.uid() != effective_uid)
     {
-        return Err("final-use authority config must be an owner-only regular file".into());
+        return Err(
+            "final-use authority config must be a protected root/owner regular file".into(),
+        );
     }
     let mut bytes = Vec::new();
     file.by_ref()
