@@ -103,8 +103,13 @@ Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
 malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+Dynamic lease mutations are implemented separately by `BaoLeaseCoordinator`
+and documented in [SECRET_LEASE.md](SECRET_LEASE.md). They require a provider
+that proves stable operation-key deduplication plus durable status lookup,
+persist intent before any mutation, and never reuse the KV-read retry model.
+The legacy metadata-only boundary remains non-dispatching. HeptaBao server-side
+dynamic-broker composition is a separate co-owned integration and is not
+claimed by this adapter source.
 
 ## Verification
 
