@@ -395,17 +395,11 @@ impl LongHorizonSegmentedLedgerV1 {
     }
 
     pub fn contains_anchor(
-        &mut self,
+        &self,
         anchor: LedgerAnchor,
     ) -> Result<bool, LongHorizonLedgerErrorV1> {
         self.ready()?;
-        if anchor.sequence == 0 {
-            return Ok(anchor.chain_digest.is_zero());
-        }
-        Ok(self
-            .semantic
-            .historical_chain_digest(anchor.sequence)?
-            .is_some_and(|digest| digest == anchor.chain_digest))
+        self.semantic.contains_anchor(anchor).map_err(Into::into)
     }
 
     pub fn metrics(&self) -> Result<LongHorizonLedgerMetricsV1, LongHorizonLedgerErrorV1> {
