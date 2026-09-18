@@ -59,13 +59,42 @@ impl ContextSerializerV2 for FramingSerializer {
         &self,
         _profile: &ContextModelProfileV2,
         ordered_items: &[ContextPayloadItemV2],
-    ) -> Result<Vec<u8>, String> {
+    ) -> Result<ContextSerializedPayloadV2, String> {
         let mut payload = b"<ctx>".to_vec();
+        let mut placements = Vec::new();
         for item in ordered_items {
+            let start = payload.len();
             payload.extend_from_slice(item.content());
+            let end = payload.len();
+            placements.push(ContextPayloadPlacementV2::new(
+                item.item_id().clone(),
+                start,
+                end,
+            ));
         }
         payload.extend_from_slice(b"</ctx>");
-        Ok(payload)
+        Ok(ContextSerializedPayloadV2::new(payload, placements))
+    }
+}
+
+struct DroppingSerializer {
+    identity: Digest32,
+}
+
+impl ContextSerializerV2 for DroppingSerializer {
+    fn serializer_digest(&self) -> Digest32 {
+        self.identity
+    }
+
+    fn serialize(
+        &self,
+        _profile: &ContextModelProfileV2,
+        _ordered_items: &[ContextPayloadItemV2],
+    ) -> Result<ContextSerializedPayloadV2, String> {
+        Ok(ContextSerializedPayloadV2::new(
+            b"<ctx></ctx>".to_vec(),
+            Vec::new(),
+        ))
     }
 }
 
@@ -502,6 +531,27 @@ fn final_payload_is_retokenized_and_serializer_overhead_can_refuse_attachment_pa
             actual_tokens: 14,
             token_budget: 3,
         })
+    );
+}
+
+#[test]
+fn serialization_rejects_serializer_that_drops_selected_item() {
+    let content = b"abc";
+    let compiled = compile_one_trusted(content, 100);
+    assert_eq!(
+        serialize_context_v2(
+            &compiled,
+            id("serialization:dropped"),
+            vec![ContextPayloadItemV2::new(
+                id("item:trusted"),
+                content.to_vec(),
+            )],
+            &DroppingSerializer {
+                identity: digest("serializer"),
+            },
+            &tokenizer(),
+        ),
+        Err(ContextCompilerV2Error::PayloadPlacementSetMismatch)
     );
 }
 
