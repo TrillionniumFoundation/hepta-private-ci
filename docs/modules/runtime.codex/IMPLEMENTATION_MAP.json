@@ -7,17 +7,13 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
-  "sourceMaturity": "native_execution_spine_composed",
+  "sourceMaturity": "native_execution_spine",
   "declaredRoots": [
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
   ],
   "resolvedRoots": [
     "codex-rs/app-server",
-    "codex-rs/app-server-client/src/remote.rs",
-    "codex-rs/hepta-agentd/src/app_runtime.rs",
-    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
-    "codex-rs/hepta-infer-core/src/native_control.rs",
     "codex-rs/core/src/tools/router.rs",
     "codex-rs/core/src/codex_thread.rs",
     "codex-rs/hepta-codex-adapter"
@@ -176,5 +172,12 @@
   "sourceRoot": [
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
-  ]
+  ],
+  "compositionEvidenceRoots": [
+    "codex-rs/app-server-client/src/remote.rs",
+    "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-core/src/native_control.rs"
+  ],
+  "compositionState": "source_composed_qualification_pending"
 }
