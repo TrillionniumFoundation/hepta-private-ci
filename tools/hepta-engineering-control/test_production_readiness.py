@@ -38,6 +38,13 @@ class ProductionReadinessTests(unittest.TestCase):
             deployment_receipt_digest="9" * 64,
             rollback_rehearsed=True,
             rollback_receipt_digest="a" * 64,
+            source_receipt_verified=True,
+            completion_receipts_verified=True,
+            multidimensional_orchestration_verified=True,
+            external_audit_anchor_observed=True,
+            audit_anchor_receipt_digest="b" * 64,
+            multi_host_execution=True,
+            distributed_coordination_bound=True,
         )
 
     def test_complete_verified_fact_set_closes_both_readiness_dimensions(self) -> None:
@@ -82,6 +89,8 @@ class ProductionReadinessTests(unittest.TestCase):
             strong_sandbox_observed=False,
             deployment_observed=False,
             rollback_rehearsed=False,
+            external_audit_anchor_observed=False,
+            distributed_coordination_bound=False,
         )
         decision = evaluate_production_readiness(facts)
         self.assertTrue(decision.production_implementation_ready)
@@ -93,6 +102,8 @@ class ProductionReadinessTests(unittest.TestCase):
         self.assertIn("strong_sandbox_not_observed", decision.deployment_blockers)
         self.assertIn("deployment_not_observed", decision.deployment_blockers)
         self.assertIn("rollback_not_rehearsed", decision.deployment_blockers)
+        self.assertIn("external_audit_anchor_missing", decision.deployment_blockers)
+        self.assertIn("distributed_coordination_missing", decision.deployment_blockers)
 
     def test_non_boolean_claims_and_authority_delta_fail_closed(self) -> None:
         facts = replace(
