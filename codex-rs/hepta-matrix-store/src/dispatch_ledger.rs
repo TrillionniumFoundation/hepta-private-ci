@@ -137,7 +137,7 @@ impl MatrixDurableStore {
         now_ms: u64,
         intent: &SendIntent,
     ) -> Result<SendReceipt, MatrixDispatchError> {
-        validate_intent(now_ms, intent)?;
+        validate_intent_shape(intent)?;
         let mut transaction = self
             .sqlite_pool()
             .begin_with("BEGIN IMMEDIATE")
@@ -165,17 +165,22 @@ impl MatrixDurableStore {
         if transaction_reuse != 0 {
             return Err(MatrixDispatchError::OperationConflict);
         }
-        let unresolved: i64 = sqlx::query_scalar(
-            "SELECT COUNT(*) FROM matrix_dispatch_ledger
-             WHERE state NOT IN ('succeeded', 'failed', 'redacted')",
-        )
-        .fetch_one(&mut *transaction)
-        .await
-        .map_err(store_error)?;
-        if u64::try_from(unresolved).map_err(|_| MatrixDispatchError::Store)?
-            >= MAX_UNRESOLVED_SENDS
-        {
-            return Err(MatrixDispatchError::CapacityExceeded);
+        let preobserved =
+            matching_server_observation_tx(&mut transaction, intent, None).await?;
+        if preobserved.is_none() {
+            validate_intent_live(now_ms, intent)?;
+            let unresolved: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM matrix_dispatch_ledger
+                 WHERE state NOT IN ('succeeded', 'failed', 'redacted')",
+            )
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(store_error)?;
+            if u64::try_from(unresolved).map_err(|_| MatrixDispatchError::Store)?
+                >= MAX_UNRESOLVED_SENDS
+            {
+                return Err(MatrixDispatchError::CapacityExceeded);
+            }
         }
         sqlx::query(
             "INSERT INTO matrix_dispatch_ledger (
@@ -214,9 +219,7 @@ impl MatrixDurableStore {
         // stable Matrix transaction before the dispatch-ledger row existed.
         // Reconcile that durable observation before any caller can retry wire
         // dispatch, preserving one transaction identity across restart.
-        if let Some(observation) =
-            matching_server_observation_tx(&mut transaction, intent, None).await?
-        {
+        if let Some(observation) = preobserved {
             settle_succeeded_tx(&mut transaction, &intent.operation_id, &observation).await?;
         }
         let receipt = load_record_tx(&mut transaction, &intent.operation_id)
@@ -1148,7 +1151,7 @@ fn server_observation_from_row(
     })
 }
 
-fn validate_intent(now_ms: u64, value: &SendIntent) -> Result<(), MatrixDispatchError> {
+fn validate_intent_shape(value: &SendIntent) -> Result<(), MatrixDispatchError> {
     for (field, name) in [
         (&value.operation_id, "operation"),
         (&value.transaction_id, "transaction"),
@@ -1172,7 +1175,7 @@ fn validate_intent(now_ms: u64, value: &SendIntent) -> Result<(), MatrixDispatch
             if grant_payload_digest != &value.payload_digest {
                 return Err(MatrixDispatchError::PayloadMismatch);
             }
-            if expires_at_ms <= now_ms || expires_at_ms > i64::MAX as u64 {
+            if expires_at_ms == 0 || expires_at_ms > i64::MAX as u64 {
                 return Err(MatrixDispatchError::DeadlineExpired);
             }
         }
@@ -1181,8 +1184,22 @@ fn validate_intent(now_ms: u64, value: &SendIntent) -> Result<(), MatrixDispatch
     if value.session_generation == 0 || value.authority_epoch == 0 {
         return Err(MatrixDispatchError::InvalidGeneration);
     }
-    if value.reconciliation_deadline_ms <= now_ms
+    if value.reconciliation_deadline_ms == 0
         || value.reconciliation_deadline_ms > i64::MAX as u64
+    {
+        return Err(MatrixDispatchError::DeadlineExpired);
+    }
+    Ok(())
+}
+
+fn validate_intent_live(
+    now_ms: u64,
+    value: &SendIntent,
+) -> Result<(), MatrixDispatchError> {
+    if value
+        .verified_grant_expires_at_ms
+        .is_some_and(|expires_at_ms| expires_at_ms <= now_ms)
+        || value.reconciliation_deadline_ms <= now_ms
     {
         return Err(MatrixDispatchError::DeadlineExpired);
     }
