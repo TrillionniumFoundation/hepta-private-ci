@@ -213,12 +213,15 @@ async fn run_supervisord_inner(
     let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let (supervisor, recovery) = Supervisor::recover(
+    let (mut supervisor, recovery) = Supervisor::recover(
         registry.clone(),
         driver,
         SupervisorConfig::local_default(),
         Instant::now(),
     )?;
+    if let Some(revocation_frontier) = production_revocation_frontier {
+        supervisor.set_production_revocation_frontier(revocation_frontier)?;
+    }
     let state = Arc::new(DaemonState {
         registry,
         supervisor: Mutex::new(supervisor),
