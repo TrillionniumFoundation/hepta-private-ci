@@ -5,6 +5,7 @@ use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
+use crate::ForgetMemoryDraft;
 use crate::KgEntityFactDraft;
 use crate::KgFactSetDraft;
 use crate::KgRelationFactDraft;
@@ -12,6 +13,7 @@ use crate::MemoryDraft;
 use crate::MemoryLifecycleState;
 use crate::MemoryRevisionDraft;
 use crate::MemoryVerification;
+use crate::RetrievalRequest;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use crate::cognitive_test_support::source;
@@ -33,14 +35,15 @@ fn revision(scope: CognitiveScope, content: &str) -> MemoryRevisionDraft {
 async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
     let temp = TempDir::new().expect("temp dir");
     let agent_id = agent_id(4);
-    let store = CognitiveStore::open(&layout(&temp, &agent_id))
+    let store_layout = layout(&temp, &agent_id);
+    let store = CognitiveStore::open(&store_layout)
         .await
         .expect("store");
     let workspace_sha256 = workspace("research");
     let scope = CognitiveScope::WorkspacePrivate {
         workspace_sha256: workspace_sha256.clone(),
     };
-    let access = CognitiveAccess::workspace_private(agent_id, workspace_sha256);
+    let access = CognitiveAccess::workspace_private(agent_id.clone(), workspace_sha256);
     let content = "Ada collaborated with Charles.";
     let first = store
         .remember_with_kg(
@@ -133,7 +136,7 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
             &source(scope.clone(), "dangling", bad_content),
             &MemoryDraft {
                 stable_key: "dangling".to_string(),
-                revision: revision(scope, bad_content),
+                revision: revision(scope.clone(), bad_content),
             },
             &KgFactSetDraft {
                 entities: Vec::new(),
@@ -154,5 +157,68 @@ async fn product_projection_is_scoped_cited_append_only_and_fts_backed() {
             .await
             .expect("rolled-back source count"),
         sources_before
+    );
+
+    drop(store);
+    let reopened = CognitiveStore::open(&store_layout)
+        .await
+        .expect("reopen after correction");
+    let after_restart = reopened
+        .retrieve_memory_candidates(&access, &RetrievalRequest::new("Ada Lovelace", 200))
+        .await
+        .expect("query corrected projection after restart");
+    assert!(
+        after_restart
+            .candidates
+            .iter()
+            .any(|candidate| candidate.memory.id.memory_id == first.memory.id.memory_id),
+        "corrected KG support must remain visible through the product query consumer after restart"
+    );
+
+    let reason = "withdraw corrected Ada memory";
+    let forgotten = reopened
+        .forget_with_kg(
+            &access,
+            &first.memory.id.memory_id,
+            2,
+            &source(scope.clone(), "kg-forget", reason),
+            &ForgetMemoryDraft {
+                scope: scope.clone(),
+                reason: reason.to_string(),
+                valid_from_unix_seconds: 300,
+            },
+        )
+        .await
+        .expect("tombstone projection");
+    assert_eq!(forgotten.projection.generation.get(), 3);
+    assert_eq!(forgotten.projection.node_count, 0);
+    assert_eq!(forgotten.projection.edge_count, 0);
+
+    let after_forget = reopened
+        .retrieve_memory_candidates(&access, &RetrievalRequest::new("Ada Lovelace", 400))
+        .await
+        .expect("query after tombstone");
+    assert!(
+        after_forget
+            .candidates
+            .iter()
+            .all(|candidate| candidate.memory.id.memory_id != first.memory.id.memory_id),
+        "tombstoned support must disappear from visible query semantics"
+    );
+
+    drop(reopened);
+    let reopened_again = CognitiveStore::open(&store_layout)
+        .await
+        .expect("reopen after tombstone");
+    let after_second_restart = reopened_again
+        .retrieve_memory_candidates(&access, &RetrievalRequest::new("Ada Lovelace", 400))
+        .await
+        .expect("query tombstoned projection after restart");
+    assert!(
+        after_second_restart
+            .candidates
+            .iter()
+            .all(|candidate| candidate.memory.id.memory_id != first.memory.id.memory_id),
+        "tombstone visibility must survive restart"
     );
 }
