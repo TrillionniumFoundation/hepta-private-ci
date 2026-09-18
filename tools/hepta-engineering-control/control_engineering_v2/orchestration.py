@@ -227,6 +227,8 @@ def _verify_completion(
     checked_id(receipt.generation_id, "generation_id")
     checked_sha256(receipt.generation_digest, "generation_digest")
     checked_sha256(receipt.result_digest, "result_digest")
+    if receipt.generation_digest == "0" * 64 or receipt.result_digest == "0" * 64:
+        raise EngineeringError("completion_receipt_digest")
     if receipt.source_commit != envelope.source_commit or receipt.source_tree != envelope.source_tree:
         raise EngineeringError("completion_source_mismatch")
     if receipt.issuer not in {"ci_executor", "package_owner"}:
@@ -242,7 +244,7 @@ def _verify_completion(
     ):
         raise EngineeringError("completion_receipt_signature")
     generation = store.connection.execute(
-        "SELECT envelope_id,semantic_digest,assigned_json "
+        "SELECT envelope_id,semantic_digest,assigned_json,created_unix_ns "
         "FROM assignment_generations WHERE generation_id=?",
         (receipt.generation_id,),
     ).fetchone()
@@ -253,6 +255,10 @@ def _verify_completion(
         or str(generation["semantic_digest"]) != receipt.generation_digest
     ):
         raise EngineeringError("completion_generation_mismatch")
+    if receipt.observed_unix_ns < int(generation["created_unix_ns"]):
+        raise EngineeringError("completion_receipt_before_generation")
+    if receipt.expires_unix_ns > envelope.expires_unix_ns:
+        raise EngineeringError("completion_receipt_window_exceeds_envelope")
     assigned_raw = generation["assigned_json"]
     if isinstance(assigned_raw, str):
         assigned_text = assigned_raw
