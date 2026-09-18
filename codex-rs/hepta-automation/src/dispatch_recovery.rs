@@ -52,10 +52,7 @@ impl AutomationStore {
         {
             return Err(AutomationError::Conflict);
         }
-        let task = self
-            .task(task_id)
-            .await?
-            .ok_or(AutomationError::Corrupt)?;
+        let task = self.task(task_id).await?.ok_or(AutomationError::Corrupt)?;
         let lease = AutomationLease {
             task,
             occurrence,
