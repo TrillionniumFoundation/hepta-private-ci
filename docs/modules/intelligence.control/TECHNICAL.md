@@ -175,7 +175,7 @@ Composition library over injected owner ports. The read-only vertical and evalua
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-intelligence/src/prompt_delivery.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery.rs) — read-only prompt-registry payload-to-context compilation bridge.
+- [codex-rs/hepta-intelligence/src/prompt_delivery.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery.rs) — read-only prompt-registry byte-to-context bridge that carries selected bytes through compilation, serialization and attachment receipts.
 - [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 
