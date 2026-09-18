@@ -1,6 +1,6 @@
 //! Local durable admission around the actual App Server driver.
 
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::DurableInferenceControlStore;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 use sha2::Digest;
@@ -26,7 +26,7 @@ impl AppServerModelDriver {
     /// Reopening a possibly dispatched run never invokes a model again.
     pub async fn run(
         &self,
-        control: &mut DurableInferenceControl,
+        store: &DurableInferenceControlStore,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
@@ -54,7 +54,9 @@ impl AppServerModelDriver {
                 self.config.timeout.as_millis(),
             ))?),
         };
-        let record = control.reserve_native(request, admission.maximum_in_flight)?;
+        let record = store.with_control(|control| {
+            control.reserve_native(request, admission.maximum_in_flight)
+        })?;
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
@@ -77,29 +79,41 @@ impl AppServerModelDriver {
                     "reopened after possible dispatch; reservation held, no replay".to_string(),
                 ),
             };
-            control.settle_native(&record.request.request_id, output.clone())?;
+            let settled_request_id = record.request.request_id.clone();
+            store.with_control(|control| {
+                control
+                    .settle_native(&settled_request_id, output.clone())
+                    .map(|_| ())
+            })?;
             return Ok(output);
         }
         let request_id = record.request.request_id;
         match self
-            .run_once(control, &request_id, prompt, context_query, cancellation)
+            .run_once(store, &request_id, prompt, context_query, cancellation)
             .await
         {
             Ok(output) => {
-                if !output.terminal_observed && cancellation.is_cancelled() {
-                    control.cancel_native(&request_id)?;
-                }
-                control.settle_native(&request_id, output.clone())?;
+                store.with_control(|control| {
+                    if !output.terminal_observed && cancellation.is_cancelled() {
+                        control.cancel_native(&request_id)?;
+                    }
+                    control.settle_native(&request_id, output.clone()).map(|_| ())
+                })?;
                 Ok(output)
             }
             Err(error) => {
-                if control
-                    .native_record(&request_id)
+                let state = store.native_record(&request_id)?;
+                if state
+                    .as_ref()
                     .is_some_and(|record| record.state == NativeReservationState::Reserved)
                 {
                     // Only Reserved proves turn/start could not have happened.
                     let reason: String = error.to_string().chars().take(1024).collect();
-                    control.stop_native_before_dispatch(&request_id, reason)?;
+                    store.with_control(|control| {
+                        control
+                            .stop_native_before_dispatch(&request_id, reason)
+                            .map(|_| ())
+                    })?;
                 }
                 Err(error)
             }
