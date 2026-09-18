@@ -246,7 +246,6 @@ impl LoadedTabularWorldModelV1 {
 
 /// Compatibility surface for in-memory callers. Persisted or externally
 /// selected candidates should be admitted through `LoadedTabularWorldModelV1`.
-#[deprecated(note = "use LoadedTabularWorldModelV1 for selected/persisted candidates")]
 pub fn predict_transition(
     model: &TabularWorldModelV1,
     state_id: &StableId,
