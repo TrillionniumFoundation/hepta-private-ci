@@ -391,9 +391,7 @@ fn sync_directory(path: &Path) -> Result<(), NduProjectionStoreError> {
 }
 
 #[cfg(unix)]
-fn encode_store(
-    journal: &NduProjectionJournalV1,
-) -> Result<Vec<u8>, NduProjectionStoreError> {
+fn encode_store(journal: &NduProjectionJournalV1) -> Result<Vec<u8>, NduProjectionStoreError> {
     let journal_bytes = journal.export_bytes();
     let journal_length =
         u32::try_from(journal_bytes.len()).map_err(|_| NduProjectionStoreError::CorruptStore)?;
