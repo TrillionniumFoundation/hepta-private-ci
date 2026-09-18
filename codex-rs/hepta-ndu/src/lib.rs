@@ -22,6 +22,7 @@ mod projection_journal;
 mod protocol;
 mod recursive;
 mod scoring;
+mod stochastic_admission;
 
 pub use conditional_moments::ConditionalMomentSampleV1;
 pub use conditional_moments::ConditionalMomentsV1;
@@ -82,3 +83,9 @@ pub use recursive::RecursiveUtilityPath;
 pub use recursive::RecursiveUtilityReceipt;
 pub use recursive::UtilityEvent;
 pub use recursive::evaluate_recursive_utility;
+pub use stochastic_admission::AdmittedNduStochasticEvidenceV1;
+pub use stochastic_admission::BoundZEstimateV1;
+pub use stochastic_admission::NduStochasticAdmissionError;
+pub use stochastic_admission::NduStochasticEvidenceBindingV1;
+pub use stochastic_admission::admit_stochastic_evidence_binding_v1;
+pub use stochastic_admission::solve_backward_regression_with_admission;
