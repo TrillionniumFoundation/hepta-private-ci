@@ -7,7 +7,7 @@ import { SameOriginHttpTransport } from "../src/http-transport.js";
 import { LocalStoragePendingStore } from "../src/pending-store.js";
 import { ERROR_CODES } from "../src/protocol.js";
 import { RuntimeClient } from "../src/runtime-client.js";
-import { acquireControlPlaneLease } from "../src/web-main.js";
+import { acquireControlPlaneLease, startControlPlane } from "../src/web-main.js";
 
 const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
@@ -1174,6 +1174,210 @@ test("displayed-view and stop-scope accessors fail without invoking getters", as
   );
   assert.equal(scopeGetterCalls, 0);
   assert.equal(requestCalls, 0);
+});
+
+test("failed initial browser runtime install releases its durable writer lease", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  document.body = new FakeElement("body", document);
+  document.querySelector = (selector) => (selector === "#app" ? root : null);
+  const held = new Set();
+  const lockManager = {
+    async request(name, options, callback) {
+      assert.deepEqual(options, { mode: "exclusive", ifAvailable: true });
+      if (held.has(name)) return callback(null);
+      held.add(name);
+      try {
+        return await callback({ name, mode: "exclusive" });
+      } finally {
+        held.delete(name);
+      }
+    },
+  };
+  const window = {
+    location: { origin: "https://control.example" },
+    setInterval() { assert.fail("failed startup must not start snapshot polling"); },
+    clearInterval() {},
+    addEventListener() {},
+    removeEventListener() {},
+  };
+  let connectCalls = 0;
+  const fetchImpl = async (url) => {
+    const path = new URL(url).pathname;
+    if (path === "/api/ui-control/bootstrap") {
+      return new Response(
+        JSON.stringify({
+          endpointId: "runtime.1",
+          protocolVersion: 1,
+          manifestDigest: D1,
+          basePath: "/api/ui-control",
+          persistenceNamespace: "principal.a",
+          snapshotPollMs: 2_000,
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    if (path === "/api/ui-control/csrf") {
+      return new Response(JSON.stringify({ token: "csrf" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    if (path === "/api/ui-control/connect") {
+      connectCalls += 1;
+      return new Response(JSON.stringify({ error: "unavailable" }), {
+        status: 503,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    assert.fail(`unexpected startup request ${path}`);
+  };
+
+  await assert.rejects(
+    startControlPlane({
+      document,
+      window,
+      storage: new MemoryStorage(),
+      fetchImpl,
+      lockManager,
+    }),
+    (error) => error.code === ERROR_CODES.BACKEND_UNAVAILABLE,
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(connectCalls, 1);
+  assert.equal(held.size, 0);
+});
+
+test("failed persistence-domain switch keeps the old lease recoverable and releases the candidate", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  document.body = new FakeElement("body", document);
+  document.querySelector = (selector) => (selector === "#app" ? root : null);
+  const held = new Set();
+  const lockManager = {
+    async request(name, options, callback) {
+      assert.deepEqual(options, { mode: "exclusive", ifAvailable: true });
+      if (held.has(name)) return callback(null);
+      held.add(name);
+      try {
+        return await callback({ name, mode: "exclusive" });
+      } finally {
+        held.delete(name);
+      }
+    },
+  };
+  let intervalId = 0;
+  const window = {
+    location: { origin: "https://control.example" },
+    setInterval() { intervalId += 1; return intervalId; },
+    clearInterval() {},
+    addEventListener() {},
+    removeEventListener() {},
+  };
+  let bootstrapCalls = 0;
+  let connectCalls = 0;
+  let failFirstDomainBConnect = true;
+  let activeSession = null;
+  let activeGeneration = 0;
+  const fetchImpl = async (url) => {
+    const path = new URL(url).pathname;
+    if (path === "/api/ui-control/bootstrap") {
+      bootstrapCalls += 1;
+      const domain = bootstrapCalls === 1 ? "principal.a" : "principal.b";
+      return new Response(
+        JSON.stringify({
+          endpointId: "runtime.1",
+          protocolVersion: 1,
+          manifestDigest: D1,
+          basePath: "/api/ui-control",
+          persistenceNamespace: domain,
+          snapshotPollMs: 2_000,
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    if (path === "/api/ui-control/csrf") {
+      return new Response(JSON.stringify({ token: "csrf" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    if (path === "/api/ui-control/connect") {
+      connectCalls += 1;
+      if (connectCalls > 1 && failFirstDomainBConnect) {
+        failFirstDomainBConnect = false;
+        return new Response(JSON.stringify({ error: "unavailable" }), {
+          status: 503,
+          headers: { "content-type": "application/json" },
+        });
+      }
+      activeGeneration += 1;
+      activeSession = `session.${activeGeneration}`;
+      return new Response(
+        JSON.stringify({
+          authenticated: true,
+          sessionId: activeSession,
+          connectionGeneration: activeGeneration,
+          protocolVersion: 1,
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    if (path === "/api/ui-control/snapshot") {
+      return new Response(
+        JSON.stringify({
+          sessionId: activeSession,
+          connectionGeneration: activeGeneration,
+          generation: 7 + activeGeneration,
+          revision: 9 + activeGeneration,
+          digest: D2,
+          modules: [
+            {
+              moduleId: "runtime.agentd",
+              status: "ready",
+              revision: 4 + activeGeneration,
+              digest: D3,
+            },
+          ],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    if (path === "/api/ui-control/close") {
+      return new Response(JSON.stringify({ closed: true }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    assert.fail(`unexpected recovery request ${path}`);
+  };
+
+  const control = await startControlPlane({
+    document,
+    window,
+    storage: new MemoryStorage(),
+    fetchImpl,
+    lockManager,
+  });
+  assert.ok(control);
+  assert.equal(held.size, 1);
+  const oldLeaseName = [...held][0];
+
+  await assert.rejects(
+    control.reconnect("switch domain"),
+    (error) => error.code === ERROR_CODES.BACKEND_UNAVAILABLE,
+  );
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual([...held], [oldLeaseName]);
+
+  await control.reconnect("retry domain switch");
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(held.size, 1);
+  assert.notEqual([...held][0], oldLeaseName);
+
+  await control.dispose();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(held.size, 0);
 });
 
 test("browser writer lease permits only one durable writer for a persistence domain", async () => {
