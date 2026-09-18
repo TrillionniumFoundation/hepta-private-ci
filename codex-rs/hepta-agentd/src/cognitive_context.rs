@@ -158,6 +158,7 @@ async fn read_inner(
     }
 
     let mut prepared_runtime = None;
+    let mut causal_decision = None;
     if let Some(runtime) = retrieval_runtime {
         let runtime = std::sync::Arc::clone(runtime);
         let rank_owner = owner.clone();
@@ -258,6 +259,7 @@ async fn read_inner(
                 &prepared.profile.dynamics,
             )
             .map_err(|_| CognitiveContextError::RetrievalUnavailable)?;
+            causal_decision = Some((prepared.clone(), built.clone(), receipt.clone()));
             match receipt.packet.disposition {
                 RecallDispositionV1::Recalled => {
                     let mut by_identity = admitted_items
@@ -306,6 +308,24 @@ async fn read_inner(
         .await
         .map_err(|_| CognitiveContextError::RankerUnavailable)?
         .map_err(|_| CognitiveContextError::RankerUnavailable)?;
+    }
+
+    if let (Some(runtime), Some((prepared, built, receipt))) =
+        (retrieval_runtime, causal_decision.as_ref())
+    {
+        let runtime = std::sync::Arc::clone(runtime);
+        let prepared = prepared.clone();
+        let built = built.clone();
+        let receipt = receipt.clone();
+        let selected_identity = admitted_items
+            .first()
+            .map(|item| (item.memory_id.clone(), item.revision));
+        tokio::task::spawn_blocking(move || {
+            runtime.record_decision(&prepared, &built, &receipt, selected_identity)
+        })
+        .await
+        .map_err(|_| CognitiveContextError::RetrievalUnavailable)?
+        .map_err(|_| CognitiveContextError::RetrievalUnavailable)?;
     }
 
     for item in admitted_items {
