@@ -26,6 +26,7 @@ const HEADER: usize = 72;
 const MAX_BYTES: u64 = 16 * 1024 * 1024;
 const MAX_FRAME: usize = 2048;
 const MAX_RECORDS: usize = 8192;
+const FENCED_BINDING_DOMAIN: &[u8] = b"hepta.intelligence-eval.final-holdout-owner.v2";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct HoldoutAnchorV1 {
@@ -36,6 +37,8 @@ pub struct HoldoutAnchorV1 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DurableHoldoutError {
     Binding,
+    InvalidWriterFence,
+    ContextMismatch,
     NotRegular,
     Busy,
     AlreadyInitialized,
@@ -58,6 +61,88 @@ impl Error for DurableHoldoutError {}
 impl From<io::Error> for DurableHoldoutError {
     fn from(error: io::Error) -> Self {
         Self::Io(error.kind())
+    }
+}
+
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct HoldoutOwnerContextV2 {
+    /// Stable digest for the host-owned holdout authority/scope.
+    pub scope_digest: Digest32,
+    /// Nonzero generation issued by the host's current writer-fence authority.
+    pub writer_fence: u64,
+}
+
+impl HoldoutOwnerContextV2 {
+    fn binding_digest(self) -> Result<Digest32, DurableHoldoutError> {
+        if self.scope_digest.is_zero() {
+            return Err(DurableHoldoutError::Binding);
+        }
+        if self.writer_fence == 0 {
+            return Err(DurableHoldoutError::InvalidWriterFence);
+        }
+        let mut bytes = FENCED_BINDING_DOMAIN.to_vec();
+        bytes.extend_from_slice(self.scope_digest.as_array());
+        bytes.extend_from_slice(&self.writer_fence.to_be_bytes());
+        Ok(Digest32::of_bytes(&bytes))
+    }
+}
+
+/// Fence-scoped V2 owner wrapper.
+///
+/// The caller MUST obtain `current_context` from a host-owned current-fence
+/// authority for every consume. A stale process cannot continue through this
+/// API after the host advances the fence unless it can also forge that current
+/// authority. The underlying file remains a local append-only journal; a
+/// multi-host deployment still requires a transactional current-fence/anchor
+/// authority or a dedicated holdout service.
+pub struct FencedFinalHoldoutJournalV2 {
+    context: HoldoutOwnerContextV2,
+    inner: DurableFinalHoldoutJournalV1,
+}
+
+impl FencedFinalHoldoutJournalV2 {
+    pub fn create(
+        file: File,
+        context: HoldoutOwnerContextV2,
+    ) -> Result<Self, DurableHoldoutError> {
+        let binding = context.binding_digest()?;
+        Ok(Self {
+            context,
+            inner: DurableFinalHoldoutJournalV1::create(file, binding)?,
+        })
+    }
+
+    pub fn recover(
+        file: File,
+        context: HoldoutOwnerContextV2,
+        minimum: HoldoutAnchorV1,
+    ) -> Result<Self, DurableHoldoutError> {
+        let binding = context.binding_digest()?;
+        Ok(Self {
+            context,
+            inner: DurableFinalHoldoutJournalV1::recover(file, binding, minimum)?,
+        })
+    }
+
+    pub fn consume(
+        &mut self,
+        current_context: HoldoutOwnerContextV2,
+        expected: HoldoutAnchorV1,
+        plan: &CrossFoldPlanReceiptV1,
+    ) -> Result<FinalHoldoutJournalReceiptV1, DurableHoldoutError> {
+        if current_context != self.context {
+            return Err(DurableHoldoutError::ContextMismatch);
+        }
+        self.inner.consume(expected, plan)
+    }
+
+    pub fn anchor(&self) -> HoldoutAnchorV1 {
+        self.inner.anchor()
+    }
+
+    pub fn context(&self) -> HoldoutOwnerContextV2 {
+        self.context
     }
 }
 
