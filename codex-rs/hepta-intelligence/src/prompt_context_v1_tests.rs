@@ -1,6 +1,7 @@
 use super::*;
 use codex_hepta_prompt_optimizer::PromptAuthenticationErrorV1;
 use codex_hepta_prompt_optimizer::PromptCandidateBindingV1;
+use codex_hepta_prompt_optimizer::PromptCandidateRoleV1;
 use codex_hepta_prompt_optimizer::PromptCandidateEnumerationRequestV1;
 use codex_hepta_prompt_optimizer::PromptCandidateSourceAuthenticatorV1;
 use codex_hepta_prompt_optimizer::PromptCandidateSourceV1;
@@ -71,6 +72,7 @@ fn fixture() -> (
         candidate_id: id("candidate:001"),
         factor_id: id("factor:001"),
         realization_id: id("realization:001"),
+        role: PromptCandidateRoleV1::DeveloperInstruction,
         payload_digest: digest("payload"),
         admission_digest: digest("admission"),
         support_digest: digest("registry-support"),
