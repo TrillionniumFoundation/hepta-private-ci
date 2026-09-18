@@ -99,6 +99,10 @@ mod summary_tests;
 mod historical_tests;
 
 #[cfg(test)]
+#[path = "authbus_control_tests.rs"]
+mod authbus_control_tests;
+
+#[cfg(test)]
 #[path = "authbus_outbox_tests.rs"]
 mod authbus_outbox_tests;
 
