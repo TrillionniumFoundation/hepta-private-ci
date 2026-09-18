@@ -28,13 +28,15 @@ fn main() -> ExitCode {
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 5
+    if args.len() != 9
         || args[0] != "sign"
         || args[1] != "--distributor-id"
         || args[3] != "--key"
+        || args[5] != "--issued-at-unix-ms"
+        || args[7] != "--expires-at-unix-ms"
     {
         return Err(
-            "usage: hepta-final-use-revocation-signer sign --distributor-id ID --key OWNER_ONLY_RAW_SEED_FILE < revocations.json"
+            "usage: hepta-final-use-revocation-signer sign --distributor-id ID --key OWNER_ONLY_RAW_SEED_FILE --issued-at-unix-ms N --expires-at-unix-ms N < revocations.json"
                 .into(),
         );
     }
@@ -46,7 +48,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Err("revocation head exceeds 8 MiB".into());
     }
     let head: FinalUseRevocations = serde_json::from_slice(&bytes)?;
-    let update = FinalUseRevocationUpdate::new(args[2].clone(), head);
+    let issued_at_unix_ms: u64 = args[6].parse()?;
+    let expires_at_unix_ms: u64 = args[8].parse()?;
+    let update = FinalUseRevocationUpdate::new(
+        args[2].clone(),
+        head,
+        issued_at_unix_ms,
+        expires_at_unix_ms,
+    );
     let signing_key = load_private_seed(&args[4])?;
     let signature = signing_key
         .sign(&update.signing_bytes()?)
