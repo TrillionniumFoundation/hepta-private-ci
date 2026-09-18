@@ -16,6 +16,18 @@
 
 This stable document is the implementation guide for `auth.authbus`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+### Capability status at this source candidate
+
+| Capability | Target | Implemented | Product-composed |
+| --- | --- | --- | --- |
+| Authentication | yes | yes | partial — Agentd signed-text ingress |
+| Authorization | yes | yes — versioned policy store/API | qualification effect seam only |
+| Quota | yes | yes — integer durable ledger | qualification effect seam only |
+| Reservation | yes | yes — reserve/settle/cancel/expire/quarantine/reconcile | qualification effect seam only |
+
+“Implemented” above means source exists in this candidate and is covered by repository-native tests. It is not a production-activation claim. The shared durable physical writer is `kernel.evidence`; `auth.authbus` remains the semantic owner of policy/quota/reservation facts. Exact-head and deterministic merge-candidate receipts, independent review, an enrolled production effect caller, an independently retained rollback checkpoint, operator acceptance and release remain separate gates.
+
+
 ## 1. Identity, mission and ownership
 
 Own policy, quota and reservation facts while separating authorization from external secret effects.
@@ -130,7 +142,7 @@ Read-only data dependencies:
 - `cross_owner_outbox`
 - `operation_ledger`
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+For every owned domain, this module is the semantic authority. The physical SQLite writer is deliberately delegated to the existing `kernel.evidence` `HeptaEvidenceStore`; that delegation does not transfer policy/quota ownership. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
@@ -166,7 +178,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native signed-admission verifier is embedded into the host; deliver issuer/replay trust through protected host configuration. Its signed text boundary is distinct from the broader policy/quota/settlement target below. Real economic quota ownership and provider settlement must be connected explicitly before those capabilities are claimed.
+The native signed-admission verifier is embedded into the host. Agentd's signed-text profile now reconciles its protected owner trust file with the durable managed issuer registry on each admission/delivery boundary; a file cannot reactivate a revoked/retired epoch or replace a key at the same epoch. The durable control slice provides versioned policy, integer quota, reservation and reconciliation APIs through the EvidenceStore owner. The provider-effect composition remains qualification-only: a production effect caller and independently governed external rollback checkpoint must still be connected explicitly before production activation is claimed.
 
 Current operating and state-format references:
 
