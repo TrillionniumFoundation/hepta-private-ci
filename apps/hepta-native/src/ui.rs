@@ -254,14 +254,14 @@ impl HeptaNativeApp {
 
 impl eframe::App for HeptaNativeApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        egui::TopBottomPanel::top("hepta-native-top").show_inside(ui, |ui| {
+        egui::Panel::top("hepta-native-top").show(ui, |ui| {
             self.top_bar(ui);
         });
-        egui::SidePanel::left("hepta-native-navigation")
+        egui::Panel::left("hepta-native-navigation")
             .resizable(false)
             .default_width(210.0)
-            .show_inside(ui, |ui| self.navigation(ui));
-        egui::CentralPanel::default().show_inside(ui, |ui| match self.screen {
+            .show(ui, |ui| self.navigation(ui));
+        egui::CentralPanel::default().show(ui, |ui| match self.screen {
             Screen::Runtime => self.runtime_view(ui),
             Screen::Operations => self.operations_view(ui),
             Screen::Updates => self.updates_view(ui),
