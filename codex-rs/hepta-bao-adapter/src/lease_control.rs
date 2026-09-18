@@ -728,9 +728,6 @@ impl BaoClient {
             .get(&request.local_lease_id)
             .cloned()
             .ok_or(BaoClientError::LeaseNotFound)?;
-        if current.state == LeaseState::Revoked {
-            return Ok(BaoLeaseOutcome::Existing(current));
-        }
         let provider_lease_id = current
             .provider_lease_id
             .clone()
