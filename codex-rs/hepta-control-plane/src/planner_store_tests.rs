@@ -114,6 +114,21 @@ fn committed_revocation_cannot_be_resurrected_from_older_backup() {
 }
 
 #[test]
+fn missing_frontier_never_reseeds_a_new_format_store() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let (store, _) = PlannerJournalStoreV1::open(directory.path()).expect("open store");
+    let journal = decision_journal();
+    store.commit(&journal).expect("commit");
+    std::fs::remove_file(directory.path().join(FRONTIER_FILE)).expect("remove frontier");
+
+    assert_eq!(
+        PlannerJournalStoreV1::open(directory.path())
+            .expect_err("new store without frontier must fail closed"),
+        PlannerStoreError::FrontierMismatch
+    );
+}
+
+#[test]
 fn raw_v1_journal_migrates_to_store_envelope_and_frontier() {
     let directory = tempfile::tempdir().expect("tempdir");
     let journal = decision_journal();
