@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.control",
-  "sourceMaturity": "native_hosted_policy_bound_dispatch_reconciliation_and_compaction",
+  "sourceMaturity": "native_hosted_policy_bound_dispatch_reconciliation_compaction_and_deterministic_worker_selection",
   "declaredRoots": [
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
@@ -56,8 +56,21 @@
         "symbol": "pub fn dispatch_native(",
         "buildTarget": "codex-hepta-infer-core::durable_control::native"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "supporting_algorithm",
+          "path": "codex-rs/hepta-inferd/src/lib.rs",
+          "symbol": "pub fn schedule(",
+          "buildTarget": "codex-hepta-inferd",
+          "ownerModule": "inference.control"
+        }
+      ],
       "tests": [
+        {
+          "path": "codex-rs/hepta-inferd/src/lib_tests.rs",
+          "kind": "deterministic_feasible_multi_worker_ranking",
+          "command": "just test -p codex-hepta-inferd --lib"
+        },
         {
           "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
           "kind": "dispatch_final_use_fencing",
@@ -69,7 +82,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Consumes a kernel-owned signed final-use grant bound to the exact provider/model/request/scope/payload and authority epoch, then syncs thread/provider/context/grant dispatch intent before the actual turn/start RPC; a duplicate cannot issue a new turn.",
+      "sourceSemantics": "Canonicalizes and digest-binds an eligible worker snapshot, performs deterministic feasible ranking under model/token/concurrency constraints, then the durable owner syncs exact thread/provider/context/final-use dispatch intent before the actual turn/start RPC. Planning never grants provider authority and a duplicate cannot issue a new turn.",
       "operation": "schedule",
       "nativeSymbol": "pub fn dispatch_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
@@ -128,8 +141,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose a named non-CLI production caller that obtains current quota/resource evidence and signed final-use grants from their owners; the explicit native worker CLI is a source/qualification host and does not activate the product.",
-    "Implement the full target multi-worker schedule(reservation, eligible_worker_snapshot) deterministic feasible ranking when a product actually supplies multiple enrolled workers; the native App Server route currently binds one exact provider/resource and hepta-inferd remains an authority-free exact-binding planner."
+    "Compose a named non-CLI production caller that obtains current quota/resource evidence and signed final-use grants from their owners; the explicit native worker CLI is a source/qualification host and does not activate the product."
   ],
   "externalEvidenceGates": [
     "real provider deployment, crash/cancellation/reconciliation acceptance and provider-side retention behavior",
