@@ -207,6 +207,7 @@ Current operating and state-format references:
 - [codex-rs/hepta-learning-ledger/LOCK_OWNERSHIP.md](../../../codex-rs/hepta-learning-ledger/LOCK_OWNERSHIP.md).
 - [codex-rs/hepta-learning-ledger/INSPECTION.md](../../../codex-rs/hepta-learning-ledger/INSPECTION.md).
 - [codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md](../../../codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md).
+- [codex-rs/hepta-learning-ledger/CONVERGENCE.md](../../../codex-rs/hepta-learning-ledger/CONVERGENCE.md) — repository-controlled P0/P1/P2 convergence candidate; external production, trust deployment and release gates remain separate.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
