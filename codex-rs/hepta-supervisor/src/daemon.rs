@@ -458,6 +458,15 @@ async fn handle_request<D: ProcessDriver>(
                 safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
             }
         },
+        SupervisordMethod::ProductionMutationStatus { agent_id } => {
+            let supervisor = state.supervisor.lock().await;
+            match supervisor.production_mutation_receipt(&agent_id) {
+                Ok(receipt) => SupervisordPayload::ProductionMutationStatus { receipt },
+                Err(error) => {
+                    safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
+                }
+            }
+        }
         SupervisordMethod::Start { fence, release_id } => {
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
