@@ -9,22 +9,29 @@
 
 `objective.compiler` converts one bounded, authenticated request into an immutable objective revision. It does not infer authority from prose, relax a hard constraint, rewrite an objective during a run, select an action or execute an effect. Output remains advisory until the existing authority owner independently authorizes a concrete operation.
 
-The complete native admission path is:
+The complete product admission path is:
 
 ```text
 bounded JSON bytes
 -> decode_source_envelope_json_v1
 -> ObjectiveSourceEnvelopeV1::validate_structure
--> authenticate source and principal scope
--> bind exact ObjectiveAdmissionProfileV1 digest
--> normalize and map every represented semantic field
--> check_feasibility_v1
--> compile
+-> admit_objective_v1
+   -> authenticate source and principal scope
+   -> bind exact ObjectiveAdmissionProfileV1 digest
+   -> verify source/schema/normalization/intent digests and time bounds
+   -> map every admitted source field into the bounded native representation
+   -> AdmittedObjectiveV1
+-> compile_admitted_objective_v1
+   -> compiler::compile
+      -> scalar_adapter::scalar_conflict
+         -> check_feasibility_v1
 -> ObjectiveAdmissionReceiptV1
 -> ObjectiveCompileReceiptV1 | ObjectiveConflictReceiptV1
+-> intelligence.control::ObjectiveProductCallerV1
+   -> atomic durable objective + RunStartSnapshotV1 publication
 ```
 
-No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
+No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. Unsupported source semantics fail before an admitted value is created. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile. The exact source-language-to-native support matrix is [SEMANTIC_SUPPORT.md](../modules/objective.compiler/SEMANTIC_SUPPORT.md).
 
 ## 2. Input grammar and canonical IR
 
@@ -41,7 +48,7 @@ risk: risk class, abstention rule, rollback and compensation requirements
 provenance: exact source and normalization-profile digests
 ```
 
-Free text is evidence for intent extraction, never the final authority representation. Every predicate has an identifier, unit, comparator, bound, evidence source and terminality. Arrays are stable-sorted by semantic identifier. Unicode uses the selected normalization profile; timestamps are UTC; durations are integer microseconds; numeric values use registered fixed-point profiles. Duplicate semantic keys are rejected.
+Free text is evidence for intent extraction, never the final authority representation. Every predicate has an identifier, unit, comparator, bound, evidence source and terminality. The V1 production wire accepts only the exactly representable comparator subset `eq`, `lte` and `gte`; `ne`, strict inequalities and set comparators are rejected at strict JSON ingress rather than approximated. Arrays are stable-sorted by semantic identifier. Unicode uses the selected normalization profile; timestamps are UTC; durations are integer microseconds; numeric values use registered fixed-point profiles. Duplicate semantic keys are rejected.
 
 The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Every payload and collection has both count and encoded-byte bounds. Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and 256 KiB of encoded profile semantics; risk and rollback levels must be monotone.
 
@@ -57,7 +64,7 @@ P3 task success predicates and terminal conditions
 P4 soft utility preferences and resource allocation
 ```
 
-A lower class cannot offset a higher-class violation. Soft atoms never participate in hard feasibility. Scalar and finite-enum atoms use deterministic intersection. Registered positive action implications use bounded graph closure. Unsupported operators, arbitrary code, unrestricted quantifiers, nonlinear arithmetic and unbounded recursion reject before solving.
+A lower class cannot offset a higher-class violation. Soft atoms never participate in hard feasibility. The admitted V1 objective path maps scalar bounds into the native compiler. Separately, the explicit typed `check_feasibility_v1` API supports registered scalar intervals, finite-enum include/exclude atoms, action require/forbid/positive implication atoms and immutable-identity equality. Capabilities of that typed API do not implicitly widen the ObjectiveSourceEnvelopeV1 wire language. Unsupported operators, arbitrary code, unrestricted quantifiers, nonlinear arithmetic and unbounded recursion reject before solving.
 
 For infeasible hard constraints, deterministic deletion filtering returns an **inclusion-minimal** unsatisfied set in canonical order. It does not claim minimum cardinality. A hard conflict is represented by `ObjectiveConflictReceiptV1`, not by reusing an unrelated error code. Oracle exhaustion preserves the original objective and emits unavailable; it never publishes a partial core that permits dropping a hard constraint.
 
@@ -101,7 +108,7 @@ Compilation is a pure function of the authenticated source envelope, selected ad
 
 ## 5. State machine and persistence
 
-The compiler owns no domain-fact store. The owning caller persists the immutable `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts. Publication occurs only after source, intent, profile, constraint and objective digests agree.
+The compiler owns no domain-fact store. The named repository product caller is `codex_hepta_intelligence::ObjectiveProductCallerV1`. Its host supplies an already-authorized regular `File` and nonzero store binding; the caller opens no path. It takes an exclusive file lock and atomically publishes the admission receipt, complete compiled objective and `RunStartSnapshotV1` in one append-only frame only after source, intent, profile, constraint and objective digests agree. Equal retries are idempotent. Reuse of a request/revision with different admitted semantics is a durable conflict. An ambiguous write poisons the handle until anchored recovery and reconciliation.
 
 ```text
 received
@@ -115,7 +122,7 @@ received
 -> published by owning caller
 ```
 
-A crash before caller publication leaves no selected objective. A crash after durable publication is reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
+A crash before caller publication leaves no selected objective. Recovery replays bounded checksummed frames and validates an independently retained `ObjectivePublicationAnchorV1`; an incomplete unacknowledged final frame may be trimmed only after the acknowledged prefix is proved. A crash after durable publication is reconciled by request/revision semantic identity, admitted source/intent/profile digests and run identity. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class requires a new objective revision; a new run over identical frozen objective semantics uses a distinct `RunStartSnapshotV1`.
 
 ## 6. Error taxonomy and fallback
 
@@ -157,7 +164,7 @@ The following paths are measured separately:
 
 Pilot ceilings are `<=256` constraints, `<=128` success predicates, `<=127` caller actions when abstain is implicit, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. CPU and wall-clock budgets are frozen before evaluation. Exceeding a bound rejects or returns unavailable; input is never truncated after semantic analysis.
 
-The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
+The semantic solver and canonical ordering are deterministic for identical typed inputs. The explicit feasibility API may also apply a caller-supplied wall-clock availability budget; `Exhausted` and receipt `elapsed` are host-observed availability data, not deterministic semantic bytes. The admitted compile path uses the deterministic oracle-call ceiling without a host wall-clock cutoff. p95/p99 claims still require a named path, fixture, host, compiler/build profile and exact source; a normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
 
 ## 9. Golden fixtures and tests
 
@@ -176,17 +183,17 @@ Tests cover structural round trips, canonical ordering, unit conversion, conflic
 
 ## 10. Implementation sequence
 
-Implement and maintain, in order: strict JSON decoder; owner-local source type; structural validator; authenticated admission context; frozen profile mapping; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; durable caller adapter; faults; benchmarks; exact-source and merge-candidate qualification.
+Implement and maintain, in order: strict JSON decoder; owner-local source type; structural validator; authenticated admission context; opaque admitted type; frozen profile mapping; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; named durable product caller; recovery/idempotency faults; named-host measurements; exact-source and merge-candidate qualification.
 
-Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, a bounded work-package envelope, mandatory fixtures, deterministic fallback and zero authority delta. Source completion still does not establish a production caller, activation, independent acceptance, promotion or release.
+Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, a bounded work-package envelope, mandatory fixtures, deterministic fallback and zero authority delta. The repository now contains a candidate named product caller and durable publication implementation, but source presence alone still does not establish exact-head qualification, target-host qualification, independent acceptance, activation, promotion or release.
 
 ## 11. Coding-entry checklist
 
 - exact canonical source receipt and immutable profile digest are current;
 - every profile collection and encoded profile is within its enforced bound;
-- all represented source semantics map without truncation or guessing;
+- every admitted source semantic maps without truncation or guessing, and unsupported wire semantics reject before admission;
 - intrinsic `abstain`, hard-feasibility and conflict fixtures pass;
-- outputs remain deny-all and the durable caller boundary is named;
+- outputs remain deny-all; the durable caller is `ObjectiveProductCallerV1` and recovery/idempotency fixtures pass;
 - exact-head and synthetic-merge checks pass before source completion is claimed.
 
 ## Appendix A. Closed gap and protocol mapping
