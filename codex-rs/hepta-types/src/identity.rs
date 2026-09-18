@@ -94,9 +94,10 @@ fn validate_bound(raw: &str) -> Result<(), IdentityError> {
 }
 
 fn validate_stable(raw: &str) -> Result<(), IdentityError> {
-    if raw.bytes().all(|byte| {
-        byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':')
-    }) {
+    if raw
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':'))
+    {
         Ok(())
     } else {
         Err(IdentityError::InvalidCharacter)
@@ -105,9 +106,7 @@ fn validate_stable(raw: &str) -> Result<(), IdentityError> {
 
 fn validate_module(raw: &str) -> Result<(), IdentityError> {
     if raw.bytes().any(|byte| {
-        !(byte.is_ascii_lowercase()
-            || byte.is_ascii_digit()
-            || matches!(byte, b'.' | b'_' | b'-'))
+        !(byte.is_ascii_lowercase() || byte.is_ascii_digit() || matches!(byte, b'.' | b'_' | b'-'))
     }) {
         return Err(IdentityError::InvalidCharacter);
     }
