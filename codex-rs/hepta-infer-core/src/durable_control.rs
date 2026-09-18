@@ -72,10 +72,7 @@ impl RequestState {
     }
 
     fn terminal(self) -> bool {
-        matches!(
-            self,
-            Self::Completed | Self::Failed | Self::Cancelled | Self::Indeterminate
-        )
+        matches!(self, Self::Completed | Self::Failed | Self::Cancelled)
     }
 }
 
@@ -997,6 +994,15 @@ impl DurableInferenceControl {
                 if record.state.terminal() {
                     return Err(Error::Conflict);
                 }
+                if record.state == RequestState::Indeterminate && !observation.terminal_observed {
+                    return Err(Error::InvalidTransition);
+                }
+                if record.state == RequestState::Indeterminate
+                    && (observation.consumed_tokens < record.consumed_tokens
+                        || observation.usage_units < record.usage_units)
+                {
+                    return Err(Error::UsageExceeded);
+                }
                 let reservation = record
                     .reservation
                     .as_ref()
@@ -1410,9 +1416,18 @@ fn apply_event(
             require_revision(record, *expected_revision, replay)?;
             if !matches!(
                 record.state,
-                RequestState::Assigned | RequestState::Cancelling
+                RequestState::Assigned | RequestState::Cancelling | RequestState::Indeterminate
             ) {
                 return Err(Error::InvalidTransition);
+            }
+            if record.state == RequestState::Indeterminate && !observation.terminal_observed {
+                return Err(Error::InvalidTransition);
+            }
+            if record.state == RequestState::Indeterminate
+                && (observation.consumed_tokens < record.consumed_tokens
+                    || observation.usage_units < record.usage_units)
+            {
+                return Err(Error::UsageExceeded);
             }
             record.state = if observation.terminal_observed {
                 observation
@@ -1526,7 +1541,7 @@ fn receipt(record: &RequestRecord, idempotent: bool) -> ControlReceipt {
         revision: record.revision,
         state: record.state,
         idempotent,
-        terminal_observed: record.state.terminal() && record.state != RequestState::Indeterminate,
+        terminal_observed: record.state.terminal(),
     }
 }
 
