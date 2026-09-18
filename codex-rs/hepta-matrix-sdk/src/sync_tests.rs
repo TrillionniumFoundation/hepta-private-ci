@@ -104,6 +104,12 @@ fn redaction(id: &str, target: &str) -> Value {
         "type":"m.room.redaction","content":{"redacts":target}})
 }
 
+fn own_message(id: &str, body: &str, transaction_id: &str) -> Value {
+    json!({"event_id":id,"sender":AGENT,"origin_server_ts":11,"type":"m.room.message",
+        "unsigned":{"transaction_id":transaction_id},
+        "content":{"msgtype":"m.text","body":body}})
+}
+
 fn timeline(events: Vec<Value>) -> TestResult<Timeline> {
     Ok(Timeline {
         events: events
@@ -132,6 +138,38 @@ fn response(events: Vec<Value>) -> TestResult<SyncResponse> {
     Ok(response)
 }
 
+#[tokio::test]
+async fn self_authored_room_message_becomes_outbound_observation_not_user_ingress() -> TestResult {
+    let fixture = Fixture::new().await?;
+    let txn_id = MatrixTransactionId::parse("hepta-v1-0123456789abcdef")?;
+    let response = response(vec![own_message(
+        "$self-outbound",
+        "agent reply",
+        txn_id.as_str(),
+    )])?;
+    let mutations = fixture.composer().normalize(
+        &response,
+        /*observed_at_ms*/ 20,
+        |_| Some(RoomVersionRules::V11),
+    )?;
+    assert_eq!(mutations.len(), 1);
+    assert_eq!(mutations[0].source_event_id.as_str(), "$self-outbound");
+    assert_eq!(mutations[0].sender.as_str(), AGENT);
+    assert!(matches!(
+        &mutations[0].body,
+        MatrixSyncMutationBodyV2::OutboundObservation { transaction_id: Some(observed) }
+            if observed == &txn_id
+    ));
+    assert_eq!(fixture.ingress.metrics().accepted, 0);
+    assert!(
+        fixture
+            .store
+            .inbox(&MatrixEventId::parse("$self-outbound")?)
+            .await?
+            .is_none()
+    );
+    Ok(())
+}
 #[tokio::test]
 async fn v1_redaction_commits_before_replay_and_survives_reopen() -> TestResult {
     let fixture = Fixture::new().await?;

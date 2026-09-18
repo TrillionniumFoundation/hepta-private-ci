@@ -695,9 +695,10 @@ pub(crate) async fn observe_outbound_success_tx(
 ) -> Result<bool, MatrixDurableError> {
     validate_digest(observation_digest)?;
     let txn_id = if let Some(txn_id) = transaction_id {
-        dispatch_by_txn_tx(transaction, txn_id)
-            .await?
-            .map(|_| txn_id.clone())
+        match dispatch_by_txn_tx(transaction, txn_id).await? {
+            Some(_) => Some(txn_id.clone()),
+            None => dispatch_txn_for_event_tx(transaction, event_id).await?,
+        }
     } else {
         dispatch_txn_for_event_tx(transaction, event_id).await?
     };

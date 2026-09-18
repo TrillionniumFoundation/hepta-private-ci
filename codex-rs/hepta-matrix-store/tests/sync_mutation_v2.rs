@@ -15,6 +15,7 @@ use codex_hepta_matrix_store::ChangeKind;
 use codex_hepta_matrix_store::InboxDraft;
 use codex_hepta_matrix_store::InboxQueuedDraft;
 use codex_hepta_matrix_store::InboxState;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
@@ -24,6 +25,7 @@ use codex_hepta_matrix_store::MatrixUserId;
 use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
+use codex_hepta_matrix_store::OutboxState;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_store::RoomThreadBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
@@ -181,6 +183,68 @@ fn dispositions(result: MatrixSyncResultV2) -> TestResult<Vec<MatrixSyncMutation
     }
 }
 
+#[tokio::test]
+async fn outbound_sync_observation_settles_the_same_durable_transaction() -> TestResult {
+    let temp = TempDir::new()?;
+    let room_id = room("!outbound-observation:example.test")?;
+    let store = store_and_room(&temp, &room_id).await?;
+    let logical_outbox_id = "sync-outbound-observation";
+    let txn_id = transaction_id(logical_outbox_id, 1)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_outbox_id.to_string(),
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"observed reply".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?;
+    let claimed = store.claim_outbox(10, 30, 1).await?;
+    assert_eq!(claimed.len(), 1);
+    let event_id = event("$outbound-observed")?;
+    store.mark_outbox_accepted(&txn_id, 1, &event_id, 11).await?;
+
+    let mut observed = mutation(
+        event_id.clone(),
+        room_id,
+        MatrixSyncMutationBodyV2::OutboundObservation {
+            transaction_id: Some(txn_id.clone()),
+        },
+        12,
+    )?;
+    observed.sender = user(AGENT_USER_ID)?;
+    assert_eq!(
+        dispositions(
+            store
+                .apply_sync_decision_v2(&commit(None, "s1", 13, vec![observed]))
+                .await?,
+        )?,
+        vec![MatrixSyncMutationDispositionV2::Applied]
+    );
+    let dispatch = store
+        .dispatch_record(&txn_id)
+        .await?
+        .ok_or("dispatch disappeared after sync observation")?;
+    assert_eq!(dispatch.state, MatrixDispatchState::Succeeded);
+    assert_eq!(dispatch.terminal_event_id.as_ref(), Some(&event_id));
+    assert!(dispatch.send_observation_digest.is_some());
+    let outbox = store
+        .outbox_for_txn(&txn_id)
+        .await?
+        .ok_or("outbox disappeared after sync observation")?;
+    assert_eq!(outbox.state, OutboxState::Sent);
+    assert_eq!(outbox.sent_event_id.as_ref(), Some(&event_id));
+    assert_eq!(
+        store.sync_checkpoint().await?.ok_or("checkpoint missing")?.next_batch,
+        "s1"
+    );
+    store.close().await;
+    Ok(())
+}
 #[tokio::test]
 async fn redaction_missing_target_and_cancellation_remain_distinct() -> TestResult {
     let temp = TempDir::new()?;
