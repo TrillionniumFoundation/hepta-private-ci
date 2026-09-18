@@ -62,7 +62,8 @@ class ExactHeadImplementationEvidenceTests(unittest.TestCase):
             self.assertTrue(
                 any(
                     test.endswith(
-                        "production_writer_host_tests.rs::agentd_compaction_checkpoint_round_trips_through_authorized_writer"
+                        "production_writer_host_tests.rs::"
+                        "agentd_compaction_checkpoint_round_trips_through_authorized_writer"
                     )
                     for test in integration_tests
                 ),
@@ -71,7 +72,8 @@ class ExactHeadImplementationEvidenceTests(unittest.TestCase):
             self.assertTrue(
                 any(
                     test.endswith(
-                        "qualified_compact_store_tests.rs::canonical_checkpoint_publication_is_idempotent_and_survives_reopen"
+                        "qualified_compact_store_tests.rs::"
+                        "canonical_checkpoint_publication_is_idempotent_and_survives_reopen"
                     )
                     for test in integration_tests
                 ),
