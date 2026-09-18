@@ -173,6 +173,11 @@ impl ReleaseSelectionRecord {
     ) -> Result<Self, SupervisorError> {
         let mut value = Self {
             status,
+            recovery_decision_sha256: if status.terminal() {
+                self.recovery_decision_sha256.clone()
+            } else {
+                None
+            },
             ..self.clone()
         };
         value.selection_sha256 = value.compute_digest()?;
