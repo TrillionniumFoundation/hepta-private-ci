@@ -72,6 +72,7 @@ impl NativeExecutionPolicy {
         generation: u64,
         model: &str,
         maximum_output_tokens: u64,
+        maximum_budget_units: u64,
     ) -> Result<NativeAdmissionBinding, NativePolicyError> {
         self.quota
             .validate()
@@ -82,6 +83,9 @@ impl NativeExecutionPolicy {
 
         if maximum_output_tokens == 0 || maximum_output_tokens > MAX_NATIVE_OUTPUT_TOKENS {
             return Err(NativePolicyError::Invalid("maximum output tokens"));
+        }
+        if maximum_budget_units == 0 {
+            return Err(NativePolicyError::Invalid("maximum budget units"));
         }
         if self.quota.state != QuotaReservationState::Held {
             return Err(NativePolicyError::Invalid("quota reservation is not held"));
@@ -113,6 +117,7 @@ impl NativeExecutionPolicy {
             || self.quota.reserved_requests == 0
             || self.quota.reserved_concurrency == 0
             || self.quota.reserved_tokens < maximum_output_tokens
+            || self.quota.reserved_day_budget < maximum_budget_units
         {
             return Err(NativePolicyError::Invalid("quota/resource authority mismatch"));
         }
@@ -138,6 +143,7 @@ impl NativeExecutionPolicy {
                 reserved_requests: self.quota.reserved_requests,
                 reserved_tokens: self.quota.reserved_tokens,
                 reserved_concurrency: self.quota.reserved_concurrency,
+                reserved_day_budget: self.quota.reserved_day_budget,
                 authority_epoch: self.quota.authority_epoch,
                 expires_at_unix_seconds: self.quota.expires_at_unix_seconds,
             },
@@ -165,6 +171,7 @@ impl NativeExecutionPolicy {
         request_payload_digest: &str,
         context_digest: &str,
         maximum_output_tokens: u64,
+        maximum_budget_units: u64,
         exact_turn_payload: &[u8],
     ) -> Result<ClaimedFinalUse, NativePolicyError> {
         let admission = self.admission_binding(
@@ -173,6 +180,7 @@ impl NativeExecutionPolicy {
             generation,
             model,
             maximum_output_tokens,
+            maximum_budget_units,
         )?;
         if admission.resource.provider_id != model_provider {
             return Err(NativePolicyError::Invalid("provider mismatch"));
