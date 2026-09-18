@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `intuition.policy`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. The current native surface includes historical calibrated replay, V2 complete-request binding and the authenticated `decide_qualified_v1` path for policy profile, calibration, OOD, completeness, learned-scorer output and assignment provenance. This status does not activate `intuition.policy`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -72,10 +72,12 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `legal-candidate validator`
-- `scoring head`
-- `confidence calibrator`
-- `OOD and abstention router`
+- `complete legal-candidate validator`
+- `qualified-admission verifier for profile, calibration, OOD, completeness, scorer output and assignment`
+- `bounded calibrated selector and assignment router`
+- `OOD, risk and abstention router`
+
+Learned model loading, feature extraction, score production, training and calibration fitting remain outside this crate. The native qualified path authenticates their immutable lineage and decision-specific outputs before applying policy gates; action assignment is separately authenticated so the scorer does not own exploration probability or random draws.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -162,13 +164,13 @@ Owned threat entries:
 - `intuition_propensity_omission`
 - `intuition_unsupported_action`
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. The qualified path uses three independently identified trust roles: artifact qualification, learned scorer and policy assignment. Assignment authentication binds the exact ordered probabilities, mode, random-stream digest, draw and abstain mass to the decision sequence; changing any of them fails closed before policy execution. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-intuition/src/lib.rs](../../../codex-rs/hepta-intuition/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) specifies this module's algorithm and pilot ceilings. The repository now also carries a release-mode authenticated fast-path regression gate for 1/16/64/128 candidates in [FAST_BENCHMARK.md](FAST_BENCHMARK.md); those repository ceilings are not target-host SLAs. Current native limits belong to [codex-rs/hepta-intuition/src/lib.rs](../../../codex-rs/hepta-intuition/src/lib.rs) and the linked implementation components.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -178,7 +180,11 @@ Read-only policy library; inject the complete legal candidate set and exact cali
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs).
+- [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs);
+- [codex-rs/hepta-intuition/src/qualified/decision.rs](../../../codex-rs/hepta-intuition/src/qualified/decision.rs);
+- [QUALIFICATION.md](QUALIFICATION.md);
+- [LEARNED_SCORER_CONTRACT.md](LEARNED_SCORER_CONTRACT.md);
+- [FAST_BENCHMARK.md](FAST_BENCHMARK.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -187,9 +193,12 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs); named case: `v2_binds_same_outcome_to_its_actual_assignment_and_artifact_metadata`.
+- [codex-rs/hepta-intuition/src/qualified_tests.rs](../../../codex-rs/hepta-intuition/src/qualified_tests.rs); covers authenticated current-generation material, assignment-probability/random-stream/draw tampering and trust-role separation.
+- [codex-rs/hepta-intuition/tests/frozen_qualification.rs](../../../codex-rs/hepta-intuition/tests/frozen_qualification.rs); recomputes calibration/OOD metrics from committed frozen model/data before qualified execution.
+- [codex-rs/hepta-intuition/tests/fast_benchmark_gate.rs](../../../codex-rs/hepta-intuition/tests/fast_benchmark_gate.rs); release-only 1/16/64/128 candidate latency/throughput/allocation gate.
 - [codex-rs/hepta-intuition/src/lib_tests.rs](../../../codex-rs/hepta-intuition/src/lib_tests.rs); named case: `hard_veto_cannot_be_overridden`.
 
-In `codex-rs`, run `just test -p codex-hepta-intuition`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-intuition`. The dedicated `.github/workflows/hepta-intuition-policy.yml` additionally runs strict all-target Clippy, frozen qualification and the release fast-path gate on the exact PR head, plus package qualification on the deterministic synthetic merge. Commands are invocations, not stored results; inspect exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -383,4 +392,4 @@ The bootstrap source-location obligation for `intuition.policy` is implemented b
 
 - `codex-rs/hepta-intuition`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`. The authenticated fast-policy surface is additionally checked by `.github/workflows/hepta-intuition-policy.yml`, including package tests, strict all-target Clippy, frozen-data qualification, exact-head fast-path budgets and deterministic synthetic-merge execution. These receipts are source/qualification evidence only. They grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

@@ -1,7 +1,7 @@
 # intuition.policy: implementation design
 
 Parent: `docs/modules/intuition.policy/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: bounded calibrated decision and candidate/request binding implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded calibrated decision, authenticated qualification and decision-specific assignment provenance implemented; remaining product composition and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -20,7 +20,7 @@ No authoritative facts or current-run weight writer. Selected policy/calibration
 
 ## 4. Deterministic algorithm and scheduling
 
-Apply hard legality and support checks before scoring; consume bounded cached NDU and qualified neural signals; normalize a bounded action distribution using the canonical numeric profile; include explicit abstain/no-op; select with a recorded counter-based random stream when randomized. High-risk, unsupported, OOD or insufficient-confidence cases take deterministic validation/slow path. Calibration uses disjoint data and is assessed by task/risk/subgroup, not only an overall average.
+Apply hard legality and support checks before scoring; consume bounded cached NDU and qualified neural signals; normalize a bounded action distribution using the canonical numeric profile; include explicit abstain/no-op; select with a recorded counter-based random stream when randomized. On the native qualified path, policy profile, calibration/OOD/completeness, learned-scorer output and the exact assignment plan are independently authenticated; the assignment authority binds ordered probabilities, random-stream identity, draw and abstain mass for the exact decision sequence. High-risk, unsupported, OOD or insufficient-confidence cases take deterministic validation/slow path. Calibration uses disjoint data and is assessed by task/risk/subgroup, not only an overall average.
 
 ## 5. Capacity and performance profile
 
@@ -45,8 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `decide_calibrated` in [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs); `decide_calibrated_v2` in [codex-rs/hepta-intuition/src/calibrated_binding.rs](../../../codex-rs/hepta-intuition/src/calibrated_binding.rs). Bounded calibrated decision and candidate/request binding implemented.
-- **State and recovery:** Pure receipts retain action propensities and explicit abstain/slow-path mass; hard veto, OOD, confidence and risk checks precede selection over the supplied candidate set. Calibration, completeness and provenance are input evidence, not learned here.
-- **Source tests:** [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/modules/intuition.policy/TECHNICAL.md](../../../docs/modules/intuition.policy/TECHNICAL.md), [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
-- **Remaining work:** Bind authenticated current calibration/OOD/completeness artifacts and an owner-supplied assignment draw; real calibration quality and consumer execution require independent evidence.
+- **Implemented entrypoints:** `decide_calibrated` in [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs); `decide_calibrated_v2` in [codex-rs/hepta-intuition/src/calibrated_binding.rs](../../../codex-rs/hepta-intuition/src/calibrated_binding.rs); `decide_qualified_v1` in [codex-rs/hepta-intuition/src/qualified/decision.rs](../../../codex-rs/hepta-intuition/src/qualified/decision.rs). Bounded calibrated selection, complete-request binding and authenticated current-generation qualification are implemented.
+- **State and recovery:** Pure receipts retain action propensities and explicit abstain/slow-path mass; hard veto, OOD, confidence and risk checks precede selection. The qualified path recomputes canonical calibration/OOD/completeness/profile/scorer digests, authenticates them, and separately authenticates the exact assignment plan under a distinct assignment key so distribution/random-stream/draw mutation fails closed. Learned scoring and calibration fitting remain external inputs rather than state owned here.
+- **Source tests:** [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs), [codex-rs/hepta-intuition/src/qualified_tests.rs](../../../codex-rs/hepta-intuition/src/qualified_tests.rs), [codex-rs/hepta-intuition/tests/frozen_qualification.rs](../../../codex-rs/hepta-intuition/tests/frozen_qualification.rs), [codex-rs/hepta-intuition/tests/fast_benchmark_gate.rs](../../../codex-rs/hepta-intuition/tests/fast_benchmark_gate.rs). These are test identities, not pass receipts for this documentation revision.
+- **Implementation and operating references:** [docs/modules/intuition.policy/TECHNICAL.md](../../../docs/modules/intuition.policy/TECHNICAL.md), [docs/modules/intuition.policy/QUALIFICATION.md](../../../docs/modules/intuition.policy/QUALIFICATION.md), [docs/modules/intuition.policy/LEARNED_SCORER_CONTRACT.md](../../../docs/modules/intuition.policy/LEARNED_SCORER_CONTRACT.md), [docs/modules/intuition.policy/FAST_BENCHMARK.md](../../../docs/modules/intuition.policy/FAST_BENCHMARK.md), [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
+- **Remaining work:** Provision the three trusted production key roles outside request data, compose `decide_qualified_v1` through a named product caller, qualify the target host and obtain independent calibration/consumer evidence before activation or release.
