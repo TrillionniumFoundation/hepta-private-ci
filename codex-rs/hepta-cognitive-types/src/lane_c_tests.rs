@@ -266,3 +266,44 @@ fn prompt_snapshot_and_delivery_observation_reject_stale_semantics() {
         ))
     );
 }
+
+#[test]
+fn federation_completeness_matches_coverage() {
+    let mut result = FederatedEvidenceResultV1 {
+        query_id: id("query:coverage"),
+        peer_id: id("peer:coverage"),
+        observed_snapshot: snapshot_key(),
+        items: vec![FederatedEvidenceItemV1 {
+            source_owner_id: id("owner:coverage"),
+            record_id: id("record:coverage"),
+            record_revision: revision(1),
+            record_digest: digest("record-coverage"),
+            support_digest: digest("support-coverage"),
+            validity_digest: digest("validity-coverage"),
+        }],
+        coverage: FederatedCoverageV1 {
+            requested_peers: 2,
+            completed_peers: 1,
+            failed_peers: 0,
+            truncated_items: 0,
+        },
+        completeness: FederatedCompletenessV1::Complete,
+        validity: FederatedValidityV1::Valid,
+        expires_unix_ms: 10,
+        result_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    result.result_digest = result.compute_result_digest();
+    assert_eq!(
+        result.validate(),
+        Err(LaneCContractError::InvalidState(
+            "federated_complete_coverage"
+        ))
+    );
+
+    result.completeness = FederatedCompletenessV1::Partial;
+    result.result_digest = result.compute_result_digest();
+    result
+        .validate()
+        .unwrap_or_else(|error| panic!("partial coverage must be valid: {error}"));
+}

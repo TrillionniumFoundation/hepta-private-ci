@@ -20,3 +20,12 @@ cargo test --manifest-path qualification/hnmf-reference/Cargo.toml
 ```
 
 Passing these checks proves only that the HNMF contracts, algorithms, bounds, negative authority posture, and deterministic reference behavior are internally closed at the exact candidate. It does not prove production activation, longitudinal efficacy, functional biomimicry, operator acceptance, promotion, or release.
+
+
+## Canonical production owner
+
+HNMF V1 contract ownership is now rooted in
+`codex-rs/hepta-cognitive-types/src/hnmf_v1`. The qualification contract
+reference is a compatibility façade over that implementation and must not
+define a second event/span/wire model. The algorithm reference remains
+qualification-only and its unversioned in-memory structs are not wire schemas.

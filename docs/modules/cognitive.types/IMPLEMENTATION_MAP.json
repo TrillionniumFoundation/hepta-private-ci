@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "tree": "789fa2ea88e8a6e787a0fb838a8dda3cf2e20701"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.types",
@@ -18,37 +18,532 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "native_consumers_present_product_activation_not_proved",
+  "productionWriterState": "not_applicable_stateless_contract_owner",
   "operations": [
     {
       "operation": "build_snapshot",
       "nativeSymbol": "build_snapshot",
       "sourcePath": "codex-rs/hepta-cognitive-types/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_integrated_not_product_activated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "cognitivesnapshotkeyv1",
+      "operation": "LaneCGenerationVectorV1",
+      "nativeSymbol": "LaneCGenerationVectorV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "LaneCGenerationVectorV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "CognitiveSnapshotKeyV1",
       "nativeSymbol": "CognitiveSnapshotKeyV1",
       "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_integrated_not_product_activated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivesnapshotkeyv1",
+      "designOperation": "CognitiveSnapshotKeyV1",
       "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "MemoryAdmissionKind",
+      "nativeSymbol": "MemoryAdmissionKind",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "MemoryAdmissionKind",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "MemoryVerificationState",
+      "nativeSymbol": "MemoryVerificationState",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "MemoryVerificationState",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "MemoryAdmissionEvidenceV1",
+      "nativeSymbol": "MemoryAdmissionEvidenceV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "MemoryAdmissionEvidenceV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "MemoryAdmissionCandidateV1",
+      "nativeSymbol": "MemoryAdmissionCandidateV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "MemoryAdmissionCandidateV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "MemoryWriteIntentV1",
+      "nativeSymbol": "MemoryWriteIntentV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "MemoryWriteIntentV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "MemoryWriteDisposition",
+      "nativeSymbol": "MemoryWriteDisposition",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "MemoryWriteDisposition",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "MemoryWriteReceiptV1",
+      "nativeSymbol": "MemoryWriteReceiptV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "MemoryWriteReceiptV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "FederatedMemoryQueryV1",
+      "nativeSymbol": "FederatedMemoryQueryV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "FederatedMemoryQueryV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "FederatedEvidenceItemV1",
+      "nativeSymbol": "FederatedEvidenceItemV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "FederatedEvidenceItemV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "FederatedCompletenessV1",
+      "nativeSymbol": "FederatedCompletenessV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "FederatedCompletenessV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "FederatedValidityV1",
+      "nativeSymbol": "FederatedValidityV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "FederatedValidityV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "FederatedCoverageV1",
+      "nativeSymbol": "FederatedCoverageV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "FederatedCoverageV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "FederatedEvidenceResultV1",
+      "nativeSymbol": "FederatedEvidenceResultV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "FederatedEvidenceResultV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "KnowledgeGraphGenerationV1",
+      "nativeSymbol": "KnowledgeGraphGenerationV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "KnowledgeGraphGenerationV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ProjectionDispositionV1",
+      "nativeSymbol": "ProjectionDispositionV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ProjectionDispositionV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ProjectionReceiptV1",
+      "nativeSymbol": "ProjectionReceiptV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ProjectionReceiptV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "CompactCheckpointV1",
+      "nativeSymbol": "CompactCheckpointV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "CompactCheckpointV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "CompactionProofV1",
+      "nativeSymbol": "CompactionProofV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "CompactionProofV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "PromptRegistrySnapshotV1",
+      "nativeSymbol": "PromptRegistrySnapshotV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "PromptRegistrySnapshotV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ContextDeliveryDispositionV1",
+      "nativeSymbol": "ContextDeliveryDispositionV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ContextDeliveryDispositionV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ContextDeliveryObservationV1",
+      "nativeSymbol": "ContextDeliveryObservationV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ContextDeliveryObservationV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "LaneCContractError",
+      "nativeSymbol": "LaneCContractError",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "state": "source_implemented_integrated_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "LaneCContractError",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ModalitySpanRefV1",
+      "nativeSymbol": "ModalitySpanRefV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/span.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ModalitySpanRefV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "MemoryEventV1",
+      "nativeSymbol": "MemoryEventV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/event.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "MemoryEventV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "CrossModalBindingV1",
+      "nativeSymbol": "CrossModalBindingV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/span.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "CrossModalBindingV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "EngramNodeV1",
+      "nativeSymbol": "EngramNodeV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/graph.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "EngramNodeV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "SynapseV1",
+      "nativeSymbol": "SynapseV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/graph.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "SynapseV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "MemoryCueV1",
+      "nativeSymbol": "MemoryCueV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/graph.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "MemoryCueV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "RecallPacketV1",
+      "nativeSymbol": "RecallPacketV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/graph.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "RecallPacketV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "OutcomeSignalV1",
+      "nativeSymbol": "OutcomeSignalV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/learning.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "OutcomeSignalV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ReplaySelectionReceiptV1",
+      "nativeSymbol": "ReplaySelectionReceiptV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/learning.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ReplaySelectionReceiptV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "PlasticityBatchV1",
+      "nativeSymbol": "PlasticityBatchV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/learning.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "PlasticityBatchV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "CognitiveTopologyProposalV1",
+      "nativeSymbol": "CognitiveTopologyProposalV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/learning.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "CognitiveTopologyProposalV1",
+      "mappingClass": "owner_native_canonical_wire",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ForgetPropagationReceiptV1",
+      "nativeSymbol": "ForgetPropagationReceiptV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf_v1/learning.rs",
+      "state": "source_implemented_wire_registered_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ForgetPropagationReceiptV1",
+      "mappingClass": "owner_native_canonical_wire",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain exact-head focused/package/all-target/strict-clippy receipts for the final candidate.",
+    "Obtain deterministic synthetic-merge execution receipts before changing the claim boundary.",
+    "Bind authenticated product callsites to registered canonical wire profiles; this stateless module never gains writer authority."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -66,5 +561,34 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-types"
+  ],
+  "sourceBaseMeaning": "default-branch reconciliation baseline; exact PR/head/merge candidate identity is live evidence and is not cached in this map",
+  "nativeConsumerState": "integrated_by_repository_callers",
+  "authenticatedProductCompositionState": "not_proved",
+  "nativeConsumers": [
+    {
+      "module": "cognitive.read",
+      "path": "codex-rs/hepta-cognitive-read"
+    },
+    {
+      "module": "cognitive.store",
+      "path": "codex-rs/hepta-cognitive-store"
+    },
+    {
+      "module": "memory.runtime",
+      "path": "codex-rs/hepta-memory"
+    },
+    {
+      "module": "memory.retrieval",
+      "path": "codex-rs/hepta-memory-retrieval"
+    },
+    {
+      "module": "compact.engine",
+      "path": "codex-rs/hepta-compact-engine"
+    },
+    {
+      "module": "intelligence.control",
+      "path": "codex-rs/hepta-intelligence"
+    }
   ]
 }

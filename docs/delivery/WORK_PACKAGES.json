@@ -2197,7 +2197,7 @@
       "id": "MEM-0-TYPES",
       "module": "cognitive.types",
       "priority": 2,
-      "state": "planned",
+      "state": "source_implemented_execution_pending",
       "parallelClass": "contract_first_parallel",
       "authorityDelta": "none",
       "developmentAfter": [
@@ -2218,10 +2218,22 @@
         "ModulePort::platform.types::cognitive.types"
       ],
       "producesContracts": [
+        "CognitiveTopologyProposalV1",
+        "CrossModalBindingV1",
+        "EngramNodeV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryCueV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
         "ModulePort::cognitive.types::cognitive.read",
         "ModulePort::cognitive.types::cognitive.store",
         "ModulePort::cognitive.types::knowledge.graph",
-        "ModulePort::cognitive.types::learning.ledger"
+        "ModulePort::cognitive.types::learning.ledger",
+        "OutcomeSignalV1",
+        "PlasticityBatchV1",
+        "RecallPacketV1",
+        "ReplaySelectionReceiptV1",
+        "SynapseV1"
       ],
       "deliverables": [
         "exact_source_identity",

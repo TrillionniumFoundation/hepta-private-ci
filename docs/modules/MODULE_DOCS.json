@@ -1470,9 +1470,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "MEM-0-TYPES",
-      "sha256": "4115df354fc20ec78d28362a077f9fea8b65584a24b7435760142066b258eb73",
-      "bytes": 16098,
-      "words": 1782,
+      "sha256": "84c63eb9a6ff02b8528a760a48a132f941128f5dc7096617778978a4817ff76a",
+      "bytes": 17714,
+      "words": 1955,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -1492,15 +1492,40 @@
         "## 17. Source implementation receipt"
       ],
       "producedContracts": [
+        "CognitiveTopologyProposalV1",
+        "CrossModalBindingV1",
+        "EngramNodeV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryCueV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
         "ModulePort::cognitive.types::cognitive.read",
         "ModulePort::cognitive.types::cognitive.store",
         "ModulePort::cognitive.types::knowledge.graph",
-        "ModulePort::cognitive.types::learning.ledger"
+        "ModulePort::cognitive.types::learning.ledger",
+        "OutcomeSignalV1",
+        "PlasticityBatchV1",
+        "RecallPacketV1",
+        "ReplaySelectionReceiptV1",
+        "SynapseV1"
       ],
       "consumedContracts": [
         "ModulePort::platform.types::cognitive.types"
       ],
-      "protocols": [],
+      "protocols": [
+        "CognitiveTopologyProposalV1",
+        "CrossModalBindingV1",
+        "EngramNodeV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryCueV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
+        "OutcomeSignalV1",
+        "PlasticityBatchV1",
+        "RecallPacketV1",
+        "ReplaySelectionReceiptV1",
+        "SynapseV1"
+      ],
       "ownedDomains": [],
       "readDomains": [],
       "workPackages": [
@@ -1545,11 +1570,18 @@
       "consumedContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
         "ModulePort::cognitive.types::cognitive.store",
         "ModulePort::kernel.operations::cognitive.store",
         "OperationIntentV1"
       ],
-      "protocols": [],
+      "protocols": [
+        "ForgetPropagationReceiptV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1"
+      ],
       "ownedDomains": [
         "knowledge_fact_ledger",
         "memory_ledger"
@@ -1603,9 +1635,22 @@
         "ModulePort::cognitive.read::utility.ndu"
       ],
       "consumedContracts": [
-        "ModulePort::cognitive.types::cognitive.read"
+        "EngramNodeV1",
+        "MemoryCueV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
+        "ModulePort::cognitive.types::cognitive.read",
+        "RecallPacketV1",
+        "SynapseV1"
       ],
-      "protocols": [],
+      "protocols": [
+        "EngramNodeV1",
+        "MemoryCueV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
+        "RecallPacketV1",
+        "SynapseV1"
+      ],
       "ownedDomains": [],
       "readDomains": [],
       "workPackages": [
@@ -1743,18 +1788,28 @@
         "ModulePort::knowledge.graph::memory.retrieval"
       ],
       "consumedContracts": [
+        "CrossModalBindingV1",
         "DomainRead::knowledge_fact_ledgerV1",
         "DomainRead::memory_ledgerV1",
         "DomainRead::prompt_factor_lifecycleV1",
         "DomainRead::prompt_factor_registryV1",
         "DomainRead::prompt_realization_registryV1",
+        "EngramNodeV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryEventV1",
         "ModulePort::cognitive.store::knowledge.graph",
         "ModulePort::cognitive.types::knowledge.graph",
         "ModulePort::prompt.registry::knowledge.graph",
-        "PromptFactorV1"
+        "PromptFactorV1",
+        "SynapseV1"
       ],
       "protocols": [
-        "PromptFactorV1"
+        "CrossModalBindingV1",
+        "EngramNodeV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryEventV1",
+        "PromptFactorV1",
+        "SynapseV1"
       ],
       "ownedDomains": [
         "knowledge_graph_projection",
@@ -1866,11 +1921,14 @@
         "OutcomeWatermarkV1"
       ],
       "consumedContracts": [
+        "CognitiveTopologyProposalV1",
         "ContextCompilationReceiptV1",
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
+        "ForgetPropagationReceiptV1",
         "IntuitionDecisionReceiptV1",
         "LegalActionCandidateSetV1",
+        "MemoryEventV1",
         "ModulePort::cognitive.types::learning.ledger",
         "ModulePort::kernel.operations::learning.ledger",
         "ModulePort::platform.types::learning.ledger",
@@ -1879,34 +1937,45 @@
         "NduUpdateReceiptV1",
         "NeuronSignalReceiptV1",
         "ObjectiveFunctionV1",
+        "OutcomeSignalV1",
+        "PlasticityBatchV1",
         "PromptCandidateSetReceiptV1",
         "PromptDeliveryObservationV1",
         "PromptExerciseDecisionV1",
         "PromptPortfolioReceiptV1",
         "PromptPricingReceiptV1",
+        "RecallPacketV1",
+        "ReplaySelectionReceiptV1",
         "RunStartSnapshotV1"
       ],
       "protocols": [
         "CandidateSetCompletenessReceiptV1",
+        "CognitiveTopologyProposalV1",
         "ContextCompilationReceiptV1",
         "CreditAssignmentReceiptV1",
         "DatasetSnapshotV1",
+        "ForgetPropagationReceiptV1",
         "IntuitionDecisionReceiptV1",
         "LearningDecisionV1",
         "LearningEpisodeV1",
         "LegalActionCandidateSetV1",
+        "MemoryEventV1",
         "NduPreferenceStateV1",
         "NduSummaryReceiptV1",
         "NduUpdateReceiptV1",
         "NeuronSignalReceiptV1",
         "ObjectiveFunctionV1",
         "OutcomeReceiptV1",
+        "OutcomeSignalV1",
         "OutcomeWatermarkV1",
+        "PlasticityBatchV1",
         "PromptCandidateSetReceiptV1",
         "PromptDeliveryObservationV1",
         "PromptExerciseDecisionV1",
         "PromptPortfolioReceiptV1",
         "PromptPricingReceiptV1",
+        "RecallPacketV1",
+        "ReplaySelectionReceiptV1",
         "RunStartSnapshotV1"
       ],
       "ownedDomains": [
@@ -2336,6 +2405,7 @@
         "TopologyProposalV1"
       ],
       "consumedContracts": [
+        "CognitiveTopologyProposalV1",
         "DomainRead::learning_artifact_registryV1",
         "DomainRead::operator_sensor_core_registryV1",
         "DomainRead::qualification_evidenceV1",
@@ -2347,6 +2417,7 @@
         "RandomStreamManifestV1"
       ],
       "protocols": [
+        "CognitiveTopologyProposalV1",
         "IterationCandidateV1",
         "IterationEnvelopeV1",
         "NeuronCheckpointV1",

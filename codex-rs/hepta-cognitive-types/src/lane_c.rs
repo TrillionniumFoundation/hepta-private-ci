@@ -430,6 +430,27 @@ impl FederatedEvidenceResultV1 {
                 "federated_indeterminate_state",
             ));
         }
+        match self.completeness {
+            FederatedCompletenessV1::Complete
+                if self.coverage.completed_peers != self.coverage.requested_peers
+                    || self.coverage.failed_peers != 0
+                    || self.coverage.truncated_items != 0 =>
+            {
+                return Err(LaneCContractError::InvalidState(
+                    "federated_complete_coverage",
+                ));
+            }
+            FederatedCompletenessV1::Partial
+                if self.coverage.completed_peers == self.coverage.requested_peers
+                    && self.coverage.failed_peers == 0
+                    && self.coverage.truncated_items == 0 =>
+            {
+                return Err(LaneCContractError::InvalidState(
+                    "federated_partial_coverage",
+                ));
+            }
+            _ => {}
+        }
         let mut identities = BTreeSet::new();
         for item in &self.items {
             item.validate()?;

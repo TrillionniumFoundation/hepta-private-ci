@@ -73,14 +73,17 @@
       "id": "ModalitySpanRefV1",
       "maximumEncodedBytes": 32768,
       "requiredFields": [
+        "spanId",
         "modality",
         "assetSha256",
-        "start",
-        "end",
+        "range",
         "preprocessorManifestSha256",
         "uncertaintyPpm",
-        "privacyClass"
-      ]
+        "privacyClass",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "MemoryEventV1",
@@ -91,13 +94,20 @@
         "scope",
         "observedInterval",
         "modalitySpans",
+        "crossModalBindings",
         "semanticKeys",
         "provenance",
         "verification",
         "retentionPolicy",
         "objectiveDigest",
-        "nduStateDigest"
-      ]
+        "nduStateDigest",
+        "causalParentEventIds",
+        "temporalNeighborEventIds",
+        "lifecycle",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "CrossModalBindingV1",
@@ -108,8 +118,11 @@
         "spanRefs",
         "alignmentKind",
         "confidencePpm",
-        "producerManifestSha256"
-      ]
+        "producerManifestSha256",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "EngramNodeV1",
@@ -118,12 +131,16 @@
         "nodeId",
         "population",
         "modalityMask",
+        "semanticCueKeys",
         "supportManifestSha256",
         "thresholdQ16",
         "targetActivityPpm",
         "confidencePpm",
-        "snapshotGeneration"
-      ]
+        "snapshotGeneration",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "SynapseV1",
@@ -135,9 +152,13 @@
         "weightQ16",
         "delaySteps",
         "plasticityClass",
+        "eligibilityPpm",
         "supportManifestSha256",
-        "snapshotGeneration"
-      ]
+        "snapshotGeneration",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "MemoryCueV1",
@@ -150,8 +171,11 @@
         "semanticKeys",
         "seedNodeIds",
         "nowUnixMs",
-        "resourceBudget"
-      ]
+        "resourceBudget",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "RecallPacketV1",
@@ -168,8 +192,11 @@
         "confidencePpm",
         "oodPpm",
         "abstain",
-        "resourceReceipt"
-      ]
+        "resourceReceipt",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "OutcomeSignalV1",
@@ -181,8 +208,11 @@
         "noveltyPpm",
         "riskPpm",
         "oodPpm",
-        "observerDigest"
-      ]
+        "observerDigest",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "ReplaySelectionReceiptV1",
@@ -192,8 +222,11 @@
         "selectedEventIds",
         "sourceBucketCounts",
         "selectionPolicyDigest",
-        "resourceReceipt"
-      ]
+        "resourceReceipt",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "PlasticityBatchV1",
@@ -205,11 +238,14 @@
         "weightProposals",
         "thresholdProposals",
         "currentSnapshotImmutable",
-        "productionActivationAllowed"
-      ]
+        "productionActivationAllowed",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
-      "id": "TopologyProposalV1",
+      "id": "CognitiveTopologyProposalV1",
       "maximumEncodedBytes": 65536,
       "requiredFields": [
         "predecessorGeneration",
@@ -218,8 +254,11 @@
         "capabilityTyped",
         "sandboxOnly",
         "operatorAccepted",
-        "productionActivationAllowed"
-      ]
+        "productionActivationAllowed",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     },
     {
       "id": "ForgetPropagationReceiptV1",
@@ -231,8 +270,11 @@
         "retiredNodeIds",
         "retiredSynapses",
         "projectionRebuildRequired",
-        "artifactRevocationRequired"
-      ]
+        "artifactRevocationRequired",
+        "authority"
+      ],
+      "schemaVersion": 1,
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope"
     }
   ],
   "dynamics": {
@@ -447,7 +489,7 @@
       "source-aware multimodal recall packet compilation"
     ],
     "intelligence.control": [
-      "composition fa\u00e7ade only; no durable fact or model execution ownership"
+      "composition façade only; no durable fact or model execution ownership"
     ]
   },
   "prohibitedSubstitutions": [

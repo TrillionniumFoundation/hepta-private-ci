@@ -3281,6 +3281,881 @@
         "current_run_artifact_immutable",
         "correction_deletion_and_revocation_lineage_preserved"
       ]
+    },
+    {
+      "id": "ModalitySpanRefV1",
+      "contractId": "ModalitySpanRefV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 32768,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "spanId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "modality",
+          "type": "enum",
+          "required": true
+        },
+        {
+          "name": "assetSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "range",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "preprocessorManifestSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "featureBlobSha256",
+          "type": "sha256",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "symbolicProjectionSha256",
+          "type": "sha256",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "uncertaintyPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "privacyClass",
+          "type": "enum",
+          "required": true
+        },
+        {
+          "name": "redactionMaskSha256",
+          "type": "sha256",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "MemoryEventV1",
+      "contractId": "MemoryEventV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "eventId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "episodeId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "scope",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096
+        },
+        {
+          "name": "observedInterval",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        },
+        {
+          "name": "modalitySpans",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 131072
+        },
+        {
+          "name": "crossModalBindings",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 65536
+        },
+        {
+          "name": "semanticKeys",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "provenance",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "verification",
+          "type": "enum",
+          "required": true
+        },
+        {
+          "name": "retentionPolicy",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 1024
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "nduStateDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "causalParentEventIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "temporalNeighborEventIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "behaviorPropensityPpm",
+          "type": "u32",
+          "required": false
+        },
+        {
+          "name": "lifecycle",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 1024
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "CrossModalBindingV1",
+      "contractId": "CrossModalBindingV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "bindingId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "eventId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "spanRefs",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "alignmentKind",
+          "type": "enum",
+          "required": true
+        },
+        {
+          "name": "confidencePpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "producerManifestSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "EngramNodeV1",
+      "contractId": "EngramNodeV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "nodeId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "population",
+          "type": "enum",
+          "required": true
+        },
+        {
+          "name": "modalityMask",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 2048
+        },
+        {
+          "name": "semanticCueKeys",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "supportManifestSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "thresholdQ16",
+          "type": "i32",
+          "required": true
+        },
+        {
+          "name": "targetActivityPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "confidencePpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "snapshotGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "SynapseV1",
+      "contractId": "SynapseV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "sourceNodeId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "targetNodeId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "relation",
+          "type": "enum",
+          "required": true
+        },
+        {
+          "name": "weightQ16",
+          "type": "i32",
+          "required": true
+        },
+        {
+          "name": "delaySteps",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "plasticityClass",
+          "type": "utf8",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "eligibilityPpm",
+          "type": "i32",
+          "required": true
+        },
+        {
+          "name": "supportManifestSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "snapshotGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "MemoryCueV1",
+      "contractId": "MemoryCueV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "cueId",
+          "type": "utf8",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "nduStateDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "modalities",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 2048
+        },
+        {
+          "name": "semanticKeys",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "seedNodeIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192
+        },
+        {
+          "name": "nowUnixMs",
+          "type": "utf8_decimal_i64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "resourceBudget",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 2048
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "RecallPacketV1",
+      "contractId": "RecallPacketV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "cueDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "eventSnapshotDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "engramSnapshotDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "selectedEvents",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "activeNodes",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 65536
+        },
+        {
+          "name": "activationPaths",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "contradictions",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "coveragePpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "confidencePpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "oodPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "abstain",
+          "type": "enum",
+          "required": false
+        },
+        {
+          "name": "resourceReceipt",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 2048
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "OutcomeSignalV1",
+      "contractId": "OutcomeSignalV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 32768,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "episodeId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "utilityDeltaPpm",
+          "type": "i32",
+          "required": true
+        },
+        {
+          "name": "predictionErrorPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "noveltyPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "riskPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "oodPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "observerDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "ReplaySelectionReceiptV1",
+      "contractId": "ReplaySelectionReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "candidateSetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "selectedEventIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "sourceBucketCounts",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "selectionPolicyDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "resourceReceipt",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 2048
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "PlasticityBatchV1",
+      "contractId": "PlasticityBatchV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "predecessorGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "nextGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "outcomeSignalDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "weightProposals",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 196608
+        },
+        {
+          "name": "thresholdProposals",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 65536
+        },
+        {
+          "name": "currentSnapshotImmutable",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "productionActivationAllowed",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "ForgetPropagationReceiptV1",
+      "contractId": "ForgetPropagationReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "eventId",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "predecessorGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "nextGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "retiredNodeIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "retiredSynapses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768
+        },
+        {
+          "name": "projectionRebuildRequired",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "artifactRevocationRequired",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority"
+      ]
+    },
+    {
+      "id": "CognitiveTopologyProposalV1",
+      "contractId": "CognitiveTopologyProposalV1",
+      "canonicalEncoding": "canonical_json_utf8_v1_envelope",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_version_and_all_semantic_payload_fields",
+      "fields": [
+        {
+          "name": "predecessorGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "nextGeneration",
+          "type": "utf8_decimal_u64",
+          "required": true,
+          "maxBytes": 32
+        },
+        {
+          "name": "operation",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 16384
+        },
+        {
+          "name": "capabilityTyped",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "sandboxOnly",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "operatorAccepted",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "productionActivationAllowed",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "authority",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 512
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "schema_and_version_envelope",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "deny_all_authority",
+        "candidate_only_next_generation"
+      ]
     }
   ],
   "subordinateProtocolRegistries": [
