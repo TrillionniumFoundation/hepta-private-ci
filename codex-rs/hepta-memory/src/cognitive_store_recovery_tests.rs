@@ -137,6 +137,98 @@ async fn exact_current_cut_is_unavailable_without_file_or_sidecar_mutation() {
 }
 
 #[tokio::test]
+async fn writer_recovery_requires_current_anchor_bound_fence_before_descriptor_backend() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(90);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
+    let root = store.path().parent().expect("cognitive root").to_path_buf();
+    store.pool.close().await;
+    let before = capture_recovery_tree(&root);
+    let valid_fence = CognitiveRecoveryWriterFence {
+        owner_agent_id: owner.clone(),
+        anchor_state_digest: anchor.state_digest.clone(),
+        generation: 7,
+        valid_until_unix_seconds: 1_000,
+        fence_digest: Sha256Digest::for_bytes(b"externally-current-writer-fence"),
+    };
+    let verifier = |fence: &CognitiveRecoveryWriterFence,
+                    expected: &CognitiveRecoveryAnchor,
+                    expected_owner: &AgentId| {
+        if fence.owner_agent_id == *expected_owner
+            && fence.anchor_state_digest == expected.state_digest
+            && fence.generation == 7
+        {
+            Ok(())
+        } else {
+            Err("fence verification failed".to_string())
+        }
+    };
+
+    let failure = recovery_failure(
+        CognitiveStore::open_with_recovery_writer(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &valid_fence,
+            &verifier,
+            100,
+        )
+        .await,
+    );
+    assert!(
+        matches!(failure, CognitiveRecoveryError::Unavailable(_)),
+        "a valid host fence must reach the still-unavailable descriptor writer backend"
+    );
+    assert_eq!(capture_recovery_tree(&root), before);
+
+    let mut wrong_cut = valid_fence.clone();
+    wrong_cut.anchor_state_digest = Sha256Digest::for_bytes(b"different-cut");
+    assert!(matches!(
+        CognitiveStore::open_with_recovery_writer(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &wrong_cut,
+            &verifier,
+            100,
+        )
+        .await,
+        Err(CognitiveRecoveryError::Indeterminate(_))
+    ));
+    assert_eq!(capture_recovery_tree(&root), before);
+
+    let mut expired = valid_fence.clone();
+    expired.valid_until_unix_seconds = 100;
+    assert!(matches!(
+        CognitiveStore::open_with_recovery_writer(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &expired,
+            &verifier,
+            100,
+        )
+        .await,
+        Err(CognitiveRecoveryError::AccessDenied(_))
+    ));
+
+    let rejecting_verifier =
+        |_fence: &CognitiveRecoveryWriterFence,
+         _expected: &CognitiveRecoveryAnchor,
+         _owner: &AgentId| Err("revoked by current authority owner".to_string());
+    assert!(matches!(
+        CognitiveStore::open_with_recovery_writer(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &valid_fence,
+            &rejecting_verifier,
+            100,
+        )
+        .await,
+        Err(CognitiveRecoveryError::AccessDenied(_))
+    ));
+    assert_eq!(capture_recovery_tree(&root), before);
+}
+
+#[tokio::test]
 async fn predecessor_and_current_witnesses_cannot_enable_path_recovery() {
     let temp = TempDir::new().expect("temp dir");
     let owner = agent_id(92);

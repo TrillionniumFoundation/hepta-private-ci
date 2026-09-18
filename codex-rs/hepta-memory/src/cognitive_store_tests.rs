@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
@@ -81,6 +83,47 @@ async fn stores_are_per_agent_append_only_and_scope_fail_closed() {
         delete_error
             .to_string()
             .contains("source ledger is immutable")
+    );
+}
+
+#[tokio::test]
+async fn durable_owner_implements_cognitive_store_binding_without_granting_authority() {
+    let temp = TempDir::new().expect("owner descriptor temp");
+    let first_owner = agent_id(201);
+    let second_owner = agent_id(202);
+    let first = CognitiveStore::open(&layout(&temp, &first_owner))
+        .await
+        .expect("first owner");
+    let second = CognitiveStore::open(&layout(&temp, &second_owner))
+        .await
+        .expect("second owner");
+
+    let first_descriptor = first.authoritative_owner_descriptor_v1();
+    first_descriptor.validate().expect("valid owner descriptor");
+    assert_eq!(
+        first_descriptor.durability,
+        codex_hepta_cognitive_store::DurableStoreProfileV1::SqliteWalSynchronousFull
+    );
+    assert_eq!(
+        first_descriptor.writer_fence,
+        codex_hepta_cognitive_store::DurableWriterFenceProfileV1::ExternalAuthorityGrantProcessLockAndCas
+    );
+    assert_eq!(
+        first_descriptor.recovery,
+        codex_hepta_cognitive_store::DurableRecoveryProfileV1::DescriptorSafeWriterUnavailable
+    );
+    assert!(!first_descriptor.authority.grants_any());
+    assert_ne!(
+        first_descriptor.owner_identity_digest,
+        second
+            .authoritative_owner_descriptor_v1()
+            .owner_identity_digest
+    );
+    assert_ne!(
+        first_descriptor.physical_store_digest,
+        second
+            .authoritative_owner_descriptor_v1()
+            .physical_store_digest
     );
 }
 
@@ -862,4 +905,186 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
         .expect("migration ledger"),
         "1,2,3,4,5,6,7,8,9,10"
     );
+}
+
+#[tokio::test]
+#[ignore = "manual PERF-DURABLE profile; set HEPTA_COGNITIVE_PERF_RECORDS to size the retained fixture"]
+async fn perf_durable_reports_write_wal_reopen_and_max_cut_metrics() {
+    let target_revisions = std::env::var("HEPTA_COGNITIVE_PERF_RECORDS")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(1_024);
+    assert!(
+        (16..=16_384).contains(&target_revisions),
+        "HEPTA_COGNITIVE_PERF_RECORDS must be in 16..=16384"
+    );
+    let tombstone_count = (target_revisions / 10).max(1);
+    let live_count = target_revisions - tombstone_count;
+
+    let temp = TempDir::new().expect("perf temp dir");
+    let owner = agent_id(240);
+    let owner_layout = layout(&temp, &owner);
+    let store = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("perf store");
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let mut memory_ids = Vec::with_capacity(tombstone_count);
+    let mut commit_micros = Vec::with_capacity(target_revisions);
+
+    for index in 0..live_count {
+        let content = format!("perf retained cognitive fact {index}");
+        let source_draft = source(
+            CognitiveScope::AgentPrivate,
+            &format!("perf-source-{index}"),
+            &content,
+        );
+        let started = Instant::now();
+        let citation = store
+            .append_source(&access, &source_draft)
+            .await
+            .expect("append perf source");
+        let memory = store
+            .remember_memory(
+                &access,
+                &MemoryDraft {
+                    stable_key: format!("perf-memory-{index}"),
+                    revision: MemoryRevisionDraft {
+                        scope: CognitiveScope::AgentPrivate,
+                        content,
+                        verification: MemoryVerification::Verified,
+                        lifecycle: MemoryLifecycleState::Active,
+                        valid_from_unix_seconds: 1,
+                        valid_to_unix_seconds: None,
+                        citations: vec![citation],
+                    },
+                },
+            )
+            .await
+            .expect("remember perf memory");
+        commit_micros.push(started.elapsed().as_micros());
+        if index < tombstone_count {
+            memory_ids.push(memory.id.memory_id);
+        }
+    }
+
+    for (index, memory_id) in memory_ids.iter().enumerate() {
+        let started = Instant::now();
+        let latest = store
+            .latest_memory(&access, memory_id)
+            .await
+            .expect("read perf memory head");
+        store
+            .forget_memory(
+                &access,
+                memory_id,
+                latest.id.revision,
+                &crate::ForgetMemoryDraft {
+                    scope: CognitiveScope::AgentPrivate,
+                    reason: format!("perf tombstone {index}"),
+                    valid_from_unix_seconds: 2,
+                    citations: latest.citations,
+                },
+            )
+            .await
+            .expect("append perf tombstone");
+        commit_micros.push(started.elapsed().as_micros());
+    }
+
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM memory_revisions")
+            .fetch_one(&store.pool)
+            .await
+            .expect("count perf revisions"),
+        i64::try_from(target_revisions).expect("target revisions fit i64"),
+    );
+    let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode")
+        .fetch_one(&store.pool)
+        .await
+        .expect("journal mode");
+    let synchronous: i64 = sqlx::query_scalar("PRAGMA synchronous")
+        .fetch_one(&store.pool)
+        .await
+        .expect("synchronous pragma");
+    assert_eq!(journal_mode.to_ascii_lowercase(), "wal");
+    assert_eq!(synchronous, 2);
+
+    let wal_path = store.path().with_extension("sqlite3-wal");
+    let wal_bytes_before_checkpoint = std::fs::metadata(&wal_path)
+        .map(|metadata| metadata.len())
+        .unwrap_or(0);
+    let checkpoint_started = Instant::now();
+    let checkpoint: (i64, i64, i64) = sqlx::query_as("PRAGMA wal_checkpoint(PASSIVE)")
+        .fetch_one(&store.pool)
+        .await
+        .expect("passive checkpoint");
+    let checkpoint_micros = checkpoint_started.elapsed().as_micros();
+
+    let cut_started = Instant::now();
+    let cut = store
+        .lane_c_snapshot(&access, &CognitiveScope::AgentPrivate, 2)
+        .await
+        .expect("materialize maximum retained cut");
+    let cut_micros = cut_started.elapsed().as_micros();
+    assert_eq!(cut.frontiers().memory as usize, target_revisions);
+    assert_eq!(cut.frontiers().tombstone as usize, tombstone_count);
+
+    let database_bytes = std::fs::metadata(store.path())
+        .expect("database metadata")
+        .len();
+    let cut_digest = cut.cut_digest();
+    let database_path = store.path().to_path_buf();
+    store.pool.close().await;
+    drop(store);
+
+    let reopen_started = Instant::now();
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("perf reopen");
+    let reopen_micros = reopen_started.elapsed().as_micros();
+    let revalidate_started = Instant::now();
+    reopened
+        .revalidate_lane_c_cut(&access, &CognitiveScope::AgentPrivate, cut_digest, 2)
+        .await
+        .expect("perf cut revalidation");
+    let revalidate_micros = revalidate_started.elapsed().as_micros();
+
+    commit_micros.sort_unstable();
+    let percentile = |numerator: usize, denominator: usize| -> u128 {
+        let index = commit_micros
+            .len()
+            .saturating_sub(1)
+            .saturating_mul(numerator)
+            / denominator;
+        commit_micros[index]
+    };
+    let report = serde_json::json!({
+        "schema": "hepta.cognitive-store.perf-durable.v1",
+        "database": database_path.file_name().and_then(|name| name.to_str()),
+        "retained_revisions": target_revisions,
+        "tombstones": tombstone_count,
+        "journal_mode": journal_mode,
+        "synchronous": synchronous,
+        "commit_latency_micros": {
+            "p50": percentile(50, 100),
+            "p95": percentile(95, 100),
+            "p99": percentile(99, 100),
+            "max": commit_micros.last().copied().unwrap_or_default(),
+        },
+        "wal_bytes_before_checkpoint": wal_bytes_before_checkpoint,
+        "checkpoint": {
+            "busy": checkpoint.0,
+            "log_frames": checkpoint.1,
+            "checkpointed_frames": checkpoint.2,
+            "latency_micros": checkpoint_micros,
+        },
+        "database_bytes": database_bytes,
+        "max_cut_latency_micros": cut_micros,
+        "reopen_latency_micros": reopen_micros,
+        "revalidate_cut_latency_micros": revalidate_micros,
+    });
+    println!(
+        "{}",
+        serde_json::to_string(&report).expect("serialize PERF-DURABLE report")
+    );
+    reopened.pool.close().await;
 }

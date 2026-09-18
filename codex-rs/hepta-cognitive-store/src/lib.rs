@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+mod owner;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -18,15 +19,28 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
+pub use owner::AuthoritativeCognitiveStoreOwnerV1;
+pub use owner::CognitiveStoreOwnerDescriptorV1;
+pub use owner::DurableRecoveryProfileV1;
+pub use owner::DurableStoreProfileV1;
+pub use owner::DurableWriterFenceProfileV1;
+pub use owner::OwnerDescriptorError;
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
 pub use v2::CognitiveStoreV2Error;
 pub use v2::ForgetIntentV2;
+pub use v2::MAX_V2_INTENT_JOURNAL_ENTRIES;
 pub use v2::MAX_V2_RECORD_REVISIONS;
+pub use v2::MAX_V2_REVOCATION_INTENT_RESERVE;
+pub use v2::MAX_V2_REVOCATION_RESERVE;
 pub use v2::MAX_V2_SNAPSHOT_LEASE_MS;
+pub use v2::MAX_V2_SNAPSHOT_PAGE_RECORDS;
 pub use v2::SnapshotOpenRequestV2;
+pub use v2::SnapshotPageOpenRequestV2;
+pub use v2::SnapshotPagePreviousRecordV2;
 pub use v2::StoreAuthorityVerifierV2;
 pub use v2::StoreIntentImageEntryV2;
+pub use v2::StoreSnapshotPageV2;
 pub use v2::StoreSnapshotV2;
 
 const MAX_RECORDS: usize = 16_384;

@@ -63,6 +63,49 @@ pub enum CognitiveRecoveryRequirement<'a> {
     Revoked,
 }
 
+/// Host-supplied current writer fence for descriptor-safe writer recovery.
+///
+/// This is not generated from the database being recovered. The host must
+/// authenticate it independently and bind it to the exact current-cut anchor.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveRecoveryWriterFence {
+    pub owner_agent_id: AgentId,
+    pub anchor_state_digest: Sha256Digest,
+    pub generation: u64,
+    pub valid_until_unix_seconds: u64,
+    pub fence_digest: Sha256Digest,
+}
+
+/// External verifier for the host's current writer fence.
+///
+/// A verifier must establish currentness/revocation outside the suspect
+/// database. Returning Ok does not bypass descriptor-safe SQLite identity.
+pub trait CognitiveRecoveryWriterFenceVerifier: Send + Sync {
+    fn verify(
+        &self,
+        fence: &CognitiveRecoveryWriterFence,
+        anchor: &CognitiveRecoveryAnchor,
+        expected_owner: &AgentId,
+    ) -> Result<(), String>;
+}
+
+impl<F> CognitiveRecoveryWriterFenceVerifier for F
+where
+    F: Fn(&CognitiveRecoveryWriterFence, &CognitiveRecoveryAnchor, &AgentId) -> Result<(), String>
+        + Send
+        + Sync,
+{
+    fn verify(
+        &self,
+        fence: &CognitiveRecoveryWriterFence,
+        anchor: &CognitiveRecoveryAnchor,
+        expected_owner: &AgentId,
+    ) -> Result<(), String> {
+        self(fence, anchor, expected_owner)
+    }
+}
+
 /// Fail-closed recovery admission outcome.
 ///
 /// This separate type preserves an indeterminate filesystem identity instead
@@ -116,6 +159,114 @@ impl CognitiveStore {
             .verify_inspection_unchanged()
             .map_err(recovery_error)?;
         Err(recovery_error(SqliteRecoveryError::Unavailable))
+    }
+
+    /// Recovery admission with an independently verified current writer fence.
+    ///
+    /// Today this still fails closed at the state backend because the qualified
+    /// descriptor-backed, non-reconnecting SQLite writer VFS is not yet
+    /// implemented. Unlike the legacy recovery entrypoint, this method closes
+    /// the current-writer-fence prerequisite now, so a future VFS cannot be
+    /// enabled without also satisfying owner/anchor/generation/expiry binding.
+    pub async fn open_with_recovery_writer<V>(
+        layout: &HeptaAgentLayout,
+        requirement: CognitiveRecoveryRequirement<'_>,
+        fence: &CognitiveRecoveryWriterFence,
+        verifier: &V,
+        now_unix_seconds: u64,
+    ) -> Result<Self, CognitiveRecoveryError>
+    where
+        V: CognitiveRecoveryWriterFenceVerifier + ?Sized,
+    {
+        let expected = validate_requirement(layout, requirement)?;
+        validate_writer_fence(layout, expected, fence, now_unix_seconds)?;
+        verifier
+            .verify(fence, expected, layout.agent_id())
+            .map_err(CognitiveRecoveryError::AccessDenied)?;
+
+        let path = layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
+        let sqlite_home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
+            .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
+        let config = SqliteConfig::from_sqlite_home(sqlite_home);
+        let guard = config
+            .bind_existing_recovery_database(&path)
+            .map_err(recovery_error)?;
+        guard
+            .verify_inspection_unchanged()
+            .map_err(recovery_error)?;
+
+        // This call is intentionally the only possible transition to a writer.
+        // The state backend currently returns Unavailable. Never fall back to
+        // CognitiveStore::open here: that would discard the retained identity.
+        let pool = config
+            .open_identity_bound_durable_evidence_pool(guard)
+            .await
+            .map_err(recovery_error)?;
+        let store = CognitiveStore {
+            pool,
+            owner_agent_id: layout.agent_id().clone(),
+            path,
+        };
+        super::verify_store(&store.pool, layout.agent_id())
+            .await
+            .map_err(cognitive_recovery_error)?;
+        let observed = store
+            .recovery_anchor()
+            .await
+            .map_err(cognitive_recovery_error)?;
+        if &observed != expected {
+            store.pool.close().await;
+            return Err(CognitiveRecoveryError::Indeterminate(
+                "recovered cognitive writer does not match the independently current anchor"
+                    .to_string(),
+            ));
+        }
+        Ok(store)
+    }
+}
+
+fn validate_writer_fence(
+    layout: &HeptaAgentLayout,
+    anchor: &CognitiveRecoveryAnchor,
+    fence: &CognitiveRecoveryWriterFence,
+    now_unix_seconds: u64,
+) -> Result<(), CognitiveRecoveryError> {
+    if fence.owner_agent_id != *layout.agent_id() {
+        return Err(CognitiveRecoveryError::AccessDenied(
+            "cognitive recovery writer-fence owner mismatch".to_string(),
+        ));
+    }
+    if fence.anchor_state_digest != anchor.state_digest {
+        return Err(CognitiveRecoveryError::Indeterminate(
+            "cognitive recovery writer fence is bound to a different state cut".to_string(),
+        ));
+    }
+    if fence.generation == 0 {
+        return Err(CognitiveRecoveryError::Invalid(
+            "cognitive recovery writer-fence generation must be non-zero".to_string(),
+        ));
+    }
+    if fence.valid_until_unix_seconds == 0 || now_unix_seconds >= fence.valid_until_unix_seconds {
+        return Err(CognitiveRecoveryError::AccessDenied(
+            "cognitive recovery writer fence is expired".to_string(),
+        ));
+    }
+    if fence.fence_digest.as_str().bytes().all(|byte| byte == b'0') {
+        return Err(CognitiveRecoveryError::Invalid(
+            "cognitive recovery writer-fence digest must be non-zero".to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn cognitive_recovery_error(error: CognitiveStoreError) -> CognitiveRecoveryError {
+    match error {
+        CognitiveStoreError::AccessDenied(message) => CognitiveRecoveryError::AccessDenied(message),
+        CognitiveStoreError::Invalid(message) => CognitiveRecoveryError::Invalid(message),
+        CognitiveStoreError::Unavailable(message) => CognitiveRecoveryError::Unavailable(message),
+        CognitiveStoreError::Conflict(message) | CognitiveStoreError::Corrupt(message) => {
+            CognitiveRecoveryError::Indeterminate(message)
+        }
     }
 }
 

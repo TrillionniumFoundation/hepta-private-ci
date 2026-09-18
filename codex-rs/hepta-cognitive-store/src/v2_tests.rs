@@ -19,6 +19,10 @@ fn revision(value: u64) -> Revision {
     Revision::new(value).unwrap_or_else(|error| panic!("valid revision: {error}"))
 }
 
+fn sequence(value: u64) -> LogicalSequence {
+    LogicalSequence::new(value).unwrap_or_else(|error| panic!("valid sequence: {error}"))
+}
+
 fn snapshot_key() -> CognitiveSnapshotKeyV1 {
     CognitiveSnapshotKeyV1::new(LaneCGenerationVectorV1 {
         scope_id: id("scope:store"),
@@ -127,6 +131,76 @@ fn admission_appends_full_revision_history_and_advances_frontiers() {
     assert_eq!(
         history[1].predecessor_digest,
         Some(history[0].record_digest())
+    );
+}
+
+#[test]
+fn only_verified_candidates_can_enter_the_live_ledger() {
+    for (verification, expected) in [
+        (
+            MemoryVerificationState::Unverified,
+            CognitiveStoreV2Error::UnverifiedCandidate,
+        ),
+        (
+            MemoryVerificationState::Contradicted,
+            CognitiveStoreV2Error::ContradictedCandidate,
+        ),
+        (
+            MemoryVerificationState::Revoked,
+            CognitiveStoreV2Error::RevokedCandidate,
+        ),
+    ] {
+        let mut store = store();
+        let mut value = candidate(
+            "memory:verification",
+            "content",
+            MemoryAdmissionKind::Inference,
+        );
+        value.verification = verification;
+        let write_intent = intent(&store, "intent:verification", &value);
+        assert_eq!(
+            store.append_admitted(&Verifier, value, write_intent),
+            Err(expected)
+        );
+        assert!(store.current_head(&id("memory:verification")).is_none());
+        assert_eq!(store.sequence(), sequence(1));
+    }
+}
+
+#[test]
+fn revocation_reserve_allows_forget_after_ordinary_capacity_is_full() {
+    let mut store = AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
+        .unwrap_or_else(|error| panic!("valid tiny store: {error}"));
+    let first = candidate("memory:1", "content:v1", MemoryAdmissionKind::Observation);
+    store
+        .append_admitted(&Verifier, first.clone(), intent(&store, "intent:1", &first))
+        .unwrap_or_else(|error| panic!("fill ordinary capacity: {error}"));
+
+    let second = candidate("memory:2", "content:v1", MemoryAdmissionKind::Observation);
+    let second_intent = intent(&store, "intent:2", &second);
+    assert_eq!(
+        store.append_admitted(&Verifier, second, second_intent),
+        Err(CognitiveStoreV2Error::CapacityExceeded)
+    );
+
+    let tombstone = store
+        .forget(
+            &Verifier,
+            ForgetIntentV2 {
+                intent_id: id("forget:1"),
+                record_id: id("memory:1"),
+                expected_snapshot: store.snapshot_key().clone(),
+                writer_fence_digest: digest("writer-fence"),
+                authorization_digest: digest("authorization"),
+                reason_digest: digest("capacity-safe-delete"),
+            },
+        )
+        .unwrap_or_else(|error| panic!("revocation reserve must remain writable: {error}"));
+    assert_eq!(tombstone.disposition, MemoryWriteDisposition::Inserted);
+    assert_eq!(store.history(&id("memory:1")).expect("history").len(), 2);
+    assert_eq!(
+        store.current_head(&id("memory:1")).expect("head").state,
+        RecordState::Tombstone
     );
 }
 
@@ -265,4 +339,250 @@ fn export_reopen_and_snapshot_preserve_history_and_tombstones() {
     snapshot
         .validate(10)
         .unwrap_or_else(|error| panic!("validate snapshot: {error}"));
+}
+
+#[test]
+fn image_validation_rejects_journal_receipt_identity_drift_even_after_rehash() {
+    let mut store = store();
+    let first = candidate("memory:1", "content:v1", MemoryAdmissionKind::Observation);
+    store
+        .append_admitted(&Verifier, first.clone(), intent(&store, "intent:1", &first))
+        .unwrap_or_else(|error| panic!("append: {error}"));
+
+    let mut image = store.export_image().expect("image");
+    image.journal[0].receipt.intent_id = id("intent:forged");
+    image.image_digest = image.compute_image_digest();
+    assert_eq!(
+        image.validate(),
+        Err(CognitiveStoreV2Error::JournalReceiptMismatch("intent_id"))
+    );
+}
+
+#[test]
+fn image_validation_rejects_sequence_and_frontier_drift_even_after_rehash() {
+    let mut store = store();
+    let first = candidate("memory:1", "content:v1", MemoryAdmissionKind::Observation);
+    store
+        .append_admitted(&Verifier, first.clone(), intent(&store, "intent:1", &first))
+        .unwrap_or_else(|error| panic!("append: {error}"));
+
+    let mut sequence_drift = store.export_image().expect("image");
+    sequence_drift.sequence = sequence(1);
+    sequence_drift.image_digest = sequence_drift.compute_image_digest();
+    assert_eq!(
+        sequence_drift.validate(),
+        Err(CognitiveStoreV2Error::ImageSequenceMismatch)
+    );
+
+    let mut frontier_drift = store.export_image().expect("image");
+    let mut vector = frontier_drift.snapshot_key.vector.clone();
+    vector.memory_ledger_frontier = 1;
+    frontier_drift.snapshot_key =
+        CognitiveSnapshotKeyV1::new(vector).expect("structurally valid forged frontier");
+    frontier_drift.image_digest = frontier_drift.compute_image_digest();
+    assert_eq!(
+        frontier_drift.validate(),
+        Err(CognitiveStoreV2Error::ImageFrontierMismatch("memory"))
+    );
+}
+
+#[test]
+fn paged_snapshot_binds_one_ledger_root_and_rejects_midstream_mutation() {
+    let mut store = store();
+    for index in 0..5 {
+        let record_id = format!("memory:{index}");
+        let content = format!("content:{index}");
+        let candidate = candidate(&record_id, &content, MemoryAdmissionKind::Observation);
+        let intent_id = format!("intent:{index}");
+        let write_intent = intent(&store, &intent_id, &candidate);
+        store
+            .append_admitted(&Verifier, candidate, write_intent)
+            .unwrap_or_else(|error| panic!("append {index}: {error}"));
+    }
+
+    let base_request = SnapshotOpenRequestV2 {
+        request_id: id("snapshot-page:1"),
+        scope_id: id("scope:store"),
+        purpose_id: id("purpose:memory"),
+        minimum_memory_frontier: store.snapshot_key().vector.memory_ledger_frontier,
+        minimum_tombstone_frontier: store.snapshot_key().vector.tombstone_frontier,
+        authority_epoch: 1,
+        deadline_unix_ms: 1_000,
+        lease_duration_ms: 100,
+    };
+    let first = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: base_request.clone(),
+                cursor: 0,
+                maximum_records: 2,
+                expected_ledger_digest: None,
+            },
+        )
+        .expect("first page");
+    assert_eq!(first.records.len(), 2);
+    assert_eq!(first.cursor, 0);
+    assert_eq!(first.next_cursor, Some(2));
+    assert_eq!(first.total_records, 5);
+    assert!(first.previous_record.is_none());
+
+    let second = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: base_request.clone(),
+                cursor: 2,
+                maximum_records: 2,
+                expected_ledger_digest: Some(first.ledger_digest),
+            },
+        )
+        .expect("second page");
+    assert_eq!(
+        second
+            .previous_record
+            .as_ref()
+            .map(|anchor| anchor.record_digest),
+        first.records.last().map(MemoryRecord::record_digest)
+    );
+    assert_eq!(second.next_cursor, Some(4));
+    assert_eq!(second.ledger_digest, first.ledger_digest);
+
+    let extra = candidate("memory:5", "content:5", MemoryAdmissionKind::Observation);
+    let extra_intent = intent(&store, "intent:5", &extra);
+    store
+        .append_admitted(&Verifier, extra, extra_intent)
+        .expect("mutate between pages");
+    assert_eq!(
+        store.open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: SnapshotOpenRequestV2 {
+                    minimum_memory_frontier: 1,
+                    ..base_request
+                },
+                cursor: 4,
+                maximum_records: 2,
+                expected_ledger_digest: Some(first.ledger_digest),
+            },
+        ),
+        Err(CognitiveStoreV2Error::DigestMismatch("ledger_root"))
+    );
+}
+
+#[test]
+fn paged_snapshot_proves_same_record_ancestry_and_rejects_forged_tombstone_boundary() {
+    let mut store = store();
+    let first = candidate(
+        "memory:chain",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
+    let first_intent = intent(&store, "intent:chain:1", &first);
+    store
+        .append_admitted(&Verifier, first, first_intent)
+        .expect("append first");
+
+    let second = candidate(
+        "memory:chain",
+        "content:v2",
+        MemoryAdmissionKind::Observation,
+    );
+    let second_intent = intent(&store, "intent:chain:2", &second);
+    store
+        .append_admitted(&Verifier, second, second_intent)
+        .expect("append second");
+
+    store
+        .forget(
+            &Verifier,
+            ForgetIntentV2 {
+                intent_id: id("forget:chain"),
+                record_id: id("memory:chain"),
+                expected_snapshot: store.snapshot_key().clone(),
+                writer_fence_digest: digest("writer-fence"),
+                authorization_digest: digest("authorization"),
+                reason_digest: digest("delete-chain"),
+            },
+        )
+        .expect("tombstone chain");
+
+    let snapshot = SnapshotOpenRequestV2 {
+        request_id: id("snapshot-page:chain"),
+        scope_id: id("scope:store"),
+        purpose_id: id("purpose:memory"),
+        minimum_memory_frontier: store.snapshot_key().vector.memory_ledger_frontier,
+        minimum_tombstone_frontier: store.snapshot_key().vector.tombstone_frontier,
+        authority_epoch: 1,
+        deadline_unix_ms: 1_000,
+        lease_duration_ms: 100,
+    };
+    let first_page = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: snapshot.clone(),
+                cursor: 0,
+                maximum_records: 1,
+                expected_ledger_digest: None,
+            },
+        )
+        .expect("first page");
+    let second_page = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot: snapshot.clone(),
+                cursor: 1,
+                maximum_records: 1,
+                expected_ledger_digest: Some(first_page.ledger_digest),
+            },
+        )
+        .expect("second page");
+    let anchor = second_page
+        .previous_record
+        .as_ref()
+        .expect("cross-page predecessor");
+    assert_eq!(anchor.record_id, id("memory:chain"));
+    assert_eq!(anchor.revision, revision(1));
+    assert_eq!(anchor.state, RecordState::Live);
+    assert_eq!(
+        second_page.records[0].predecessor_digest,
+        Some(anchor.record_digest)
+    );
+
+    let third_page = store
+        .open_snapshot_page(
+            10,
+            SnapshotPageOpenRequestV2 {
+                snapshot,
+                cursor: 2,
+                maximum_records: 1,
+                expected_ledger_digest: Some(first_page.ledger_digest),
+            },
+        )
+        .expect("third page");
+    assert_eq!(third_page.records[0].state, RecordState::Tombstone);
+    assert_eq!(
+        third_page
+            .previous_record
+            .as_ref()
+            .expect("third page predecessor")
+            .revision,
+        revision(2)
+    );
+
+    let mut forged = second_page;
+    forged
+        .previous_record
+        .as_mut()
+        .expect("forged predecessor")
+        .state = RecordState::Tombstone;
+    forged.page_digest = forged.compute_page_digest();
+    assert_eq!(
+        forged.validate(10),
+        Err(CognitiveStoreV2Error::ResurrectionDenied(
+            "memory:chain".to_string()
+        ))
+    );
 }
