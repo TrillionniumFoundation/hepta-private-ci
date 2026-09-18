@@ -57,6 +57,7 @@ const MAX_CANDIDATE_BYTES: usize = 16 * 1024 * 1024;
 const ABSTAIN: &str = "abstain";
 const SLOW_PATH: &str = "shadow:slow-path";
 
+#[cfg(feature = "trusted-evaluated-shadow-v1")]
 pub struct EvaluatedShadowRequestV1<'a> {
     /// The snapshot authority epoch belongs to the supplied verifier's trust domain.
     pub run: LaneFRunRequestV1,
@@ -126,6 +127,7 @@ impl Error for EvaluatedShadowError {}
 /// E's complete signed request. Sign with the bundle evaluator's registered key.
 /// Signers must inspect the actual artifact; a signature establishes attribution,
 /// not artifact semantics, freshness, model quality, or host enrollment.
+#[cfg(feature = "trusted-evaluated-shadow-v1")]
 pub fn evaluated_candidate_signing_payload_v1(
     evaluation: &IndependentEvaluationBundleV1,
     roles: &[MetricRoleContractV2],
@@ -176,6 +178,7 @@ pub fn evaluated_candidate_signing_payload_v2(
 /// current revocation/rollback witnesses. A terminal host failure appends no Decision.
 /// This single-dataset interface checks the complete snapshot-ID set. Ledger
 /// sync is blocking and cannot be cancelled safely at a latency budget boundary.
+#[cfg(feature = "trusted-evaluated-shadow-v1")]
 pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
     request: EvaluatedShadowRequestV1<'_>,
     verifier: &LearningEvidenceVerifierV1,
