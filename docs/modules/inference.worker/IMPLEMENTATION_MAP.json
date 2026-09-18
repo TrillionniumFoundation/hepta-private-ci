@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "7a6ad21fab4650d22cb877e2d01b3cf2b0148334",
+    "tree": "5b0f430e6db578b6ece1dd6742b83cd8eb5b854a"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -140,5 +140,6 @@
   "technicalGuide": "docs/modules/inference.worker/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-infer-worker-host"
-  ]
+  ],
+  "sourceFreshnessPolicy": "bound_sources_unchanged_since_source_base"
 }
