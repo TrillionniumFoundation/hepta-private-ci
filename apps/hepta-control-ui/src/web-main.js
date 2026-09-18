@@ -23,6 +23,70 @@ function boundedPoll(value, fallback) {
   return candidate;
 }
 
+export async function acquireControlPlaneLease({ lockManager, name }) {
+  if (!lockManager || typeof lockManager.request !== "function") {
+    fail(
+      ERROR_CODES.PERSISTENCE_UNAVAILABLE,
+      "Web Locks API is required for the durable control-plane writer",
+    );
+  }
+  if (typeof name !== "string" || name.length === 0 || name.length > 256) {
+    fail(ERROR_CODES.INVALID_INPUT, "control-plane lease name must be a bounded string");
+  }
+
+  let releaseHold;
+  const hold = new Promise((resolve) => {
+    releaseHold = resolve;
+  });
+  let settled = false;
+  let resolveAcquired;
+  let rejectAcquired;
+  const acquired = new Promise((resolve, reject) => {
+    resolveAcquired = resolve;
+    rejectAcquired = reject;
+  });
+
+  const run = Promise.resolve()
+    .then(() =>
+      lockManager.request(
+        name,
+        { mode: "exclusive", ifAvailable: true },
+        async (lock) => {
+          if (lock == null) {
+            settled = true;
+            resolveAcquired(null);
+            return;
+          }
+          let released = false;
+          const lease = Object.freeze({
+            name,
+            release() {
+              if (released) return;
+              released = true;
+              releaseHold();
+            },
+          });
+          settled = true;
+          resolveAcquired(lease);
+          await hold;
+        },
+      ),
+    )
+    .catch((error) => {
+      if (!settled) {
+        settled = true;
+        rejectAcquired(error);
+      }
+    });
+  run.catch(() => {});
+
+  try {
+    return await acquired;
+  } catch {
+    fail(ERROR_CODES.PERSISTENCE_UNAVAILABLE, "control-plane writer lease acquisition failed");
+  }
+}
+
 function renderFatal(root, error) {
   const alert = root.ownerDocument.createElement("div");
   alert.setAttribute("role", "alert");
@@ -68,6 +132,7 @@ export async function startControlPlane({
   window = globalThis.window,
   storage = globalThis.localStorage,
   fetchImpl = globalThis.fetch?.bind(globalThis),
+  lockManager = globalThis.navigator?.locks,
   bootstrapUrl = "/api/ui-control/bootstrap",
 } = {}) {
   const root = document?.querySelector?.("#app");
@@ -82,6 +147,7 @@ export async function startControlPlane({
   let refreshingPromise = null;
   let recoveryPromise = null;
   let suspensionPromise = Promise.resolve();
+  let writerLease = null;
   let lifecycleGeneration = 0;
   let suspended = false;
   let disposed = false;
@@ -113,7 +179,31 @@ export async function startControlPlane({
       manifestDigest: value.manifestDigest,
     });
 
+  const acquireWriterLease = async (nextConfig) => {
+    const suffix = nextConfig.persistenceKey.slice("hepta.ui.control.pending.".length);
+    const lease = await acquireControlPlaneLease({
+      lockManager,
+      name: `hepta.ui.control.writer.${suffix}`,
+    });
+    if (lease === null) {
+      fail(
+        ERROR_CODES.PERSISTENCE_UNAVAILABLE,
+        "another control-plane page owns the durable writer lease",
+      );
+    }
+    return Object.freeze({
+      persistenceKey: nextConfig.persistenceKey,
+      lease,
+    });
+  };
+
   const installRuntime = async (nextConfig, expectedGeneration = lifecycleGeneration) => {
+    if (writerLease?.persistenceKey !== nextConfig.persistenceKey) {
+      fail(
+        ERROR_CODES.PERSISTENCE_UNAVAILABLE,
+        "durable pending store requires the matching browser writer lease",
+      );
+    }
     const nextStore = new LocalStoragePendingStore({
       storage,
       key: nextConfig.persistenceKey,
@@ -197,8 +287,17 @@ export async function startControlPlane({
         config !== null && nextConfig.persistenceKey === config.persistenceKey;
       const sameRuntimeBinding =
         config !== null && nextConfig.runtimeBinding === config.runtimeBinding;
+      const nextWriterLease =
+        writerLease?.persistenceKey === nextConfig.persistenceKey
+          ? null
+          : await acquireWriterLease(nextConfig);
+      if (!lifecycleCurrent(recoveryGeneration)) {
+        nextWriterLease?.lease.release();
+        return null;
+      }
 
       if (client && samePersistenceDomain && !sameRuntimeBinding) {
+        nextWriterLease?.lease.release();
         fail(
           ERROR_CODES.INCOMPATIBLE_PROTOCOL,
           "runtime bootstrap binding changed; reload before reconciling the durable pending domain",
@@ -226,6 +325,13 @@ export async function startControlPlane({
         config = nextConfig;
       } else {
         const previousClient = client;
+        const previousWriterLease = writerLease;
+        if (!nextWriterLease) {
+          fail(
+            ERROR_CODES.PERSISTENCE_UNAVAILABLE,
+            "new durable pending domain requires a new browser writer lease",
+          );
+        }
         if (previousClient) {
           try {
             await previousClient.close();
@@ -233,7 +339,12 @@ export async function startControlPlane({
             // The old principal/domain mirror remains isolated under its old key.
           }
         }
-        if (!lifecycleCurrent(recoveryGeneration)) return null;
+        if (!lifecycleCurrent(recoveryGeneration)) {
+          nextWriterLease.lease.release();
+          return null;
+        }
+        writerLease = nextWriterLease;
+        previousWriterLease?.lease.release();
         const installed = await installRuntime(nextConfig, recoveryGeneration);
         if (!installed) return null;
       }
@@ -278,8 +389,14 @@ export async function startControlPlane({
   }
 
   const initialGeneration = lifecycleGeneration;
-  const installed = await installRuntime(await loadConfig(), initialGeneration);
-  if (!installed) return null;
+  const initialConfig = await loadConfig();
+  writerLease = await acquireWriterLease(initialConfig);
+  const installed = await installRuntime(initialConfig, initialGeneration);
+  if (!installed) {
+    writerLease.lease.release();
+    writerLease = null;
+    return null;
+  }
   await applyCurrentSnapshot(initialGeneration);
   startTimer();
 
@@ -336,6 +453,8 @@ export async function startControlPlane({
         // Local state is already cleared by RuntimeClient.close().
       }
     }
+    writerLease?.lease.release();
+    writerLease = null;
   };
 
   return Object.freeze({
