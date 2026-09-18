@@ -16,6 +16,7 @@ use codex_hepta_types::StableId;
 
 pub use wire::CODEX_OPERATION_INTENT_SCHEMA;
 pub use wire::CodexOperationIntentWireCodec;
+pub use wire::CodexWireIngressPolicy;
 pub use wire::MAX_CODEX_OPERATION_INTENT_PAYLOAD_BYTES;
 pub use wire::WireAdaptError;
 pub use wire::WireIngressError;
