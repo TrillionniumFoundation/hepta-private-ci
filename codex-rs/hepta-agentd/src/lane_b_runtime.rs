@@ -41,11 +41,6 @@ pub struct RunSnapshot {
     pub objective_digest: String,
     pub body_digest: String,
     pub artifact_set_digest: String,
-    /// Present only for runs admitted from intelligence.control. The three
-    /// intelligence bindings are all-or-none and remain immutable for the run.
-    pub intelligence_envelope_digest: Option<String>,
-    pub expected_context_digest: Option<String>,
-    pub expected_context_receipt_digest: Option<String>,
     pub authority_epoch: u64,
     pub deadline_ms: u64,
 }
@@ -95,9 +90,17 @@ pub enum AgentRunError {
     ArithmeticOverflow,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct IntelligenceRunBinding {
+    envelope_digest: String,
+    expected_context_digest: String,
+    expected_context_receipt_digest: String,
+}
+
 #[derive(Clone, Debug)]
 struct RunRecord {
     snapshot: RunSnapshot,
+    intelligence: Option<IntelligenceRunBinding>,
     revision: u64,
     phase: RunPhase,
     context_digest: Option<String>,
@@ -138,9 +141,45 @@ impl AgentRunCoordinator {
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
+        self.start_run_bound(now_ms, snapshot, None)
+    }
+
+    /// Additive V3 admission path. Legacy RunSnapshot callers remain source
+    /// compatible; the intelligence binding stays private to Agentd.
+    pub fn start_intelligence_run(
+        &mut self,
+        now_ms: u64,
+        snapshot: RunSnapshot,
+        envelope_digest: String,
+        expected_context_digest: String,
+        expected_context_receipt_digest: String,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_digest(&envelope_digest, "intelligence envelope")?;
+        validate_digest(&expected_context_digest, "expected context")?;
+        validate_digest(
+            &expected_context_receipt_digest,
+            "expected context receipt",
+        )?;
+        self.start_run_bound(
+            now_ms,
+            snapshot,
+            Some(IntelligenceRunBinding {
+                envelope_digest,
+                expected_context_digest,
+                expected_context_receipt_digest,
+            }),
+        )
+    }
+
+    fn start_run_bound(
+        &mut self,
+        now_ms: u64,
+        snapshot: RunSnapshot,
+        intelligence: Option<IntelligenceRunBinding>,
+    ) -> Result<RunReceipt, AgentRunError> {
         validate_snapshot(now_ms, &snapshot)?;
         if let Some(current) = self.runs.get(&snapshot.run_id) {
-            if current.snapshot == snapshot {
+            if current.snapshot == snapshot && current.intelligence == intelligence {
                 return Ok(receipt(current, /*idempotent*/ true));
             }
             return Err(AgentRunError::Conflict);
@@ -150,6 +189,7 @@ impl AgentRunCoordinator {
         }
         let record = RunRecord {
             snapshot: snapshot.clone(),
+            intelligence,
             revision: 1,
             phase: RunPhase::Admitted,
             context_digest: None,
@@ -175,15 +215,12 @@ impl AgentRunCoordinator {
             || attachment.body_digest != record.snapshot.body_digest
             || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
             || record
-                .snapshot
-                .expected_context_digest
-                .as_deref()
-                .is_some_and(|expected| expected != attachment.context_digest)
-            || record
-                .snapshot
-                .expected_context_receipt_digest
-                .as_deref()
-                .is_some_and(|expected| expected != attachment.compilation_receipt_digest)
+                .intelligence
+                .as_ref()
+                .is_some_and(|binding| binding.expected_context_digest != attachment.context_digest)
+            || record.intelligence.as_ref().is_some_and(|binding| {
+                binding.expected_context_receipt_digest != attachment.compilation_receipt_digest
+            })
         {
             return Err(AgentRunError::MixedSnapshot);
         }
@@ -236,7 +273,11 @@ impl AgentRunCoordinator {
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
-        if record.snapshot.intelligence_envelope_digest.as_deref() != envelope_digest {
+        let expected_envelope = record
+            .intelligence
+            .as_ref()
+            .map(|binding| binding.envelope_digest.as_str());
+        if expected_envelope != envelope_digest {
             return Err(AgentRunError::MixedSnapshot);
         }
         if record.phase == RunPhase::Dispatched {
@@ -363,19 +404,6 @@ fn validate_snapshot(now_ms: u64, value: &RunSnapshot) -> Result<(), AgentRunErr
         (&value.artifact_set_digest, "artifact set"),
     ] {
         validate_digest(digest, field)?;
-    }
-    match (
-        value.intelligence_envelope_digest.as_deref(),
-        value.expected_context_digest.as_deref(),
-        value.expected_context_receipt_digest.as_deref(),
-    ) {
-        (None, None, None) => {}
-        (Some(envelope), Some(context), Some(receipt)) => {
-            validate_digest(envelope, "intelligence envelope")?;
-            validate_digest(context, "expected context")?;
-            validate_digest(receipt, "expected context receipt")?;
-        }
-        _ => return Err(AgentRunError::MixedSnapshot),
     }
     if value.authority_epoch == 0 {
         return Err(AgentRunError::InvalidGeneration);
