@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "repository_product_caller_defined_execution_pending",
+  "productCallerState": "repository_product_caller_dual_lane_defined_execution_pending",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -166,7 +166,7 @@
       "designOperation": "repository_product_caller",
       "nativeSymbol": "build_product_receipt",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
-      "state": "repository_product_caller_defined_execution_pending",
+      "state": "repository_product_caller_dual_lane_defined_execution_pending",
       "authority": "none",
       "tests": [
         {
@@ -182,7 +182,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Observe a successful exact-head and deterministic synthetic-merge run of the repository product caller before setting productionImplementation=true.",
+    "Observe successful exact-source and deterministic synthetic-merge runs of the repository product caller before changing the product-execution claim boundary.",
     "Retain strong Linux/Bubblewrap, mutation-testing and sandbox-controller receipts for the exact candidate."
   ],
   "externalEvidenceGates": [
