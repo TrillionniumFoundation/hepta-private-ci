@@ -141,13 +141,26 @@ async fn queue_submission_is_not_occurrence_or_taskflow_success() {
         .expect("taskflow run");
     assert_eq!(run.state, TaskFlowRunState::Indeterminate);
 
+    let terminal = Sha256Digest::for_bytes(b"observed terminal success");
+    assert!(matches!(
+        store
+            .complete_occurrence(
+                task.task_id,
+                1,
+                AutomationOccurrenceTerminalState::Succeeded,
+                &terminal,
+                190,
+            )
+            .await,
+        Err(AutomationError::Conflict)
+    ));
+
     let work = store
         .pending_occurrence_work(1)
         .await
         .expect("work")
         .pop()
         .expect("pending occurrence");
-    let terminal = Sha256Digest::for_bytes(b"observed terminal success");
     store
         .reconcile_occurrence_taskflow_terminal(
             &work,

@@ -427,7 +427,7 @@ mod tests {
             task_id,
             occurrence: 1,
         };
-        let admitted = AutomationTick::Admitted {
+        let admitted = AutomationTick::Submitted {
             task_id,
             occurrence: 1,
             queued_submission_id: "queue-1".to_string(),

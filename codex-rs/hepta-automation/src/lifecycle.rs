@@ -633,7 +633,7 @@ impl AutomationStore {
             "turn_persisted",
             AutomationOccurrenceState::Running,
             current.claim_generation,
-            "historical-claim",
+            &current.claim_token,
             current.queued_submission_id.as_deref(),
             Some(turn_id),
             None,
@@ -692,7 +692,7 @@ impl AutomationStore {
             "indeterminate",
             AutomationOccurrenceState::Indeterminate,
             current.claim_generation,
-            "historical-claim",
+            &current.claim_token,
             current.queued_submission_id.as_deref(),
             current.turn_id.as_deref(),
             Some(receipt_digest.as_str()),
@@ -733,6 +733,56 @@ impl AutomationStore {
             }
             return Err(AutomationError::Conflict);
         }
+
+        // Store-level causal invariant: an automation occurrence cannot become
+        // terminal until the exact bound TaskFlow run and step attempt are
+        // already terminal/reconciled with the same receipt. Agentd follows
+        // this order, but the durable owner must reject any caller that tries
+        // to bypass it.
+        let expected_terminal = terminal_state.as_str();
+        let run_state: String = sqlx::query_scalar(
+            "SELECT state FROM taskflow_runs
+             WHERE owner_agent_id = ? AND run_id = ?",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(&current.taskflow_run_id)
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(unavailable)?
+        .ok_or(AutomationError::Conflict)?;
+        if run_state != expected_terminal {
+            return Err(AutomationError::Conflict);
+        }
+        let step = sqlx::query(
+            "SELECT event_kind, receipt_digest, final_outcome
+             FROM taskflow_step_outbox
+             WHERE owner_agent_id = ? AND run_id = ? AND step_id = 'codex_turn'
+               AND attempt = ?
+             ORDER BY event_seq DESC LIMIT 1",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(&current.taskflow_run_id)
+        .bind(i64::from(current.step_attempt))
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(unavailable)?
+        .ok_or(AutomationError::Conflict)?;
+        let step_event: String = step
+            .try_get("event_kind")
+            .map_err(|_| AutomationError::Corrupt)?;
+        let step_receipt: Option<String> = step
+            .try_get("receipt_digest")
+            .map_err(|_| AutomationError::Corrupt)?;
+        let step_outcome: Option<String> = step
+            .try_get("final_outcome")
+            .map_err(|_| AutomationError::Corrupt)?;
+        if step_event != "reconciled"
+            || step_receipt.as_deref() != Some(receipt_digest.as_str())
+            || step_outcome.as_deref() != Some(expected_terminal)
+        {
+            return Err(AutomationError::Conflict);
+        }
+
         if !matches!(
             current.state,
             AutomationOccurrenceState::Admitted
@@ -769,7 +819,7 @@ impl AutomationStore {
             event_kind,
             terminal_state,
             current.claim_generation,
-            "historical-claim",
+            &current.claim_token,
             current.queued_submission_id.as_deref(),
             current.turn_id.as_deref(),
             Some(receipt_digest.as_str()),

@@ -230,7 +230,7 @@ pub struct AutomationDispatchUncertainty {
 pub enum AutomationTick {
     Idle,
     /// Compatibility-only legacy semantic. New scheduler code must emit
-    /// `Admitted` and wait for occurrence terminalization separately.
+    /// `Submitted` and wait for occurrence terminalization separately.
     Submitted {
         task_id: AutomationTaskId,
         occurrence: u64,
