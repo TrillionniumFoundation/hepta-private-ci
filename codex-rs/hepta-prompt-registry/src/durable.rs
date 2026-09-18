@@ -90,15 +90,29 @@ impl DurablePromptRegistry {
         })
     }
 
-    /// Returns the last in-process image. After an indeterminate durable commit
-    /// this image is diagnostic only; authoritative reads reject until reopen.
-    pub fn registry(&self) -> &PromptRegistry {
+    /// Returns the current authoritative in-process image. After an
+    /// indeterminate durable commit no authoritative view is exposed until the
+    /// owner is reopened and reconciled.
+    pub fn registry(&self) -> Result<&PromptRegistry, DurableRegistryError> {
+        self.ensure_available()?;
+        Ok(&self.registry)
+    }
+
+    #[cfg(test)]
+    fn diagnostic_registry(&self) -> &PromptRegistry {
         &self.registry
     }
 
     #[must_use]
     pub const fn requires_reopen(&self) -> bool {
         self.poisoned
+    }
+
+    fn ensure_available(&self) -> Result<(), DurableRegistryError> {
+        if self.poisoned {
+            return Err(DurableRegistryError::ReopenRequired);
+        }
+        Ok(())
     }
 
     #[cfg(test)]
@@ -130,6 +144,7 @@ impl DurablePromptRegistry {
         reviewed_scope_digest: Digest32,
         evidence_digest: Digest32,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
+        self.ensure_available()?;
         let factor = self.registry.factor(factor_id).cloned().ok_or_else(|| {
             DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string()))
         })?;
@@ -171,6 +186,7 @@ impl DurablePromptRegistry {
         payload: Vec<u8>,
         supersedes_realization_id: Option<StableId>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
+        self.ensure_available()?;
         let factor = self
             .registry
             .factor(&binding.factor_id)
@@ -245,6 +261,7 @@ impl DurablePromptRegistry {
         scope_digest: Digest32,
         reason_digest: Digest32,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
+        self.ensure_available()?;
         let factor = self.registry.factor(factor_id).cloned().ok_or_else(|| {
             DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string()))
         })?;
@@ -276,6 +293,7 @@ impl DurablePromptRegistry {
         reason_digest: Digest32,
         cutoff_unix_ms: u64,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
+        self.ensure_available()?;
         let factor = self.registry.factor(factor_id).cloned().ok_or_else(|| {
             DurableRegistryError::Core(Error::FactorNotFound(factor_id.to_string()))
         })?;
@@ -313,9 +331,7 @@ impl DurablePromptRegistry {
         generation_vector_digest: Digest32,
         model_tuple: &PromptModelTupleV2,
     ) -> Result<PromptRegistrySnapshotV2, DurableRegistryError> {
-        if self.poisoned {
-            return Err(DurableRegistryError::ReopenRequired);
-        }
+        self.ensure_available()?;
         self.registry
             .snapshot_v2(generation_vector_digest, model_tuple)
             .map_err(DurableRegistryError::Read)
@@ -330,9 +346,7 @@ impl DurablePromptRegistry {
         required_factor_ids: Vec<StableId>,
         maximum_results: u32,
     ) -> Result<crate::CompatibleRealizationSetV2, DurableRegistryError> {
-        if self.poisoned {
-            return Err(DurableRegistryError::ReopenRequired);
-        }
+        self.ensure_available()?;
         self.registry
             .read_compatible_v2(
                 expected_snapshot,
@@ -353,9 +367,7 @@ impl DurablePromptRegistry {
         model_tuple: &PromptModelTupleV2,
         now_unix_ms: u64,
     ) -> Result<RealizationDeliveryV2, DurableRegistryError> {
-        if self.poisoned {
-            return Err(DurableRegistryError::ReopenRequired);
-        }
+        self.ensure_available()?;
         self.registry
             .dereference_realization_v2(
                 realization_id,
