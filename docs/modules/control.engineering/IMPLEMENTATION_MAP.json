@@ -201,5 +201,11 @@
   "sourceRoot": [
     "tools/hepta-engineering-control"
   ],
-  "sourceBaseRole": "historical_common_map_snapshot_current_identity_from_exact_candidate_receipts"
+  "sourceBaseRole": "historical_common_map_snapshot_not_current_candidate_identity",
+  "currentCandidateIdentityAuthority": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
+    "embeddedCommit": false,
+    "reason": "Embedding the file's own current commit would create a self-reference; current identity is established by CI/product execution receipts."
+  }
 }
