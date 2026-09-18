@@ -34,7 +34,6 @@ use codex_hepta_types::StableId;
 #[path = "objective_product_codec.rs"]
 mod codec;
 
-
 const MAGIC: &[u8; 8] = b"HEPTOB01";
 const HEADER_BYTES: usize = 72;
 const FRAME_FIXED_BYTES: usize = 112;
@@ -419,7 +418,6 @@ impl DurableObjectivePublicationStoreV1 {
         let frame = encode_frame(
             sequence,
             predecessor_chain_digest,
-
             publication_digest,
             chain_digest,
             &payload,
@@ -456,9 +454,7 @@ impl DurableObjectivePublicationStoreV1 {
         Ok((publication, ObjectivePublicationDispositionV1::Appended))
     }
 
-    pub fn records(
-        &self,
-    ) -> Result<&[ObjectivePublicationV1], ObjectivePublicationStoreErrorV1> {
+    pub fn records(&self) -> Result<&[ObjectivePublicationV1], ObjectivePublicationStoreErrorV1> {
         if self.poisoned {
             Err(ObjectivePublicationStoreErrorV1::Poisoned)
         } else {
