@@ -513,7 +513,7 @@ pub(crate) async fn verify_qualified_compact_store(
     pool: &SqlitePool,
     owner: &codex_hepta_contracts::AgentId,
 ) -> Result<(), CognitiveStoreError> {
-    let expected_objects: &[(&str, &str, &[&str])] = &[
+    let expected_objects: [(&str, &str, &[&str]); 4] = [
         (
             "cognitive_qualified_compact_checkpoints",
             "table",
@@ -568,9 +568,10 @@ pub(crate) async fn verify_qualified_compact_store(
                 "qualified compact schema object {name} has no SQL definition"
             )));
         };
-        if actual_type != *expected_type
+        if actual_type != expected_type
             || required_fragments
                 .iter()
+                .copied()
                 .any(|fragment| !sql.contains(fragment))
         {
             return Err(CognitiveStoreError::Corrupt(format!(
