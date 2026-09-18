@@ -844,6 +844,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         now_unix_seconds: u64,
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
+            if let Some(configured_frontier) = supervisor.production_revocation_frontier
+                && configured_frontier != expected_revocation_frontier
+            {
+                return Err(SupervisorError::ProductionAuthority(format!(
+                    "production recovery revocation frontier mismatch: configured {configured_frontier}, requested {expected_revocation_frontier}"
+                )));
+            }
             let record = supervisor.record(agent_id)?;
             let intent = read_intent(record.layout.run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
