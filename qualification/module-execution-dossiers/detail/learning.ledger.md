@@ -189,6 +189,8 @@ or future-time efficacy.
 
 ## 10. Current native implementation
 
+**Implemented entrypoints:** `LedgerWriter` in [codex-rs/hepta-learning-ledger/src/production.rs](../../../codex-rs/hepta-learning-ledger/src/production.rs); `LedgerWitnessStore` in [codex-rs/hepta-learning-ledger/src/witness.rs](../../../codex-rs/hepta-learning-ledger/src/witness.rs); `activate_learning_trust` in [codex-rs/hepta-learning-ledger/src/trust_distribution.rs](../../../codex-rs/hepta-learning-ledger/src/trust_distribution.rs); `build_ledger_index_checkpoint` in [codex-rs/hepta-learning-ledger/src/checkpoint.rs](../../../codex-rs/hepta-learning-ledger/src/checkpoint.rs).
+
 - **Production-facing entrypoint:** `LedgerWriter` in
   [codex-rs/hepta-learning-ledger/src/production.rs](../../../codex-rs/hepta-learning-ledger/src/production.rs).
 - **Durable backends:** `DurableLedger` and `SegmentedLedger` in
