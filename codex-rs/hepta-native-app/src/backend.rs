@@ -258,7 +258,7 @@ mod tests {
         let server_run = run_root.clone();
         let server_app = app_server.clone();
         let server = std::thread::spawn(move || -> Result<(), String> {
-            for _ in 0..7 {
+            for _ in 0..8 {
                 let (stream, _) = listener.accept().map_err(|error| error.to_string())?;
                 let mut reader = BufReader::new(stream);
                 let mut bytes = Vec::new();
