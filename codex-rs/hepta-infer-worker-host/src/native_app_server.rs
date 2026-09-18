@@ -51,6 +51,8 @@ pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_protocol::user_input::user_input_payload_sha256;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use sha2::Digest;
+use sha2::Sha256;
 
 #[path = "native_run_control.rs"]
 mod control;
