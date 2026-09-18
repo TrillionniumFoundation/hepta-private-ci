@@ -11,6 +11,7 @@ This matrix is source-level acceptance guidance for the composed Codex App Serve
 | Terminal notification with wrong thread | reject correlation | none | unchanged | adapter negative test |
 | Terminal notification with wrong turn | reject correlation | none | unchanged | adapter negative test |
 | Payload digest differs from authority-bound payload digest | reject request | none | no dispatch | adapter negative test |
+| No non-constructible final-use capability from `kernel.authority`, or capability is not bound to the exact final `TurnStart` payload | production dispatch must be denied | none | no dispatch | **repository-controlled blocker: native caller wiring not yet implemented** |
 | Missing/zero owner generation | reject request | none | no dispatch | adapter negative test |
 | Protocol version other than App Server v2 | reject request | none | no dispatch | adapter negative test |
 | App Server transport overload JSON-RPC `-32001` before handler admission | `Overloaded` | `SafeToRetry` with a new admitted request | release | typed JSON-RPC error from the bounded transport queue |
@@ -38,4 +39,4 @@ The v2 runtime.codex request digest binds the operation ID, Agent/App Server ses
 
 ## Authority ceiling
 
-Every `CodexAdapterReceipt` remains `DENY_ALL` and never grants model, provider, tool, external-effect, promotion, or release authority. Payload-binding checks do not substitute for the separately owned final-use authority contract.
+Every `CodexAdapterReceipt` remains `DENY_ALL` and never grants model, provider, tool, external-effect, promotion, or release authority. Payload-binding checks do not substitute for the separately owned final-use authority contract. The current native caller has not yet composed that final-use capability, so this matrix is not a production-authorization receipt.
