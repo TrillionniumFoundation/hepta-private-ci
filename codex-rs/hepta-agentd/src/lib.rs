@@ -78,6 +78,7 @@ pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use memory_retrieval_runtime::CurrentMemoryRetrievalProfile;
 pub use memory_retrieval_runtime::MemoryRetrievalCandidateKeyV1;
+pub use memory_retrieval_runtime::MemoryRetrievalDecisionSink;
 pub use memory_retrieval_runtime::MemoryRetrievalPreparationV1;
 pub use memory_retrieval_runtime::MemoryRetrievalProfileV1;
 pub use memory_retrieval_runtime::PinnedMemoryRetrievalRuntime;
