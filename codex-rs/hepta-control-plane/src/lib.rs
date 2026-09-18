@@ -20,6 +20,7 @@ mod planner;
 mod planner_context;
 mod planner_journal;
 mod planner_ndu;
+mod planner_store;
 #[path = "embodiment/timing.rs"]
 mod timing;
 
@@ -127,6 +128,8 @@ pub use planner_ndu::NduPlanningError;
 pub use planner_ndu::NduPlanningInputV1;
 pub use planner_ndu::canonical_ndu_planning_policy_digest;
 pub use planner_ndu::evaluate_prepared_plan_with_ndu;
+pub use planner_store::PlannerJournalStoreV1;
+pub use planner_store::PlannerStoreError;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;
