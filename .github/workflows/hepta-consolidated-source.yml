@@ -368,3 +368,77 @@ jobs:
           path: ${{ runner.temp }}/control-engineering-product.json
           if-no-files-found: error
           retention-days: 30
+
+  engineering-product-evidence:
+    name: control.engineering dual-lane product evidence
+    needs: [engineering-product-gate]
+    if: ${{ github.event_name == 'pull_request' && needs.engineering-product-gate.result == 'success' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Download source-head product receipt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: control-engineering-product-${{ github.run_id }}-${{ github.run_attempt }}-source-head
+          path: ${{ runner.temp }}/control-engineering-source-head
+      - name: Download base-merge product receipt
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: control-engineering-product-${{ github.run_id }}-${{ github.run_attempt }}-base-merge
+          path: ${{ runner.temp }}/control-engineering-base-merge
+      - name: Verify and bind dual-lane product evidence
+        env:
+          SOURCE_RECEIPT: ${{ runner.temp }}/control-engineering-source-head/control-engineering-product.json
+          MERGE_RECEIPT: ${{ runner.temp }}/control-engineering-base-merge/control-engineering-product.json
+          PAIR_RECEIPT: ${{ runner.temp }}/control-engineering-product-pair.json
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          EXPECTED_REPOSITORY_ID: ${{ github.repository_id }}
+          EXPECTED_RUN_ID: ${{ github.run_id }}
+          EXPECTED_RUN_ATTEMPT: ${{ github.run_attempt }}
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          EXPECTED_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EXPECTED_PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=tools/hepta-engineering-control python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          from control_engineering_v2.product_gate import verify_product_receipt_pair
+
+          source = json.loads(Path(os.environ["SOURCE_RECEIPT"]).read_text(encoding="utf-8"))
+          merge = json.loads(Path(os.environ["MERGE_RECEIPT"]).read_text(encoding="utf-8"))
+          pair = verify_product_receipt_pair(
+              source,
+              merge,
+              expected_repository=os.environ["EXPECTED_REPOSITORY"],
+              expected_repository_id=int(os.environ["EXPECTED_REPOSITORY_ID"]),
+              expected_run_id=int(os.environ["EXPECTED_RUN_ID"]),
+              expected_run_attempt=int(os.environ["EXPECTED_RUN_ATTEMPT"]),
+              expected_source_sha=os.environ["EXPECTED_SOURCE_SHA"],
+              expected_base_sha=os.environ["EXPECTED_BASE_SHA"],
+              expected_pull_request_number=int(os.environ["EXPECTED_PR_NUMBER"]),
+          )
+          Path(os.environ["PAIR_RECEIPT"]).write_text(
+              json.dumps(pair, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(pair, sort_keys=True))
+          PY
+      - name: Retain dual-lane product evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-engineering-product-pair-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/control-engineering-product-pair.json
+          if-no-files-found: error
+          retention-days: 30
