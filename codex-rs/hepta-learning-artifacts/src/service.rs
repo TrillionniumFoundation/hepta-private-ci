@@ -35,7 +35,7 @@ pub fn inspect_artifact_owner_status_v1(
 ) -> Result<ArtifactOwnerStatusV1, ArtifactAdmissionError> {
     let registry_head_digest = registry.head_digest();
     let registry_records = registry.records().len();
-    let withdrawal_records = withdrawal.snapshot().records().len();
+    let withdrawal_records = withdrawal.record_count();
     let withdrawal_head_digest = withdrawal_head_digest_v3(withdrawal, withdrawal_domain)?;
     let lifecycle_head_digest = lifecycle.head_digest();
     let lifecycle_records = lifecycle.records().len();
