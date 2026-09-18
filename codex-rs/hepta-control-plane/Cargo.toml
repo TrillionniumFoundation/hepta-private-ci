@@ -14,8 +14,12 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-hepta-contracts = { path = "../hepta-contracts" }
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-types = { path = "../hepta-types" }
+ed25519-dalek = { workspace = true }
+rustix = { workspace = true, features = ["fs", "process"] }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
