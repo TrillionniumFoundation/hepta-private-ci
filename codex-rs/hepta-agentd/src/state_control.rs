@@ -137,7 +137,7 @@ impl AgentdState {
                 reason,
             } => {
                 let (disposition, receipt) =
-                    self.run_cancel(&run_id, expected_revision, reason)?;
+                    self.run_cancel(now_ms()?, &run_id, expected_revision, reason)?;
                 AgentdPayload::RunCancellation {
                     disposition,
                     receipt,
