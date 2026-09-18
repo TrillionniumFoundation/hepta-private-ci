@@ -144,4 +144,3 @@ fn admitted_evidence_is_bound_into_the_regression_result() {
     assert_eq!(bound.stochastic_admission_digest, admitted.admission_digest);
     assert!((bound.estimate.z[0][0] - 3.0).abs() < 1e-12);
 }
-
