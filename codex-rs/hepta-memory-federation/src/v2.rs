@@ -395,7 +395,11 @@ pub type FederationStopFuture<'a> =
 /// Product-host cancellation/deadline source. The engine races this future
 /// against both transport and post-I/O authority revalidation.
 pub trait FederationAttemptControlV2: Send + Sync {
-    fn wait_for_stop<'a>(&'a self, query: &'a FederatedQueryV2) -> FederationStopFuture<'a>;
+    fn wait_for_stop<'a>(
+        &'a self,
+        query: &'a FederatedQueryV2,
+        lease: &'a FederatedLeaseV2,
+    ) -> FederationStopFuture<'a>;
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -522,8 +526,24 @@ where
 {
     query.validate(now_unix_ms)?;
     lease.validate_for_query(now_unix_ms, &query)?;
+    let preflight_authority =
+        revalidate_with_control(authority, control, &query, lease).await?;
+    preflight_authority.validate_for(&query, lease)?;
+    if preflight_authority.observed_unix_ms < now_unix_ms {
+        return Err(FederationV2Error::AuthorityObservationRegressed);
+    }
+    ensure_authority_horizon(preflight_authority.observed_unix_ms, &query, lease)?;
+    if !matches!(
+        preflight_authority.state,
+        FederationAuthorityStateV2::Current
+    ) {
+        return Err(FederationV2Error::AuthorityNotCurrent(
+            preflight_authority.state,
+        ));
+    }
+
     let query_binding_digest = query.binding_digest();
-    let transport_result = send_with_control(transport, control, &query).await?;
+    let transport_result = send_with_control(transport, control, &query, lease).await?;
     let mut result = match transport_result {
         FederationTransportResultV2::NonTerminal(_) => FederatedResultV2 {
             query_id: query.query_id,
@@ -551,7 +571,9 @@ where
             let authority_observation =
                 revalidate_with_control(authority, control, &query, lease).await?;
             authority_observation.validate_for(&query, lease)?;
-            if authority_observation.observed_unix_ms < now_unix_ms {
+            if authority_observation.observed_unix_ms
+                < preflight_authority.observed_unix_ms
+            {
                 return Err(FederationV2Error::AuthorityObservationRegressed);
             }
             ensure_post_io_horizon(
@@ -638,13 +660,14 @@ async fn send_with_control<T, C>(
     transport: &T,
     control: &C,
     query: &FederatedQueryV2,
+    lease: &FederatedLeaseV2,
 ) -> Result<FederationTransportResultV2, FederationV2Error>
 where
     T: FederationTransportV2 + ?Sized,
     C: FederationAttemptControlV2 + ?Sized,
 {
     let mut transport_future = transport.send_once(query);
-    let mut stop_future = control.wait_for_stop(query);
+    let mut stop_future = control.wait_for_stop(query, lease);
     poll_fn(|context| {
         if let Poll::Ready(reason) = stop_future.as_mut().poll(context) {
             return Poll::Ready(Err(stop_reason_error(reason)));
@@ -668,7 +691,7 @@ where
     C: FederationAttemptControlV2 + ?Sized,
 {
     let mut authority_future = authority.revalidate(query, lease);
-    let mut stop_future = control.wait_for_stop(query);
+    let mut stop_future = control.wait_for_stop(query, lease);
     poll_fn(|context| {
         if let Poll::Ready(reason) = stop_future.as_mut().poll(context) {
             return Poll::Ready(Err(stop_reason_error(reason)));
@@ -681,11 +704,10 @@ where
     .await
 }
 
-fn ensure_post_io_horizon(
+fn ensure_authority_horizon(
     observed_unix_ms: u64,
     query: &FederatedQueryV2,
     lease: &FederatedLeaseV2,
-    response: &RemoteFederatedResponseV2,
 ) -> Result<(), FederationV2Error> {
     if observed_unix_ms >= query.deadline_unix_ms {
         return Err(FederationV2Error::DeadlineExpired);
@@ -693,6 +715,16 @@ fn ensure_post_io_horizon(
     if observed_unix_ms >= lease.expires_unix_ms {
         return Err(FederationV2Error::LeaseExpired);
     }
+    Ok(())
+}
+
+fn ensure_post_io_horizon(
+    observed_unix_ms: u64,
+    query: &FederatedQueryV2,
+    lease: &FederatedLeaseV2,
+    response: &RemoteFederatedResponseV2,
+) -> Result<(), FederationV2Error> {
+    ensure_authority_horizon(observed_unix_ms, query, lease)?;
     if observed_unix_ms >= response.expires_unix_ms {
         return Err(FederationV2Error::ResponseExpired);
     }
@@ -772,6 +804,7 @@ pub enum FederationV2Error {
     InvalidCoverage,
     StaleEvidenceExposed,
     AuthorityObservationRegressed,
+    AuthorityNotCurrent(FederationAuthorityStateV2),
     AuthorityGranted,
     AuthorityRevalidationFailed,
     TransportRejected,
