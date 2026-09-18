@@ -5,10 +5,12 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_evidence::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
+use codex_hepta_evidence::AuthBusControlError;
 use codex_hepta_evidence::AuthBusDeliveryState;
 use codex_hepta_evidence::AuthBusDeliveryStatus;
 use codex_hepta_evidence::HeptaEvidenceStore;
@@ -54,6 +56,64 @@ impl TextIngress {
     pub fn trust(&self, state: &AgentdState) -> Result<TextTrust, AgentdError> {
         TextTrust::load(&self.trust_file, state.identity())
     }
+
+    /// Resolve the owner-controlled allowlist and synchronize its issuer/key
+    /// epoch against the durable AuthBus registry. A file can revoke an active
+    /// epoch, but it cannot reactivate a revoked/retired epoch or replace an
+    /// enrolled key at the same epoch.
+    pub async fn managed_trust(
+        &self,
+        state: &AgentdState,
+    ) -> Result<(TextTrust, IssuerRegistration), AgentdError> {
+        let trust = self.trust(state)?;
+        let file_issuer = trust.issuer()?;
+        let managed = self
+            .evidence
+            .load_authbus_issuer(&file_issuer.issuer_id, file_issuer.key_epoch)
+            .await;
+        let issuer = match managed {
+            Ok(managed) => {
+                if managed.verifying_key != file_issuer.verifying_key {
+                    return Err(invalid(
+                        "trust file public key differs from the enrolled issuer epoch",
+                    ));
+                }
+                if file_issuer.revoked && !managed.revoked {
+                    self.evidence
+                        .revoke_authbus_issuer(&file_issuer.issuer_id, file_issuer.key_epoch)
+                        .await
+                        .map_err(|error| invalid(&error.to_string()))?;
+                    self.evidence
+                        .load_authbus_issuer(&file_issuer.issuer_id, file_issuer.key_epoch)
+                        .await
+                        .map_err(|error| invalid(&error.to_string()))?
+                } else if !file_issuer.revoked && managed.revoked {
+                    return Err(invalid(
+                        "trust file cannot reactivate a revoked or retired issuer epoch",
+                    ));
+                } else {
+                    managed
+                }
+            }
+            Err(AuthBusControlError::InvalidRequest(_)) if file_issuer.revoked => {
+                // A first-seen revoked file grants nothing. Do not create a
+                // registry identity merely because untrusted work named it.
+                file_issuer
+            }
+            Err(AuthBusControlError::InvalidRequest(_)) => {
+                self.evidence
+                    .install_authbus_issuer(&file_issuer)
+                    .await
+                    .map_err(|error| invalid(&error.to_string()))?;
+                self.evidence
+                    .load_authbus_issuer(&file_issuer.issuer_id, file_issuer.key_epoch)
+                    .await
+                    .map_err(|error| invalid(&error.to_string()))?
+            }
+            Err(error) => return Err(invalid(&error.to_string())),
+        };
+        Ok((trust, issuer))
+    }
 }
 
 /// Canonical claims for an independently signed text message. This helper
@@ -86,7 +146,7 @@ pub(crate) async fn submit(
 ) -> Result<AuthBusTextStatus, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
-    let trust = host.trust(state)?;
+    let (trust, issuer) = host.managed_trust(state).await?;
     if !trust.permits(&request.body.thread_id)
         || request.body.spawn_generation != state.identity().spawn_generation
     {
@@ -103,16 +163,16 @@ pub(crate) async fn submit(
     let body = payload(&request.body)?;
     let result = host
         .evidence
-        .enqueue_authbus_message(&trust.issuer()?, &message, &host.subject, host.scope, &body)
+        .enqueue_authbus_message(&issuer, &message, &host.subject, host.scope, &body)
         .await
         .map_err(|error| invalid(&error.to_string()))?;
     // If authority changed during admission, preserve the committed message but
     // refuse to report readiness. The worker independently refreshes all gates.
     require_ready(state)?;
-    let current = host.trust(state)?;
+    let (current, current_issuer) = host.managed_trust(state).await?;
     message
         .authenticate(
-            &current.issuer()?,
+            &current_issuer,
             host.scope,
             Digest32::of_bytes(&body),
             now_ms()?,
