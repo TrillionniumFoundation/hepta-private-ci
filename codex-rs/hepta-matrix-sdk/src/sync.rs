@@ -15,6 +15,7 @@ use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationDispositionV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
 use codex_hepta_matrix_protocol::MatrixSyncResultV2;
+use codex_hepta_matrix_protocol::MatrixTransactionId;
 use codex_hepta_matrix_protocol::MatrixUserId;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixSyncCheckpoint;
@@ -361,6 +362,25 @@ impl MatrixSyncComposer<'_> {
             AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
                 SyncMessageLikeEvent::Original(event),
             )) => {
+                if sender == self.config.binding.expected_mxid {
+                    let transaction_id = unsigned
+                        .as_ref()
+                        .and_then(|value| value.get("transaction_id"))
+                        .and_then(Value::as_str)
+                        .map(MatrixTransactionId::parse)
+                        .transpose()
+                        .map_err(|_| MatrixSdkError::Sync)?;
+                    return Ok(vec![MatrixSyncMutationV2 {
+                        source_event_id,
+                        room_id: room_id.clone(),
+                        sender,
+                        binding_revision: self.config.binding.revision,
+                        generation: self.config.matrix_generation,
+                        origin_server_ts_ms,
+                        received_at_ms,
+                        body: MatrixSyncMutationBodyV2::OutboundObservation { transaction_id },
+                    }]);
+                }
                 if !matches!(&event.content.msgtype, MessageType::Text(_)) {
                     self.ingress
                         .record_ignored(IngressIgnoredReason::UnsupportedMessageType);

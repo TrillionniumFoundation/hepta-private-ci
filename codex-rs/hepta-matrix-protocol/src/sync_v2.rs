@@ -165,6 +165,7 @@ impl MatrixSyncMutationV2 {
                     return Err(invalid("Matrix redaction cannot target its source event"));
                 }
             }
+            MatrixSyncMutationBodyV2::OutboundObservation { .. } => {}
             MatrixSyncMutationBodyV2::RoomLeave { .. } => {}
             MatrixSyncMutationBodyV2::RoomTombstone {
                 replacement_room_id,
@@ -191,6 +192,13 @@ pub enum MatrixSyncMutationBodyV2 {
     },
     Redaction {
         target_event_id: MatrixEventId,
+    },
+    /// One event emitted by this exact Matrix account and observed again from
+    /// the homeserver sync stream. The optional transaction id is untrusted
+    /// transport metadata; the durable owner revalidates room/generation and
+    /// accepted event identity before settling dispatch terminality.
+    OutboundObservation {
+        transaction_id: Option<MatrixTransactionId>,
     },
     RoomLeave {
         departed_user_id: MatrixUserId,

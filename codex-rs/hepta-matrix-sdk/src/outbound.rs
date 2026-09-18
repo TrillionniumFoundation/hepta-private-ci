@@ -5,6 +5,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxRecord;
@@ -63,8 +64,13 @@ impl OutboxDispatchConfig {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct OutboxDispatchStats {
     pub claimed: u64,
+    /// Terminal success observed independently of the current transport call.
     pub sent: u64,
+    /// HTTP/SDK accepted the transaction, but homeserver observation is pending.
+    pub accepted: u64,
     pub retry_scheduled: u64,
+    /// Boundary uncertainty frozen for reconciliation rather than blind retry.
+    pub indeterminate: u64,
     pub permanent_failure: u64,
     pub cancelled: bool,
 }
@@ -106,28 +112,47 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         };
         match result {
             Ok(event_id) => {
-                store
-                    .mark_outbox_sent(&record.stable_txn_id, record.attempts, &event_id, now_ms)
+                let dispatch = store
+                    .mark_outbox_accepted(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        &event_id,
+                        now_ms,
+                    )
                     .await
                     .map_err(store_error)?;
-                stats.sent += 1;
+                if matches!(
+                    dispatch.state,
+                    MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
+                ) {
+                    stats.sent += 1;
+                } else {
+                    stats.accepted += 1;
+                }
             }
             Err(MatrixTransportError::Retryable) => {
                 if record.attempts >= config.max_attempts {
-                    store
-                        .mark_outbox_permanent_failure(
+                    let dispatch = store
+                        .mark_outbox_indeterminate(
                             &record.stable_txn_id,
                             record.attempts,
                             now_ms,
                         )
                         .await
                         .map_err(store_error)?;
-                    stats.permanent_failure += 1;
+                    if matches!(
+                        dispatch.state,
+                        MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
+                    ) {
+                        stats.sent += 1;
+                    } else {
+                        stats.indeterminate += 1;
+                    }
                 } else {
                     let next_attempt_at_ms = now_ms
                         .checked_add(retry_delay_ms(config, record.attempts)?)
                         .ok_or(OutboxDispatchError::Invalid)?;
-                    store
+                    let outbox = store
                         .mark_outbox_retry(
                             &record.stable_txn_id,
                             record.attempts,
@@ -136,15 +161,49 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                         )
                         .await
                         .map_err(store_error)?;
-                    stats.retry_scheduled += 1;
+                    if outbox.state == codex_hepta_matrix_store::OutboxState::Sent {
+                        stats.sent += 1;
+                    } else {
+                        stats.retry_scheduled += 1;
+                    }
                 }
             }
             Err(MatrixTransportError::Permanent) => {
-                store
-                    .mark_outbox_permanent_failure(&record.stable_txn_id, record.attempts, now_ms)
-                    .await
-                    .map_err(store_error)?;
-                stats.permanent_failure += 1;
+                // A deterministic rejection proves this attempt did not cross
+                // the boundary. It cannot erase uncertainty from an earlier
+                // retryable attempt that may already have reached Matrix.
+                if record.attempts > 1 {
+                    let dispatch = store
+                        .mark_outbox_indeterminate(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    if matches!(
+                        dispatch.state,
+                        MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
+                    ) {
+                        stats.sent += 1;
+                    } else {
+                        stats.indeterminate += 1;
+                    }
+                } else {
+                    let outbox = store
+                        .mark_outbox_permanent_failure(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    if outbox.state == codex_hepta_matrix_store::OutboxState::Sent {
+                        stats.sent += 1;
+                    } else {
+                        stats.permanent_failure += 1;
+                    }
+                }
             }
         }
     }

@@ -99,6 +99,7 @@ pub(crate) async fn active_dispatch_exists_tx(
     let target_event_id = match &mutation.body {
         MatrixSyncMutationBodyV2::Redaction { target_event_id } => target_event_id,
         MatrixSyncMutationBodyV2::Timeline { .. }
+        | MatrixSyncMutationBodyV2::OutboundObservation { .. }
         | MatrixSyncMutationBodyV2::RoomLeave { .. }
         | MatrixSyncMutationBodyV2::RoomTombstone { .. } => return Ok(false),
     };
@@ -129,7 +130,8 @@ pub(crate) fn tombstone_fields(
     Option<&str>,
 ) {
     match &mutation.body {
-        MatrixSyncMutationBodyV2::Timeline { .. } => (None, None, None, None),
+        MatrixSyncMutationBodyV2::Timeline { .. }
+        | MatrixSyncMutationBodyV2::OutboundObservation { .. } => (None, None, None, None),
         MatrixSyncMutationBodyV2::Redaction { target_event_id } => (
             Some("event"),
             Some(target_event_id.as_str()),
@@ -184,9 +186,14 @@ pub(crate) async fn has_commit_capacity_tx(
         return Err(MatrixDurableError::Corrupt);
     }
     let destructive_only = !mutations.is_empty()
-        && mutations
-            .iter()
-            .all(|mutation| !matches!(&mutation.body, MatrixSyncMutationBodyV2::Timeline { .. }));
+        && mutations.iter().all(|mutation| {
+            matches!(
+                &mutation.body,
+                MatrixSyncMutationBodyV2::Redaction { .. }
+                    | MatrixSyncMutationBodyV2::RoomLeave { .. }
+                    | MatrixSyncMutationBodyV2::RoomTombstone { .. }
+            )
+        });
     let mutation_limit = if destructive_only {
         MUTATION_JOURNAL_CAPACITY
     } else {

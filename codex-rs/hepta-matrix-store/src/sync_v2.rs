@@ -29,6 +29,8 @@ use super::sync_v2_tombstone::scrub_room_tx;
 use super::sync_v2_tombstone::tombstone_fields;
 use crate::ChangeKind;
 use crate::InboxDisposition;
+use crate::dispatch::apply_outbound_redaction_tx;
+use crate::dispatch::observe_outbound_success_tx;
 use crate::InboxDraft;
 use crate::MatrixDurableError;
 use crate::MatrixEventId;
@@ -63,6 +65,9 @@ enum MatrixSyncMutationBodyIdentityV2<'a> {
     },
     Redaction {
         target_event_id: &'a MatrixEventId,
+    },
+    OutboundObservation {
+        transaction_id: Option<&'a codex_hepta_matrix_protocol::MatrixTransactionId>,
     },
     RoomLeave {
         departed_user_id: &'a MatrixUserId,
@@ -435,6 +440,14 @@ impl MatrixDurableStore {
                     mutation.received_at_ms,
                 )
                 .await?;
+                let dispatch_redacted = apply_outbound_redaction_tx(
+                    self,
+                    transaction,
+                    target_event_id,
+                    semantic_digest.as_str(),
+                    mutation.received_at_ms,
+                )
+                .await?;
                 self.append_change(
                     transaction,
                     ChangeKind::InboxRedacted,
@@ -444,11 +457,26 @@ impl MatrixDurableStore {
                     mutation.received_at_ms,
                 )
                 .await?;
-                if existed {
+                if existed || dispatch_redacted {
                     MatrixSyncMutationDispositionV2::Applied
                 } else {
                     MatrixSyncMutationDispositionV2::Missing
                 }
+            }
+            MatrixSyncMutationBodyV2::OutboundObservation { transaction_id } => {
+                observe_outbound_success_tx(
+                    self,
+                    transaction,
+                    transaction_id.as_ref(),
+                    &mutation.room_id,
+                    mutation.binding_revision,
+                    mutation.generation,
+                    &mutation.source_event_id,
+                    semantic_digest.as_str(),
+                    mutation.received_at_ms,
+                )
+                .await?;
+                MatrixSyncMutationDispositionV2::Applied
             }
             MatrixSyncMutationBodyV2::RoomLeave { .. } => {
                 scrub_room_tx(
@@ -666,6 +694,10 @@ fn mutation_kind(body: &MatrixSyncMutationBodyV2) -> &'static str {
     match body {
         MatrixSyncMutationBodyV2::Timeline { .. } => "timeline",
         MatrixSyncMutationBodyV2::Redaction { .. } => "redaction",
+        // Migration 0005 intentionally has a closed mutation_kind enum. The
+        // semantic digest below distinguishes outbound observations while the
+        // durable dispatch observation table stores their actual kind.
+        MatrixSyncMutationBodyV2::OutboundObservation { .. } => "timeline",
         MatrixSyncMutationBodyV2::RoomLeave { .. } => "room_leave",
         MatrixSyncMutationBodyV2::RoomTombstone { .. } => "room_tombstone",
     }
@@ -707,6 +739,11 @@ fn mutation_body_identity(body: &MatrixSyncMutationBodyV2) -> MatrixSyncMutation
         },
         MatrixSyncMutationBodyV2::Redaction { target_event_id } => {
             MatrixSyncMutationBodyIdentityV2::Redaction { target_event_id }
+        }
+        MatrixSyncMutationBodyV2::OutboundObservation { transaction_id } => {
+            MatrixSyncMutationBodyIdentityV2::OutboundObservation {
+                transaction_id: transaction_id.as_ref(),
+            }
         }
         MatrixSyncMutationBodyV2::RoomLeave { departed_user_id } => {
             MatrixSyncMutationBodyIdentityV2::RoomLeave { departed_user_id }
