@@ -14,6 +14,7 @@ use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
+use codex_app_server_client::TypedRequestError;
 use codex_app_server_protocol::AdditionalContextEntry;
 use codex_app_server_protocol::AdditionalContextKind;
 use codex_app_server_protocol::AskForApproval;
@@ -42,6 +43,8 @@ use codex_hepta_codex_adapter::adapt;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
+use codex_hepta_infer_core::durable_control::native::NativeDispatchRejectionKind;
 use codex_hepta_infer_core::durable_control::native::NativeCodexBoundaryReceipt;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
@@ -254,7 +257,15 @@ impl AppServerModelDriver {
         .await;
         let turn = match response {
             Ok(Ok(response)) => response.turn,
-            _ => {
+            Ok(Err(error)) => {
+                if let Some(rejection) =
+                    explicit_turn_start_rejection(&error, pending_boundary.request_digest)
+                {
+                    let reason = rejection.reason.clone();
+                    control.reject_native_dispatch(request_id, rejection)?;
+                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                    return Err(format!("turn/start rejected before execution: {reason}").into());
+                }
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Ok(NativeRunOutput {
                     thread_id: started.thread.id,
@@ -266,7 +277,25 @@ impl AppServerModelDriver {
                     observed_output_tokens: None,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
-                    stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
+                    stop_reason: Some(format!(
+                        "turn/start response could not prove non-execution: {error}"
+                    )),
+                    codex_boundary: Some(native_boundary_receipt(&pending_boundary)?),
+                });
+            }
+            Err(_) => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Ok(NativeRunOutput {
+                    thread_id: started.thread.id,
+                    turn_id: String::new(),
+                    model: started.model,
+                    model_provider: started.model_provider,
+                    status: NativeRunStatus::Indeterminate,
+                    output: String::new(),
+                    observed_output_tokens: None,
+                    terminal_observed: false,
+                    owner_authority: NativeOwnerAuthority::Unverified,
+                    stop_reason: Some("turn/start acknowledgement timed out; do not replay".to_string()),
                     codex_boundary: Some(native_boundary_receipt(&pending_boundary)?),
                 });
             }
@@ -511,6 +540,31 @@ fn observe_notification(
         _ => {}
     }
     Ok(false)
+}
+
+fn explicit_turn_start_rejection(
+    error: &TypedRequestError,
+    codex_request_digest: Digest32,
+) -> Option<NativeDispatchRejection> {
+    let TypedRequestError::Server { source, .. } = error else {
+        return None;
+    };
+    let kind = match source.code {
+        -32001 => NativeDispatchRejectionKind::Unavailable,
+        -32600 | -32601 | -32602 => NativeDispatchRejectionKind::Rejected,
+        _ => return None,
+    };
+    let reason: String = source.message.chars().take(4096).collect();
+    let response_digest = Digest32::of_bytes(
+        &serde_json::to_vec(&(source.code, &source.message, &source.data)).ok()?,
+    );
+    Some(NativeDispatchRejection {
+        kind,
+        code: source.code,
+        reason,
+        response_digest: response_digest.to_string(),
+        codex_request_digest: codex_request_digest.to_string(),
+    })
 }
 
 fn unix_ms() -> Result<u64> {
