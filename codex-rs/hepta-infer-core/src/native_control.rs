@@ -324,7 +324,10 @@ impl DurableInferenceControl {
         Ok(record)
     }
 
-    fn validate_latest_native_event(&self, event: &Event) -> Result<Option<NativeRunRecord>, Error> {
+    fn validate_latest_native_event(
+        &self,
+        event: &Event,
+    ) -> Result<Option<NativeRunRecord>, Error> {
         match event {
             Event::Reserve {
                 request,
@@ -448,8 +451,13 @@ impl NativeJournal {
         }
         self.maximum_in_flight = checkpoint.maximum_in_flight.or(self.maximum_in_flight);
         self.active_count += usize::from(is_active);
-        if self.maximum_in_flight.is_none_or(|limit| self.active_count > limit) {
-            return Err(Error::CorruptJournal("native checkpoint in-flight capacity"));
+        if self
+            .maximum_in_flight
+            .is_none_or(|limit| self.active_count > limit)
+        {
+            return Err(Error::CorruptJournal(
+                "native checkpoint in-flight capacity",
+            ));
         }
         Ok(())
     }
@@ -576,7 +584,10 @@ impl NativeJournal {
                 .active_count
                 .checked_add(1)
                 .ok_or(Error::ArithmeticOverflow)?;
-            if self.maximum_in_flight.is_none_or(|limit| self.active_count > limit) {
+            if self
+                .maximum_in_flight
+                .is_none_or(|limit| self.active_count > limit)
+            {
                 return Err(Error::CapacityExceeded);
             }
         }
@@ -650,7 +661,9 @@ fn validate_checkpoint(record: &NativeRunRecord) -> Result<(), Error> {
                     .as_ref()
                     .is_none_or(|output| output.terminal_observed)
             {
-                return Err(Error::CorruptJournal("native checkpoint indeterminate state"));
+                return Err(Error::CorruptJournal(
+                    "native checkpoint indeterminate state",
+                ));
             }
         }
         NativeReservationState::Released => {
@@ -809,3 +822,4 @@ mod pre_turn_stop_tests {
         std::fs::remove_file(path).unwrap();
     }
 }
+

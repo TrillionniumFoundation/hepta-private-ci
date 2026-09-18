@@ -84,11 +84,8 @@ pub fn admit_and_compile_objective_v1(
     context: &ObjectiveAdmissionContextV1,
 ) -> Result<ObjectiveAdmissionOutcomeV1, ObjectiveAdmissionError> {
     let prepared = prepare_admission(envelope, profile, context)?;
-    let (registry, atoms) = mapped_v1_hard_constraints(
-        envelope,
-        profile,
-        prepared.admitted_source_digest,
-    )?;
+    let (registry, atoms) =
+        mapped_v1_hard_constraints(envelope, profile, prepared.admitted_source_digest)?;
     validate_lowered_nonconstraint_semantics(envelope, profile, &atoms)?;
 
     let feasibility = check_feasibility_v1(
@@ -299,10 +296,7 @@ fn mapped_v1_hard_constraints(
             return Err(ObjectiveAdmissionError::ConstraintUnitMismatch);
         }
         let id = stable_id(&source.constraint_id, "constraintId")?;
-        let evidence_source = stable_id(
-            &source.evidence_source_id,
-            "constraint.evidenceSourceId",
-        )?;
+        let evidence_source = stable_id(&source.evidence_source_id, "constraint.evidenceSourceId")?;
         let bound = FixedQ32::from_raw(source.bound_q32);
         let (lower, upper) = scalar_interval_for_constraint(source.comparator, bound)?;
         push_scalar_atom(
@@ -546,10 +540,7 @@ fn validate_lowered_nonconstraint_semantics(
                 "minimumConfidencePpm",
             ));
         }
-        stable_id(
-            &source.evidence_source_id,
-            "requirement.evidenceSourceId",
-        )?;
+        stable_id(&source.evidence_source_id, "requirement.evidenceSourceId")?;
         insert_semantic_id(
             &mut semantic_ids,
             stable_id(&source.requirement_id, "requirementId")?,
@@ -621,7 +612,10 @@ fn validate_lowered_nonconstraint_semantics(
     // conflict receipt for authority it was never allowed to create.
     if envelope.source_trust_class == ObjectiveSourceTrustV1::UntrustedEvidence {
         let privileged_constraint = hard_atoms.iter().any(|atom| {
-            !matches!(atom.precedence, AtomPrecedenceV1::Hard(ConstraintClass::Task))
+            !matches!(
+                atom.precedence,
+                AtomPrecedenceV1::Hard(ConstraintClass::Task)
+            )
         });
         if privileged_constraint || !native_legal_actions.is_empty() {
             return Err(ObjectiveAdmissionError::Compiler(
@@ -651,10 +645,7 @@ fn validate_predicate_mapping(
     if mapping.expected_unit != source.unit {
         return Err(ObjectiveAdmissionError::PredicateUnitMismatch);
     }
-    stable_id(
-        &source.evidence_source_id,
-        "predicate.evidenceSourceId",
-    )?;
+    stable_id(&source.evidence_source_id, "predicate.evidenceSourceId")?;
     match source.comparator {
         ObjectivePredicateComparatorV1::Equal
         | ObjectivePredicateComparatorV1::LessThanOrEqual
@@ -843,9 +834,7 @@ fn parse_utc_micros(value: &str) -> Option<u64> {
         .checked_add(u64::from(hour) * 3_600)?
         .checked_add(u64::from(minute) * 60)?
         .checked_add(u64::from(second))?;
-    seconds
-        .checked_mul(MICROS_PER_SECOND)?
-        .checked_add(micros)
+    seconds.checked_mul(MICROS_PER_SECOND)?.checked_add(micros)
 }
 
 fn parse_decimal(bytes: &[u8]) -> Option<u64> {
@@ -853,9 +842,7 @@ fn parse_decimal(bytes: &[u8]) -> Option<u64> {
         return None;
     }
     bytes.iter().try_fold(0_u64, |value, byte| {
-        value
-            .checked_mul(10)?
-            .checked_add(u64::from(byte - b'0'))
+        value.checked_mul(10)?.checked_add(u64::from(byte - b'0'))
     })
 }
 
@@ -879,8 +866,7 @@ fn days_from_civil(year: i64, month: u32, day: u32) -> Option<i64> {
     let year_of_era = adjusted_year - era * 400;
     let shifted_month = i64::from(month) + if month > 2 { -3 } else { 9 };
     let day_of_year = (153 * shifted_month + 2) / 5 + i64::from(day) - 1;
-    let day_of_era =
-        year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
+    let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
     era.checked_mul(146_097)?
         .checked_add(day_of_era)?
         .checked_sub(719_468)

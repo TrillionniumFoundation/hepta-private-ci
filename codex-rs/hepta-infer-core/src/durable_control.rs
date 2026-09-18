@@ -265,14 +265,20 @@ impl DurableInferenceControl {
             }
             if let Some(digest) = line.strip_prefix(COMPACTION_PREFIX) {
                 validate_digest(digest, "compaction archive")?;
-                if compaction_archive_digest.replace(digest.to_string()).is_some() {
+                if compaction_archive_digest
+                    .replace(digest.to_string())
+                    .is_some()
+                {
                     return Err(Error::CorruptJournal("duplicate compaction header"));
                 }
             } else if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
                 let record: RequestRecord = serde_json::from_str(json)
                     .map_err(|_| Error::CorruptJournal("legacy checkpoint decode"))?;
                 validate_checkpoint_record(&record)?;
-                if records.insert(record.request.request_id.clone(), record).is_some() {
+                if records
+                    .insert(record.request.request_id.clone(), record)
+                    .is_some()
+                {
                     return Err(Error::CorruptJournal("duplicate legacy checkpoint"));
                 }
             } else if let Some(json) = line.strip_prefix(native::CHECKPOINT_PREFIX) {
@@ -289,8 +295,7 @@ impl DurableInferenceControl {
         if records.keys().any(|id| native.records.contains_key(id)) {
             return Err(Error::Conflict);
         }
-        let archive_stamp =
-            verify_compaction_archive(&path, compaction_archive_digest.as_deref())?;
+        let archive_stamp = verify_compaction_archive(&path, compaction_archive_digest.as_deref())?;
         let cached_stamp = file_stamp(&file)?;
         #[cfg(unix)]
         {
@@ -459,8 +464,7 @@ impl DurableInferenceControl {
                 validate_private_file(&archive)?;
                 let stamp = file_stamp(&archive)?;
                 if stamp.is_none() || stamp != self.archive_stamp {
-                    self.archive_stamp =
-                        verify_compaction_archive(&self.path, Some(digest))?;
+                    self.archive_stamp = verify_compaction_archive(&self.path, Some(digest))?;
                 }
             }
             self.file = current_file;
@@ -499,14 +503,20 @@ impl DurableInferenceControl {
             }
             if let Some(digest) = line.strip_prefix(COMPACTION_PREFIX) {
                 validate_digest(digest, "compaction archive")?;
-                if compaction_archive_digest.replace(digest.to_string()).is_some() {
+                if compaction_archive_digest
+                    .replace(digest.to_string())
+                    .is_some()
+                {
                     return Err(Error::CorruptJournal("duplicate compaction header"));
                 }
             } else if let Some(json) = line.strip_prefix(LEGACY_CHECKPOINT_PREFIX) {
                 let record: RequestRecord = serde_json::from_str(json)
                     .map_err(|_| Error::CorruptJournal("legacy checkpoint decode"))?;
                 validate_checkpoint_record(&record)?;
-                if records.insert(record.request.request_id.clone(), record).is_some() {
+                if records
+                    .insert(record.request.request_id.clone(), record)
+                    .is_some()
+                {
                     return Err(Error::CorruptJournal("duplicate legacy checkpoint"));
                 }
             } else if let Some(json) = line.strip_prefix(native::CHECKPOINT_PREFIX) {
@@ -533,8 +543,10 @@ impl DurableInferenceControl {
         self.archive_digest = compaction_archive_digest;
         self.archive_stamp = archive_stamp;
         self.replay_stats.full_replays = self.replay_stats.full_replays.saturating_add(1);
-        self.replay_stats.replayed_bytes =
-            self.replay_stats.replayed_bytes.saturating_add(journal_bytes);
+        self.replay_stats.replayed_bytes = self
+            .replay_stats
+            .replayed_bytes
+            .saturating_add(journal_bytes);
         Ok(lock_file)
     }
 
@@ -595,7 +607,10 @@ impl DurableInferenceControl {
         self.poisoned = true;
         fs::rename(&tmp, &self.path)?;
         sync_parent(&self.path)?;
-        self.file = OpenOptions::new().append(true).read(true).open(&self.path)?;
+        self.file = OpenOptions::new()
+            .append(true)
+            .read(true)
+            .open(&self.path)?;
         validate_private_file(&self.file)?;
         self.cached_stamp = file_stamp(&self.file)?;
         self.archive_stamp = verify_compaction_archive(&self.path, Some(&archive_digest))?;

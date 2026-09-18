@@ -228,7 +228,9 @@ fn zero_caller_actions_reaches_explicit_abstain_through_bounded_admission() {
 
     let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
         .expect("zero-action source should admit");
-    let compile = outcome.compile_result.expect("explicit abstain is non-error");
+    let compile = outcome
+        .compile_result
+        .expect("explicit abstain is non-error");
     assert_eq!(CompileDisposition::ExplicitAbstain, compile.disposition);
     assert_eq!(1, compile.objective.legal_actions.len());
     assert_eq!("abstain", compile.objective.legal_actions[0].id.as_str());
@@ -352,10 +354,16 @@ fn public_admission_returns_inclusion_minimal_profile_bound_conflict() {
 
     let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
         .expect("semantic conflict is a typed non-error outcome");
-    let conflict = outcome.compile_result.expect_err("bounds are contradictory");
+    let conflict = outcome
+        .compile_result
+        .expect_err("bounds are contradictory");
     assert_eq!(
         vec![id("latency.ceiling"), id("latency.floor")],
         conflict.conflicting_ids
     );
-    assert_eq!(outcome.receipt.admitted_source_digest, conflict.source_digest);
+    assert_eq!(
+        outcome.receipt.admitted_source_digest,
+        conflict.source_digest
+    );
 }
+

@@ -64,12 +64,8 @@ async fn exact_operation_replay_returns_one_task_and_one_destination_receipt() {
     let fixture = Fixture::new();
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
     let draft = draft();
-    let operation = automation_task_operation_intent(
-        store.owner_agent_id(),
-        &draft,
-        generation(7),
-    )
-    .expect("operation");
+    let operation = automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
+        .expect("operation");
 
     let first = store
         .create_task_from_operation(&operation, &draft)
@@ -95,12 +91,8 @@ async fn same_operation_identity_with_changed_task_payload_conflicts() {
     let fixture = Fixture::new();
     let store = AutomationStore::open(&fixture.layout).await.expect("open");
     let draft = draft();
-    let operation = automation_task_operation_intent(
-        store.owner_agent_id(),
-        &draft,
-        generation(7),
-    )
-    .expect("operation");
+    let operation = automation_task_operation_intent(store.owner_agent_id(), &draft, generation(7))
+        .expect("operation");
     store
         .create_task_from_operation(&operation, &draft)
         .await

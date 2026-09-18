@@ -189,10 +189,15 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.terminal_conditions
                 .resize(n, s.terminal_conditions[0].clone())
         }),
-        ("legalActionClasses", 0, MAX_OBJECTIVE_CALLER_ACTIONS, |s, n| {
-            s.legal_action_classes
-                .resize(n, s.legal_action_classes[0].clone())
-        }),
+        (
+            "legalActionClasses",
+            0,
+            MAX_OBJECTIVE_CALLER_ACTIONS,
+            |s, n| {
+                s.legal_action_classes
+                    .resize(n, s.legal_action_classes[0].clone())
+            },
+        ),
         ("forbiddenActionClasses", 0, 128, |s, n| {
             s.forbidden_action_classes
                 .resize(n, s.forbidden_action_classes[0].clone())
@@ -206,9 +211,12 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
                     .resize(n, s.confirmation_action_classes[0].clone())
             },
         ),
-        ("constraints", 1, MAX_OBJECTIVE_SOURCE_CONSTRAINTS, |s, n| {
-            s.constraints.resize(n, s.constraints[0].clone())
-        }),
+        (
+            "constraints",
+            1,
+            MAX_OBJECTIVE_SOURCE_CONSTRAINTS,
+            |s, n| s.constraints.resize(n, s.constraints[0].clone()),
+        ),
         ("softDimensions", 0, 64, |s, n| {
             s.soft_dimensions.resize(n, s.soft_dimensions[0].clone())
         }),

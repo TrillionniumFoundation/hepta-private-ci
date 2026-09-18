@@ -13,7 +13,9 @@ fn main() -> Result<()> {
     let command = args
         .next()
         .and_then(|value| value.into_string().ok())
-        .context("usage: hepta-supervisor-intent-recovery <inspect|abort> <run-root> [intent-sha256]")?;
+        .context(
+            "usage: hepta-supervisor-intent-recovery <inspect|abort> <run-root> [intent-sha256]",
+        )?;
     let run_root = PathBuf::from(args.next().context(
         "usage: hepta-supervisor-intent-recovery <inspect|abort> <run-root> [intent-sha256]",
     )?);
@@ -43,12 +45,13 @@ fn main() -> Result<()> {
                     | SignedIntentStatus::Queued
                     | SignedIntentStatus::RecoveryRequired
             ) {
-                bail!("signed supervisor intent is already terminal: {:?}", intent.status);
+                bail!(
+                    "signed supervisor intent is already terminal: {:?}",
+                    intent.status
+                );
             }
             if intent.intent_sha256.as_str() != expected_digest {
-                bail!(
-                    "intent digest changed; inspect again before issuing an abort directive"
-                );
+                bail!("intent digest changed; inspect again before issuing an abort directive");
             }
             let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())?;
             write_signed_intent_recovery_directive(&run_root, &directive)?;
