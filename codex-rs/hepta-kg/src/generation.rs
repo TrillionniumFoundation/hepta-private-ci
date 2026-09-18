@@ -37,6 +37,9 @@ pub enum KnowledgeRelationKindV2 {
     PromptComplements,
     PromptSubstitutes,
     PromptConflicts,
+    /// Exact predicates outside the fixed semantic vocabulary. The precise
+    /// predicate remains part of `KnowledgeEdgeIdentityV2::predicate_id`.
+    Related,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -67,6 +70,9 @@ pub struct KnowledgeNodeV2 {
 pub struct KnowledgeEdgeIdentityV2 {
     pub source_node_id: StableId,
     pub relation: KnowledgeRelationKindV2,
+    /// Stable identity of the exact predicate. This prevents product graphs
+    /// with arbitrary predicates from collapsing into one coarse relation kind.
+    pub predicate_id: StableId,
     pub target_node_id: StableId,
 }
 
@@ -572,6 +578,7 @@ fn compute_query_result_digest(result: &KnowledgeRelationResultV2) -> Digest32 {
 fn push_edge_identity(bytes: &mut Vec<u8>, identity: &KnowledgeEdgeIdentityV2) {
     push_id(bytes, &identity.source_node_id);
     bytes.push(relation_code(identity.relation));
+    push_id(bytes, &identity.predicate_id);
     push_id(bytes, &identity.target_node_id);
 }
 
@@ -679,6 +686,7 @@ const fn relation_code(value: KnowledgeRelationKindV2) -> u8 {
         KnowledgeRelationKindV2::PromptComplements => 7,
         KnowledgeRelationKindV2::PromptSubstitutes => 8,
         KnowledgeRelationKindV2::PromptConflicts => 9,
+        KnowledgeRelationKindV2::Related => 10,
     }
 }
 
