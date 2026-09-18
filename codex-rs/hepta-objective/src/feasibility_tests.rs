@@ -316,6 +316,57 @@ fn pilot_atom_bound_and_maximum_oracle_count_are_enforced() {
 }
 
 #[test]
+fn conflict_oracle_named_host_measurement_receipt() {
+    if std::env::var_os("HEPTA_OBJECTIVE_CONFLICT_MEASURE").is_none() {
+        return;
+    }
+
+    let mut atoms = vec![
+        atom("a", "x", interval(0, 1)),
+        atom("b", "x", interval(2, 3)),
+    ];
+    atoms.extend((2..256).map(|index| {
+        atom(
+            &format!("irrelevant-{index:03}"),
+            "x",
+            interval(-5, 5),
+        )
+    }));
+
+    let registered = scalar_registry();
+    let mut micros = Vec::new();
+    for _ in 0..16 {
+        let receipt = check_feasibility_v1(
+            &registered,
+            atoms.clone(),
+            OracleBudgetV1 {
+                max_calls: 257,
+                wall_time: Duration::MAX,
+            },
+        );
+        assert!(matches!(
+            receipt.outcome,
+            FeasibilityOutcomeV1::Infeasible { .. }
+        ));
+        assert_eq!(receipt.oracle_calls, 257);
+        micros.push(receipt.elapsed.as_micros());
+    }
+
+    micros.sort_unstable();
+    let percentile = |numerator: usize| {
+        let index = ((micros.len() - 1) * numerator + 99) / 100;
+        micros[index]
+    };
+    println!(
+        "{{\"schema\":\"hepta.objective-conflict-measurement.v1\",\"samples\":{},\"atoms\":256,\"oracleCallsPerSample\":257,\"p50Micros\":{},\"p95Micros\":{},\"p99Micros\":{},\"path\":\"inclusion-minimal-conflict-256-atoms\"}}",
+        micros.len(),
+        percentile(50),
+        percentile(95),
+        percentile(99)
+    );
+}
+
+#[test]
 fn registry_action_limit_is_checked_before_solving() {
     let mut registered = registry(Vec::new());
     registered.axes.extend((0..129).map(|i| {
