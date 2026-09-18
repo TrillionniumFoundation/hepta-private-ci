@@ -855,12 +855,18 @@ fn lease_publication_failure_keeps_child_tracked_until_exit() -> Result<(), Supe
         AgentLifecycle::Starting
     );
 
+    #[cfg(unix)]
+    assert!(supervisor.preflight_stop_or_kill(&fleet.first).is_ok());
+    supervisor.stop(&fleet.first, now)?;
+    // Stop cannot downgrade an unleased quarantine to graceful termination.
+    assert_eq!(control.counts(&fleet.first), (0, 0, 2));
+
     let report = supervisor.tick(now);
     assert_eq!(report.faults.len(), 1);
     assert_eq!(report.faults[0].agent_id, fleet.first);
     // Emergency kill is retried before poll, so the injected observation
     // failure cannot block cleanup pressure.
-    assert_eq!(control.counts(&fleet.first), (0, 0, 2));
+    assert_eq!(control.counts(&fleet.first), (0, 0, 3));
     assert!(supervisor.snapshot(&fleet.first).expect("snapshot").active);
     control.set_exit(&fleet.first);
     assert_eq!(
