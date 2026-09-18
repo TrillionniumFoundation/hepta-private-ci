@@ -31,6 +31,7 @@ write_registry_snapshot(CreateOnlyArtifactFile, &ArtifactRegistry, Digest32)
 write_candidate_payload(CreateOnlyArtifactFile, &ArtifactRegistry, &StableId, &[u8])
 write_registry_head_witness(CreateOnlyArtifactFile, &RegistryHeadWitnessV1, &RegistryHeadRequirementV1, Digest32)
 read_registry_head_witness(File, RegistryHeadWitnessReceipt, &RegistryHeadRequirementV1)
+inspect_orphan_candidate(File, &[Digest32]) -> OrphanInspection
 ```
 
 `write_registry_snapshot` writes one new empty target and syncs it before
@@ -89,8 +90,10 @@ expected digest. It must never truncate, overwrite, silently adopt or retry
 through the same path. Removal of a proven orphan is a separately authorized host operation. The host
 must reconcile by exact path/identity, expected digest or zero-length state,
 current and retained historical receipts, and publication transaction identity
-before deletion. A name that is referenced by any retained receipt is not an
-orphan even if it is not current.
+before deletion. `inspect_orphan_candidate` provides a bounded, shared-lock,
+read-only digest/length inspection against independently supplied retained
+digests; it never removes, truncates or authorizes deletion. A name that is
+referenced by any retained receipt is not an orphan even if it is not current.
 
 ## Host transaction and trust boundary
 
@@ -128,7 +131,8 @@ Regression coverage must include real-file reopen, every snapshot truncation
 point, independent witness mismatch, canonical form, existing nonempty, empty and
 truncate-to-zero rejection, regular and dangling symlink rejection where
 supported, exactly one concurrent creator, lock contention, post-create
-interference, payload integrity, revocation descendants and invalid binding.
+interference, payload integrity, revocation descendants, invalid binding and
+non-mutating orphan inspection against retained digest evidence.
 Exact source and actual-base synthetic-merge compilation, tests, lint and format
 remain mandatory.
 
