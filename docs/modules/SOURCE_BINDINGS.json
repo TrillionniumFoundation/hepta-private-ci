@@ -559,12 +559,16 @@
         "codex-rs/hepta-kg"
       ],
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-kg"
+        "codex-rs/hepta-kg",
+        "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+        "codex-rs/hepta-memory/migrations/0011_kg_kernel_generation_digest.sql"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-4-KG",
       "technicalDocument": "docs/modules/knowledge.graph/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "evidence_roots_are_non_authoritative_product_composition_callers; projection_authority_remains_knowledge.graph; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "compact.engine",

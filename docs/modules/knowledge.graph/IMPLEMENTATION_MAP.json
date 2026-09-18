@@ -18,18 +18,48 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "memory_kg_product_candidate_composed_pending_exact_evidence",
+  "productionWriterState": "memory_kg_sqlite_candidate_established_pending_exact_evidence",
   "operations": [
     {
       "operation": "build_complete_generation",
       "nativeSymbol": "build_complete_generation",
       "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-kg/src/generation_tests.rs",
+          "symbol": "incremental_and_full_rebuilds_are_semantically_equal"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "symbol": "sqlite_projection_is_kernel_canonical_across_query_restart_correction_and_tombstone"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "build_complete_generation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "derive_incremental_delta",
+      "nativeSymbol": "derive_incremental_delta",
+      "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
+      "state": "source_implemented_oracle",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-kg/src/generation_tests.rs",
+          "symbol": "derived_incremental_delta_replays_the_complete_generation"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "symbol": "sqlite_projection_is_kernel_canonical_across_query_restart_correction_and_tombstone"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "derive_incremental_delta",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -37,9 +67,18 @@
       "operation": "apply_incremental_delta",
       "nativeSymbol": "apply_incremental_delta",
       "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_oracle",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-kg/src/generation_tests.rs",
+          "symbol": "incremental_and_full_rebuilds_are_semantically_equal"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "symbol": "sqlite_projection_is_kernel_canonical_across_query_restart_correction_and_tombstone"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "apply_incremental_delta",
       "mappingClass": "owner_native",
@@ -49,18 +88,95 @@
       "operation": "publish_generation",
       "nativeSymbol": "publish_generation",
       "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_candidate",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-kg/src/generation_tests.rs",
+          "symbol": "publication_is_predecessor_bound_and_query_is_generation_bound"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "symbol": "sqlite_projection_is_kernel_canonical_across_query_restart_correction_and_tombstone"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "publish_generation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "query_relations",
+      "nativeSymbol": "query_relations",
+      "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
+      "state": "source_implemented_product_candidate",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-kg/src/generation_tests.rs",
+          "symbol": "named_relation_kinds_are_stable_distinct_and_queryable"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "symbol": "sqlite_projection_is_kernel_canonical_across_query_restart_correction_and_tombstone"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "query_relations",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "sqlite_projection_adapter",
+      "nativeSymbol": "CognitiveStore::refresh_scope_projection_tx",
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+      "state": "product_composition_candidate_pending_exact_evidence",
+      "authority": "projection_writer_only",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "symbol": "sqlite_projection_is_kernel_canonical_across_query_restart_correction_and_tombstone"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "symbol": "physical cognitive product e2e"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "publish_generation",
+      "mappingClass": "cross_owner_physical_adapter",
+      "delegatedCallees": [
+        "build_complete_generation",
+        "publish_generation"
+      ]
+    },
+    {
+      "operation": "graph_one_hop_product_consumer",
+      "nativeSymbol": "CognitiveStore::graph_channel_tx",
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+      "state": "product_composition_candidate_pending_exact_evidence",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+          "symbol": "sqlite_projection_is_kernel_canonical_across_query_restart_correction_and_tombstone"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+          "symbol": "physical cognitive product e2e"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "query_relations",
+      "mappingClass": "cross_owner_product_consumer",
+      "delegatedCallees": [
+        "query_relations"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests before changing the production implementation claim.",
+    "Compose and qualify prompt-factor projection production callers separately from the memory-backed knowledge-graph path."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

@@ -387,6 +387,16 @@ async fn real_agentd_remember_recall_correct_and_forget_revalidate_physical_send
     ensure!(before_restart.node_count == 2);
     ensure!(before_restart.edge_count == 1);
     ensure!(
+        before_restart
+            .kernel_generation_sha256
+            .as_deref()
+            .is_some_and(|digest| digest.len() == 64
+                && digest
+                    .bytes()
+                    .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))),
+        "persisted KG generation omitted the canonical kernel digest"
+    );
+    ensure!(
         before_restart.fact_set_sha256 == remember_projection.fact_set_sha256
             && before_restart.input_heads_sha256 == remember_projection.input_heads_sha256
             && before_restart.output_sha256 == remember_projection.output_sha256,
@@ -2105,6 +2115,7 @@ struct KgProjectionEvidence {
     fact_set_sha256: String,
     input_heads_sha256: String,
     output_sha256: String,
+    kernel_generation_sha256: Option<String>,
 }
 
 fn assert_projection_receipt(
@@ -2127,6 +2138,7 @@ fn assert_projection_receipt(
         fact_set_sha256: json_sha256(projection, "fact_set_sha256")?,
         input_heads_sha256: json_sha256(projection, "input_heads_sha256")?,
         output_sha256: json_sha256(projection, "output_sha256")?,
+        kernel_generation_sha256: None,
     };
     ensure!(
         evidence.generation == generation
@@ -2247,15 +2259,29 @@ async fn read_kg_sqlite_evidence(
         receipt_fact_set_sha256,
         input_heads_sha256,
         output_sha256,
+        kernel_generation_sha256,
         entity_count,
         relation_count,
         node_count,
         edge_count,
         actual_node_count,
         actual_edge_count,
-    ): (i64, String, String, String, i64, i64, i64, i64, i64, i64) = sqlx::query_as(
+    ): (
+        i64,
+        String,
+        String,
+        String,
+        String,
+        i64,
+        i64,
+        i64,
+        i64,
+        i64,
+        i64,
+    ) = sqlx::query_as(
         "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
-                r.entity_count, r.relation_count, r.node_count, r.edge_count,
+                r.kernel_generation_sha256, r.entity_count, r.relation_count,
+                r.node_count, r.edge_count,
                 (SELECT COUNT(*) FROM kg_nodes AS n
                  WHERE n.projection_scope = r.projection_scope
                    AND n.generation = r.generation
@@ -2298,6 +2324,7 @@ async fn read_kg_sqlite_evidence(
         fact_set_sha256,
         input_heads_sha256,
         output_sha256,
+        kernel_generation_sha256: Some(kernel_generation_sha256),
     })
 }
 

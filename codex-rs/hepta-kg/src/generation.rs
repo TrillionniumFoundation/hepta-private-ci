@@ -20,7 +20,7 @@ use codex_hepta_types::StableId;
 
 pub const MAX_KNOWLEDGE_NODES_V2: usize = 65_536;
 pub const MAX_KNOWLEDGE_EDGES_V2: usize = 262_144;
-pub const MAX_SUPPORTS_PER_RELATION_V2: usize = 64;
+pub const MAX_SUPPORTS_PER_RELATION_V2: usize = 128;
 const GENERATION_DOMAIN: &[u8] = b"hepta.knowledge-generation.v2";
 const PUBLICATION_DOMAIN: &[u8] = b"hepta.knowledge-publication.v2";
 const QUERY_DOMAIN: &[u8] = b"hepta.knowledge-query-result.v2";
@@ -37,10 +37,34 @@ pub enum KnowledgeRelationKindV2 {
     PromptComplements,
     PromptSubstitutes,
     PromptConflicts,
+    Named(Digest32),
+}
+
+pub fn relation_kind_from_name(value: &str) -> KnowledgeRelationKindV2 {
+    match value {
+        "supports" => KnowledgeRelationKindV2::Supports,
+        "contradicts" => KnowledgeRelationKindV2::Contradicts,
+        "temporal_before" => KnowledgeRelationKindV2::TemporalBefore,
+        "temporal_after" => KnowledgeRelationKindV2::TemporalAfter,
+        "causes" => KnowledgeRelationKindV2::Causes,
+        "enables" => KnowledgeRelationKindV2::Enables,
+        "procedure_step" => KnowledgeRelationKindV2::ProcedureStep,
+        "prompt_complements" => KnowledgeRelationKindV2::PromptComplements,
+        "prompt_substitutes" => KnowledgeRelationKindV2::PromptSubstitutes,
+        "prompt_conflicts" => KnowledgeRelationKindV2::PromptConflicts,
+        _ => {
+            let mut bytes = Vec::new();
+            bytes.extend_from_slice(b"hepta.knowledge-relation-name.v2");
+            push_len(&mut bytes, value.len());
+            bytes.extend_from_slice(value.as_bytes());
+            KnowledgeRelationKindV2::Named(Digest32::of_bytes(&bytes))
+        }
+    }
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct KnowledgeSupportV2 {
+    pub support_id: StableId,
     pub source_id: StableId,
     pub source_revision: Revision,
     pub source_fact_digest: Digest32,
@@ -244,6 +268,75 @@ pub fn apply_incremental_delta(
         nodes.into_values().collect(),
         edges.into_values().collect(),
     )
+}
+
+pub fn derive_incremental_delta(
+    predecessor: &KnowledgeGenerationV2,
+    candidate: &KnowledgeGenerationV2,
+) -> Result<KnowledgeProjectionDeltaV2, KnowledgeGenerationErrorV2> {
+    predecessor.validate()?;
+    candidate.validate()?;
+    if predecessor.generation.next().ok() != Some(candidate.generation) {
+        return Err(KnowledgeGenerationErrorV2::InvalidPredecessor);
+    }
+    if predecessor.graph_profile_digest != candidate.graph_profile_digest {
+        return Err(KnowledgeGenerationErrorV2::ProfileChangedInDelta);
+    }
+
+    let predecessor_nodes = predecessor
+        .nodes
+        .iter()
+        .map(|node| (node.node_id.clone(), node))
+        .collect::<BTreeMap<_, _>>();
+    let candidate_nodes = candidate
+        .nodes
+        .iter()
+        .map(|node| (node.node_id.clone(), node))
+        .collect::<BTreeMap<_, _>>();
+    let remove_node_ids = predecessor_nodes
+        .keys()
+        .filter(|node_id| !candidate_nodes.contains_key(*node_id))
+        .cloned()
+        .collect::<Vec<_>>();
+    let upsert_nodes = candidate_nodes
+        .iter()
+        .filter_map(|(node_id, node)| {
+            (predecessor_nodes.get(node_id).copied() != Some(*node)).then(|| (**node).clone())
+        })
+        .collect::<Vec<_>>();
+
+    let predecessor_edges = predecessor
+        .edges
+        .iter()
+        .map(|edge| (edge.identity.clone(), edge))
+        .collect::<BTreeMap<_, _>>();
+    let candidate_edges = candidate
+        .edges
+        .iter()
+        .map(|edge| (edge.identity.clone(), edge))
+        .collect::<BTreeMap<_, _>>();
+    let remove_edge_identities = predecessor_edges
+        .keys()
+        .filter(|identity| !candidate_edges.contains_key(*identity))
+        .cloned()
+        .collect::<Vec<_>>();
+    let upsert_edges = candidate_edges
+        .iter()
+        .filter_map(|(identity, edge)| {
+            (predecessor_edges.get(identity).copied() != Some(*edge)).then(|| (**edge).clone())
+        })
+        .collect::<Vec<_>>();
+
+    Ok(KnowledgeProjectionDeltaV2 {
+        expected_predecessor_digest: predecessor.generation_digest,
+        source_snapshot_digest: candidate.source_snapshot_digest,
+        generation_vector_digest: candidate.generation_vector_digest,
+        graph_profile_digest: candidate.graph_profile_digest,
+        remove_node_ids,
+        upsert_nodes,
+        remove_edge_identities,
+        upsert_edges,
+    })
 }
 
 pub fn publish_generation(
@@ -481,8 +574,7 @@ fn canonicalize_supports(
     let mut identities = BTreeSet::new();
     for support in supports.iter() {
         support.validate()?;
-        let identity = (support.source_id.clone(), support.source_revision);
-        if !identities.insert(identity) {
+        if !identities.insert(support.support_id.clone()) {
             return Err(KnowledgeGenerationErrorV2::DuplicateSupport);
         }
     }
@@ -571,13 +663,24 @@ fn compute_query_result_digest(result: &KnowledgeRelationResultV2) -> Digest32 {
 
 fn push_edge_identity(bytes: &mut Vec<u8>, identity: &KnowledgeEdgeIdentityV2) {
     push_id(bytes, &identity.source_node_id);
-    bytes.push(relation_code(identity.relation));
+    push_relation_kind(bytes, identity.relation);
     push_id(bytes, &identity.target_node_id);
+}
+
+fn push_relation_kind(bytes: &mut Vec<u8>, value: KnowledgeRelationKindV2) {
+    match value {
+        KnowledgeRelationKindV2::Named(digest) => {
+            bytes.push(10);
+            push_digest(bytes, digest);
+        }
+        _ => bytes.push(relation_code(value)),
+    }
 }
 
 fn push_supports(bytes: &mut Vec<u8>, supports: &[KnowledgeSupportV2]) {
     push_len(bytes, supports.len());
     for support in supports {
+        push_id(bytes, &support.support_id);
         push_id(bytes, &support.source_id);
         push_u64(bytes, support.source_revision.get());
         push_digest(bytes, support.source_fact_digest);
@@ -679,6 +782,7 @@ const fn relation_code(value: KnowledgeRelationKindV2) -> u8 {
         KnowledgeRelationKindV2::PromptComplements => 7,
         KnowledgeRelationKindV2::PromptSubstitutes => 8,
         KnowledgeRelationKindV2::PromptConflicts => 9,
+        KnowledgeRelationKindV2::Named(_) => 10,
     }
 }
 

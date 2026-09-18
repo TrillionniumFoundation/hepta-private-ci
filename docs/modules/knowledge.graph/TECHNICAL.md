@@ -34,9 +34,14 @@ Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-kg`
 
-Non-authoritative implementation evidence roots:
+Non-authoritative product-composition evidence roots:
 
-None.
+- `codex-rs/hepta-memory/src/cognitive_kg_store.rs`
+- `codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs`
+- `codex-rs/hepta-memory/src/cognitive_retrieval.rs`
+- `codex-rs/hepta-memory/migrations/0011_kg_kernel_generation_digest.sql`
+
+These paths remain owned at their declared physical boundaries; listing them here records composition evidence and does not transfer source-ledger or retrieval ownership.
 
 Declared roots not yet present:
 
@@ -139,6 +144,8 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md).
 
+The current memory-backed composition uses the existing cognitive SQLite mutation transaction. The adapter constructs and validates the V2 generation and predecessor-bound publication before inserting the new projection generation, and the SQLite generation pointer is selected by the existing compare-and-swap only after those checks pass. No second KG store is introduced.
+
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
@@ -165,7 +172,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Projection builder library over owner-approved facts. Publish only complete validated generations tied to an exact source cut; do not turn generated edges into source facts. Persistence, index service and route/GC ownership must be explicitly composed before claiming a durable graph deployment.
+Projection builder over owner-approved facts. Publish only complete validated generations tied to an exact source cut; do not turn generated edges into source facts. The memory-backed knowledge-graph path is now composed through the existing SQLite owner: new generation receipts persist the V2 kernel digest, reopen verifies it, and GraphOneHop retrieval consumes the V2 query kernel. This composition is source/product-path evidence, not independent activation or release authority.
 
 Current operating and state-format references:
 
@@ -180,6 +187,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-kg/src/generation_tests.rs](../../../codex-rs/hepta-kg/src/generation_tests.rs); named case: `incremental_and_full_rebuilds_are_semantically_equal`.
 - [codex-rs/hepta-kg/src/lib_tests.rs](../../../codex-rs/hepta-kg/src/lib_tests.rs); named case: `rebuild_is_canonical_and_authority_free`.
+- [codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs); named case: `sqlite_projection_is_kernel_canonical_across_query_restart_correction_and_tombstone`.
+- [codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs); physical product path checks the persisted canonical KG generation digest across restart.
 
 In `codex-rs`, run `just test -p codex-hepta-kg`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/knowledge.graph.md) separately labels target acceptance designs.
 

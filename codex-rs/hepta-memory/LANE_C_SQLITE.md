@@ -25,6 +25,22 @@ graph generation are read in one SQLite transaction.
 | Number of scoped memory revisions | Snapshot generation plus one |
 | Owner UUID and scope projection-key digest | `cognitive:<UUID>:<SHA256>` scope ID |
 
+The durable KG projection uses the same SQLite mutation transaction but no
+longer carries an independent projection policy. `cognitive_kg_store.rs`
+adapts the exact owner fact cut into `codex-hepta-kg` V2, validates complete
+generation semantics and exact-predecessor publication there, persists the
+canonical generation digest in the generation receipt, writes occurrence
+nodes/edges, and only then CAS-selects the new generation. Reopen reconstructs
+the same V2 generation and fails closed on a stored digest mismatch. Historical
+pre-digest receipts remain readable but are still reconstructed and validated
+through V2.
+
+`GraphOneHop` retrieval likewise loads the selected persisted generation,
+reconstructs its V2 view, invokes `codex_hepta_kg::query_relations` against the
+exact generation digest, and maps the result back to SQLite occurrence memory
+records. SQLite remains the durable/index boundary; `codex-hepta-kg` is the
+single deterministic graph-semantic boundary.
+
 The two generation offsets preserve the nonzero newtype contract; they are not
 wall-clock timestamps. Visibility can change when a validity interval expires
 without a write, so callers compare the complete snapshot digest and frontiers,

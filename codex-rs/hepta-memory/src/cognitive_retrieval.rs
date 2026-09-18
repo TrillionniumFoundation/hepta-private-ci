@@ -3,6 +3,8 @@ use std::collections::BTreeSet;
 use std::future::Future;
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::KnowledgeRelationQueryV2;
+use codex_hepta_kg::query_relations;
 use serde::Serialize;
 use sqlx::Row;
 use sqlx::Sqlite;
@@ -21,6 +23,7 @@ use crate::MemoryVerification;
 use crate::ProjectionGeneration;
 use crate::SourceRevisionId;
 use crate::StableMemoryId;
+use crate::cognitive_kg_store::kernel_query_id;
 use crate::cognitive_store::decode_scope;
 use crate::cognitive_store::unavailable;
 
@@ -637,9 +640,11 @@ impl CognitiveStore {
         now: i64,
     ) -> Result<ChannelOutput<MemoryKey>, CognitiveStoreError> {
         let mut queried_canonical_entities = BTreeSet::new();
+        let mut projections = BTreeMap::new();
         let mut seen = BTreeSet::new();
         let mut result = Vec::new();
         let mut limit = RetrievalLimitObservation::Exhausted;
+
         'seeds: for seed in seeds {
             if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
                 limit = RetrievalLimitObservation::LimitReached;
@@ -652,84 +657,132 @@ impl CognitiveStore {
             )) {
                 continue;
             }
-            let remaining = MAX_RETRIEVAL_CHANNEL_CANDIDATES - result.len();
-            let rows = sqlx::query(
-                "WITH canonical_support_nodes AS (
-                     SELECT node_id
-                     FROM kg_projection_node_entities
-                     WHERE projection_scope = ? AND generation = ?
-                       AND canonical_entity_id = ?
-                 )
-                 SELECT DISTINCT e.edge_id, e.memory_id AS edge_memory_id,
-                        e.memory_revision AS edge_memory_revision,
-                        n.node_id, n.memory_id AS node_memory_id,
-                        n.memory_revision AS node_memory_revision
-                 FROM canonical_support_nodes s
-                 JOIN kg_edges e
-                   ON e.projection_scope = ? AND e.generation = ?
-                  AND (e.from_node_id = s.node_id OR e.to_node_id = s.node_id)
-                 JOIN kg_nodes n
-                   ON n.projection_scope = e.projection_scope AND n.generation = e.generation
-                  AND n.node_id = CASE WHEN e.from_node_id = s.node_id
-                                       THEN e.to_node_id ELSE e.from_node_id END
-                 JOIN memory_heads eh ON eh.memory_id = e.memory_id
-                                     AND eh.revision = e.memory_revision
-                 JOIN memory_heads nh ON nh.memory_id = n.memory_id
-                                     AND nh.revision = n.memory_revision
-                 JOIN memory_revisions er ON er.memory_id = e.memory_id
-                                         AND er.revision = e.memory_revision
-                 JOIN memory_revisions nr ON nr.memory_id = n.memory_id
-                                         AND nr.revision = n.memory_revision
-                 WHERE e.valid_from_unix_seconds <= ?
-                   AND (e.valid_to_unix_seconds IS NULL OR ? < e.valid_to_unix_seconds)
-                   AND n.valid_from_unix_seconds <= ?
-                   AND (n.valid_to_unix_seconds IS NULL OR ? < n.valid_to_unix_seconds)
-                   AND er.verification = 'verified' AND er.lifecycle = 'active'
-                   AND nr.verification = 'verified' AND nr.lifecycle = 'active'
-                   AND er.valid_from_unix_seconds <= ?
-                   AND (er.valid_to_unix_seconds IS NULL OR ? < er.valid_to_unix_seconds)
-                   AND nr.valid_from_unix_seconds <= ?
-                   AND (nr.valid_to_unix_seconds IS NULL OR ? < nr.valid_to_unix_seconds)
-                 ORDER BY e.edge_id, n.node_id
-                 LIMIT ?",
-            )
-            .bind(&seed.projection_scope)
-            .bind(seed.generation)
-            .bind(&seed.canonical_entity_id)
-            .bind(&seed.projection_scope)
-            .bind(seed.generation)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(now)
-            .bind(i64::try_from(remaining).map_err(|_| {
-                CognitiveStoreError::Invalid("graph retrieval limit exceeds i64".to_string())
-            })?)
-            .fetch_all(&mut **transaction)
-            .await
-            .map_err(unavailable)?;
-            if rows.len() >= remaining {
-                limit = RetrievalLimitObservation::LimitReached;
+
+            let projection_key = (seed.projection_scope.clone(), seed.generation);
+            if !projections.contains_key(&projection_key) {
+                let projection = self
+                    .load_kernel_projection_tx(
+                        transaction,
+                        &seed.projection_scope,
+                        seed.generation,
+                    )
+                    .await?;
+                projections.insert(projection_key.clone(), projection);
             }
-            for row in rows {
-                for key in [
-                    decode_memory_key(&row, "edge_memory_id", "edge_memory_revision")?,
-                    decode_memory_key(&row, "node_memory_id", "node_memory_revision")?,
-                ] {
-                    if seen.insert(key.clone()) {
-                        result.push(key);
+            let projection = projections.get(&projection_key).ok_or_else(|| {
+                CognitiveStoreError::Corrupt(
+                    "canonical KG projection disappeared from the query cache".to_string(),
+                )
+            })?;
+            let Some(seed_node_ids) = projection
+                .seed_node_ids_by_canonical
+                .get(&seed.canonical_entity_id)
+            else {
+                continue;
+            };
+            if projection.generation.edges.is_empty() {
+                continue;
+            }
+
+            let maximum_edges = u32::try_from(projection.generation.edges.len()).map_err(|_| {
+                CognitiveStoreError::Invalid(
+                    "canonical KG query edge bound exceeds u32".to_string(),
+                )
+            })?;
+            let query = KnowledgeRelationQueryV2 {
+                query_id: kernel_query_id(
+                    &seed.projection_scope,
+                    seed.generation,
+                    &seed.canonical_entity_id,
+                )?,
+                generation_digest: projection.generation.generation_digest,
+                seed_node_ids: seed_node_ids.clone(),
+                relation_kinds: Vec::new(),
+                maximum_edges,
+            };
+            let queried = query_relations(&projection.generation, query).map_err(|error| {
+                CognitiveStoreError::Corrupt(format!(
+                    "canonical KG query rejected current SQLite projection: {error}"
+                ))
+            })?;
+            let seed_ids = seed_node_ids
+                .iter()
+                .map(|node_id| node_id.as_str())
+                .collect::<BTreeSet<_>>();
+
+            for edge in queried.edges {
+                let occurrence_indices = projection
+                    .edge_indices_by_identity
+                    .get(&edge.identity)
+                    .ok_or_else(|| {
+                        CognitiveStoreError::Corrupt(
+                            "canonical KG query returned an edge with no SQLite occurrence"
+                                .to_string(),
+                        )
+                    })?;
+                for occurrence_index in occurrence_indices {
+                    let occurrence = projection.edges.get(*occurrence_index).ok_or_else(|| {
+                        CognitiveStoreError::Corrupt(
+                            "canonical KG edge occurrence index is out of bounds".to_string(),
+                        )
+                    })?;
+                    if !projection_value_is_valid(
+                        occurrence.valid_from,
+                        occurrence.valid_to,
+                        now,
+                    ) {
+                        continue;
                     }
-                    if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
-                        limit = RetrievalLimitObservation::LimitReached;
-                        break 'seeds;
+                    let opposite_node_id = if seed_ids.contains(occurrence.from_node_id.as_str()) {
+                        &occurrence.to_node_id
+                    } else if seed_ids.contains(occurrence.to_node_id.as_str()) {
+                        &occurrence.from_node_id
+                    } else {
+                        continue;
+                    };
+                    let node_index = projection
+                        .node_index_by_id
+                        .get(opposite_node_id)
+                        .ok_or_else(|| {
+                            CognitiveStoreError::Corrupt(
+                                "canonical KG query edge points to an unknown SQLite node"
+                                    .to_string(),
+                            )
+                        })?;
+                    let node = projection.nodes.get(*node_index).ok_or_else(|| {
+                        CognitiveStoreError::Corrupt(
+                            "canonical KG node occurrence index is out of bounds".to_string(),
+                        )
+                    })?;
+                    if !projection_value_is_valid(node.valid_from, node.valid_to, now) {
+                        continue;
+                    }
+
+                    for (memory_id, memory_revision) in [
+                        (&occurrence.memory_id, occurrence.memory_revision),
+                        (&node.memory_id, node.memory_revision),
+                    ] {
+                        let revision = u64::try_from(memory_revision).map_err(|_| {
+                            CognitiveStoreError::Corrupt(
+                                "negative KG occurrence memory revision".to_string(),
+                            )
+                        })?;
+                        let key = MemoryKey {
+                            memory_id: memory_id.clone(),
+                            revision,
+                        };
+                        if seen.insert(key.clone()) {
+                            result.push(key);
+                        }
+                        if result.len() >= MAX_RETRIEVAL_CHANNEL_CANDIDATES {
+                            limit = RetrievalLimitObservation::LimitReached;
+                            break 'seeds;
+                        }
                     }
                 }
             }
         }
+
         Ok(ChannelOutput {
             values: result,
             limit,
@@ -880,6 +933,10 @@ fn binding_from_explanation(explanation: &MemoryExplanation) -> MemoryRevalidati
             .collect(),
         kg_projection_generation: explanation.kg_projection_generation,
     }
+}
+
+fn projection_value_is_valid(valid_from: i64, valid_to: Option<i64>, now: i64) -> bool {
+    valid_from <= now && valid_to.is_none_or(|valid_to| now < valid_to)
 }
 
 fn eligible(memory: &MemoryRevisionRecord, now: i64) -> bool {
