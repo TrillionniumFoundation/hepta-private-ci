@@ -17,6 +17,7 @@ use codex_hepta_matrix_protocol::outbox_id;
 use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_matrix_sdk::IngressDisposition;
 use codex_hepta_matrix_sdk::IngressIgnoredReason;
+use codex_hepta_matrix_sdk::MatrixDispatchContext;
 use codex_hepta_matrix_sdk::MatrixIngress;
 use codex_hepta_matrix_sdk::MatrixOutboundTransport;
 use codex_hepta_matrix_sdk::MatrixSdkPaths;
@@ -29,6 +30,7 @@ use codex_hepta_matrix_sdk::dispatch_outbox_once;
 use codex_hepta_matrix_sdk::run_outbox_sender;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableStore;
+use codex_hepta_matrix_store::MatrixServerEventObservation;
 use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
@@ -160,6 +162,35 @@ struct FakeTransport {
 /// Models the exact response-loss window qualified against real Synapse: the
 /// first PUT is accepted under the stable transaction ID, but its successful
 /// response is hidden from the dispatcher before `mark_outbox_sent`.
+fn test_dispatch_context() -> MatrixDispatchContext {
+    MatrixDispatchContext {
+        homeserver_id: "https://example.test".to_string(),
+        device_id: "DEVICE".to_string(),
+        session_generation: 1,
+        authority_identity: "a".repeat(64),
+        authority_epoch: 1,
+    }
+}
+
+async fn observe_sent(
+    store: &MatrixDurableStore,
+    record: &OutboxRecord,
+    event_id: MatrixEventId,
+    observed_at_ms: u64,
+) -> TestResult {
+    store
+        .observe_server_event(&MatrixServerEventObservation {
+            event_id,
+            transaction_id: Some(record.stable_txn_id.clone()),
+            room_id: record.room_id.clone(),
+            session_generation: record.generation,
+            observation_digest: "9".repeat(64),
+            observed_at_ms,
+        })
+        .await?;
+    Ok(())
+}
+
 struct PostSendAckLossTransport {
     accepted_event_id: MatrixEventId,
     txn_ids: Mutex<Vec<MatrixTransactionId>>,
@@ -183,6 +214,13 @@ impl PostSendAckLossTransport {
 }
 
 impl MatrixOutboundTransport for PostSendAckLossTransport {
+    fn dispatch_context(
+        &self,
+        _record: &OutboxRecord,
+    ) -> Result<MatrixDispatchContext, MatrixTransportError> {
+        Ok(test_dispatch_context())
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             let mut txn_ids = self
@@ -219,6 +257,13 @@ impl FakeTransport {
 }
 
 impl MatrixOutboundTransport for FakeTransport {
+    fn dispatch_context(
+        &self,
+        _record: &OutboxRecord,
+    ) -> Result<MatrixDispatchContext, MatrixTransportError> {
+        Ok(test_dispatch_context())
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             self.txn_ids
@@ -369,12 +414,21 @@ async fn expired_crash_lease_reuses_the_stable_transaction_after_reopen() -> Tes
         31,
     )
     .await?;
-    assert_eq!(stats.sent, 1);
+    assert_eq!(stats.accepted, 1);
+    assert_eq!(stats.sent, 0);
     assert_eq!(transport.txn_ids()?, vec![original.stable_txn_id.clone()]);
+    let accepted = reopened
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted outbox record disappeared")?;
+    assert_eq!(accepted.state, OutboxState::RetryScheduled);
+    assert_eq!(accepted.sent_event_id, None);
+
+    observe_sent(&reopened, &original, sent_event.clone(), 32).await?;
     let stored = reopened
         .outbox_for_txn(&original.stable_txn_id)
         .await?
-        .ok_or("sent outbox record disappeared")?;
+        .ok_or("observed outbox record disappeared")?;
     assert_eq!(stored.state, OutboxState::Sent);
     assert_eq!(stored.sent_event_id, Some(sent_event));
     reopened.close().await;
@@ -408,18 +462,30 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
             .retry_scheduled,
         1
     );
-    assert_eq!(
-        dispatch_outbox_once(&store, &transport, &config, &cancel, 20)
-            .await?
-            .sent,
-        1
-    );
+    let accepted = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
+    assert_eq!(accepted.accepted, 1);
+    assert_eq!(accepted.sent, 0);
     assert_eq!(
         transport.txn_ids()?,
         vec![
             original.stable_txn_id.clone(),
             original.stable_txn_id.clone()
         ]
+    );
+    observe_sent(
+        &store,
+        &original,
+        event("$sent-after-retry")?,
+        21,
+    )
+    .await?;
+    assert_eq!(
+        store
+            .outbox_for_txn(&original.stable_txn_id)
+            .await?
+            .ok_or("observed retry row disappeared")?
+            .state,
+        OutboxState::Sent
     );
 
     cancel.cancel();
@@ -461,7 +527,8 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(after_response_loss.sent_event_id, None);
 
     let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
-    assert_eq!(second.sent, 1);
+    assert_eq!(second.accepted, 1);
+    assert_eq!(second.sent, 0);
     assert_eq!(
         transport.txn_ids()?,
         vec![
@@ -469,10 +536,19 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
             original.stable_txn_id.clone(),
         ]
     );
+    let accepted = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("accepted outbox row disappeared")?;
+    assert_eq!(accepted.state, OutboxState::RetryScheduled);
+    assert_eq!(accepted.attempts, 2);
+    assert_eq!(accepted.sent_event_id, None);
+
+    observe_sent(&store, &original, accepted_event_id.clone(), 21).await?;
     let committed = store
         .outbox_for_txn(&original.stable_txn_id)
         .await?
-        .ok_or("sent outbox row disappeared")?;
+        .ok_or("observed outbox row disappeared")?;
     assert_eq!(committed.state, OutboxState::Sent);
     assert_eq!(committed.attempts, 2);
     assert_eq!(committed.sent_event_id, Some(accepted_event_id));
