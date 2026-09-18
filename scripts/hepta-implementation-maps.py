@@ -62,28 +62,35 @@ def _source_tests(text: str) -> list[str]:
     return tests
 
 
+def _tests_for_source(module: str, source: str) -> list[str]:
+    dossier = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
+    text = dossier.read_text(encoding="utf-8") if dossier.exists() else ""
+    documented_tests = _source_tests(text)
+    sibling_test = (
+        str(Path(source).with_name(f"{Path(source).stem}_tests.rs"))
+        if source.endswith(".rs")
+        else ""
+    )
+    tests = []
+    if sibling_test and (ROOT / sibling_test).is_file():
+        tests.append(sibling_test)
+    for test in documented_tests:
+        if test not in tests and Path(test).parent == Path(source).parent:
+            tests.append(test)
+    return tests
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
     match = re.search(r"\*\*Implemented entrypoints:\*\*\s*(.*)", text)
     if not match:
         return []
-    documented_tests = _source_tests(text)
     entries = []
     for name, source in re.findall(r"`([^`]+)`\s+in\s+\[([^]]+)\]", match.group(1)):
         source = _normalize_doc_link(source)
         source_path = ROOT / source
-        sibling_test = (
-            str(Path(source).with_name(f"{Path(source).stem}_tests.rs"))
-            if source.endswith(".rs")
-            else ""
-        )
-        operation_tests = []
-        if sibling_test and (ROOT / sibling_test).is_file():
-            operation_tests.append(sibling_test)
-        for test in documented_tests:
-            if test not in operation_tests and Path(test).parent == Path(source).parent:
-                operation_tests.append(test)
+        operation_tests = _tests_for_source(module, source)
         entries.append(
             {
                 "operation": re.sub(r"[^a-zA-Z0-9]+", "_", name).strip("_").lower(),
@@ -189,6 +196,8 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         op.setdefault("tests", [])
         source = op.get("sourcePath")
         op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
+        if source and not op.get("tests"):
+            op["tests"] = _tests_for_source(module["id"], source)
         operations.append(op)
     if not operations:
         operations = [
