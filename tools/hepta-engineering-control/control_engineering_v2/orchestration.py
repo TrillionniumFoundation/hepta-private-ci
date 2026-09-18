@@ -51,6 +51,7 @@ class CompletionReceipt:
     signing_identity: str
     observed_unix_ns: int
     expires_unix_ns: int
+    passed: bool = False
     signature: str = ""
 
 
@@ -239,6 +240,8 @@ def _verify_completion(
     # completed predecessor frontier used by this production orchestrator.
     if receipt.issuer != "ci_executor":
         raise EngineeringError("completion_issuer_role")
+    if receipt.passed is not True:
+        raise EngineeringError("completion_not_successful")
     if not (
         type(receipt.observed_unix_ns) is int
         and type(receipt.expires_unix_ns) is int
