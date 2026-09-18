@@ -34,6 +34,10 @@ use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
 use crate::signed_intent::write_intent;
+use crate::release_selection::ReleaseSelectionRecord;
+use crate::release_selection::ReleaseSelectionStatus;
+use crate::release_selection::read_release_selection;
+use crate::release_selection::write_release_selection;
 
 /// Lifecycle-only controller with one process handle and bounded buffers per agent.
 pub struct Supervisor<D: ProcessDriver> {
@@ -543,7 +547,12 @@ impl<D: ProcessDriver> Supervisor<D> {
             if slot
                 .signed_intent
                 .as_ref()
-                .is_some_and(|intent| !matches!(intent.status, SignedIntentStatus::Committed))
+                .is_some_and(|intent| {
+                    !matches!(
+                        intent.status,
+                        SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+                    )
+                })
             {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
@@ -564,6 +573,25 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             write_intent(record.layout.run_root(), &intent)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            let selection = ReleaseSelectionRecord::prepared(
+                grant,
+                next_control_revision,
+                record.lifecycle.generation,
+            )?;
+            if let Err(error) = write_release_selection(record.layout.run_root(), &selection) {
+                let recovery = intent
+                    .with_status(SignedIntentStatus::RecoveryRequired)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                let _ = write_intent(record.layout.run_root(), &recovery);
+                if let Ok(selection_recovery) =
+                    selection.with_status(ReleaseSelectionStatus::RecoveryRequired)
+                {
+                    let _ =
+                        write_release_selection(record.layout.run_root(), &selection_recovery);
+                }
+                slot.signed_intent = Some(recovery);
+                return Err(error);
+            }
             supervisor.set_control_revision(agent_id, next_control_revision)?;
             slot.signed_intent = Some(intent.clone());
             let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
@@ -582,6 +610,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             write_intent(record.layout.run_root(), &queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            let selection = selection.with_status(ReleaseSelectionStatus::Queued)?;
+            write_release_selection(record.layout.run_root(), &selection)?;
             slot.signed_intent = Some(queued);
             Ok(ProductionMutationReceipt::queued(
                 grant,
@@ -616,8 +646,126 @@ impl<D: ProcessDriver> Supervisor<D> {
         let record = self.record(agent_id)?;
         write_intent(record.layout.run_root(), &committed)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let selection = read_release_selection(record.layout.run_root())?
+            .ok_or_else(|| {
+                SupervisorError::SignedIntentRecoveryRequired(agent_id.clone())
+            })?;
+        if selection.grant_sha256 != committed.grant_sha256 {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
+        let selection = selection.with_status(ReleaseSelectionStatus::Committed)?;
+        write_release_selection(record.layout.run_root(), &selection)?;
         slot.signed_intent = Some(committed);
         Ok(())
+    }
+
+    pub(crate) fn mark_signed_intent_rolled_back(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+    ) -> Result<(), SupervisorError> {
+        let Some(intent) = slot.signed_intent.clone() else {
+            return Ok(());
+        };
+        if !matches!(
+            intent.status,
+            SignedIntentStatus::Prepared | SignedIntentStatus::Queued
+        ) {
+            return Ok(());
+        }
+        let record = self.record(agent_id)?;
+        let rolled_back = intent
+            .with_status(SignedIntentStatus::RolledBack)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        write_intent(record.layout.run_root(), &rolled_back)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let selection = read_release_selection(record.layout.run_root())?
+            .ok_or_else(|| {
+                SupervisorError::SignedIntentRecoveryRequired(agent_id.clone())
+            })?;
+        if selection.grant_sha256 != rolled_back.grant_sha256 {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
+        let selection = selection.with_status(ReleaseSelectionStatus::RolledBack)?;
+        write_release_selection(record.layout.run_root(), &selection)?;
+        slot.signed_intent = Some(rolled_back);
+        Ok(())
+    }
+
+    pub(crate) fn mark_signed_intent_recovery_required(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+    ) -> Result<(), SupervisorError> {
+        let Some(intent) = slot.signed_intent.clone() else {
+            return Ok(());
+        };
+        if matches!(
+            intent.status,
+            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+        ) {
+            return Ok(());
+        }
+        let record = self.record(agent_id)?;
+        let recovery = intent
+            .with_status(SignedIntentStatus::RecoveryRequired)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        write_intent(record.layout.run_root(), &recovery)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        if let Some(selection) = read_release_selection(record.layout.run_root())? {
+            if selection.grant_sha256 != recovery.grant_sha256 {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
+            let selection = selection.with_status(ReleaseSelectionStatus::RecoveryRequired)?;
+            write_release_selection(record.layout.run_root(), &selection)?;
+        }
+        slot.signed_intent = Some(recovery);
+        Ok(())
+    }
+
+    pub fn production_mutation_receipt(
+        &self,
+        agent_id: &AgentId,
+    ) -> Result<Option<ProductionMutationReceipt>, SupervisorError> {
+        let record = self.record(agent_id)?;
+        let Some(intent) = read_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        else {
+            return Ok(None);
+        };
+        let status = match intent.status {
+            SignedIntentStatus::Prepared | SignedIntentStatus::Queued => {
+                crate::ProductionMutationStatus::Queued
+            }
+            SignedIntentStatus::Committed => crate::ProductionMutationStatus::Committed,
+            SignedIntentStatus::RolledBack => crate::ProductionMutationStatus::RolledBack,
+            SignedIntentStatus::RecoveryRequired => {
+                crate::ProductionMutationStatus::RecoveryRequired
+            }
+        };
+        let control_revision = intent
+            .expected_control_revision
+            .checked_add(1)
+            .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))?;
+        Ok(Some(ProductionMutationReceipt {
+            grant_sha256: intent.grant_sha256,
+            agent_id: intent.agent_id,
+            transition: intent.transition,
+            source_release: intent.source_release,
+            target_release: intent.target_release,
+            control_revision,
+            status,
+            production_authority: true,
+            external_effects: true,
+            operator_acceptance: true,
+            promotion: true,
+        }))
     }
 
     fn recover_signed_intent(
@@ -628,7 +776,13 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let selection = read_release_selection(record.layout.run_root())?;
         let Some(intent) = intent else {
+            if selection.is_some() {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
             return Ok(());
         };
         if intent.agent_id != agent_id.to_string() {
@@ -637,7 +791,27 @@ impl<D: ProcessDriver> Supervisor<D> {
             ));
         }
         slot.signed_intent = Some(intent.clone());
-        if matches!(intent.status, SignedIntentStatus::Committed) {
+        if matches!(
+            intent.status,
+            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+        ) {
+            let Some(selection) = selection else {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            };
+            let expected_status = match intent.status {
+                SignedIntentStatus::Committed => ReleaseSelectionStatus::Committed,
+                SignedIntentStatus::RolledBack => ReleaseSelectionStatus::RolledBack,
+                _ => unreachable!(),
+            };
+            if selection.grant_sha256 != intent.grant_sha256
+                || selection.status != expected_status
+            {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
             return Ok(());
         }
         // A restart has no durable proof that an apparently matching target
