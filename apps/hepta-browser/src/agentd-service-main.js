@@ -9,6 +9,7 @@ import {
 } from "./agentd-service.js";
 import { FileBrowserOperationJournal } from "./journal.js";
 import { BrowserProfileHost } from "./runtime.js";
+import { createFilePersistedEffectReconciler } from "./persisted-reconciler.js";
 import {
   LinuxBubblewrapLauncher,
   PooledSubprocessBrowserDriver,
@@ -53,11 +54,18 @@ if (process.platform !== "linux") {
 const channel = new AgentdBrowserChannel({ input: process.stdin, output: process.stdout });
 const authority = new ParentFinalUseAuthority(channel);
 const maxProfiles = optionalPositiveInteger("HEPTA_BROWSER_MAX_PROFILES", 16);
+const reconciliationRoot = process.env.HEPTA_BROWSER_RECONCILIATION_ROOT;
 const driver = new PooledSubprocessBrowserDriver({
   workerPath: requiredAbsolutePath("HEPTA_BROWSER_WORKER_PATH"),
   workerDigest: requiredDigest("HEPTA_BROWSER_WORKER_SHA256"),
   profileRoot: requiredAbsolutePath("HEPTA_BROWSER_PROFILE_ROOT"),
   maxProfiles,
+  persistedReconciler:
+    reconciliationRoot === undefined
+      ? null
+      : createFilePersistedEffectReconciler(
+          requiredAbsolutePath("HEPTA_BROWSER_RECONCILIATION_ROOT"),
+        ),
   launcher: new LinuxBubblewrapLauncher({
     bwrapPath: process.env.HEPTA_BROWSER_BWRAP_PATH ?? "/usr/bin/bwrap",
     bwrapDigest: requiredDigest("HEPTA_BROWSER_BWRAP_SHA256"),
