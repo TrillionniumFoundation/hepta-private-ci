@@ -196,7 +196,6 @@ impl StdError for ArtifactAdmissionError {
             | Self::ManifestDigestMismatch
             | Self::AdmissionDigestMismatch => None,
         }
-    }
 }
 
 impl From<ArtifactClosureError> for ArtifactAdmissionError {
@@ -299,6 +298,7 @@ mod tests {
             validate_artifact_publication_v3(&admission, &domain, &registry, 21),
             Err(ArtifactAdmissionError::WithdrawalHeadChanged)
         );
+    }
 
     #[test]
     fn art_05_identical_raw_head_cannot_cross_withdrawal_domain() {
