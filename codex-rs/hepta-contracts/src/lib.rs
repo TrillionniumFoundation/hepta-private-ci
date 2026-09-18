@@ -16,6 +16,7 @@ mod callers_manifest_tests;
 mod canonical;
 mod final_use;
 mod identity;
+mod independent_decision;
 mod memory;
 mod provider;
 mod provider_effect;
@@ -192,6 +193,9 @@ pub use authbus_b5::B5OutboxDelivery;
 pub use authbus_b5::B5RecoveryAction;
 #[cfg(feature = "authbus-local-qualification")]
 pub use authbus_b5::LocalB5Wal;
+pub use independent_decision::INDEPENDENT_DECISION_MAX_CONDITIONS_BYTES;
+pub use independent_decision::INDEPENDENT_DECISION_MAX_ENCODED_BYTES;
+pub use independent_decision::IndependentDecisionReceiptV1;
 pub use identity::ActionId;
 pub use identity::DecisionId;
 pub use identity::ReceiptId;
