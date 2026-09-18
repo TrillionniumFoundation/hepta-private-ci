@@ -592,6 +592,7 @@ impl BoundModelExecutionV1 {
             }
         }
         bytes.extend_from_slice(&self.ood_score_q24.to_be_bytes());
+        bytes.extend_from_slice(&self.transient_allocation_bytes.to_be_bytes());
         Ok(Digest32::of_bytes(&bytes))
     }
 }
