@@ -44,6 +44,7 @@ pub struct PromptRealizationBindingV2 {
     pub tokenizer_digest: Digest32,
     pub template_digest: Digest32,
     pub tool_schema_digest: Digest32,
+    pub context_profile_digest: Digest32,
     pub locale_id: StableId,
     pub role: PromptRoleV2,
     pub payload_digest: Digest32,
@@ -58,6 +59,7 @@ impl PromptRealizationBindingV2 {
             ("tokenizer", self.tokenizer_digest),
             ("template", self.template_digest),
             ("tool_schema", self.tool_schema_digest),
+            ("context_profile", self.context_profile_digest),
             ("payload", self.payload_digest),
         ] {
             ensure_digest(name, digest)?;
@@ -82,6 +84,7 @@ impl PromptRealizationBindingV2 {
             self.tokenizer_digest,
             self.template_digest,
             self.tool_schema_digest,
+            self.context_profile_digest,
         ] {
             push_digest(&mut bytes, digest);
         }
@@ -106,6 +109,7 @@ pub struct PromptModelTupleV2 {
     pub tokenizer_digest: Digest32,
     pub template_digest: Digest32,
     pub tool_schema_digest: Digest32,
+    pub context_profile_digest: Digest32,
     pub locale_id: StableId,
 }
 
@@ -116,6 +120,7 @@ impl PromptModelTupleV2 {
             ("tokenizer", self.tokenizer_digest),
             ("template", self.template_digest),
             ("tool_schema", self.tool_schema_digest),
+            ("context_profile", self.context_profile_digest),
         ] {
             ensure_digest(name, digest)?;
         }
@@ -130,6 +135,7 @@ impl PromptModelTupleV2 {
             self.tokenizer_digest,
             self.template_digest,
             self.tool_schema_digest,
+            self.context_profile_digest,
         ] {
             push_digest(&mut bytes, digest);
         }
@@ -279,6 +285,18 @@ impl PromptRegistry {
                 ));
             }
         }
+        if self.realization_bindings.values().any(|existing| {
+            existing.realization_id != binding.realization_id
+                && same_profile(existing, &binding)
+                && self
+                    .realizations
+                    .get(&existing.realization_id)
+                    .is_some_and(|realization| realization.active)
+        }) {
+            return Err(Error::RealizationProfileConflict(
+                binding.factor_id.to_string(),
+            ));
+        }
         self.ensure_capacity(/*additional*/ 1)?;
         let next_revision = self.next_revision()?;
         self.realizations
@@ -337,7 +355,11 @@ impl PromptRegistry {
                 ));
             }
         }
-        let mut bindings = self
+        let canonical_required_factor_ids = factor_filter.iter().cloned().collect::<Vec<_>>();
+        if canonical_required_factor_ids.len() > maximum_results {
+            return Err(PromptRegistryV2Error::ReadLimitExceeded);
+        }
+        let mut eligible = self
             .realization_bindings
             .values()
             .filter(|binding| {
@@ -355,6 +377,7 @@ impl PromptRegistry {
                     && binding.tokenizer_digest == model_tuple.tokenizer_digest
                     && binding.template_digest == model_tuple.template_digest
                     && binding.tool_schema_digest == model_tuple.tool_schema_digest
+                    && binding.context_profile_digest == model_tuple.context_profile_digest
                     && binding.locale_id == model_tuple.locale_id;
                 let live = binding
                     .expires_unix_ms
@@ -363,29 +386,45 @@ impl PromptRegistry {
             })
             .cloned()
             .collect::<Vec<_>>();
-        bindings.sort_by(|left, right| {
+        eligible.sort_by(|left, right| {
             left.factor_id
                 .cmp(&right.factor_id)
                 .then_with(|| left.realization_id.cmp(&right.realization_id))
         });
-        let omitted_count = bindings.len().saturating_sub(maximum_results);
-        bindings.truncate(maximum_results);
-        if !factor_filter.is_empty() {
-            let returned = bindings
-                .iter()
-                .map(|binding| binding.factor_id.clone())
-                .collect::<BTreeSet<_>>();
-            if factor_filter
-                .iter()
-                .any(|factor_id| !returned.contains(factor_id))
-            {
-                return Err(PromptRegistryV2Error::RequiredFactorUnavailable);
+
+        let eligible_count = eligible.len();
+        let mut bindings = Vec::new();
+        let mut selected_realizations = BTreeSet::new();
+        if factor_filter.is_empty() {
+            bindings.extend(eligible.into_iter().take(maximum_results));
+        } else {
+            for factor_id in &factor_filter {
+                let Some(binding) = eligible.iter().find(|binding| &binding.factor_id == factor_id)
+                else {
+                    return Err(PromptRegistryV2Error::RequiredFactorUnavailable);
+                };
+                selected_realizations.insert(binding.realization_id.clone());
+                bindings.push(binding.clone());
             }
+            for binding in eligible {
+                if bindings.len() >= maximum_results {
+                    break;
+                }
+                if selected_realizations.insert(binding.realization_id.clone()) {
+                    bindings.push(binding);
+                }
+            }
+            bindings.sort_by(|left, right| {
+                left.factor_id
+                    .cmp(&right.factor_id)
+                    .then_with(|| left.realization_id.cmp(&right.realization_id))
+            });
         }
+        let omitted_count = eligible_count.saturating_sub(bindings.len());
         let mut result = CompatibleRealizationSetV2 {
             snapshot_digest: current_snapshot.snapshot_digest,
             model_tuple_digest: model_tuple.digest(),
-            required_factor_ids,
+            required_factor_ids: canonical_required_factor_ids,
             bindings,
             omitted_count: u32::try_from(omitted_count).unwrap_or(u32::MAX),
             set_digest: Digest32::ZERO,
@@ -418,6 +457,20 @@ impl fmt::Display for PromptRegistryV2Error {
 }
 
 impl StdError for PromptRegistryV2Error {}
+
+pub(crate) fn same_profile(
+    left: &PromptRealizationBindingV2,
+    right: &PromptRealizationBindingV2,
+) -> bool {
+    left.factor_id == right.factor_id
+        && left.model_digest == right.model_digest
+        && left.tokenizer_digest == right.tokenizer_digest
+        && left.template_digest == right.template_digest
+        && left.tool_schema_digest == right.tool_schema_digest
+        && left.context_profile_digest == right.context_profile_digest
+        && left.locale_id == right.locale_id
+        && left.role == right.role
+}
 
 fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), PromptRegistryV2Error> {
     if digest.is_zero() {
