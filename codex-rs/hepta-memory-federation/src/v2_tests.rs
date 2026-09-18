@@ -240,6 +240,32 @@ async fn one_attempt_returns_bounded_partial_result() {
 }
 
 #[tokio::test]
+async fn terminal_receipt_cannot_drop_remote_provenance() {
+    let query = query();
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::Terminal(terminal_response(
+            &query,
+        ))),
+    };
+    let mut result = execute_once(
+        &transport,
+        &current_authority(&query),
+        &NeverCancelledV2,
+        10,
+        query.clone(),
+        &lease(&query),
+    )
+    .await
+    .unwrap_or_else(|error| panic!("valid result: {error}"));
+    result.remote_response_digest = None;
+    result.result_digest = result.compute_result_digest();
+    assert_eq!(
+        result.validate(),
+        Err(FederationV2Error::InvalidCompleteness)
+    );
+}
+
+#[tokio::test]
 async fn nonterminal_attempt_is_explicitly_indeterminate_without_retry() {
     let query = query();
     let transport = FixtureTransport {
