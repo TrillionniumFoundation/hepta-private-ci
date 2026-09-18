@@ -118,9 +118,9 @@
       "delegatedCallees": []
     },
     {
-      "operation": "verify_distributed_write_grant",
-      "designOperation": "verify_distributed_write_grant",
-      "nativeSymbol": "verify_distributed_write_grant",
+      "operation": "admit_distributed_write_grant",
+      "designOperation": "admit_distributed_write_grant",
+      "nativeSymbol": "admit_distributed_write_grant",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/external_control.py",
       "state": "source_implemented",
       "authority": "none",
@@ -130,9 +130,9 @@
       "delegatedCallees": []
     },
     {
-      "operation": "export_audit_anchor",
-      "designOperation": "export_audit_anchor",
-      "nativeSymbol": "export_audit_anchor",
+      "operation": "verify_store_audit_anchor",
+      "designOperation": "verify_store_audit_anchor",
+      "nativeSymbol": "verify_store_audit_anchor",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/external_control.py",
       "state": "source_implemented",
       "authority": "none",
@@ -142,9 +142,9 @@
       "delegatedCallees": []
     },
     {
-      "operation": "verify_key_custody_receipt",
-      "designOperation": "verify_key_custody_receipt",
-      "nativeSymbol": "verify_key_custody_receipt",
+      "operation": "verify_custodied_signature_provider",
+      "designOperation": "verify_custodied_signature_provider",
+      "nativeSymbol": "verify_custodied_signature_provider",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/external_control.py",
       "state": "source_implemented",
       "authority": "none",
