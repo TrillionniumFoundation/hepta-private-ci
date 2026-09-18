@@ -1,7 +1,7 @@
 # secrets.heptabao: implementation design
 
 Parent: `docs/modules/secrets.heptabao/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: authorized exact-version KV v2 HTTPS read consumer implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: exact-version KV v2 consumer plus dynamic SecretLease issue/renew/revoke source implementation present; product composition, distributed HA and independent acceptance remain separate and are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `consume_kv_v2` in [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); `binding` in [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs). Authorized exact-version KV v2 HTTPS read consumer implemented.
-- **State and recovery:** BaoReadRequest binds one mount/path/version/string field, expected digest and consumer identity. The client owns no secret database or lease registry: it uses pinned direct HTTPS, a 1 MiB response cap, zeroizing buffers and kernel-owned durable nonce/revocation state.
-- **Source tests:** [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs), [codex-rs/hepta-bao-adapter/qa/real_service_smoke.py](../../../codex-rs/hepta-bao-adapter/qa/real_service_smoke.py). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-bao-adapter/README.md](../../../codex-rs/hepta-bao-adapter/README.md).
-- **Remaining work:** request_secret_lease, renew and revoke in section 2 are target operations, not implemented adapter APIs. The external HeptaBao service owns its own wider capabilities and must be assessed at its own source pin. Bind the real registered host consumer; the callback and trust configuration are trusted host inputs. Existing recorded tests are tied to their recorded candidates, not this documentation revision.
+- **Implemented entrypoints:** `consume_kv_v2` and `binding` in [https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); `request_secret_lease`, `renew_secret_lease`, `revoke_secret_lease`, lifecycle bindings and `LeaseRegistry` in [lease_control.rs](../../../codex-rs/hepta-bao-adapter/src/lease_control.rs).
+- **State and recovery:** dynamic provider mutations persist operation identity before dispatch. Lost/ambiguous acknowledgement becomes `Unknown` and is never blindly retried. Reconciliation records Active, Revoked or proven NotApplied. Raw secret values are never persisted. Final-use replay claims use an append-only fsynced journal; the authority head remains a small atomic snapshot.
+- **Source tests:** [https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs), [lease_control_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lease_control_tests.rs), [final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs), and [real_service_smoke.py](../../../codex-rs/hepta-bao-adapter/qa/real_service_smoke.py). Test identities are not execution receipts.
+- **Implementation references:** [CURRENT_IMPLEMENTATION.md](../../../docs/modules/secrets.heptabao/CURRENT_IMPLEMENTATION.md), [SECRET_LEASE_DESIGN.md](../../../docs/modules/secrets.heptabao/SECRET_LEASE_DESIGN.md), [FAILURE_RECOVERY.md](../../../docs/modules/secrets.heptabao/FAILURE_RECOVERY.md), [HA_AND_STORAGE.md](../../../docs/modules/secrets.heptabao/HA_AND_STORAGE.md), and [README.md](../../../codex-rs/hepta-bao-adapter/README.md).
+- **Remaining work:** bind a real registered product caller; qualify provider-specific reconciliation against the selected dynamic engines; add a strongly consistent active-active backend if multi-writer HA is required; produce exact-head/synthetic-merge receipts; independently accept deployment and release. The trusted callback and trust configuration remain privileged host inputs.
