@@ -17,7 +17,7 @@
     "third_party/servo-patches"
   ],
   "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict persistent operation journal; durable history fences profile-generation resurrection, unresolved older effects block advancement, a fresh principal-bound private profile directory is created for each worker generation, and raw credentials remain external references.",
-  "terminalObserverDisposition": "The current-pin Servo worker source supplies bounded semantic page observations and live-worker action observations; durable unknown dispatch identities survive process loss, but post-process-loss reconciliation requires a separately injected trusted persisted-effect observer. The current subprocess driver remains indeterminate without that observer; remote business terminality and target-host enforcement still require independent evidence.",
+  "terminalObserverDisposition": "The current-pin Servo worker source supplies bounded semantic page observations and live-worker action observations; durable unknown dispatch identities survive process loss, but post-process-loss reconciliation requires a separately injected trusted persisted-effect observer. Crash recovery supplies only non-secret durable identity and accepts terminality only when operation ID, request digest and semantic digest bind exactly. The current subprocess driver remains indeterminate without that observer; remote business terminality and target-host enforcement still require independent evidence.",
   "operations": [
     {
       "designOperation": "open_profile",
