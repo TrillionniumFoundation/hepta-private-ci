@@ -1038,8 +1038,14 @@ impl std::error::Error for DurableRegistryError {}
 
 #[cfg(all(test, unix))]
 mod tests {
+    use std::collections::BTreeSet;
     use std::os::unix::fs::OpenOptionsExt;
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
 
+    use codex_hepta_contracts::FinalUseGrant;
+    use codex_hepta_contracts::FinalUseRevocations;
+    use codex_hepta_contracts::SignedFinalUseGrant;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 
@@ -1282,6 +1288,164 @@ mod tests {
             ),
             Err(DurableRegistryError::Read(PromptRegistryV2Error::SnapshotStale))
         ));
+    }
+
+
+    #[test]
+    fn final_use_admission_is_scope_bound_single_use_and_revocation_aware() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let registry_root = temporary.path().join("registry");
+        let authority_root = temporary.path().join("authority");
+        let signing_key = SigningKey::from_bytes(&[43; 32]);
+        let authority = FinalUseAuthority::open_state_dir(
+            &authority_root,
+            "security-owner".to_owned(),
+            signing_key.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )
+        .expect("final-use authority");
+
+        let mut durable =
+            DurablePromptRegistry::open_state_dir(&registry_root, 64).expect("registry");
+        let factor = PromptFactor {
+            factor_id: id("factor:final-use"),
+            proposer_id: id("proposer:final-use"),
+            semantic_version: id("v1"),
+            content_digest: digest("factor:final-use"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        durable
+            .register_factor(factor.clone())
+            .expect("register factor");
+
+        let reviewer = id("reviewer:final-use");
+        let scope = digest("scope:final-use");
+        let evidence = digest("evidence:final-use");
+        let binding =
+            crate::final_use_admission_binding(&factor, &reviewer, scope, evidence)
+                .expect("binding");
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_millis() as u64;
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "security-owner".to_owned(),
+            authority_epoch: 7,
+            grant_id: "admission-final-use-1".to_owned(),
+            nonce: [17; 32],
+            binding,
+            not_before_unix_ms: now.saturating_sub(1000),
+            expires_at_unix_ms: now + 30_000,
+        };
+        let signed = SignedFinalUseGrant {
+            signature: signing_key
+                .sign(&grant.signing_bytes().expect("signing bytes"))
+                .to_bytes()
+                .to_vec(),
+            grant,
+        };
+
+        durable
+            .admit_factor_final_use(
+                &authority,
+                &signed,
+                &factor.factor_id,
+                scope,
+                evidence,
+            )
+            .expect("final-use admission");
+        let event = durable
+            .registry()
+            .lifecycle_events()
+            .last()
+            .expect("admission event");
+        assert_eq!(event.kind, LifecycleEventKind::Admitted);
+        assert_eq!(event.actor_id, reviewer);
+        assert_eq!(event.scope_digest, Some(scope));
+        assert_eq!(event.evidence_digest, evidence);
+        assert_eq!(
+            event.admission_grant_id,
+            Some(id("admission-final-use-1"))
+        );
+
+        assert!(matches!(
+            durable.admit_factor_final_use(
+                &authority,
+                &signed,
+                &factor.factor_id,
+                scope,
+                evidence,
+            ),
+            Err(DurableRegistryError::Admission(AdmissionError::AlreadyUsed))
+        ));
+
+        let second_factor = PromptFactor {
+            factor_id: id("factor:revoked-grant"),
+            proposer_id: id("proposer:revoked-grant"),
+            semantic_version: id("v1"),
+            content_digest: digest("factor:revoked-grant"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        durable
+            .register_factor(second_factor.clone())
+            .expect("register second factor");
+        let second_binding = crate::final_use_admission_binding(
+            &second_factor,
+            &id("reviewer:revoked-grant"),
+            scope,
+            evidence,
+        )
+        .expect("second binding");
+        let second_grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "security-owner".to_owned(),
+            authority_epoch: 7,
+            grant_id: "admission-final-use-revoked".to_owned(),
+            nonce: [18; 32],
+            binding: second_binding,
+            not_before_unix_ms: now.saturating_sub(1000),
+            expires_at_unix_ms: now + 30_000,
+        };
+        let second_signed = SignedFinalUseGrant {
+            signature: signing_key
+                .sign(&second_grant.signing_bytes().expect("second signing bytes"))
+                .to_bytes()
+                .to_vec(),
+            grant: second_grant,
+        };
+        authority
+            .update_revocations(FinalUseRevocations {
+                authority_epoch: 7,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from([
+                    "admission-final-use-revoked".to_owned(),
+                ]),
+            })
+            .expect("revoke grant");
+        assert!(matches!(
+            durable.admit_factor_final_use(
+                &authority,
+                &second_signed,
+                &second_factor.factor_id,
+                scope,
+                evidence,
+            ),
+            Err(DurableRegistryError::Admission(AdmissionError::Revoked))
+        ));
+        assert_eq!(
+            durable
+                .registry()
+                .factor(&second_factor.factor_id)
+                .map(|factor| factor.lifecycle),
+            Some(Lifecycle::Draft)
+        );
     }
 
 
