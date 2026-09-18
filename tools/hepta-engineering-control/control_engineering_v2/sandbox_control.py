@@ -57,7 +57,8 @@ class SandboxCoordinator:
             return self._peak
 
     def _enter(self) -> None:
-        self._semaphore.acquire()
+        if not self._semaphore.acquire(blocking=False):
+            raise EngineeringError("sandbox_capacity_exhausted")
         with self._lock:
             self._active += 1
             self._peak = max(self._peak, self._active)
