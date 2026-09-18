@@ -51,6 +51,8 @@ pub enum FleetPlacementError {
     NoEligibleHost(String),
     #[error("duplicate placement request {0}")]
     DuplicateRequest(String),
+    #[error("invalid or internally inconsistent host observation {0}")]
+    InvalidHostObservation(String),
     #[error("placement resource arithmetic failed")]
     ResourceArithmetic,
     #[error(transparent)]
@@ -80,6 +82,15 @@ pub fn calculate_fleet_placement_v1(
             })
     });
     for host in &ordered_hosts {
+        if host
+            .observation
+            .validate(host.observation.observed_at_ms)
+            .is_err()
+        {
+            return Err(FleetPlacementError::InvalidHostObservation(
+                host.observation.host_id.clone(),
+            ));
+        }
         if !host.available.fits(host.observation.capacity) {
             return Err(FleetPlacementError::ResourceArithmetic);
         }
@@ -95,12 +106,34 @@ pub fn calculate_fleet_placement_v1(
         }
     }
 
+    // Place the most constrained requests first. Sorting by request ID alone
+    // can reject an otherwise feasible plan when a flexible request consumes
+    // the only host capable of satisfying a later request. This remains a
+    // bounded deterministic heuristic rather than a claim of global optimum.
+    let mut prioritized_requests = Vec::with_capacity(ordered_requests.len());
+    for request in ordered_requests {
+        let eligible_hosts = ordered_hosts
+            .iter()
+            .filter(|host| request.minimum.fits(host.available))
+            .count();
+        if eligible_hosts == 0 {
+            return Err(FleetPlacementError::NoEligibleHost(request.request_id));
+        }
+        prioritized_requests.push((eligible_hosts, request));
+    }
+    prioritized_requests.sort_by(|left, right| {
+        left.0
+            .cmp(&right.0)
+            .then_with(|| left.1.request_id.cmp(&right.1.request_id))
+            .then_with(|| left.1.agent_id.cmp(&right.1.agent_id))
+    });
+
     let mut residual: Vec<_> = ordered_hosts.iter().map(|host| host.available).collect();
     let mut host_counts = vec![0_u64; ordered_hosts.len()];
     let mut domain_counts: BTreeMap<&str, u64> = BTreeMap::new();
-    let mut bound = Vec::with_capacity(ordered_requests.len());
+    let mut bound = Vec::with_capacity(prioritized_requests.len());
 
-    for request in &ordered_requests {
+    for (_, request) in &prioritized_requests {
         let mut eligible = Vec::new();
         for (index, host) in ordered_hosts.iter().enumerate() {
             if request.minimum.fits(residual[index]) {

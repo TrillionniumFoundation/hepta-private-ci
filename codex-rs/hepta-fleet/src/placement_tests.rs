@@ -59,6 +59,38 @@ fn placement_selects_hosts_before_allocation_and_spreads_failure_domains() {
 }
 
 #[test]
+fn placement_prioritizes_requests_with_fewer_eligible_hosts() {
+    let hosts = vec![host("host-large", "rack-a", 4), host("host-small", "rack-b", 3)];
+    let requests = vec![
+        request("request-flexible", 1, 3, 3),
+        request("request-constrained", 2, 4, 4),
+    ];
+    let plan = calculate_fleet_placement_v1(&hosts, &requests).expect("feasible placement");
+    let by_request: std::collections::BTreeMap<_, _> = plan
+        .assignments
+        .iter()
+        .map(|assignment| (assignment.request_id.as_str(), assignment.host_id.as_str()))
+        .collect();
+    assert_eq!(by_request["request-constrained"], "host-large");
+    assert_eq!(by_request["request-flexible"], "host-small");
+}
+
+#[test]
+fn placement_rejects_tampered_host_observation() {
+    let mut hosts = vec![host("host-a", "rack-a", 4)];
+    hosts[0].observation.capacity.concurrent_turns = 5;
+    assert_eq!(
+        calculate_fleet_placement_v1(
+            &hosts,
+            &[request("request-a", 1, 1, 1)],
+        ),
+        Err(FleetPlacementError::InvalidHostObservation(
+            "host-a".to_string()
+        ))
+    );
+}
+
+#[test]
 fn placement_is_permutation_invariant() {
     let mut hosts = vec![host("host-b", "rack-b", 4), host("host-a", "rack-a", 4)];
     let mut requests = vec![
