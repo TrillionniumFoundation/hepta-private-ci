@@ -163,6 +163,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs); named case: `generation_vector_digest_binds_every_generation`.
 - [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs); named case: `snapshot_is_canonical_and_authority_free`.
+- [codex-rs/hepta-cognitive-types/src/hnmf_tests.rs](../../../codex-rs/hepta-cognitive-types/src/hnmf_tests.rs); canonical HNMF V1 construction, wire round trip, unknown-field rejection and authority-negative cases.
+- [qualification/hnmf-conformance/src/lib.rs](../../../qualification/hnmf-conformance/src/lib.rs); shared production/reference semantic fixtures.
 
 In `codex-rs`, run `just test -p codex-hepta-cognitive-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) separately labels target acceptance designs.
 
@@ -194,7 +196,7 @@ For `cognitive.types`, this document grants no runtime, production, model, provi
 
 #### `MEM-0-TYPES`
 
-- State: `planned`; priority: `2`; parallel class: `contract_first_parallel`.
+- State: `source_implemented_candidate`; priority: `2`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `cognitive-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-cognitive-types/**`
@@ -251,3 +253,91 @@ The bootstrap source-location obligation for `cognitive.types` is implemented by
 - `codex-rs/hepta-cognitive-types`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. Canonical HNMF V1 production contract surface
+
+The production ontology for HNMF contracts is now owned by
+`codex-rs/hepta-cognitive-types/src/hnmf/`. The qualification reference remains
+an oracle and must not become a second product API. The canonical V1 protocol
+surface includes `ModalitySpanRefV1`, `CrossModalBindingV1`,
+`MemoryEventV1`, `EngramNodeV1`, `SynapseV1`, `MemoryCueV1`,
+`RecallPacketV1`, `OutcomeSignalV1`, `ReplaySelectionReceiptV1`,
+`PlasticityBatchV1`, `TopologyProposalV1` and
+`ForgetPropagationReceiptV1`.
+
+HNMF V1 value fields are private. Callers construct canonical values with
+`try_new`-style validating constructors; canonical JSON decoding re-runs the
+same validation before a value is returned. Direct generic
+`serde_json::from_*::<T>` calls are not a supported contract-construction
+boundary; untrusted wire bytes must use `decode_canonical_json`. This makes invalid canonical HNMF
+states non-constructible through the public API. The older
+`MemoryRecord`/`CognitiveSnapshot` compatibility surface remains public-field
+based for existing downstream callers and therefore still requires explicit
+`validate()`/`validate_integrity()`; migration of that legacy surface is a
+separate compatibility change.
+
+## 19. Canonical JSON wire profile V1
+
+HNMF V1 uses canonical JSON as its normative wire profile. The media type is
+`application/vnd.hepta.hnmf+json;version=1`. Every top-level encoded contract
+uses the envelope `schemaId`, `version`, `payload`.
+
+Wire rules are closed:
+
+- schema version is exactly `1`;
+- payload structs deny unknown fields;
+- enums are closed `snake_case` values and unknown variants fail decoding;
+- Rust struct declaration order defines object-field order;
+- `BTreeSet` and `BTreeMap` define deterministic sorted collection order;
+- decoding re-encodes and requires exact byte equality, so alternate whitespace
+  or alternate key order is not canonical;
+- the HNMF registry `maximumEncodedBytes` limit applies to the full canonical
+  envelope;
+- the canonical digest is SHA-256 over the exact canonical envelope bytes;
+- fixed byte/digest golden vectors are registered in
+  `codex-rs/hepta-cognitive-types/testdata/hnmf-wire-v1/MANIFEST.json` and
+  exercised by production tests.
+
+`canonical_json_bytes`, `decode_canonical_json` and
+`canonical_json_digest` are the normative Rust entry points. Proto/CBOR are
+not canonical V1 encodings. A future projection may be added only with a
+separate profile identifier and conformance vectors; it cannot silently redefine
+V1 JSON semantics.
+
+## 20. Production-reference conformance
+
+`qualification/hnmf-conformance` is the production/reference compatibility
+gate. A single fixture definition is projected into both
+`codex-hepta-cognitive-types` and `hepta-hnmf-contract-reference`, and the
+test requires identical accept/reject outcomes. The contract-reference fixtures cover valid agent-private text events, privacy
+mismatch, modality/range mismatch and same-modality cross-modal binding
+rejection. The deterministic-runtime oracle fixtures additionally cover engram
+support, synapse endpoint validity, cue seeds, outcome bounds, replay score
+bounds, plasticity no-self-activation, topology no-self-activation and forget
+rebuild requirements. `RecallPacketV1` remains covered by production tests and
+runtime recall tests; the deterministic runtime reference does not expose a
+standalone input validator for arbitrary recall packets, so conformance does not
+pretend that such an oracle exists.
+
+`.github/workflows/hnmf-qualification.yml` is path-bound to
+`codex-rs/hepta-cognitive-types/**` and runs formatting, all-target check,
+strict Clippy and tests for the production crate in addition to the reference
+crates and conformance suite. Reference closure alone is therefore insufficient
+to move the qualified layer.
+
+## 21. Seven-layer status model
+
+The machine-readable status source is
+`docs/modules/cognitive.types/IMPLEMENTATION_MAP.json`. Its
+`statusLayers` field reports exactly seven independent layers:
+`spec`, `reference`, `native`, `wire`, `composed`, `qualified` and
+`activated`.
+
+`docs/modules/cognitive.types/STATUS.json` is generated from that map by:
+
+`python3 scripts/hepta-cognitive-types-status.py --write`
+
+CI runs the same tool with `--verify`; manual status editing is rejected as
+stale. In particular, native/wire completion does not imply product composition,
+qualification, independent acceptance, activation, promotion or release.

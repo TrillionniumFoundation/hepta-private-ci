@@ -23,6 +23,34 @@ impl ProvenanceRef {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MemoryVerificationState {
+    Unverified,
+    Verified,
+    Contradicted,
+    Revoked,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RetentionPolicy {
+    pub policy_digest: Digest32,
+    pub retain_until_unix_ms: Option<i64>,
+}
+
+impl RetentionPolicy {
+    fn validate_for(&self, observed_start_unix_ms: i64) -> Result<(), ContractError> {
+        if self
+            .retain_until_unix_ms
+            .is_some_and(|end| end <= observed_start_unix_ms)
+        {
+            return Err(ContractError::Invalid(
+                "retention deadline must be after observation start",
+            ));
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MemoryLifecycle {
     Active,
@@ -54,6 +82,8 @@ pub struct MemoryEvent {
     pub cross_modal_bindings: Vec<CrossModalBinding>,
     pub semantic_keys: BTreeSet<String>,
     pub provenance: Vec<ProvenanceRef>,
+    pub verification: MemoryVerificationState,
+    pub retention_policy: RetentionPolicy,
     pub objective_digest: Digest32,
     pub ndu_state_digest: Digest32,
     pub behavior_propensity_ppm: Option<u32>,
@@ -69,6 +99,8 @@ impl MemoryEvent {
         }
         self.scope.validate()?;
         self.observed_interval.validate()?;
+        self.retention_policy
+            .validate_for(self.observed_interval.start_unix_ms)?;
         self.lifecycle.validate_for(self.event_id)?;
         if self.modality_spans.is_empty() || self.modality_spans.len() > MAX_MODALITY_SPANS {
             return Err(ContractError::BoundExceeded("event modality spans"));
@@ -128,6 +160,7 @@ impl MemoryEvent {
         revoked_sources: &BTreeSet<Digest32>,
     ) -> bool {
         matches!(self.lifecycle, MemoryLifecycle::Active)
+            && !matches!(self.verification, MemoryVerificationState::Revoked)
             && self.scope.permits(principal)
             && self.observed_interval.contains(now_unix_ms)
             && self

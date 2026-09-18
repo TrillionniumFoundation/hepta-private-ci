@@ -1,0 +1,68 @@
+{
+  "claimBoundary": {
+    "canonicalWireProfileImplemented": true,
+    "hnmfCanonicalContractsInProductionCrate": true,
+    "independentAcceptance": false,
+    "nativeSourceMappingComplete": true,
+    "productExecutionProved": false,
+    "productionActivation": false,
+    "productionCompositionComplete": false,
+    "releaseAuthority": false,
+    "sourceRootPresent": true
+  },
+  "generatedFrom": "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
+  "layers": {
+    "activated": {
+      "evidence": [
+        "no production activation or independent acceptance is claimed"
+      ],
+      "state": "not_activated"
+    },
+    "composed": {
+      "evidence": [
+        "Lane C contracts have source-level consumers; HNMF V1 product composition is not established"
+      ],
+      "state": "partial"
+    },
+    "native": {
+      "evidence": [
+        "codex-rs/hepta-cognitive-types/src/hnmf",
+        "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+        "codex-rs/hepta-cognitive-types/src/lib.rs"
+      ],
+      "state": "implemented_v1"
+    },
+    "qualified": {
+      "evidence": [
+        ".github/workflows/hnmf-qualification.yml",
+        "qualification/hnmf-conformance"
+      ],
+      "state": "pending_branch_ci"
+    },
+    "reference": {
+      "evidence": [
+        "qualification/hnmf-contract-reference",
+        "qualification/hnmf-reference",
+        "qualification/hnmf-adversarial-reference"
+      ],
+      "state": "complete_reference"
+    },
+    "spec": {
+      "evidence": [
+        "docs/hnmf/HNMF.json",
+        "docs/hnmf/TECHNICAL.md",
+        "docs/modules/cognitive.types/TECHNICAL.md"
+      ],
+      "state": "complete"
+    },
+    "wire": {
+      "evidence": [
+        "codex-rs/hepta-cognitive-types/src/hnmf/wire.rs"
+      ],
+      "state": "implemented_canonical_json_v1"
+    }
+  },
+  "moduleId": "cognitive.types",
+  "reviewBaselineCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
+  "schema": "hepta.module-status.v1"
+}

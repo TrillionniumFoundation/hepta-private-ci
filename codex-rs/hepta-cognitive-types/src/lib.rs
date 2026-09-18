@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+pub mod hnmf;
 pub mod lane_c;
 
 use std::collections::BTreeSet;
@@ -102,7 +103,47 @@ impl CognitiveSnapshot {
     }
 }
 
+impl Citation {
+    /// Constructs a source citation whose digest is non-zero.
+    pub fn try_new(source_id: StableId, source_digest: Digest32) -> Result<Self, Error> {
+        if source_digest.is_zero() {
+            return Err(Error::EmptyDigest("citation"));
+        }
+        Ok(Self {
+            source_id,
+            source_digest,
+        })
+    }
+}
+
 impl MemoryRecord {
+    /// Constructs and validates a legacy V1 memory record.
+    ///
+    /// This is the migration path away from direct public-field construction.
+    /// Fields remain public temporarily for compatibility with existing callers.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_new(
+        record_id: StableId,
+        revision: Revision,
+        kind: MemoryKind,
+        content_digest: Digest32,
+        predecessor_digest: Option<Digest32>,
+        citations: Vec<Citation>,
+        state: RecordState,
+    ) -> Result<Self, Error> {
+        let value = Self {
+            record_id,
+            revision,
+            kind,
+            content_digest,
+            predecessor_digest,
+            citations,
+            state,
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
     /// Checks the record's bounded structural invariants.
     ///
     /// Success establishes only local consistency of caller-supplied fields. It

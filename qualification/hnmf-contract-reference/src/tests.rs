@@ -44,6 +44,11 @@ fn event(event_id: EventId, source: char, key: &str) -> MemoryEvent {
             source_sha256: digest(source),
             observed_at_unix_ms: 1,
         }],
+        verification: MemoryVerificationState::Verified,
+        retention_policy: RetentionPolicy {
+            policy_digest: digest('f'),
+            retain_until_unix_ms: None,
+        },
         objective_digest: digest('d'),
         ndu_state_digest: digest('e'),
         behavior_propensity_ppm: Some(500_000),

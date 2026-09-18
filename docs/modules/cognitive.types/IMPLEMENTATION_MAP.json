@@ -1,70 +1,272 @@
 {
-  "schema": "hepta.module-implementation-map.v3",
-  "schemaVersion": 3,
+  "schema": "hepta.module-implementation-map.v4",
+  "schemaVersion": 4,
+  "moduleId": "cognitive.types",
+  "lane": "LANE-C-MEMORY",
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "reviewBaselineCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "declaredRoot": "codex-rs/hepta-cognitive-types",
+    "resolvedRoot": "codex-rs/hepta-cognitive-types"
   },
-  "laneId": "LANE-C-MEMORY",
-  "module": "cognitive.types",
-  "owner": "cognitive-platform",
-  "deputy": "kernel-contracts",
-  "technicalGuide": "docs/modules/cognitive.types/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-cognitive-types"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-cognitive-types"
-  ],
-  "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
-  "operations": [
+  "ownership": {
+    "owner": "cognitive-platform",
+    "deputy": "kernel-contracts",
+    "productionOntology": "codex-rs/hepta-cognitive-types/src/hnmf",
+    "qualificationOracle": "qualification/hnmf-contract-reference",
+    "oraclePolicy": "reference is a qualification oracle only; production API ownership remains cognitive.types"
+  },
+  "statusLayers": {
+    "spec": {
+      "state": "complete",
+      "evidence": [
+        "docs/hnmf/HNMF.json",
+        "docs/hnmf/TECHNICAL.md",
+        "docs/modules/cognitive.types/TECHNICAL.md"
+      ]
+    },
+    "reference": {
+      "state": "complete_reference",
+      "evidence": [
+        "qualification/hnmf-contract-reference",
+        "qualification/hnmf-reference",
+        "qualification/hnmf-adversarial-reference"
+      ]
+    },
+    "native": {
+      "state": "implemented_v1",
+      "evidence": [
+        "codex-rs/hepta-cognitive-types/src/hnmf",
+        "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+        "codex-rs/hepta-cognitive-types/src/lib.rs"
+      ]
+    },
+    "wire": {
+      "state": "implemented_canonical_json_v1",
+      "evidence": [
+        "codex-rs/hepta-cognitive-types/src/hnmf/wire.rs"
+      ]
+    },
+    "composed": {
+      "state": "partial",
+      "evidence": [
+        "Lane C contracts have source-level consumers; HNMF V1 product composition is not established"
+      ]
+    },
+    "qualified": {
+      "state": "pending_branch_ci",
+      "evidence": [
+        ".github/workflows/hnmf-qualification.yml",
+        "qualification/hnmf-conformance"
+      ]
+    },
+    "activated": {
+      "state": "not_activated",
+      "evidence": [
+        "no production activation or independent acceptance is claimed"
+      ]
+    }
+  },
+  "wireProfile": {
+    "canonical": "JSON",
+    "mediaType": "application/vnd.hepta.hnmf+json;version=1",
+    "envelopeFields": [
+      "schemaId",
+      "version",
+      "payload"
+    ],
+    "schemaVersion": 1,
+    "unknownFieldPolicy": "deny",
+    "enumPolicy": "closed snake_case enums; unknown variants rejected",
+    "canonicalOrdering": "struct declaration order; BTreeSet/BTreeMap sorted order; exact re-encode byte equality required on decode",
+    "digest": "SHA-256 over canonical envelope bytes",
+    "nonCanonicalWhitespaceAccepted": false,
+    "goldenVectors": [
+      {
+        "schemaId": "OutcomeSignalV1",
+        "path": "codex-rs/hepta-cognitive-types/testdata/hnmf-wire-v1/outcome_signal_v1.json",
+        "sha256": "94f1ea223042fd0fd5ab8b1b5294dabb71813aca7735674aa4145d180ff8306d"
+      },
+      {
+        "schemaId": "MemoryCueV1",
+        "path": "codex-rs/hepta-cognitive-types/testdata/hnmf-wire-v1/memory_cue_v1.json",
+        "sha256": "3416b1ec9cec8809423b33f4d8b5bc9758ad7a2c46b2f8f560d93e35a1b13087"
+      }
+    ]
+  },
+  "contractGroups": {
+    "legacySnapshotContracts": {
+      "source": "codex-rs/hepta-cognitive-types/src/lib.rs",
+      "symbols": [
+        "MemoryKind",
+        "RecordState",
+        "Citation",
+        "MemoryRecord",
+        "CognitiveSnapshot",
+        "build_snapshot"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lib_tests.rs"
+      ]
+    },
+    "laneCContracts": {
+      "source": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+      "symbols": [
+        "LaneCGenerationVectorV1",
+        "CognitiveSnapshotKeyV1",
+        "MemoryAdmissionKind",
+        "MemoryVerificationState",
+        "MemoryAdmissionEvidenceV1",
+        "MemoryAdmissionCandidateV1",
+        "MemoryWriteIntentV1",
+        "MemoryWriteDisposition",
+        "MemoryWriteReceiptV1",
+        "FederatedMemoryQueryV1",
+        "FederatedEvidenceItemV1",
+        "FederatedCompletenessV1",
+        "FederatedValidityV1",
+        "FederatedCoverageV1",
+        "FederatedEvidenceResultV1",
+        "KnowledgeGraphGenerationV1",
+        "ProjectionDispositionV1",
+        "ProjectionReceiptV1",
+        "CompactCheckpointV1",
+        "CompactionProofV1",
+        "PromptRegistrySnapshotV1",
+        "ContextDeliveryDispositionV1",
+        "ContextDeliveryObservationV1"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ]
+    },
+    "hnmfCanonicalProtocols": {
+      "source": "codex-rs/hepta-cognitive-types/src/hnmf",
+      "symbols": [
+        "ModalitySpanRefV1",
+        "CrossModalBindingV1",
+        "MemoryEventV1",
+        "EngramNodeV1",
+        "SynapseV1",
+        "MemoryCueV1",
+        "RecallPacketV1",
+        "OutcomeSignalV1",
+        "ReplaySelectionReceiptV1",
+        "PlasticityBatchV1",
+        "TopologyProposalV1",
+        "ForgetPropagationReceiptV1"
+      ],
+      "protocolIds": [
+        "ModalitySpanRefV1",
+        "CrossModalBindingV1",
+        "MemoryEventV1",
+        "EngramNodeV1",
+        "SynapseV1",
+        "MemoryCueV1",
+        "RecallPacketV1",
+        "OutcomeSignalV1",
+        "ReplaySelectionReceiptV1",
+        "PlasticityBatchV1",
+        "TopologyProposalV1",
+        "ForgetPropagationReceiptV1"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_tests.rs",
+        "qualification/hnmf-conformance/src/lib.rs"
+      ]
+    },
+    "hnmfSupportingContracts": {
+      "source": "codex-rs/hepta-cognitive-types/src/hnmf",
+      "symbols": [
+        "CanonicalDigestV1",
+        "MemoryScopeV1",
+        "TimeIntervalV1",
+        "SpanRangeV1",
+        "AlignmentKindV1",
+        "ProvenanceRefV1",
+        "MemoryLifecycleV1",
+        "KernelEventViewV1",
+        "EngramPopulationV1",
+        "SynapseRelationV1",
+        "PlasticityClassV1",
+        "ResourceBudgetV1",
+        "ResourceReceiptV1",
+        "ActiveNodeV1",
+        "ActivationPathV1",
+        "ContradictionV1",
+        "RecallAbstainReasonV1",
+        "ReplayCandidateV1",
+        "WeightProposalV1",
+        "ThresholdProposalV1",
+        "TopologyOperationV1",
+        "ForgetRequestV1",
+        "RetiredSynapseV1",
+        "CanonicalContractV1",
+        "CanonicalWireErrorV1",
+        "MemoryVerificationStateV1",
+        "RetentionPolicyV1"
+      ]
+    }
+  },
+  "conformance": {
+    "productionReferenceFixtureSuite": "qualification/hnmf-conformance",
+    "productionPackage": "codex-hepta-cognitive-types",
+    "contractReferencePackage": "hepta-hnmf-contract-reference",
+    "deterministicRuntimeOraclePackage": "hepta-hnmf-reference",
+    "contractReferenceFixtures": [
+      "valid_agent_text_event",
+      "privacy_mismatch",
+      "modality_range_mismatch",
+      "same_modality_binding"
+    ],
+    "runtimeOracleFixtures": [
+      "engram_active_support",
+      "synapse_self_loop",
+      "cue_zero_seed",
+      "outcome_over_ppm",
+      "topology_self_activation",
+      "plasticity_self_activation",
+      "forget_without_rebuild",
+      "replay_over_ppm"
+    ],
+    "explicitCoverageGap": "RecallPacketV1 has production and runtime recall tests but the deterministic runtime oracle exposes no standalone arbitrary-packet validator"
+  },
+  "downstreamConsumers": [
     {
-      "operation": "build_snapshot",
-      "nativeSymbol": "build_snapshot",
-      "sourcePath": "codex-rs/hepta-cognitive-types/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "build_snapshot",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "surface": "lane_c"
     },
     {
-      "operation": "cognitivesnapshotkeyv1",
-      "nativeSymbol": "CognitiveSnapshotKeyV1",
-      "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "cognitivesnapshotkeyv1",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "surface": "lane_c"
+    },
+    {
+      "path": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "surface": "lane_c"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/qualified.rs",
+      "surface": "lane_c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "surface": "lane_c"
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
-  ],
-  "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "bind HNMF V1 contracts to authenticated product consumer callsites before changing composed state",
+    "add a first-class runtime-oracle validation surface for arbitrary RecallPacketV1 only if product semantics require recall packets to cross an untrusted boundary",
+    "run exact-head CI and independent acceptance before changing qualified or activated state",
+    "migrate remaining direct legacy MemoryRecord/CognitiveSnapshot field callers onto the new validated constructors, then privatize compatibility fields in a separately staged cross-module caller migration"
   ],
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "nativeSourceMappingComplete": true,
+    "hnmfCanonicalContractsInProductionCrate": true,
+    "canonicalWireProfileImplemented": true,
+    "productionCompositionComplete": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
-    "activation": false,
-    "release": false
-  },
-  "sourceRoot": [
-    "codex-rs/hepta-cognitive-types"
-  ]
+    "productionActivation": false,
+    "releaseAuthority": false
+  }
 }

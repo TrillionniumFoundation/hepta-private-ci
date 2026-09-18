@@ -109,3 +109,25 @@ fn duplicate_record_revision_is_rejected() {
         Err(Error::DuplicateRecord("record:1".to_string()))
     );
 }
+
+
+#[test]
+fn validated_legacy_constructors_reject_invalid_digest_state() {
+    assert_eq!(
+        Citation::try_new(id("source:1"), Digest32::ZERO),
+        Err(Error::EmptyDigest("citation"))
+    );
+
+    assert_eq!(
+        MemoryRecord::try_new(
+            id("memory:invalid"),
+            revision(1),
+            MemoryKind::Fact,
+            Digest32::ZERO,
+            None,
+            Vec::new(),
+            RecordState::Live,
+        ),
+        Err(Error::EmptyDigest("content"))
+    );
+}

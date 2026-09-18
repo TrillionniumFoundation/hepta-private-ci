@@ -55,6 +55,128 @@ PROTOCOLS = [
     "ForgetPropagationReceiptV1",
 ]
 
+PROTOCOL_REQUIRED_FIELDS = {
+    "ModalitySpanRefV1": [
+        "spanId",
+        "modality",
+        "assetSha256",
+        "range",
+        "preprocessorManifestSha256",
+        "uncertaintyPpm",
+        "privacyClass",
+    ],
+    "MemoryEventV1": [
+        "eventId",
+        "episodeId",
+        "scope",
+        "observedInterval",
+        "modalitySpans",
+        "crossModalBindings",
+        "semanticKeys",
+        "provenance",
+        "verification",
+        "retentionPolicy",
+        "objectiveDigest",
+        "nduStateDigest",
+        "lifecycle",
+    ],
+    "CrossModalBindingV1": [
+        "bindingId",
+        "eventId",
+        "spanRefs",
+        "alignmentKind",
+        "confidencePpm",
+        "producerManifestSha256",
+    ],
+    "EngramNodeV1": [
+        "nodeId",
+        "population",
+        "modalityMask",
+        "supportManifestSha256",
+        "thresholdQ16",
+        "targetActivityPpm",
+        "confidencePpm",
+        "snapshotGeneration",
+    ],
+    "SynapseV1": [
+        "sourceNodeId",
+        "targetNodeId",
+        "relation",
+        "weightQ16",
+        "delaySteps",
+        "plasticityClass",
+        "supportManifestSha256",
+        "snapshotGeneration",
+    ],
+    "MemoryCueV1": [
+        "cueId",
+        "objectiveDigest",
+        "nduStateDigest",
+        "modalities",
+        "semanticKeys",
+        "seedNodeIds",
+        "nowUnixMs",
+        "resourceBudget",
+    ],
+    "RecallPacketV1": [
+        "cueDigest",
+        "eventSnapshotDigest",
+        "engramSnapshotDigest",
+        "selectedEvents",
+        "activeNodes",
+        "activationPaths",
+        "contradictions",
+        "coveragePpm",
+        "confidencePpm",
+        "oodPpm",
+        "abstain",
+        "resourceReceipt",
+    ],
+    "OutcomeSignalV1": [
+        "episodeId",
+        "utilityDeltaPpm",
+        "predictionErrorPpm",
+        "noveltyPpm",
+        "riskPpm",
+        "oodPpm",
+        "observerDigest",
+    ],
+    "ReplaySelectionReceiptV1": [
+        "candidateSetDigest",
+        "selectedEventIds",
+        "sourceBucketCounts",
+        "selectionPolicyDigest",
+        "resourceReceipt",
+    ],
+    "PlasticityBatchV1": [
+        "predecessorGeneration",
+        "nextGeneration",
+        "outcomeSignalDigest",
+        "weightProposals",
+        "thresholdProposals",
+        "currentSnapshotImmutable",
+        "productionActivationAllowed",
+    ],
+    "TopologyProposalV1": [
+        "predecessorGeneration",
+        "nextGeneration",
+        "operation",
+        "capabilityTyped",
+        "sandboxOnly",
+        "operatorAccepted",
+        "productionActivationAllowed",
+    ],
+    "ForgetPropagationReceiptV1": [
+        "eventId",
+        "predecessorGeneration",
+        "nextGeneration",
+        "retiredNodeIds",
+        "retiredSynapses",
+        "projectionRebuildRequired",
+        "artifactRevocationRequired",
+    ],
+}
+
 WORK_PACKAGES = [
     "HNM-0-MULTIMODAL-CONTRACTS",
     "HNM-1-IMMUTABLE-EVENT-LEDGER",
@@ -96,6 +218,22 @@ REQUIRED_FILES = [
     "qualification/hnmf-reference/Cargo.lock",
     "qualification/hnmf-reference/README.md",
     "qualification/hnmf-reference/src/lib.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/mod.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/event.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/forget.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/wire.rs",
+    "codex-rs/hepta-cognitive-types/testdata/hnmf-wire-v1/MANIFEST.json",
+    "codex-rs/hepta-cognitive-types/testdata/hnmf-wire-v1/outcome_signal_v1.json",
+    "codex-rs/hepta-cognitive-types/testdata/hnmf-wire-v1/memory_cue_v1.json",
+    "qualification/hnmf-conformance/Cargo.toml",
+    "qualification/hnmf-conformance/src/lib.rs",
+    "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
+    "docs/modules/cognitive.types/STATUS.json",
     ".github/workflows/hnmf-qualification.yml",
 ]
 
@@ -121,6 +259,36 @@ RUST_TOKENS = [
     "ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false",
     "PRODUCTION_AUTHORITY: bool = false",
     "EXTERNAL_EFFECTS_ALLOWED: bool = false",
+]
+
+PRODUCTION_RUST_TOKENS = [
+    "pub struct ModalitySpanRefV1",
+    "pub struct MemoryEventV1",
+    "pub struct CrossModalBindingV1",
+    "pub struct EngramNodeV1",
+    "pub struct SynapseV1",
+    "pub struct MemoryCueV1",
+    "pub struct RecallPacketV1",
+    "pub struct OutcomeSignalV1",
+    "pub struct ReplaySelectionReceiptV1",
+    "pub struct PlasticityBatchV1",
+    "pub struct TopologyProposalV1",
+    "pub struct ForgetPropagationReceiptV1",
+    "pub trait CanonicalContractV1",
+    "pub fn canonical_json_bytes",
+    "pub fn decode_canonical_json",
+]
+
+PRODUCTION_RUST_FILES = [
+    "codex-rs/hepta-cognitive-types/src/hnmf/mod.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/event.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/forget.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/wire.rs",
 ]
 
 RUST_TESTS = [
@@ -200,10 +368,17 @@ def verify() -> int:
         [item.get("id") for item in spec.get("populations", [])] == POPULATIONS,
         "population closure",
     )
+    protocol_rows = spec.get("protocols", [])
     need(
-        [item.get("id") for item in spec.get("protocols", [])] == PROTOCOLS,
+        [item.get("id") for item in protocol_rows] == PROTOCOLS,
         "protocol closure",
     )
+    for item in protocol_rows:
+        protocol_id = item["id"]
+        need(
+            item.get("requiredFields") == PROTOCOL_REQUIRED_FIELDS[protocol_id],
+            f"protocol required fields {protocol_id}",
+        )
     need(
         [item.get("id") for item in spec.get("workPackages", [])] == WORK_PACKAGES,
         "work-package closure",
@@ -315,11 +490,26 @@ def verify() -> int:
         "unsafe" not in rust.replace("#![forbid(unsafe_code)]", ""), "unsafe code token"
     )
 
+    production_rust = "\n".join(
+        (ROOT / path).read_text(encoding="utf-8") for path in PRODUCTION_RUST_FILES
+    )
+    for token in PRODUCTION_RUST_TOKENS:
+        need(token in production_rust, f"production contract token {token}")
+    need(
+        "qualification/hnmf-conformance" in (
+            ROOT / ".github/workflows/hnmf-qualification.yml"
+        ).read_text(encoding="utf-8"),
+        "production-reference conformance workflow binding",
+    )
+
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
     )
     for command in [
         "python3 scripts/hepta-hnmf.py verify",
+        "python3 scripts/hepta-cognitive-types-status.py --verify",
+        "cargo check --manifest-path codex-rs/Cargo.toml -p codex-hepta-cognitive-types --all-targets --locked",
+        "cargo test --manifest-path qualification/hnmf-conformance/Cargo.toml",
         "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
         "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
         "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
