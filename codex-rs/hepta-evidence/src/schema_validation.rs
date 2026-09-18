@@ -445,6 +445,148 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         ],
     },
     SchemaObjectSpec {
+        name: "qualification_evidence",
+        object_type: "table",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "create table qualification_evidence",
+            "receipt_id text not null unique",
+            "source_commit text not null check",
+            "claim_class text not null check",
+            "issuer_verifying_key blob not null check (length(issuer_verifying_key) = 32)",
+            "foreign key(predecessor_receipt_id)",
+            "references qualification_evidence(receipt_id)",
+            "foreign key(revokes_receipt_id)",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_candidate_claim_seq",
+        object_type: "index",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "create index qualification_evidence_candidate_claim_seq",
+            "qualification_evidence(candidate_id, source_commit, source_tree, claim_class, seq)",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_candidate_role_seq",
+        object_type: "index",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "create index qualification_evidence_candidate_role_seq",
+            "qualification_evidence(candidate_id, source_commit, source_tree, issuer_role, seq)",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_revocation_target",
+        object_type: "index",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "create index qualification_evidence_revocation_target",
+            "qualification_evidence(revokes_receipt_id)",
+            "where revokes_receipt_id is not null",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_no_update",
+        object_type: "trigger",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "before update on qualification_evidence",
+            "raise(abort, 'qualification evidence is immutable')",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_no_delete",
+        object_type: "trigger",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "before delete on qualification_evidence",
+            "raise(abort, 'qualification evidence is immutable')",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "independent_decision_receipts",
+        object_type: "table",
+        table_name: "independent_decision_receipts",
+        required_sql_fragments: &[
+            "create table independent_decision_receipts",
+            "decision_id text primary key",
+            "receipt_id text not null unique",
+            "role text not null check",
+            "payload_sha256 text not null check",
+            "foreign key(receipt_id)",
+            "references qualification_evidence(receipt_id)",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "independent_decision_receipts_candidate_role",
+        object_type: "index",
+        table_name: "independent_decision_receipts",
+        required_sql_fragments: &[
+            "create index independent_decision_receipts_candidate_role",
+            "independent_decision_receipts(candidate_id, role, decision_id)",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "independent_decision_receipts_no_update",
+        object_type: "trigger",
+        table_name: "independent_decision_receipts",
+        required_sql_fragments: &[
+            "before update on independent_decision_receipts",
+            "raise(abort, 'independent decision receipts are immutable')",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "independent_decision_receipts_no_delete",
+        object_type: "trigger",
+        table_name: "independent_decision_receipts",
+        required_sql_fragments: &[
+            "before delete on independent_decision_receipts",
+            "raise(abort, 'independent decision receipts are immutable')",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_issuer_key_revocations",
+        object_type: "table",
+        table_name: "qualification_issuer_key_revocations",
+        required_sql_fragments: &[
+            "create table qualification_issuer_key_revocations",
+            "revocation_id text primary key",
+            "authority_role text not null check (authority_role = 'security_reviewer')",
+            "authority_verifying_key blob not null check (length(authority_verifying_key) = 32)",
+            "payload_sha256 text not null check",
+            "signature blob not null check (length(signature) = 64)",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_issuer_key_revocations_key",
+        object_type: "index",
+        table_name: "qualification_issuer_key_revocations",
+        required_sql_fragments: &[
+            "create index qualification_issuer_key_revocations_key",
+            "qualification_issuer_key_revocations(root_id, key_id, observed_unix_ms)",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_issuer_key_revocations_no_update",
+        object_type: "trigger",
+        table_name: "qualification_issuer_key_revocations",
+        required_sql_fragments: &[
+            "before update on qualification_issuer_key_revocations",
+            "raise(abort, 'qualification issuer key revocations are immutable')",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_issuer_key_revocations_no_delete",
+        object_type: "trigger",
+        table_name: "qualification_issuer_key_revocations",
+        required_sql_fragments: &[
+            "before delete on qualification_issuer_key_revocations",
+            "raise(abort, 'qualification issuer key revocations are immutable')",
+        ],
+    },
+    SchemaObjectSpec {
         name: "memory_mutation_shadow_observations",
         object_type: "table",
         table_name: "memory_mutation_shadow_observations",

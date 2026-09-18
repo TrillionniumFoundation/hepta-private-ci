@@ -90,7 +90,7 @@ impl GovernanceState {
             input.host_accepted,
             outcome,
         );
-        match evidence.append_receipt(&receipt).await {
+        match evidence.append_governance_receipt(&receipt).await {
             Ok(AppendDisposition::Inserted | AppendDisposition::AlreadyPresent) => {
                 self.release_action_for_mode(&action_id, input.attempt_id)?;
                 Ok(())

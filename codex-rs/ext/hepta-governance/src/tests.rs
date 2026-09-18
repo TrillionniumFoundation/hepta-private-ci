@@ -574,6 +574,7 @@ async fn disabled_feature_does_not_initialize_the_evidence_backend() {
         mode: GovernanceMode::Enforce,
         state_db: Some(state_db),
         evidence: tokio::sync::OnceCell::new(),
+        qualification_authority: None,
     };
     let thread = ExtensionData::new("thread-1");
 

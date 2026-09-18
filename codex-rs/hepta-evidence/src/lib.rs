@@ -5,6 +5,7 @@ mod authbus_outbox_record;
 mod authbus_outbox_worker;
 mod authbus_store;
 mod canonical;
+mod checkpoint;
 mod governance_store;
 mod governance_validation;
 mod historical;
@@ -13,6 +14,7 @@ mod provider_effect_store;
 mod provider_insert;
 mod provider_record;
 mod provider_store;
+mod qualification;
 mod schema_validation;
 mod store;
 mod summary;
@@ -28,6 +30,8 @@ pub use authbus_outbox_record::AuthBusDeliveryStatus;
 pub use authbus_outbox_record::AuthBusLease;
 pub use authbus_outbox_record::AuthBusOutboxError;
 pub use authbus_store::AuthBusAdmissionError;
+pub use checkpoint::EVIDENCE_EXTERNAL_CHECKPOINT_SCHEMA_VERSION;
+pub use checkpoint::EvidenceExternalCheckpointV1;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;
 pub use historical::HistoricalEvidenceRecord;
@@ -47,6 +51,29 @@ pub use provider_effect_store::StoredProviderEffectUncertainty;
 pub use provider_store::StoredProviderAttemptEvidence;
 pub use provider_store::StoredProviderIntent;
 pub use provider_store::StoredProviderReceipt;
+pub use qualification::AuthenticatedEvidenceIssuerV1;
+pub use qualification::EvidenceAssetRefV1;
+pub use qualification::EvidenceCandidateV1;
+pub use qualification::EvidenceClaimClassV1;
+pub use qualification::EvidenceDispositionV1;
+pub use qualification::EvidenceId;
+pub use qualification::EvidenceIssuerAuthorityV1;
+pub use qualification::EvidenceIssuerCertificateV1;
+pub use qualification::EvidenceIssuerKeyRevocationV1;
+pub use qualification::EvidenceIssuerRevocationsV1;
+pub use qualification::EvidenceIssuerRoleV1;
+pub use qualification::EvidenceReferenceV1;
+pub use qualification::EvidenceTrustRootV1;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_ASSETS;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_CHAIN_EDGES;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES;
+pub use qualification::QUALIFICATION_EVIDENCE_SCHEMA_VERSION;
+pub use qualification::QualificationEvidenceEnvelopeV1;
+pub use qualification::SignedEvidenceIssuerCertificateV1;
+pub use qualification::SignedEvidenceIssuerKeyRevocationV1;
+pub use qualification::SignedQualificationEvidenceEnvelopeV1;
+pub use qualification::authenticate_evidence_issuer;
 pub use store::AppendDisposition;
 pub use store::HeptaEvidenceStore;
 pub use store::StoredActionEvidence;
@@ -57,15 +84,15 @@ pub use summary::ProviderEvidenceSummary;
 
 #[derive(Debug, thiserror::Error)]
 pub enum EvidenceError {
-    #[error("failed to serialize governance evidence: {0}")]
+    #[error("failed to serialize evidence: {0}")]
     Serialization(String),
-    #[error("governance evidence backend is unavailable: {0}")]
+    #[error("evidence backend is unavailable: {0}")]
     Unavailable(String),
-    #[error("governance evidence identity conflict for {record_id}")]
+    #[error("evidence identity conflict for {record_id}")]
     IdempotencyConflict { record_id: String },
-    #[error("invalid governance evidence record: {0}")]
+    #[error("invalid evidence record: {0}")]
     InvalidRecord(String),
-    #[error("governance evidence is corrupt: {0}")]
+    #[error("evidence is corrupt: {0}")]
     Corrupt(String),
 }
 
@@ -88,6 +115,10 @@ mod provider_effect_tests;
 #[cfg(test)]
 #[path = "summary_tests.rs"]
 mod summary_tests;
+
+#[cfg(test)]
+#[path = "qualification_tests.rs"]
+mod qualification_tests;
 
 #[cfg(test)]
 #[path = "historical_tests.rs"]

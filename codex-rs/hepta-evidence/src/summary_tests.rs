@@ -109,7 +109,10 @@ async fn governance_summary_moves_from_pending_to_terminal() {
 
     let receipt = GovernanceReceipt::new(decision, None, false, HandlerOutcome::Blocked);
     assert_eq!(
-        store.append_receipt(&receipt).await.expect("receipt"),
+        store
+            .append_governance_receipt(&receipt)
+            .await
+            .expect("receipt"),
         AppendDisposition::Inserted
     );
     let terminal = store.summary().await.expect("terminal summary");

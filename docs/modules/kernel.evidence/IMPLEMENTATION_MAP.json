@@ -18,42 +18,167 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "qualification_product_host_composed_activation_gated",
+  "productionWriterState": "authenticated_host_path_composed_trust_root_gated",
   "operations": [
     {
-      "operation": "append_provider_effect_intent",
-      "nativeSymbol": "append_provider_effect_intent",
-      "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "append_receipt",
+      "nativeSymbol": "append_receipt",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "authenticated_issuer_only",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "append_provider_effect_intent",
+      "designOperation": "append_receipt",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "reconcile_provider_effect_lookup",
-      "nativeSymbol": "reconcile_provider_effect_lookup",
-      "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "verify_chain",
+      "nativeSymbol": "verify_chain",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "read_only_verification",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "reconcile_provider_effect_lookup",
+      "designOperation": "verify_chain",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "query_claim",
+      "nativeSymbol": "query_claim",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "read_only_query",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "query_claim",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "append_independent_decision_receipt",
+      "nativeSymbol": "append_independent_decision_receipt",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_external_signer_required",
+      "authority": "registered_independent_role_only",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_independent_decision_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "append_issuer_key_revocation",
+      "nativeSymbol": "append_issuer_key_revocation",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "security_reviewer_only",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_issuer_key_revocation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "capture_external_checkpoint",
+      "nativeSymbol": "capture_external_checkpoint",
+      "sourcePath": "codex-rs/hepta-evidence/src/checkpoint.rs",
+      "state": "source_implemented_external_retention_required",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "capture_external_checkpoint",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_external_checkpoint",
+      "nativeSymbol": "verify_external_checkpoint",
+      "sourcePath": "codex-rs/hepta-evidence/src/checkpoint.rs",
+      "state": "source_implemented_external_retention_required",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_external_checkpoint",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_qualification_trust",
+      "nativeSymbol": "verify_qualification_trust",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "host_pinned_trust_root",
+      "tests": [
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_qualification_trust",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "query_claim_with_authority",
+      "nativeSymbol": "query_claim_with_authority",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "host_pinned_trust_root_and_revocation_head",
+      "tests": [
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "query_claim",
+      "mappingClass": "owner_native_product_adapter",
+      "delegatedCallees": [
+        "query_claim"
+      ]
+    },
+    {
+      "operation": "verify_chain_with_authority",
+      "nativeSymbol": "verify_chain_with_authority",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_host_composed_activation_gated",
+      "authority": "host_pinned_trust_root_and_revocation_head",
+      "tests": [
+        "codex-rs/ext/hepta-governance/src/qualification_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_chain",
+      "mappingClass": "owner_native_product_adapter",
+      "delegatedCallees": [
+        "verify_chain"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for every claim-boundary change.",
+    "Retain source/test/product-composition receipts without promoting them to independent acceptance."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "independent exact-candidate semantic review",
+    "physical target-host qualification and operator acceptance",
+    "external checkpoint retention and trust-root ceremony",
+    "canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,

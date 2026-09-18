@@ -13,6 +13,7 @@ mod terminal;
 
 pub use install::install;
 pub use install::install_with_mode;
+pub use install::install_with_mode_and_qualification_authority;
 pub use state::GovernanceState;
 
 #[cfg(test)]
@@ -29,3 +30,7 @@ mod tests;
 #[cfg(test)]
 #[path = "provider_policy_tests.rs"]
 mod provider_policy_tests;
+
+#[cfg(test)]
+#[path = "qualification_product_tests.rs"]
+mod qualification_product_tests;

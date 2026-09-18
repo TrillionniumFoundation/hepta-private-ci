@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.kernel-evidence-independent-acceptance-template.v1",
+  "note": "Template only. This is not an acceptance receipt and carries no signature or authority.",
+  "exactCandidate": {
+    "sourceCommit": "<PR_HEAD_SHA>",
+    "sourceTree": "<PR_HEAD_TREE>",
+    "syntheticMergeCommit": "<SYNTHETIC_MERGE_SHA>",
+    "syntheticMergeTree": "<SYNTHETIC_MERGE_TREE>"
+  },
+  "decisionReceipt": {
+    "decisionId": "<external-id>",
+    "candidateId": "<exact-candidate-id>",
+    "role": "<independent_evaluator|architecture_reviewer|security_reviewer>",
+    "principalId": "<external-principal>",
+    "signingIdentityDigest": "<sha256>",
+    "evidenceSetDigest": "<sha256>",
+    "decision": "<accept|reject|conditional>",
+    "conditions": [],
+    "expiresUnixMs": "<u64>"
+  },
+  "signedEnvelope": {
+    "receiptId": "<external-id>",
+    "claimClass": "independent_review",
+    "signature": "<detached-ed25519-signature>"
+  },
+  "authorityClaims": {
+    "independentAcceptance": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}
