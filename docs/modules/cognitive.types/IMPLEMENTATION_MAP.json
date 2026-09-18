@@ -4,7 +4,7 @@
   "moduleId": "cognitive.types",
   "lane": "LANE-C-MEMORY",
   "sourceBase": {
-    "observedCommit": "07a80365e5f479e2975f79299b94feb4944bd208",
+    "observedCommit": "7624a86b25ae6be30ab45ca3d42a321c4add5c81",
     "declaredRoot": "codex-rs/hepta-cognitive-types",
     "resolvedRoot": "codex-rs/hepta-cognitive-types"
   },
@@ -189,7 +189,9 @@
         "ForgetRequestV1",
         "RetiredSynapseV1",
         "CanonicalContractV1",
-        "CanonicalWireErrorV1"
+        "CanonicalWireErrorV1",
+        "MemoryVerificationStateV1",
+        "RetentionPolicyV1"
       ]
     }
   },
@@ -229,7 +231,8 @@
   "repositoryControlledGaps": [
     "bind HNMF V1 contracts to authenticated product consumer callsites before changing composed state",
     "expand production-reference conformance fixtures beyond event/span into engram/recall/replay/plasticity/forget semantics",
-    "run exact-head CI and independent acceptance before changing qualified or activated state"
+    "run exact-head CI and independent acceptance before changing qualified or activated state",
+    "migrate the legacy MemoryRecord/CognitiveSnapshot public-field compatibility surface to validated constructors in a separately staged caller migration"
   ],
   "claimBoundary": {
     "sourceRootPresent": true,
