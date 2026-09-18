@@ -305,90 +305,108 @@ enum Access {
     Append,
 }
 
-#[cfg(unix)]
+// The store is deliberately Linux-only for now. This avoids adding a new
+// first-party dependency edge (and therefore an out-of-scope Cargo.lock
+// mutation) while preserving O_NOFOLLOW/O_DIRECTORY semantics. Other
+// platforms fail closed until an equivalent owner/ACL implementation exists.
+#[cfg(target_os = "linux")]
 fn prepare_directory(root: &Path) -> Result<File, BaoLeaseError> {
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
+
+    const O_DIRECTORY: i32 = 0o200000;
+    const O_NOFOLLOW: i32 = 0o400000;
+    const O_CLOEXEC: i32 = 0o2000000;
 
     if let Err(error) = std::fs::DirBuilder::new().mode(0o700).create(root)
         && error.kind() != std::io::ErrorKind::AlreadyExists
     {
         return Err(BaoLeaseError::StateUnavailable);
     }
-    let directory: File = rustix::fs::open(
-        root,
-        rustix::fs::OFlags::RDONLY
-            | rustix::fs::OFlags::DIRECTORY
-            | rustix::fs::OFlags::NOFOLLOW
-            | rustix::fs::OFlags::CLOEXEC,
-        rustix::fs::Mode::empty(),
-    )
-    .map_err(|_| BaoLeaseError::UnsafeStateDirectory)?
-    .into();
+    let directory = std::fs::OpenOptions::new()
+        .read(true)
+        .custom_flags(O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)
+        .open(root)
+        .map_err(|_| BaoLeaseError::UnsafeStateDirectory)?;
     let metadata = directory
         .metadata()
         .map_err(|_| BaoLeaseError::StateUnavailable)?;
-    if !metadata.is_dir()
-        || metadata.mode() & 0o077 != 0
-        || metadata.uid() != rustix::process::geteuid().as_raw()
-    {
+    let effective_uid = std::fs::metadata("/proc/self")
+        .map_err(|_| BaoLeaseError::UnsafeStateDirectory)?
+        .uid();
+    if !metadata.is_dir() || metadata.mode() & 0o077 != 0 || metadata.uid() != effective_uid {
         return Err(BaoLeaseError::UnsafeStateDirectory);
     }
     Ok(directory)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 fn prepare_directory(_root: &Path) -> Result<File, BaoLeaseError> {
     Err(BaoLeaseError::UnsafeStateDirectory)
 }
 
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 fn open_private(directory: &File, name: &str, access: Access) -> Result<File, BaoLeaseError> {
+    use std::os::fd::AsRawFd;
     use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
 
-    let flags = match access {
-        Access::Create => rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE,
-        Access::Append => {
-            rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE | rustix::fs::OFlags::APPEND
+    const O_NOFOLLOW: i32 = 0o400000;
+    const O_CLOEXEC: i32 = 0o2000000;
+
+    let path = format!("/proc/self/fd/{}/{}", directory.as_raw_fd(), name);
+    let mut options = std::fs::OpenOptions::new();
+    options
+        .read(true)
+        .create(true)
+        .mode(0o600)
+        .custom_flags(O_NOFOLLOW | O_CLOEXEC);
+    match access {
+        Access::Create => {
+            options.write(true);
         }
-    } | rustix::fs::OFlags::NOFOLLOW
-        | rustix::fs::OFlags::CLOEXEC;
-    let file: File = rustix::fs::openat(
-        directory,
-        name,
-        flags,
-        rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
-    )
-    .map_err(|_| BaoLeaseError::StateUnavailable)?
-    .into();
+        Access::Append => {
+            options.append(true);
+        }
+    }
+    let file = options
+        .open(path)
+        .map_err(|_| BaoLeaseError::StateUnavailable)?;
     let metadata = file
         .metadata()
         .map_err(|_| BaoLeaseError::StateUnavailable)?;
+    let effective_uid = std::fs::metadata("/proc/self")
+        .map_err(|_| BaoLeaseError::UnsafeStateDirectory)?
+        .uid();
     if !metadata.is_file()
         || metadata.mode() & 0o077 != 0
         || metadata.nlink() != 1
-        || metadata.uid() != rustix::process::geteuid().as_raw()
+        || metadata.uid() != effective_uid
     {
         return Err(BaoLeaseError::UnsafeStateDirectory);
     }
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, BaoLeaseError> {
     Err(BaoLeaseError::UnsafeStateDirectory)
 }
 
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 fn entry_exists(directory: &File, name: &str) -> Result<bool, BaoLeaseError> {
-    match rustix::fs::statat(directory, name, rustix::fs::AtFlags::SYMLINK_NOFOLLOW) {
+    use std::os::fd::AsRawFd;
+
+    let path = format!("/proc/self/fd/{}/{}", directory.as_raw_fd(), name);
+    match std::fs::symlink_metadata(path) {
         Ok(_) => Ok(true),
-        Err(rustix::io::Errno::NOENT) => Ok(false),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(false),
         Err(_) => Err(BaoLeaseError::StateUnavailable),
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(not(target_os = "linux"))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, BaoLeaseError> {
     Err(BaoLeaseError::UnsafeStateDirectory)
 }
