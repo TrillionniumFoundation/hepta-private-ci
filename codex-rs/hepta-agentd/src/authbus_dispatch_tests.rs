@@ -82,6 +82,7 @@ impl Fixture {
         let state =
             Arc::new(AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16).unwrap());
         state.refresh_generation().unwrap();
+        state.mark_runtime_prerequisites_ready().unwrap();
         state.mark_app_server_ready().unwrap();
         let fixture = Self {
             _temp: temp,
@@ -337,6 +338,7 @@ async fn ready_generation_and_owner_private_trust_are_required_before_admission(
     )
     .unwrap();
     unconfigured.refresh_generation().unwrap();
+    unconfigured.mark_runtime_prerequisites_ready().unwrap();
     unconfigured.mark_app_server_ready().unwrap();
     assert!(
         submit(&unconfigured, fixture.request(/*sequence*/ 1))
