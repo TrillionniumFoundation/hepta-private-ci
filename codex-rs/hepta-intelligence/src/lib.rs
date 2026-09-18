@@ -24,6 +24,7 @@ pub use plasticity_product::ParameterPlasticityProductReceiptV1;
 pub use plasticity_product::ParameterPlasticityProductRequestV1;
 pub use plasticity_product::PlasticityAdmissionEvidenceV1;
 pub use plasticity_product::PlasticityAnchorCommitterV1;
+pub use plasticity_product::PlasticityWriterStateV1;
 pub use plasticity_product::plasticity_admission_signing_payload_v1;
 pub use plasticity_product::propose_authenticated_parameter_plasticity_v1;
 

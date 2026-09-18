@@ -11,7 +11,6 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
-use std::io;
 
 use codex_hepta_intelligence_eval::{
     IndependentEvaluationBundleV1, IndependentEvaluationDispositionV1, MetricRoleContractV2,
@@ -122,9 +121,14 @@ impl From<DurableProposalRegistryError> for ParameterPlasticityProductErrorV1 {
 
 #[derive(Debug)]
 pub enum AnchoredPlasticityWriterErrorV1 {
-    BootstrapFileNotEmpty,
-    Io(io::ErrorKind),
     Registry(DurableProposalRegistryError),
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum PlasticityWriterStateV1 {
+    Healthy,
+    AppendPendingAnchor,
+    Poisoned,
 }
 impl fmt::Display for AnchoredPlasticityWriterErrorV1 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -159,7 +163,7 @@ pub struct AnchoredPlasticityWriterV1 {
     registry: DurableProposalRegistry,
     registry_scope_digest: Digest32,
     writer_fence: u64,
-    poisoned: bool,
+    state: PlasticityWriterStateV1,
 }
 
 impl AnchoredPlasticityWriterV1 {
@@ -172,14 +176,8 @@ impl AnchoredPlasticityWriterV1 {
         writer_fence: u64,
         maximum_records: usize,
     ) -> Result<Self, AnchoredPlasticityWriterErrorV1> {
-        let metadata = file
-            .metadata()
-            .map_err(|error| AnchoredPlasticityWriterErrorV1::Io(error.kind()))?;
-        if metadata.len() != 0 {
-            return Err(AnchoredPlasticityWriterErrorV1::BootstrapFileNotEmpty);
-        }
         Ok(Self {
-            registry: DurableProposalRegistry::open(
+            registry: DurableProposalRegistry::open_bootstrap_empty(
                 file,
                 registry_scope_digest,
                 writer_fence,
@@ -187,7 +185,7 @@ impl AnchoredPlasticityWriterV1 {
             )?,
             registry_scope_digest,
             writer_fence,
-            poisoned: false,
+            state: PlasticityWriterStateV1::Healthy,
         })
     }
 
@@ -209,21 +207,25 @@ impl AnchoredPlasticityWriterV1 {
             )?,
             registry_scope_digest,
             writer_fence,
-            poisoned: false,
+            state: PlasticityWriterStateV1::Healthy,
         })
+    }
+
+    pub const fn state(&self) -> PlasticityWriterStateV1 {
+        self.state
     }
 
     pub fn current_anchor(
         &self,
     ) -> Result<Option<DurableRegistryAnchorV1>, DurableProposalRegistryError> {
-        if self.poisoned {
+        if self.state != PlasticityWriterStateV1::Healthy {
             return Err(DurableProposalRegistryError::Poisoned);
         }
         self.registry.current_anchor()
     }
 
     pub fn record_count(&self) -> Result<usize, DurableProposalRegistryError> {
-        if self.poisoned {
+        if self.state != PlasticityWriterStateV1::Healthy {
             return Err(DurableProposalRegistryError::Poisoned);
         }
         self.registry.record_count()
@@ -273,7 +275,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
 ) -> Result<ParameterPlasticityProductReceiptV1, ParameterPlasticityProductErrorV1> {
     use ParameterPlasticityProductErrorV1 as E;
 
-    if writer.poisoned {
+    if writer.state != PlasticityWriterStateV1::Healthy {
         return Err(E::Registry(DurableProposalRegistryError::Poisoned));
     }
     verify_generated_parameter_candidates_v3(
@@ -397,9 +399,26 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         candidates: request.generated.candidates.clone(),
     })?;
 
-    let registry = writer
+    writer.state = PlasticityWriterStateV1::AppendPendingAnchor;
+    let registry = match writer
         .registry
-        .append_v2(request.expected_registry_predecessor, proposal.clone())?;
+        .append_v2(request.expected_registry_predecessor, proposal.clone())
+    {
+        Ok(receipt) => receipt,
+        Err(error) => {
+            writer.state = if matches!(
+                error,
+                DurableProposalRegistryError::Indeterminate
+                    | DurableProposalRegistryError::Poisoned
+                    | DurableProposalRegistryError::Io(_)
+            ) {
+                PlasticityWriterStateV1::Poisoned
+            } else {
+                PlasticityWriterStateV1::Healthy
+            };
+            return Err(E::Registry(error));
+        }
+    };
     let committed_registry_anchor = writer
         .registry
         .current_anchor()?
@@ -409,9 +428,10 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         writer.writer_fence,
         committed_registry_anchor,
     ) {
-        writer.poisoned = true;
+        writer.state = PlasticityWriterStateV1::Poisoned;
         return Err(E::AnchorPersistenceFailed);
     }
+    writer.state = PlasticityWriterStateV1::Healthy;
 
     let generator_authentication_digest = attestation_digest(&request.generator_attestation);
     let admission_authentication_digest = attestation_digest(&request.admission_attestation);
@@ -508,7 +528,9 @@ mod tests {
         );
         assert!(matches!(
             result,
-            Err(AnchoredPlasticityWriterErrorV1::BootstrapFileNotEmpty)
+            Err(AnchoredPlasticityWriterErrorV1::Registry(
+                DurableProposalRegistryError::BootstrapRequiresEmptyFile
+            ))
         ));
     }
 
