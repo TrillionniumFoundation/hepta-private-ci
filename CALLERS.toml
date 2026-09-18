@@ -36,6 +36,9 @@ required_boundary_ids = [
   "self_evolution_adoption",
   "self_evolution_rollback",
   "self_evolution_confirmation",
+  "final_use_dispatch",
+  "final_use_dispatch_raw",
+  "authority_lease_prune",
 ]
 
 [[boundary]]
@@ -67,8 +70,8 @@ id = "agentd_production_writer_host"
 symbol = "AgentdProductionWriterHost::open_with_store"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
 definition_markers = ["pub struct AgentdProductionWriterHost", "pub async fn open_with_store", "ProductionAuthorityVerifier"]
-product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
-caller_markers = ["dispatch_final_use", "dispatch_final_use(&self.authority", "BrowserServoError"]
+product_callers = []
+caller_markers = []
 
 [[boundary]]
 id = "provider_effect_coordinator"
@@ -100,7 +103,7 @@ symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
 product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
-caller_markers = ["claim_final_use", "claim_final_use(authority, grant, &binding)", "BaoClientError::Authority", "claim_final_use(", "BrowserServoError"]
+caller_markers = ["claim_final_use", "BrowserServoError", "BaoClientError::Authority"]
 
 [[boundary]]
 id = "final_use_claim_raw"
@@ -390,14 +393,13 @@ external_effect = false
 self_issued_acceptance = false
 promotion = false
 release = false
-
 [[boundary]]
 id = "final_use_dispatch"
 symbol = "dispatch_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn dispatch_final_use", "HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH", "with_dispatch_boundary"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
+caller_markers = ["dispatch_final_use", "BrowserServoError"]
 
 [[boundary]]
 id = "final_use_dispatch_raw"
@@ -415,3 +417,4 @@ definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn prune_expired_leases(", "MAX_AUTHORITY_PRUNE_BATCH", "expires_at_unix_ms"]
 product_callers = []
 caller_markers = []
+
