@@ -1,4 +1,12 @@
+use std::collections::BTreeSet;
 use std::fmt::Debug;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
 
 use codex_hepta_cognitive_read::ReadRequest;
 use codex_hepta_cognitive_read::read;
@@ -10,6 +18,8 @@ use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::build_snapshot;
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::ContextItem;
+use codex_hepta_context_compiler::ContextCompilationRequestV2;
+use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_context_compiler::ContextRole;
 use codex_hepta_ndu::AxisDirection;
 use codex_hepta_ndu::AxisValue;
@@ -51,7 +61,19 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
+use codex_hepta_prompt_optimizer::registry_source::RegistryCandidateScore;
+use codex_hepta_prompt_optimizer::registry_source::RegistryOptimizationRequest;
+use codex_hepta_prompt_registry::AdmissionRequest;
+use codex_hepta_prompt_registry::FactorSource;
+use codex_hepta_prompt_registry::Lifecycle;
+use codex_hepta_prompt_registry::PromptFactor;
+use codex_hepta_prompt_registry::PromptModelTupleV2;
+use codex_hepta_prompt_registry::PromptRealizationBindingV2;
+use codex_hepta_prompt_registry::PromptRegistry;
+use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 use crate::PlanDecision;
 use crate::ReadOnlyUtilityContribution;
@@ -496,4 +518,160 @@ fn omitted_cognitive_read_evidence_fails_closed() {
         ReadOnlyVerticalError::ReadEvidenceOmitted(item)
             if item == "context.memory.read"
     ));
+}
+
+
+fn admit_registry_factor(registry: &mut PromptRegistry, factor_id: &str) {
+    let directory = tempfile::tempdir().expect("authority directory");
+    let now = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_millis(),
+    )
+    .expect("time fits");
+    let signing_seed = Digest32::of_bytes(&now.to_be_bytes()).into_array();
+    let signing = SigningKey::from_bytes(&signing_seed);
+    let authority = FinalUseAuthority::open_state_dir(
+        directory.path(),
+        "intelligence-prompt-review-owner".to_string(),
+        signing.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )
+    .expect("authority");
+    let request = AdmissionRequest {
+        factor_id: id(factor_id),
+        reviewer_id: id("reviewer:intelligence"),
+        evidence_digest: digest("prompt-review-evidence"),
+        reviewed_scope_digest: digest("prompt-review-scope"),
+    };
+    let binding = registry.admission_binding(&request).expect("admission binding");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "intelligence-prompt-review-owner".to_string(),
+        authority_epoch: 1,
+        grant_id: "intelligence-prompt-admission".to_string(),
+        nonce: Digest32::of_bytes(&now.saturating_add(1).to_be_bytes()).into_array(),
+        binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now.saturating_add(30_000),
+    };
+    let signature = signing
+        .sign(&grant.signing_bytes().expect("signing bytes"))
+        .to_bytes()
+        .to_vec();
+    let signed = SignedFinalUseGrant { grant, signature };
+    let token = authority
+        .claim(&signed, &signed.grant.binding)
+        .expect("claim admission");
+    registry
+        .admit_factor_authorized(&authority, token, request)
+        .expect("admit factor");
+}
+
+#[test]
+fn intelligence_control_composes_registry_optimizer_and_context_v2() {
+    let request = vertical_request();
+    let objective_digest = request.context.objective_digest;
+    let mut registry = PromptRegistry::new(64).expect("prompt registry");
+    registry
+        .register_factor(PromptFactor {
+            factor_id: id("factor:verify"),
+            proposer_id: id("proposer:verify"),
+            semantic_version: id("v1"),
+            content_digest: digest("factor:verify"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        })
+        .expect("register factor");
+    admit_registry_factor(&mut registry, "factor:verify");
+
+    let payload = b"Verify evidence before the final answer.".to_vec();
+    let binding = PromptRealizationBindingV2 {
+        realization_id: id("realization:verify"),
+        factor_id: id("factor:verify"),
+        model_digest: digest("model"),
+        tokenizer_digest: digest("tokenizer"),
+        template_digest: digest("template"),
+        tool_schema_digest: digest("tool-schema"),
+        context_profile_digest: digest("context-profile"),
+        locale_id: id("locale:en-US"),
+        role: PromptRoleV2::DeveloperInstruction,
+        payload_digest: Digest32::of_bytes(&payload),
+        token_cost: 8,
+        expires_unix_ms: None,
+        predecessor_realization_id: None,
+    };
+    registry
+        .register_realization_v2(binding.clone(), payload.clone())
+        .expect("register realization");
+    let model_tuple = PromptModelTupleV2 {
+        model_digest: binding.model_digest,
+        tokenizer_digest: binding.tokenizer_digest,
+        template_digest: binding.template_digest,
+        tool_schema_digest: binding.tool_schema_digest,
+        context_profile_digest: binding.context_profile_digest,
+        locale_id: binding.locale_id.clone(),
+    };
+    let generation_vector_digest = digest("prompt-generation");
+    let snapshot = registry
+        .snapshot_v2(generation_vector_digest, &model_tuple)
+        .expect("registry snapshot");
+
+    let (portfolio, compiled, resolutions) = request
+        .compose_prompt_registry_v2(
+            &registry,
+            &snapshot,
+            RegistryOptimizationRequest {
+                decision_id: id("prompt-decision"),
+                objective_digest,
+                generation_vector_digest,
+                model_tuple: model_tuple.clone(),
+                now_unix_ms: 1,
+                budget: 64,
+                maximum_selected: 1,
+                scores: vec![RegistryCandidateScore {
+                    factor_id: binding.factor_id.clone(),
+                    expected_gain: FixedQ32::from_raw(1_i64 << 31),
+                    legal: true,
+                    support_digest: digest("prompt-support"),
+                }],
+            },
+            ContextCompilationRequestV2 {
+                compilation_id: id("prompt-context"),
+                objective_digest,
+                prompt_portfolio_digest: Digest32::ZERO,
+                generation_vector_digest,
+                model_profile: ContextModelProfileV2 {
+                    model_digest: model_tuple.model_digest,
+                    tokenizer_digest: model_tuple.tokenizer_digest,
+                    template_digest: model_tuple.template_digest,
+                    tool_schema_digest: model_tuple.tool_schema_digest,
+                    maximum_context_tokens: 4_096,
+                },
+                token_budget: 64,
+                truncation_policy_digest: digest("prompt-truncation"),
+                candidates: Vec::new(),
+                mandatory_groups: Vec::new(),
+            },
+        )
+        .expect("compose prompt registry");
+
+    assert_eq!(portfolio.selected, vec![binding.realization_id.clone()]);
+    assert_eq!(
+        compiled.receipt.prompt_portfolio_digest,
+        portfolio.receipt_digest
+    );
+    assert_eq!(
+        compiled.receipt.selected_item_ids,
+        vec![binding.realization_id.clone()]
+    );
+    assert_eq!(resolutions.len(), 1);
+    assert_eq!(resolutions[0].payload, payload);
+    assert!(!portfolio.authority.grants_any());
+    assert!(!compiled.receipt.authority.grants_any());
 }
