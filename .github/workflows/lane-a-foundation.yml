@@ -60,6 +60,10 @@ jobs:
       - name: Run exact-head AuthBus Agentd product proof
         working-directory: codex-rs
         env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_CI_LANE: source-head
           CARGO_TARGET_DIR: ${{ runner.temp }}/lane-a-authbus-product-target
         shell: bash
         run: |
@@ -72,6 +76,11 @@ jobs:
 
       - name: Run exact-head AuthBus native qualification runner
         working-directory: codex-rs
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_CI_LANE: source-head
         shell: bash
         run: |
           set -euo pipefail
@@ -156,6 +165,10 @@ jobs:
       - name: Run merge-candidate AuthBus Agentd product proof
         working-directory: codex-rs
         env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          TESTED_SHA: ${{ steps.merge.outputs.sha }}
+          HEPTA_CI_LANE: base-merge
           CARGO_TARGET_DIR: ${{ runner.temp }}/lane-a-authbus-product-target
         shell: bash
         run: |
@@ -166,6 +179,11 @@ jobs:
 
       - name: Run merge-candidate AuthBus native qualification runner
         working-directory: codex-rs
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          TESTED_SHA: ${{ steps.merge.outputs.sha }}
+          HEPTA_CI_LANE: base-merge
         shell: bash
         run: |
           set -euo pipefail
