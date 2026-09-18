@@ -7,6 +7,33 @@ from control_engineering_v2 import product_gate
 
 
 class ProductGateTests(unittest.TestCase):
+    def write_canonical_registry(self, root: Path) -> None:
+        target = root / "docs" / "delivery" / "WORK_PACKAGES.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(
+            """{
+  "schema": "hepta.work-package-registry.v4",
+  "schemaVersion": 4,
+  "documentClass": "canonical_registry",
+  "packages": [
+    {
+      "id": "ECP-1-ENGINEERING-CONTROL-PLANE",
+      "module": "control.engineering",
+      "state": "source_implemented",
+      "authorityDelta": "none",
+      "developmentAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
+      "activationAfter": ["DOC-2-DEFAULT-BRANCH-SELECTION"],
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "sourceMutationAllowed": true,
+      "allowedWritePaths": ["tools/hepta-engineering-control/**"]
+    }
+  ]
+}
+""",
+            encoding="utf-8",
+        )
+
     def identity(
         self,
         *,
@@ -61,6 +88,7 @@ class ProductGateTests(unittest.TestCase):
             }[args],
         ):
             with tempfile.TemporaryDirectory() as temp:
+                self.write_canonical_registry(Path(temp))
                 receipt = product_gate.build_product_receipt(
                     Path(temp),
                     source_sha=source,
@@ -73,6 +101,14 @@ class ProductGateTests(unittest.TestCase):
             "control.engineering.repository-product-gate",
         )
         self.assertEqual(receipt["orderedParents"], [base, source])
+        self.assertEqual(
+            receipt["canonicalWorkPackage"]["packageId"],
+            "ECP-1-ENGINEERING-CONTROL-PLANE",
+        )
+        self.assertEqual(
+            receipt["canonicalWorkPackage"]["developmentAfter"],
+            ["DOC-2-DEFAULT-BRANCH-SELECTION"],
+        )
         self.assertFalse(receipt["mergeAuthority"])
         self.assertFalse(receipt["releaseAuthority"])
 
@@ -105,6 +141,7 @@ class ProductGateTests(unittest.TestCase):
             }[args],
         ):
             with tempfile.TemporaryDirectory() as temp:
+                self.write_canonical_registry(Path(temp))
                 receipt = product_gate.build_product_receipt(
                     Path(temp),
                     source_sha=source,
@@ -153,6 +190,66 @@ class ProductGateTests(unittest.TestCase):
                     pull_request_number=0,
                 ),
             )
+
+    def test_missing_canonical_work_package_registry_fails_closed(self):
+        source = "a" * 40
+        source_tree = "e" * 40
+        calls = {
+            ("rev-parse", "HEAD"): source,
+            ("rev-parse", "HEAD^{tree}"): source_tree,
+            ("rev-parse", f"{source}^{{tree}}"): source_tree,
+            ("show", "-s", "--format=%P", "HEAD"): "f" * 40,
+        }
+        with mock.patch.object(
+            product_gate,
+            "_git",
+            side_effect=lambda _root, *args: calls[args],
+        ):
+            with tempfile.TemporaryDirectory() as temp:
+                with self.assertRaisesRegex(
+                    ValueError, "canonical_work_package_registry_unavailable"
+                ):
+                    product_gate.build_product_receipt(
+                        Path(temp),
+                        source_sha=source,
+                        base_sha="b" * 40,
+                        **self.identity(lane="source-head"),
+                    )
+
+    def test_tampered_canonical_engineering_package_fails_closed(self):
+        source = "a" * 40
+        source_tree = "e" * 40
+        calls = {
+            ("rev-parse", "HEAD"): source,
+            ("rev-parse", "HEAD^{tree}"): source_tree,
+            ("rev-parse", f"{source}^{{tree}}"): source_tree,
+            ("show", "-s", "--format=%P", "HEAD"): "f" * 40,
+        }
+        with mock.patch.object(
+            product_gate,
+            "_git",
+            side_effect=lambda _root, *args: calls[args],
+        ):
+            with tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                self.write_canonical_registry(root)
+                target = root / "docs" / "delivery" / "WORK_PACKAGES.json"
+                target.write_text(
+                    target.read_text(encoding="utf-8").replace(
+                        '"authorityDelta": "none"',
+                        '"authorityDelta": "merge"',
+                    ),
+                    encoding="utf-8",
+                )
+                with self.assertRaisesRegex(
+                    ValueError, "canonical_engineering_package_binding"
+                ):
+                    product_gate.build_product_receipt(
+                        root,
+                        source_sha=source,
+                        base_sha="b" * 40,
+                        **self.identity(lane="source-head"),
+                    )
 
     def test_ci_identity_mismatch_fails_closed(self):
         identity = self.identity()
