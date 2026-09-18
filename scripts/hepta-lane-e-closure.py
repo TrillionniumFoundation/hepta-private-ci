@@ -62,9 +62,10 @@ EXPECTED_OPERATIONS = {
     "learning.eval": {
         "estimate_ope",
         "estimate_sequential",
-        "freeze_cross_fold_plan",
-        "FinalHoldoutRegistry::consume",
-        "decide_independently",
+        "freeze_cross_fold_plan_v2",
+        "DurableFinalHoldoutJournalV1::consume_proven",
+        "decide_with_signed_durable_evidence_v3",
+        "decide_with_signed_durable_longitudinal_evidence_v4",
     },
 }
 EXPECTED_CRATES = {
@@ -183,7 +184,10 @@ def verify_matrix(
         f"matrix modules must be exactly {sorted(EXPECTED_MODULES)}",
     )
     for module, item in modules.items():
-        for key in ("sourceRoot", "stableGuide", "dossier", "nativeMapping"):
+        required_paths = ["sourceRoot", "stableGuide", "dossier", "nativeMapping"]
+        if module == "learning.eval":
+            required_paths.append("productionContract")
+        for key in required_paths:
             path = relative_path(item.get(key), findings, f"{module}.{key}")
             if path is not None:
                 findings.require(
@@ -540,6 +544,40 @@ def verify_workflow(findings: Findings) -> None:
         ),
         "workflow_gate_missing",
         "workflow is missing the cross-language payload-fault regression",
+    )
+    findings.require(
+        "cargo-llvm-cov@0.9.0" in text
+        and "cargo llvm-cov" in text
+        and "learning-eval.lcov" in text,
+        "workflow_gate_missing",
+        "workflow is missing pinned learning.eval coverage evidence",
+    )
+    findings.require(
+        "Lane E learning.eval durable holdout stress audit" in text
+        and "durable_holdout::tests" in text,
+        "workflow_gate_missing",
+        "workflow is missing the durable holdout stress audit",
+    )
+    findings.require(
+        "decide_with_signed_durable_evidence_v3"
+        in (
+            ROOT / "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs"
+        ).read_text(encoding="utf-8"),
+        "production_e2e_missing",
+        "cross-crate closure does not use signed durable evaluation admission",
+    )
+    findings.require(
+        "--features trusted-inprocess-eval" in text
+        and "--test operator_claim" in text,
+        "workflow_gate_missing",
+        "workflow must run trusted-only compatibility explicitly",
+    )
+    findings.require(
+        "scripts/hepta-lane-e-evidence.py emit" in text
+        and "scripts/hepta-lane-e-evidence.py verify" in text
+        and "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" in text,
+        "workflow_gate_missing",
+        "workflow is missing exact-candidate provenance artifact generation",
     )
     findings.require(
         bool(re.search(r"^  synthetic-merge:\s*$", text, re.MULTILINE)),
