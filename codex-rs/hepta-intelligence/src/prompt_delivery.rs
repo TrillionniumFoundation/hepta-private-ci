@@ -226,6 +226,7 @@ pub fn compile_prompt_registry_v2(
             .map_err(PromptRegistryCompilationErrorV2::Registry)?;
         let admission_digest = registry
             .registry()
+            .map_err(PromptRegistryCompilationErrorV2::Registry)?
             .admission_event_digest(&candidate.factor_id)
             .ok_or_else(|| {
                 PromptRegistryCompilationErrorV2::MissingAdmissionLineage(
