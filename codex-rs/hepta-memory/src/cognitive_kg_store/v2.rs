@@ -132,19 +132,30 @@ pub(crate) async fn load_generation_tx(
 ) -> Result<LoadedProjectionV2, CognitiveStoreError> {
     let generation_u64 = u64::try_from(generation)
         .map_err(|_| CognitiveStoreError::Corrupt("negative KG generation".to_string()))?;
+    let receipt = sqlx::query(
+        "SELECT input_heads_sha256, output_sha256, node_count, edge_count
+         FROM kg_projection_generation_receipts
+         WHERE projection_scope = ? AND generation = ?",
+    )
+    .bind(projection_scope)
+    .bind(generation)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
     let input_heads_sha256 = Sha256Digest::parse(
-        sqlx::query_scalar::<_, String>(
-            "SELECT input_heads_sha256
-             FROM kg_projection_generation_receipts
-             WHERE projection_scope = ? AND generation = ?",
-        )
-        .bind(projection_scope)
-        .bind(generation)
-        .fetch_one(&mut **transaction)
-        .await
-        .map_err(unavailable)?,
+        receipt
+            .try_get::<String, _>("input_heads_sha256")
+            .map_err(unavailable)?,
     )
     .map_err(CognitiveStoreError::Corrupt)?;
+    let stored_output_sha256 = Sha256Digest::parse(
+        receipt
+            .try_get::<String, _>("output_sha256")
+            .map_err(unavailable)?,
+    )
+    .map_err(CognitiveStoreError::Corrupt)?;
+    let expected_node_count: i64 = receipt.try_get("node_count").map_err(unavailable)?;
+    let expected_edge_count: i64 = receipt.try_get("edge_count").map_err(unavailable)?;
 
     let node_rows = sqlx::query(
         "SELECT n.node_id, i.canonical_entity_id, n.entity_type, n.label,
@@ -171,6 +182,11 @@ pub(crate) async fn load_generation_tx(
             "stored KG projection exceeds the {MAX_SCOPE_NODES}-node V2 load limit"
         )));
     }
+    if i64::try_from(node_rows.len()).ok() != Some(expected_node_count) {
+        return Err(CognitiveStoreError::Corrupt(
+            "stored KG node count does not match its immutable generation receipt".to_string(),
+        ));
+    }
 
     let edge_rows = sqlx::query(
         "SELECT e.edge_id, e.from_node_id, e.to_node_id, e.relation,
@@ -193,6 +209,11 @@ pub(crate) async fn load_generation_tx(
         return Err(CognitiveStoreError::Corrupt(format!(
             "stored KG projection exceeds the {MAX_SCOPE_EDGES}-edge V2 load limit"
         )));
+    }
+    if i64::try_from(edge_rows.len()).ok() != Some(expected_edge_count) {
+        return Err(CognitiveStoreError::Corrupt(
+            "stored KG edge count does not match its immutable generation receipt".to_string(),
+        ));
     }
 
     let relation_rows = sqlx::query(
@@ -326,6 +347,32 @@ pub(crate) async fn load_generation_tx(
             "persisted KG projection fails canonical V2 validation: {error}"
         ))
     })?;
+
+    let v2_digest = Sha256Digest::parse(generation.generation_digest.to_string())
+        .map_err(CognitiveStoreError::Corrupt)?;
+    if stored_output_sha256 != v2_digest {
+        // Historical generations written before the V2 composition retain the
+        // predecessor projection digest. CognitiveStore::open verifies the
+        // selected legacy generation against the immutable fact rows before any
+        // product read is admitted. All generations published by the V2 path
+        // bind this equality directly.
+        let is_current: bool = sqlx::query_scalar(
+            "SELECT EXISTS(
+                 SELECT 1 FROM kg_projection
+                 WHERE projection_scope = ? AND generation = ?
+             )",
+        )
+        .bind(projection_scope)
+        .bind(generation)
+        .fetch_one(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        if !is_current {
+            return Err(CognitiveStoreError::Corrupt(
+                "historical KG generation is not bound to the canonical V2 digest".to_string(),
+            ));
+        }
+    }
 
     Ok(LoadedProjectionV2 {
         generation,
