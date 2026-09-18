@@ -92,6 +92,7 @@ impl ValidateHnmfV1 for MemoryScopeV1 {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct TimeIntervalV1 {
     start_unix_ms: i64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     end_unix_ms: Option<i64>,
 }
 
@@ -193,6 +194,7 @@ pub enum MemoryVerificationStateV1 {
 pub struct RetentionPolicyV1 {
     #[serde(with = "super::wire::digest")]
     policy_digest: Digest32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     retain_until_unix_ms: Option<i64>,
     legal_hold: bool,
 }
@@ -292,6 +294,7 @@ pub struct MemoryEventV1 {
     objective_digest: Digest32,
     #[serde(with = "super::wire::digest")]
     ndu_state_digest: Digest32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     behavior_propensity_ppm: Option<u32>,
     lifecycle: MemoryLifecycleV1,
 }
