@@ -13,6 +13,7 @@ fn adapter_intent() -> CodexOperationIntent {
         method_id: StableId::new("app-server:v2:turn-start".to_string()).unwrap(),
         payload_digest: payload,
         lease_payload_digest: payload,
+        context_digest: Digest32::of_bytes(b"test-context"),
         connection_digest: Digest32::of_bytes(b"test-connection"),
         session_generation: 1,
         protocol_version: APP_SERVER_PROTOCOL_VERSION,
