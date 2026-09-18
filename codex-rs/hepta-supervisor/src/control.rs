@@ -71,6 +71,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot
+            .runtime
+            .as_ref()
+            .is_some_and(|runtime| !runtime.lease_persisted)
+        {
+            // An unleased spawned child is quarantined. Stop may strengthen
+            // cleanup but must never downgrade it to graceful termination.
+            return self.kill_slot(agent_id, slot);
+        }
         slot.restart_pending = false;
         slot.automatic_restart = false;
         slot.restart_not_before = None;
