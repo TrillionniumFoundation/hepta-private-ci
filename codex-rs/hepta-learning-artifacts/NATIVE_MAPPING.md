@@ -41,6 +41,7 @@ or filesystem namespace. Those capabilities remain host-owned.
 | append/replay lifecycle journal | `ArtifactLifecycleJournalV2::append`, `ArtifactLifecycleJournalV2::from_snapshot` | `src/lifecycle_journal.rs` | implemented |
 | persist/reopen withdrawal frontier | `write_dataset_withdrawal_snapshot`, `read_dataset_withdrawal_snapshot` | `src/storage.rs` | implemented |
 | persist/reopen lifecycle journal | `write_lifecycle_journal_snapshot`, `read_lifecycle_journal_snapshot` | `src/storage.rs` | implemented |
+| project V3 admission into V1 registry event | `artifact_registry_event_for_admission_v3` | `src/publication.rs` | implemented |
 | prepare/recover publication transaction | `prepare_artifact_publication_v1`, `recover_artifact_publication_v1` | `src/publication.rs` | implemented |
 | governed iteration transition | `validate_iteration_transition` | `src/iteration.rs` | implemented |
 | governed iteration evidence ledger | `IterationLedgerV1::append_candidate`, `IterationLedgerV1::transition`, `IterationLedgerV1::from_snapshot` | `src/iteration_ledger.rs` | implemented |
