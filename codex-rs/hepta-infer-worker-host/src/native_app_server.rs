@@ -458,7 +458,7 @@ fn final_use_identifier(value: &str) -> bool {
         && value.len() <= 119
         && value
             .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+            .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
 }
 
 async fn verify_owner_health(
