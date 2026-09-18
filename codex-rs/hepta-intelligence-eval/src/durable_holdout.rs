@@ -64,7 +64,6 @@ impl From<io::Error> for DurableHoldoutError {
     }
 }
 
-
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct HoldoutOwnerContextV2 {
     /// Stable digest for the host-owned holdout authority/scope.
@@ -102,10 +101,7 @@ pub struct FencedFinalHoldoutJournalV2 {
 }
 
 impl FencedFinalHoldoutJournalV2 {
-    pub fn create(
-        file: File,
-        context: HoldoutOwnerContextV2,
-    ) -> Result<Self, DurableHoldoutError> {
+    pub fn create(file: File, context: HoldoutOwnerContextV2) -> Result<Self, DurableHoldoutError> {
         let binding = context.binding_digest()?;
         Ok(Self {
             context,
