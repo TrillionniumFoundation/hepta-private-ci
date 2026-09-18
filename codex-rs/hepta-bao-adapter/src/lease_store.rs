@@ -57,7 +57,13 @@ impl BaoLeaseStore {
         let root = prepare_directory(root)?;
         let store = Self { root };
         let (_guard, created_marker) = store.lock_initialization()?;
-        if !entry_exists(&store.root, "leases.json")? {
+        let has_state = entry_exists(&store.root, "leases.json")?;
+        if created_marker && has_state {
+            // Never recreate a missing lock beside an existing registry; an
+            // older process could still be fencing on the unlinked inode.
+            return Err(LeaseStoreError::InvalidState);
+        }
+        if !has_state {
             if !created_marker {
                 return Err(LeaseStoreError::InvalidState);
             }
