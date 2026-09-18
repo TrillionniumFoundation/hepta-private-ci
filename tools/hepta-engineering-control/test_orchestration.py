@@ -367,6 +367,33 @@ class OrchestrationTests(unittest.TestCase):
                         now_ns=self.now,
                     )
 
+    def test_resource_planner_rejects_package_outside_envelope(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                with self.assertRaisesRegex(
+                    ValueError, "package_path_outside_envelope"
+                ):
+                    plan_engineering_work(
+                        store,
+                        self.envelope,
+                        (
+                            EngineeringWorkPackage(
+                                0,
+                                "escape",
+                                (),
+                                ("outside/escape",),
+                                expected_value_q32=100,
+                            ),
+                        ),
+                        (WorkerProfile("worker", (), 1, ("outside",)),),
+                        (),
+                        self.trust,
+                        EngineeringCapacity(1, ()),
+                        generation_id="g-outside-envelope",
+                        now_ns=self.now,
+                    )
+
     def test_plan_rejects_envelope_not_identical_to_admitted_owner_state(self):
         with tempfile.TemporaryDirectory() as temp:
             with EngineeringStore(Path(temp) / "store.db") as store:
