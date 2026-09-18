@@ -105,6 +105,83 @@ test("close drains in-flight acknowledgement under immutable origin provenance b
   assert.equal(session.pendingReconciliation, 1);
 });
 
+test("closing client cannot re-arm or manually start reconciliation from a late acknowledgement", async () => {
+  let requestResolve;
+  let requestStartedResolve;
+  let closeResolve;
+  const requestStarted = new Promise((resolve) => { requestStartedResolve = resolve; });
+  const closeStarted = new Promise((resolve) => { closeResolve = resolve; });
+  let finishClose;
+  const closeGate = new Promise((resolve) => { finishClose = resolve; });
+  let timerCalls = 0;
+  let reconcileCalls = 0;
+  const transport = {
+    async connect(input) {
+      return {
+        authenticated: true,
+        sessionId: "session.1",
+        connectionGeneration: 1,
+        protocolVersion: input.protocolVersion,
+      };
+    },
+    async request(method, input) {
+      requestStartedResolve({ method, input });
+      return new Promise((resolve) => { requestResolve = resolve; });
+    },
+    async reconcile() {
+      reconcileCalls += 1;
+      return null;
+    },
+    async close() {
+      closeResolve();
+      await closeGate;
+    },
+  };
+  const client = new RuntimeClient({
+    transport,
+    setTimer: () => {
+      timerCalls += 1;
+      return { unref() {} };
+    },
+    clearTimer: () => {},
+  });
+  await connectWithSnapshot(client);
+
+  const submission = client.submitRequest({
+    operationId: "operation.close-late-ack",
+    subjectId: "runtime.agentd",
+    action: "request_retry",
+    expectedRevision: 4,
+    displayedView: displayedViewBinding(),
+  });
+  const started = await requestStarted;
+  const closing = client.close();
+  await closeStarted;
+
+  requestResolve({
+    accepted: true,
+    method: started.method,
+    sessionId: started.input.sessionId,
+    connectionGeneration: started.input.connectionGeneration,
+    runtimeGeneration: started.input.runtimeGeneration,
+    operationId: started.input.operationId,
+    semanticDigest: started.input.semanticDigest,
+  });
+  const acknowledgement = await submission;
+  assert.equal(acknowledgement.accepted, true);
+  assert.equal(timerCalls, 0);
+  assert.equal(reconcileCalls, 0);
+  await assert.rejects(
+    client.reconcilePending({ force: true }),
+    (error) => error.code === ERROR_CODES.NOT_CONNECTED,
+  );
+
+  finishClose();
+  await closing;
+  assert.equal(timerCalls, 0);
+  assert.equal(reconcileCalls, 0);
+});
+
 test("reconnect does not reconcile an operation while its original mutation dispatch is in flight", async () => {
   let connection = 0;
   let reconcileCalls = 0;
