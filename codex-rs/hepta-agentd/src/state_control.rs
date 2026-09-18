@@ -150,6 +150,56 @@ impl AgentdState {
                     },
                 }
             }
+            crate::AgentdMethod::CognitiveContextFinalize {
+                snapshot_digest,
+                read_digest,
+            } => {
+                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                // Re-observe the exact owner snapshot and deterministic read receipt
+                // immediately before the downstream effect boundary. Lifecycle
+                // authority is fenced before and after the storage I/O as well.
+                let result = crate::cognitive_context::finalize(
+                    &store,
+                    &self.identity.agent_id,
+                    &snapshot_digest,
+                    &read_digest,
+                )
+                .await;
+                self.refresh_generation()?;
+                {
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.fenced,
+                    )?;
+                }
+                match result {
+                    Ok(()) => AgentdPayload::CognitiveContextFinalized {
+                        snapshot_digest,
+                        read_digest,
+                    },
+                    Err(CognitiveContextError::Store(error)) => {
+                        return self.cognitive_error_response(
+                            request_id,
+                            current_generation,
+                            error,
+                        );
+                    }
+                    Err(CognitiveContextError::RankerUnavailable) => AgentdPayload::Error {
+                        code: "cognitive_ranker_unavailable".to_string(),
+                        message: "selected ranker is unavailable; explicit reload required"
+                            .to_string(),
+                    },
+                }
+            }
             crate::AgentdMethod::Events {
                 after_cursor,
                 limit,
