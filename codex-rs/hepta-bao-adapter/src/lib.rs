@@ -16,6 +16,8 @@ use codex_hepta_types::StableId;
 
 mod final_use_host;
 mod https_consumer;
+mod lease_client;
+mod lease_store;
 mod secret_boundary_v1;
 
 pub use final_use_host::BaoConsumerCallback;
@@ -27,6 +29,22 @@ pub use https_consumer::BaoClientError;
 pub use https_consumer::BaoReadRequest;
 pub use https_consumer::BaoSecretReceipt;
 pub use https_consumer::BaoToken;
+pub use lease_client::BaoLeaseError;
+pub use lease_client::BaoReceiptKey;
+pub use lease_client::BaoSecretLeaseReconcileRequest;
+pub use lease_client::BaoSecretLeaseRenewRequest;
+pub use lease_client::BaoSecretLeaseRequest;
+pub use lease_client::BaoSecretLeaseRevokeRequest;
+pub use lease_store::SECRET_LEASE_SCHEMA_VERSION_V1;
+pub use lease_store::SecretLeaseIssueObservationV1;
+pub use lease_store::SecretLeaseMetadataV1;
+pub use lease_store::SecretLeaseOperationAdmissionV1;
+pub use lease_store::SecretLeaseOperationKindV1;
+pub use lease_store::SecretLeaseOperationStateV1;
+pub use lease_store::SecretLeaseOperationV1;
+pub use lease_store::SecretLeaseStateV1;
+pub use lease_store::SecretLeaseStore;
+pub use lease_store::SecretLeaseStoreError;
 
 pub use secret_boundary_v1::AUTHBUS_POLICY_PRODUCER_ID;
 pub use secret_boundary_v1::HEPTABAO_BACKEND_ID;
