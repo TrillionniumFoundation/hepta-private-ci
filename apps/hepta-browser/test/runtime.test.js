@@ -677,7 +677,15 @@ test("persisted indeterminate operation reconciles after host process loss witho
 });
 
 test("terminal operation retention uses durable tombstones instead of exhausting active capacity", async () => {
+  let pageGeneration = 0;
   const fakeDriver = driver({
+    observeImpl: async () => ({
+      pageGeneration: ++pageGeneration,
+      documentDigest: D3,
+      semanticDigest: SEMANTIC_DIGEST,
+      semanticObservation: SEMANTIC,
+      origin: "https://example.com",
+    }),
     dispatchImpl: async () => ({
       terminalObserved: true,
       status: "succeeded",
@@ -686,8 +694,22 @@ test("terminal operation retention uses durable tombstones instead of exhausting
   });
   const { host } = await preparedHost({ driver: fakeDriver });
   for (let index = 0; index < 300; index += 1) {
-    const receipt = await host.navigateOrAct(operation({ operationId: `operation.${index}` }));
+    const receipt = await host.navigateOrAct(
+      operation({
+        operationId: `operation.${index}`,
+        pageGeneration: index + 1,
+      }),
+    );
     assert.equal(receipt.terminalObserved, true);
+    if (index < 299) {
+      const refreshed = await host.observePage({
+        profileId: "profile.1",
+        principalId: "principal.1",
+        generation: 1,
+        observationBudget: 2048,
+      });
+      assert.equal(refreshed.pageGeneration, index + 2);
+    }
   }
   assert.equal(fakeDriver.dispatchCalls, 300);
   const replay = await host.navigateOrAct(operation({ operationId: "operation.0" }));
