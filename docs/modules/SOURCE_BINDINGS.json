@@ -471,7 +471,7 @@
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
       "source_root_present": true,
-      "production_implementation": false,
+      "production_implementation": true,
       "declaredRoots": [
         "codex-rs/hepta-cognitive-store"
       ],
@@ -479,12 +479,13 @@
         "codex-rs/hepta-cognitive-store"
       ],
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-cognitive-store"
+        "codex-rs/hepta-cognitive-store",
+        "codex-rs/hepta-memory"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-1-STORE",
       "technicalDocument": "docs/modules/cognitive.store/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "named_agentd_product_caller_and_executable_product_test_bind_the_canonical_facade_to_the_existing_sqlite_owner;_activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "cognitive.read",
