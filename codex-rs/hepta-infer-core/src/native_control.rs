@@ -112,10 +112,19 @@ pub struct NativeRunRecord {
     pub observation: Option<NativeRunOutput>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeArchivedTombstone {
+    pub request: NativeRequest,
+    pub final_state: NativeReservationState,
+    pub archive_digest: String,
+}
+
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub(super) struct NativeJournal {
     maximum_in_flight: Option<usize>,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
+    pub(super) tombstones: BTreeMap<String, NativeArchivedTombstone>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -143,6 +152,11 @@ enum Event {
     Observe {
         request_id: String,
         output: NativeRunOutput,
+    },
+    Tombstone {
+        request: NativeRequest,
+        final_state: NativeReservationState,
+        archive_digest: String,
     },
 }
 
@@ -179,8 +193,16 @@ impl DurableInferenceControl {
                 Err(Error::Conflict)
             };
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        self.maybe_compact_native_history()?;
+        if self.records.len() + self.native.active_count() >= self.capacity {
             return Err(Error::CapacityExceeded);
+        }
+        if let Some(tombstone) = self.native.tombstones.get(&request.request_id) {
+            return if tombstone.request == request {
+                Err(Error::ArchivedRequest)
+            } else {
+                Err(Error::Conflict)
+            };
         }
         self.ensure_native_dispatch_space()?;
         let id = request.request_id.clone();
@@ -318,7 +340,7 @@ impl DurableInferenceControl {
         self.native.records.get(request_id)
     }
 
-    fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
+    fn ensure_native_dispatch_space(&mut self) -> Result<(), Error> {
         // This exclusive owner serializes active calls. Leave room for bounded
         // dispatch/cancel metadata and the next maximal observed output before
         // admitting a new external execution. This is not an archival policy.
@@ -345,6 +367,97 @@ impl DurableInferenceControl {
 }
 
 impl NativeJournal {
+    pub(super) fn active_count(&self) -> usize {
+        self.records
+            .values()
+            .filter(|record| record.state != NativeReservationState::Released)
+            .count()
+    }
+
+    pub(super) fn released_count(&self) -> usize {
+        self.records.len().saturating_sub(self.active_count())
+    }
+
+    pub(super) fn compacted_lines(&self, archive_digest: &str) -> Result<String, Error> {
+        validate_digest(archive_digest, "native archive")?;
+        let mut events = Vec::new();
+        for tombstone in self.tombstones.values() {
+            events.push(Event::Tombstone {
+                request: tombstone.request.clone(),
+                final_state: tombstone.final_state,
+                archive_digest: tombstone.archive_digest.clone(),
+            });
+        }
+        let maximum_in_flight = self.maximum_in_flight.unwrap_or(1);
+        for record in self.records.values() {
+            if record.state == NativeReservationState::Released {
+                events.push(Event::Tombstone {
+                    request: record.request.clone(),
+                    final_state: NativeReservationState::Released,
+                    archive_digest: archive_digest.to_string(),
+                });
+                continue;
+            }
+            events.push(Event::Reserve {
+                request: record.request.clone(),
+                maximum_in_flight,
+            });
+            if let Some(dispatch) = &record.dispatch {
+                events.push(Event::Dispatch {
+                    request_id: record.request.request_id.clone(),
+                    dispatch: dispatch.clone(),
+                });
+            }
+            if let Some(turn_id) = &record.turn_id {
+                events.push(Event::Started {
+                    request_id: record.request.request_id.clone(),
+                    turn_id: turn_id.clone(),
+                });
+            }
+            if record.cancel_requested {
+                events.push(Event::Cancel {
+                    request_id: record.request.request_id.clone(),
+                });
+            }
+            if let Some(reason) = &record.pre_dispatch_stop {
+                events.push(Event::Stop {
+                    request_id: record.request.request_id.clone(),
+                    reason: reason.clone(),
+                });
+            }
+            if let Some(output) = &record.observation {
+                events.push(Event::Observe {
+                    request_id: record.request.request_id.clone(),
+                    output: output.clone(),
+                });
+            }
+        }
+
+        let mut candidate = NativeJournal::default();
+        let mut encoded = String::new();
+        for event in events {
+            candidate.apply(event.clone())?;
+            let json =
+                serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
+            encoded.push_str(JOURNAL_PREFIX);
+            encoded.push_str(&json);
+            encoded.push('\n');
+        }
+        let expected_records = self
+            .records
+            .iter()
+            .filter(|(_, record)| record.state != NativeReservationState::Released)
+            .map(|(id, record)| (id.clone(), record.clone()))
+            .collect::<BTreeMap<_, _>>();
+        if candidate.records != expected_records
+            || candidate.maximum_in_flight != self.maximum_in_flight
+            || candidate.tombstones.len() != self.tombstones.len() + self.released_count()
+        {
+            return Err(Error::CorruptJournal("native compaction replay"));
+        }
+        Ok(encoded)
+    }
+
     pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
         let event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
@@ -352,6 +465,31 @@ impl NativeJournal {
     }
 
     fn apply(&mut self, event: Event) -> Result<(), Error> {
+        if let Event::Tombstone {
+            request,
+            final_state,
+            archive_digest,
+        } = event
+        {
+            validate_identity(&request.request_id, "native request")?;
+            validate_digest(&request.payload_digest, "native payload")?;
+            validate_digest(&archive_digest, "native archive")?;
+            if final_state != NativeReservationState::Released
+                || self.records.contains_key(&request.request_id)
+                || self.tombstones.contains_key(&request.request_id)
+            {
+                return Err(Error::Conflict);
+            }
+            self.tombstones.insert(
+                request.request_id.clone(),
+                NativeArchivedTombstone {
+                    request,
+                    final_state,
+                    archive_digest,
+                },
+            );
+            return Ok(());
+        }
         if let Event::Reserve {
             request,
             maximum_in_flight,
@@ -375,6 +513,13 @@ impl NativeJournal {
                 || self.records.contains_key(&request.request_id)
             {
                 return Err(Error::Conflict);
+            }
+            if let Some(tombstone) = self.tombstones.get(&request.request_id) {
+                return if tombstone.request == request {
+                    Err(Error::ArchivedRequest)
+                } else {
+                    Err(Error::Conflict)
+                };
             }
             if self
                 .records
@@ -402,7 +547,9 @@ impl NativeJournal {
             return Ok(());
         }
         let id = match &event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::Tombstone { .. } => {
+                return Err(Error::InvalidTransition)
+            }
             Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
@@ -411,7 +558,9 @@ impl NativeJournal {
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
-            Event::Reserve { .. } => return Err(Error::InvalidTransition),
+            Event::Reserve { .. } | Event::Tombstone { .. } => {
+                return Err(Error::InvalidTransition)
+            }
             Event::Dispatch { dispatch, .. } => {
                 if record.state != NativeReservationState::Reserved {
                     return Err(Error::InvalidTransition);
