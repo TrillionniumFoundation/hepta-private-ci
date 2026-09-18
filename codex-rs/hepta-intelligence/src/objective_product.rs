@@ -601,3 +601,177 @@ fn replay(
                 .try_into()
                 .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?,
         );
+
+        let complement = u32::from_be_bytes(
+            fixed[4..8]
+                .try_into()
+                .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?,
+        );
+        if payload_len != !complement
+            || payload_len == 0
+            || payload_len as usize > MAX_PAYLOAD_BYTES
+        {
+            return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+        }
+        let sequence = u64::from_be_bytes(
+            fixed[8..16]
+                .try_into()
+                .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?,
+        );
+        let predecessor_chain_digest = digest_from_slice(&fixed[16..48])?;
+        let frame_len = FRAME_FIXED_BYTES
+            .checked_add(payload_len as usize)
+            .ok_or(ObjectivePublicationStoreErrorV1::Capacity)?;
+        if length - cursor < frame_len as u64 {
+            break;
+        }
+        if records.len() >= max_records
+            || sequence != records.len() as u64 + 1
+            || predecessor_chain_digest != head
+        {
+            return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+        }
+        let mut payload = vec![0_u8; payload_len as usize];
+        file.read_exact(&mut payload)?;
+        let mut trailer = [0_u8; 64];
+        file.read_exact(&mut trailer)?;
+        let publication_digest = digest_from_slice(&trailer[..32])?;
+        let chain_digest = digest_from_slice(&trailer[32..])?;
+        if publication_digest != Digest32::of_bytes(&payload)
+            || chain_digest
+                != publication_chain_digest(
+                    sequence,
+                    predecessor_chain_digest,
+                    publication_digest,
+                )
+        {
+            return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+        }
+        let body: StoredPublicationBody = serde_json::from_slice(&payload)
+            .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?;
+        let (admission, objective, run_start) = body.into_typed()?;
+        validate_publication_semantics(&admission, &objective, &run_start)?;
+        let record = ObjectivePublicationV1 {
+            sequence,
+            predecessor_chain_digest,
+            admission,
+            objective,
+            run_start,
+            publication_digest,
+            chain_digest,
+        };
+        validate_replayed_identity(&records, &record)?;
+        head = chain_digest;
+        records.push(record);
+        cursor += frame_len as u64;
+    }
+    Ok((records, cursor, length))
+}
+
+fn validate_replayed_identity(
+    records: &[ObjectivePublicationV1],
+    candidate: &ObjectivePublicationV1,
+) -> Result<(), ObjectivePublicationStoreErrorV1> {
+    for existing in records {
+        if existing.run_start.run_id == candidate.run_start.run_id {
+            return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+        }
+        if existing.objective.objective.request_id == candidate.objective.objective.request_id
+            && existing.objective.objective.revision == candidate.objective.objective.revision
+            && (existing.objective.objective.semantic_digest
+                != candidate.objective.objective.semantic_digest
+                || existing.admission.intent_digest != candidate.admission.intent_digest
+                || existing.admission.profile_digest != candidate.admission.profile_digest
+                || existing.admission.admitted_source_digest
+                    != candidate.admission.admitted_source_digest)
+        {
+            return Err(ObjectivePublicationStoreErrorV1::Corrupt);
+        }
+    }
+    Ok(())
+}
+
+fn encode_frame(
+    sequence: u64,
+    predecessor: Digest32,
+    publication_digest: Digest32,
+    chain_digest: Digest32,
+    payload: &[u8],
+) -> Result<Vec<u8>, ObjectivePublicationStoreErrorV1> {
+    let size =
+        u32::try_from(payload.len()).map_err(|_| ObjectivePublicationStoreErrorV1::Capacity)?;
+    let mut frame = Vec::with_capacity(FRAME_FIXED_BYTES + payload.len());
+    frame.extend_from_slice(&size.to_be_bytes());
+    frame.extend_from_slice(&(!size).to_be_bytes());
+    frame.extend_from_slice(&sequence.to_be_bytes());
+    frame.extend_from_slice(predecessor.as_array());
+    frame.extend_from_slice(payload);
+    frame.extend_from_slice(publication_digest.as_array());
+    frame.extend_from_slice(chain_digest.as_array());
+    Ok(frame)
+}
+
+fn publication_chain_digest(
+    sequence: u64,
+    predecessor: Digest32,
+    publication_digest: Digest32,
+) -> Digest32 {
+    let mut bytes = Vec::with_capacity(PUBLICATION_CHAIN_DOMAIN.len() + 72);
+    bytes.extend_from_slice(PUBLICATION_CHAIN_DOMAIN);
+    bytes.extend_from_slice(&sequence.to_be_bytes());
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(publication_digest.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn digest_from_slice(bytes: &[u8]) -> Result<Digest32, ObjectivePublicationStoreErrorV1> {
+    let array: [u8; 32] = bytes
+        .try_into()
+        .map_err(|_| ObjectivePublicationStoreErrorV1::Corrupt)?;
+    Ok(Digest32::from_array(array))
+}
+
+struct LockedFile(File);
+
+impl LockedFile {
+    fn acquire(file: File) -> Result<Self, ObjectivePublicationStoreErrorV1> {
+        if !file.metadata()?.is_file() {
+            return Err(ObjectivePublicationStoreErrorV1::NotRegular);
+        }
+        match file.try_lock() {
+            Ok(()) => Ok(Self(file)),
+            Err(TryLockError::WouldBlock) => Err(ObjectivePublicationStoreErrorV1::Busy),
+            Err(TryLockError::Error(error)) => Err(ObjectivePublicationStoreErrorV1::Io(error.kind())),
+        }
+    }
+}
+
+impl Deref for LockedFile {
+    type Target = File;
+
+    fn deref(&self) -> &File {
+        &self.0
+    }
+}
+
+impl DerefMut for LockedFile {
+    fn deref_mut(&mut self) -> &mut File {
+        &mut self.0
+    }
+}
+
+impl Drop for LockedFile {
+    fn drop(&mut self) {
+        let _ = self.0.unlock();
+    }
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    let length = u32::try_from(value.len()).unwrap_or(u32::MAX);
+    bytes.extend_from_slice(&length.to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
+}
+
+#[cfg(test)]
+#[path = "objective_product_tests.rs"]
+mod tests;
