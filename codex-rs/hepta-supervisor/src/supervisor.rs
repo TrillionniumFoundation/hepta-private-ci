@@ -248,6 +248,27 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
+    fn next_control_revision_for_slot(
+        slot: &AgentSlot<D::Process>,
+    ) -> Result<u64, SupervisorError> {
+        slot.control_revision
+            .checked_add(1)
+            .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))
+    }
+
+    fn set_control_revision_for_slot(
+        slot: &mut AgentSlot<D::Process>,
+        revision: u64,
+    ) -> Result<(), SupervisorError> {
+        if revision != slot.control_revision.saturating_add(1) {
+            return Err(SupervisorError::Invalid(
+                "control revision must advance exactly once".to_string(),
+            ));
+        }
+        slot.control_revision = revision;
+        Ok(())
+    }
+
     #[cfg(unix)]
     pub(crate) fn preflight_drain(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
@@ -371,11 +392,20 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         target: &AgentRelease,
     ) -> Result<(), SupervisorError> {
-        let record = self.record(agent_id)?;
         let slot = self
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        self.preflight_upgrade_slot(agent_id, slot, target)
+    }
+
+    fn preflight_upgrade_slot(
+        &self,
+        agent_id: &AgentId,
+        slot: &AgentSlot<D::Process>,
+        target: &AgentRelease,
+    ) -> Result<(), SupervisorError> {
+        let record = self.record(agent_id)?;
         Self::ensure_signed_intent_resolved(agent_id, slot)?;
         if slot.release_change.is_some() || slot.restart_pending {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
@@ -604,7 +634,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     now_unix_seconds,
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
-            supervisor.preflight_upgrade(agent_id, &target)?;
+            supervisor.preflight_upgrade_slot(agent_id, slot, &target)?;
             if slot
                 .signed_intent
                 .as_ref()
@@ -619,7 +649,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     agent_id.clone(),
                 ));
             }
-            let next_control_revision = supervisor.next_control_revision(agent_id)?;
+            let next_control_revision = Self::next_control_revision_for_slot(slot)?;
             let intent = SignedSupervisorIntent::new(
                 grant.digest().clone(),
                 agent_id.to_string(),
@@ -653,7 +683,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.signed_intent = Some(recovery);
                 return Err(error);
             }
-            supervisor.set_control_revision(agent_id, next_control_revision)?;
+            Self::set_control_revision_for_slot(slot, next_control_revision)?;
             slot.signed_intent = Some(intent.clone());
             let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
             if let Err(error) =
