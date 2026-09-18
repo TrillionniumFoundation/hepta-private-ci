@@ -31,6 +31,30 @@ function freezeRecord(record) {
   return Object.freeze({ ...record });
 }
 
+// One transition policy for memory, live file updates and recovery. A replay
+// cannot turn an observed result back into a dispatch intent.
+function foldDispatch(prior, record) {
+  if (!prior) return record;
+  if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
+    throw new TypeError("journal operation identity was reused with changed semantics");
+  }
+  return prior;
+}
+
+function foldObservation(prior, record) {
+  if (!prior) throw new TypeError("journal observation has no dispatch intent");
+  if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
+    throw new TypeError("journal observation changed immutable semantics");
+  }
+  if (prior.terminalObserved === true) {
+    if (record.terminalObserved !== true || prior.status !== record.status || prior.outcomeDigest !== record.outcomeDigest) {
+      throw new TypeError("journal observation conflicts with an already observed terminal result");
+    }
+    return prior;
+  }
+  return freezeRecord({ ...prior, ...record });
+}
+
 async function ensureCanonicalPrivateParent(path) {
   const parent = dirname(path);
   await mkdir(parent, { recursive: true, mode: 0o700 });
@@ -47,21 +71,14 @@ export class MemoryBrowserOperationJournal {
     const snapshot = freezeRecord(requireRecord(record, "dispatch record"));
     const key = keyOf(snapshot);
     const prior = this.#records.get(key);
-    if (prior && prior.requestDigest !== snapshot.requestDigest) {
-      throw new TypeError("journal operation identity was reused with changed semantics");
-    }
-    this.#records.set(key, snapshot);
+    this.#records.set(key, foldDispatch(prior, snapshot));
   }
 
   async recordObservation(record) {
     const snapshot = freezeRecord(requireRecord(record, "observation record"));
     const key = keyOf(snapshot);
     const prior = this.#records.get(key);
-    if (!prior) throw new TypeError("journal observation has no dispatch intent");
-    if (prior.requestDigest !== snapshot.requestDigest || prior.semanticDigest !== snapshot.semanticDigest) {
-      throw new TypeError("journal observation changed immutable semantics");
-    }
-    this.#records.set(key, freezeRecord({ ...prior, ...snapshot }));
+    this.#records.set(key, foldObservation(prior, snapshot));
   }
 
   async getOperation(profileId, generation, operationId) {
@@ -88,23 +105,20 @@ export class FileBrowserOperationJournal {
   }
 
   async recordDispatch(record) {
+    const snapshot = freezeRecord(requireRecord(record, "dispatch record"));
     return this.#serialize(async () => {
-      const prior = await this.#getOperationUnlocked(record.profileId, record.generation, record.operationId);
-      if (prior && prior.requestDigest !== record.requestDigest) {
-        throw new TypeError("journal operation identity was reused with changed semantics");
-      }
-      await this.#append({ type: "dispatch", record: requireRecord(record, "dispatch record") });
+      const prior = await this.#getOperationUnlocked(snapshot.profileId, snapshot.generation, snapshot.operationId);
+      if (foldDispatch(prior, snapshot) === prior) return;
+      await this.#append({ type: "dispatch", record: snapshot });
     });
   }
 
   async recordObservation(record) {
+    const snapshot = freezeRecord(requireRecord(record, "observation record"));
     return this.#serialize(async () => {
-      const prior = await this.#getOperationUnlocked(record.profileId, record.generation, record.operationId);
-      if (!prior) throw new TypeError("journal observation has no dispatch intent");
-      if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
-        throw new TypeError("journal observation changed immutable semantics");
-      }
-      await this.#append({ type: "observation", record: requireRecord(record, "observation record") });
+      const prior = await this.#getOperationUnlocked(snapshot.profileId, snapshot.generation, snapshot.operationId);
+      if (foldObservation(prior, snapshot) === prior) return;
+      await this.#append({ type: "observation", record: snapshot });
     });
   }
 
@@ -148,6 +162,11 @@ export class FileBrowserOperationJournal {
     } finally {
       await handle.close();
     }
+    if (bytes.length !== 0 && !bytes.endsWith("\n")) {
+      // Never append onto a possibly incomplete record, even when its JSON and
+      // checksum happen to parse. Repair requires explicit owner reconciliation.
+      throw new TypeError("browser journal contains an incomplete final record");
+    }
     const records = new Map();
     const lines = bytes.length === 0 ? [] : bytes.split("\n");
     if (lines.at(-1) === "") lines.pop();
@@ -177,16 +196,9 @@ export class FileBrowserOperationJournal {
       const key = keyOf(record);
       const prior = records.get(key);
       if (envelope.type === "dispatch") {
-        if (prior && prior.requestDigest !== record.requestDigest) {
-          throw new TypeError("browser journal contains conflicting dispatch identity");
-        }
-        records.set(key, record);
+        records.set(key, foldDispatch(prior, record));
       } else if (envelope.type === "observation") {
-        if (!prior) throw new TypeError("browser journal observation precedes dispatch");
-        if (prior.requestDigest !== record.requestDigest || prior.semanticDigest !== record.semanticDigest) {
-          throw new TypeError("browser journal observation changed semantics");
-        }
-        records.set(key, freezeRecord({ ...prior, ...record }));
+        records.set(key, foldObservation(prior, record));
       } else {
         throw new TypeError("browser journal record type is unsupported");
       }
