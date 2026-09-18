@@ -4,6 +4,35 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
 
+fn adapter_intent() -> CodexOperationIntent {
+    let payload = Digest32::of_bytes(b"test-payload");
+    CodexOperationIntent {
+        operation_id: StableId::new("operation:test".to_string()).unwrap(),
+        thread_id: StableId::new("thread-a".to_string()).unwrap(),
+        expected_turn_id: Some(StableId::new("turn-a".to_string()).unwrap()),
+        method_id: StableId::new("app-server:v2:turn-start".to_string()).unwrap(),
+        payload_digest: payload,
+        lease_payload_digest: payload,
+        context_digest: Digest32::of_bytes(b"test-context"),
+        connection_digest: Digest32::of_bytes(b"test-connection"),
+        session_generation: 1,
+        protocol_version: APP_SERVER_PROTOCOL_VERSION,
+        deadline_ms: u64::MAX,
+    }
+}
+
+fn pending_boundary() -> NativeCodexBoundaryReceipt {
+    let receipt = adapt(1, adapter_intent(), None).unwrap();
+    native_boundary_receipt(&receipt).unwrap()
+}
+
+fn observe(
+    output: &mut NativeRunOutput,
+    notification: ServerNotification,
+) -> std::result::Result<bool, String> {
+    super::observe_notification(output, notification, &adapter_intent())
+}
+
 fn output() -> NativeRunOutput {
     NativeRunOutput {
         thread_id: "thread-a".to_string(),
@@ -16,6 +45,7 @@ fn output() -> NativeRunOutput {
         terminal_observed: false,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        codex_boundary: Some(pending_boundary()),
     }
 }
 
@@ -39,14 +69,14 @@ fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification 
 fn only_the_bound_turn_can_complete_the_native_request() {
     let mut output = output();
     assert!(
-        !observe_notification(
+        !observe(
             &mut output,
             terminal("thread-b", "turn-a", TurnStatus::Completed)
         )
         .unwrap()
     );
     assert!(
-        !observe_notification(
+        !observe(
             &mut output,
             terminal("thread-a", "turn-b", TurnStatus::Completed)
         )
@@ -54,7 +84,7 @@ fn only_the_bound_turn_can_complete_the_native_request() {
     );
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_notification(
+        observe(
             &mut output,
             terminal("thread-a", "turn-a", TurnStatus::Interrupted)
         )
@@ -62,6 +92,9 @@ fn only_the_bound_turn_can_complete_the_native_request() {
     );
     assert_eq!(output.status, NativeRunStatus::Interrupted);
     assert!(output.terminal_observed);
+    let boundary = output.codex_boundary.as_ref().unwrap();
+    assert_eq!(boundary.status, NativeRunStatus::Interrupted);
+    assert!(boundary.response_digest.is_some());
 }
 
 #[test]
@@ -75,12 +108,12 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_notification(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_notification(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    observe(&mut output, delta("unrelated", "discard".to_string())).unwrap();
+    observe(&mut output, delta("thread-a", "model output".to_string())).unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_notification(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        observe(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
@@ -90,7 +123,7 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
 fn in_progress_is_not_a_terminal_observation() {
     let mut output = output();
     assert!(
-        observe_notification(
+        observe(
             &mut output,
             terminal("thread-a", "turn-a", TurnStatus::InProgress)
         )
@@ -125,11 +158,11 @@ fn actual_usage_is_bound_monotonic_and_survives_terminal_failure() {
         })
     };
     let mut output = output();
-    observe_notification(&mut output, usage("unrelated", 99)).unwrap();
+    observe(&mut output, usage("unrelated", 99)).unwrap();
     assert_eq!(output.observed_output_tokens, None);
-    observe_notification(&mut output, usage("thread-a", 42)).unwrap();
-    assert!(observe_notification(&mut output, usage("thread-a", -1)).is_err());
-    assert!(observe_notification(&mut output, usage("thread-a", 41)).is_err());
+    observe(&mut output, usage("thread-a", 42)).unwrap();
+    assert!(observe(&mut output, usage("thread-a", -1)).is_err());
+    assert!(observe(&mut output, usage("thread-a", 41)).is_err());
     assert_eq!(output.observed_output_tokens, Some(42));
     let mut failed = terminal("thread-a", "turn-a", TurnStatus::Failed);
     if let ServerNotification::TurnCompleted(ref mut notification) = failed {
@@ -139,7 +172,7 @@ fn actual_usage_is_bound_monotonic_and_survives_terminal_failure() {
             additional_details: None,
         });
     }
-    assert!(observe_notification(&mut output, failed).unwrap());
+    assert!(observe(&mut output, failed).unwrap());
     assert_eq!(output.status, NativeRunStatus::Failed);
     assert_eq!(output.observed_output_tokens, Some(42));
     assert_eq!(output.stop_reason.as_deref(), Some("provider error"));
@@ -197,7 +230,7 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
         let lost = output.owner_authority.clone();
         // Grace has no owner parameter: it can still establish provider facts.
         assert!(
-            observe_notification(
+            observe(
                 &mut output,
                 terminal("thread-a", "turn-a", TurnStatus::Completed)
             )
@@ -236,7 +269,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
             .await
             .is_err()
     );
-    observe_notification(
+    observe(
         &mut timed_out,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
@@ -254,7 +287,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     .await
     .unwrap();
     // select! can consume Completed before a simultaneously ready health tick.
-    observe_notification(
+    observe(
         &mut terminal_first,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
@@ -278,7 +311,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
 #[tokio::test]
 async fn success_requires_both_matching_completion_and_final_ready_owner() {
     let mut output = output();
-    observe_notification(
+    observe(
         &mut output,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
     )
@@ -294,4 +327,46 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(output.succeeded());
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
+}
+
+
+fn server_error(code: i64, message: &str) -> TypedRequestError {
+    TypedRequestError::Server {
+        method: "turn/start".to_string(),
+        source: JSONRPCErrorError {
+            code,
+            message: message.to_string(),
+            data: None,
+        },
+    }
+}
+
+#[test]
+fn only_proven_pre_admission_errors_release_as_rejection() {
+    let request_digest = Digest32::of_bytes(b"codex-request");
+
+    let overloaded = explicit_turn_start_rejection(
+        &server_error(-32001, "Server overloaded; retry later."),
+        request_digest,
+    )
+    .unwrap();
+    assert_eq!(overloaded.kind, NativeDispatchRejectionKind::Unavailable);
+    assert_eq!(overloaded.code, -32001);
+    assert_eq!(overloaded.codex_request_digest, request_digest.to_string());
+
+    let invalid = explicit_turn_start_rejection(
+        &server_error(-32602, "invalid params"),
+        request_digest,
+    )
+    .unwrap();
+    assert_eq!(invalid.kind, NativeDispatchRejectionKind::Rejected);
+
+    // Internal errors can occur after more work and therefore stay unknown.
+    assert!(
+        explicit_turn_start_rejection(
+            &server_error(-32603, "internal error"),
+            request_digest
+        )
+        .is_none()
+    );
 }

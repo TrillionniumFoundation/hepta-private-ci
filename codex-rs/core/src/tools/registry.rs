@@ -38,6 +38,7 @@ use crate::tools::tool_dispatch_trace::ToolDispatchTrace;
 use crate::util::error_or_panic;
 use codex_analytics::ControlToolCallStatus;
 use codex_extension_api::ToolCallOutcome;
+use codex_features::Feature;
 use codex_protocol::models::FunctionCallOutputPayload;
 use codex_protocol::models::ResponseInputItem;
 use codex_protocol::parse_command::ParsedCommand;
@@ -511,6 +512,19 @@ impl ToolRegistry {
         attempt_id: &ToolDispatchAttemptId,
         terminal_outcome_reached: Option<Arc<AtomicBool>>,
     ) -> Result<AnyToolResult, FunctionCallError> {
+        if invocation
+            .turn
+            .config
+            .features
+            .get()
+            .enabled(Feature::HeptaCodexEffectFence)
+        {
+            return Err(FunctionCallError::Fatal(
+                "runtime.codex effect fence blocked tool execution before final-use authority"
+                    .to_string(),
+            ));
+        }
+
         let tool_name = invocation.tool_name.clone();
         let call_id_owned = invocation.call_id.clone();
         let otel = invocation.turn.session_telemetry.clone();

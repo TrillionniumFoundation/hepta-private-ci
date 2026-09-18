@@ -49,6 +49,29 @@ pub enum NativeOwnerAuthority {
     },
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NativeCodexObservationSource {
+    LiveTransport,
+    DurableThreadHistory,
+}
+
+/// Durable runtime.codex correlation receipt. This records what the trusted
+/// native App Server client observed; it is not model/provider authority.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeCodexBoundaryReceipt {
+    pub request_digest: String,
+    pub response_digest: Option<String>,
+    #[serde(default)]
+    pub observation_source: Option<NativeCodexObservationSource>,
+    pub context_digest: String,
+    pub connection_digest: String,
+    pub session_generation: u64,
+    pub protocol_version: u32,
+    pub status: NativeRunStatus,
+}
+
 /// Fields observed by the native client, never a provider billing assertion.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -64,6 +87,10 @@ pub struct NativeRunOutput {
     pub stop_reason: Option<String>,
     #[serde(default)]
     pub owner_authority: NativeOwnerAuthority,
+    /// Older journal entries legitimately have no runtime.codex receipt and
+    /// therefore cannot be replayed as newly qualified success.
+    #[serde(default)]
+    pub codex_boundary: Option<NativeCodexBoundaryReceipt>,
 }
 
 impl NativeRunOutput {
@@ -73,6 +100,11 @@ impl NativeRunOutput {
         self.terminal_observed
             && self.status == NativeRunStatus::Completed
             && self.owner_authority == NativeOwnerAuthority::ObservedReady
+            && self.codex_boundary.as_ref().is_some_and(|receipt| {
+                receipt.status == NativeRunStatus::Completed
+                    && receipt.response_digest.is_some()
+                    && receipt.observation_source.is_some()
+            })
     }
 }
 
@@ -94,6 +126,36 @@ pub struct NativeDispatch {
     pub model_provider: String,
     /// Exact serialized additional context, including its owner snapshot.
     pub context_digest: String,
+    /// runtime.codex request/caller binding committed before turn/start.
+    /// All fields are optional only for replay compatibility with older
+    /// journals; new qualified dispatches populate the complete set.
+    #[serde(default)]
+    pub codex_request_digest: Option<String>,
+    #[serde(default)]
+    pub codex_connection_digest: Option<String>,
+    #[serde(default)]
+    pub codex_session_generation: Option<u64>,
+    #[serde(default)]
+    pub codex_protocol_version: Option<u32>,
+    #[serde(default)]
+    pub codex_deadline_ms: Option<u64>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NativeDispatchRejectionKind {
+    Rejected,
+    Unavailable,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeDispatchRejection {
+    pub kind: NativeDispatchRejectionKind,
+    pub code: i64,
+    pub reason: String,
+    pub response_digest: String,
+    pub codex_request_digest: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -108,6 +170,10 @@ pub struct NativeRunRecord {
     /// A locally proven pre-dispatch stop releases a slot without pretending
     /// to have observed a provider terminal event or zero token consumption.
     pub pre_dispatch_stop: Option<String>,
+    /// Explicit App Server rejection that proves the turn was not admitted.
+    /// This is distinct from a lost acknowledgement, which remains indeterminate.
+    #[serde(default)]
+    pub dispatch_rejection: Option<NativeDispatchRejection>,
     pub observation: Option<NativeRunOutput>,
 }
 
@@ -138,6 +204,10 @@ enum Event {
     Stop {
         request_id: String,
         reason: String,
+    },
+    RejectDispatch {
+        request_id: String,
+        rejection: NativeDispatchRejection,
     },
     Observe {
         request_id: String,
@@ -254,6 +324,22 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Records a server response that proves turn/start did not enter execution.
+    /// Only protocol-level pre-admission rejection codes should use this path.
+    pub fn reject_native_dispatch(
+        &mut self,
+        request_id: &str,
+        rejection: NativeDispatchRejection,
+    ) -> Result<NativeRunRecord, Error> {
+        self.commit_native(
+            request_id,
+            Event::RejectDispatch {
+                request_id: request_id.to_string(),
+                rejection,
+            },
+        )
+    }
+
     /// Trusted host port: validates exact assignment and monotonic observations.
     /// Only matching terminal observations release local execution capacity.
     /// Missing usage never becomes zero and unknown execution may later settle.
@@ -361,6 +447,7 @@ impl NativeJournal {
                     turn_id: None,
                     cancel_requested: false,
                     pre_dispatch_stop: None,
+                    dispatch_rejection: None,
                     observation: None,
                 },
             );
@@ -372,6 +459,7 @@ impl NativeJournal {
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
+            | Event::RejectDispatch { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -384,6 +472,7 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                validate_codex_dispatch(&dispatch)?;
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -414,6 +503,35 @@ impl NativeJournal {
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
             }
+            Event::RejectDispatch { rejection, .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || rejection.reason.is_empty()
+                    || rejection.reason.len() > 4096
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                validate_digest(&rejection.response_digest, "native rejection response")?;
+                validate_digest(
+                    &rejection.codex_request_digest,
+                    "native rejection codex request",
+                )?;
+                let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
+                if dispatch.codex_request_digest.as_deref()
+                    != Some(rejection.codex_request_digest.as_str())
+                {
+                    return Err(Error::AssignmentMismatch);
+                }
+                match rejection.kind {
+                    NativeDispatchRejectionKind::Unavailable if rejection.code == -32001 => {}
+                    NativeDispatchRejectionKind::Rejected
+                        if matches!(rejection.code, -32600 | -32601 | -32602) => {}
+                    _ => return Err(Error::InvalidTransition),
+                }
+                record.dispatch_rejection = Some(rejection);
+                record.state = NativeReservationState::Released;
+            }
             Event::Observe { output, .. } => {
                 apply_observation(record, output)?;
             }
@@ -438,6 +556,7 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::AssignmentMismatch);
     }
+    validate_codex_observation(dispatch, &output)?;
     if output.output.len() > 1024 * 1024
         || output
             .stop_reason
@@ -496,6 +615,79 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     };
     record.observation = Some(output);
     Ok(())
+}
+
+fn validate_codex_dispatch(dispatch: &NativeDispatch) -> Result<(), Error> {
+    match (
+        dispatch.codex_request_digest.as_deref(),
+        dispatch.codex_connection_digest.as_deref(),
+        dispatch.codex_session_generation,
+        dispatch.codex_protocol_version,
+        dispatch.codex_deadline_ms,
+    ) {
+        (None, None, None, None, None) => Ok(()),
+        (
+            Some(request_digest),
+            Some(connection_digest),
+            Some(session_generation),
+            Some(protocol_version),
+            Some(deadline_ms),
+        ) => {
+            validate_digest(request_digest, "native codex request")?;
+            validate_digest(connection_digest, "native codex connection")?;
+            if session_generation == 0 || protocol_version == 0 || deadline_ms == 0 {
+                return Err(Error::InvalidIdentity("native codex binding"));
+            }
+            Ok(())
+        }
+        _ => Err(Error::AssignmentMismatch),
+    }
+}
+
+fn validate_codex_observation(
+    dispatch: &NativeDispatch,
+    output: &NativeRunOutput,
+) -> Result<(), Error> {
+    let binding = (
+        dispatch.codex_request_digest.as_deref(),
+        dispatch.codex_connection_digest.as_deref(),
+        dispatch.codex_session_generation,
+        dispatch.codex_protocol_version,
+        dispatch.codex_deadline_ms,
+    );
+    match (binding, output.codex_boundary.as_ref()) {
+        ((None, None, None, None, None), None) => Ok(()),
+        (
+            (
+                Some(request_digest),
+                Some(connection_digest),
+                Some(session_generation),
+                Some(protocol_version),
+                Some(_deadline_ms),
+            ),
+            Some(receipt),
+        ) => {
+            validate_digest(&receipt.request_digest, "native codex receipt request")?;
+            validate_digest(&receipt.context_digest, "native codex receipt context")?;
+            validate_digest(&receipt.connection_digest, "native codex receipt connection")?;
+            if let Some(response_digest) = receipt.response_digest.as_deref() {
+                validate_digest(response_digest, "native codex receipt response")?;
+            }
+            if receipt.request_digest != request_digest
+                || receipt.context_digest != dispatch.context_digest
+                || receipt.connection_digest != connection_digest
+                || receipt.session_generation != session_generation
+                || receipt.protocol_version != protocol_version
+                || receipt.status != output.status
+                || receipt.response_digest.is_some() != output.terminal_observed
+                || receipt.observation_source.is_some() != output.terminal_observed
+            {
+                return Err(Error::AssignmentMismatch);
+            }
+            Ok(())
+        }
+        _ => Err(Error::AssignmentMismatch),
+    }
 }
 
 #[cfg(test)]

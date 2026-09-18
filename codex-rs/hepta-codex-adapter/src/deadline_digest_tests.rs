@@ -15,9 +15,14 @@ fn intent(deadline_ms: u64) -> CodexOperationIntent {
     CodexOperationIntent {
         operation_id: id("operation:deadline"),
         thread_id: id("thread:deadline"),
+        expected_turn_id: None,
         method_id: id("method:deadline"),
         payload_digest: digest(b"payload"),
         lease_payload_digest: digest(b"payload"),
+        context_digest: digest(b"context"),
+        connection_digest: digest(b"connection"),
+        session_generation: 11,
+        protocol_version: 2,
         deadline_ms,
     }
 }
@@ -38,6 +43,36 @@ fn deadline_is_bound_into_the_codex_request_digest() {
 }
 
 #[test]
+fn transport_session_and_protocol_are_bound_into_request_digest() {
+    let base = must_adapt(intent(2_000));
+
+    let mut other_context = intent(2_000);
+    other_context.context_digest = digest(b"other-context");
+    assert_ne!(
+        base.request_digest,
+        must_adapt(other_context).request_digest
+    );
+
+    let mut other_connection = intent(2_000);
+    other_connection.connection_digest = digest(b"other-connection");
+    assert_ne!(
+        base.request_digest,
+        must_adapt(other_connection).request_digest
+    );
+
+    let mut other_generation = intent(2_000);
+    other_generation.session_generation = 12;
+    assert_ne!(
+        base.request_digest,
+        must_adapt(other_generation).request_digest
+    );
+
+    let mut other_protocol = intent(2_000);
+    other_protocol.protocol_version = 3;
+    assert_ne!(base.request_digest, must_adapt(other_protocol).request_digest);
+}
+
+#[test]
 fn an_exact_retry_keeps_the_adapter_receipt_stable() {
     assert_eq!(
         must_adapt(intent(/*deadline_ms*/ 2_000)),
@@ -55,4 +90,31 @@ fn the_deadline_remains_exclusive() {
         ),
         Err(Error::DeadlineExpired)
     );
+}
+
+
+#[test]
+fn late_terminal_observation_is_not_erased_by_local_deadline() {
+    let value = intent(/*deadline_ms*/ 2_000);
+    let observation = AppServerObservation::terminal(
+        id("thread:deadline"),
+        id("turn:late"),
+        11,
+        2,
+        digest(b"connection"),
+        TerminalOutcome::Failed,
+        digest(b"late-response"),
+    )
+    .expect("late terminal evidence remains structurally valid");
+
+    let receipt = adapt(
+        /*now_ms*/ 2_500,
+        value,
+        Some(observation),
+    )
+    .expect("a local timeout cannot erase provider terminal truth");
+
+    assert_eq!(receipt.status, AdapterStatus::Failed);
+    assert_eq!(receipt.turn_id.as_ref(), Some(&id("turn:late")));
+    assert!(receipt.response_digest.is_some());
 }

@@ -123,6 +123,22 @@ pub(crate) fn build_tool_router(
     step_store: &ExtensionData,
     tool_suggest_candidates: Option<&crate::tools::router::ToolSuggestCandidates>,
 ) -> CodexResult<ToolRouter> {
+    // runtime.codex model-only execution must not inherit ambient tool
+    // capability while final-use authority is not plumbed to this process.
+    // The registry-level fence is the physical backstop; returning an empty
+    // router here also keeps denied tools out of the model-visible schema.
+    if turn_context
+        .config
+        .features
+        .get()
+        .enabled(Feature::HeptaCodexEffectFence)
+    {
+        return Ok(ToolRouter::from_parts(
+            ToolRegistry::default(),
+            Vec::new(),
+        ));
+    }
+
     let default_agent_type_description =
         crate::agent::role::spawn_tool_spec::build(&std::collections::BTreeMap::new());
     let wait_for_environment_tool_config = session
