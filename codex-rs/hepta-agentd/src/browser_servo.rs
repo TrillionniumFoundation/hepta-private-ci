@@ -242,38 +242,38 @@ impl<T: BrowserServoTransport> BrowserServoPort<T> {
         let witness_text = hex_lower(&witness_digest);
 
         dispatch_final_use(&self.authority, token, &invocation.binding, || {
-                send_frame(
-                    state,
-                    "authority_enter",
-                    request_id,
-                    json!({
-                        "authorized": true,
-                        "witnessDigest": witness_text,
-                        "authorityEpoch": authority_epoch,
-                        "requestDigest": request_digest_text,
-                    }),
-                )?;
-                let boundary = receive_frame(state)?;
-                if boundary.kind != "dispatch_boundary" || boundary.request_id != request_id {
-                    return Err(BrowserServoError::Indeterminate(
-                        "Browser did not acknowledge the local dispatch boundary after authority entry"
-                            .into(),
-                    ));
-                }
-                let boundary_payload =
-                    require_plain_object(&boundary.payload, "Browser dispatch boundary")?;
-                if boundary_payload.get("localDispatchCrossed") != Some(&Value::Bool(true))
-                    || boundary_payload.get("requestDigest").and_then(Value::as_str)
-                        != Some(request_digest_text)
-                    || boundary_payload.get("witnessDigest").and_then(Value::as_str)
-                        != Some(witness_text.as_str())
-                {
-                    return Err(BrowserServoError::Indeterminate(
-                        "Browser dispatch-boundary receipt drifted from final-use authority".into(),
-                    ));
-                }
-                Ok(())
-            })??;
+            send_frame(
+                state,
+                "authority_enter",
+                request_id,
+                json!({
+                    "authorized": true,
+                    "witnessDigest": witness_text,
+                    "authorityEpoch": authority_epoch,
+                    "requestDigest": request_digest_text,
+                }),
+            )?;
+            let boundary = receive_frame(state)?;
+            if boundary.kind != "dispatch_boundary" || boundary.request_id != request_id {
+                return Err(BrowserServoError::Indeterminate(
+                    "Browser did not acknowledge the local dispatch boundary after authority entry"
+                        .into(),
+                ));
+            }
+            let boundary_payload =
+                require_plain_object(&boundary.payload, "Browser dispatch boundary")?;
+            if boundary_payload.get("localDispatchCrossed") != Some(&Value::Bool(true))
+                || boundary_payload.get("requestDigest").and_then(Value::as_str)
+                    != Some(request_digest_text)
+                || boundary_payload.get("witnessDigest").and_then(Value::as_str)
+                    != Some(witness_text.as_str())
+            {
+                return Err(BrowserServoError::Indeterminate(
+                    "Browser dispatch-boundary receipt drifted from final-use authority".into(),
+                ));
+            }
+            Ok(())
+        })??;
         Ok(())
     }
 }
