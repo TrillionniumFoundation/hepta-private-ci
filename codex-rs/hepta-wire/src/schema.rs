@@ -103,7 +103,7 @@ impl SchemaRegistry {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct AdmittedPayload<'a> {
     wire_version: WireVersion,
     schema: &'a StableId,
