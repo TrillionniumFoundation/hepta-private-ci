@@ -456,3 +456,27 @@ fn candidate_set_digest_is_canonical_under_input_reordering() {
     .expect("candidate set");
     assert_eq!(first.digest(), second.digest());
 }
+
+
+#[test]
+fn caller_candidate_limit_reserves_ledger_control_slots() {
+    let snapshot = capability_snapshot(false);
+    let candidates = (0..127)
+        .map(|index| LegalActionCandidateV1 {
+            candidate_id: id(&format!("action.{index:03}")),
+            support_digest: digest(&format!("support:{index:03}")),
+            support_ppm: 1_000_000,
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        LegalActionCandidateSetV1::new(
+            id("candidate-set-overflow"),
+            snapshot.digest(),
+            id("intelligence.control"),
+            digest("grammar"),
+            candidates,
+            500_000,
+        ),
+        Err(LegalActionCandidateSetErrorV1::CandidateLimitExceeded)
+    );
+}
