@@ -76,10 +76,12 @@ pub enum WorldModelError {
     EmptyDataset,
     SampleLimit,
     DuplicateSample(String),
+    DuplicateEvidence,
     InvalidOutcome,
     StateActionLimit,
     BranchLimit,
     UnsupportedStateAction,
+    InvalidModel,
     Arithmetic,
 }
 
@@ -121,9 +123,13 @@ pub fn fit_transition_model(
         ));
     }
 
+    let mut seen_evidence = BTreeSet::new();
     let mut groups: BTreeMap<(StableId, StableId), Group> = BTreeMap::new();
     for sample in &samples {
         require_digest(sample.evidence_digest, "world-model sample evidence")?;
+        if !seen_evidence.insert(sample.evidence_digest) {
+            return Err(WorldModelError::DuplicateEvidence);
+        }
         if !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw()).contains(&sample.outcome.raw()) {
             return Err(WorldModelError::InvalidOutcome);
         }
@@ -197,16 +203,71 @@ pub fn fit_transition_model(
     })
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct WorldModelPinV1 {
+    pub model_digest: Digest32,
+    pub dataset_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LoadedTabularWorldModelV1 {
+    model: TabularWorldModelV1,
+}
+
+impl LoadedTabularWorldModelV1 {
+    /// Admit a host-selected model only when its independent identity pin and
+    /// full public structure validate. Selection/promotion remains external.
+    pub fn from_pinned_model(
+        model: TabularWorldModelV1,
+        pin: &WorldModelPinV1,
+    ) -> Result<Self, WorldModelError> {
+        require_digest(pin.model_digest, "world-model pin")?;
+        require_digest(pin.dataset_digest, "world-model dataset pin")?;
+        if model.model_digest != pin.model_digest || model.dataset_digest != pin.dataset_digest {
+            return Err(WorldModelError::InvalidModel);
+        }
+        validate_world_model(&model)?;
+        Ok(Self { model })
+    }
+
+    pub fn predict(
+        &self,
+        state_id: &StableId,
+        action_id: &StableId,
+    ) -> Result<WorldModelPredictionV1, WorldModelError> {
+        predict_validated_transition(&self.model, state_id, action_id)
+    }
+
+    #[must_use]
+    pub fn model_id(&self) -> &StableId {
+        &self.model.model_id
+    }
+}
+
+/// Compatibility surface for in-memory callers. Persisted or externally
+/// selected candidates should be admitted through `LoadedTabularWorldModelV1`.
+#[deprecated(note = "use LoadedTabularWorldModelV1 for selected/persisted candidates")]
 pub fn predict_transition(
     model: &TabularWorldModelV1,
     state_id: &StableId,
     action_id: &StableId,
 ) -> Result<WorldModelPredictionV1, WorldModelError> {
-    let estimate = model
+    validate_world_model(model)?;
+    predict_validated_transition(model, state_id, action_id)
+}
+
+fn predict_validated_transition(
+    model: &TabularWorldModelV1,
+    state_id: &StableId,
+    action_id: &StableId,
+) -> Result<WorldModelPredictionV1, WorldModelError> {
+    let index = model
         .estimates
-        .iter()
-        .find(|estimate| &estimate.state_id == state_id && &estimate.action_id == action_id)
-        .ok_or(WorldModelError::UnsupportedStateAction)?;
+        .binary_search_by(|estimate| {
+            (&estimate.state_id, &estimate.action_id).cmp(&(state_id, action_id))
+        })
+        .map_err(|_| WorldModelError::UnsupportedStateAction)?;
+    let estimate = &model.estimates[index];
     Ok(WorldModelPredictionV1 {
         model_id: model.model_id.clone(),
         dataset_digest: model.dataset_digest,
@@ -218,6 +279,64 @@ pub fn predict_transition(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+fn validate_world_model(model: &TabularWorldModelV1) -> Result<(), WorldModelError> {
+    require_digest(model.dataset_digest, "world-model dataset")?;
+    require_digest(model.model_digest, "world-model digest")?;
+    if model.authority.grants_any()
+        || model.estimates.is_empty()
+        || model.estimates.len() > MAX_STATE_ACTIONS
+        || model.estimates.windows(2).any(|pair| {
+            (&pair[0].state_id, &pair[0].action_id)
+                >= (&pair[1].state_id, &pair[1].action_id)
+        })
+    {
+        return Err(WorldModelError::InvalidModel);
+    }
+    for estimate in &model.estimates {
+        require_digest(estimate.estimate_digest, "transition estimate")?;
+        if estimate.sample_count == 0
+            || estimate.branches.is_empty()
+            || estimate.branches.len() > MAX_BRANCHES_PER_STATE_ACTION
+            || estimate.branches.windows(2).any(|pair| pair[0].next_state_id >= pair[1].next_state_id)
+        {
+            return Err(WorldModelError::InvalidModel);
+        }
+        let mut count_sum = 0_u64;
+        let mut probability_sum = 0_u64;
+        for branch in &estimate.branches {
+            if branch.count == 0 {
+                return Err(WorldModelError::InvalidModel);
+            }
+            count_sum = count_sum
+                .checked_add(u64::from(branch.count))
+                .ok_or(WorldModelError::Arithmetic)?;
+            probability_sum = probability_sum
+                .checked_add(branch.probability.raw())
+                .ok_or(WorldModelError::Arithmetic)?;
+        }
+        if count_sum != u64::from(estimate.sample_count)
+            || probability_sum != ProbabilityQ32::ONE.raw()
+        {
+            return Err(WorldModelError::InvalidModel);
+        }
+    }
+    let mut bytes = b"hepta.bellman-operator.tabular-world-model.v1".to_vec();
+    push_id(&mut bytes, &model.model_id);
+    bytes.extend_from_slice(model.dataset_digest.as_array());
+    bytes.extend_from_slice(
+        &u32::try_from(model.estimates.len())
+            .map_err(|_| WorldModelError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for estimate in &model.estimates {
+        bytes.extend_from_slice(estimate.estimate_digest.as_array());
+    }
+    if Digest32::of_bytes(&bytes) != model.model_digest {
+        return Err(WorldModelError::InvalidModel);
+    }
+    Ok(())
 }
 
 fn exact_probabilities(
