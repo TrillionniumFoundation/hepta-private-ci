@@ -825,6 +825,7 @@ pub enum FederationV2Error {
     PeerNotEnrolled,
     AuthorityRevoked,
     AuthorityExpired,
+    AuthorityUnavailable,
     IdentityMismatch(&'static str),
     DigestMismatch(&'static str),
     MissingTerminalObservation,
