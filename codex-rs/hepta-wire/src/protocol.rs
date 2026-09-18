@@ -79,6 +79,13 @@ impl WireFrame {
         }
     }
 
+    pub fn wire_version(&self) -> u16 {
+        match self {
+            Self::V1(envelope) => envelope.wire_version(),
+            Self::V2(envelope) => envelope.wire_version(),
+        }
+    }
+
     pub fn encode(&self) -> Vec<u8> {
         match self {
             Self::V1(envelope) => envelope.encode(),
@@ -89,10 +96,7 @@ impl WireFrame {
 
 impl EnvelopeView for WireFrame {
     fn wire_version(&self) -> u16 {
-        match self {
-            Self::V1(envelope) => envelope.wire_version(),
-            Self::V2(envelope) => envelope.wire_version(),
-        }
+        WireFrame::wire_version(self)
     }
 
     fn schema(&self) -> &StableId {
