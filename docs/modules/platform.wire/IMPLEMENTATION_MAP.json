@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "source_composed_read_only_gateway",
+  "productCallerState": "not_composed",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -40,7 +40,7 @@
       "operation": "wire_v2",
       "nativeSymbol": "WireEnvelopeV2",
       "sourcePath": "codex-rs/hepta-wire/src/envelope_v2.rs",
-      "state": "source_implemented_product_source_composed",
+      "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/envelope_v2_tests.rs",
