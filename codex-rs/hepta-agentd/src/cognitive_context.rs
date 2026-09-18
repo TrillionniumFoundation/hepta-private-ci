@@ -54,6 +54,57 @@ pub(crate) async fn read(
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    read_inner(
+        store,
+        owner,
+        body_generation,
+        query,
+        limit,
+        ranker,
+        || async {},
+    )
+    .await
+}
+
+#[cfg(test)]
+pub(crate) async fn read_with_test_after_selection<F, Fut>(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    after_selection: F,
+) -> Result<CognitiveContextSnapshot, CognitiveContextError>
+where
+    F: FnOnce() -> Fut,
+    Fut: std::future::Future<Output = ()>,
+{
+    read_inner(
+        store,
+        owner,
+        body_generation,
+        query,
+        limit,
+        ranker,
+        after_selection,
+    )
+    .await
+}
+
+async fn read_inner<F, Fut>(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    after_selection: F,
+) -> Result<CognitiveContextSnapshot, CognitiveContextError>
+where
+    F: FnOnce() -> Fut,
+    Fut: std::future::Future<Output = ()>,
+{
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -204,6 +255,8 @@ pub(crate) async fn read(
             break;
         }
     }
+    after_selection().await;
+
     // Revalidate the exact post-ranking attachment set. Tail candidates do not
     // participate in this gate, while any correction, deletion, citation drift
     // or KG-generation change affecting a selected item fails the read closed.
