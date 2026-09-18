@@ -98,7 +98,12 @@ pub fn write_dataset_withdrawal_snapshot(
     require_binding(binding)?;
     let snapshot = registry.snapshot();
     let bytes = encode_withdrawal_snapshot(&snapshot, binding)?;
-    let receipt = receipt(binding, snapshot.head_digest, snapshot.records().len(), &bytes);
+    let receipt = receipt(
+        binding,
+        snapshot.head_digest,
+        snapshot.records().len(),
+        &bytes,
+    );
     write_create_only_blob(file, &bytes)?;
     Ok(receipt)
 }
@@ -120,7 +125,12 @@ pub fn write_lifecycle_journal_snapshot(
     require_binding(binding)?;
     let snapshot = journal.snapshot();
     let bytes = encode_lifecycle_snapshot(&snapshot, binding)?;
-    let receipt = receipt(binding, snapshot.head_digest, snapshot.records.len(), &bytes);
+    let receipt = receipt(
+        binding,
+        snapshot.head_digest,
+        snapshot.records.len(),
+        &bytes,
+    );
     write_create_only_blob(file, &bytes)?;
     Ok(receipt)
 }
@@ -250,7 +260,9 @@ fn decode_withdrawal_snapshot(
     if records.len() != count {
         return Err(JournalStorageError::Corrupt);
     }
-    Ok(DatasetWithdrawalRegistrySnapshotV1::from_parts(records, head))
+    Ok(DatasetWithdrawalRegistrySnapshotV1::from_parts(
+        records, head,
+    ))
 }
 
 fn encode_lifecycle_snapshot(
