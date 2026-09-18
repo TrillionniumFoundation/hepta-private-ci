@@ -19,16 +19,22 @@ spine.
 
 ## 2. Public operations and contract details
 
-The native general capability owner is `AuthorityLeaseRegistry`:
+The native general capability owner is split by type-level least authority:
 
+- `AuthorityLeaseRegistry` is the non-cloneable administrative owner;
+- `AuthorityLeaseVerifier` is the cloneable read/verify attenuation;
 - `put_lease(lease, expected_revision)` performs bounded owner-CAS create/update;
-- `read_lease(lease_id)` publishes the current `authority_lease` value;
-- `read_revocation(lease_id)` publishes the current `capability_revocation` value;
-- `verify_use(lease_id, expected_revision, binding, now)` checks principal,
-  operation class, scope, payload/destination binding, epoch, revision, expiry
-  and revocation using trusted host time;
-- `revoke(lease_id, expected_revision, reason_digest, revoked_at)` performs one
-  durable owner-CAS revocation;
+  an identical retry succeeds only with the original predecessor revision;
+- `read_lease(lease_id)` and `read_revocation(lease_id)` publish the current
+  `authority_lease` / `capability_revocation` values;
+- `AuthorityLeaseVerifier::verify_use(lease_id, expected_revision, binding)`
+  checks principal, operation class, scope, payload/destination binding, epoch,
+  revision, expiry and revocation using the clock already bound to the owner;
+- `revoke(lease_id, expected_revision, reason_digest)` performs one durable
+  owner-CAS revocation. The authority clock creates the revocation timestamp;
+  an exact retry returns the original receipt;
+- `prune_expired_leases(max_to_prune)` reclaims a bounded batch of expired,
+  unrevoked leases without collecting revocation tombstones inside an epoch;
 - `advance_epoch(expected_store_revision, new_epoch)` durably fences old
   authority and clears bounded old-epoch history only as part of the epoch
   transition.
@@ -72,13 +78,24 @@ revocation committed before it denies entry; a revocation committed after it is
 ordered after entry and cannot retroactively undo the effect.
 
 The registered Bao host resolves the signed `consumer_id` against a closed
-process-local registry. It verifies independent operator approval before provider
-dispatch. Revocation updates enter through a separately pinned signed feed.
+process-local registry. It verifies independent operator approval and current
+signed-feed freshness before provider dispatch. After provider I/O, exact
+version and secret-digest validation, it checks feed freshness again at the
+registered consumer boundary before releasing secret bytes. A feed that expires
+in flight therefore fails with `StaleRevocationFeed` without invoking the
+consumer. Revocation updates enter through a separately pinned signed feed.
+
+The revocation control protocol caps signed-feed lifetime at 300,000 ms and
+supports node-signed exact-update acknowledgements. Convergence verification
+rejects missing/duplicate/unknown/forged/wrong-head/stale and future-dated
+acknowledgements; it proves the enrolled-node acknowledgement set but does not
+perform fleet transport.
 
 ## 5. Capacity and performance profile
 
 Both current owner stores are bounded; there is no silent eviction. The general
-lease registry exposes current/max lease and revocation counts and an explicit
+lease registry exposes current/max lease and revocation counts, bounded online
+pruning of expired unrevoked leases (maximum 1,024 per call), and explicit
 durable epoch rollover. A selected deployment must alert before exhaustion and
 coordinate the trusted epoch/frontier transition before admitting new work.
 
@@ -96,6 +113,9 @@ revocation transport. Pilot ceilings are design targets, not measurements.
 - AUTH-06: forged or stale revocation-feed updates never change live authority.
 - AUTH-07: a callback that re-enters revocation does not deadlock or poison the authority mutex.
 - AUTH-08: an unregistered signed consumer id cannot select an arbitrary callback.
+- AUTH-09: an identical lease mutation with the wrong predecessor revision is not an idempotent retry.
+- AUTH-10: a revocation acknowledgement dated after verifier current time is rejected.
+- AUTH-11: if signed-feed freshness expires during Bao provider I/O, final consumer entry is denied and no secret is released.
 
 Source tests implement the native cases above. Exact-candidate workflow receipts,
 not test-file existence, establish execution for one candidate.
@@ -105,7 +125,9 @@ not test-file existence, establish execution for one candidate.
 B4 call-site proof now inventories final-use claim, final delivery, independent
 approval verification, revocation-feed application, the raw Bao consumer and the
 registered Bao host. Method-call patterns are scanned across non-test/non-example
-Rust sources; unexpected product callers fail the closed-set check.
+Rust sources; unexpected product callers fail the closed-set check. The public
+raw `BaoClient::consume_kv_v2` closure path has an empty product-caller set;
+the registered host uses a crate-private typed final-delivery gate instead.
 
 The local filesystem remains insufficient as an external anti-rollback oracle.
 The host must provide a protected monotonic frontier and trusted time. Signed
