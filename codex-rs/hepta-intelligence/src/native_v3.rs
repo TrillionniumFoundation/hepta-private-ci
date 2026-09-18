@@ -149,11 +149,41 @@ impl<'a> NativeCompositionPortsV3<'a> {
         self.decision.as_ref()
     }
 
+    fn ensure_run_binding(
+        &self,
+        input: &CompositionPortInputV3,
+    ) -> Result<(), PortFailureV1> {
+        if self.candidate_set.digest() != input.candidate_set_digest
+            || self.candidate_set.state_digest != input.snapshot_digest
+        {
+            return Err(native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "native-run-binding",
+            ));
+        }
+        Ok(())
+    }
+
+    fn required_generation(
+        &self,
+        input: &CompositionPortInputV3,
+    ) -> Result<codex_hepta_types::Generation, PortFailureV1> {
+        input.capability_generation.ok_or_else(|| {
+            native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "missing-capability-generation",
+            )
+        })
+    }
+
     fn inputs_mut(
         &mut self,
         input: &CompositionPortInputV3,
         label: &'static str,
     ) -> Result<&mut NativeCompositionInputsV3, PortFailureV1> {
+        self.ensure_run_binding(input)?;
         self.inputs
             .as_mut()
             .ok_or_else(|| native_failure(input, PortFailureClassV1::Rejected, label))
@@ -163,6 +193,7 @@ impl<'a> NativeCompositionPortsV3<'a> {
         &self,
         input: &CompositionPortInputV3,
     ) -> Result<Digest32, PortFailureV1> {
+        self.ensure_run_binding(input)?;
         self.objective
             .as_ref()
             .map(|receipt| receipt.objective.semantic_digest)
@@ -241,6 +272,19 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
                 inputs.evaluation_policy.clone(),
             )
         };
+        let required_generation = self.required_generation(input)?;
+        if contributions.generation != required_generation
+            || contributions
+                .contributions
+                .iter()
+                .any(|contribution| contribution.generation != required_generation)
+        {
+            return Err(native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "ndu-generation",
+            ));
+        }
         contributions.objective_digest = objective_digest;
         for contribution in &mut contributions.contributions {
             contribution.objective_digest = objective_digest;
@@ -303,6 +347,14 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
                     )
                 })?
         };
+        let required_generation = self.required_generation(input)?;
+        if neuron.request.generation != required_generation {
+            return Err(native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "neuron-generation",
+            ));
+        }
         neuron.request.run_id = input.run_id.clone();
         neuron.request.source_digest = input.predecessor_digest;
         let (state, receipt) = step(neuron.request, neuron.previous.as_ref())
@@ -361,6 +413,14 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
             let inputs = self.inputs_mut(input, "missing-intuition-input")?;
             inputs.intuition.clone()
         };
+        let required_generation = self.required_generation(input)?;
+        if request.policy_generation != required_generation.get() {
+            return Err(native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "intuition-generation",
+            ));
+        }
         request.decision_id = input.run_id.clone();
         request.objective_digest = objective_digest;
         request.state_digest = input.snapshot_digest;
@@ -382,6 +442,34 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
                 PortFailureClassV1::Rejected,
                 "intuition-candidate-set",
             ));
+        }
+        let utility = self.utility.as_ref().ok_or_else(|| {
+            native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "utility-not-evaluated",
+            )
+        })?;
+        for candidate in &request.candidates {
+            let Some(ndu_candidate) = utility
+                .base
+                .evaluated_candidates
+                .iter()
+                .find(|row| row.candidate_id == candidate.candidate_id)
+            else {
+                return Err(native_failure(
+                    input,
+                    PortFailureClassV1::Rejected,
+                    "intuition-ndu-candidate",
+                ));
+            };
+            if ndu_candidate.scalar_score != Some(candidate.utility) {
+                return Err(native_failure(
+                    input,
+                    PortFailureClassV1::Rejected,
+                    "intuition-ndu-utility",
+                ));
+            }
         }
 
         let receipt = decide_calibrated_v2(request)
@@ -436,10 +524,17 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         input: &CompositionPortInputV3,
     ) -> Result<CompositionPortReceiptV3, PortFailureV1> {
         let objective_digest = self.objective_digest(input)?;
-        let mut request = {
+        let (mut request, policy_id) = {
             let inputs = self.inputs_mut(input, "missing-evaluation-input")?;
-            inputs.evaluation.clone()
+            (inputs.evaluation.clone(), inputs.policy_id.clone())
         };
+        if request.candidate_id != policy_id {
+            return Err(native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "evaluation-policy-binding",
+            ));
+        }
         request.objective_digest = objective_digest;
         request.candidate_producer_id = StableId::new("intelligence.control").map_err(|_| {
             native_failure(
