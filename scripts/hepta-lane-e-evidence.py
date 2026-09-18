@@ -23,6 +23,8 @@ STATIC_INPUTS = [
     Path("codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md"),
     Path("codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md"),
     Path("codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md"),
+    Path("codex-rs/hepta-intelligence/src/evaluated_shadow.rs"),
+    Path("codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"),
     Path("codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs"),
     Path("docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json"),
     Path("qualification/lane-e/TEST_TRACEABILITY.json"),
