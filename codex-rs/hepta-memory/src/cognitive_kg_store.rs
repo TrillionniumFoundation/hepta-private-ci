@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::publish_generation;
 use sha2::Digest;
 use sha2::Sha256;
 use sqlx::Row;
@@ -19,6 +20,10 @@ use crate::cognitive_intelligence_writer::canonical_entity_id;
 use crate::cognitive_intelligence_writer::canonical_relation_id;
 use crate::cognitive_intelligence_writer::occurrence_edge_id;
 use crate::cognitive_intelligence_writer::occurrence_node_id;
+use crate::cognitive_kg_kernel::build_kernel_generation;
+use crate::cognitive_kg_kernel::load_kernel_generation_tx;
+use crate::cognitive_kg_kernel::persist_kernel_receipt_tx;
+use crate::cognitive_kg_kernel::support_fact_digests;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
@@ -327,6 +332,48 @@ impl CognitiveStore {
         let next = current
             .checked_add(1)
             .ok_or_else(|| CognitiveStoreError::Corrupt("KG generation overflow".to_string()))?;
+        let predecessor = if current == 0 {
+            None
+        } else {
+            let generation = load_kernel_generation_tx(transaction, &projection_scope, current)
+                .await?
+                .ok_or_else(|| {
+                    CognitiveStoreError::Corrupt(
+                        "current KG pointer has no reconstructable predecessor".to_string(),
+                    )
+                })?;
+            let persisted_digest: String = sqlx::query_scalar(
+                "SELECT generation_sha256
+                 FROM kg_projection_kernel_receipts
+                 WHERE projection_scope = ? AND generation = ?",
+            )
+            .bind(&projection_scope)
+            .bind(current)
+            .fetch_one(&mut **transaction)
+            .await
+            .map_err(unavailable)?;
+            if persisted_digest != generation.generation_digest.to_string() {
+                return Err(CognitiveStoreError::Corrupt(
+                    "current KG kernel digest does not match its durable projection".to_string(),
+                ));
+            }
+            Some(generation)
+        };
+        let kernel_generation = build_kernel_generation(
+            u64::try_from(next).map_err(|_| {
+                CognitiveStoreError::Corrupt("negative KG generation".to_string())
+            })?,
+            input_heads_sha256.as_str(),
+            &nodes,
+            &edges,
+            &support_fact_digests(&heads),
+        )?;
+        let kernel_publication = publish_generation(predecessor.as_ref(), &kernel_generation)
+            .map_err(|error| {
+                CognitiveStoreError::Corrupt(format!(
+                    "hepta-kg rejected SQLite generation publication: {error}"
+                ))
+            })?;
         sqlx::query(
             "INSERT INTO kg_projection_generation_receipts (
                 projection_scope, generation, trigger_memory_id,
@@ -422,6 +469,13 @@ impl CognitiveStore {
             .await
             .map_err(unavailable)?;
         }
+        persist_kernel_receipt_tx(
+            transaction,
+            &projection_scope,
+            &kernel_generation,
+            &kernel_publication,
+        )
+        .await?;
         let updated = sqlx::query(
             "UPDATE kg_projection SET generation = ?
              WHERE projection_scope = ? AND generation = ?",
