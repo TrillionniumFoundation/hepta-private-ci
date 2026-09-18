@@ -20,7 +20,9 @@ Owned logical domains are:
 - artifact lifecycle evidence.
 
 The source modules do not own a signing key, selection route, production process
-or filesystem namespace. Those capabilities remain host-owned.
+or filesystem namespace. Read-only orphan/admin inspection emits no mutation or
+selection authority and cannot establish freshness of the supplied state. Those
+capabilities remain host-owned.
 
 ## Design operation to Rust symbol
 
@@ -42,6 +44,8 @@ or filesystem namespace. Those capabilities remain host-owned.
 | persist/reopen withdrawal registry | `write_withdrawal_registry_snapshot`, `read_withdrawal_registry_snapshot` | `src/aux_storage.rs` | implemented |
 | persist/reopen lifecycle journal | `write_lifecycle_journal_snapshot`, `read_lifecycle_journal_snapshot` | `src/aux_storage.rs` | implemented |
 | record governed iteration transitions | `validate_iteration_transition`, `IterationLedgerV1::transition` | `src/iteration.rs`, `src/iteration_ledger.rs` | implemented |
+| inspect suspected orphan without deletion authority | `inspect_orphan_candidate` | `src/storage.rs` | implemented |
+| summarize supplied registry/withdrawal/lifecycle state | `inspect_artifact_admin_state` | `src/admin.rs` | implemented, DENY_ALL |
 
 `LearningArtifactManifestV2` explicitly binds:
 
