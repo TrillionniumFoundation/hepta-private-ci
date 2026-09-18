@@ -27,6 +27,7 @@ use super::FLEET_CPU_MILLIS_AXIS;
 use super::FLEET_MEMORY_MIB_AXIS;
 use super::FleetEssentialFloorsV1;
 use super::GlobalPlaneError;
+use super::admit_durable_owner_summary_v1;
 use super::admit_fleet_allocation_owner_v1;
 use super::authenticate_owner_summary_v1;
 use super::compose_global_plan_with_fleet_v1;
@@ -297,6 +298,38 @@ fn authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request
         digest("effect-payload")
     );
     assert!(!requests.authority().grants_any());
+}
+
+#[test]
+fn durable_owner_admission_requires_the_exact_store_receipt() {
+    let objective = digest("global-objective");
+    let configuration = digest("global-configuration");
+    let generation = Generation::new(11).expect("generation");
+    let summary = evidence_owner(objective, generation, configuration);
+    let (signed, issuer) = sign_owner(&summary);
+    let scope = owner_summary_scope_digest_v1(&summary);
+    let payload = owner_summary_payload_digest_v1(&summary);
+    let authenticated = signed
+        .authenticate(&issuer, scope, payload, 1_100)
+        .expect("signature admission");
+    let receipt = authenticated.receipt().clone();
+
+    let admitted = admit_durable_owner_summary_v1(
+        summary.clone(),
+        &signed,
+        &issuer,
+        &receipt,
+        1_100,
+    )
+    .expect("durable receipt admission");
+    assert_eq!(admitted.summary().owner_id, summary.owner_id);
+
+    let mut wrong = receipt;
+    wrong.sequence = wrong.sequence.saturating_add(1);
+    assert!(matches!(
+        admit_durable_owner_summary_v1(summary, &signed, &issuer, &wrong, 1_100),
+        Err(GlobalPlaneError::InvalidOwnerBinding)
+    ));
 }
 
 #[test]
