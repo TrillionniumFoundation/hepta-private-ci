@@ -380,7 +380,11 @@
         "invalid_completion_receipt",
         "invalid_package_capacity",
         "invalid_worker_paths",
-        "invalid_review_capacity"
+        "invalid_review_capacity",
+        "completion_receipt_digest",
+        "completion_receipt_before_generation",
+        "completion_receipt_window_exceeds_envelope",
+        "assignment_generation_invalid"
       ],
       "resourceBounds": {
         "maximumWorkers": 256,
@@ -388,7 +392,8 @@
         "maximumReviewRoles": 16,
         "maximumCapacityUnits": 1000000
       },
-      "rollback": "discard the immutable plan and publish a new generation from fresh authenticated facts"
+      "rollback": "discard the immutable plan and publish a new generation from fresh authenticated facts",
+      "physicalState": "SQLite assignment_generations and assignment_generation_frontiers atomically contain the final resource-aware assigned/blocked projection"
     },
     {
       "id": "sandbox-execution-controller",
