@@ -173,11 +173,7 @@
       "sourcePathExists": true,
       "designOperation": "owner_store_evidence_context_and_policy",
       "mappingClass": "delegated_composition",
-      "delegatedCallees": [
-        "kernel.evidence",
-        "neuron.runtime",
-        "utility.ndu"
-      ]
+      "delegatedCallees": []
     },
     {
       "operation": "agentd_anchor_fence_store",
@@ -221,6 +217,21 @@
       ],
       "sourcePathExists": true,
       "designOperation": "verify_topology_proposal_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "topology_protected_surface_policy",
+      "nativeSymbol": "TopologyMutationPolicyV1",
+      "sourcePath": "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+      "state": "source_implemented_typed_protected_surface_policy",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "topology_protected_surface_policy",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
