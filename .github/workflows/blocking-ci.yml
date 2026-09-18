@@ -18,15 +18,71 @@ permissions:
   contents: read
 
 jobs:
+  scope:
+    name: Select blocking CI scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      prose_only: ${{ steps.classify.outputs.prose_only }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Classify pure prose pull requests
+        id: classify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          prose_only=false
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            mapfile -d '' paths < <(
+              git --no-replace-objects diff --no-ext-diff --no-textconv                 --name-only --no-renames -z "$BASE_SHA" "$HEAD_SHA" --
+            )
+            if [ "${#paths[@]}" -gt 0 ]; then
+              prose_only=true
+              for path in "${paths[@]}"; do
+                case "$path" in
+                  README.md|CONTRIBUTING.md|docs/*.md) ;;
+                  *) prose_only=false; break ;;
+                esac
+              done
+            fi
+          fi
+          printf 'prose_only=%s\n' "$prose_only" >> "$GITHUB_OUTPUT"
+          printf 'blocking-ci scope: prose_only=%s\n' "$prose_only"
+
+      - name: Regression-test scoped fan-in policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          NEEDS='{"scope":{"result":"success"},"heavy":{"result":"skipped"}}'             ALLOWED_SKIPPED='["heavy"]'             python3 .github/scripts/check_ci_results.py
+          if NEEDS='{"scope":{"result":"success"},"heavy":{"result":"skipped"}}'             python3 .github/scripts/check_ci_results.py; then
+            echo "unscoped skipped dependency was incorrectly accepted" >&2
+            exit 1
+          fi
+
+  # Keep reusable workflow calls alphabetized. Source-bearing changes keep the
+  # full matrix. Pure README/docs Markdown changes retain lightweight repository
+  # and document validation without spending cross-platform native capacity.
   hepta-contract-gate:
     name: Hepta contract gate
+    needs: scope
+    if: needs.scope.outputs.prose_only != 'true'
     uses: ./.github/workflows/hepta-contract-gate.yml
     secrets: inherit
 
-  # Keep reusable workflow calls alphabetized. The `required` job below is the
-  # version-controlled list that the main-branch ruleset should require.
   bazel:
     name: Bazel
+    needs: scope
+    if: needs.scope.outputs.prose_only != 'true'
     uses: ./.github/workflows/bazel.yml
     secrets: inherit
 
@@ -37,6 +93,8 @@ jobs:
 
   cargo-deny:
     name: cargo-deny
+    needs: scope
+    if: needs.scope.outputs.prose_only != 'true'
     uses: ./.github/workflows/cargo-deny.yml
     secrets: inherit
 
@@ -45,18 +103,48 @@ jobs:
     uses: ./.github/workflows/codespell.yml
     secrets: inherit
 
+  prose-checks:
+    name: Prose checks
+    needs: scope
+    if: needs.scope.outputs.prose_only == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact prose candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify prose and canonical document consistency
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 scripts/asciicheck.py README.md
+          python3 scripts/readme_toc.py README.md
+          python3 scripts/hepta-docs.py verify
+          test -z "$(git status --porcelain --untracked-files=no)"
+
   repo-checks:
     name: repo-checks
+    needs: scope
+    if: needs.scope.outputs.prose_only != 'true'
     uses: ./.github/workflows/repo-checks.yml
     secrets: inherit
 
   rust-ci:
     name: rust-ci
+    needs: scope
+    if: needs.scope.outputs.prose_only != 'true'
     uses: ./.github/workflows/rust-ci.yml
     secrets: inherit
 
   sdk:
     name: sdk
+    needs: scope
+    if: needs.scope.outputs.prose_only != 'true'
     uses: ./.github/workflows/sdk.yml
     secrets: inherit
 
@@ -67,11 +155,13 @@ jobs:
     # required check can appear successful instead of reporting the failure.
     if: ${{ always() }}
     needs:
+      - scope
       - hepta-contract-gate
       - bazel
       - blob-size-policy
       - cargo-deny
       - codespell
+      - prose-checks
       - repo-checks
       - rust-ci
       - sdk
@@ -83,7 +173,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Require successful dependencies
+      - name: Require successful applicable dependencies
         env:
           NEEDS: ${{ toJSON(needs) }}
+          ALLOWED_SKIPPED: >-
+            ${{ needs.scope.outputs.prose_only == 'true'
+              && '["hepta-contract-gate","bazel","cargo-deny","repo-checks","rust-ci","sdk"]'
+              || '["prose-checks"]' }}
         run: python3 .github/scripts/check_ci_results.py
