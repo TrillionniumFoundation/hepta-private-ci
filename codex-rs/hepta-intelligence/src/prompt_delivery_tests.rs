@@ -406,7 +406,7 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
     );
 
     let factor_v1 = registry
-        .registry()
+        .registry().expect("registry")
         .factor_protocol_v1(&id("factor:verify"))
         .expect("factor projection")
         .expect("factor exists");
@@ -415,7 +415,7 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
         "inspect evidence before mutation"
     );
     let realization_v1 = registry
-        .registry()
+        .registry().expect("registry")
         .realization_protocol_v1(&id("realization:verify"))
         .expect("realization projection")
         .expect("realization exists");
@@ -433,7 +433,7 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
     let selected = canonical_selection(&registry, &tuple, 100);
 
     let factor = registry
-        .registry()
+        .registry().expect("registry")
         .factor(&id("factor:verify"))
         .cloned()
         .expect("admitted factor");
