@@ -22,9 +22,10 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
-pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 16_384;
-pub const MAX_GENERATION_BOUND_RESULTS: usize = 256;
+pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 512;
+pub const MAX_GENERATION_BOUND_RESULTS: usize = 16;
 const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
+const COMPILED_CUE_ID_DOMAIN: &[u8] = b"hepta.memory-cue.id.v1";
 const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
 const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
 const RECALL_PACKET_DOMAIN: &[u8] = b"hepta.recall-packet.v1";
@@ -47,6 +48,41 @@ pub struct MemoryCueV1 {
     pub approved_context_digest: Digest32,
     pub snapshot_key: CognitiveSnapshotKeyV1,
     pub cue_profile_digest: Digest32,
+}
+
+/// Compile one deterministic, authority-free cue from already-approved digests
+/// and one exact Lane C snapshot key. The cue identity is derived from the
+/// semantic inputs; callers cannot smuggle an unrelated identity into recall.
+pub fn compile_cue(
+    objective_digest: Digest32,
+    approved_context_digest: Digest32,
+    snapshot_key: CognitiveSnapshotKeyV1,
+    cue_profile_digest: Digest32,
+) -> Result<MemoryCueV1, RecallErrorV1> {
+    snapshot_key
+        .validate()
+        .map_err(RecallErrorV1::Contract)?;
+    ensure_digest("objective", objective_digest)?;
+    ensure_digest("approved_context", approved_context_digest)?;
+    ensure_digest("cue_profile", cue_profile_digest)?;
+
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(COMPILED_CUE_ID_DOMAIN);
+    push_digest(&mut bytes, objective_digest);
+    push_digest(&mut bytes, approved_context_digest);
+    push_digest(&mut bytes, snapshot_key.vector_digest);
+    push_digest(&mut bytes, cue_profile_digest);
+    let cue_id = StableId::new(format!("cue:{}", Digest32::of_bytes(&bytes)))
+        .map_err(|error| RecallErrorV1::InvalidCueId(error.to_string()))?;
+    let cue = MemoryCueV1 {
+        cue_id,
+        objective_digest,
+        approved_context_digest,
+        snapshot_key,
+        cue_profile_digest,
+    };
+    cue.validate()?;
+    Ok(cue)
 }
 
 impl MemoryCueV1 {
@@ -507,11 +543,15 @@ pub fn recall(
     candidates: Vec<RetrievalChannelCandidateV1>,
 ) -> Result<RecallPacketV1, RecallErrorV1> {
     let union = build_candidate_union(cue, policy, candidates)?;
+    let maximum_results = usize::try_from(policy.maximum_results).unwrap_or(0);
+    // Risk gating is evaluated only over the candidates eligible to be
+    // delivered. Lower-ranked tail candidates remain bound by union_digest but
+    // cannot force an unrelated top-k recall to abstain.
+    let risk_entries = &union.entries[..union.entries.len().min(maximum_results)];
     let minimum_channels = usize::try_from(policy.minimum_distinct_channels).unwrap_or(usize::MAX);
-    let observed_channels = usize::try_from(union.distinct_channels).unwrap_or(0);
-    let contradiction_count = contradiction_population_count(&union.entries);
-    let maximum_ood = union
-        .entries
+    let observed_channels = distinct_channel_count(risk_entries);
+    let contradiction_count = contradiction_population_count(risk_entries);
+    let maximum_ood = risk_entries
         .iter()
         .map(|entry| entry.maximum_ood)
         .max()
@@ -530,7 +570,6 @@ pub fn recall(
         None
     };
 
-    let maximum_results = usize::try_from(policy.maximum_results).unwrap_or(0);
     let (disposition, selections, omitted_count) = match reason {
         Some(reason) => (RecallDispositionV1::Abstained(reason), Vec::new(), 0),
         None => {
@@ -596,6 +635,14 @@ impl UnionBuilder {
     }
 }
 
+fn distinct_channel_count(entries: &[CandidateUnionEntryV1]) -> usize {
+    entries
+        .iter()
+        .flat_map(|entry| entry.channels.iter().copied())
+        .collect::<BTreeSet<_>>()
+        .len()
+}
+
 fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
     let mut populations = BTreeMap::<Digest32, usize>::new();
     for entry in entries {
@@ -610,6 +657,7 @@ fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
 pub enum RecallErrorV1 {
     Contract(LaneCContractError),
     EmptyDigest(&'static str),
+    InvalidCueId(String),
     EmptyChannelPolicy,
     DuplicateChannelPolicy(RetrievalChannelV1),
     InvalidChannelLimit(RetrievalChannelV1),
