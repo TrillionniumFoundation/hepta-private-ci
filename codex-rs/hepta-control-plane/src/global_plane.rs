@@ -8,6 +8,7 @@ use codex_hepta_authbus::PreverifiedAuthEnvelope;
 use codex_hepta_authbus::ReplayWindow;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::TrustedReplayContext;
+use codex_hepta_authbus::VerificationReceipt;
 use codex_hepta_fleet::lease_ledger::LeaseLedger;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -213,6 +214,41 @@ pub fn authenticate_owner_summary_v1(
     )?;
 
     let admission_digest = replay_receipt.envelope_digest;
+    summary.support_digest = bind_admission_support(summary.support_digest, admission_digest);
+    Ok(AdmittedOwnerSummaryV1 {
+        summary,
+        admission_digest,
+    })
+}
+
+/// Admit a summary whose AuthBus replay sequence was already consumed by a
+/// durable owner such as HeptaEvidenceStore.
+///
+/// Control re-verifies the signature and exact scope/payload and requires the
+/// durable receipt to equal the receipt derived from the same signed message.
+/// The durable store therefore owns replay persistence; this function never
+/// creates a second in-memory replay authority.
+pub fn admit_durable_owner_summary_v1(
+    mut summary: OwnerSummaryV1,
+    signed: &SignedMessage,
+    issuer: &IssuerRegistration,
+    durable_receipt: &VerificationReceipt,
+    now_unix_ms: u64,
+) -> Result<AdmittedOwnerSummaryV1, GlobalPlaneError> {
+    if signed.claims.subject_id != summary.owner_id {
+        return Err(GlobalPlaneError::InvalidOwnerBinding);
+    }
+    let expected_scope = owner_summary_scope_digest_v1(&summary);
+    let expected_payload = owner_summary_payload_digest_v1(&summary);
+    let authenticated =
+        signed.authenticate(issuer, expected_scope, expected_payload, now_unix_ms)?;
+    if authenticated.claims().subject_id != summary.owner_id
+        || authenticated.receipt() != durable_receipt
+        || durable_receipt.subject_id != summary.owner_id
+    {
+        return Err(GlobalPlaneError::InvalidOwnerBinding);
+    }
+    let admission_digest = durable_receipt.envelope_digest;
     summary.support_digest = bind_admission_support(summary.support_digest, admission_digest);
     Ok(AdmittedOwnerSummaryV1 {
         summary,
