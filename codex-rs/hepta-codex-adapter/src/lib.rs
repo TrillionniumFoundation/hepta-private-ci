@@ -172,7 +172,7 @@ impl AppServerObservation {
             // JSON-RPC request/method/parameter rejection is established before
             // a valid turn can be admitted. Internal/custom server failures do
             // not carry that guarantee and remain indeterminate.
-            -32600..=-32602 => ObservationKind::Rejected,
+            -32602..=-32600 => ObservationKind::Rejected,
             _ => ObservationKind::Indeterminate,
         };
         Ok(Self {
