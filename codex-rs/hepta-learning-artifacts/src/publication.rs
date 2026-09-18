@@ -100,9 +100,7 @@ impl ArtifactPublicationTransactionV1 {
             {
                 Ok(())
             }
-            ArtifactPublicationPhaseV1::Prepared
-            | ArtifactPublicationPhaseV1::SnapshotDurable
-            | ArtifactPublicationPhaseV1::WitnessDurable
+            ArtifactPublicationPhaseV1::WitnessDurable
             | ArtifactPublicationPhaseV1::Acknowledged => {
                 Err(ArtifactPublicationError::PhaseConflict)
             }
