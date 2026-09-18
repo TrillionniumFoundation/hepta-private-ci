@@ -13,6 +13,7 @@ fn digest(value: &str) -> Digest32 {
 
 fn model_pin(model: &TabularWorldModelV1) -> WorldModelPinV1 {
     WorldModelPinV1 {
+        payload_digest: world_model_payload_digest_v1(model).expect("payload digest"),
         model_digest: model.model_digest,
         dataset_digest: model.dataset_digest,
     }
@@ -129,10 +130,7 @@ fn world_model_loaded_pin_authenticates_identity_and_structure() {
         vec![sample("sample-loaded", "state-b", 10)],
     )
     .expect("fit");
-    let pin = WorldModelPinV1 {
-        model_digest: model.model_digest,
-        dataset_digest: model.dataset_digest,
-    };
+    let pin = model_pin(&model);
     let loaded = LoadedTabularWorldModelV1::from_pinned_model(model.clone(), &pin)
         .expect("pinned model admitted");
     assert_eq!(loaded.model_id(), &id("world-model-loaded"));
@@ -176,6 +174,26 @@ fn raw_world_model_prediction_rejects_unmatched_pin() {
     pin.dataset_digest = digest("other-dataset");
     assert_eq!(
         predict_transition(&model, &pin, &id("state-a"), &id("action-a")),
+        Err(WorldModelError::InvalidModel)
+    );
+}
+
+#[test]
+fn world_model_pin_rejects_semantically_valid_payload_substitution() {
+    let mut model = fit_transition_model(
+        id("world-model-payload"),
+        digest("dataset-payload"),
+        vec![sample("sample-payload", "state-b", 10)],
+    )
+    .expect("fit");
+    let pin = model_pin(&model);
+    model.estimates[0].mean_outcome = FixedQ32::from_raw(9);
+    assert_eq!(
+        predict_transition(&model, &pin, &id("state-a"), &id("action-a")),
+        Err(WorldModelError::InvalidModel)
+    );
+    assert_eq!(
+        LoadedTabularWorldModelV1::from_pinned_model(model, &pin),
         Err(WorldModelError::InvalidModel)
     );
 }
