@@ -227,6 +227,19 @@ export class BrowserProfileHost {
           observed.profileOwnerDigest,
           "profileOwnerDigest",
         );
+        const expectedProfileOwnerDigest = canonicalDigest({
+          schema: "hepta.browser.profile-owner.v1",
+          profileId,
+          principalId,
+          generation,
+          manifestDigest,
+          grantDigest,
+        });
+        if (profileOwnerDigest !== expectedProfileOwnerDigest) {
+          throw new TypeError(
+            "driver profile ownership observation does not bind the admitted identity",
+          );
+        }
         const state = {
           profileId,
           principalId,
