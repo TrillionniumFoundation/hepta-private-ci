@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use super::*;
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::RecordState;
