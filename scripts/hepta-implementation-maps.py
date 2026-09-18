@@ -345,6 +345,19 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        attestation = row.get("currentHeadAttestation")
+        if attestation is not None:
+            if not isinstance(attestation, dict):
+                failures.append(f"{mid}: current head attestation")
+            else:
+                attested_commit = attestation.get("commit")
+                attested_tree = attestation.get("tree")
+                if not isinstance(attested_commit, str) or not re.fullmatch(r"[0-9a-f]{40}", attested_commit):
+                    failures.append(f"{mid}: attested commit")
+                if not isinstance(attested_tree, str) or not re.fullmatch(r"[0-9a-f]{40}", attested_tree):
+                    failures.append(f"{mid}: attested tree")
+                if attestation.get("class") != "module_code_candidate":
+                    failures.append(f"{mid}: attestation class")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
