@@ -669,6 +669,54 @@ async fn projection_and_fact_receipts_survive_clean_reopen() {
 }
 
 #[tokio::test]
+async fn reopen_rejects_tampered_v2_generation_digest() {
+    let temp = TempDir::new().expect("V2 tamper temp dir");
+    let owner = agent_id(40);
+    let store = seeded_store(&temp, &owner).await;
+    let receipt_guard_sql: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema
+         WHERE name = 'kg_projection_v2_publications_no_update'",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .expect("V2 receipt guard SQL");
+    let mut connection = store.pool.acquire().await.expect("V2 tamper connection");
+    sqlx::query("DROP TRIGGER kg_projection_v2_publications_no_update")
+        .execute(&mut *connection)
+        .await
+        .expect("drop V2 receipt guard");
+    sqlx::query(
+        "UPDATE kg_projection_v2_publications
+         SET generation_digest = ?
+         WHERE projection_scope = 'agent_private' AND generation = 1",
+    )
+    .bind("0".repeat(64))
+    .execute(&mut *connection)
+    .await
+    .expect("tamper V2 generation digest");
+    sqlx::query(sqlx::AssertSqlSafe(receipt_guard_sql.as_str()))
+        .execute(&mut *connection)
+        .await
+        .expect("restore exact V2 receipt guard");
+    drop(connection);
+    store.pool.close().await;
+    drop(store);
+
+    let error = match CognitiveStore::open(&layout(&temp, &owner)).await {
+        Ok(_) => panic!("tampered V2 generation digest must fail reopen"),
+        Err(error) => error,
+    };
+    assert!(
+        matches!(
+            error,
+            CognitiveStoreError::Corrupt(ref message)
+                if message.contains("canonical V2 reopen verification")
+        ),
+        "unexpected V2 tamper reopen error: {error:?}"
+    );
+}
+
+#[tokio::test]
 async fn reopen_rejects_same_name_permissive_trigger_and_fts_count_tampering() {
     let trigger_temp = TempDir::new().expect("temp dir");
     let trigger_owner = agent_id(35);
