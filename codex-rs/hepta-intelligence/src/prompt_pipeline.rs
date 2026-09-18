@@ -274,11 +274,8 @@ pub fn prepare_prompt_delivery_v1(
     // Prove that every selected prompt realization occurs byte-for-byte in the
     // final serialization, in the same relative order as the compiled context.
     // A digest of arbitrary provider bytes is not enough to establish exposure.
-    let serialization_proof = prove_prompt_serialization(
-        &prepared.compiled,
-        &materialization,
-        &serialized_payload,
-    )?;
+    let serialization_proof =
+        prove_prompt_serialization(&prepared.compiled, &materialization, &serialized_payload)?;
     let payload_digest = serialization_proof.serialized_payload_digest;
     let serialization = record_serialization(&prepared.compiled, serialization_id, payload_digest)
         .map_err(|error| PromptPipelineErrorV1::ContextCompiler(format!("{error:?}")))?;
