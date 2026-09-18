@@ -144,10 +144,9 @@ and its own measured acceptance evidence.
 
 The repository production caller is the read-only GitHub Actions job
 `engineering-product-gate` in
-`.github/workflows/hepta-consolidated-source.yml`. It is downstream of both the
-real Linux/Bubblewrap `engineering-sandbox` job and the repository
-`qualification` matrix. If either prerequisite fails or is skipped, the product
-caller does not issue a receipt.
+`.github/workflows/hepta-consolidated-source.yml`. It is downstream of the full `workspace-regression` gate, the real
+Linux/Bubblewrap `engineering-sandbox` job and the repository `qualification`
+matrix. If any prerequisite fails, the product caller does not issue a receipt.
 
 The caller executes the SQLite v5 control plane in a disposable owner database,
 publishes a bounded assignment generation, reads back its exact assignment
