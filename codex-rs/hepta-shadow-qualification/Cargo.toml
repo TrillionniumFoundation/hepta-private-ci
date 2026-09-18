@@ -30,6 +30,7 @@ tokio = { workspace = true, features = ["io-util", "macros", "net", "process", "
 toml = { workspace = true }
 
 [dev-dependencies]
+ed25519-dalek = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
