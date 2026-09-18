@@ -90,15 +90,10 @@ pub fn claim_final_use_for_grant_request_v1(
     destination_id: &StableId,
     scope_digest: Digest32,
 ) -> Result<VerifiedUseToken, AuthorityBridgeError> {
-    let binding = final_use_binding_for_grant_request_v1(
-        request,
-        subject_id,
-        destination_id,
-        scope_digest,
-    )?;
+    let binding =
+        final_use_binding_for_grant_request_v1(request, subject_id, destination_id, scope_digest)?;
     authority.claim(signed_grant, &binding).map_err(Into::into)
 }
-
 
 /// Preferred final-boundary helper. The caller's effect closure runs only
 /// inside FinalUseAuthority's second time/revocation fence after durable nonce
