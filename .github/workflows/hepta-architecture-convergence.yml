@@ -123,11 +123,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runner-tests.json" -- python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_exec*.py'
-      - name: Repository-control parser and journal monotonicity regressions
+      - name: Repository-control rejection regressions
         run: |
           set -euo pipefail
+          # Browser journal tests already run in consolidated-source on both
+          # exact source and merge identities; do not duplicate that owner gate.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser-journal.json" --minimum-tests 1 -- node --test apps/hepta-browser/test/journal.test.js apps/hepta-browser/test/journal-monotonicity.test.js
       - name: Prepare native prerequisites
         run: |
           set -euo pipefail
