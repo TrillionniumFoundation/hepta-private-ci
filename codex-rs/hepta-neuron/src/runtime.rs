@@ -176,6 +176,7 @@ where
         now_unix_micros: u64,
     ) -> Result<Self, RuntimeError> {
         let config_digest = runtime_profile_digest(&config, &native)?;
+        calibration_policy.digest()?;
         if now_unix_micros >= config.expires_at_unix_micros {
             return Err(RuntimeError::ConfigExpired);
         }
@@ -253,6 +254,7 @@ where
         now_unix_micros: u64,
     ) -> Result<Self, RuntimeError> {
         let config_digest = runtime_profile_digest(&config, &native)?;
+        calibration_policy.digest()?;
         if now_unix_micros >= config.expires_at_unix_micros {
             return Err(RuntimeError::ConfigExpired);
         }
