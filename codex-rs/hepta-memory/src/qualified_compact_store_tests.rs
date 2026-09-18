@@ -177,6 +177,21 @@ async fn canonical_checkpoint_publication_is_idempotent_and_survives_reopen() {
 }
 
 #[tokio::test]
+async fn store_rejects_checkpoint_generation_that_skips_source_snapshot() {
+    let (_temp, store, lease, fence) = prepared().await;
+    let skipped = checkpoint(3, digest("skipped-predecessor"), "skipped");
+    let skipped_proof = proof(&skipped, "skipped");
+
+    assert!(matches!(
+        store
+            .publish_qualified_compact_checkpoint(&lease, &fence, &skipped, &skipped_proof)
+            .await,
+        Err(QualifiedCompactStoreError::Invalid(ref message))
+            if message.contains("successor of the source snapshot")
+    ));
+}
+
+#[tokio::test]
 async fn predecessor_cas_rejects_divergent_successor() {
     let (_temp, store, lease, fence) = prepared().await;
     let first = checkpoint(2, digest("bootstrap-predecessor"), "one");
