@@ -517,7 +517,7 @@ async fn completed_provider_effect_settles_only_from_observed_cost_evidence() {
     };
     let dispatched = store
         .dispatch_provider_effect_with_authbus_qualification(
-            &adapter, &auth, &request, &intent, 10
+            &adapter, &auth, &request, &intent
         )
         .await
         .expect("dispatch");
