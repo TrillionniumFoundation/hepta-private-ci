@@ -40,15 +40,20 @@ poisons the handle and requires reopen/reconciliation rather than a blind retry.
 ## Bounds, migration and rollback
 
 At most 1024 ticks per segment: below 4.6 MB at d=256, plus one incomplete tail.
-Replay and receipt-cache memory are quota-bounded. At capacity the caller stops;
-segment rollover, compaction and cross-segment temporal continuity are not yet
-implemented. This synced disk path has no real-time latency claim. Configuration,
-selected model weights and topology remain immutable throughout a segment.
+Replay and receipt-cache memory are quota-bounded. `NeuronRuntimeHost::rotate`
+implements continuation segments: rotation is allowed only from the exact
+independently witnessed checkpoint, which becomes the next segment's genesis,
+so temporal/homeostatic state is not reset. Compaction and archival across many
+segments remain outside this bounded journal. This synced disk path has no
+real-time latency claim. Configuration, selected model weights and topology remain
+immutable throughout a generation.
 
-The host must revoke/rebuild deleted-data-derived state before reopening it.
-Encryption, backup deletion, canonical Neuron wire protocols, authenticated
-provenance and real model/caller composition remain separate work. Process-exit
-tests do not certify physical power-loss behavior or target-hardware p99 timing.
+Deleted-data-derived state is rebuilt only into a fresh empty runtime by replaying
+ordered inputs through the live lineage policy; any partial failure poisons that
+rebuild. Canonical Neuron wire adapters are implemented separately from this disk
+format. Encryption, backup deletion, authenticated host/file provenance and a
+concrete real-model deployment remain separate work. Process-exit tests do not
+certify physical power-loss behavior or target-hardware p99 timing.
 Downgrade leaves this new journal inert; never silently choose a stale checkpoint.
 
 ## Executable verification

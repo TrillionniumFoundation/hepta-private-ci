@@ -171,7 +171,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native sparse tick is a library operation. A host owns SparseJournal, model/config/body scope and independently retained recovery anchor. Reopen using the same exact profile; never retry a failed anchored recovery without the anchor. An encoder digest in a request is not evidence that a local model was executed.
+The pure native sparse tick remains a library operation. The current source candidate also provides `NeuronRuntimeHost`, which owns the canonical typed composition boundary over a host-supplied frozen-model executor, SparseJournal and an independently retained recovery witness. The embedding product still owns executor enrollment and port activation. Reopen using the same exact profile; never retry a failed anchored recovery without the anchor. An encoder digest in a request is not evidence that a local model was executed.
 
 Current operating and state-format references:
 
@@ -185,6 +185,9 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-neuron/src/closure_tests.rs](../../../codex-rs/hepta-neuron/src/closure_tests.rs); owner-host model binding, witnessed rotation/rebuild, calibration/OOD and plasticity cases.
+- [codex-rs/hepta-neuron/src/wire_tests.rs](../../../codex-rs/hepta-neuron/src/wire_tests.rs); strict canonical Neuron protocol round trips and rejection cases.
+- [codex-rs/hepta-neuron/src/qualification_tests.rs](../../../codex-rs/hepta-neuron/src/qualification_tests.rs); executable mechanism lesions and longitudinal evidence-binding cases.
 - [codex-rs/hepta-neuron/src/journal_anchor_tests.rs](../../../codex-rs/hepta-neuron/src/journal_anchor_tests.rs); named case: `anchored_reopen_preserves_the_exact_receipt_and_all_bytes`.
 - [codex-rs/hepta-neuron/src/journal_tests.rs](../../../codex-rs/hepta-neuron/src/journal_tests.rs); named case: `committed_checkpoint_and_receipt_survive_reopen`.
 
