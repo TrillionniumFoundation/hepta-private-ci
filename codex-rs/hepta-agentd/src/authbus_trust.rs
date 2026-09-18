@@ -115,6 +115,11 @@ impl TextTrust {
         let mut registrations = Vec::with_capacity(1 + self.previous_epochs.len());
         registrations.push(self.issuer_for(self.key_epoch, now_ms)?);
         for epoch in &self.previous_epochs {
+            if epoch.not_before_ms.is_some_and(|start| now_ms < start)
+                || epoch.not_after_ms.is_some_and(|end| now_ms >= end)
+            {
+                continue;
+            }
             registrations.push(self.issuer_for(epoch.key_epoch, now_ms)?);
         }
         Ok(registrations)
