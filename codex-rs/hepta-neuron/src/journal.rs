@@ -222,8 +222,13 @@ impl SparseJournal {
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
-            if let RecoveryPolicy::Require(_) = policy {
-                return Err(JournalError::AcknowledgedHistoryMissing);
+            if let RecoveryPolicy::Require(anchor) = policy {
+                if anchor.sequence > base_sequence {
+                    return Err(JournalError::AcknowledgedHistoryMissing);
+                }
+                if genesis_anchor != Some(anchor) {
+                    return Err(JournalError::AnchorMismatch);
+                }
             }
             file.write_all(&header)
                 .map_err(|_| JournalError::Indeterminate)?;
