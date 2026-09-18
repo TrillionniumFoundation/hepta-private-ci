@@ -9,6 +9,7 @@ import { join } from "node:path";
 
 import {
   LinuxBubblewrapLauncher,
+  PooledSubprocessBrowserDriver,
   SubprocessBrowserDriver,
 } from "../src/worker-driver.js";
 import {
@@ -53,6 +54,7 @@ function fakeLauncher({
   capture = null,
   corruptResponseBinding = false,
 } = {}) {
+  let nextPid = 4241;
   return {
     posture: {
       sourceContractOnly: true,
@@ -62,10 +64,11 @@ function fakeLauncher({
       userHomeHidden: true,
       hostFilesystemRestricted: true,
       parentDeathCleanup: true,
+      resourceLimitsConfigured: true,
     },
     spawn(spec) {
       const child = new EventEmitter();
-      child.pid = 4242;
+      child.pid = ++nextPid;
       child.stdin = new PassThrough();
       child.stdout = new PassThrough();
       child.stderr = new PassThrough();
@@ -359,6 +362,11 @@ test(
     assert.equal(argv.at(-1), "/hepta-worker");
     assert.equal(launcher.posture.sourceContractOnly, true);
     assert.equal(launcher.posture.hostFilesystemRestricted, true);
+    assert.equal(launcher.posture.resourceLimitsConfigured, true);
+    assert.equal(launcher.resourceLimits.maxAddressSpaceBytes, 8 * 1024 * 1024 * 1024);
+    assert.equal(launcher.resourceLimits.maxCpuSeconds, 300);
+    assert.equal(launcher.resourceLimits.maxOpenFiles, 4096);
+    assert.equal(launcher.resourceLimits.maxProcesses, 256);
   },
 );
 
@@ -389,10 +397,63 @@ test("subprocess driver rejects launchers without the complete source isolation 
             userHomeHidden: true,
             hostFilesystemRestricted: false,
             parentDeathCleanup: true,
+            resourceLimitsConfigured: true,
           },
           spawn() {},
         },
       }),
     /hostFilesystemRestricted/,
   );
+});
+
+
+test("pooled subprocess driver runs multiple isolated profiles and enforces the global process cap", async () => {
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-pool-"));
+  const workerPath = join(root, "worker.bin");
+  const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
+  await writeFile(workerPath, workerBytes, { mode: 0o700 });
+  const driver = new PooledSubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(workerBytes),
+    profileRoot: join(root, "profiles"),
+    launcher: fakeLauncher(),
+    maxProfiles: 2,
+  });
+
+  const first = await driver.start(startInput({ profileId: "profile.1" }));
+  const second = await driver.start(startInput({
+    profileId: "profile.2",
+    principalId: "principal.2",
+  }));
+  assert.notEqual(first.processId, second.processId);
+
+  await assert.rejects(
+    driver.start(startInput({
+      profileId: "profile.3",
+      principalId: "principal.3",
+    })),
+    /pool capacity is exhausted/,
+  );
+
+  await driver.stop({
+    profileId: "profile.1",
+    processId: first.processId,
+    generation: 1,
+  });
+  const third = await driver.start(startInput({
+    profileId: "profile.3",
+    principalId: "principal.3",
+  }));
+  assert.match(third.processId, /^servo\.pid\./);
+
+  await driver.stop({
+    profileId: "profile.2",
+    processId: second.processId,
+    generation: 1,
+  });
+  await driver.stop({
+    profileId: "profile.3",
+    processId: third.processId,
+    generation: 1,
+  });
 });
