@@ -14,7 +14,6 @@ impl<T, E: Debug> TestResultExt<T> for Result<T, E> {
     }
 }
 
-
 use codex_hepta_types::Digest32;
 
 use super::*;
@@ -178,7 +177,7 @@ fn canonical_json_denies_unknown_fields_and_noncanonical_whitespace() {
     let encoded = canonical_json_bytes(&event).must();
 
     let mut unknown = String::from_utf8(encoded.clone()).must();
-    unknown.insert_str(1, ""unexpected":true,");
+    unknown.insert_str(1, "\"unexpected\":true,");
     assert!(decode_canonical_json::<MemoryEventV1>(unknown.as_bytes()).is_err());
 
     let mut spaced = encoded;
@@ -188,7 +187,6 @@ fn canonical_json_denies_unknown_fields_and_noncanonical_whitespace() {
         Err(CanonicalWireErrorV1::NonCanonicalEncoding)
     ));
 }
-
 
 #[test]
 fn canonical_json_golden_vectors_are_stable() {
