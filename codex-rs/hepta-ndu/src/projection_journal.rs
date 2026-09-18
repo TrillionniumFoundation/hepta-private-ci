@@ -61,6 +61,13 @@ pub struct NduProjectionJournalV1 {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct NduProjectionCheckpointV1 {
+    pub record_count: u32,
+    pub head_entry_digest: Digest32,
+    pub checkpoint_digest: Digest32,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NduProjectionJournalError {
     EmptyDigest,
     RecordLimitExceeded,
@@ -139,7 +146,7 @@ impl NduProjectionJournalV1 {
         }) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
-        if self.revoked_digests().contains(&projection_digest) {
+        if self.is_revoked(objective_digest, subject_digest, projection_digest) {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
         self.append(
@@ -173,7 +180,6 @@ impl NduProjectionJournalV1 {
         objective_digest: Digest32,
         subject_digest: Digest32,
     ) -> Option<Digest32> {
-        let revoked = self.revoked_digests();
         let mut selected = None;
         for entry in &self.entries {
             if entry.objective_digest != objective_digest || entry.subject_digest != subject_digest
@@ -182,8 +188,12 @@ impl NduProjectionJournalV1 {
             }
             match entry.kind {
                 NduProjectionKindV1::SelectedProjection => {
-                    selected =
-                        (!revoked.contains(&entry.payload_digest)).then_some(entry.payload_digest);
+                    selected = (!self.is_revoked(
+                        objective_digest,
+                        subject_digest,
+                        entry.payload_digest,
+                    ))
+                    .then_some(entry.payload_digest);
                 }
                 NduProjectionKindV1::Revocation if selected == Some(entry.payload_digest) => {
                     selected = None;
@@ -191,7 +201,7 @@ impl NduProjectionJournalV1 {
                 _ => {}
             }
         }
-        selected.filter(|digest| !revoked.contains(digest))
+        selected.filter(|digest| !self.is_revoked(objective_digest, subject_digest, *digest))
     }
 
     fn append(
@@ -379,11 +389,49 @@ impl NduProjectionJournalV1 {
         Ok(journal)
     }
 
-    fn revoked_digests(&self) -> BTreeSet<Digest32> {
+    #[must_use]
+    pub fn checkpoint(&self) -> NduProjectionCheckpointV1 {
+        let record_count = u32::try_from(self.entries.len()).unwrap_or(u32::MAX);
+        let head_entry_digest = self
+            .entries
+            .last()
+            .map_or(Digest32::ZERO, |entry| entry.entry_digest);
+        let mut bytes = b"hepta.ndu.projection-journal-checkpoint.v1".to_vec();
+        bytes.extend_from_slice(&record_count.to_be_bytes());
+        bytes.extend_from_slice(head_entry_digest.as_array());
+        NduProjectionCheckpointV1 {
+            record_count,
+            head_entry_digest,
+            checkpoint_digest: Digest32::of_bytes(&bytes),
+        }
+    }
+
+    #[must_use]
+    pub fn matches_checkpoint(&self, checkpoint: NduProjectionCheckpointV1) -> bool {
+        self.checkpoint() == checkpoint
+    }
+
+    fn is_revoked(
+        &self,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+        payload_digest: Digest32,
+    ) -> bool {
+        self.revoked_keys()
+            .contains(&(objective_digest, subject_digest, payload_digest))
+    }
+
+    fn revoked_keys(&self) -> BTreeSet<(Digest32, Digest32, Digest32)> {
         self.entries
             .iter()
             .filter(|entry| entry.kind == NduProjectionKindV1::Revocation)
-            .map(|entry| entry.payload_digest)
+            .map(|entry| {
+                (
+                    entry.objective_digest,
+                    entry.subject_digest,
+                    entry.payload_digest,
+                )
+            })
             .collect()
     }
 }
