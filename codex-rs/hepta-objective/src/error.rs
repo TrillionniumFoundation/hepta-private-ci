@@ -14,6 +14,7 @@ pub enum ObjectiveError {
     NonCanonicalOutput(&'static str),
     EmptyPrincipalScope,
     EmptyDigest(&'static str),
+    DigestMismatch(&'static str),
     InvalidSoftWeight(String),
     AbstainUnavailable,
     UntrustedAuthorityEscalation,
@@ -33,7 +34,7 @@ impl ObjectiveError {
             | Self::Arithmetic => "OBJ-E001",
             Self::UnsupportedConstraintLanguage => "OBJ-E002",
             Self::EmptyPrincipalScope => "OBJ-E003",
-            Self::EmptyDigest(_) => "OBJ-E004",
+            Self::EmptyDigest(_) | Self::DigestMismatch(_) => "OBJ-E004",
             Self::AbstainUnavailable => "OBJ-E006",
             Self::FeasibilityBudgetExhausted => "OBJ-E007",
             Self::UntrustedAuthorityEscalation => "OBJ-E009",
@@ -55,6 +56,7 @@ impl fmt::Display for ObjectiveError {
             }
             Self::EmptyPrincipalScope => formatter.write_str("principal scope must not be empty"),
             Self::EmptyDigest(kind) => write!(formatter, "{kind} digest must not be zero"),
+            Self::DigestMismatch(kind) => write!(formatter, "{kind} digest mismatch"),
             Self::InvalidSoftWeight(dimension) => write!(
                 formatter,
                 "soft preference weight must be in [0, 1] for dimension {dimension}"
