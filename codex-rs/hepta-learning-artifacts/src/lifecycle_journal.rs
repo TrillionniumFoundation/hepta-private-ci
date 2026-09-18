@@ -252,14 +252,19 @@ impl ArtifactLifecycleJournalV2 {
         if sequence != expected.sequence {
             return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
         }
-        let chain_digest =
-            digest_chain(sequence, expected.predecessor_head_digest, expected.event_digest);
+        let chain_digest = digest_chain(
+            sequence,
+            expected.predecessor_head_digest,
+            expected.event_digest,
+        );
         if chain_digest != expected.chain_digest {
             return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
         }
 
-        self.states
-            .insert(expected.event.artifact_id.clone(), expected.event.next_state);
+        self.states.insert(
+            expected.event.artifact_id.clone(),
+            expected.event.next_state,
+        );
         self.event_digests
             .insert(expected.event.event_id.clone(), expected.event_digest);
         self.head_digest = expected.chain_digest;
