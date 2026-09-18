@@ -707,6 +707,7 @@ pub struct BrowserServoHostConfig {
     pub worker_sha256: String,
     pub profile_root: PathBuf,
     pub journal_path: PathBuf,
+    pub reconciliation_root: Option<PathBuf>,
     pub bwrap_path: PathBuf,
     pub bwrap_sha256: String,
     pub prlimit_path: PathBuf,
@@ -778,6 +779,7 @@ pub fn open_browser_servo_port_from_file(
         worker_sha256: parse_digest_text(&config.worker_sha256, "worker_sha256")?,
         profile_root: config.profile_root,
         journal_path: config.journal_path,
+        reconciliation_root: config.reconciliation_root,
         bwrap_path: config.bwrap_path,
         bwrap_sha256: parse_digest_text(&config.bwrap_sha256, "bwrap_sha256")?,
         prlimit_path: config.prlimit_path,
@@ -823,6 +825,7 @@ pub struct BrowserServoProcessConfig {
     pub worker_sha256: [u8; 32],
     pub profile_root: PathBuf,
     pub journal_path: PathBuf,
+    pub reconciliation_root: Option<PathBuf>,
     pub bwrap_path: PathBuf,
     pub bwrap_sha256: [u8; 32],
     pub prlimit_path: PathBuf,
@@ -851,6 +854,13 @@ impl BrowserServoProcessConfig {
                     "{name} path must be absolute"
                 )));
             }
+        }
+        if let Some(path) = self.reconciliation_root.as_ref()
+            && !path.is_absolute()
+        {
+            return Err(BrowserServoError::Invalid(
+                "Browser reconciliation root path must be absolute".into(),
+            ));
         }
         for (value, name) in [
             (self.max_profiles, "Browser max profiles"),
@@ -960,7 +970,11 @@ impl ChildBrowserTransport {
             .env(
                 "HEPTA_BROWSER_DRIVER_TIMEOUT_MS",
                 config.driver_timeout_ms.to_string(),
-            )
+            );
+        if let Some(path) = config.reconciliation_root.as_ref() {
+            command.env("HEPTA_BROWSER_RECONCILIATION_ROOT", path);
+        }
+        command
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::inherit());
