@@ -124,12 +124,18 @@ jobs:
           test -s .hepta-evidence/learning-eval-stress.log
 
       - name: Cross-crate causal learning closure
-        working-directory: codex-rs
-        run: >-
-          just test --locked
-          -p codex-hepta-shadow-qualification
-          lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
-          --test-threads=1
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          (
+            cd codex-rs
+            cargo test --locked \
+              -p codex-hepta-shadow-qualification \
+              lane_e_causal_candidate_chain_is_digest_bound_and_deny_all \
+              -- --test-threads=1
+          ) 2>&1 | tee .hepta-evidence/learning-eval-e2e.log
+          test -s .hepta-evidence/learning-eval-e2e.log
 
       - name: Cross-language wire and fault closure
         working-directory: codex-rs
@@ -251,12 +257,18 @@ jobs:
           --test operator_claim
 
       - name: Test merged cross-crate closure
-        working-directory: codex-rs
-        run: >-
-          just test --locked
-          -p codex-hepta-shadow-qualification
-          lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
-          --test-threads=1
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          (
+            cd codex-rs
+            cargo test --locked \
+              -p codex-hepta-shadow-qualification \
+              lane_e_causal_candidate_chain_is_digest_bound_and_deny_all \
+              -- --test-threads=1
+          ) 2>&1 | tee .hepta-evidence/learning-eval-synthetic-e2e.log
+          test -s .hepta-evidence/learning-eval-synthetic-e2e.log
 
       - name: Test merged cross-language wire and fault closure
         working-directory: codex-rs
