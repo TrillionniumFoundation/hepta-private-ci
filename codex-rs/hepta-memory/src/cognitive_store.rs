@@ -188,7 +188,7 @@ pub struct CognitiveStore {
     pub(crate) pool: SqlitePool,
     pub(crate) owner_agent_id: AgentId,
     path: PathBuf,
-    open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
+    _open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
 }
 
 #[derive(Debug)]
@@ -271,7 +271,7 @@ impl CognitiveStore {
             pool,
             owner_agent_id,
             path,
-            open_guard: None,
+            _open_guard: None,
         }
     }
 
@@ -305,7 +305,7 @@ impl CognitiveStore {
             pool,
             owner_agent_id: layout.agent_id().clone(),
             path,
-            open_guard: Some(open_guard),
+            _open_guard: Some(open_guard),
         })
     }
 
