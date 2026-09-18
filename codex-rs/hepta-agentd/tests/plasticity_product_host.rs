@@ -2,9 +2,10 @@ use std::fs::OpenOptions;
 
 use codex_hepta_agentd::{
     AgentdPlasticityAnchorFenceStoreV1, AgentdPlasticityHostV1,
-    PlasticityOwnerEvidenceErrorV1, PlasticityOwnerEvidenceQueryV1,
+    PlasticityOwnerEvidenceErrorV1, PlasticityOwnerEvidenceKindV1,
+    PlasticityOwnerEvidencePolicyV1, PlasticityOwnerEvidenceQueryV1,
     PlasticityOwnerEvidenceReceiptV1, PlasticityOwnerEvidenceResolverV1,
-    artifact_frontier_binding_v1,
+    artifact_frontier_binding_v1, plasticity_owner_evidence_query_digest_v1,
 };
 use codex_hepta_intelligence::{
     AnchoredPlasticityWriterV1, CandidateEvaluationAdmissionV1,
@@ -39,6 +40,8 @@ fn open_file(path: &std::path::Path) -> std::fs::File {
 struct OwnerResolver {
     frontier: Digest32,
     stale: bool,
+    owner_id: StableId,
+    context_mismatch: bool,
 }
 impl PlasticityOwnerEvidenceResolverV1 for OwnerResolver {
     fn resolve(
@@ -47,13 +50,32 @@ impl PlasticityOwnerEvidenceResolverV1 for OwnerResolver {
     ) -> Result<PlasticityOwnerEvidenceReceiptV1, PlasticityOwnerEvidenceErrorV1> {
         Ok(PlasticityOwnerEvidenceReceiptV1 {
             evidence_digest: query.evidence_digest,
-            owner_id: id("learning.owner"),
+            query_digest: if self.context_mismatch {
+                digest("wrong-owner-query")
+            } else {
+                plasticity_owner_evidence_query_digest_v1(query)
+            },
+            owner_id: self.owner_id.clone(),
             owner_receipt_digest: Digest32::of_bytes(query.evidence_digest.as_array()),
             frontier_head_digest: self.frontier,
             observed_at: if self.stale { 1 } else { 40 },
             expires_at: if self.stale { 2 } else { 60 },
         })
     }
+}
+
+fn owner_policy(owner_id: StableId) -> PlasticityOwnerEvidencePolicyV1 {
+    PlasticityOwnerEvidencePolicyV1::from_rules(vec![
+        (PlasticityOwnerEvidenceKindV1::UpdateRule, owner_id.clone()),
+        (PlasticityOwnerEvidenceKindV1::Modulator, owner_id.clone()),
+        (
+            PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
+            owner_id.clone(),
+        ),
+        (PlasticityOwnerEvidenceKindV1::Eligibility, owner_id.clone()),
+        (PlasticityOwnerEvidenceKindV1::ParameterSignal, owner_id),
+    ])
+    .expect("owner policy")
 }
 
 struct Fixture {
@@ -379,8 +401,11 @@ fn agentd_host_resolves_owner_state_and_persists_governed_proposal() {
     let resolver = OwnerResolver {
         frontier: fixture.frontier,
         stale: false,
+        owner_id: id("learning.owner"),
+        context_mismatch: false,
     };
-    let host = AgentdPlasticityHostV1::new(&fixture.artifacts, &resolver);
+    let policy = owner_policy(id("learning.owner"));
+    let host = AgentdPlasticityHostV1::new(&fixture.artifacts, &resolver, &policy);
     let registry_scope = digest("plasticity-registry-scope");
     let anchor_file = NamedTempFile::new().expect("anchor journal");
     let mut anchor_store = AgentdPlasticityAnchorFenceStoreV1::open(
@@ -424,8 +449,11 @@ fn agentd_host_rejects_stale_owner_evidence_before_registry_append() {
     let resolver = OwnerResolver {
         frontier: fixture.frontier,
         stale: true,
+        owner_id: id("learning.owner"),
+        context_mismatch: false,
     };
-    let host = AgentdPlasticityHostV1::new(&fixture.artifacts, &resolver);
+    let policy = owner_policy(id("learning.owner"));
+    let host = AgentdPlasticityHostV1::new(&fixture.artifacts, &resolver, &policy);
     let registry_scope = digest("plasticity-registry-scope:stale");
     let anchor_file = NamedTempFile::new().expect("anchor journal");
     let mut anchor_store = AgentdPlasticityAnchorFenceStoreV1::open(
@@ -453,6 +481,94 @@ fn agentd_host_rejects_stale_owner_evidence_before_registry_append() {
             50,
         )
         .is_err());
+    assert_eq!(writer.record_count(), Ok(0));
+    assert_eq!(anchor_store.state().anchor, None);
+}
+
+#[test]
+fn agentd_host_rejects_wrong_evidence_owner_before_registry_append() {
+    let fixture = Fixture::new();
+    let resolver = OwnerResolver {
+        frontier: fixture.frontier,
+        stale: false,
+        owner_id: id("unexpected.owner"),
+        context_mismatch: false,
+    };
+    let policy = owner_policy(id("learning.owner"));
+    let host = AgentdPlasticityHostV1::new(&fixture.artifacts, &resolver, &policy);
+    let registry_scope = digest("plasticity-registry-scope:wrong-owner");
+    let anchor_file = NamedTempFile::new().expect("anchor journal");
+    let mut anchor_store =
+        AgentdPlasticityAnchorFenceStoreV1::open(open_file(anchor_file.path()), registry_scope)
+            .expect("anchor/fence store");
+    let fence = anchor_store
+        .issue_new_registry_fence()
+        .expect("new registry fence");
+    let mut writer = AnchoredPlasticityWriterV1::bootstrap_new(
+        tempfile().expect("proposal registry"),
+        registry_scope,
+        fence,
+        32,
+    )
+    .expect("proposal writer");
+
+    let result = host.propose_parameter_plasticity(
+        fixture.request(),
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_store,
+        50,
+    );
+    assert!(matches!(
+        result,
+        Err(codex_hepta_agentd::AgentdPlasticityHostErrorV1::Evidence(
+            PlasticityOwnerEvidenceErrorV1::Unauthorized
+        ))
+    ));
+    assert_eq!(writer.record_count(), Ok(0));
+    assert_eq!(anchor_store.state().anchor, None);
+}
+
+#[test]
+fn agentd_host_rejects_owner_receipt_context_substitution() {
+    let fixture = Fixture::new();
+    let resolver = OwnerResolver {
+        frontier: fixture.frontier,
+        stale: false,
+        owner_id: id("learning.owner"),
+        context_mismatch: true,
+    };
+    let policy = owner_policy(id("learning.owner"));
+    let host = AgentdPlasticityHostV1::new(&fixture.artifacts, &resolver, &policy);
+    let registry_scope = digest("plasticity-registry-scope:context-mismatch");
+    let anchor_file = NamedTempFile::new().expect("anchor journal");
+    let mut anchor_store =
+        AgentdPlasticityAnchorFenceStoreV1::open(open_file(anchor_file.path()), registry_scope)
+            .expect("anchor/fence store");
+    let fence = anchor_store
+        .issue_new_registry_fence()
+        .expect("new registry fence");
+    let mut writer = AnchoredPlasticityWriterV1::bootstrap_new(
+        tempfile().expect("proposal registry"),
+        registry_scope,
+        fence,
+        32,
+    )
+    .expect("proposal writer");
+
+    let result = host.propose_parameter_plasticity(
+        fixture.request(),
+        &fixture.verifier,
+        &mut writer,
+        &mut anchor_store,
+        50,
+    );
+    assert!(matches!(
+        result,
+        Err(codex_hepta_agentd::AgentdPlasticityHostErrorV1::Evidence(
+            PlasticityOwnerEvidenceErrorV1::ContextMismatch
+        ))
+    ));
     assert_eq!(writer.record_count(), Ok(0));
     assert_eq!(anchor_store.state().anchor, None);
 }
