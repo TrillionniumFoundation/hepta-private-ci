@@ -42,6 +42,20 @@ SET occurrence_id =
         ELSE 'materialized'
     END;
 
+-- v3 marked a one-shot task completed as soon as App Server accepted the
+-- queue request. Preserve no-rerun behavior (next_run_at_ms is already NULL)
+-- but remove that unproved terminal claim. The indeterminate occurrence must
+-- be explicitly reconciled through TaskFlow before completion is restored.
+UPDATE automation_tasks
+SET state = 'enabled'
+WHERE schedule_kind = 'once'
+  AND state = 'completed'
+  AND EXISTS (
+      SELECT 1 FROM automation_runs r
+      WHERE r.task_id = automation_tasks.task_id
+        AND r.execution_state = 'indeterminate'
+  );
+
 CREATE UNIQUE INDEX automation_runs_occurrence_id_unique
     ON automation_runs(occurrence_id);
 
