@@ -46,13 +46,26 @@ fn dispatch_binding_for(run_id: &str, context_digest: String) -> RunDispatchBind
         .expect("dispatch binding")
 }
 
+fn execution_binding_for(run_id: &str, context_digest: String) -> RunExecutionBinding {
+    let dispatch = dispatch_binding_for(run_id, context_digest);
+    RunExecutionBinding::new(
+        run_id,
+        dispatch.binding_digest,
+        dispatch.thread_id,
+        "turn.1",
+    )
+    .expect("execution binding")
+}
+
 fn terminal_observation(phase: RunPhase) -> RunTerminalObservation {
-    let binding = dispatch_binding_for("run.1", digest('7'));
+    let dispatch = dispatch_binding_for("run.1", digest('7'));
+    let execution = execution_binding_for("run.1", digest('7'));
     RunTerminalObservation::new(
         "run.1",
-        binding.binding_digest,
-        binding.thread_id,
-        "turn.1",
+        dispatch.binding_digest,
+        execution.binding_digest,
+        execution.thread_id,
+        execution.turn_id,
         phase,
     )
     .expect("terminal observation")
@@ -272,8 +285,11 @@ fn terminal_phase_rejects_missing_delegated_observation() {
     coordinator
         .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
         .expect("dispatch");
+    coordinator
+        .bind_execution("run.1", 3, execution_binding_for("run.1", digest('7')))
+        .expect("bind execution");
     assert_eq!(
-        coordinator.observe_terminal("run.1", 3, RunPhase::Succeeded, None),
+        coordinator.observe_terminal("run.1", 4, RunPhase::Succeeded, None),
         Err(AgentRunError::TerminalObservationRequired)
     );
 }
@@ -289,10 +305,13 @@ fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed() {
     coordinator
         .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
         .expect("dispatch");
+    coordinator
+        .bind_execution("run.1", 3, execution_binding_for("run.1", digest('7')))
+        .expect("bind execution");
     let completed = coordinator
         .observe_terminal(
             "run.1",
-            3,
+            4,
             RunPhase::Succeeded,
             Some(terminal_observation(RunPhase::Succeeded)),
         )
@@ -300,7 +319,7 @@ fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed() {
     let repeated = coordinator
         .observe_terminal(
             "run.1",
-            3,
+            4,
             RunPhase::Succeeded,
             Some(terminal_observation(RunPhase::Succeeded)),
         )
@@ -360,10 +379,17 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
                 dispatch_binding_for("run.1", digest('7')),
             )
             .expect("dispatch");
+        coordinator
+            .bind_execution(
+                "run.1",
+                /* expected_revision */ 3,
+                execution_binding_for("run.1", digest('7')),
+            )
+            .expect("bind execution");
         let unknown = coordinator
             .observe_terminal(
                 "run.1",
-                /* expected_revision */ 3,
+                /* expected_revision */ 4,
                 RunPhase::Indeterminate,
                 None,
             )
@@ -379,7 +405,7 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
         assert_eq!(
             coordinator.observe_terminal(
                 "run.1",
-                /* expected_revision */ 3,
+                /* expected_revision */ 4,
                 RunPhase::Succeeded,
                 Some(terminal_observation(RunPhase::Succeeded)),
             ),
@@ -399,6 +425,36 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
             .expect("release capacity");
     }
     assert_eq!(coordinator.run("run.1"), None);
+}
+
+#[test]
+fn terminal_observation_must_match_exact_bound_turn() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition(3)).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit run");
+    coordinator
+        .attach_context(101, 1, attachment())
+        .expect("attach context");
+    coordinator
+        .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
+        .expect("dispatch");
+    let execution = execution_binding_for("run.1", digest('7'));
+    coordinator
+        .bind_execution("run.1", 3, execution.clone())
+        .expect("bind execution");
+    let dispatch = dispatch_binding_for("run.1", digest('7'));
+    let wrong_turn = RunTerminalObservation::new(
+        "run.1",
+        dispatch.binding_digest,
+        execution.binding_digest,
+        execution.thread_id,
+        "turn.other",
+        RunPhase::Succeeded,
+    )
+    .expect("well-formed wrong-turn observation");
+    assert_eq!(
+        coordinator.observe_terminal("run.1", 4, RunPhase::Succeeded, Some(wrong_turn)),
+        Err(AgentRunError::InvalidTerminalObservation)
+    );
 }
 
 #[test]

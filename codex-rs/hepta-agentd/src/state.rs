@@ -13,6 +13,7 @@ use crate::CancellationDisposition;
 use crate::ContextAttachment;
 use crate::EventBuffer;
 use crate::RunDispatchBinding;
+use crate::RunExecutionBinding;
 use crate::RunPhase;
 use crate::RunReceipt;
 use crate::RunSnapshot;
@@ -311,6 +312,32 @@ impl AgentdState {
             .transact(|coordinator| {
                 coordinator.mark_dispatched(now_ms, run_id, expected_revision, binding)
             })
+    }
+
+    pub(crate) fn run_bind_execution(
+        &self,
+        run_id: &str,
+        expected_revision: u64,
+        binding: RunExecutionBinding,
+    ) -> Result<RunReceipt, AgentdError> {
+        self.require_run_reconciliation_ready()?;
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| coordinator.bind_execution(run_id, expected_revision, binding))
+    }
+
+    pub(crate) fn run_execution_binding(
+        &self,
+        run_id: &str,
+    ) -> Result<Option<RunExecutionBinding>, AgentdError> {
+        self.refresh_generation()?;
+        Ok(self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .coordinator()
+            .execution_binding(run_id))
     }
 
     pub(crate) fn run_cancel(

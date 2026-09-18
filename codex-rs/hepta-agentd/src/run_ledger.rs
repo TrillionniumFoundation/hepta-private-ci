@@ -21,7 +21,10 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::RuntimeComposition;
 
-const RUN_LEDGER_SCHEMA_VERSION: u32 = 1;
+// Schema 2 adds exact thread/turn execution binding. Keeping the owner-local
+// path stable makes an older ledger visible so upgrade fails closed instead of
+// silently starting a second history; older binaries reject schema 2.
+const RUN_LEDGER_SCHEMA_VERSION: u32 = 2;
 const RUN_LEDGER_FILE: &str = "agentd-run-lifecycle-v1.json";
 const MAX_RUN_LEDGER_BYTES: u64 = 4 * 1024 * 1024;
 const DEFAULT_CANCELLATION_ACK_TIMEOUT_MS: u64 = 5_000;
@@ -297,6 +300,7 @@ mod tests {
 
     #[test]
     fn ledger_filename_is_owner_local_and_fixed() {
+        assert_eq!(RUN_LEDGER_SCHEMA_VERSION, 2);
         assert_eq!(RUN_LEDGER_FILE, "agentd-run-lifecycle-v1.json");
         assert!(!Path::new(RUN_LEDGER_FILE).is_absolute());
     }

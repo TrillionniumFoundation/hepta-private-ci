@@ -54,6 +54,7 @@ pub use codex_hepta_agent_protocol::MemoryFederationCapabilitySnapshot;
 pub use codex_hepta_agent_protocol::MemoryFederationCapabilityState;
 pub use codex_hepta_agent_protocol::MemoryFederationScopeKind;
 pub use codex_hepta_agent_protocol::RunDispatchBinding;
+pub use codex_hepta_agent_protocol::RunExecutionBinding;
 pub use codex_hepta_agent_protocol::RunPhase;
 pub use codex_hepta_agent_protocol::RunReceipt;
 pub use codex_hepta_agent_protocol::RunSnapshot;

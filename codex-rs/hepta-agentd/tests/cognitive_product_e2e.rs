@@ -449,11 +449,19 @@ async fn real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispat
     // The embedded App Server thread is ephemeral. After process restart there
     // is no provider-owned terminal state to verify, so a caller cannot turn
     // an indeterminate run into success by presenting a self-authored digest.
+    let fabricated_execution = codex_hepta_agentd::RunExecutionBinding::new(
+        snapshot.run_id.clone(),
+        dispatch_binding.binding_digest.clone(),
+        dispatch_binding.thread_id.clone(),
+        "turn.lifecycle.fabricated",
+    )
+    .map_err(anyhow::Error::msg)?;
     let fabricated = codex_hepta_agentd::RunTerminalObservation::new(
         snapshot.run_id.clone(),
         dispatch_binding.binding_digest,
-        dispatch_binding.thread_id,
-        "turn.lifecycle.fabricated",
+        fabricated_execution.binding_digest,
+        fabricated_execution.thread_id,
+        fabricated_execution.turn_id,
         RunPhase::Succeeded,
     )
     .map_err(anyhow::Error::msg)?;

@@ -187,6 +187,28 @@ impl AgentdClient {
         }
     }
 
+    pub async fn run_bind_execution(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        binding: crate::RunExecutionBinding,
+    ) -> Result<RunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_bind_execution(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+                expected_revision,
+                binding,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn run_cancel(
         &self,
         run_id: String,

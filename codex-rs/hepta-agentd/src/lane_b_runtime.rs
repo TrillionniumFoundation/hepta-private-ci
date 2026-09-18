@@ -4,6 +4,7 @@ use codex_hepta_agent_protocol::CancellationDisposition;
 use codex_hepta_agent_protocol::ContextAttachment;
 use codex_hepta_agent_protocol::MAX_RUN_CANCEL_REASON_BYTES;
 use codex_hepta_agent_protocol::RunDispatchBinding;
+use codex_hepta_agent_protocol::RunExecutionBinding;
 use codex_hepta_agent_protocol::RunPhase;
 use codex_hepta_agent_protocol::RunReceipt;
 use codex_hepta_agent_protocol::RunSnapshot;
@@ -43,6 +44,8 @@ pub enum AgentRunError {
     ContextRequired,
     DispatchBindingRequired,
     InvalidDispatchBinding,
+    ExecutionBindingRequired,
+    InvalidExecutionBinding,
     TerminalObservationRequired,
     InvalidTerminalObservation,
     DeadlineExceeded,
@@ -57,6 +60,7 @@ struct RunRecord {
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
     dispatch_binding: Option<RunDispatchBinding>,
+    execution_binding: Option<RunExecutionBinding>,
     terminal_observation: Option<RunTerminalObservation>,
     cancel_reason: Option<String>,
     cancellation_ack_deadline_ms: Option<u64>,
@@ -114,6 +118,20 @@ impl AgentRunCoordinator {
                     return Err(AgentRunError::InvalidDispatchBinding);
                 }
             }
+            if let Some(execution) = &record.execution_binding {
+                execution
+                    .validate()
+                    .map_err(|_| AgentRunError::InvalidExecutionBinding)?;
+                let Some(dispatch) = &record.dispatch_binding else {
+                    return Err(AgentRunError::DispatchBindingRequired);
+                };
+                if execution.run_id != record.snapshot.run_id
+                    || execution.dispatch_binding_digest != dispatch.binding_digest
+                    || execution.thread_id != dispatch.thread_id
+                {
+                    return Err(AgentRunError::InvalidExecutionBinding);
+                }
+            }
             if let Some(observation) = &record.terminal_observation {
                 observation
                     .validate()
@@ -121,9 +139,14 @@ impl AgentRunCoordinator {
                 let Some(binding) = &record.dispatch_binding else {
                     return Err(AgentRunError::DispatchBindingRequired);
                 };
+                let Some(execution) = &record.execution_binding else {
+                    return Err(AgentRunError::ExecutionBindingRequired);
+                };
                 if observation.run_id != record.snapshot.run_id
                     || observation.dispatch_binding_digest != binding.binding_digest
-                    || observation.thread_id != binding.thread_id
+                    || observation.execution_binding_digest != execution.binding_digest
+                    || observation.thread_id != execution.thread_id
+                    || observation.turn_id != execution.turn_id
                     || observation.phase != record.phase
                 {
                     return Err(AgentRunError::InvalidTerminalObservation);
@@ -137,13 +160,16 @@ impl AgentRunCoordinator {
                 return Err(AgentRunError::InvalidTransition);
             }
             let has_dispatch = record.dispatch_binding.is_some();
+            let has_execution = record.execution_binding.is_some();
             let has_terminal_observation = record.terminal_observation.is_some();
             match record.phase {
-                RunPhase::Admitted if has_context || has_dispatch || has_terminal_observation => {
+                RunPhase::Admitted
+                    if has_context || has_dispatch || has_execution || has_terminal_observation =>
+                {
                     return Err(AgentRunError::InvalidTransition);
                 }
                 RunPhase::ContextAttached
-                    if !has_context || has_dispatch || has_terminal_observation =>
+                    if !has_context || has_dispatch || has_execution || has_terminal_observation =>
                 {
                     return Err(AgentRunError::InvalidTransition);
                 }
@@ -153,11 +179,17 @@ impl AgentRunCoordinator {
                     return Err(AgentRunError::InvalidTransition);
                 }
                 RunPhase::Succeeded | RunPhase::Failed
-                    if !has_context || !has_dispatch || !has_terminal_observation =>
+                    if !has_context
+                        || !has_dispatch
+                        || !has_execution
+                        || !has_terminal_observation =>
                 {
                     return Err(AgentRunError::InvalidTransition);
                 }
-                RunPhase::Cancelled if has_dispatch != has_terminal_observation => {
+                RunPhase::Cancelled
+                    if has_dispatch != has_terminal_observation
+                        || has_execution != has_terminal_observation =>
+                {
                     return Err(AgentRunError::InvalidTransition);
                 }
                 _ => {}
@@ -240,6 +272,7 @@ impl AgentRunCoordinator {
             context_digest: None,
             compilation_receipt_digest: None,
             dispatch_binding: None,
+            execution_binding: None,
             terminal_observation: None,
             cancel_reason: None,
             cancellation_ack_deadline_ms: None,
@@ -321,6 +354,44 @@ impl AgentRunCoordinator {
         }
         record.dispatch_binding = Some(binding);
         record.phase = RunPhase::Dispatched;
+        advance_revision(record)?;
+        Ok(receipt(record, /* idempotent */ false))
+    }
+
+    pub fn bind_execution(
+        &mut self,
+        run_id: &str,
+        expected_revision: u64,
+        binding: RunExecutionBinding,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_identity(run_id, "run")?;
+        binding
+            .validate()
+            .map_err(|_| AgentRunError::InvalidExecutionBinding)?;
+        let record = self.runs.get_mut(run_id).ok_or(AgentRunError::RunNotFound)?;
+        let Some(dispatch) = &record.dispatch_binding else {
+            return Err(AgentRunError::DispatchBindingRequired);
+        };
+        if binding.run_id != record.snapshot.run_id
+            || binding.dispatch_binding_digest != dispatch.binding_digest
+            || binding.thread_id != dispatch.thread_id
+        {
+            return Err(AgentRunError::InvalidExecutionBinding);
+        }
+        if let Some(current) = &record.execution_binding {
+            if current == &binding {
+                return Ok(receipt(record, /* idempotent */ true));
+            }
+            return Err(AgentRunError::Conflict);
+        }
+        require_revision(record, expected_revision)?;
+        if !matches!(
+            record.phase,
+            RunPhase::Dispatched | RunPhase::Cancelling | RunPhase::Indeterminate
+        ) {
+            return Err(AgentRunError::InvalidTransition);
+        }
+        record.execution_binding = Some(binding);
         advance_revision(record)?;
         Ok(receipt(record, /* idempotent */ false))
     }
@@ -466,10 +537,15 @@ impl AgentRunCoordinator {
             let Some(binding) = &record.dispatch_binding else {
                 return Err(AgentRunError::DispatchBindingRequired);
             };
+            let Some(execution) = &record.execution_binding else {
+                return Err(AgentRunError::ExecutionBindingRequired);
+            };
             if observation.phase != phase
                 || observation.run_id != record.snapshot.run_id
                 || observation.dispatch_binding_digest != binding.binding_digest
-                || observation.thread_id != binding.thread_id
+                || observation.execution_binding_digest != execution.binding_digest
+                || observation.thread_id != execution.thread_id
+                || observation.turn_id != execution.turn_id
             {
                 return Err(AgentRunError::InvalidTerminalObservation);
             }
@@ -507,6 +583,12 @@ impl AgentRunCoordinator {
         self.runs
             .get(run_id)
             .map(|record| receipt(record, /* idempotent */ false))
+    }
+
+    pub fn execution_binding(&self, run_id: &str) -> Option<RunExecutionBinding> {
+        self.runs
+            .get(run_id)
+            .and_then(|record| record.execution_binding.clone())
     }
 
     pub fn active_run_count(&self) -> usize {
