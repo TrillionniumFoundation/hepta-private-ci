@@ -1,3 +1,5 @@
+use base64::Engine as _;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use codex_keyring_store::DefaultKeyringStore;
 use codex_keyring_store::KeyringStore;
 use serde::Deserialize;
@@ -5,8 +7,10 @@ use serde::Serialize;
 
 use crate::error::ShellError;
 use crate::model::SessionIncarnation;
+use crate::model::sha256_hex;
 use crate::model::validate_digest;
 use crate::model::validate_stable_id;
+use zeroize::Zeroize as _;
 
 const SERVICE: &str = "hepta.native.session.v1";
 const GATEWAY_SERVICE: &str = "hepta.native.gateway.v1";
@@ -82,6 +86,12 @@ impl<S: KeyringStore> SessionReferenceStore<S> {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct GatewayCredentialProvisionReceipt {
+    pub account: String,
+    pub token_digest: String,
+}
+
 #[derive(Debug, Clone)]
 pub struct GatewayCredentialStore<S = DefaultKeyringStore> {
     keyring: S,
@@ -98,6 +108,37 @@ impl Default for GatewayCredentialStore<DefaultKeyringStore> {
 impl<S: KeyringStore> GatewayCredentialStore<S> {
     pub fn new(keyring: S) -> Self {
         Self { keyring }
+    }
+
+    pub fn provision_random(
+        &self,
+        account: &str,
+    ) -> Result<GatewayCredentialProvisionReceipt, ShellError> {
+        validate_stable_id(account, "gateway credential account")?;
+        let mut bytes = [0_u8; 32];
+        getrandom::fill(&mut bytes)
+            .map_err(|error| ShellError::Security(format!("generate gateway capability: {error}")))?;
+        let mut token = URL_SAFE_NO_PAD.encode(bytes);
+        bytes.zeroize();
+        validate_gateway_token(&token)?;
+        let token_digest = sha256_hex(token.as_bytes());
+        let save_result = self
+            .keyring
+            .save(GATEWAY_SERVICE, account, &token)
+            .map_err(|error| ShellError::Security(error.to_string()));
+        token.zeroize();
+        save_result?;
+        Ok(GatewayCredentialProvisionReceipt {
+            account: account.to_owned(),
+            token_digest,
+        })
+    }
+
+    pub fn delete(&self, account: &str) -> Result<bool, ShellError> {
+        validate_stable_id(account, "gateway credential account")?;
+        self.keyring
+            .delete(GATEWAY_SERVICE, account)
+            .map_err(|error| ShellError::Security(error.to_string()))
     }
 
     pub fn load(&self, account: &str) -> Result<String, ShellError> {
