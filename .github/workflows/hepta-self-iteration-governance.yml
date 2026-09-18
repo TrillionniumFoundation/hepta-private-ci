@@ -1,0 +1,44 @@
+name: Hepta self-iteration governance
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-control-plane/src/self_evolution.rs"
+      - "codex-rs/hepta-intelligence-eval/src/self_evolution_selection.rs"
+      - "codex-rs/hepta-types/src/self_evolution.rs"
+      - "codex-rs/hepta-agentd/src/self_evolution_host.rs"
+      - "codex-rs/hepta-plasticity/**"
+      - "codex-rs/hepta-intelligence/src/plasticity_product.rs"
+      - "docs/architecture/**"
+      - "docs/delivery/**"
+      - "scripts/hepta_self_iteration_governance.py"
+      - ".github/workflows/hepta-self-iteration-governance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  exact-candidate-governance:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Verify protected main and independent exact-head review
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python3 scripts/hepta_self_iteration_governance.py \
+            --event "$GITHUB_EVENT_PATH" \
+            --expected-head "$EXPECTED_HEAD" \
+            --repository "$GITHUB_REPOSITORY" \
+            --output .hepta-evidence/self-iteration-governance.json
