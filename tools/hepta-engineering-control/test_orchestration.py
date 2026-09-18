@@ -294,6 +294,46 @@ class OrchestrationTests(unittest.TestCase):
                         now_ns=self.now,
                     )
 
+    def test_repository_envelope_rejects_dirty_and_untracked_source(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / "repo"
+            root.mkdir()
+            git(root, "init")
+            git(root, "config", "user.email", "test@example.invalid")
+            git(root, "config", "user.name", "test")
+            git(root, "remote", "add", "origin", "https://github.com/acme/repo.git")
+            (root / "src").mkdir()
+            tracked = root / "src/a"
+            tracked.write_text("x", encoding="utf-8")
+            git(root, "add", ".")
+            git(root, "commit", "-m", "base")
+            envelope = replace(
+                self.envelope,
+                source_commit=git(root, "rev-parse", "HEAD"),
+                source_tree=git(root, "rev-parse", "HEAD^{tree}"),
+            )
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                untracked = root / "src/untracked"
+                untracked.write_text("new", encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "source_worktree_dirty"):
+                    issue_repository_work_envelope(
+                        root,
+                        store,
+                        envelope,
+                        expected_repository="acme/repo",
+                        now_ns=self.now,
+                    )
+                untracked.unlink()
+                tracked.write_text("changed", encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, "source_worktree_dirty"):
+                    issue_repository_work_envelope(
+                        root,
+                        store,
+                        envelope,
+                        expected_repository="acme/repo",
+                        now_ns=self.now,
+                    )
+
     def test_repository_envelope_binds_real_head_tree_and_remote(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp) / "repo"
