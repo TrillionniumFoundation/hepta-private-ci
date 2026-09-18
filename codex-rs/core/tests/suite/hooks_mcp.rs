@@ -42,6 +42,9 @@ use serde_json::Value;
 use serde_json::json;
 use tempfile::TempDir;
 
+use super::model_provider_policy::ProviderPolicyState;
+use super::model_provider_policy::TestDecision;
+use super::model_provider_policy::test_provider_policy;
 use super::rmcp_client::remote_aware_environment_id;
 use super::rmcp_client::remote_aware_stdio_server_bin;
 
@@ -549,9 +552,19 @@ async fn run_governed_mcp_tool_hook_guard_test(
                     .expect("test config should allow Hepta governance");
             }
         });
+    let mut extensions = ExtensionRegistryBuilder::<Config>::new();
+    let mut has_custom_extensions = false;
     if active_policy {
-        let mut extensions = ExtensionRegistryBuilder::<Config>::new();
         extensions.tool_policy_contributor(Arc::new(ActiveToolPolicy));
+        has_custom_extensions = true;
+    }
+    if enable_hepta {
+        let provider_policy = ProviderPolicyState::new(true, TestDecision::Allow);
+        provider_policy.terminal_release.add_permits(8);
+        extensions.model_provider_policy_contributor(test_provider_policy(provider_policy));
+        has_custom_extensions = true;
+    }
+    if has_custom_extensions {
         builder = builder.with_extensions(Arc::new(extensions.build()));
     }
     let test = builder.build(&server).await?;
