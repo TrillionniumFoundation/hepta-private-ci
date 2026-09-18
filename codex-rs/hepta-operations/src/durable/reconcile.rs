@@ -146,9 +146,6 @@ impl DurableOperationStore {
         let operation = load_operation_tx(&mut tx, scope, operation_id)
             .await?
             .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
-        if operation.owner_generation != observer_generation {
-            return Err(DurableOperationError::StaleLease);
-        }
         if operation.destination != receipt.destination
             || operation.semantic_digest != receipt.semantic_digest
         {
@@ -156,6 +153,9 @@ impl DurableOperationStore {
         }
         let terminal_state = state_for_outcome(receipt.outcome);
         if operation.state.is_terminal() {
+            if operation.owner_generation != observer_generation {
+                return Err(DurableOperationError::StaleLease);
+            }
             if operation.state == terminal_state
                 && operation.terminal_evidence_digest == Some(receipt.evidence_digest)
             {
@@ -163,6 +163,9 @@ impl DurableOperationStore {
                 return Ok(operation);
             }
             return Err(DurableOperationError::Conflict(operation_id.clone()));
+        }
+        if observer_generation < operation.owner_generation {
+            return Err(DurableOperationError::StaleLease);
         }
         if !matches!(
             operation.state,
@@ -175,9 +178,11 @@ impl DurableOperationStore {
             .next()
             .map_err(|_| DurableOperationError::Conflict(operation_id.clone()))?;
         sqlx::query(
-            "UPDATE operation_ledger SET state = ?, terminal_evidence_digest = ?, revision = ?,
-             updated_at_ms = ?, terminal_at_ms = ? WHERE scope = ? AND operation_id = ?",
+            "UPDATE operation_ledger SET owner_generation = ?, state = ?,
+             terminal_evidence_digest = ?, revision = ?, updated_at_ms = ?, terminal_at_ms = ?
+             WHERE scope = ? AND operation_id = ?",
         )
+        .bind(u64_blob(observer_generation.get()))
         .bind(terminal_state.label())
         .bind(blob(receipt.evidence_digest))
         .bind(u64_blob(revision.get()))
