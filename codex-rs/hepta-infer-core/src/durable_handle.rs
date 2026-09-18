@@ -8,6 +8,7 @@
 //! auditability and prevent semantic resurrection across capacity cycles.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -34,7 +35,7 @@ use crate::durable_control::native::NativeRunRecord;
 
 const WRITER_RETRY_ATTEMPTS: usize = 200;
 const WRITER_RETRY_DELAY: Duration = Duration::from_millis(10);
-const MAX_TOMBSTONE_BYTES: u64 = 64 * 1024 * 1024;
+const MAX_TOMBSTONE_SEGMENT_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_TOMBSTONE_LINE_BYTES: usize = 4096;
 const NATIVE_PREFIX: &str = "native-v1|";
 
@@ -87,8 +88,59 @@ impl DurableInferenceControlHandle {
         PathBuf::from(format!("{}.owner.lock", self.path.display()))
     }
 
-    fn tombstone_path(&self) -> PathBuf {
+    fn legacy_tombstone_path(&self) -> PathBuf {
         PathBuf::from(format!("{}.tombstones.jsonl", self.path.display()))
+    }
+
+    fn tombstone_segment_path(&self, index: u64) -> PathBuf {
+        PathBuf::from(format!(
+            "{}.tombstones.{index:08}.jsonl",
+            self.path.display()
+        ))
+    }
+
+    fn tombstone_paths(&self) -> Result<Vec<(u64, PathBuf)>, Error> {
+        let parent = self
+            .path
+            .parent()
+            .filter(|path| !path.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        let base = self
+            .path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .ok_or(Error::InvalidIdentity("journal path"))?;
+        let legacy_name = format!("{base}.tombstones.jsonl");
+        let prefix = format!("{base}.tombstones.");
+        let mut paths = Vec::new();
+        for entry in fs::read_dir(parent)? {
+            let entry = entry?;
+            let name = entry.file_name();
+            let Some(name) = name.to_str() else { continue };
+            if name == legacy_name {
+                paths.push((0, entry.path()));
+                continue;
+            }
+            let Some(rest) = name.strip_prefix(&prefix) else { continue };
+            let Some(number) = rest.strip_suffix(".jsonl") else { continue };
+            if number.len() != 8 || !number.bytes().all(|byte| byte.is_ascii_digit()) {
+                continue;
+            }
+            let index = number
+                .parse::<u64>()
+                .map_err(|_| Error::CorruptJournal("tombstone segment name"))?;
+            if index == 0 {
+                return Err(Error::CorruptJournal("zero tombstone segment"));
+            }
+            paths.push((index, entry.path()));
+        }
+        paths.sort_by_key(|(index, _)| *index);
+        for pair in paths.windows(2) {
+            if pair[0].0 == pair[1].0 {
+                return Err(Error::CorruptJournal("duplicate tombstone segment"));
+            }
+        }
+        Ok(paths)
     }
 
     fn archive_receipt_path(&self) -> PathBuf {
@@ -231,42 +283,49 @@ impl DurableInferenceControlHandle {
     }
 
     fn reject_archived_request(&self, request: &NativeRequest) -> Result<(), Error> {
-        let tombstones = self.read_tombstones()?;
-        let Some(existing) = tombstones.get(&request.request_id) else {
-            return Ok(());
-        };
-        let digest = native_request_digest(request)?;
-        if existing == &digest {
+        let wanted = BTreeSet::from([request.request_id.clone()]);
+        let tombstones = self.read_tombstones_for(&wanted)?;
+        if tombstones.contains_key(&request.request_id) {
             return Err(Error::Conflict);
         }
-        Err(Error::Conflict)
+        Ok(())
     }
 
-    fn read_tombstones(&self) -> Result<BTreeMap<String, String>, Error> {
-        let path = self.tombstone_path();
-        if !path.exists() {
-            return Ok(BTreeMap::new());
-        }
-        let file = File::open(path)?;
-        if file.metadata()?.len() > MAX_TOMBSTONE_BYTES {
-            return Err(Error::CapacityExceeded);
-        }
+    /// Stream every bounded segment but retain only identities needed by the
+    /// current operation. Historical growth therefore affects disk scan work,
+    /// not peak memory. Conflicting duplicate identities fail closed.
+    fn read_tombstones_for(
+        &self,
+        wanted: &BTreeSet<String>,
+    ) -> Result<BTreeMap<String, String>, Error> {
         let mut result = BTreeMap::new();
-        for line in BufReader::new(file).lines() {
-            let line = line?;
-            if line.len() > MAX_TOMBSTONE_LINE_BYTES {
-                return Err(Error::CorruptJournal("archived tombstone line"));
+        for (_, path) in self.tombstone_paths()? {
+            let file = File::open(&path)?;
+            if file.metadata()?.len() > MAX_TOMBSTONE_SEGMENT_BYTES {
+                return Err(Error::CapacityExceeded);
             }
-            if line.is_empty() {
-                continue;
-            }
-            let tombstone: ArchivedRequestTombstone = serde_json::from_str(&line)
-                .map_err(|_| Error::CorruptJournal("archived tombstone"))?;
-            match result.insert(tombstone.request_id, tombstone.request_digest.clone()) {
-                Some(previous) if previous != tombstone.request_digest => {
-                    return Err(Error::CorruptJournal("archived tombstone conflict"));
+            for line in BufReader::new(file).lines() {
+                let line = line?;
+                if line.len() > MAX_TOMBSTONE_LINE_BYTES {
+                    return Err(Error::CorruptJournal("archived tombstone line"));
                 }
-                _ => {}
+                if line.is_empty() {
+                    continue;
+                }
+                let tombstone: ArchivedRequestTombstone = serde_json::from_str(&line)
+                    .map_err(|_| Error::CorruptJournal("archived tombstone"))?;
+                if !wanted.contains(&tombstone.request_id) {
+                    continue;
+                }
+                match result.insert(
+                    tombstone.request_id,
+                    tombstone.request_digest.clone(),
+                ) {
+                    Some(previous) if previous != tombstone.request_digest => {
+                        return Err(Error::CorruptJournal("archived tombstone conflict"));
+                    }
+                    _ => {}
+                }
             }
         }
         Ok(result)
@@ -281,7 +340,8 @@ impl DurableInferenceControlHandle {
         let current_bytes = current.journal_path().metadata()?.len();
         drop(current);
 
-        let existing = self.read_tombstones()?;
+        let wanted = scanned.keys().cloned().collect::<BTreeSet<_>>();
+        let existing = self.read_tombstones_for(&wanted)?;
         let mut additions = Vec::new();
         for record in scanned.values() {
             let digest = native_request_digest(&record.request)?;
@@ -330,33 +390,53 @@ impl DurableInferenceControlHandle {
         if additions.is_empty() {
             return Ok(());
         }
-        let path = self.tombstone_path();
-        let mut options = OpenOptions::new();
-        options.create(true).append(true).read(true);
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.mode(0o600);
-        }
-        let mut file = options.open(&path)?;
-        let existing = file.metadata()?.len();
-        let mut encoded = Vec::new();
+        let paths = self.tombstone_paths()?;
+        let mut segment = paths
+            .iter()
+            .filter(|(index, _)| *index > 0)
+            .map(|(index, _)| *index)
+            .max()
+            .unwrap_or(1);
+        let mut path = self.tombstone_segment_path(segment);
+        let mut existing = path.metadata().map(|meta| meta.len()).unwrap_or(0);
+
         for tombstone in additions {
-            let line = serde_json::to_vec(tombstone)
+            let mut encoded = serde_json::to_vec(tombstone)
                 .map_err(|_| Error::CorruptJournal("archived tombstone encode"))?;
-            if line.len() > MAX_TOMBSTONE_LINE_BYTES {
+            if encoded.len() > MAX_TOMBSTONE_LINE_BYTES {
                 return Err(Error::CapacityExceeded);
             }
-            encoded.extend_from_slice(&line);
             encoded.push(b'\n');
+            if existing.saturating_add(encoded.len() as u64) > MAX_TOMBSTONE_SEGMENT_BYTES {
+                segment = segment.checked_add(1).ok_or(Error::CapacityExceeded)?;
+                path = self.tombstone_segment_path(segment);
+                if path.exists() {
+                    return Err(Error::CorruptJournal("tombstone segment collision"));
+                }
+                existing = 0;
+            }
+
+            let mut options = OpenOptions::new();
+            options.create(true).append(true).read(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                options.mode(0o600);
+            }
+            let mut file = options.open(&path)?;
+            let on_disk = file.metadata()?.len();
+            if on_disk != existing
+                || on_disk.saturating_add(encoded.len() as u64) > MAX_TOMBSTONE_SEGMENT_BYTES
+            {
+                return Err(Error::CorruptJournal("tombstone segment size drift"));
+            }
+            file.write_all(&encoded)?;
+            file.flush()?;
+            file.sync_all()?;
+            sync_parent(&path)?;
+            existing = existing.saturating_add(encoded.len() as u64);
         }
-        if existing.saturating_add(encoded.len() as u64) > MAX_TOMBSTONE_BYTES {
-            return Err(Error::CapacityExceeded);
-        }
-        file.write_all(&encoded)?;
-        file.flush()?;
-        file.sync_all()?;
-        sync_parent(&path)
+        Ok(())
     }
 
     fn append_archive_receipt(&self, receipt: &ArchiveReceipt) -> Result<(), Error> {
