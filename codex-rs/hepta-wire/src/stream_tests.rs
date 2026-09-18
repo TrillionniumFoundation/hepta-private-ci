@@ -4,29 +4,46 @@ use codex_hepta_types::StableId;
 use super::*;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("test identifier")
+    let Ok(value) = StableId::new(value) else {
+        panic!("test identifier rejected");
+    };
+    value
 }
 
 fn generation() -> Generation {
-    Generation::new(5).expect("test generation")
+    let Ok(value) = Generation::new(5) else {
+        panic!("test generation rejected");
+    };
+    value
+}
+
+fn v1(payload: Vec<u8>) -> WireEnvelope {
+    let result = WireEnvelope::new(id("stream.v1"), id("p1"), generation(), payload);
+    let Ok(value) = result else {
+        panic!("valid v1 envelope rejected");
+    };
+    value
+}
+
+fn v2(payload: Vec<u8>) -> WireEnvelopeV2 {
+    let result = WireEnvelopeV2::new(id("stream.v2"), id("p2"), generation(), payload);
+    let Ok(value) = result else {
+        panic!("valid v2 envelope rejected");
+    };
+    value
 }
 
 #[test]
 fn decoder_accepts_one_byte_chunks_without_buffering_beyond_one_frame() {
-    let envelope = WireEnvelopeV2::new(
-        id("stream.v2"),
-        id("producer"),
-        generation(),
-        vec![7; 257],
-    )
-    .expect("valid envelope");
+    let envelope = v2(vec![7; 257]);
     let encoded = envelope.encode();
     let mut decoder = WireStreamDecoder::new();
     let mut decoded = None;
     for byte in &encoded {
-        let progress = decoder
-            .push(std::slice::from_ref(byte))
-            .expect("stream push");
+        let result = decoder.push(std::slice::from_ref(byte));
+        let Ok(progress) = result else {
+            panic!("stream push rejected");
+        };
         assert_eq!(progress.consumed, 1);
         assert!(decoder.buffered_len() <= MAX_WIRE_FRAME_BYTES);
         if progress.frame.is_some() {
@@ -39,36 +56,26 @@ fn decoder_accepts_one_byte_chunks_without_buffering_beyond_one_frame() {
 
 #[test]
 fn decoder_stops_exactly_at_frame_boundary_and_leaves_next_frame_unconsumed() {
-    let first = WireEnvelope::new(
-        id("stream.v1"),
-        id("p1"),
-        generation(),
-        vec![1, 2, 3],
-    )
-    .expect("v1 envelope")
-    .encode();
-    let second = WireEnvelopeV2::new(
-        id("stream.v2"),
-        id("p2"),
-        generation(),
-        vec![4, 5, 6],
-    )
-    .expect("v2 envelope")
-    .encode();
+    let first = v1(vec![1, 2, 3]).encode();
+    let second = v2(vec![4, 5, 6]).encode();
     let mut joined = first.clone();
     joined.extend_from_slice(&second);
 
-    let mut decoder = WireStreamDecoder::new();
-    let first_progress = decoder.push(&joined).expect("first frame");
+    let first_result = WireStreamDecoder::new().push(&joined);
+    let Ok(first_progress) = first_result else {
+        panic!("first frame rejected");
+    };
     assert_eq!(first_progress.consumed, first.len());
     assert!(matches!(
         first_progress.frame,
         Some(DecodedEnvelope::V1(_))
     ));
 
-    let second_progress = decoder
-        .push(&joined[first_progress.consumed..])
-        .expect("second frame");
+    let mut decoder = WireStreamDecoder::new();
+    let second_result = decoder.push(&joined[first_progress.consumed..]);
+    let Ok(second_progress) = second_result else {
+        panic!("second frame rejected");
+    };
     assert_eq!(second_progress.consumed, second.len());
     assert!(matches!(
         second_progress.frame,
