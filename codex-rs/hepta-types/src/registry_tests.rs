@@ -103,6 +103,15 @@ fn registry_rejects_duplicate_identity_invalid_version_and_capacity() {
         Err(RegistryError::InvalidVersion)
     );
 
+    let legacy_id = StableId::new("schema");
+    let Ok(legacy_id) = legacy_id else {
+        panic!("legacy stable ID fixture should be valid");
+    };
+    assert_eq!(
+        RegistryDefinitionV1::new(RegistryKindV1::Schema, legacy_id, 1, "definition"),
+        Err(RegistryError::Identity(IdentityError::NonCanonical))
+    );
+
     let entry = definition(RegistryKindV1::Schema, "schema:a", 1, "definition");
     assert_eq!(
         ContractRegistryV1::new(vec![entry.clone(), entry.clone()]),
