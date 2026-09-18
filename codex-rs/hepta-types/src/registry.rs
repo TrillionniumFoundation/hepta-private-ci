@@ -197,9 +197,13 @@ impl fmt::Display for RegistryError {
             Self::Bounded(error) => error.fmt(formatter),
             Self::Identity(error) => error.fmt(formatter),
             Self::Canonical(error) => error.fmt(formatter),
-            Self::InvalidVersion => formatter.write_str("registry definition version must be non-zero"),
+            Self::InvalidVersion => {
+                formatter.write_str("registry definition version must be non-zero")
+            }
             Self::TooManyEntries => formatter.write_str("registry entry limit exceeded"),
-            Self::DuplicateDefinition => formatter.write_str("duplicate registry definition identity"),
+            Self::DuplicateDefinition => {
+                formatter.write_str("duplicate registry definition identity")
+            }
         }
     }
 }
