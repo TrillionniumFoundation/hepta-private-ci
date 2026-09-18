@@ -840,8 +840,8 @@ fn canonical_scope(value: &str) -> bool {
 fn heptabao_id(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 64
-        && !value.starts_with(['-', '_'])
-        && !value.ends_with(['-', '_'])
+        && !matches!(value.as_bytes().first(), Some(b'-' | b'_'))
+        && !matches!(value.as_bytes().last(), Some(b'-' | b'_'))
         && value
             .bytes()
             .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || matches!(byte, b'-' | b'_'))
