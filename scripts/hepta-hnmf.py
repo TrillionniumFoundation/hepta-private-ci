@@ -96,6 +96,19 @@ REQUIRED_FILES = [
     "qualification/hnmf-reference/Cargo.lock",
     "qualification/hnmf-reference/README.md",
     "qualification/hnmf-reference/src/lib.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/mod.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/event.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/forget.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/wire.rs",
+    "qualification/hnmf-conformance/Cargo.toml",
+    "qualification/hnmf-conformance/src/lib.rs",
+    "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
+    "docs/modules/cognitive.types/STATUS.json",
     ".github/workflows/hnmf-qualification.yml",
 ]
 
@@ -121,6 +134,36 @@ RUST_TOKENS = [
     "ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false",
     "PRODUCTION_AUTHORITY: bool = false",
     "EXTERNAL_EFFECTS_ALLOWED: bool = false",
+]
+
+PRODUCTION_RUST_TOKENS = [
+    "pub struct ModalitySpanRefV1",
+    "pub struct MemoryEventV1",
+    "pub struct CrossModalBindingV1",
+    "pub struct EngramNodeV1",
+    "pub struct SynapseV1",
+    "pub struct MemoryCueV1",
+    "pub struct RecallPacketV1",
+    "pub struct OutcomeSignalV1",
+    "pub struct ReplaySelectionReceiptV1",
+    "pub struct PlasticityBatchV1",
+    "pub struct TopologyProposalV1",
+    "pub struct ForgetPropagationReceiptV1",
+    "pub trait CanonicalContractV1",
+    "pub fn canonical_json_bytes",
+    "pub fn decode_canonical_json",
+]
+
+PRODUCTION_RUST_FILES = [
+    "codex-rs/hepta-cognitive-types/src/hnmf/mod.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/event.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/forget.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/wire.rs",
 ]
 
 RUST_TESTS = [
@@ -315,11 +358,26 @@ def verify() -> int:
         "unsafe" not in rust.replace("#![forbid(unsafe_code)]", ""), "unsafe code token"
     )
 
+    production_rust = "\n".join(
+        (ROOT / path).read_text(encoding="utf-8") for path in PRODUCTION_RUST_FILES
+    )
+    for token in PRODUCTION_RUST_TOKENS:
+        need(token in production_rust, f"production contract token {token}")
+    need(
+        "qualification/hnmf-conformance" in (
+            ROOT / ".github/workflows/hnmf-qualification.yml"
+        ).read_text(encoding="utf-8"),
+        "production-reference conformance workflow binding",
+    )
+
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
     )
     for command in [
         "python3 scripts/hepta-hnmf.py verify",
+        "python3 scripts/hepta-cognitive-types-status.py --verify",
+        "cargo check --manifest-path codex-rs/Cargo.toml -p codex-hepta-cognitive-types --all-targets --locked",
+        "cargo test --manifest-path qualification/hnmf-conformance/Cargo.toml",
         "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
         "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
         "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
