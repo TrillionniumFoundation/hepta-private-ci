@@ -20,6 +20,8 @@ pub enum AuthBusProviderEffectError {
     Evidence(#[from] EvidenceError),
     #[error("completed provider effect requires observed cost before quota can settle")]
     ObservedCostRequired,
+    #[error("AuthBus operation identity must equal the provider effect idempotency key")]
+    OperationBindingMismatch,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -51,6 +53,9 @@ impl HeptaEvidenceStore {
         intent: &ProviderEffectIntent,
         admission: &EffectAdmissionRequest,
     ) -> Result<AuthBusProviderEffectReceipt, AuthBusProviderEffectError> {
+        if admission.operation_id.as_str() != intent.key.as_str() {
+            return Err(AuthBusProviderEffectError::OperationBindingMismatch);
+        }
         let admitted = self.authorize_and_reserve(admission).await?;
         let reservation = self
             .begin_reserved_effect(admitted.reservation.reservation_id, &admission.operation_id)
@@ -85,6 +90,10 @@ impl HeptaEvidenceStore {
         observed_cost: Option<u64>,
         terminal_evidence: Digest32,
     ) -> Result<Reservation, AuthBusProviderEffectError> {
+        let reservation = self.reservation(reservation_id).await?;
+        if reservation.operation_id.as_str() != key.as_str() {
+            return Err(AuthBusProviderEffectError::OperationBindingMismatch);
+        }
         let state = self.reconcile_provider_effect_with_adapter(adapter, key).await?;
         match state {
             ProviderEffectState::Completed => {
