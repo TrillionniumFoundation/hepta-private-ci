@@ -5,6 +5,12 @@
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::Sender;
+use std::time::Duration;
 
 use codex_hepta_bellman_operator::TabularOperatorPlanV1;
 use codex_hepta_bellman_operator::TabularOperatorSampleV1;
@@ -34,13 +40,30 @@ use crate::PinnedCognitiveRanker;
 use crate::cognitive_action_id;
 use crate::cognitive_sensor_id;
 
+struct CurrentViewGate {
+    calls: AtomicUsize,
+    entered: Sender<()>,
+    release: Mutex<Receiver<()>>,
+}
+
 struct CurrentView {
     path: PathBuf,
     receipt: RegistrySnapshotReceipt,
+    gate: Option<CurrentViewGate>,
 }
 
 impl CurrentCognitiveRegistry for CurrentView {
     fn current(&self) -> Result<(File, RegistrySnapshotReceipt), String> {
+        if let Some(gate) = &self.gate
+            && gate.calls.fetch_add(1, Ordering::SeqCst) == 1
+        {
+            gate.entered.send(()).map_err(|error| error.to_string())?;
+            gate.release
+                .lock()
+                .map_err(|_| "current-view gate lock poisoned".to_string())?
+                .recv()
+                .map_err(|error| error.to_string())?;
+        }
         Ok((
             File::open(&self.path).map_err(|error| error.to_string())?,
             self.receipt,
@@ -62,6 +85,15 @@ fn hash(value: &str) -> Digest32 {
 }
 
 fn fitted_ranker(owner: AgentId, items: &[CognitiveContextItem], scores: &[i64]) -> RankerFixture {
+    fitted_ranker_with_gate(owner, items, scores, None)
+}
+
+fn fitted_ranker_with_gate(
+    owner: AgentId,
+    items: &[CognitiveContextItem],
+    scores: &[i64],
+    gate: Option<CurrentViewGate>,
+) -> RankerFixture {
     assert_eq!(items.len(), scores.len());
     let directory = tempfile::tempdir().unwrap();
     let sensor = cognitive_sensor_id("lemon").unwrap();
@@ -145,6 +177,7 @@ fn fitted_ranker(owner: AgentId, items: &[CognitiveContextItem], scores: &[i64])
     let current = Arc::new(CurrentView {
         path: snapshot.clone(),
         receipt: registry_receipt,
+        gate,
     });
     let ranker = Arc::new(
         PinnedCognitiveRanker::load(
@@ -251,7 +284,13 @@ fn escaping_contents() -> Vec<String> {
 async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
     let (_directory, store, owner, items) = stored_candidates(escaping_contents()).await;
     let baseline = read(
-        &store, &owner, /*body_generation*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        /*authority_epoch*/ 2,
+        "lemon",
+        /*limit*/ 4,
+        /*ranker*/ None,
     )
     .await
     .unwrap();
@@ -262,6 +301,7 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
         &store,
         &owner,
         /*body_generation*/ 1,
+        /*authority_epoch*/ 2,
         "lemon",
         /*limit*/ 1,
         Some(&fixture.ranker),
@@ -273,6 +313,7 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
         &store,
         &owner,
         /*body_generation*/ 1,
+        /*authority_epoch*/ 2,
         "lemon",
         /*limit*/ 4,
         Some(&fixture.ranker),
@@ -314,6 +355,7 @@ async fn oversized_learned_winner_does_not_consume_the_only_result_slot() {
         &store,
         &owner,
         /*body_generation*/ 1,
+        /*authority_epoch*/ 2,
         "lemon",
         /*limit*/ 1,
         Some(&fixture.ranker),
@@ -328,7 +370,13 @@ async fn oversized_learned_winner_does_not_consume_the_only_result_slot() {
 async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention() {
     let (_directory, store, owner, items) = stored_candidates(escaping_contents()).await;
     let baseline = read(
-        &store, &owner, /*body_generation*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        /*authority_epoch*/ 2,
+        "lemon",
+        /*limit*/ 4,
+        /*ranker*/ None,
     )
     .await
     .unwrap();
@@ -341,6 +389,7 @@ async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstenti
         &store,
         &owner,
         /*body_generation*/ 1,
+        /*authority_epoch*/ 2,
         "lemon",
         /*limit*/ 1,
         Some(&fixture.ranker),
@@ -348,4 +397,90 @@ async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstenti
     .await
     .unwrap();
     assert_eq!(selected.items, vec![baseline.items[0].clone()]);
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn production_read_fail_closes_when_owner_changes_after_authoritative_acquisition() {
+    let (_directory, store, owner, items) = stored_candidates(vec![
+        "lemon authoritative alpha".to_string(),
+        "lemon authoritative beta".to_string(),
+    ])
+    .await;
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let first_item = items
+        .first()
+        .unwrap_or_else(|| panic!("stored candidate fixture must not be empty"));
+    let memory_id = must(
+        StableMemoryId::parse(first_item.memory_id.clone()),
+        "parse memory id",
+    );
+    let head = must(
+        store.read_memory_head(&access, &memory_id).await,
+        "read memory head",
+    );
+
+    let (entered_tx, entered_rx) = std::sync::mpsc::channel();
+    let (release_tx, release_rx) = std::sync::mpsc::channel();
+    let fixture = fitted_ranker_with_gate(
+        owner.clone(),
+        &items,
+        &[10, 0],
+        Some(CurrentViewGate {
+            calls: AtomicUsize::new(0),
+            entered: entered_tx,
+            release: Mutex::new(release_rx),
+        }),
+    );
+
+    let read_store = store.clone();
+    let read_owner = owner.clone();
+    let read_ranker = Arc::clone(&fixture.ranker);
+    let read_task = tokio::spawn(async move {
+        read(
+            &read_store,
+            &read_owner,
+            /*body_generation*/ 1,
+            /*authority_epoch*/ 2,
+            "lemon",
+            /*limit*/ 2,
+            Some(&read_ranker),
+        )
+        .await
+    });
+
+    let gate_wait = must(
+        tokio::task::spawn_blocking(move || entered_rx.recv_timeout(Duration::from_secs(5))).await,
+        "join ranker gate wait",
+    );
+    if let Err(error) = gate_wait {
+        drop(release_tx.send(()));
+        panic!("wait for ranker gate: {error}");
+    }
+
+    let correction = store
+        .correct_memory(
+            &access,
+            &memory_id,
+            head.id.revision,
+            &MemoryRevisionDraft {
+                scope: head.scope.clone(),
+                content: "lemon authoritative alpha corrected".to_string(),
+                verification: MemoryVerification::Verified,
+                lifecycle: MemoryLifecycleState::Active,
+                valid_from_unix_seconds: head.valid_from_unix_seconds,
+                valid_to_unix_seconds: head.valid_to_unix_seconds,
+                citations: head.citations.clone(),
+            },
+        )
+        .await;
+    must(release_tx.send(()), "release ranker gate");
+    must(correction, "advance memory frontier");
+
+    let result = must(read_task.await, "join cognitive read");
+    assert!(matches!(
+        result,
+        Err(super::super::CognitiveContextError::Store(
+            CognitiveStoreError::Conflict(_)
+        ))
+    ));
 }

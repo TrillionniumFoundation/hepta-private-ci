@@ -34,6 +34,7 @@ pub trait CurrentCognitiveRegistry: Send + Sync {
 pub struct PinnedCognitiveRanker {
     owner: AgentId,
     body_generation: u64,
+    model_digest: Digest32,
     model: LoadedTabularOperatorV1,
     current: Arc<dyn CurrentCognitiveRegistry>,
     cache: Mutex<Option<RevalidatingCandidate>>,
@@ -91,6 +92,7 @@ impl PinnedCognitiveRanker {
         let value = Self {
             owner,
             body_generation,
+            model_digest: model_pin.payload_digest,
             model,
             current,
             cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
@@ -104,6 +106,10 @@ impl PinnedCognitiveRanker {
             return Err("ranking host belongs to another agent generation".to_string());
         }
         Ok(())
+    }
+
+    pub(crate) const fn model_digest(&self) -> Digest32 {
+        self.model_digest
     }
 
     fn with_current<T>(&self, consume: impl FnOnce() -> Result<T, String>) -> Result<T, String> {

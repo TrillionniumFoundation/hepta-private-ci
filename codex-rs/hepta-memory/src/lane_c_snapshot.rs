@@ -7,9 +7,12 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
+#[cfg(test)]
 use codex_hepta_cognitive_read::ReadRequestV2;
+#[cfg(test)]
 use codex_hepta_cognitive_read::ReadResultV2;
 use codex_hepta_cognitive_read::SnapshotProviderError;
+#[cfg(test)]
 use codex_hepta_cognitive_read::read_v2;
 use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::CognitiveSnapshot;
@@ -90,8 +93,13 @@ impl DurableCognitiveSnapshot {
         Digest32::of_bytes(&bytes)
     }
 
-    /// Consume the new read module against an owner-acquired SQLite cut.
-    pub fn read(&self, request: ReadRequestV2) -> Result<ReadResultV2, SnapshotProviderError> {
+    /// Owner-crate projection primitive used by focused snapshot tests. Product
+    /// callers compose this cut through `bind_context` and `read_authoritative`.
+    #[cfg(test)]
+    pub(crate) fn read(
+        &self,
+        request: ReadRequestV2,
+    ) -> Result<ReadResultV2, SnapshotProviderError> {
         read_v2(&self.snapshot, request).map_err(SnapshotProviderError::Read)
     }
 

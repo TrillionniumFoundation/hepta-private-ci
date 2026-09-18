@@ -17,19 +17,51 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productionImplementation": true,
+  "productCallerState": "composed_in_hepta_agentd",
   "productionWriterState": "not_established",
   "operations": [
+    {
+      "operation": "read_authoritative",
+      "nativeSymbol": "read_authoritative",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "state": "product_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "acquire_snapshot_read_revalidate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "read_legacy_v1",
+      "nativeSymbol": "read",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/lib.rs",
+      "state": "legacy_shadow_compatibility_primitive",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/lib_tests.rs",
+        "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "legacy_caller_supplied_snapshot_projection",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
     {
       "operation": "read_v2",
       "nativeSymbol": "read_v2",
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "lower_level_source_primitive",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "read_v2",
+      "designOperation": "bounded_snapshot_projection",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -37,18 +69,39 @@
       "operation": "durablecognitivesnapshot",
       "nativeSymbol": "DurableCognitiveSnapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "product_composed_authoritative_provider_input",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "durablecognitivesnapshot",
+      "designOperation": "immutable_owner_cut",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "agentd_authoritative_cognitive_context",
+      "nativeSymbol": "AgentdAuthoritativeSnapshotProvider",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "state": "product_caller_composed",
+      "authority": "read_only_deny_all",
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "product_final_use_revalidation",
+      "mappingClass": "product_composition",
+      "delegatedCallees": [
+        "read_authoritative",
+        "CognitiveStore::lane_c_snapshot"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the authoritative Agentd composition before changing the execution-evidence claim boundary.",
+    "Keep final-use provider/vector/snapshot/lease and Agentd lifecycle fences covered by adversarial regression tests."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -58,11 +111,19 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false
+  },
+  "compositionEvidence": {
+    "baselineCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "candidateBranch": "fix/cognitive-read-authoritative-production",
+    "productCaller": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "ownerCut": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+    "authoritativeContract": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+    "finalUseFence": "AuthoritativeReadGuardV1::revalidate plus AgentdState lifecycle refresh/readiness recheck with exact current_generation equality"
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-read"

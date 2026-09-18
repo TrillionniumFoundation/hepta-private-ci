@@ -10,7 +10,9 @@ The host first derives `CognitiveAccess` and an exact `CognitiveScope` from its
 authenticated identity. The adapter authorizes before querying. A workspace
 request does not implicitly include agent-private or other workspace memories.
 All heads, immutable revisions, citations, source counts, fact-set counts, and
-graph generation are read in one SQLite transaction.
+graph generation are read in one SQLite transaction. The returned
+`DurableCognitiveSnapshot` is an owned immutable cut; it is not a moving view
+whose visibility and fetch methods can observe different current states.
 
 | Existing owner value | Lane C representation |
 | --- | --- |
@@ -32,25 +34,39 @@ not only snapshot generation. Broken ancestry, a nonlatest head, invalid record
 metadata, and tombstone resurrection fail closed. All returned values retain
 `DENY_ALL` effect authority.
 
-`DurableCognitiveSnapshot::read(ReadRequestV2)` runs the new cognitive-read
-implementation against this owner-acquired cut. The caller supplies result and
-encoded-byte bounds. It can intersect these digest-only records with the
-existing scoped retrieval API and fetch matching content through the same
-store. Before delivery, compare each fetched record's exact revision and content
-digest, call `revalidate_lane_c_snapshot`, and recheck host authority/generation.
-Revalidation detects intervening corrections, deletions, newly appended source
-evidence, projection changes, and changes caused by validity time. It rejects
-clock regression. A subsequent concurrent write remains possible: this API
-returns a historical read cut and does not grant a lease over future effects.
+`DurableCognitiveSnapshot::read(ReadRequestV2)` remains a lower-level owner-cut
+projection primitive. It is useful to the owner crate and focused tests, but it
+does not establish that the supplied historical cut is still the current
+host-authoritative generation at delivery time. Product callers must not treat a
+successful direct V2 projection as that stronger guarantee.
 
-`bind_context` optionally binds an externally frozen
-`LaneCGenerationVectorV1`. All five cognitive-owned components must exactly
-match the cut. The host must obtain prompt, compact, model, retrieval-profile,
-and authority values from their actual owners; the adapter supplies no defaults.
-Acquisition time must match the observed second, and the lease is bounded to
-five minutes. These are crate-native APIs; this change does not register V2
-types as a cross-module wire format or authorize arbitrary caller-supplied
-generation vectors.
+The `hepta-agentd` product path composes the cut through `bind_context` into an
+`AuthoritativeCognitiveSnapshotProvider`, calls `read_authoritative`, and retains
+the returned `AuthoritativeReadGuardV1`. Before delivery it reacquires a new
+single-transaction owner cut, rebuilds the same host generation vector and calls
+the guard's final-use revalidation. Exact provider identity, generation-vector
+digest, snapshot digest, authority epoch, frontiers, receipt, deadline and lease
+must remain valid. The surrounding Agentd state-control path passes its exact refreshed lifecycle
+`current_generation` into the read, refreshes again after the async boundary,
+requires Running+Ready and rejects any generation change, so lifecycle authority
+cannot be replaced by a caller-supplied vector.
+
+`revalidate_lane_c_snapshot` and `revalidate_lane_c_cut` remain owner-level exact
+cut fences for store/recovery use. Product authoritative delivery uses the
+broader provider/vector guard instead of relying on revision/current-cut equality
+alone. A subsequent concurrent write after the final fence remains possible:
+this read-only API never grants a lease over future effects.
+
+`bind_context` binds an externally frozen `LaneCGenerationVectorV1`. All five
+cognitive-owned components must exactly match the cut. The host supplies the
+other profile/authority identities. In the Agentd context path, dimensions not
+consumed by that path are bound to explicit domain-separated nonzero "not used"
+identities rather than borrowed mutable ambient state; an optional learned
+ranker contributes its independently pinned payload digest. Acquisition time
+must match the observed second, and the owner adapter hard-bounds a lease to five
+minutes; Agentd uses a stricter one-second context lease/deadline. These are
+crate-native APIs and do not register V2 types as a cross-module wire format or
+authorize arbitrary caller-supplied generation vectors.
 
 Reopening with existing `CognitiveStore::open` reconstructs the same cut from
 durable rows. `cut_digest` can be retained independently and compared using
@@ -70,5 +86,13 @@ proofs and deletion frontiers before those limits can be increased safely.
 
 `lane_c_snapshot_tests.rs` exercises actual owner writes, correction ancestry,
 reopen, committed deletions, scope and verification/time filters, context
-binding, and restoration of an older valid SQLite backup. Run with
-`just test -p codex-hepta-memory`.
+binding, and restoration of an older valid SQLite backup. Agentd's `cognitive_context_tests.rs` additionally exercises the production
+authoritative provider against real SQLite and requires final-use failure after
+frontier, authority-epoch or lease drift. `cognitive_context_budget_tests.rs`
+executes the full production `read()` path with a deterministic mid-flight owner
+revision change and requires the delivery fence to fail closed.
+`cognitive_ranker_tests.rs` deterministically holds an in-flight context request
+after authoritative acquisition, advances Fleet lifecycle from Running to
+Draining, then requires the outer Agentd control fence to reject before payload
+delivery. Run focused tests with
+`just test -p codex-hepta-memory -p codex-hepta-cognitive-read -p codex-hepta-agentd`.

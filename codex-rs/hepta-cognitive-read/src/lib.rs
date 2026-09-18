@@ -18,6 +18,8 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
 pub use authoritative::AuthoritativeCognitiveSnapshotProvider;
+pub use authoritative::AuthoritativeReadGuardV1;
+pub use authoritative::AuthoritativeReadRequestV1;
 pub use authoritative::AuthoritativeReadResultV1;
 pub use authoritative::AuthoritativeSnapshotV1;
 pub use authoritative::SnapshotAcquisitionRequestV1;
@@ -27,6 +29,8 @@ pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
 pub use v2::ReadRequestV2;
 pub use v2::ReadResultV2;
 pub use v2::ReadV2Error;
+/// Lower-level caller-supplied snapshot projection. Product callers must use
+/// `read_authoritative` so source authority can be reacquired before delivery.
 pub use v2::read_v2;
 
 const MAX_RESULTS: usize = 1_024;
@@ -63,6 +67,10 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Legacy V1 caller-supplied snapshot projection retained for source/shadow
+/// compatibility. Like `read_v2`, this function does not prove that the
+/// supplied bytes are the host's current authoritative generation. Product
+/// delivery paths must use `read_authoritative` and its final-use guard.
 pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadReceipt, Error> {
     if request.snapshot_digest != snapshot.snapshot_digest {
         return Err(Error::SnapshotMismatch);

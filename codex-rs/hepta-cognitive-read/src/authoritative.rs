@@ -1,24 +1,26 @@
 //! Authoritative snapshot acquisition boundary for `cognitive.read`.
 //!
-//! The legacy read functions intentionally validate only caller-supplied bytes.
-//! This module adds the missing provider boundary: a product adapter must acquire
-//! one coherent, scope-bound generation vector from an authoritative owner before
-//! any read result can be attached to downstream context.
+//! Low-level read functions intentionally validate only caller-supplied bytes.
+//! Product callers use this module instead: acquire one coherent, scope-bound
+//! owner cut, perform the bounded projection against that exact snapshot, then
+//! reacquire and revalidate the authoritative provider immediately before use.
 
 use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_cognitive_types::CognitiveSnapshot;
+use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCContractError;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::ReadRequest;
 use crate::ReadRequestV2;
 use crate::ReadResultV2;
 use crate::ReadV2Error;
-use crate::read_v2;
+use crate::v2::read_v2;
 
 const SNAPSHOT_RECEIPT_DOMAIN: &[u8] = b"hepta.cognitive.authoritative-snapshot.v1";
 const AUTHORITATIVE_READ_DOMAIN: &[u8] = b"hepta.cognitive.authoritative-read.v1";
@@ -59,10 +61,22 @@ impl SnapshotAcquisitionRequestV1 {
     }
 }
 
-/// Product adapters implement this trait against the canonical cognitive owner.
+/// Product-level bounded read selector. The authoritative provider supplies the
+/// snapshot digest; callers cannot substitute a different caller-owned snapshot.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AuthoritativeReadRequestV1 {
+    pub allowed_kinds: Vec<MemoryKind>,
+    pub maximum_results: usize,
+    pub include_tombstones: bool,
+    pub maximum_encoded_bytes: usize,
+}
+
+/// Product adapters implement this trait against one canonical cognitive owner.
 ///
-/// Implementations must not manufacture a snapshot from independent reads. They
-/// acquire one owner-defined cut and return it with a lease and receipt.
+/// Implementations must not manufacture a snapshot from independent reads. Each
+/// provider value represents one owner-defined frozen cut. Delivery code creates
+/// a fresh provider from the current owner and passes it to
+/// [`AuthoritativeReadGuardV1::revalidate`] immediately before consumption.
 pub trait AuthoritativeCognitiveSnapshotProvider {
     fn acquire(
         &self,
@@ -198,12 +212,12 @@ impl AuthoritativeSnapshotV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AuthoritativeReadResultV1 {
-    pub request_digest: Digest32,
-    pub snapshot_receipt_digest: Digest32,
-    pub generation_vector_digest: Digest32,
-    pub read_result: ReadResultV2,
-    pub binding_digest: Digest32,
-    pub authority: AuthorityPosture,
+    request_digest: Digest32,
+    snapshot_receipt_digest: Digest32,
+    generation_vector_digest: Digest32,
+    read_result: ReadResultV2,
+    binding_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl AuthoritativeReadResultV1 {
@@ -229,23 +243,117 @@ impl AuthoritativeReadResultV1 {
         }
         Ok(())
     }
+
+    #[must_use]
+    pub const fn request_digest(&self) -> Digest32 {
+        self.request_digest
+    }
+
+    #[must_use]
+    pub const fn snapshot_receipt_digest(&self) -> Digest32 {
+        self.snapshot_receipt_digest
+    }
+
+    #[must_use]
+    pub const fn generation_vector_digest(&self) -> Digest32 {
+        self.generation_vector_digest
+    }
+
+    #[must_use]
+    pub const fn read_result(&self) -> &ReadResultV2 {
+        &self.read_result
+    }
+
+    #[must_use]
+    pub const fn binding_digest(&self) -> Digest32 {
+        self.binding_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+}
+
+/// A read result plus the exact authoritative envelope that produced it.
+///
+/// The lower-level result may be used for bounded local computation, but must
+/// not be attached to downstream context until [`Self::revalidate`] succeeds
+/// against a freshly acquired provider at the final-use boundary.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AuthoritativeReadGuardV1 {
+    acquisition_request: SnapshotAcquisitionRequestV1,
+    snapshot: AuthoritativeSnapshotV1,
+    result: AuthoritativeReadResultV1,
+}
+
+impl AuthoritativeReadGuardV1 {
+    #[must_use]
+    pub const fn result(&self) -> &AuthoritativeReadResultV1 {
+        &self.result
+    }
+
+    #[must_use]
+    pub const fn read_result(&self) -> &ReadResultV2 {
+        self.result.read_result()
+    }
+
+    #[must_use]
+    pub const fn snapshot_key(&self) -> &CognitiveSnapshotKeyV1 {
+        self.snapshot.snapshot_key()
+    }
+
+    /// Revalidate the original lease/receipt and compare it to a newly acquired
+    /// current provider. Any provider identity, generation-vector or snapshot
+    /// change rejects before delivery.
+    pub fn revalidate<P: AuthoritativeCognitiveSnapshotProvider>(
+        &self,
+        current_provider: &P,
+        now_unix_ms: u64,
+    ) -> Result<(), SnapshotProviderError> {
+        self.acquisition_request.validate(now_unix_ms)?;
+        self.snapshot
+            .validate_for_request(now_unix_ms, &self.acquisition_request)?;
+        self.result.validate()?;
+
+        let current = current_provider.acquire(&self.acquisition_request)?;
+        current.validate_for_request(now_unix_ms, &self.acquisition_request)?;
+        if current.provider_id != self.snapshot.provider_id {
+            return Err(SnapshotProviderError::ProviderMismatch);
+        }
+        if current.snapshot_key.vector_digest != self.snapshot.snapshot_key.vector_digest
+            || current.snapshot.snapshot_digest != self.snapshot.snapshot.snapshot_digest
+        {
+            return Err(SnapshotProviderError::GenerationGone);
+        }
+        Ok(())
+    }
 }
 
 pub fn read_authoritative<P: AuthoritativeCognitiveSnapshotProvider>(
     provider: &P,
     now_unix_ms: u64,
     acquisition_request: SnapshotAcquisitionRequestV1,
-    read_request: ReadRequestV2,
-) -> Result<AuthoritativeReadResultV1, SnapshotProviderError> {
+    read_request: AuthoritativeReadRequestV1,
+) -> Result<AuthoritativeReadGuardV1, SnapshotProviderError> {
     acquisition_request.validate(now_unix_ms)?;
     let envelope = provider.acquire(&acquisition_request)?;
     envelope.validate_for_request(now_unix_ms, &acquisition_request)?;
-    if read_request.read_request.snapshot_digest != envelope.snapshot.snapshot_digest {
-        return Err(SnapshotProviderError::ReadSnapshotMismatch);
-    }
+
     let request_digest = acquisition_request.digest();
-    let read_result =
-        read_v2(&envelope.snapshot, read_request).map_err(SnapshotProviderError::Read)?;
+    let read_result = read_v2(
+        &envelope.snapshot,
+        ReadRequestV2 {
+            read_request: ReadRequest {
+                snapshot_digest: envelope.snapshot.snapshot_digest,
+                allowed_kinds: read_request.allowed_kinds,
+                maximum_results: read_request.maximum_results,
+                include_tombstones: read_request.include_tombstones,
+            },
+            maximum_encoded_bytes: read_request.maximum_encoded_bytes,
+        },
+    )
+    .map_err(SnapshotProviderError::Read)?;
     let generation_vector_digest = envelope.snapshot_key.vector_digest;
     let snapshot_receipt_digest = envelope.receipt_digest;
     let binding_digest = compute_authoritative_read_digest(
@@ -263,7 +371,11 @@ pub fn read_authoritative<P: AuthoritativeCognitiveSnapshotProvider>(
         authority: AuthorityPosture::DENY_ALL,
     };
     result.validate()?;
-    Ok(result)
+    Ok(AuthoritativeReadGuardV1 {
+        acquisition_request,
+        snapshot: envelope,
+        result,
+    })
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -283,6 +395,7 @@ pub enum SnapshotProviderError {
     SnapshotIntegrity,
     ReadSnapshotMismatch,
     ReceiptDigestMismatch,
+    ProviderMismatch,
     AuthorityGranted,
     EmptyDigest,
     Unavailable,

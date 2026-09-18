@@ -14,13 +14,13 @@
 
 **Bootstrap work package:** `MEM-READ-1-SNAPSHOT-PORT`
 
-This stable document is the implementation guide for `cognitive.read`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This stable document is the implementation guide for `cognitive.read`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not operator acceptance, promotion or release.
 
 ## 1. Identity, mission and ownership
 
 Expose snapshot-bound cognitive reads without write authority.
 
-The primary owner `cognitive-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `agent-runtime` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
+The primary owner `cognitive-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `agent-runtime` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit integration callsite; product composition does not transfer ownership of another module's facts.
 
 Plane `domain`, kind `port`, state model `stateless` and architecture role `contract` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
 
@@ -36,29 +36,28 @@ Existing declared roots at this exact source snapshot:
 
 Non-authoritative implementation evidence roots:
 
-None.
+- `codex-rs/hepta-memory/src/lane_c_snapshot.rs` — canonical SQLite owner cut used as provider input.
+- `codex-rs/hepta-agentd/src/cognitive_context.rs` — named product caller and final-use composition.
 
 Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
+`existing_bound` is a source-location fact: the declared root exists. Source references identify what can be inspected and invoked; only exact-candidate execution receipts establish that checks passed. This status does not establish operator acceptance, selection, promotion or release.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); observed identifiers include `ReadRequestV2`, `ReadResultV2`, `read_v2`, `binding_digest`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) for the implemented subset and remaining product work.
+The authoritative product-facing implementation is [codex-rs/hepta-cognitive-read/src/authoritative.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative.rs), including `AuthoritativeCognitiveSnapshotProvider`, `AuthoritativeReadRequestV1`, `AuthoritativeReadGuardV1` and `read_authoritative`. Caller-supplied compatibility projections remain in [codex-rs/hepta-cognitive-read/src/lib.rs](../../../codex-rs/hepta-cognitive-read/src/lib.rs) as legacy V1 `read` and in [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs) as typed `read_v2`.
+
+Legacy `read` and `read_v2` are intentionally lower-level primitives: they validate supplied immutable snapshot bytes but cannot establish that those bytes still represent the current authoritative retained generation. Product code must use the authoritative acquisition/read/revalidation path. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) for exact composition status and remaining external evidence gates.
 
 ## 3. Boundary, responsibilities and non-goals
 
-The SQLite owner now exposes `CognitiveStore::lane_c_snapshot` and
-`DurableCognitiveSnapshot::read(ReadRequestV2)` through `hepta-memory`. This is a
-native read-through adapter to the existing durable store. It authorizes the
-exact scope, preserves record and citation IDs, includes committed tombstones,
-and admits only verified, currently valid live heads. Consumers must compare
-retrieved revision/content digests and reacquire the cut before delivery using
-`revalidate_lane_c_snapshot`. Snapshot generation alone does not detect validity
-expiry without a write. See `codex-rs/hepta-memory/LANE_C_SQLITE.md`; the adapter
-does not register a new V2 wire format or grant effects to read results.
+The SQLite owner exposes `CognitiveStore::lane_c_snapshot`, which materializes an owned immutable `DurableCognitiveSnapshot` from one SQLite read transaction. It authorizes the exact scope, preserves record and citation IDs, includes committed tombstones, and admits only verified, currently valid live heads.
+
+The `hepta-agentd` product caller now composes that owner cut into an authoritative provider. It freezes a `LaneCGenerationVectorV1` containing the exact memory/source/tombstone/knowledge frontiers, KG generation, scope, purpose, lifecycle authority epoch, retrieval/query-encoder identities, optional pinned ranker payload digest and explicit identities for host dimensions not consumed by this path. It calls `read_authoritative`, uses the authoritative binding digest in context planning, then reacquires a new owner cut and requires `AuthoritativeReadGuardV1::revalidate` before returning the context.
+
+The lifecycle authority epoch is not inferred from model text or caller input. Cognitive context is admitted only after `AgentdState::refresh_generation` reports a Running, ready generation. `state_control` passes that exact `current_generation` into the read; after the async read it refreshes lifecycle again, requires Running+Ready, and rejects if the generation differs from the originally bound epoch. Optional ranker registry currentness is also revalidated before return.
 
 Direct dependencies:
 
@@ -72,24 +71,25 @@ Explicitly denied capabilities:
 
 - `write_authority`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
+The module accepts only registered, bounded, versioned inputs. It rejects stale leases, changed provider identity, changed generation vector, changed source snapshot, missing authority, scope/purpose mismatch and digest mismatch as hard failures. It never writes another owner's store.
 
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, converting a frozen read into a lease over future effects, or converting qualification evidence into deployment authority.
 
 ## 4. Internal architecture and component decomposition
 
 The bounded components are:
 
-- `snapshot acquisition`
+- `immutable owner-cut acquisition`
+- `host generation-vector binding`
+- `authoritative bounded projection`
 - `scope and redaction filter`
-- `cache boundary`
-- `consistency verifier`
+- `optional ranking/context planning`
+- `final-use provider revalidation`
+- `outer lifecycle authority fence`
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+The key consistency rule is structural, not adapter convention. Production does not expose a moving `CognitiveSnapshotView` whose `visible()` and `fetch()` methods may observe different current states. `CognitiveStore::lane_c_snapshot` materializes one owned cut inside one SQLite transaction; the authoritative provider owns that cut; `AuthoritativeReadGuardV1` retains the exact acquisition and receipt identities that must match a newly acquired current provider before delivery.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
-
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+Ingress validates identity, size, scope, purpose, authority epoch and deadline before domain logic. The deterministic projection core receives typed immutable values. Configuration/profile identities are frozen for one read and represented in the generation vector. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
 ## 5. Contracts, ports and compatibility
 
@@ -111,9 +111,13 @@ Critical protocol schemas:
 
 None.
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+The public Rust surface has three deliberately classified correctness envelopes:
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+- legacy `read(snapshot, request)` is a V1 caller-supplied projection retained for source/shadow compatibility. The non-product-composed `hepta-intelligence::run_read_only_vertical` facade is one such compatibility consumer; its read receipt is evidence composition, not proof of host-current source authority.
+- `read_v2(snapshot, request)` is the typed lower-level projection over caller-supplied immutable bytes. It remains available for owner-local compatibility and focused tests.
+- `read_authoritative(provider, now, acquisition, request)` is the product-level source-authority contract. It chooses the read snapshot from the provider, so the caller cannot substitute an unrelated snapshot digest, and returns a guard requiring current-provider revalidation before delivery.
+
+Product callers must not advertise legacy `read` or `read_v2` semantics as the authoritative contract. Every producer validates output before publication and binds semantic fields into the declared digest scope. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 ## 6. Data authority, persistence and migrations
 
@@ -123,23 +127,34 @@ None.
 
 Read-only data dependencies:
 
-None.
+- the existing `hepta-memory` SQLite cognitive owner cut.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+This module owns no persistence and writes no domain facts. The SQLite owner remains responsible for schema, integrity, recovery and revision lineage. `cognitive.read` consumes immutable snapshots and emits deny-all read receipts. A restored older database, correction, deletion, citation/source change, projection generation change or validity-time change is detected by exact owner-cut/vector/snapshot revalidation rather than treated as a compatible historical current state.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md).
+`CognitiveStore::lane_c_snapshot` acquires all material needed for one scope in a single SQLite read transaction. The returned `DurableCognitiveSnapshot` is owned and immutable. No later database query mutates that cut.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+Product execution follows:
+
+1. refresh and admit the Running Agentd generation;
+2. acquire one immutable SQLite cut;
+3. bind the host generation vector and one-second authoritative deadline/lease ceiling;
+4. execute the bounded authoritative projection;
+5. intersect retrieval content with exact admitted record ID/revision/content digests;
+6. perform bounded optional ranking and context planning;
+7. reacquire a new SQLite cut and rebuild the same host vector;
+8. require exact provider/vector/snapshot/lease revalidation;
+9. revalidate optional ranker registry currentness;
+10. return to `state_control`, which refreshes fleet lifecycle and requires Running+Ready again before the payload is emitted.
+
+Any concurrent change that crosses these fences fails closed. A write after the last fence remains possible; this read-only module never claims to lease future effects.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Freshness failures including deadline/lease expiry, scope/purpose/authority-epoch drift, owner-frontier drift, provider change, revoked/gone generation, changed vector or changed snapshot fail closed before context delivery. Invalid contract/digest/integrity state maps to corruption/invalid-input handling rather than fallback to an older view. Provider unavailability or indeterminate currentness returns unavailable; there is no stale-success fallback.
+
+Rollback is source-compatible: legacy `read` and the lower-level V2 primitive remain available, but the product caller must not silently fall back from authoritative acquisition to either caller-supplied projection. A rollback that removes the authoritative product path must be an explicit source rollback, not runtime degradation.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -149,37 +164,46 @@ Owned threat entries:
 
 None.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent currentness checks. All authoritative read results retain `DENY_ALL` effect authority. Scope, purpose and lifecycle epoch are bound into acquisition; owner frontiers and host identities are bound into the generation vector; provider/vector/snapshot/read receipts are digest-bound; the guard refuses final use after lease expiry or currentness drift.
 
-Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+The selected learned ranker, when present, contributes its independently pinned payload digest to the generation vector and revalidates its registry witness before return. Absence of a ranker is represented by a domain-separated nonzero identity, not an ambiguous zero digest.
+
+Negative tests cover scope/frontier/epoch drift, provider/vector drift, lease expiry, stale owner cuts, tombstone/correction invalidation, bounds and ranker currentness. Security review remains mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs) and the linked implementation components.
+The low-level V2 projection hard-ceils encoded output at one MiB and result count at its registered bounds. The Agentd product context is stricter: the final JSON context is limited to 24 KiB, query length to 2048 bytes, result limit to 1..=4, and the authoritative context lease/deadline to one second.
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) records target/pilot ceilings separately from measured evidence. [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Acquire a cut through the existing SQLite owner, then call the crate-native ReadRequestV2 reader. Before delivery compare exact revision/content digests and revalidate time as well as frontiers. Release snapshot handles on completion/cancel; the historical cut does not lease future external effects.
+The production operating sequence is authoritative acquisition, bounded read, local bounded computation, current-provider reacquisition, guard revalidation, then outer Agentd lifecycle revalidation. Operators must not treat snapshot acquisition or successful projection alone as permission to deliver.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
+- [codex-rs/hepta-agentd/src/cognitive_context.rs](../../../codex-rs/hepta-agentd/src/cognitive_context.rs).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+Safe observability records digest identities/frontiers/error classes rather than memory content. Expired lease, generation gone, provider mismatch and authority-epoch mismatch are correctness failures, not retry-as-success signals.
 
 ## 12. Verification and qualification
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
-- [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs); named case: `authoritative_read_binds_provider_vector_and_query`.
+- [codex-rs/hepta-cognitive-read/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-read/src/v2_tests.rs) — lower-level projection, ordering, missing/stale and resource-bound behavior.
+- [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs) — scope/frontier/epoch binding plus delivery-time provider/vector/lease revalidation.
+- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs) — one-owner SQLite cut, correction/tombstone/time/reopen/currentness behavior.
+- [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs) — real SQLite provider-level adversarial tests for memory-frontier, authority-epoch and lease drift.
+- [codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs) — deterministic full-production-`read()` race: pause after authoritative acquisition during real ranker currentness, advance the real SQLite memory revision, release the read and require the final-use fence to fail closed.
+- [codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs) — outer control-path race: pause a live cognitive-context request after authoritative acquisition, advance fleet lifecycle from Running to Draining, release the read and require state-control to reject before payload delivery.
 
-In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-read`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) separately labels target acceptance designs.
+In `codex-rs`, focused source qualification is:
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+`just test -p codex-hepta-cognitive-read -p codex-hepta-memory -p codex-hepta-agentd`
+
+The command is an invocation, not a stored result. Exact-head and merge-candidate CI receipts determine pass/fail status. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) separately records product composition and external gates.
 
 ## 13. Implementation sequence and work packages
 
@@ -187,21 +211,21 @@ Applicable work packages:
 
 - `MEM-READ-1-SNAPSHOT-PORT`
 
-The bootstrap package is `MEM-READ-1-SNAPSHOT-PORT`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
+The bootstrap package remains identified by the canonical plan. Source implementation now includes the authoritative library surface and named Agentd integration; canonical planning/activation/evidence predecessor graphs remain separately governed. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Independent acceptance, promotion and release are later gates and cannot be self-issued by this module.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+A named product caller now exists in `hepta-agentd` source. This is product source composition, not proof of deployment/target-host execution or operator acceptance. The product caller uses the authoritative path; shadow and qualification callers are not substitutes for that source fact.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Compatibility retains legacy `read` and `read_v2` as lower-level primitives. New product callers should compose `read_authoritative` and a current-provider final-use fence rather than directly calling either caller-supplied projection. Retirement of the lower-level public surfaces requires all shadow/owner/test compatibility consumers migrated and a separate compatibility decision.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Product source composition requires a named caller; that caller is now `hepta-agentd` cognitive context. Qualification requires current exact-candidate evidence. Independent acceptance, activation, selection, promotion and release remain separate externally governed states.
 
-For `cognitive.read`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+For `cognitive.read`, the repository-controlled correctness gap described as “revision revalidation done but authority/generation/frontier/digest/lease pending product composition” is closed in source: the product path performs authoritative provider/vector/snapshot/lease revalidation and the outer Agentd caller revalidates lifecycle authority after the async read. This statement does not grant production deployment, provider, tool, network, filesystem, secret, fleet, acceptance, promotion or release authority.
 
 ### Work-package execution envelopes
 
@@ -229,7 +253,7 @@ For `cognitive.read`, this document grants no runtime, production, model, provid
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
-The canonical readiness overlay binds `cognitive.read` to primary lane `LANE-C-MEMORY`. The following implementation-level specifications are mandatory alongside Sections 1–15:
+The canonical readiness overlay binds `cognitive.read` to primary lane `LANE-C-MEMORY`. The following implementation-level specifications remain mandatory alongside Sections 1–15:
 
 - [`RDY-SRC`](../../readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md)
 - [`RDY-PAR`](../../readiness/PARALLEL_DEVELOPMENT.md)
@@ -243,7 +267,7 @@ Consumed readiness protocols:
 
 - None.
 
-Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
+Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta. This overlay does not change acceptance, selection, promotion or release.
 
 ### Readiness implementation work packages
 
@@ -257,4 +281,4 @@ The bootstrap source-location obligation for `cognitive.read` is implemented by 
 
 - `codex-rs/hepta-cognitive-read`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. Product composition additionally touches the existing owners `hepta-memory` and `hepta-agentd` without transferring their ownership. This receipt is source implementation evidence only. It grants no production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
