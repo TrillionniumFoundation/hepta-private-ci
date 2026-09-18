@@ -255,3 +255,72 @@ The bootstrap source-location obligation for `memory.federation` is implemented 
 - `codex-rs/hepta-memory-federation`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. Hardened V2 product-composition candidate
+
+PR #693 composes the canonical V2 boundary into the existing durable cognitive-memory
+federation path without granting activation or release authority. This section describes
+the candidate semantics; exact-head and synthetic-merge CI remain the qualification
+oracle.
+
+### Response integrity
+
+`RemoteFederatedResponseV2.response_digest` is no longer an opaque non-zero value.
+The canonical response digest is domain-separated and binds the peer, exact query
+binding, scope, purpose, generation vector, observed frontier, response expiry,
+canonicalized evidence-item identities/revisions/digests, completeness and terminal
+observation. `validate_for_query` recomputes the digest and rejects payload drift or
+cross-query replay.
+
+### Authority lifetime and races
+
+The effective result expiry is the minimum of the remote response expiry, capability
+lease expiry and query deadline. A remote response cannot extend authority lifetime.
+
+`execute_once` observes current authority before transport dispatch and again after
+transport completion. Post-I/O revocation, generation drift, lease-epoch drift or
+authority-expiry drift rejects before evidence admission. The product bridge uses the
+existing `hepta-memory` SQLite capability head as the current revocation/generation
+owner; no second authority store is introduced.
+
+### Deadline and cancellation
+
+`FederationTransportV2` is asynchronous and cancellation-safe. The engine races the
+entire preflight/transport/postflight attempt against the effective hard deadline and a
+caller cancellation future. Dropping the transport future must stop further delivery or
+leave the read-only attempt explicitly indeterminate; blind retry remains prohibited.
+
+### Current product composition
+
+The current local product path is:
+
+`FederatedCognitiveExtension -> FederatedRecallSet -> retrieve_reader_through_canonical_v2 -> execute_once -> CanonicalReaderTransport -> FederatedMemoryReader`.
+
+`CanonicalReaderAuthority` reuses the durable capability/revocation state already
+owned by `hepta-memory`. The local transport preserves the current per-agent cognitive
+SQLite ownership boundary and does not imply a network federation service. Any future
+network or fleet transport remains independently qualified.
+
+Legacy aggregation no longer silently converts an unavailable reader into an
+indistinguishable empty result. `FederatedRetrievalCoverage` records requested,
+completed and failed sources; the extension binds that coverage into the ephemeral
+model-input source digest. A partial federation cut therefore cannot share provenance
+with a complete cut containing the same surviving candidates.
+
+### Candidate verification
+
+Focused tests include response-field tampering, cross-query replay, effective-expiry
+capping, post-transport revocation, post-transport generation drift, hard transport
+timeout, in-flight cancellation, stale-generation item suppression, duplicate identity,
+canonical response ordering and explicit failed-source coverage.
+
+The implementation map records PR #693 and its code-candidate commit separately from
+the repository-wide generated `sourceBase`. The generated source base intentionally
+remains common across all module maps; changing only this module's `sourceBase` would
+create invalid closed-world provenance drift.
+
+This candidate does **not** set `productionImplementation`,
+`productExecutionProved`, activation or release to true. Those claims require the
+exact candidate CI receipts, independent semantic review, target-host qualification and
+the normal operator acceptance gates.
