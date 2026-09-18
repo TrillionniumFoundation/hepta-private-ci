@@ -756,7 +756,8 @@ impl ModelClient {
         }
         let client_setup = self.current_client_setup().await?;
         let active_provider_policy_context = provider_policy_context.filter(|context| {
-            has_active_model_provider_policy(context.registry, context.thread_store)
+            context.require_active_policy
+                || has_active_model_provider_policy(context.registry, context.thread_store)
         });
         let transport = if active_provider_policy_context.is_some() {
             self.build_sensitive_api_transport(
@@ -890,6 +891,7 @@ impl ModelClient {
             let mut admitted_provider_attempt = match begin_model_provider_policy(
                 provider_policy_context.registry,
                 prepared.invocation_input(provider_policy_context),
+                provider_policy_context.require_active_policy,
             )
             .await
             .map_err(|error| trace_compaction_policy_error(&trace_attempt, error))?
@@ -1865,12 +1867,16 @@ impl ModelClientSession {
             let client_setup = self.client.current_client_setup().await?;
             let retry_config = client_setup.api_provider.retry.clone();
             let active_provider_policies = provider_policy_context.map(|context| {
-                active_model_provider_policies(context.registry, context.thread_store)
+                active_model_provider_policies(
+                    context.registry,
+                    context.thread_store,
+                    context.require_active_policy,
+                )
             });
             let exact_physical_endpoint_required = turn_recovery_checkpoint.is_some()
                 || active_provider_policies
                     .as_ref()
-                    .is_some_and(|active| !active.is_empty());
+                    .is_some_and(|active| active.needs_gate());
             // A redirect is a second physical endpoint and therefore needs a
             // fresh deployment fingerprint/policy lease. Until host-owned
             // redirect re-authorization exists, governed and recoverable sends
@@ -1925,7 +1931,7 @@ impl ModelClientSession {
             let mut admitted_provider_attempt = if let Some((context, active_policies)) =
                 provider_policy_context
                     .zip(active_provider_policies)
-                    .filter(|(_, active)| !active.is_empty())
+                    .filter(|(_, active)| active.needs_gate())
             {
                 let routing_hint = ProviderRoutingHint::from_header(
                     options.extra_headers.get(X_CODEX_ROUTING_HINT_HEADER),
@@ -2307,7 +2313,11 @@ impl ModelClientSession {
         loop {
             let client_setup = self.client.current_client_setup().await?;
             let active_provider_policies = provider_policy_context.map(|context| {
-                active_model_provider_policies(context.registry, context.thread_store)
+                active_model_provider_policies(
+                    context.registry,
+                    context.thread_store,
+                    context.require_active_policy,
+                )
             });
             let request_auth_context = AuthRequestTelemetryContext::new(
                 client_setup.auth.as_ref().map(CodexAuth::auth_mode),
@@ -2382,7 +2392,7 @@ impl ModelClientSession {
 
             let provider_policy_active = active_provider_policies
                 .as_ref()
-                .is_some_and(|active| !active.is_empty());
+                .is_some_and(|active| active.needs_gate());
             let provider_binding_required =
                 provider_policy_active || turn_recovery_checkpoint.is_some();
             let policy_logical_request = if provider_binding_required {
