@@ -6,7 +6,7 @@ Status: current-generation source contract. This document does not activate a mo
 
 `codex-hepta-intuition` does **not** execute or train a learned model. Its native responsibility is the bounded, deterministic policy kernel: validate a complete legal candidate set, enforce the authenticated canonical policy profile, apply calibration/OOD/confidence/risk gates, produce propensities, and select/abstain/route to slow path.
 
-Immutable learned model bytes and lineage belong to `learning.artifacts` / the `learning_artifact_registry`. A composition host supplies scored candidates only after selecting an immutable model artifact and executing the registered scorer contract. The Lane-F consumer in `codex-hepta-intelligence` owns current-generation qualification admission; it verifies signed completeness and qualification evidence before V3 is usable. No scorer, artifact registry, or consumer may mint effect authority through this contract.
+Immutable learned model bytes and lineage belong to `learning.artifacts` / the `learning_artifact_registry`. A composition host supplies scored candidates only after selecting an immutable model artifact and executing the registered scorer contract. The Lane-F consumer in `codex-hepta-intelligence` owns current-generation qualification admission; it verifies signed completeness, profile qualification and per-decision runtime evidence before V3 is usable. No scorer, artifact registry, or consumer may mint effect authority through this contract.
 
 ## `LearnedScorerContractV1`
 
@@ -22,9 +22,24 @@ A canonical policy profile binds all scorer identity fields:
 
 ## Model/calibration linkage
 
-`CanonicalPolicyProfileV1` binds `scorer.model_digest == policy_digest`, one `objective_class_digest`, one generation, the frozen calibration/OOD dataset digests, and the only accepted calibration/OOD artifact digests. V3 rejects policy/model mismatch, objective-class mismatch, generation mismatch, expired profile windows, artifact substitution, or request thresholds that differ from the profile.
+`CanonicalPolicyProfileV1` binds three independent identities: `policy_digest` for policy semantics, `scorer.model_digest` for immutable model bytes, and `scorer.scorer_contract_digest` for the scoring interface. None is required to equal another. The profile binds their relationship for one objective class and generation together with frozen calibration/OOD dataset digests and the only accepted calibration/OOD artifact digests. V3 rejects objective-class/generation drift, expired profile windows, artifact substitution, or request thresholds that differ from the profile.
 
-The policy kernel does not trust a nonzero artifact digest by itself. Current-generation admission requires a trusted consumer to verify the canonical evidence payloads against a host-owned trust snapshot. The current Lane-F consumer uses independent `Generator` and `Evaluator` roles with Ed25519 verification, validity windows, authority epoch, revocation and controller/principal separation.
+The policy kernel does not trust a nonzero artifact digest by itself. Current-generation admission requires a trusted consumer to verify the canonical evidence payloads against a host-owned trust snapshot. The current Lane-F consumer uses independent `Generator`, `Evaluator` and `Observer` roles with Ed25519 verification, validity windows, authority epoch, revocation and controller/principal separation. `Evaluator` signs the longer-lived canonical profile qualification; `Generator` signs exact candidate completeness; `Observer` signs each runtime commitment.
+
+## Per-decision scoring commitment
+
+`ScoringCommitmentV1` closes the gap between a qualified model contract and the actual scores consumed by the policy. It binds:
+
+- immutable `model_artifact_digest`;
+- exact `feature_snapshot_digest` and canonical `feature_schema_digest`;
+- `scorer_contract_digest`;
+- exact `candidate_set_digest`;
+- `scored_outputs_digest` over candidate identity, utility, calibrated confidence, OOD score and support digest;
+- `policy_digest` and generation.
+
+`AssignmentCommitmentV1` is separate from model scoring. Deterministic assignment is explicit. Counter-based assignment binds the RNG owner digest, stream digest, `counter == request.sequence`, and exact draw. `canonical_runtime_commitment_payload_v1` then binds the complete calibrated request, canonical profile, scoring commitment and assignment commitment into the per-decision `Observer` evidence payload.
+
+This split permits longer-lived model/profile qualification without allowing a caller to rescore candidates, substitute feature snapshots, or choose a favorable draw after qualification.
 
 ## Feature and output invariants
 
