@@ -207,7 +207,7 @@ pub struct DatasetWithdrawalReceiptV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DatasetWithdrawalRegistrySnapshotV1 {
     pub binding: DatasetWithdrawalRegistryBindingV1,
-    records: Vec<DatasetWithdrawalRecordV1>,
+    pub(crate) records: Vec<DatasetWithdrawalRecordV1>,
     pub head_digest: Digest32,
 }
 
