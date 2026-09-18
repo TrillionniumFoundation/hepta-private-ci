@@ -304,9 +304,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             // automatic restart while no child is currently running.
             return Ok(());
         }
-        Err(SupervisorError::Invalid(format!(
-            "agent {agent_id} is not active"
-        )))
+        Err(SupervisorError::Invalid(format!("agent {agent_id} is not active")))
     }
 
     #[cfg(unix)]
