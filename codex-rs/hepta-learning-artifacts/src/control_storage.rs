@@ -14,14 +14,12 @@ use crate::{
     ArtifactLifecycleJournalV2, ArtifactLifecycleStateV1, ArtifactStorageError,
     CreateOnlyArtifactFile, DatasetWithdrawalNoticeV1, DatasetWithdrawalRecordV1,
     DatasetWithdrawalRegistry, DatasetWithdrawalRegistrySnapshotV1, LifecycleActorEvidenceV2,
-    LifecycleActorRoleV2,
+    LifecycleActorRoleV2, MAX_DURABLE_ARTIFACT_RECORDS, MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES,
 };
 use crate::storage::{read_bounded, write_new};
 
 const WITHDRAWAL_MAGIC: &str = "HEPTAW01";
 const LIFECYCLE_MAGIC: &str = "HEPTAL02";
-const MAX_CONTROL_SNAPSHOT: usize = 8 * 1024 * 1024;
-const MAX_CONTROL_RECORDS: usize = 4096;
 const MAX_CONTROL_LINE: usize = 4096;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -72,7 +70,7 @@ pub fn read_dataset_withdrawal_snapshot_v1(
     )?;
     let bytes = read_bounded(
         file,
-        MAX_CONTROL_SNAPSHOT,
+        MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES,
         expected.encoded_bytes as u64,
         ArtifactStorageError::Corrupt,
     )?;
@@ -119,7 +117,7 @@ pub fn read_artifact_lifecycle_snapshot_v2(
     )?;
     let bytes = read_bounded(
         file,
-        MAX_CONTROL_SNAPSHOT,
+        MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES,
         expected.encoded_bytes as u64,
         ArtifactStorageError::Corrupt,
     )?;
@@ -144,9 +142,9 @@ fn validate_receipt(
 ) -> Result<(), ArtifactStorageError> {
     if binding.is_zero()
         || file_digest.is_zero()
-        || records > MAX_CONTROL_RECORDS
+        || records > MAX_DURABLE_ARTIFACT_RECORDS
         || encoded_bytes == 0
-        || encoded_bytes > MAX_CONTROL_SNAPSHOT
+        || encoded_bytes > MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES
         || (records == 0) != head_digest.is_zero()
     {
         return Err(ArtifactStorageError::InvalidReceipt);
@@ -159,7 +157,7 @@ fn encode_withdrawal_snapshot(
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     if binding.is_zero()
-        || snapshot.records().len() > MAX_CONTROL_RECORDS
+        || snapshot.records().len() > MAX_DURABLE_ARTIFACT_RECORDS
         || (snapshot.records().is_empty() != snapshot.head_digest.is_zero())
     {
         return Err(ArtifactStorageError::Capacity);
@@ -191,7 +189,7 @@ fn encode_withdrawal_snapshot(
         }
         text.push_str(&line);
     }
-    if text.len() > MAX_CONTROL_SNAPSHOT {
+    if text.len() > MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES {
         return Err(ArtifactStorageError::Capacity);
     }
     Ok(text.into_bytes())
@@ -251,7 +249,7 @@ fn encode_lifecycle_snapshot(
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
     if binding.is_zero()
-        || snapshot.records.len() > MAX_CONTROL_RECORDS
+        || snapshot.records.len() > MAX_DURABLE_ARTIFACT_RECORDS
         || (snapshot.records.is_empty() != snapshot.head_digest.is_zero())
     {
         return Err(ArtifactStorageError::Capacity);
@@ -292,7 +290,7 @@ fn encode_lifecycle_snapshot(
         }
         text.push_str(&line);
     }
-    if text.len() > MAX_CONTROL_SNAPSHOT {
+    if text.len() > MAX_DURABLE_ARTIFACT_SNAPSHOT_BYTES {
         return Err(ArtifactStorageError::Capacity);
     }
     Ok(text.into_bytes())
