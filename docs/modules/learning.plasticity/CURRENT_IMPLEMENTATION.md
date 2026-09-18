@@ -19,6 +19,7 @@ source paths and test names are not pass receipts by themselves.
 | `parameter_authenticated_admission` | `source_implemented` | `propose_authenticated_parameter_plasticity_v1` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
 | `parameter_anchor_state_machine` | `source_implemented` | `PlasticityWriterStateV1` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
 | `agentd_selected_host_surface` | `source_implemented_not_runtime_enrolled` | `AgentdPlasticityHostV1` | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
+| `agentd_owner_evidence_binding` | `source_implemented_not_deployment_bound` | `PlasticityOwnerEvidencePolicyV1` | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
 | `agentd_anchor_fence_store` | `source_implemented_not_deployment_bound` | `AgentdPlasticityAnchorFenceStoreV1` | `codex-rs/hepta-agentd/src/plasticity_host.rs` |
 | `topology_v2_proposal` | `source_implemented_proposal_only` | `propose_topology_v2` | `codex-rs/hepta-plasticity/src/topology_v2.rs` |
 | `topology_writer_handoff` | `source_implemented_validation_only` | `TopologyWriterHandoffV1` | `codex-rs/hepta-plasticity/src/topology_governance_v1.rs` |
@@ -138,9 +139,14 @@ also recomputes `artifact_frontier_binding_v1` from the exact registry head.
 The host then actively resolves update-rule, modulator, modulator-broadcast,
 eligibility and every per-parameter signal evidence digest through
 `PlasticityOwnerEvidenceResolverV1`. A resolver implementation must query the owning
-store and authenticate the owner receipt. Every returned receipt is checked for
-non-empty owner receipt/frontier digests and current validity. All receipts for one
-proposal must agree on the exact qualification-evidence frontier that was signed by the
+store and authenticate the owner receipt. Agentd independently recomputes a canonical
+query digest over evidence kind, objective, selected artifact, exact window,
+generation, parameter identity and observation time; the returned receipt must bind
+that exact query. `PlasticityOwnerEvidencePolicyV1` also requires an explicit
+kind-to-owner allow-policy, so an otherwise valid receipt from the wrong owner is
+rejected before proposal persistence. Every returned receipt is checked for non-empty
+owner receipt/frontier digests and current validity. All receipts for one proposal
+must agree on the exact qualification-evidence frontier that was signed by the
 Observer.
 
 The repository supplies the host seam and verification logic, not a fake universal
