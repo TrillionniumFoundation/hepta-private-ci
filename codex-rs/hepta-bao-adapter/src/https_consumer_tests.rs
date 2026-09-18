@@ -461,7 +461,7 @@ async fn root_namespace_omits_namespace_header() {
 
 
 fn lease_grant(
-    client: &BaoClient,
+    _client: &BaoClient,
     binding: FinalUseBinding,
     grant_id: &str,
     nonce: [u8; 32],
@@ -597,12 +597,12 @@ async fn dynamic_lease_body_timeout_is_indeterminate_and_burns_grant() {
         outcome,
         crate::SecretLeaseIssueOutcome::Indeterminate { .. }
     ));
-    assert_eq!(
+    assert!(matches!(
         client
             .request_secret_lease(&authority, &signed, &request, |_| Ok(()))
             .await,
         Err(BaoClientError::Authority(FinalUseError::AlreadyClaimed))
-    );
+    ));
     task.abort();
     let _ = task.await;
 }
