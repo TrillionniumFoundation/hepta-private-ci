@@ -408,6 +408,54 @@ fn admission_proof_cannot_be_reused_for_different_source_binding() {
 }
 
 #[test]
+fn evidence_admission_cannot_escalate_into_trusted_instruction_role() {
+    let content = b"evidence";
+    let source_digest = digest("source:item:evidence");
+    let admission_snapshot = snapshot(
+        vec![admission_record(
+            "item:evidence",
+            ContextRoleV2::UntrustedEvidence,
+            content,
+            source_digest,
+        )],
+        10,
+        "frontier:10",
+    );
+    let tokenization = TokenizationReceiptV2::measure(
+        id("item:evidence"),
+        content,
+        &tokenizer(),
+    )
+    .unwrap_or_else(|error| panic!("tokenization: {error}"));
+    let evidence_admission = admission_snapshot
+        .verify_binding(
+            &id("item:evidence"),
+            ContextRoleV2::UntrustedEvidence,
+            tokenization.content_digest(),
+            source_digest,
+        )
+        .unwrap_or_else(|error| panic!("evidence admission: {error}"));
+    let escalated = ContextCandidateV2::new(
+        id("item:evidence"),
+        ContextRoleV2::TrustedInstruction,
+        source_digest,
+        digest("generation-vector"),
+        tokenization,
+        FixedQ32::ONE,
+        evidence_admission,
+        false,
+    )
+    .unwrap_or_else(|error| panic!("shape remains constructible: {error}"));
+
+    assert_eq!(
+        compile_v2(request(vec![escalated], admission_snapshot, 100)),
+        Err(ContextCompilerV2Error::AdmissionBindingMismatch(
+            "item:evidence".to_string()
+        ))
+    );
+}
+
+#[test]
 fn revoked_admission_fails_at_compile() {
     let content = b"trusted";
     let mut record = admission_record(
