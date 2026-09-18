@@ -174,7 +174,8 @@
         "OrchestrationTests.test_value_ordering_and_durable_generation_are_identical",
         "OrchestrationTests.test_infeasible_high_score_does_not_consume_assignment_slot",
         "OrchestrationTests.test_completion_cannot_predate_or_outlive_its_owner_generation",
-        "OrchestrationTests.test_resource_planner_rejects_package_outside_envelope"
+        "OrchestrationTests.test_resource_planner_rejects_package_outside_envelope",
+        "OrchestrationTests.test_package_owner_self_attestation_cannot_complete_predecessor"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "assignment/integration-order/merge-queue proposals only"
