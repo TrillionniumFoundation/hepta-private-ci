@@ -73,7 +73,7 @@ checkpoint.
 
 Agentd can load the expected replay checkpoint from `--authbus-replay-checkpoint-file`. The protected file must be outside the Agent home and run root and is verified on every admission/dispatch trust refresh as a rollback watermark. Normal replay growth after the checkpoint is allowed; restoring a database whose stored checkpoint predecessor is older than the independently retained expected checkpoint fails closed. A checkpoint stored only with the same backup/restore set as SQLite is not an independent anti-rollback oracle.
 
-## Public source bindings
+## Public symbols and source bindings
 
 - protocol/domain types and signed authentication:
   `codex-rs/hepta-authbus/src/{lib.rs,control.rs,signed.rs}`;
@@ -88,6 +88,18 @@ Agentd can load the expected replay checkpoint from `--authbus-replay-checkpoint
 - Agentd trust/ingress/relay:
   `codex-rs/hepta-agentd/src/authbus_{trust,ingress,dispatch}.rs`;
 - migrations: evidence `0009`, `0010`, `0011`.
+
+## Durability and activation
+
+The durable signed-admission, replay, outbox, policy, quota, reservation, trust-head and replay-checkpoint state is owned by the existing EvidenceStore lineage. The Agentd signed-text path is a narrow composed host; general provider-effect production activation is not claimed. Durable control source implementation and product activation remain separate states.
+
+## Target-only design
+
+Named production effect-adapter activation, independently governed replay rollback anchoring, operator-managed signing-key custody/rotation, independent acceptance, canary, promotion and release remain outside this source candidate.
+
+## Known limits and non-claims
+
+The guarded provider facade is qualification-only. Queue acknowledgement is not external-effect terminality. A replay checkpoint protects restore only when its expected value is retained independently from the SQLite backup set. Authentication receipts remain `DENY_ALL` and cannot substitute for final-use authorization.
 
 ## Verification
 
@@ -106,7 +118,7 @@ Lane A CI explicitly runs `codex-hepta-agentd --test authbus_text_product` for t
 exact source head and deterministic synthetic merge and retains its command record next
 to the Lane A source/native receipts.
 
-## Remaining non-claims
+## Integration prerequisites
 
 This candidate does not by itself establish independent semantic/security acceptance,
 a named production provider-effect adapter, operator acceptance, canary, promotion or
