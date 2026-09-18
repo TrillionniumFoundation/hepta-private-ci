@@ -30,6 +30,8 @@ pub use authorized_effect::AuthorizedEffectDriverError;
 pub use authorized_effect::AuthorizedEffectError;
 pub use authorized_effect::AuthorizedEffectOutcome;
 pub use authorized_effect::AuthorizedEffectProviderReceipt;
+pub use authorized_effect::AuthorizedEffectRecovery;
+pub use authorized_effect::AuthorizedEffectRecoveryResult;
 pub use authorized_effect::AuthorizedEffectRequest;
 pub use automation_taskflow::AutomationTaskFlowDispatch;
 pub use automation_taskflow::admission_receipt_digest;
