@@ -345,7 +345,7 @@ impl fmt::Display for SecretLeaseBindingError {
 
 impl std::error::Error for SecretLeaseBindingError {}
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SecretLeaseStoreError {
     InvalidRecord(SecretLeaseBindingError),
     AlreadyExists,
@@ -367,6 +367,12 @@ impl std::error::Error for SecretLeaseStoreError {}
 pub type SecretLeaseFuture<'a, T> =
     Pin<Box<dyn Future<Output = Result<T, SecretLeaseStoreError>> + Send + 'a>>;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SecretLeaseCreateDisposition {
+    Inserted,
+    AlreadyPresent,
+}
+
 /// Strong-CAS metadata owner required by the lease adapter.
 ///
 /// Implementations must make `create` exact-idempotent and
@@ -377,7 +383,10 @@ pub trait SecretLeaseStore: Send + Sync {
     fn load<'a>(&'a self, lease_key: &'a str)
         -> SecretLeaseFuture<'a, Option<SecretLeaseRecord>>;
 
-    fn create<'a>(&'a self, record: &'a SecretLeaseRecord) -> SecretLeaseFuture<'a, ()>;
+    fn create<'a>(
+        &'a self,
+        record: &'a SecretLeaseRecord,
+    ) -> SecretLeaseFuture<'a, SecretLeaseCreateDisposition>;
 
     fn compare_and_swap<'a>(
         &'a self,
