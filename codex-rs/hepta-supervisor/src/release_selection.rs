@@ -256,6 +256,7 @@ mod tests {
             digest(b"tm"),
             digest(b"ta"),
             None,
+            digest(b"compatibility-receipt"),
             7,
         )
         .expect("binding");
