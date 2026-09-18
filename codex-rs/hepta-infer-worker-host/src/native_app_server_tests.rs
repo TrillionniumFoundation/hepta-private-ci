@@ -322,3 +322,84 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
 }
+
+#[test]
+fn observed_terminal_flows_through_adapter_and_durable_reopen() {
+    use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+    use codex_hepta_infer_core::durable_control::native::NativeRequest;
+    use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+
+    for (status, expected) in [
+        (TurnStatus::Completed, NativeRunStatus::Completed),
+        (TurnStatus::Failed, NativeRunStatus::Failed),
+        (TurnStatus::Interrupted, NativeRunStatus::Interrupted),
+    ] {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!(
+            "hepta-runtime-codex-terminal-{status:?}-{nonce}.journal"
+        ));
+        let intent = test_intent();
+        let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+        control
+            .reserve_native(
+                NativeRequest {
+                    request_id: intent.operation_id.to_string(),
+                    principal_id: "agent-1".to_string(),
+                    worker_generation: intent.session_generation,
+                    model: "provider-model".to_string(),
+                    payload_digest: intent.payload_digest.to_string(),
+                },
+                1,
+            )
+            .unwrap();
+        control
+            .dispatch_native(
+                intent.operation_id.as_str(),
+                NativeDispatch {
+                    thread_id: "thread-a".to_string(),
+                    model_provider: "provider".to_string(),
+                    context_digest: Digest32::of_bytes(b"context").to_string(),
+                },
+            )
+            .unwrap();
+        control
+            .native_started(intent.operation_id.as_str(), "turn-a".to_string())
+            .unwrap();
+
+        let mut output = output();
+        assert!(
+            observe(
+                &mut output,
+                terminal("thread-a", "turn-a", status),
+            )
+            .unwrap()
+        );
+        assert_eq!(output.status, expected);
+        assert!(output.terminal_observed);
+        let settled = control
+            .settle_native(intent.operation_id.as_str(), output.clone())
+            .unwrap();
+        assert_eq!(settled.state, NativeReservationState::Released);
+        assert_eq!(settled.observation, Some(output));
+        drop(control);
+
+        let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+        assert_eq!(reopened.native_record(intent.operation_id.as_str()), Some(&settled));
+        drop(reopened);
+        std::fs::remove_file(path).unwrap();
+    }
+}
+
+#[test]
+fn overload_backoff_is_bounded_deterministic_and_nonzero() {
+    for attempt in 0..=MAX_OVERLOAD_RETRIES {
+        let first = overload_backoff("request-1", attempt);
+        let second = overload_backoff("request-1", attempt);
+        assert_eq!(first, second);
+        assert!(!first.is_zero());
+        assert!(first <= MAX_OVERLOAD_BACKOFF);
+    }
+}
