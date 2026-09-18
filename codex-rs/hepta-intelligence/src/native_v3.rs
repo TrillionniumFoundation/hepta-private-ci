@@ -245,6 +245,28 @@ impl CompositionPortsV3 for NativeCompositionPortsV3<'_> {
         for contribution in &mut contributions.contributions {
             contribution.objective_digest = objective_digest;
         }
+        let abstain = StableId::new("abstain").map_err(|_| {
+            native_failure(input, PortFailureClassV1::Rejected, "abstain-id")
+        })?;
+        let mut expected = self
+            .candidate_set
+            .candidates
+            .iter()
+            .map(|candidate| candidate.candidate_id.clone())
+            .collect::<BTreeSet<_>>();
+        expected.insert(abstain);
+        let actual = contributions
+            .contributions
+            .iter()
+            .map(|contribution| contribution.candidate_id.clone())
+            .collect::<BTreeSet<_>>();
+        if actual != expected {
+            return Err(native_failure(
+                input,
+                PortFailureClassV1::Rejected,
+                "ndu-candidate-set",
+            ));
+        }
         let receipt = evaluate_candidates_with_policy(
             contributions,
             profile,
