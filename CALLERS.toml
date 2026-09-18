@@ -287,16 +287,16 @@ id = "authority_lease_verify_use"
 symbol = "AuthorityLeaseVerifier::verify_use"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
+caller_markers = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort"]
 
 [[boundary]]
 id = "authority_lease_delivery"
 symbol = "AuthorityLeaseVerifier::with_verified_use"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "drop(state)"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
+caller_markers = ["AuthorityLeaseVerifier", ".with_verified_use(", "FleetAuthorityPort"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
