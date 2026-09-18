@@ -165,7 +165,9 @@ async fn serve_overloaded_connection(
     // Do not parse or reflect request metadata from a peer that the normal
     // control path would reject.
     stream.ensure_current_user_peer().map_err(|error| {
-        AgentdError::Protocol(format!("reject overloaded agentd control peer identity: {error}"))
+        AgentdError::Protocol(format!(
+            "reject overloaded agentd control peer identity: {error}"
+        ))
     })?;
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);

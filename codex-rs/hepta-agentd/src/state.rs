@@ -383,18 +383,14 @@ impl AgentdState {
             .active_run_count())
     }
 
-    pub(crate) fn mark_unfinished_runs_for_shutdown(
-        &self,
-    ) -> Result<Vec<RunReceipt>, AgentdError> {
+    pub(crate) fn mark_unfinished_runs_for_shutdown(&self) -> Result<Vec<RunReceipt>, AgentdError> {
         self.runs
             .lock()
             .map_err(poisoned_state)?
             .transact(|coordinator| coordinator.mark_unfinished_for_shutdown())
     }
 
-    fn run_execution_guard(
-        &self,
-    ) -> Result<std::sync::MutexGuard<'_, RuntimeState>, AgentdError> {
+    fn run_execution_guard(&self) -> Result<std::sync::MutexGuard<'_, RuntimeState>, AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         if runtime.lifecycle != AgentLifecycle::Running

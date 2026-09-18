@@ -23,15 +23,15 @@ use crate::AgentdResponse;
 use crate::CancellationDisposition;
 use crate::ContextAttachment;
 use crate::EventBatch;
-use crate::RunPhase;
-use crate::RunReceipt;
-use crate::RunSnapshot;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
 use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
+use crate::RunPhase;
+use crate::RunReceipt;
+use crate::RunSnapshot;
 use crate::SessionIngress;
 
 pub struct AgentdClient {
@@ -78,7 +78,9 @@ impl AgentdClient {
     }
 
     pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
-        self.health_with_generation().await.map(|(snapshot, _)| snapshot)
+        self.health_with_generation()
+            .await
+            .map(|(snapshot, _)| snapshot)
     }
 
     /// Return the health payload together with the current supervisor
@@ -86,9 +88,7 @@ impl AgentdClient {
     ///
     /// Callers that create run snapshots must bind authority_epoch to this
     /// exact value rather than infer it from the process spawn generation.
-    pub async fn health_with_generation(
-        &self,
-    ) -> Result<(HealthSnapshot, u64), AgentdError> {
+    pub async fn health_with_generation(&self) -> Result<(HealthSnapshot, u64), AgentdError> {
         let response = self
             .send(AgentdRequest::health(
                 self.request_id(),

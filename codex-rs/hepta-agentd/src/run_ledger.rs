@@ -70,9 +70,7 @@ impl RunLedger {
                 )));
             }
             let mut coordinator = persisted.coordinator;
-            coordinator
-                .validate_recovered_state()
-                .map_err(run_error)?;
+            coordinator.validate_recovered_state().map_err(run_error)?;
             coordinator
                 .reconcile_after_restart(composition)
                 .map_err(run_error)?;
@@ -278,12 +276,10 @@ mod tests {
         let temp = tempfile::tempdir().expect("tempdir");
         let file = temp.path().join("ledger.json");
         std::fs::write(&file, b"{}").expect("write ledger");
-        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600))
-            .expect("mode 0600");
+        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600)).expect("mode 0600");
         validate_private_regular_file(&file).expect("private regular file");
 
-        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o644))
-            .expect("mode 0644");
+        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o644)).expect("mode 0644");
         assert!(validate_private_regular_file(&file).is_err());
         std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600))
             .expect("restore mode");

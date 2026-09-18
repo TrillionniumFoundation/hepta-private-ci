@@ -337,7 +337,9 @@ async fn real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispat
         context_digest: digest('5'),
         compilation_receipt_digest: digest('6'),
     };
-    let attached = control.run_attach_context(admitted.revision, attachment).await?;
+    let attached = control
+        .run_attach_context(admitted.revision, attachment)
+        .await?;
     ensure!(
         attached.phase == RunPhase::ContextAttached,
         "real wire did not attach the exact frozen tuple: {attached:?}"
@@ -440,8 +442,7 @@ async fn real_agentd_wire_lifecycle_survives_supervisor_restart_without_redispat
         .context("pre-dispatch lifecycle run disappeared across restart")?;
     ensure!(
         safely_closed.phase == RunPhase::Cancelled
-            && safely_closed.cancel_reason.as_deref()
-                == Some("agentd_shutdown_before_dispatch"),
+            && safely_closed.cancel_reason.as_deref() == Some("agentd_shutdown_before_dispatch"),
         "graceful restart did not close safe pre-dispatch work: {safely_closed:?}"
     );
 

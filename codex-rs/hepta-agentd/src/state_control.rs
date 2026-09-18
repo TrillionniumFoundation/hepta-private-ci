@@ -180,9 +180,7 @@ impl AgentdState {
             crate::AgentdMethod::RunRemoveClosed {
                 run_id,
                 expected_revision,
-            } => AgentdPayload::RunReceipt(
-                self.run_remove_closed(&run_id, expected_revision)?,
-            ),
+            } => AgentdPayload::RunReceipt(self.run_remove_closed(&run_id, expected_revision)?),
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
                 crate::authbus_ingress::submit(self, request).await?,
             ),
@@ -546,8 +544,7 @@ impl AgentdState {
         observation: &RunTerminalObservation,
     ) -> Result<(), AgentdError> {
         observation.validate().map_err(AgentdError::Protocol)?;
-        let socket_path =
-            AbsolutePathBuf::from_absolute_path(&self.identity.app_server_socket)?;
+        let socket_path = AbsolutePathBuf::from_absolute_path(&self.identity.app_server_socket)?;
         let client = timeout(
             Duration::from_secs(1),
             RemoteAppServerClient::connect(RemoteAppServerConnectArgs {

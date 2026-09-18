@@ -58,7 +58,6 @@ fn terminal_observation(phase: RunPhase) -> RunTerminalObservation {
     .expect("terminal observation")
 }
 
-
 #[test]
 fn freezes_the_complete_run_tuple_before_context_attachment() {
     let mut coordinator =
@@ -132,7 +131,10 @@ fn deadline_is_enforced_after_admission_and_expires_dispatched_runs_conservative
         .expect("expire pre-dispatch deadline");
     assert_eq!(expired.len(), 1);
     assert_eq!(expired[0].phase, RunPhase::Cancelled);
-    assert_eq!(expired[0].cancel_reason.as_deref(), Some("deadline_exceeded"));
+    assert_eq!(
+        expired[0].cancel_reason.as_deref(),
+        Some("deadline_exceeded")
+    );
 
     let mut second = snapshot();
     second.run_id = "run.2".to_string();
@@ -152,7 +154,10 @@ fn deadline_is_enforced_after_admission_and_expires_dispatched_runs_conservative
         .expect("expire dispatched deadline");
     assert_eq!(expired.len(), 1);
     assert_eq!(expired[0].phase, RunPhase::Cancelling);
-    assert_eq!(expired[0].cancel_reason.as_deref(), Some("deadline_exceeded"));
+    assert_eq!(
+        expired[0].cancel_reason.as_deref(),
+        Some("deadline_exceeded")
+    );
     assert_eq!(expired[0].cancellation_ack_deadline_ms, Some(21_000));
 
     let uncertain = coordinator
@@ -165,8 +170,7 @@ fn deadline_is_enforced_after_admission_and_expires_dispatched_runs_conservative
 
 #[test]
 fn cancellation_preserves_dispatch_boundary_reason_and_idempotency() {
-    let mut before =
-        AgentRunCoordinator::compose_runtime(composition(3)).expect("compose runtime");
+    let mut before = AgentRunCoordinator::compose_runtime(composition(3)).expect("compose runtime");
     before.start_run(100, snapshot()).expect("admit run");
     let early = before
         .cancel_run(103, "run.1", 1, "operator_requested")
@@ -180,13 +184,14 @@ fn cancellation_preserves_dispatch_boundary_reason_and_idempotency() {
     assert_eq!(repeated.0, CancellationDisposition::AlreadyTerminal);
     assert!(repeated.1.idempotent);
 
-    let mut after =
-        AgentRunCoordinator::compose_runtime(composition(3)).expect("compose runtime");
+    let mut after = AgentRunCoordinator::compose_runtime(composition(3)).expect("compose runtime");
     after.start_run(100, snapshot()).expect("admit run");
     after
         .attach_context(101, 1, attachment())
         .expect("attach context");
-    after.mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7'))).expect("dispatch");
+    after
+        .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
+        .expect("dispatch");
     let late = after
         .cancel_run(103, "run.1", 3, "operator_requested")
         .expect("cancel");
@@ -197,7 +202,10 @@ fn cancellation_preserves_dispatch_boundary_reason_and_idempotency() {
     let repeated_late = after
         .cancel_run(u64::MAX, "run.1", 3, "operator_requested")
         .expect("repeat dispatched cancel");
-    assert_eq!(repeated_late.0, CancellationDisposition::CancellingAfterDispatch);
+    assert_eq!(
+        repeated_late.0,
+        CancellationDisposition::CancellingAfterDispatch
+    );
     assert!(repeated_late.1.idempotent);
     assert_eq!(repeated_late.1.cancellation_ack_deadline_ms, Some(1_103));
 
@@ -262,12 +270,7 @@ fn terminal_phase_rejects_missing_delegated_observation() {
         .attach_context(101, 1, attachment())
         .expect("attach context");
     coordinator
-        .mark_dispatched(
-            102,
-            "run.1",
-            2,
-            dispatch_binding_for("run.1", digest('7')),
-        )
+        .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
         .expect("dispatch");
     assert_eq!(
         coordinator.observe_terminal("run.1", 3, RunPhase::Succeeded, None),
@@ -283,7 +286,9 @@ fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed() {
     coordinator
         .attach_context(101, 1, attachment())
         .expect("attach context");
-    coordinator.mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7'))).expect("dispatch");
+    coordinator
+        .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
+        .expect("dispatch");
     let completed = coordinator
         .observe_terminal(
             "run.1",
@@ -316,7 +321,11 @@ fn identical_context_bytes_do_not_hide_a_changed_run_snapshot() {
         .start_run(/* now_ms */ 100, snapshot())
         .expect("admit");
     let original = coordinator
-        .attach_context(/* now_ms */ 101, /* expected_revision */ 1, attachment())
+        .attach_context(
+            /* now_ms */ 101,
+            /* expected_revision */ 1,
+            attachment(),
+        )
         .expect("attach");
     let mut mixed = attachment();
     mixed.objective_digest = digest('9');
@@ -337,7 +346,11 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
             .start_run(/* now_ms */ 100, snapshot())
             .expect("admit");
         coordinator
-            .attach_context(/* now_ms */ 101, /* expected_revision */ 1, attachment())
+            .attach_context(
+                /* now_ms */ 101,
+                /* expected_revision */ 1,
+                attachment(),
+            )
             .expect("attach");
         coordinator
             .mark_dispatched(
@@ -396,7 +409,9 @@ fn restart_never_redispatches_uncertain_work() {
     coordinator
         .attach_context(101, 1, attachment())
         .expect("attach context");
-    coordinator.mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7'))).expect("dispatch");
+    coordinator
+        .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
+        .expect("dispatch");
 
     let mut second = snapshot();
     second.run_id = "run.2".to_string();
@@ -411,8 +426,14 @@ fn restart_never_redispatches_uncertain_work() {
         .reconcile_after_restart(composition(4))
         .expect("restart reconcile");
     assert_eq!(changed.len(), 2);
-    assert_eq!(coordinator.run("run.1").expect("run 1").phase, RunPhase::Indeterminate);
-    assert_eq!(coordinator.run("run.2").expect("run 2").phase, RunPhase::Cancelled);
+    assert_eq!(
+        coordinator.run("run.1").expect("run 1").phase,
+        RunPhase::Indeterminate
+    );
+    assert_eq!(
+        coordinator.run("run.2").expect("run 2").phase,
+        RunPhase::Cancelled
+    );
     assert_eq!(coordinator.composition().agentd_generation, 4);
 }
 
@@ -424,7 +445,9 @@ fn shutdown_preserves_dispatch_uncertainty_and_closes_safe_work() {
     coordinator
         .attach_context(101, 1, attachment())
         .expect("attach context");
-    coordinator.mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7'))).expect("dispatch");
+    coordinator
+        .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
+        .expect("dispatch");
 
     let mut second = snapshot();
     second.run_id = "run.2".to_string();
@@ -449,23 +472,17 @@ fn shutdown_preserves_dispatch_uncertainty_and_closes_safe_work() {
     );
 }
 
-
 #[test]
 fn recovered_state_rejects_impossible_phase_fields() {
     let mut coordinator = AgentRunCoordinator::compose_runtime(composition(3)).expect("compose");
     coordinator.start_run(100, snapshot()).expect("admit run");
 
-    coordinator
-        .runs
-        .get_mut("run.1")
-        .expect("run record")
-        .phase = RunPhase::Dispatched;
+    coordinator.runs.get_mut("run.1").expect("run record").phase = RunPhase::Dispatched;
     assert_eq!(
         coordinator.validate_recovered_state(),
         Err(AgentRunError::InvalidTransition)
     );
 }
-
 
 #[test]
 fn restart_reconciliation_requires_a_strict_generation_advance() {

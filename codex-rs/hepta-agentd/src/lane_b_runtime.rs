@@ -105,7 +105,9 @@ impl AgentRunCoordinator {
                 validate_digest(receipt_digest, "compilation receipt")?;
             }
             if let Some(binding) = &record.dispatch_binding {
-                binding.validate().map_err(|_| AgentRunError::InvalidDispatchBinding)?;
+                binding
+                    .validate()
+                    .map_err(|_| AgentRunError::InvalidDispatchBinding)?;
                 if binding.run_id != record.snapshot.run_id
                     || record.context_digest.as_deref() != Some(binding.context_digest.as_str())
                 {
@@ -113,7 +115,9 @@ impl AgentRunCoordinator {
                 }
             }
             if let Some(observation) = &record.terminal_observation {
-                observation.validate().map_err(|_| AgentRunError::InvalidTerminalObservation)?;
+                observation
+                    .validate()
+                    .map_err(|_| AgentRunError::InvalidTerminalObservation)?;
                 let Some(binding) = &record.dispatch_binding else {
                     return Err(AgentRunError::DispatchBindingRequired);
                 };
@@ -292,7 +296,9 @@ impl AgentRunCoordinator {
         binding: RunDispatchBinding,
     ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
-        binding.validate().map_err(|_| AgentRunError::InvalidDispatchBinding)?;
+        binding
+            .validate()
+            .map_err(|_| AgentRunError::InvalidDispatchBinding)?;
         let record = self
             .runs
             .get_mut(run_id)
@@ -405,8 +411,10 @@ impl AgentRunCoordinator {
                 RunPhase::Dispatched => {
                     record.phase = RunPhase::Cancelling;
                     record.cancel_reason = Some("deadline_exceeded".to_string());
-                    record.cancellation_ack_deadline_ms =
-                        Some(cancellation_ack_deadline(now_ms, cancellation_ack_timeout_ms)?);
+                    record.cancellation_ack_deadline_ms = Some(cancellation_ack_deadline(
+                        now_ms,
+                        cancellation_ack_timeout_ms,
+                    )?);
                     advance_revision(record)?;
                     expired.push(receipt(record, /* idempotent */ false));
                 }
@@ -429,7 +437,9 @@ impl AgentRunCoordinator {
     ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
         if let Some(observation) = &observation {
-            observation.validate().map_err(|_| AgentRunError::InvalidTerminalObservation)?;
+            observation
+                .validate()
+                .map_err(|_| AgentRunError::InvalidTerminalObservation)?;
         }
         let record = self
             .runs
@@ -564,10 +574,7 @@ fn validate_composition(value: &RuntimeComposition) -> Result<(), AgentRunError>
     Ok(())
 }
 
-fn cancellation_ack_deadline(
-    now_ms: u64,
-    timeout_ms: u64,
-) -> Result<u64, AgentRunError> {
+fn cancellation_ack_deadline(now_ms: u64, timeout_ms: u64) -> Result<u64, AgentRunError> {
     now_ms
         .checked_add(timeout_ms)
         .ok_or(AgentRunError::ArithmeticOverflow)
