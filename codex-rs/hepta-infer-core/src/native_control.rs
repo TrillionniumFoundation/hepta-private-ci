@@ -139,13 +139,6 @@ enum Event {
         request_id: String,
         reason: String,
     },
-    /// App Server proved that turn/start was rejected before admission.
-    /// This releases the local reservation without inventing a provider
-    /// terminal event or permitting an automatic semantic replay.
-    Rejected {
-        request_id: String,
-        reason: String,
-    },
     Observe {
         request_id: String,
         output: NativeRunOutput,
@@ -261,18 +254,52 @@ impl DurableInferenceControl {
         )
     }
 
-    /// Records a typed App Server rejection after the dispatch binding was
+    /// Records a proven App Server rejection after the dispatch binding was
     /// journaled but before a turn identity existed.
+    ///
+    /// The journal encoding intentionally reuses the native-v1 Observe shape:
+    /// current readers recognize the binding marker and release the slot, while
+    /// older readers still parse the record and conservatively keep it
+    /// Indeterminate. This preserves rollback readability without inventing a
+    /// provider terminal event.
     pub fn reject_native_before_start(
         &mut self,
         request_id: &str,
         reason: String,
     ) -> Result<NativeRunRecord, Error> {
+        if reason.is_empty() || reason.len() > 3072 {
+            return Err(Error::InvalidIdentity("native pre-admission rejection reason"));
+        }
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != NativeReservationState::Dispatching
+            || record.turn_id.is_some()
+            || record.observation.is_some()
+        {
+            return Err(Error::InvalidTransition);
+        }
+        let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
+        let marker = pre_admission_rejection_marker(record, &reason)?;
+        let output = NativeRunOutput {
+            thread_id: dispatch.thread_id.clone(),
+            turn_id: String::new(),
+            model: record.request.model.clone(),
+            model_provider: dispatch.model_provider.clone(),
+            status: NativeRunStatus::Indeterminate,
+            output: String::new(),
+            observed_output_tokens: None,
+            terminal_observed: false,
+            stop_reason: Some(marker),
+            owner_authority: NativeOwnerAuthority::Unverified,
+        };
         self.commit_native(
             request_id,
-            Event::Rejected {
+            Event::Observe {
                 request_id: request_id.to_string(),
-                reason,
+                output,
             },
         )
     }
@@ -395,7 +422,6 @@ impl NativeJournal {
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
-            | Event::Rejected { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -438,17 +464,6 @@ impl NativeJournal {
                 record.pre_dispatch_stop = Some(reason);
                 record.state = NativeReservationState::Released;
             }
-            Event::Rejected { reason, .. } => {
-                if record.state != NativeReservationState::Dispatching
-                    || record.turn_id.is_some()
-                    || reason.is_empty()
-                    || reason.len() > 4096
-                {
-                    return Err(Error::InvalidTransition);
-                }
-                record.pre_dispatch_stop = Some(reason);
-                record.state = NativeReservationState::Released;
-            }
             Event::Observe { output, .. } => {
                 apply_observation(record, output)?;
             }
@@ -459,6 +474,43 @@ impl NativeJournal {
             .ok_or(Error::ArithmeticOverflow)?;
         Ok(())
     }
+}
+
+const PRE_ADMISSION_REJECTION_PREFIX: &str = "hepta.native.pre-admission-rejection.v1";
+
+fn pre_admission_rejection_marker(
+    record: &NativeRunRecord,
+    reason: &str,
+) -> Result<String, Error> {
+    let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
+    Ok(format!(
+        "{PRE_ADMISSION_REJECTION_PREFIX}|{}|{}|{}|{}",
+        record.request.payload_digest,
+        dispatch.context_digest,
+        dispatch.thread_id,
+        reason
+    ))
+}
+
+fn pre_admission_rejection_reason<'a>(
+    record: &NativeRunRecord,
+    output: &'a NativeRunOutput,
+) -> Option<&'a str> {
+    if output.status != NativeRunStatus::Indeterminate
+        || output.terminal_observed
+        || !output.turn_id.is_empty()
+        || !output.output.is_empty()
+        || output.observed_output_tokens.is_some()
+        || output.owner_authority != NativeOwnerAuthority::Unverified
+    {
+        return None;
+    }
+    let dispatch = record.dispatch.as_ref()?;
+    let expected = format!(
+        "{PRE_ADMISSION_REJECTION_PREFIX}|{}|{}|{}|",
+        record.request.payload_digest, dispatch.context_digest, dispatch.thread_id
+    );
+    output.stop_reason.as_deref()?.strip_prefix(&expected)
 }
 
 fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
@@ -524,11 +576,16 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         validate_identity(&output.turn_id, "native turn")?;
         record.turn_id = Some(output.turn_id.clone());
     }
-    record.state = if output.terminal_observed {
+    let pre_admission_rejection =
+        pre_admission_rejection_reason(record, &output).map(str::to_string);
+    record.state = if output.terminal_observed || pre_admission_rejection.is_some() {
         NativeReservationState::Released
     } else {
         NativeReservationState::Indeterminate
     };
+    if let Some(reason) = pre_admission_rejection {
+        record.pre_dispatch_stop = Some(reason);
+    }
     record.observation = Some(output);
     Ok(())
 }
