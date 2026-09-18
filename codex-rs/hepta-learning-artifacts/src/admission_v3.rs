@@ -24,6 +24,7 @@ pub struct WithdrawalAuthorityDomainV1 {
     pub registry_id: StableId,
     pub scope_digest: Digest32,
     pub authority_id: StableId,
+    pub authority_epoch: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -126,13 +127,14 @@ pub fn validate_artifact_publication_v3(
 fn digest_withdrawal_domain(
     domain: &WithdrawalAuthorityDomainV1,
 ) -> Result<Digest32, ArtifactAdmissionError> {
-    if domain.scope_digest.is_zero() {
+    if domain.scope_digest.is_zero() || domain.authority_epoch == 0 {
         return Err(ArtifactAdmissionError::InvalidWithdrawalDomain);
     }
     let mut bytes = b"hepta.learning-artifacts.withdrawal-authority-domain.v1".to_vec();
     push_id(&mut bytes, &domain.registry_id);
     bytes.extend_from_slice(domain.scope_digest.as_array());
     push_id(&mut bytes, &domain.authority_id);
+    bytes.extend_from_slice(&domain.authority_epoch.to_be_bytes());
     Ok(Digest32::of_bytes(&bytes))
 }
 
@@ -228,6 +230,7 @@ mod tests {
             registry_id: id("dataset-withdrawals"),
             scope_digest: digest(scope),
             authority_id: id("withdrawal-authority"),
+            authority_epoch: 7,
         }
     }
 
@@ -298,6 +301,34 @@ mod tests {
         assert_eq!(
             validate_artifact_publication_v3(&admission, &domain, &registry, 21),
             Err(ArtifactAdmissionError::WithdrawalHeadChanged)
+        );
+    }
+
+    #[test]
+    fn art_05_authority_epoch_rotation_changes_withdrawal_domain() {
+        let registry = DatasetWithdrawalRegistry::new();
+        let epoch_7 = domain("tenant-a");
+        let mut epoch_8 = epoch_7.clone();
+        epoch_8.authority_epoch = 8;
+
+        assert_ne!(
+            withdrawal_head_digest_v3(&registry, &epoch_7).unwrap(),
+            withdrawal_head_digest_v3(&registry, &epoch_8).unwrap()
+        );
+
+        let head = withdrawal_head_digest_v3(&registry, &epoch_7).unwrap();
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            &epoch_7,
+            head,
+            manifest(digest("dataset")),
+            20,
+        )
+        .expect("admission succeeds");
+
+        assert_eq!(
+            validate_artifact_publication_v3(&admission, &epoch_8, &registry, 20),
+            Err(ArtifactAdmissionError::WithdrawalDomainChanged)
         );
     }
 
