@@ -208,18 +208,22 @@ impl MatrixDurableStore {
         .execute(&mut *transaction)
         .await
         .map_err(store_error)?;
+
+        // A previous process or sync turn may already have observed this exact
+        // stable Matrix transaction before the dispatch-ledger row existed.
+        // Reconcile that durable observation before any caller can retry wire
+        // dispatch, preserving one transaction identity across restart.
+        if let Some(observation) =
+            matching_server_observation_tx(&mut transaction, intent, None).await?
+        {
+            settle_succeeded_tx(&mut transaction, &intent.operation_id, &observation).await?;
+        }
+        let receipt = load_record_tx(&mut transaction, &intent.operation_id)
+            .await?
+            .ok_or(MatrixDispatchError::SendNotFound)?
+            .receipt;
         transaction.commit().await.map_err(store_error)?;
-        Ok(SendReceipt {
-            operation_id: intent.operation_id.clone(),
-            transaction_id: intent.transaction_id.clone(),
-            state: SendState::Prepared,
-            server_event_id: None,
-            transport_observation_digest: None,
-            send_observation_digest: None,
-            redaction_observation_digest: None,
-            terminal_observed: false,
-            idempotent: false,
-        })
+        Ok(receipt)
     }
 
     pub async fn mark_send_dispatched(
