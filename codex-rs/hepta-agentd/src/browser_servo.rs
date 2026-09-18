@@ -6,6 +6,7 @@
 //! fence only through Browser's durable-intent + local-worker-dispatch boundary.
 //! Remote page/effect terminality is observed later through reconciliation.
 
+use std::collections::BTreeSet;
 use std::fmt;
 use std::fs;
 use std::io::BufReader;
@@ -24,7 +25,9 @@ use std::time::Duration;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
+use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use serde::Deserialize;
 use serde_json::Map;
 use serde_json::Value;
 use serde_json::json;
@@ -39,6 +42,8 @@ const MAX_SERVICE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_WORKER_BYTES: usize = 512 * 1024 * 1024;
 const MAX_BWRAP_BYTES: usize = 64 * 1024 * 1024;
 const MAX_PRLIMIT_BYTES: usize = 16 * 1024 * 1024;
+const MAX_HOST_CONFIG_BYTES: u64 = 65_536;
+const MAX_BROWSER_PROFILES: u64 = 64;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 const MAX_DRIVER_TIMEOUT_MS: u64 = 120_000;
 const PARENT_FRAME_GRACE_MS: u64 = 5_000;
@@ -686,6 +691,129 @@ fn browser_witness_digest(
     hasher.finalize().into()
 }
 
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BrowserServoHostConfig {
+    pub signer_id: String,
+    pub verifying_key: [u8; 32],
+    pub authority_state_dir: PathBuf,
+    pub authority_epoch: u64,
+    pub revocation_revision: u64,
+    pub revoked_grant_ids: BTreeSet<String>,
+    pub node_path: PathBuf,
+    pub service_path: PathBuf,
+    pub service_sha256: String,
+    pub worker_path: PathBuf,
+    pub worker_sha256: String,
+    pub profile_root: PathBuf,
+    pub journal_path: PathBuf,
+    pub bwrap_path: PathBuf,
+    pub bwrap_sha256: String,
+    pub prlimit_path: PathBuf,
+    pub prlimit_sha256: String,
+    pub max_profiles: u64,
+    pub max_address_space_bytes: u64,
+    pub max_cpu_seconds: u64,
+    pub max_open_files: u64,
+    pub max_processes: u64,
+    pub driver_timeout_ms: u64,
+}
+
+pub fn open_browser_servo_port_from_file(
+    path: &Path,
+) -> Result<BrowserServoPort<ChildBrowserTransport>, BrowserServoError> {
+    let metadata = fs::symlink_metadata(path).map_err(|error| {
+        BrowserServoError::Invalid(format!(
+            "cannot inspect Browser runtime config {}: {error}",
+            path.display()
+        ))
+    })?;
+    if !metadata.is_file()
+        || metadata.file_type().is_symlink()
+        || metadata.len() == 0
+        || metadata.len() > MAX_HOST_CONFIG_BYTES
+    {
+        return Err(BrowserServoError::Invalid(
+            "Browser runtime config must be a bounded regular non-symlink file".into(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if metadata.permissions().mode() & 0o077 != 0 {
+            return Err(BrowserServoError::Invalid(
+                "Browser runtime config permissions are too broad".into(),
+            ));
+        }
+    }
+    let bytes = fs::read(path).map_err(|error| {
+        BrowserServoError::Invalid(format!(
+            "cannot read Browser runtime config {}: {error}",
+            path.display()
+        ))
+    })?;
+    let config: BrowserServoHostConfig = serde_json::from_slice(&bytes).map_err(|error| {
+        BrowserServoError::Invalid(format!("Browser runtime config is invalid JSON: {error}"))
+    })?;
+    if config.authority_epoch == 0 || config.revocation_revision == 0 {
+        return Err(BrowserServoError::Invalid(
+            "Browser authority epoch/revision must be non-zero".into(),
+        ));
+    }
+    let authority = FinalUseAuthority::open_state_dir(
+        &config.authority_state_dir,
+        config.signer_id,
+        config.verifying_key,
+        FinalUseRevocations {
+            authority_epoch: config.authority_epoch,
+            revision: config.revocation_revision,
+            revoked_grant_ids: config.revoked_grant_ids,
+        },
+    )?;
+    let process = BrowserServoProcessConfig {
+        node_path: config.node_path,
+        service_path: config.service_path,
+        service_sha256: parse_digest_text(&config.service_sha256, "service_sha256")?,
+        worker_path: config.worker_path,
+        worker_sha256: parse_digest_text(&config.worker_sha256, "worker_sha256")?,
+        profile_root: config.profile_root,
+        journal_path: config.journal_path,
+        bwrap_path: config.bwrap_path,
+        bwrap_sha256: parse_digest_text(&config.bwrap_sha256, "bwrap_sha256")?,
+        prlimit_path: config.prlimit_path,
+        prlimit_sha256: parse_digest_text(&config.prlimit_sha256, "prlimit_sha256")?,
+        max_profiles: config.max_profiles,
+        max_address_space_bytes: config.max_address_space_bytes,
+        max_cpu_seconds: config.max_cpu_seconds,
+        max_open_files: config.max_open_files,
+        max_processes: config.max_processes,
+        driver_timeout_ms: config.driver_timeout_ms,
+    };
+    let frame_timeout = process.parent_frame_timeout()?;
+    let transport = ChildBrowserTransport::spawn(&process)?;
+    BrowserServoPort::with_frame_timeout(authority, transport, frame_timeout)
+}
+
+fn parse_digest_text(value: &str, name: &str) -> Result<[u8; 32], BrowserServoError> {
+    if value.len() != 64
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+    {
+        return Err(BrowserServoError::Invalid(format!(
+            "{name} must be lowercase SHA-256 hex"
+        )));
+    }
+    let mut output = [0u8; 32];
+    for (index, slot) in output.iter_mut().enumerate() {
+        let start = index * 2;
+        *slot = u8::from_str_radix(&value[start..start + 2], 16).map_err(|error| {
+            BrowserServoError::Invalid(format!("{name} contains invalid hex: {error}"))
+        })?;
+    }
+    Ok(output)
+}
+
 #[derive(Clone, Debug)]
 pub struct BrowserServoProcessConfig {
     pub node_path: PathBuf,
@@ -699,6 +827,7 @@ pub struct BrowserServoProcessConfig {
     pub bwrap_sha256: [u8; 32],
     pub prlimit_path: PathBuf,
     pub prlimit_sha256: [u8; 32],
+    pub max_profiles: u64,
     pub max_address_space_bytes: u64,
     pub max_cpu_seconds: u64,
     pub max_open_files: u64,
@@ -724,6 +853,7 @@ impl BrowserServoProcessConfig {
             }
         }
         for (value, name) in [
+            (self.max_profiles, "Browser max profiles"),
             (self.max_address_space_bytes, "Browser max address space"),
             (self.max_cpu_seconds, "Browser max CPU seconds"),
             (self.max_open_files, "Browser max open files"),
@@ -735,6 +865,11 @@ impl BrowserServoProcessConfig {
                     "{name} must be a positive safe integer"
                 )));
             }
+        }
+        if self.max_profiles > MAX_BROWSER_PROFILES {
+            return Err(BrowserServoError::Invalid(format!(
+                "Browser max profiles exceeds {MAX_BROWSER_PROFILES} hard ceiling"
+            )));
         }
         if self.driver_timeout_ms > MAX_DRIVER_TIMEOUT_MS {
             return Err(BrowserServoError::Invalid(format!(
@@ -795,6 +930,7 @@ impl ChildBrowserTransport {
             )
             .env("HEPTA_BROWSER_PROFILE_ROOT", &config.profile_root)
             .env("HEPTA_BROWSER_JOURNAL_PATH", &config.journal_path)
+            .env("HEPTA_BROWSER_MAX_PROFILES", config.max_profiles.to_string())
             .env("HEPTA_BROWSER_BWRAP_PATH", &config.bwrap_path)
             .env(
                 "HEPTA_BROWSER_BWRAP_SHA256",

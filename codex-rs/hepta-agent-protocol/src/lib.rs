@@ -20,10 +20,13 @@ use codex_hepta_automation::AutomationTask;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
 use serde::Serialize;
+use serde_json::Value;
 
 pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// Version for the transport-only host turn authority witness.  This type is
@@ -259,6 +262,27 @@ impl AgentdRequest {
     }
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BrowserServoControlMethod {
+    OpenProfile,
+    AdmitEffectGrant,
+    ObservePage,
+    NavigateOrAct,
+    ReconcileOperation,
+    ReconcilePersistedOperation,
+    CloseProfile,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct BrowserServoControlRequest {
+    pub method: BrowserServoControlMethod,
+    pub input: Value,
+    pub signed_grant: Option<SignedFinalUseGrant>,
+    pub binding: Option<FinalUseBinding>,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
@@ -308,6 +332,9 @@ pub enum AgentdMethod {
     MemoryFederationStatus {
         capability_id: MemoryFederationCapabilityId,
     },
+    BrowserServo {
+        request: BrowserServoControlRequest,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -341,6 +368,9 @@ pub enum AgentdPayload {
     },
     MemoryFederationStatus {
         capability: Option<MemoryFederationCapabilitySnapshot>,
+    },
+    BrowserServo {
+        result: Value,
     },
     Error {
         code: String,
