@@ -11,6 +11,7 @@ use codex_hepta_memory::MemoryVerification;
 use codex_hepta_memory::SourceDraft;
 use codex_hepta_paths::HeptaFleetRoot;
 
+use super::monotonic_now_micros;
 use super::read;
 
 #[path = "cognitive_context_budget_tests.rs"]
@@ -82,4 +83,11 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     assert_ne!(withdrawn.snapshot_digest, context.snapshot_digest);
     let other = AgentId::parse("00000000-0000-4000-8000-000000000120").unwrap();
     assert!(read(&store, &other, 1, "lemon", 4, None).await.is_err());
+}
+
+#[test]
+fn context_planner_clock_is_process_monotonic() {
+    let first = monotonic_now_micros().expect("monotonic timestamp");
+    let second = monotonic_now_micros().expect("monotonic timestamp");
+    assert!(second >= first);
 }
