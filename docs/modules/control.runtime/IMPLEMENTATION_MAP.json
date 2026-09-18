@@ -390,6 +390,41 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
+    },
+    {
+      "operation": "plan_global_and_record_v1",
+      "nativeSymbol": "codex_hepta_control_plane::plan_global_and_record_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_global.rs",
+      "inputs": [
+        "authenticated owner ports",
+        "NDU planning port",
+        "PlannerJournalStoreV1",
+        "operation identity",
+        "GlobalPlanningRequestV1"
+      ],
+      "outputs": [
+        "GlobalPlanningReceiptV1 with committed snapshot/decision/selection journal frontier"
+      ],
+      "state": "source_implemented_durable_global_publication",
+      "authority": "deny_all",
+      "nonClaim": "durable source path is not attached to a selected production host/state directory",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_global_tests.rs",
+          "symbol": "durable_global_plan_commits_selection_before_returning"
+        }
+      ],
+      "designOperation": "plan_global_and_record_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "plan_global_v1",
+        "PlannerJournalStoreV1::reopen",
+        "PlannerJournalV1::record_snapshot",
+        "PlannerJournalV1::record_decision",
+        "PlannerJournalV1::select_plan",
+        "PlannerJournalStoreV1::commit"
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalDomainContracts": [
@@ -418,7 +453,8 @@
     "authenticatedGlobalComposition": "candidate_implemented",
     "narrowProductCaller": "established_read_only_context",
     "independentAuthorityBridge": "candidate_implemented",
-    "namedHostMeasurement": "current_pull_request_required"
+    "namedHostMeasurement": "current_pull_request_required",
+    "durableGlobalPublication": "candidate_implemented_product_host_pending"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -440,14 +476,15 @@
     "narrowReadOnlyProductComposition": true,
     "authenticatedGlobalCompositionSource": true,
     "independentAuthorityBridgeSource": true,
-    "durableOwnerLocalStoreSource": true
+    "durableOwnerLocalStoreSource": true,
+    "durableGlobalPublicationSource": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Attach PlannerJournalStoreV1 to the selected production global-planner writer and define its deployed state directory/backup policy.",
+    "Select the production host state directory/retention policy and call plan_global_and_record_v1 from that host; the durable global transaction is source-implemented.",
     "Bind plan_global_v1 to concrete authenticated runtime.fleet and kernel.evidence producer adapters in the selected product host.",
     "Bind claim_execution_grant_v1 to the selected physical effect adapter; control.runtime itself remains authority-free.",
     "Pass the dedicated source-head, deterministic synthetic-merge and named-host measurement workflow at the exact candidate."
