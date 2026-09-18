@@ -124,59 +124,31 @@
       "implementationDetail": "codex-rs/hepta-contracts/FINAL_USE.md",
       "states": {
         "source": "implemented",
-        "implementation": "final_use_and_authority_lease_owner",
-        "durability": "local_fsync_stores_with_host_frontier",
-        "qualification": "source_tests_and_exact_candidate_workflow_required",
-        "activation": "registered_host_composed_not_product_activated",
+        "implementation": "final_use_boundary",
+        "durability": "local_fsync_store",
+        "qualification": "bounded_integration_evidence",
+        "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "independently signed final-use grant verification through canonical claim and delivery entrypoints",
-        "single-use nonce and monotonic revocation persistence with capacity/frontier observability",
-        "durable authority leases with owner-CAS mutation, CAS revocation, trusted time and anti-rollback frontier input",
-        "non-serializable final-use and lease verified-use tokens",
-        "independent operator approval and authenticated revocation-feed verification",
-        "closed registered Bao consumer host source composition"
+        "independently signed final-use grant verification",
+        "single-use nonce and monotonic revocation persistence",
+        "non-serializable final-use token consumed at adapter entry"
       ],
       "targetOnlyCapabilities": [
-        "general identity provider and complete approval-policy engine",
-        "fleet revocation transport, freshness SLA and consensus",
-        "external durable anti-rollback oracle for legacy final-use state",
-        "attested trusted-time service and clock rollback detection",
+        "general identity provider",
+        "distributed anti-rollback oracle",
         "cross-platform durable authority backend",
-        "selected product-process activation and operator acceptance"
+        "trusted time service and clock rollback detection"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-contracts/src/final_use.rs",
           "mustContain": [
             "pub struct FinalUseAuthority",
-            "pub struct FinalUseCapacity",
             "pub struct VerifiedUseToken",
-            "pub fn claim_final_use(",
-            "pub fn deliver_final_use",
             "verify_strict",
             "const MAX_LIFETIME_MS: u64 = 300_000;"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-          "mustContain": [
-            "pub struct AuthorityLeaseRegistry",
-            "pub fn put_lease(",
-            "pub fn revoke(",
-            "pub fn advance_epoch(",
-            "pub fn verify_use(",
-            "AntiRollbackViolation"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-          "mustContain": [
-            "pub struct FinalUseApprovalVerifier",
-            "pub struct FinalUseRevocationFeedVerifier",
-            "verify_strict",
-            "update_revocations"
           ]
         },
         {
@@ -190,38 +162,80 @@
     },
     {
       "module": "kernel.operations",
-      "profile": "bounded_operation_reference_model",
+      "profile": "durable_operation_owner_with_reference_oracle",
       "formalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md",
+      "implementationDetail": "qualification/module-execution-dossiers/detail/kernel.operations.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_reference_model",
-        "durability": "not_implemented",
-        "qualification": "model_tests_present",
-        "activation": "inactive",
+        "implementation": "sqlite_durable_operations_with_reference_oracle",
+        "durability": "sqlite_wal_full_transactional",
+        "qualification": "durable_source_tests_present",
+        "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "bounded deterministic operation-state reference model",
-        "bounded in-memory outbox claim and acknowledgement model",
-        "generation-fenced idempotent terminal observation"
+        "atomic durable operation ledger and source outbox co-commit",
+        "bounded leased outbox claims with generation fencing and crash-reopen takeover",
+        "final-use authority dispatch admission with indeterminate recovery and terminal reconciliation",
+        "destination-owner transaction dedupe primitive with immutable apply receipts",
+        "bounded retention tombstones and backlog metrics",
+        "deterministic in-memory reference oracle retained for transition parity"
       ],
       "targetOnlyCapabilities": [
-        "durable operation ledger",
-        "transactional durable outbox",
-        "claim lease expiry and crash-reopen takeover",
-        "background reconciliation service"
+        "named product caller and destination-owner migration composition",
+        "trusted product terminal observer and continuously hosted reconciler",
+        "target-host power-loss and real disk-exhaustion qualification",
+        "operator activation canary promotion and release acceptance"
       ],
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-operations/src/lib.rs",
           "mustContain": [
-            "In-memory reference model",
-            "does not provide durable storage",
-            "ReferenceAuthorityWitness"
+            "pub use durable_store::DurableOperationStore;",
+            "pub use dispatcher::DurableDispatcher;",
+            "pub use destination_dedupe::DestinationDedupeStore;",
+            "pub use model::ReferenceAuthorityWitness;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable_store.rs",
+          "mustContain": [
+            "pub struct DurableOperationStore",
+            "BEGIN IMMEDIATE",
+            "pub async fn prepare_intent(",
+            "pub async fn authorize_dispatch(",
+            "pub async fn observe_terminal(",
+            "recover_expired_leases_tx"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/destination_dedupe.rs",
+          "mustContain": [
+            "pub struct DestinationDedupeStore",
+            "pub async fn from_migrated_pool(",
+            "pub async fn begin_apply(",
+            "pub async fn commit_applied("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0001_durable_operations.sql",
+          "mustContain": [
+            "CREATE TABLE operation_ledger",
+            "CREATE TABLE cross_owner_outbox",
+            "CREATE TABLE operation_tombstones",
+            "cross_owner_outbox_active_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable_store_tests.rs",
+          "mustContain": [
+            "prepare_is_atomic_and_survives_reopen",
+            "expired_safe_lease_can_be_taken_over_by_higher_generation",
+            "crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable",
+            "migration_checksum_tamper_fails_reopen"
           ]
         },
         {
@@ -231,21 +245,6 @@
             "pub struct OperationLedger",
             "pub fn observe_terminal",
             "terminal_matches"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-operations/src/outbox.rs",
-          "mustContain": [
-            "MAX_MODEL_OUTBOX_RECORDS",
-            "InvalidDigest(\"outbox payload\")",
-            "InvalidDigest(\"outbox acknowledgement\")"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-operations/src/model.rs",
-          "mustContain": [
-            "pub struct ReferenceAuthorityWitness",
-            "not a cryptographic credential"
           ]
         }
       ]
@@ -416,25 +415,23 @@
       "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
+        "implementation": "bounded_kv_v2_reader",
         "durability": "external_authority_plus_local_final_use_state",
-        "qualification": "source_tests_and_exact_candidate_workflow_required",
-        "activation": "registered_host_composed_not_product_activated",
+        "qualification": "partial_bounded_evidence",
+        "activation": "host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "pinned-CA HTTPS read of one exact KV-v2 string field",
-        "canonical final-use claim and delivery boundaries",
-        "registered signed consumer-id to trusted callback mapping",
-        "independent approval before dispatch and authenticated revocation ingestion",
+        "final-use grant binding and single-use dispatch",
         "metadata-only receipt without raw secret value"
       ],
       "targetOnlyCapabilities": [
         "secret mutation",
-        "generic secret lease renewal API",
+        "generic lease renewal API",
+        "generic revoke API",
         "durable operation and evidence composition",
-        "fleet revocation distribution and freshness enforcement",
-        "automatic production enrollment and selected process caller"
+        "automatic production enrollment"
       ],
       "sourceAnchors": [
         {
@@ -443,21 +440,7 @@
             "pub struct BaoClient",
             "consume_kv_v2",
             "MAX_RESPONSE_BYTES",
-            "claim_final_use(authority, grant, &binding)",
-            "deliver_final_use(authority, verified, &binding"
-          ],
-          "mustNotContain": [
-            ".claim(grant, &binding)",
-            ".with_verified_use(verified"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
-          "mustContain": [
-            "pub struct BaoFinalUseHost",
-            "UnregisteredConsumer",
-            "approval_verifier",
-            "revocation_verifier"
+            "with_verified_use"
           ]
         },
         {
