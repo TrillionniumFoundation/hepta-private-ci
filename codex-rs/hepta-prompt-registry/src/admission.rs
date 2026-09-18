@@ -130,8 +130,12 @@ impl AdmissionAuthority {
         &self,
         signed: &SignedAdmissionGrantV1,
         factor: &PromptFactor,
+        expected_reviewed_scope_digest: Digest32,
         now_unix_ms: u64,
     ) -> Result<VerifiedAdmission, AdmissionError> {
+        if expected_reviewed_scope_digest.is_zero() {
+            return Err(AdmissionError::ScopeMismatch);
+        }
         let signing_bytes = signed.grant.signing_bytes()?;
         if signed.grant.signer_id != self.signer_id.as_str() {
             return Err(AdmissionError::SignerMismatch);
@@ -159,6 +163,9 @@ impl AdmissionAuthority {
             Digest32::from_array(signed.grant.binding.factor_content_sha256);
         let reviewed_scope_digest =
             Digest32::from_array(signed.grant.binding.reviewed_scope_sha256);
+        if reviewed_scope_digest != expected_reviewed_scope_digest {
+            return Err(AdmissionError::ScopeMismatch);
+        }
         let evidence_digest = Digest32::from_array(signed.grant.binding.evidence_sha256);
 
         if factor.source != FactorSource::GovernedInternal {
@@ -207,6 +214,7 @@ pub enum AdmissionError {
     InvalidSignature,
     SignerMismatch,
     FactorBindingMismatch,
+    ScopeMismatch,
     UntrustedFactor,
     SelfReview,
     NotYetValid,
