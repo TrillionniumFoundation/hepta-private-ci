@@ -29,3 +29,7 @@ mod tests;
 #[cfg(test)]
 #[path = "provider_policy_tests.rs"]
 mod provider_policy_tests;
+
+#[cfg(test)]
+#[path = "qualification_product_tests.rs"]
+mod qualification_product_tests;
