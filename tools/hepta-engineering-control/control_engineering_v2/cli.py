@@ -88,12 +88,23 @@ def parser():
     schedule.add_argument("--packages", required=True)
     schedule.add_argument("--completed")
     schedule.add_argument("--generation-id", required=True)
-    readiness = commands.add_parser(
-        "production-readiness",
-        help="fail closed unless authenticated production-readiness facts are complete",
+    projection = commands.add_parser(
+        "readiness-projection",
+        help=(
+            "project already-authenticated readiness facts; this command is "
+            "non-authoritative and never certifies implementation or deployment"
+        ),
     )
-    readiness.add_argument("--facts", required=True)
-    readiness.add_argument(
+    projection.add_argument("--facts", required=True)
+    legacy_readiness = commands.add_parser(
+        "production-readiness",
+        help=(
+            "deprecated fail-closed alias; authenticated production/deployment "
+            "readiness must be composed through the typed verifier APIs"
+        ),
+    )
+    legacy_readiness.add_argument("--facts", required=True)
+    legacy_readiness.add_argument(
         "--require",
         choices=("implementation", "deployment"),
         default="deployment",
@@ -114,8 +125,18 @@ def parser():
 
 def run(args):
     if args.command == "production-readiness":
+        # A JSON document can describe facts but cannot authenticate them.  Keep
+        # the historical command fail-closed so it cannot be used as a deployment
+        # certificate by setting booleans and well-shaped digests.
+        raise EngineeringError("authenticated_readiness_composition_required")
+    if args.command == "readiness-projection":
         facts = _record(ProductionReadinessFacts, _read(args.facts))
-        return {"decision": asdict(evaluate_production_readiness(facts))}
+        return {
+            "qualificationClass": "projection_only",
+            "authenticated": False,
+            "authorityGranted": False,
+            "decision": asdict(evaluate_production_readiness(facts)),
+        }
     if args.command == "schedule":
         envelope = _record(WorkEnvelope, _read(args.envelope))
         packages = _records(WorkPackage, _read(args.packages), 4096)
@@ -164,11 +185,4 @@ def main(argv=None):
     print(json.dumps(result, sort_keys=True))
     if args.command == "sandbox":
         return int(result["receipt"]["passed"] is not True)
-    if args.command == "production-readiness":
-        field = (
-            "production_implementation_ready"
-            if args.require == "implementation"
-            else "deployment_readiness_ready"
-        )
-        return int(result["decision"][field] is not True)
     return 0
