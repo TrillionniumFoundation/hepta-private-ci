@@ -86,7 +86,6 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     assert!(read(&store, &other, 1, 1, "lemon", 4, None).await.is_err());
 }
 
-
 #[tokio::test]
 async fn authoritative_context_fails_closed_when_owner_changes_before_final_use() {
     let temp = tempfile::tempdir().unwrap();
