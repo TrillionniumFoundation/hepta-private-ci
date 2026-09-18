@@ -157,32 +157,37 @@ impl FleetRevocationCoordinator {
         &mut self,
         signed: SignedFinalUseRevocationAck,
     ) -> Result<FleetRevocationStatus, FleetRevocationError> {
-        let current = self
-            .current
-            .as_mut()
-            .ok_or(FleetRevocationError::NoCurrentUpdate)?;
-
-        if !current.expected_nodes.contains(&signed.ack.node_id) {
-            return Err(FleetRevocationError::UnknownNode);
-        }
-        if let Some(existing) = current
-            .acknowledgements
-            .iter()
-            .find(|candidate| candidate.ack.node_id == signed.ack.node_id)
         {
-            if existing == &signed {
-                return self.status();
+            let current = self
+                .current
+                .as_mut()
+                .ok_or(FleetRevocationError::NoCurrentUpdate)?;
+
+            if !current.expected_nodes.contains(&signed.ack.node_id) {
+                return Err(FleetRevocationError::UnknownNode);
             }
-            return Err(FleetRevocationError::ConflictingAck);
+            if let Some(existing) = current
+                .acknowledgements
+                .iter()
+                .find(|candidate| candidate.ack.node_id == signed.ack.node_id)
+            {
+                if existing == &signed {
+                    return self.status();
+                }
+                return Err(FleetRevocationError::ConflictingAck);
+            }
+
+            current.acknowledgements.push(signed);
+            if current.acknowledgements.len() > current.expected_nodes.len() {
+                current.acknowledgements.pop();
+                return Err(FleetRevocationError::InvalidNodeSet);
+            }
         }
 
-        current.acknowledgements.push(signed);
-        if current.acknowledgements.len() > current.expected_nodes.len() {
-            current.acknowledgements.pop();
-            return Err(FleetRevocationError::InvalidNodeSet);
-        }
         if let Err(error) = self.current_report() {
-            current.acknowledgements.pop();
+            if let Some(current) = self.current.as_mut() {
+                current.acknowledgements.pop();
+            }
             return Err(error);
         }
         self.status()
