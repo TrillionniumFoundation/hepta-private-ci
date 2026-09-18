@@ -89,7 +89,6 @@ impl FleetAllocationGrantReadV1 {
 mod tests {
     use super::*;
     use crate::FLEET_ALLOCATION_STORE_SCHEMA_VERSION;
-    use crate::lease_ledger::FLEET_LEASE_LEDGER_SCHEMA_VERSION;
     use crate::lease_ledger::LeaseLedger;
 
     #[test]
