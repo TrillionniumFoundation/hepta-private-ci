@@ -9,6 +9,7 @@ use std::sync::atomic::Ordering;
 use codex_hepta_automation::AutomationEffectProvider;
 use codex_hepta_automation::AutomationOccurrenceState;
 use codex_hepta_automation::AutomationProviderObservation;
+use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTaskDraft;
@@ -173,6 +174,31 @@ async fn queue_admission_is_non_terminal_and_taskflow_terminal_advances_once() {
         .expect("read occurrence")
         .expect("occurrence");
     assert_eq!(occurrence.state, AutomationOccurrenceState::Materialized);
+
+    store
+        .mark_submitted(
+            &lease,
+            &AutomationQueueReceipt {
+                queued_submission_id: "queue-1".to_string(),
+                client_user_message_id: lease.client_user_message_id.clone(),
+            },
+            101,
+        )
+        .await
+        .expect("queue admission");
+    let admitted = store
+        .causal_occurrence(&occurrence_id)
+        .await
+        .expect("read admitted occurrence")
+        .expect("occurrence");
+    assert_eq!(admitted.state, AutomationOccurrenceState::QueueAdmitted);
+    let task_after_admission = store
+        .task(draft.task_id)
+        .await
+        .expect("read task after admission")
+        .expect("task");
+    assert_eq!(task_after_admission.state, AutomationTaskState::Enabled);
+    assert_eq!(task_after_admission.next_run_at_ms, None);
 
     let flow = definition();
     let owner = fence();
