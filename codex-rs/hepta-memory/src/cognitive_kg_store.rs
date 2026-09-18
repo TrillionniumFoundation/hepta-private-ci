@@ -748,7 +748,7 @@ async fn insert_v2_publication_tx(
     Ok(())
 }
 
-async fn load_persisted_projection_tx(
+pub(crate) async fn load_persisted_projection_tx(
     transaction: &mut Transaction<'_, Sqlite>,
     projection_scope: &str,
     generation: i64,
