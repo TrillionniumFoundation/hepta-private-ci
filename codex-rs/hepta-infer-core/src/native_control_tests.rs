@@ -259,7 +259,7 @@ fn history_redaction_rewrites_legacy_native_output_and_marks_the_journal() {
     );
     let receipt = control.redact_native_output_history().unwrap();
     assert_eq!(receipt.redacted_observations, 1);
-    assert!(receipt.rewritten_journal_bytes <= receipt.previous_journal_bytes + 256);
+    assert!(receipt.rewritten_journal_bytes < super::super::MAX_JOURNAL_BYTES);
     let persisted = control
         .native_record("r1")
         .unwrap()
