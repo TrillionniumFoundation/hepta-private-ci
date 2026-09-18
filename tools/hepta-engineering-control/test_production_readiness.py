@@ -1,10 +1,20 @@
 from dataclasses import replace
+from pathlib import Path
+import tempfile
 import unittest
 
 from control_engineering_v2 import (
+    AuditAnchorReceipt,
+    EngineeringStore,
+    ExternalFactReceipt,
+    HmacTrustStore,
+    KeyCustodyReceipt,
     ProductionReadinessFacts,
+    WorkEnvelope,
+    evaluate_authenticated_production_readiness,
     evaluate_production_readiness,
 )
+from control_engineering_v2.control_plane import DENIED_AUTHORITIES
 
 
 class ProductionReadinessTests(unittest.TestCase):
@@ -149,6 +159,169 @@ class ProductionReadinessTests(unittest.TestCase):
         decision = evaluate_production_readiness(facts)
         self.assertFalse(decision.deployment_readiness_ready)
         self.assertIn("distributed_fencing_not_verified", decision.deployment_blockers)
+
+    def test_authenticated_readiness_ignores_unverified_external_booleans(self):
+        now = 100
+        trust = HmacTrustStore(
+            {
+                ("independent_review_authority", "review-key"): b"review",
+                ("deployment_handoff_authority", "handoff-key"): b"handoff",
+                ("sandbox_qualification_authority", "sandbox-key"): b"sandbox",
+                ("deployment_authority", "deploy-key"): b"deploy",
+                ("rollback_authority", "rollback-key"): b"rollback",
+                ("audit_anchor_authority", "audit-key"): b"audit",
+                ("key_custody_authority", "custody-key"): b"custody",
+            }
+        )
+
+        def sign(value):
+            return replace(
+                value,
+                signature=trust.sign(value, value.issuer, value.signing_identity),
+            )
+
+        subject = "c" * 64
+        receipts = (
+            sign(
+                ExternalFactReceipt(
+                    "independent_review_accepted",
+                    subject,
+                    "independent_review_authority",
+                    "review-key",
+                    90,
+                    1000,
+                )
+            ),
+            sign(
+                ExternalFactReceipt(
+                    "authorized_handoff",
+                    subject,
+                    "deployment_handoff_authority",
+                    "handoff-key",
+                    90,
+                    1000,
+                )
+            ),
+            sign(
+                ExternalFactReceipt(
+                    "strong_sandbox_observed",
+                    subject,
+                    "sandbox_qualification_authority",
+                    "sandbox-key",
+                    90,
+                    1000,
+                )
+            ),
+            sign(
+                ExternalFactReceipt(
+                    "deployment_observed",
+                    subject,
+                    "deployment_authority",
+                    "deploy-key",
+                    90,
+                    1000,
+                )
+            ),
+            sign(
+                ExternalFactReceipt(
+                    "rollback_rehearsed",
+                    subject,
+                    "rollback_authority",
+                    "rollback-key",
+                    90,
+                    1000,
+                )
+            ),
+        )
+        source_custody = sign(
+            KeyCustodyReceipt(
+                "hsm-provider",
+                "source-signing-key",
+                ("source_authority",),
+                "d" * 64,
+                "key_custody_authority",
+                "custody-key",
+                90,
+                1000,
+            )
+        )
+        binder_custody = sign(
+            KeyCustodyReceipt(
+                "hsm-provider",
+                "binder-signing-key",
+                ("engineering_evidence_binder",),
+                "d" * 64,
+                "key_custody_authority",
+                "custody-key",
+                90,
+                1000,
+            )
+        )
+        envelope = WorkEnvelope(
+            "prod-env",
+            "a" * 40,
+            "b" * 40,
+            "1" * 64,
+            "2" * 64,
+            "owner",
+            ("src",),
+            tuple(sorted(DENIED_AUTHORITIES)),
+            1,
+            1000,
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "engineering.sqlite3") as store:
+                store.issue_work_envelope(envelope, now_ns=now)
+                last = store.audit_projection()[-1]
+                anchor = sign(
+                    AuditAnchorReceipt(
+                        "e" * 64,
+                        last["sequence"],
+                        last["eventDigest"],
+                        "audit_anchor_authority",
+                        "audit-key",
+                        90,
+                        1000,
+                    )
+                )
+                verified = evaluate_authenticated_production_readiness(
+                    self.facts(),
+                    subject_digest=subject,
+                    external_fact_receipts=receipts,
+                    audit_anchor=anchor,
+                    key_custody_receipts=(source_custody, binder_custody),
+                    required_role_keys={
+                        "source_authority": "source-signing-key",
+                        "engineering_evidence_binder": "binder-signing-key",
+                    },
+                    verifier=trust,
+                    store=store,
+                    store_identity_digest="e" * 64,
+                    now_ns=now,
+                )
+                unverified = evaluate_authenticated_production_readiness(
+                    self.facts(),
+                    subject_digest=subject,
+                    external_fact_receipts=(),
+                    audit_anchor=anchor,
+                    key_custody_receipts=(source_custody, binder_custody),
+                    required_role_keys={
+                        "source_authority": "source-signing-key",
+                        "engineering_evidence_binder": "binder-signing-key",
+                    },
+                    verifier=trust,
+                    store=store,
+                    store_identity_digest="e" * 64,
+                    now_ns=now,
+                )
+
+        self.assertTrue(verified.deployment_readiness_ready)
+        self.assertFalse(unverified.deployment_readiness_ready)
+        self.assertIn(
+            "independent_review_not_accepted",
+            unverified.deployment_blockers,
+        )
+        self.assertIn("deployment_not_observed", unverified.deployment_blockers)
 
 
 if __name__ == "__main__":
