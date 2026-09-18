@@ -195,6 +195,69 @@ fn field_and_map_order_are_canonical_but_array_order_is_semantic() {
 }
 
 #[test]
+fn canonical_container_depth_is_exactly_bounded() {
+    let type_id = id("platform.types:depth-boundary");
+    let level17_items: [CanonicalValueV1<'_>; 0] = [];
+    let level17 = CanonicalValueV1::Array(&level17_items);
+    let level16_items = [level17];
+    let level16 = CanonicalValueV1::Array(&level16_items);
+    let level15_items = [level16];
+    let level15 = CanonicalValueV1::Array(&level15_items);
+    let level14_items = [level15];
+    let level14 = CanonicalValueV1::Array(&level14_items);
+    let level13_items = [level14];
+    let level13 = CanonicalValueV1::Array(&level13_items);
+    let level12_items = [level13];
+    let level12 = CanonicalValueV1::Array(&level12_items);
+    let level11_items = [level12];
+    let level11 = CanonicalValueV1::Array(&level11_items);
+    let level10_items = [level11];
+    let level10 = CanonicalValueV1::Array(&level10_items);
+    let level9_items = [level10];
+    let level9 = CanonicalValueV1::Array(&level9_items);
+    let level8_items = [level9];
+    let level8 = CanonicalValueV1::Array(&level8_items);
+    let level7_items = [level8];
+    let level7 = CanonicalValueV1::Array(&level7_items);
+    let level6_items = [level7];
+    let level6 = CanonicalValueV1::Array(&level6_items);
+    let level5_items = [level6];
+    let level5 = CanonicalValueV1::Array(&level5_items);
+    let level4_items = [level5];
+    let level4 = CanonicalValueV1::Array(&level4_items);
+    let level3_items = [level4];
+    let level3 = CanonicalValueV1::Array(&level3_items);
+    let level2_items = [level3];
+    let level2 = CanonicalValueV1::Array(&level2_items);
+    let level1_items = [level2];
+    let level1 = CanonicalValueV1::Array(&level1_items);
+
+    assert!(
+        canonical_encode_v1(
+            &type_id,
+            1,
+            &[CanonicalFieldV1 {
+                name: "value",
+                value: level2,
+            }],
+        )
+        .is_ok(),
+        "exactly sixteen nested containers must remain valid"
+    );
+    assert_eq!(
+        canonical_encode_v1(
+            &type_id,
+            1,
+            &[CanonicalFieldV1 {
+                name: "value",
+                value: level1,
+            }],
+        ),
+        Err(CanonicalDigestError::DepthExceeded)
+    );
+}
+
+#[test]
 fn malformed_canonical_inputs_fail_closed() {
     let type_id = id("platform.types:negative");
     let duplicate_fields = [
