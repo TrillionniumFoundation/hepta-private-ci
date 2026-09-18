@@ -78,7 +78,6 @@ fn stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation() {
     }
 }
 
-
 #[test]
 fn identity_bounds_and_monotonic_overflow_fail_closed() {
     assert!(StableId::new("a".repeat(128)).is_ok());
