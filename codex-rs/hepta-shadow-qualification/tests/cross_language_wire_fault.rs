@@ -83,10 +83,7 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
     let frame = envelope.encode();
 
     let output = run_python(&frame);
-    assert!(
-        output.status.success(),
-        "python parser failed: {output:?}"
-    );
+    assert!(output.status.success(), "python parser failed: {output:?}");
     let report: Value = serde_json::from_slice(&output.stdout).expect("python JSON receipt");
     assert_eq!(report["schema"], schema.as_str());
     assert_eq!(report["producer"], producer.as_str());
