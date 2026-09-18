@@ -414,6 +414,14 @@ impl DurableInferenceControl {
         replacement.flush()?;
         replacement.sync_all()?;
         fs::rename(&next_path, &self.path)?;
+        // The pathname now names the replacement inode. Switch the live locked
+        // handle immediately so no later fallible durability step can leave this
+        // owner holding only the unlinked predecessor lock.
+        let old = std::mem::replace(&mut self.file, replacement);
+        drop(old);
+        let previous_journal_bytes = self.journal_bytes;
+        self.journal_bytes = rewritten.len() as u64;
+        self.native = next_native;
         #[cfg(unix)]
         {
             let parent = self
@@ -421,13 +429,11 @@ impl DurableInferenceControl {
                 .parent()
                 .filter(|parent| !parent.as_os_str().is_empty())
                 .unwrap_or_else(|| std::path::Path::new("."));
-            File::open(parent)?.sync_all()?;
+            if let Err(error) = File::open(parent).and_then(|directory| directory.sync_all()) {
+                self.poisoned = true;
+                return Err(error.into());
+            }
         }
-        let old = std::mem::replace(&mut self.file, replacement);
-        drop(old);
-        let previous_journal_bytes = self.journal_bytes;
-        self.journal_bytes = rewritten.len() as u64;
-        self.native = next_native;
         Ok(NativeOutputRedactionReceipt {
             previous_journal_bytes,
             rewritten_journal_bytes: self.journal_bytes,
