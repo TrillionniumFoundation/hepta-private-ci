@@ -219,8 +219,28 @@ async fn outbound_terminality_requires_sync_observation_and_redaction_keeps_send
     );
 
     let checkpoint = fixture.store.sync_checkpoint(1, 1).await?;
+    let replayed_outbound = json!({
+        "event_id": server_event_id.as_str(),
+        "sender": AGENT,
+        "origin_server_ts": 15,
+        "type": "m.room.message",
+        "content": {"msgtype":"m.text","body":"terminal only after sync"},
+        "unsigned": {"transaction_id": txn_id.as_str()}
+    });
+    let mut replay = response(vec![replayed_outbound])?;
+    replay.next_batch = "s2".to_string();
+    fixture
+        .composer()
+        .commit_response(
+            &replay,
+            checkpoint.as_ref(),
+            /*observed_at_ms*/ 25,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+    let checkpoint = fixture.store.sync_checkpoint(1, 1).await?;
     let mut redacted = response(vec![redaction("$outbound-redaction", server_event_id.as_str())])?;
-    redacted.next_batch = "s2".to_string();
+    redacted.next_batch = "s3".to_string();
     fixture
         .composer()
         .commit_response(
