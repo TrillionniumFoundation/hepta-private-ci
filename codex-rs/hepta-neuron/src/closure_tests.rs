@@ -716,7 +716,6 @@ fn deletion_rebuild_rechecks_live_lineage_before_model_execution() {
     assert!(checked(runtime.current_checkpoint()).is_none());
 }
 
-
 #[test]
 fn native_profile_rejects_unimplemented_per_population_competition() {
     let mut config = config();
