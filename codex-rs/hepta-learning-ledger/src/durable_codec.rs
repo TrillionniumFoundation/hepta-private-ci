@@ -172,7 +172,9 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
         7 => LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
             record_id: reader.id()?,
             episode_id: reader.id()?,
+            run_snapshot_digest: reader.digest()?,
             objective_digest: reader.digest()?,
+            policy_digest: reader.digest()?,
             generator_id: reader.id()?,
             generator_controller_id: reader.id()?,
             generator_credential_chain_digest: reader.digest()?,
