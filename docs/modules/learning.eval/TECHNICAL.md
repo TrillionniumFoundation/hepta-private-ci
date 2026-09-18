@@ -528,6 +528,8 @@ Owned readiness protocols:
 - `NduConvergenceCertificateV1`
 - `RetentionSliceReceiptV1`
 
+The native `evaluate_ndu_convergence_v1` path now implements the repository-controlled decision semantics for `NduConvergenceCertificateV1`: evaluator/producer separation, current-objective binding, bounded iteration/residual/conservation diagnostics, operating-region and independent support requirements, and the strict spectral-radius upper-95% `<0.95` gate. It consumes evidence; it does not create independent observations or grant activation authority.
+
 Consumed readiness protocols:
 
 - `AssimilationProposalV1`

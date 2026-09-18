@@ -32,11 +32,41 @@
       "designOperation": "evaluate_temporal_holdout",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "evaluate_ndu_convergence_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::evaluate_ndu_convergence_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+      "state": "source_implemented_independent_ndu_certificate_decision",
+      "authority": "none",
+      "nonClaim": "source validation does not manufacture real independent perturbation, conservation, future-window or target-host evidence",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "independent_supported_evidence_can_be_accepted"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "self_evaluation_is_rejected_before_certificate_issuance"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "missing_independent_support_is_unavailable"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "stale_objective_or_failed_numeric_gate_rejects"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "evaluate_ndu_convergence_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose authenticated real NDU convergence evidence producers and canonical wire codec/consumer admission.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the dynamic claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
