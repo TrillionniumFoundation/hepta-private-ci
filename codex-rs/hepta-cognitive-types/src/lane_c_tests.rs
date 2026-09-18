@@ -142,6 +142,22 @@ fn federation_result_binds_coverage_snapshot_and_items() {
         result.validate(),
         Err(LaneCContractError::DigestMismatch("federated_result"))
     );
+
+    let mut falsely_complete = result.clone();
+    falsely_complete.coverage = FederatedCoverageV1 {
+        requested_peers: 2,
+        completed_peers: 1,
+        failed_peers: 0,
+        truncated_items: 0,
+    };
+    falsely_complete.completeness = FederatedCompletenessV1::Complete;
+    falsely_complete.result_digest = falsely_complete.compute_result_digest();
+    assert_eq!(
+        falsely_complete.validate(),
+        Err(LaneCContractError::InvalidState(
+            "federated_complete_coverage"
+        ))
+    );
 }
 
 #[test]
