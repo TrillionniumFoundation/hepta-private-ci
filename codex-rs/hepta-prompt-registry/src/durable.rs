@@ -1740,7 +1740,13 @@ mod tests {
                 .map(|record| record.lifecycle),
             Some(Lifecycle::Revoked)
         );
-        assert!(reopened.registry().expect("registry").revocation_frontier() > old_snapshot.revocation_frontier);
+        assert!(
+            reopened
+                .registry()
+                .expect("registry")
+                .revocation_frontier()
+                > old_snapshot.revocation_frontier
+        );
         assert!(
             reopened
                 .registry().expect("registry")
