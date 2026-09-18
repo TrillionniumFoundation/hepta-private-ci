@@ -16,9 +16,9 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
-const MAX_SAMPLES: usize = 65_536;
-const MAX_STATE_ACTIONS: usize = 16_384;
-const MAX_BRANCHES_PER_STATE_ACTION: usize = 1_024;
+pub(crate) const MAX_SAMPLES: usize = 65_536;
+pub(crate) const MAX_STATE_ACTIONS: usize = 16_384;
+pub(crate) const MAX_BRANCHES_PER_STATE_ACTION: usize = 1_024;
 const Q32_SCALE: u64 = 1_u64 << 32;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
