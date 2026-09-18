@@ -444,6 +444,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 input.cwd,
                 &prepared.query_sha256,
                 prepared.coverage,
+                prepared.admission_expires_unix_ms,
                 &prepared.bindings,
                 &content_sha256,
             ) else {
