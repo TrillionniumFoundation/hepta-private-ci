@@ -148,6 +148,7 @@ async fn explicit_grant_is_owner_written_consumer_read_only_and_scope_exact() {
     assert_eq!(batch.coverage.requested_sources, 1);
     assert_eq!(batch.coverage.completed_sources, 1);
     assert_eq!(batch.coverage.failed_sources, 0);
+    assert_eq!(batch.coverage.partial_sources, 0);
     assert_eq!(batch.coverage.discovery_failures, 0);
     assert_eq!(batch.candidates[0].source_agent_id, owner_id);
     assert_eq!(
@@ -275,6 +276,7 @@ async fn revoke_is_observed_by_the_next_physical_send_revalidation() {
     assert_eq!(batch.coverage.requested_sources, 1);
     assert_eq!(batch.coverage.completed_sources, 0);
     assert_eq!(batch.coverage.failed_sources, 1);
+    assert_eq!(batch.coverage.partial_sources, 0);
     assert_eq!(batch.coverage.discovery_failures, 0);
     assert!(batch.coverage.is_partial());
 }
@@ -384,6 +386,7 @@ async fn unavailable_dynamic_owner_is_explicit_discovery_failure() {
     assert_eq!(batch.coverage.requested_sources, 0);
     assert_eq!(batch.coverage.completed_sources, 0);
     assert_eq!(batch.coverage.failed_sources, 0);
+    assert_eq!(batch.coverage.partial_sources, 0);
     assert_eq!(batch.coverage.discovery_failures, 1);
     assert!(batch.coverage.is_partial());
 }
