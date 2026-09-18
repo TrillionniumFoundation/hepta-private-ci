@@ -377,33 +377,41 @@ async fn retrieve_federated_product(
 
     let discovery = async {
         let mut readers = Vec::new();
+        let mut discovery_failures = 0usize;
         for owner_layout in owner_layouts {
             if readers.len() >= MAX_FEDERATION_SOURCES_PER_AGENT {
                 break;
             }
-            let discovered = FederatedMemoryReader::discover(
+            match FederatedMemoryReader::discover(
                 owner_layout,
                 consumer_agent_id,
                 request.now_unix_seconds(),
             )
-            .await;
-            let Ok(discovered) = discovered else {
-                continue;
-            };
-            for reader in discovered {
-                if readers.len() >= MAX_FEDERATION_SOURCES_PER_AGENT {
-                    break;
+            .await
+            {
+                Ok(discovered) => {
+                    for reader in discovered {
+                        if readers.len() >= MAX_FEDERATION_SOURCES_PER_AGENT {
+                            break;
+                        }
+                        readers.push((owner_layout.clone(), reader));
+                    }
                 }
-                readers.push((owner_layout.clone(), reader));
+                Err(_) => {
+                    discovery_failures = discovery_failures.saturating_add(1);
+                }
             }
         }
-        readers
+        (readers, discovery_failures)
     };
-    let mut readers = tokio::time::timeout(PRODUCT_FEDERATION_TOTAL_BUDGET, discovery)
-        .await
-        .map_err(|_| {
-            CognitiveStoreError::Unavailable("memory federation discovery timed out".to_string())
-        })?;
+    let (mut readers, discovery_failures) =
+        tokio::time::timeout(PRODUCT_FEDERATION_TOTAL_BUDGET, discovery)
+            .await
+            .map_err(|_| {
+                CognitiveStoreError::Unavailable(
+                    "memory federation discovery timed out".to_string(),
+                )
+            })?;
     readers.sort_by(|(_, left), (_, right)| {
         left.capability()
             .owner_agent_id()
@@ -413,11 +421,15 @@ async fn retrieve_federated_product(
     readers.dedup_by(|(_, left), (_, right)| left.capability().id() == right.capability().id());
     readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
 
+    let discovery_failure_slots = discovery_failures.min(
+        MAX_FEDERATION_SOURCES_PER_AGENT.saturating_sub(readers.len()),
+    );
+    let requested_peer_slots = readers.len().saturating_add(discovery_failure_slots);
     let query_sha256 = Sha256Digest::for_bytes(request.query().as_bytes());
     let mut coverage = FederatedCoverageV2 {
-        requested_peers: u32::try_from(readers.len()).unwrap_or(u32::MAX),
+        requested_peers: u32::try_from(requested_peer_slots).unwrap_or(u32::MAX),
         completed_peers: 0,
-        failed_peers: 0,
+        failed_peers: u32::try_from(discovery_failure_slots).unwrap_or(u32::MAX),
         truncated_items: 0,
     };
     let mut candidates = Vec::new();
@@ -465,16 +477,7 @@ async fn retrieve_federated_product(
             coverage.failed_peers = coverage.failed_peers.saturating_add(1);
             continue;
         };
-        coverage.completed_peers = coverage
-            .completed_peers
-            .saturating_add(result.coverage.completed_peers);
-        coverage.failed_peers = coverage
-            .failed_peers
-            .saturating_add(result.coverage.failed_peers);
-        coverage.truncated_items = coverage
-            .truncated_items
-            .saturating_add(result.coverage.truncated_items);
-
+        merge_product_coverage(&mut coverage, &result.coverage, result.validity);
         if result.validity != FederatedValidityV2::Valid {
             continue;
         }
@@ -541,6 +544,27 @@ async fn retrieve_federated_product(
         },
         coverage,
     ))
+}
+
+fn merge_product_coverage(
+    aggregate: &mut FederatedCoverageV2,
+    attempt: &FederatedCoverageV2,
+    validity: FederatedValidityV2,
+) {
+    aggregate.truncated_items = aggregate
+        .truncated_items
+        .saturating_add(attempt.truncated_items);
+    if validity == FederatedValidityV2::Valid {
+        aggregate.completed_peers = aggregate
+            .completed_peers
+            .saturating_add(attempt.completed_peers);
+        aggregate.failed_peers = aggregate.failed_peers.saturating_add(attempt.failed_peers);
+    } else {
+        aggregate.failed_peers = aggregate
+            .failed_peers
+            .saturating_add(attempt.failed_peers)
+            .saturating_add(attempt.completed_peers);
+    }
 }
 
 async fn revalidate_federated_product(
@@ -850,6 +874,29 @@ fn domain_digest32(domain: &[u8], parts: &[&[u8]]) -> Digest32 {
 #[cfg(test)]
 mod product_nonce_tests {
     use super::*;
+
+    #[test]
+    fn nonvalid_terminal_attempt_counts_as_failed_product_coverage() {
+        let mut aggregate = FederatedCoverageV2 {
+            requested_peers: 1,
+            completed_peers: 0,
+            failed_peers: 0,
+            truncated_items: 0,
+        };
+        let attempt = FederatedCoverageV2 {
+            requested_peers: 1,
+            completed_peers: 1,
+            failed_peers: 0,
+            truncated_items: 0,
+        };
+        merge_product_coverage(
+            &mut aggregate,
+            &attempt,
+            FederatedValidityV2::Revoked,
+        );
+        assert_eq!(aggregate.completed_peers, 0);
+        assert_eq!(aggregate.failed_peers, 1);
+    }
 
     #[test]
     fn repeated_product_attempts_receive_distinct_nonce_digests() {
