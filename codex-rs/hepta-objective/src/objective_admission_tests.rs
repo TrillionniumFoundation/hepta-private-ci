@@ -18,6 +18,8 @@ use super::ObjectiveRiskProfileV1;
 use super::ObjectiveSoftDimensionProfileV1;
 use super::ObjectiveSourceAuthenticationV1;
 use super::admit_and_compile_objective_v1;
+use super::admit_objective_v1;
+use super::compile_admitted_objective_v1;
 use super::canonical_objective_intent_digest_v1;
 use crate::ConfirmationPolicy;
 use crate::ConstraintClass;
@@ -246,6 +248,21 @@ fn context(
 fn refresh_intent_digest(envelope: &mut ObjectiveSourceEnvelopeV1) {
     envelope.intent_digest =
         canonical_objective_intent_digest_v1(envelope).expect("canonical intent digest");
+}
+
+#[test]
+fn split_admission_requires_and_preserves_the_opaque_admitted_value() {
+    let profile = profile();
+    let envelope = envelope();
+    let context = context(&profile, &envelope);
+
+    let admitted = admit_objective_v1(&envelope, &profile, &context).expect("admit");
+    assert_eq!(admitted.receipt().profile_digest, context.selected_profile_digest);
+    let split = compile_admitted_objective_v1(admitted).expect("compile admitted");
+    let composed =
+        admit_and_compile_objective_v1(&envelope, &profile, &context).expect("composed");
+
+    assert_eq!(split, composed);
 }
 
 #[test]
