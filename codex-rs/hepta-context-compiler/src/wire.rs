@@ -23,6 +23,7 @@ use crate::compile;
 pub const CONTEXT_COMPILATION_REQUEST_SCHEMA: &str =
     "context.compiler.compilation-request.v1";
 pub const MAX_CONTEXT_COMPILATION_REQUEST_PAYLOAD_BYTES: usize = 835_788;
+const MIN_CONTEXT_ITEM_WIRE_BYTES: usize = 77;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextWireIngressPolicy {
@@ -214,6 +215,16 @@ fn parse_request_payload(payload: &[u8]) -> Result<CompilationRequest, RequestPa
     let item_count = usize::from(read_u16(payload, &mut offset)?);
     if item_count > MAX_ITEMS {
         return Err(RequestPayloadError::ItemCount);
+    }
+    let minimum_item_bytes = item_count
+        .checked_mul(MIN_CONTEXT_ITEM_WIRE_BYTES)
+        .ok_or(RequestPayloadError::Length)?;
+    let remaining = payload
+        .len()
+        .checked_sub(offset)
+        .ok_or(RequestPayloadError::Length)?;
+    if remaining < minimum_item_bytes {
+        return Err(RequestPayloadError::Truncated);
     }
 
     let mut items = Vec::with_capacity(item_count);
