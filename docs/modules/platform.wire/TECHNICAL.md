@@ -16,6 +16,24 @@
 
 This stable document is the implementation guide for `platform.wire`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+### Current implementation status
+
+This guide contains both executable behavior and target architecture. The table
+below is the current source claim boundary; later target text does not override
+it.
+
+| Capability | Current source state |
+|---|---|
+| HPTA V1 fixed codec | implemented and frozen |
+| HPTA V2 metadata-bound frame digest | implemented; unkeyed integrity, not authentication |
+| deterministic version/capability negotiation | implemented as a bounded transport-neutral helper |
+| negotiation downgrade resistance | binding digest exposed; authentication belongs to the selected session/transport |
+| bounded streaming decode | implemented for blocking `Read`; header admission precedes body allocation |
+| schema registry / typed payload admission | target-only until a native schema layer is bound |
+| live cross-runtime loading | qualification follow-up |
+| product caller source | not yet composed |
+
+
 ## 1. Identity, mission and ownership
 
 Provide bounded, versioned wire representations while remaining transport and domain-runtime neutral.
@@ -72,10 +90,11 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `framing and codec boundary`
+- `framing and codec boundary` (V1 and V2)
 - `version negotiation`
-- `bounded decoder`
+- `bounded decoder` (whole-frame and bounded stream reader)
 - `transport-neutral error mapping`
+- target schema admission / typed payload layer
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -162,6 +181,10 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs); named case: `every_truncation_rejects_without_reconstructing_an_envelope`.
 - [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs); named case: `envelope_round_trip_is_exact`.
+- [codex-rs/hepta-wire/src/envelope_v2_tests.rs](../../../codex-rs/hepta-wire/src/envelope_v2_tests.rs); frozen V2 vector and metadata/payload mutation rejection.
+- [codex-rs/hepta-wire/src/framed_tests.rs](../../../codex-rs/hepta-wire/src/framed_tests.rs); bounded stream framing and truncation.
+- [codex-rs/hepta-wire/src/version_tests.rs](../../../codex-rs/hepta-wire/src/version_tests.rs); highest-common negotiation and required-capability downgrade exclusion.
+- [codex-rs/hepta-wire/src/property_tests.rs](../../../codex-rs/hepta-wire/src/property_tests.rs); generated canonical round trips and arbitrary-byte no-panic corpus.
 
 In `codex-rs`, run `just test -p codex-hepta-wire`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
 

@@ -52,12 +52,12 @@ responder offer, required capabilities and selected version. The binding digest
 must be authenticated by the owning session/transport when downgrade resistance
 is required.
 
-## Streaming integration
+## Streaming
 
-This V2 codec accepts a complete bounded frame. Header-first stream admission is
-a separate transport-neutral layer and is not part of this initial V2 codec
-slice. It must preserve the same size/version/identity/generation checks before
-allocating a frame body.
+`read_envelope` reads and validates the 54-byte fixed header before allocating
+the bounded body. Unsupported versions, invalid identity lengths, zero
+generation and payloads outside 1..=1,048,576 reject before body allocation.
+Exactly one frame is consumed per call.
 
 ## Frozen vector
 
