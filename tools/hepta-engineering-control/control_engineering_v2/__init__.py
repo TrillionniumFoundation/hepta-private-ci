@@ -21,6 +21,11 @@ from .candidate import (
     generate_candidates,
     sandbox_candidate,
 )
+from .composite_candidate import (
+    CompositeCandidate,
+    generate_composite_candidates,
+    sandbox_composite_candidate,
+)
 from .control_plane import (
     EngineeringError,
     EngineeringStore,
@@ -47,6 +52,14 @@ from .evidence import (
     HmacTrustStore,
     verify_integration_evidence,
 )
+from .external import (
+    AuditAnchorReceipt,
+    ExternalFactReceipt,
+    KeyCustodyReceipt,
+    verify_audit_anchor,
+    verify_external_fact_receipts,
+    verify_key_custody,
+)
 from .facade import (
     ReviewRequest,
     execute_candidate_sandbox,
@@ -54,6 +67,19 @@ from .facade import (
     issue_work_envelope,
     publish_audit_projection,
     schedule_ready_packages,
+)
+from .orchestration import (
+    CompletionReceipt,
+    EngineeringPlan,
+    EngineeringWorkPackage,
+    LeadershipReceipt,
+    MergeQueueProposal,
+    ReviewCapacity,
+    WorkerCapacity,
+    WorkAssignment,
+    issue_authenticated_work_envelope,
+    schedule_engineering_work,
+    verify_canonical_source_receipt,
 )
 from .production import (
     ProductionReadinessDecision,
@@ -90,6 +116,26 @@ hardened_record_integration_decision = record_integration_decision
 hardened_request_independent_review = request_independent_review
 
 __all__ = [
+    "verify_key_custody",
+    "verify_external_fact_receipts",
+    "verify_canonical_source_receipt",
+    "verify_audit_anchor",
+    "schedule_engineering_work",
+    "sandbox_composite_candidate",
+    "issue_authenticated_work_envelope",
+    "generate_composite_candidates",
+    "WorkAssignment",
+    "WorkerCapacity",
+    "ReviewCapacity",
+    "MergeQueueProposal",
+    "LeadershipReceipt",
+    "KeyCustodyReceipt",
+    "ExternalFactReceipt",
+    "EngineeringWorkPackage",
+    "EngineeringPlan",
+    "CompletionReceipt",
+    "CompositeCandidate",
+    "AuditAnchorReceipt",
     "AssimilationProposal",
     "DebianSandboxAdapter",
     "AttestedSandboxParity",
