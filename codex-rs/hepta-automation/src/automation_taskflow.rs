@@ -100,7 +100,9 @@ impl AutomationStore {
             TaskFlowRunState::Running
                 if run.generation == Some(lease.lease_generation)
                     && run.owner_id.as_deref() == Some(expected_owner_id.as_str())
-                    && run.lease_expires_at_ms.is_some_and(|expires| expires > now_ms) =>
+                    && run
+                        .lease_expires_at_ms
+                        .is_some_and(|expires| expires > now_ms) =>
             {
                 TaskFlowFence {
                     owner_agent_id: lease.task.owner_agent_id.clone(),
@@ -108,21 +110,27 @@ impl AutomationStore {
                         TaskFlowError::Corrupt("running automation run lost owner id".to_string())
                     })?,
                     owner_epoch: run.owner_epoch.ok_or_else(|| {
-                        TaskFlowError::Corrupt("running automation run lost owner epoch".to_string())
+                        TaskFlowError::Corrupt(
+                            "running automation run lost owner epoch".to_string(),
+                        )
                     })?,
                     generation: run.generation.ok_or_else(|| {
                         TaskFlowError::Corrupt("running automation run lost generation".to_string())
                     })?,
                     fencing_token: run.fencing_token.clone().ok_or_else(|| {
-                        TaskFlowError::Corrupt("running automation run lost fencing token".to_string())
+                        TaskFlowError::Corrupt(
+                            "running automation run lost fencing token".to_string(),
+                        )
                     })?,
                 }
             }
             TaskFlowRunState::Running
-                if run.lease_expires_at_ms.is_none_or(|expires| expires <= now_ms)
-                    && run.generation.is_some_and(|generation| {
-                        lease.lease_generation > generation
-                    }) =>
+                if run
+                    .lease_expires_at_ms
+                    .is_none_or(|expires| expires <= now_ms)
+                    && run
+                        .generation
+                        .is_some_and(|generation| lease.lease_generation > generation) =>
             {
                 run = self
                     .claim_taskflow_run(&run.run_id, &current_fence, now_ms, lease_duration_ms)
@@ -145,10 +153,9 @@ impl AutomationStore {
                 now_ms,
             )?;
             self.apply_taskflow_command(&command).await?;
-            run = self
-                .taskflow_run(&run.run_id)
-                .await?
-                .ok_or_else(|| TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string()))?;
+            run = self.taskflow_run(&run.run_id).await?.ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
+            })?;
         }
         if run.state != TaskFlowRunState::Running {
             return Err(TaskFlowError::Conflict(
@@ -256,7 +263,9 @@ impl AutomationStore {
                 &dispatch.fence,
             )
             .await?
-            .ok_or_else(|| TaskFlowError::Conflict("automation step is not prepared".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("automation step is not prepared".to_string())
+            })?;
         let receipt = match receipt.state {
             TaskFlowStepState::Claimed => {
                 self.record_taskflow_step(
@@ -292,7 +301,9 @@ impl AutomationStore {
         let run = self
             .taskflow_run(&occurrence.taskflow_run_id)
             .await?
-            .ok_or_else(|| TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
+            })?;
         if run.state == TaskFlowRunState::Running {
             let command = TaskFlowCommand::new(
                 run.run_id.clone(),
@@ -300,7 +311,8 @@ impl AutomationStore {
                 dispatch.fence.clone(),
                 run.revision,
                 TaskFlowTransition::Indeterminate {
-                    reason: "provider admitted request; terminal outcome not yet observed".to_string(),
+                    reason: "provider admitted request; terminal outcome not yet observed"
+                        .to_string(),
                 },
                 now_ms,
             )?;
@@ -331,10 +343,7 @@ impl AutomationStore {
             .automation_occurrence_step_attempt(work.occurrence.task_id, work.occurrence.occurrence)
             .await?;
         let fence = self
-            .historical_automation_step_fence(
-                &work.occurrence.taskflow_run_id,
-                step_attempt,
-            )
+            .historical_automation_step_fence(&work.occurrence.taskflow_run_id, step_attempt)
             .await?;
         let payload_digest = Sha256Digest::for_bytes(work.admission.prompt.as_bytes());
         let intent_digest = automation_intent_digest(
@@ -351,7 +360,9 @@ impl AutomationStore {
                 &fence,
             )
             .await?
-            .ok_or_else(|| TaskFlowError::Conflict("automation TaskFlow step is missing".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("automation TaskFlow step is missing".to_string())
+            })?;
         if step.state == TaskFlowStepState::Claimed {
             let receipt_digest = admission_receipt_digest(&work.occurrence);
             self.record_taskflow_step(
@@ -374,13 +385,18 @@ impl AutomationStore {
         let run = self
             .taskflow_run(&work.occurrence.taskflow_run_id)
             .await?
-            .ok_or_else(|| TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
+            })?;
         if run.state == TaskFlowRunState::Running {
             // Reconciliation commands are timestamped when observed, but the
             // original run lease may have expired during process loss. In that
             // case the step receipt itself remains the durable uncertainty and
             // the run is left for the trusted historical reconciler below.
-            if run.lease_expires_at_ms.is_some_and(|expires| expires > now_ms) {
+            if run
+                .lease_expires_at_ms
+                .is_some_and(|expires| expires > now_ms)
+            {
                 let command = TaskFlowCommand::new(
                     run.run_id.clone(),
                     format!("automation:run:admitted:{}", work.occurrence.occurrence_id),
@@ -411,10 +427,7 @@ impl AutomationStore {
             .automation_occurrence_step_attempt(work.occurrence.task_id, work.occurrence.occurrence)
             .await?;
         let fence = self
-            .historical_automation_step_fence(
-                &work.occurrence.taskflow_run_id,
-                step_attempt,
-            )
+            .historical_automation_step_fence(&work.occurrence.taskflow_run_id, step_attempt)
             .await?;
         let payload_digest = Sha256Digest::for_bytes(work.admission.prompt.as_bytes());
         let intent_digest = automation_intent_digest(
@@ -431,7 +444,9 @@ impl AutomationStore {
                 &fence,
             )
             .await?
-            .ok_or_else(|| TaskFlowError::Conflict("automation TaskFlow step is missing".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("automation TaskFlow step is missing".to_string())
+            })?;
         match step.state {
             TaskFlowStepState::Recorded
                 if step.observation == Some(TaskFlowStepObservation::Indeterminate) =>
@@ -464,7 +479,9 @@ impl AutomationStore {
         let run = self
             .taskflow_run(&work.occurrence.taskflow_run_id)
             .await?
-            .ok_or_else(|| TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
+            })?;
         if run.state == TaskFlowRunState::Indeterminate {
             let command = TaskFlowCommand::new(
                 run.run_id.clone(),
@@ -480,9 +497,16 @@ impl AutomationStore {
             self.apply_taskflow_command(&command).await?;
         } else if !matches!(
             (run.state, terminal),
-            (TaskFlowRunState::Succeeded, AutomationOccurrenceTerminalState::Succeeded)
-                | (TaskFlowRunState::Failed, AutomationOccurrenceTerminalState::Failed)
-                | (TaskFlowRunState::Cancelled, AutomationOccurrenceTerminalState::Cancelled)
+            (
+                TaskFlowRunState::Succeeded,
+                AutomationOccurrenceTerminalState::Succeeded
+            ) | (
+                TaskFlowRunState::Failed,
+                AutomationOccurrenceTerminalState::Failed
+            ) | (
+                TaskFlowRunState::Cancelled,
+                AutomationOccurrenceTerminalState::Cancelled
+            )
         ) {
             return Err(TaskFlowError::Conflict(
                 "automation TaskFlow terminal state conflicts with observation".to_string(),
@@ -501,7 +525,10 @@ impl AutomationStore {
              WHERE task_id = ? AND occurrence = ? AND owner_agent_id = ?",
         )
         .bind(task_id.to_string())
-        .bind(i64::try_from(occurrence).map_err(|_| TaskFlowError::Invalid("occurrence overflow".to_string()))?)
+        .bind(
+            i64::try_from(occurrence)
+                .map_err(|_| TaskFlowError::Invalid("occurrence overflow".to_string()))?,
+        )
         .bind(self.taskflow_owner_agent_id().as_str())
         .fetch_optional(self.taskflow_pool())
         .await
