@@ -2009,7 +2009,8 @@
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
         "apps/hepta-control-ui/**",
-        "apps/hepta-native/**"
+        "apps/hepta-native/**",
+        "codex-rs/hepta-native-app/**"
       ],
       "coOwnerModules": [
         "ui.native"
@@ -8718,7 +8719,8 @@
       "deputy": "accessibility",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "apps/hepta-native/**"
+        "apps/hepta-native/**",
+        "codex-rs/hepta-native-app/**"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -8739,8 +8741,8 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
-        "maxCiMinutes": 30,
+        "maxChangedPaths": 32,
+        "maxCiMinutes": 45,
         "maxParallelAgents": 2
       },
       "rollback": {
