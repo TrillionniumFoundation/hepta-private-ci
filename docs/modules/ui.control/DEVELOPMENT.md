@@ -300,7 +300,8 @@ retain tests for:
 - cross-session/origin provenance cannot settle a pending operation, and in-flight acknowledgement provenance remains bound across close/reconnect races;
 - reload/crash recovery reconciles the durable operation identity without persisting the request payload or resubmitting mutation;
 - reconnect reconciliation is capped to a bounded concurrent batch rather than serially waiting on the full pending capacity;
-- persistence failure before dispatch prevents transport I/O;
+- persistence failure before dispatch prevents transport I/O, while a persistence failure after dispatch forces the returned acknowledgement to `indeterminate + recoveryRequired` instead of exposing stale optimistic state;
+- `close()` invalidates an in-flight connection attempt so a late connect response cannot resurrect a closed client;
 - rapid duplicate logical actions collapse to one request while awaiting confirmation/acknowledgement and rerender restores focus;
 - an offline/session transition while confirmation is open invalidates the request before transport;
 - session expiry, online recovery and BFCache/page-session resume establish a fresh observation session without mutation replay;
