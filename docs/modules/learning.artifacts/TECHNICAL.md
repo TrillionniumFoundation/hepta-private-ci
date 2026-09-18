@@ -502,7 +502,8 @@ usable for the V2 source API, but they cannot issue a V3 publication admission.
 
 `prepare_artifact_publication_v3` and
 `revalidate_artifact_publication_v3` define the crate-side transaction
-contract. Preparation binds:
+contract. Preparation returns `PreparedArtifactPublicationV3`, which deliberately
+does not expose the staged registry or durable snapshot binding. Preparation binds:
 
 1. the V3 admission digest;
 2. withdrawal registry/scope binding and exact withdrawal head;
@@ -512,8 +513,11 @@ contract. Preparation binds:
 
 The resulting transaction digest is the required binding for the create-only
 registry snapshot. Immediately before publication, while holding the host
-writer fence, the host revalidates both mutable frontiers. A changed registry
-head or withdrawal frontier fails closed.
+writer fence, the host consumes the prepared value through
+`revalidate_artifact_publication_v3`. A changed registry head or withdrawal
+frontier fails closed. Only the returned `RevalidatedArtifactPublicationV3`
+exposes the staged registry and snapshot binding, so the safe API cannot publish
+a prepared-but-not-revalidated registry snapshot.
 
 The stable V1 durable registry has one predecessor slot and one `support_digest`
 slot. A V2 manifest with multiple predecessors is therefore refused instead of
