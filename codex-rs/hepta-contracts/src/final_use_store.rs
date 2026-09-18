@@ -34,6 +34,25 @@ impl Store {
         verifying_key: [u8; 32],
         initial: FinalUseRevocations,
     ) -> Result<(Self, State), FinalUseError> {
+        Self::open_inner(root, signer_id, verifying_key, initial, true)
+    }
+
+    pub(super) fn open_exact(
+        root: &Path,
+        signer_id: &str,
+        verifying_key: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        Self::open_inner(root, signer_id, verifying_key, initial, false)
+    }
+
+    fn open_inner(
+        root: &Path,
+        signer_id: &str,
+        verifying_key: [u8; 32],
+        initial: FinalUseRevocations,
+        allow_startup_head_advance: bool,
+    ) -> Result<(Self, State), FinalUseError> {
         let root = prepare_directory(root)?;
         let initialized = entry_exists(&root, "authority.lock")?;
         let lock = open_private(&root, "authority.lock", Access::Create)?;
@@ -65,26 +84,30 @@ impl Store {
                 return Err(FinalUseError::InvalidTrust);
             }
             let mut state = stored.state;
-            if initial.authority_epoch >= state.head.authority_epoch
-                && initial.revision > state.head.revision
-                && (initial.authority_epoch > state.head.authority_epoch
-                    || initial
-                        .revoked_grant_ids
-                        .is_superset(&state.head.revoked_grant_ids))
-            {
-                if initial.authority_epoch > state.head.authority_epoch {
-                    state.used_nonces.clear();
+            if allow_startup_head_advance {
+                if initial.authority_epoch >= state.head.authority_epoch
+                    && initial.revision > state.head.revision
+                    && (initial.authority_epoch > state.head.authority_epoch
+                        || initial
+                            .revoked_grant_ids
+                            .is_superset(&state.head.revoked_grant_ids))
+                {
+                    if initial.authority_epoch > state.head.authority_epoch {
+                        state.used_nonces.clear();
+                    }
+                    state.head = initial;
+                    store.persist(&state)?;
+                } else if state.head.authority_epoch < initial.authority_epoch
+                    || state.head.revision < initial.revision
+                    || (state.head.authority_epoch == initial.authority_epoch
+                        && !state
+                            .head
+                            .revoked_grant_ids
+                            .is_superset(&initial.revoked_grant_ids))
+                {
+                    return Err(FinalUseError::InvalidTrust);
                 }
-                state.head = initial;
-                store.persist(&state)?;
-            } else if state.head.authority_epoch < initial.authority_epoch
-                || state.head.revision < initial.revision
-                || (state.head.authority_epoch == initial.authority_epoch
-                    && !state
-                        .head
-                        .revoked_grant_ids
-                        .is_superset(&initial.revoked_grant_ids))
-            {
+            } else if state.head != initial {
                 return Err(FinalUseError::InvalidTrust);
             }
             state
