@@ -72,11 +72,22 @@ impl SupervisordClient {
         &self,
         agent_id: AgentId,
     ) -> Result<Option<ReleaseSelectionSnapshot>, SupervisorError> {
+        let expected_agent = agent_id.to_string();
         match self
             .send(SupervisordMethod::ReleaseSelection { agent_id })
             .await?
         {
-            SupervisordPayload::ReleaseSelection { selection } => Ok(selection),
+            SupervisordPayload::ReleaseSelection { selection } => {
+                if let Some(snapshot) = selection.as_ref() {
+                    snapshot.validate()?;
+                    if snapshot.agent_id != expected_agent {
+                        return Err(SupervisorError::Invalid(
+                            "release-selection response agent binding mismatch".to_string(),
+                        ));
+                    }
+                }
+                Ok(selection)
+            }
             payload => unexpected(payload),
         }
     }
