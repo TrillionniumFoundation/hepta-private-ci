@@ -9,6 +9,8 @@
 
 #[path = "embodiment/cart.rs"]
 mod cart;
+mod authority_bridge;
+mod global_plane;
 #[path = "embodiment/io.rs"]
 mod io;
 mod organ_graph;
@@ -34,6 +36,23 @@ pub use cart::CartSimulatorV1;
 pub use cart::CartStateV1;
 pub use cart::SyntheticCartObservationV1;
 pub use cart::SyntheticCartPlant;
+pub use authority_bridge::AuthorityBridgeError;
+pub use authority_bridge::claim_final_use_for_grant_request_v1;
+pub use authority_bridge::final_use_binding_for_grant_request_v1;
+pub use authority_bridge::grant_request_digest_v1;
+pub use global_plane::AdmittedOwnerSummaryV1;
+pub use global_plane::FLEET_ACCELERATOR_MILLIS_AXIS;
+pub use global_plane::FLEET_CPU_MILLIS_AXIS;
+pub use global_plane::FLEET_MEMORY_MIB_AXIS;
+pub use global_plane::FleetEssentialFloorsV1;
+pub use global_plane::FleetOwnerAdmissionV1;
+pub use global_plane::GlobalControlPlanV1;
+pub use global_plane::GlobalPlaneError;
+pub use global_plane::admit_fleet_allocation_owner_v1;
+pub use global_plane::authenticate_owner_summary_v1;
+pub use global_plane::compose_global_plan_with_fleet_v1;
+pub use global_plane::owner_summary_payload_digest_v1;
+pub use global_plane::owner_summary_scope_digest_v1;
 pub use io::EmbodimentIoError;
 pub use io::SyntheticActuatorReceiptV1;
 pub use io::SyntheticCartIoV1;
