@@ -83,6 +83,24 @@ _ORACLE_FILE_SUFFIXES = (
     ".snap",
     ".golden",
 )
+_INLINE_ORACLE_MARKERS = (
+    "#[test]",
+    "#[cfg(test)]",
+    "#[tokio::test]",
+    "#[async_std::test]",
+    "import unittest",
+    "from unittest",
+    "pytest.",
+    "def test_",
+    "class Test",
+    "describe(",
+    "it(",
+    "test(",
+    "@Test",
+    "func Test",
+    "TEST(",
+    "TEST_F(",
+)
 
 
 def is_candidate_oracle_path(value: str) -> bool:
@@ -499,6 +517,35 @@ def _normalize_candidate_mutation(value: Mutation | MutationSet) -> Mutation | M
     if isinstance(value, MutationSet):
         return value.normalized()
     raise EngineeringError("invalid_mutation")
+
+
+def _contains_inline_oracle(value: str) -> bool:
+    folded = value.casefold()
+    return any(marker.casefold() in folded for marker in _INLINE_ORACLE_MARKERS)
+
+
+def _reject_inline_oracle_mutation(
+    worktree: Path,
+    mutation: Mutation | MutationSet,
+) -> None:
+    values = mutation.mutations if isinstance(mutation, MutationSet) else (mutation,)
+    for item in values:
+        if item.operation == "no_change":
+            continue
+        target = _safe_target(worktree, item.path)
+        if target.is_file() and not target.is_symlink():
+            try:
+                existing = target.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                existing = ""
+            except OSError:
+                raise EngineeringError("mutation_target_invalid") from None
+            if existing and _contains_inline_oracle(existing):
+                raise EngineeringError("candidate_oracle_path")
+        if item.operation in {"add_file", "replace_text"} and _contains_inline_oracle(
+            item.replacement_text
+        ):
+            raise EngineeringError("candidate_oracle_path")
 
 
 def _validate_candidate_mutation_scope(
@@ -1156,6 +1203,7 @@ def sandbox_candidate(
         if (workspace / ".git").exists() or (workspace / ".git").is_symlink():
             raise EngineeringError("source_tree_mutated")
         base_manifest = _tree_manifest(workspace)
+        _reject_inline_oracle_mutation(workspace, mutation)
         _apply_candidate_mutation(workspace, mutation)
         candidate_manifest = _tree_manifest(workspace)
         changed = _changed_paths(base_manifest, candidate_manifest)
