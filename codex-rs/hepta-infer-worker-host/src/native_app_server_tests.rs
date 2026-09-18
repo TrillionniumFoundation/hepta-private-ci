@@ -178,8 +178,6 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
             std::io::ErrorKind::ConnectionReset,
         ))),
     ] {
-        // This output is bound to the started thread/turn. The same health
-        // reducer runs in observe(), before its error triggers TurnInterrupt.
         let mut output = output();
         verify_owner_health(
             &mut output,
@@ -195,7 +193,6 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
                 .is_err()
         );
         let lost = output.owner_authority.clone();
-        // Grace has no owner parameter: it can still establish provider facts.
         assert!(
             observe_notification(
                 &mut output,
@@ -207,7 +204,6 @@ async fn owner_loss_stays_denied_after_interrupt_grace_observes_completed() {
         assert_eq!(output.observed_output_tokens, Some(42));
         assert!(output.terminal_observed);
         assert!(!output.succeeded());
-        // A later ready response cannot restore authority for this attempt.
         assert!(
             verify_owner_health(
                 &mut output,
@@ -253,7 +249,6 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     )
     .await
     .unwrap();
-    // select! can consume Completed before a simultaneously ready health tick.
     observe_notification(
         &mut terminal_first,
         terminal("thread-a", "turn-a", TurnStatus::Completed),
@@ -261,7 +256,6 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
     .unwrap();
     let mut fenced = ready_owner();
     fenced.fenced = true;
-    // run_once always executes this final check after provider cleanup.
     assert!(
         verify_owner_health(
             &mut terminal_first,
@@ -276,7 +270,7 @@ async fn owner_timeout_and_terminal_first_selection_cannot_authorize_success() {
 }
 
 #[tokio::test]
-async fn success_requires_both_matching_completion_and_final_ready_owner() {
+async fn success_requires_completion_usage_and_final_ready_owner() {
     let mut output = output();
     observe_notification(
         &mut output,
@@ -291,7 +285,61 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     )
     .await
     .unwrap();
+    assert!(!output.succeeded());
+    output.observed_output_tokens = Some(1);
     assert!(output.succeeded());
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
+}
+
+#[test]
+fn persisted_turn_reconstruction_keeps_missing_usage_non_success() {
+    let record = codex_hepta_infer_core::durable_control::native::NativeRunRecord {
+        request: codex_hepta_infer_core::durable_control::native::NativeRequest {
+            request_id: "request.1".to_string(),
+            principal_id: "principal.1".to_string(),
+            worker_generation: 1,
+            model: "provider-model".to_string(),
+            payload_digest: "a".repeat(64),
+        },
+        revision: 3,
+        state: codex_hepta_infer_core::durable_control::native::NativeReservationState::Running,
+        dispatch: Some(NativeDispatch {
+            thread_id: "thread-a".to_string(),
+            model_provider: "provider".to_string(),
+            context_digest: "b".repeat(64),
+        }),
+        turn_id: Some("turn-a".to_string()),
+        cancel_requested: false,
+        pre_dispatch_stop: None,
+        observation: None,
+    };
+    let dispatch = record.dispatch.clone().unwrap();
+    let turn = Turn {
+        id: "turn-a".to_string(),
+        items: vec![ThreadItem::AgentMessage {
+            id: "message.1".to_string(),
+            text: "persisted answer".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        }],
+        items_view: TurnItemsView::Full,
+        status: TurnStatus::Completed,
+        error: None,
+        started_at: None,
+        completed_at: None,
+        duration_ms: None,
+    };
+    let mut recovered = persisted_output(&record, &dispatch, turn).unwrap();
+    assert_eq!(recovered.output, "persisted answer");
+    assert!(recovered.terminal_observed);
+    assert_eq!(recovered.status, NativeRunStatus::Completed);
+    assert_eq!(recovered.observed_output_tokens, None);
+    assert!(!recovered.succeeded());
+
+    recovered.owner_authority = NativeOwnerAuthority::ObservedReady;
+    assert!(!recovered.succeeded());
+    recovered.observed_output_tokens = Some(13);
+    assert!(recovered.succeeded());
 }

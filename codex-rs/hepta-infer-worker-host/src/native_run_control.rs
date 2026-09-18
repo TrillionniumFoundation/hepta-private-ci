@@ -21,9 +21,10 @@ pub struct NativeAdmission {
 }
 
 impl AppServerModelDriver {
-    /// Reserves before any provider call, journals dispatch before `turn/start`,
-    /// and commits real observations before returning them to the caller.
-    /// Reopening a possibly dispatched run never invokes a model again.
+    /// Reserves before any provider call, journals provider identity before
+    /// `turn/start`, and commits real observations before returning them.
+    /// Reopening a possibly dispatched run reconciles the durable App Server
+    /// thread/client-message identity; it never performs a blind fresh replay.
     pub async fn run(
         &self,
         control: &mut DurableInferenceControl,
@@ -58,50 +59,89 @@ impl AppServerModelDriver {
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
-        if record.state != NativeReservationState::Reserved {
-            if let Some(output) = record.observation {
-                return Ok(output);
-            }
-            let dispatch = record.dispatch.ok_or("missing durable dispatch binding")?;
-            let output = NativeRunOutput {
-                thread_id: dispatch.thread_id,
-                turn_id: record.turn_id.unwrap_or_default(),
-                model: record.request.model,
-                model_provider: dispatch.model_provider,
-                status: NativeRunStatus::Indeterminate,
-                output: String::new(),
-                observed_output_tokens: None,
-                terminal_observed: false,
-                owner_authority: NativeOwnerAuthority::Unverified,
-                stop_reason: Some(
-                    "reopened after possible dispatch; reservation held, no replay".to_string(),
-                ),
-            };
-            control.settle_native(&record.request.request_id, output.clone())?;
-            return Ok(output);
-        }
-        let request_id = record.request.request_id;
-        match self
-            .run_once(control, &request_id, prompt, context_query, cancellation)
-            .await
+
+        // A fully reconciled terminal observation is immutable and idempotent.
+        // Terminal provider facts without usage are intentionally revisited so
+        // late/replayed token evidence can complete accounting.
+        if record.state == NativeReservationState::Released
+            && record
+                .observation
+                .as_ref()
+                .is_some_and(|output| output.observed_output_tokens.is_some())
         {
+            return Ok(record.observation.expect("checked observation"));
+        }
+
+        let request_id = record.request.request_id.clone();
+        let result = if record.state == NativeReservationState::Reserved {
+            self.run_once(control, &request_id, prompt, context_query, cancellation)
+                .await
+        } else {
+            self.reconcile_once(control, &request_id, prompt, context_query, cancellation)
+                .await
+        };
+
+        match result {
             Ok(output) => {
                 if !output.terminal_observed && cancellation.is_cancelled() {
-                    control.cancel_native(&request_id)?;
+                    let current = control
+                        .native_record(&request_id)
+                        .ok_or("native record disappeared")?;
+                    if current.state != NativeReservationState::Released
+                        && current.state != NativeReservationState::Reserved
+                        && !current.cancel_requested
+                    {
+                        control.cancel_native(&request_id)?;
+                    }
                 }
                 control.settle_native(&request_id, output.clone())?;
                 Ok(output)
             }
             Err(error) => {
-                if control
+                let current = control
                     .native_record(&request_id)
-                    .is_some_and(|record| record.state == NativeReservationState::Reserved)
-                {
-                    // Only Reserved proves turn/start could not have happened.
+                    .cloned()
+                    .ok_or("native record disappeared")?;
+                if current.state == NativeReservationState::Reserved {
+                    // Only Reserved proves provider dispatch could not have happened.
                     let reason: String = error.to_string().chars().take(1024).collect();
                     control.stop_native_before_dispatch(&request_id, reason)?;
+                    return Err(error);
                 }
-                Err(error)
+                // Reconciliation transport failure is itself not evidence of a
+                // provider outcome. Persist a bounded indeterminate observation
+                // while retaining the exact thread/turn binding for a later retry.
+                let dispatch = current.dispatch.ok_or("missing durable dispatch binding")?;
+                let output = NativeRunOutput {
+                    thread_id: dispatch.thread_id,
+                    turn_id: current.turn_id.unwrap_or_default(),
+                    model: current.request.model,
+                    model_provider: dispatch.model_provider,
+                    status: NativeRunStatus::Indeterminate,
+                    output: current
+                        .observation
+                        .as_ref()
+                        .map(|value| value.output.clone())
+                        .unwrap_or_default(),
+                    observed_output_tokens: current
+                        .observation
+                        .as_ref()
+                        .and_then(|value| value.observed_output_tokens),
+                    terminal_observed: false,
+                    owner_authority: current
+                        .observation
+                        .as_ref()
+                        .map(|value| value.owner_authority.clone())
+                        .unwrap_or(NativeOwnerAuthority::Unverified),
+                    stop_reason: Some(
+                        format!("provider reconciliation unavailable: {error}")
+                            .chars()
+                            .take(1024)
+                            .collect(),
+                    ),
+                };
+                control.settle_native(&request_id, output.clone())?;
+                Ok(output)
             }
         }
     }

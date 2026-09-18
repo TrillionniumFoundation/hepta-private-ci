@@ -2,7 +2,7 @@
 
 Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
 
-The native App Server worker now calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and actual observed settlement. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This does not close economic quota, local weights/device or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
+The native App Server worker uses durable local-slot admission plus a persistent private App Server thread and stable client message identity; reopen reconciles provider history and may recover the same logical turn instead of blindly replaying it. Missing token usage remains unknown and cannot authorize success. The Unix local-process profile consumes a kernel-verified single-use resource grant, verifies exact model/runtime/device/isolation artifacts, and delegates physical load/infer/unload to a private bounded runtime socket. Repository-controlled source-boundary gaps are closed by this candidate; real-model/hardware/sandbox evidence, independent acceptance and activation remain separate external gates. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies shared journal limits and hosted operating requirements.
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
@@ -135,7 +135,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.worker.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.worker.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md). Hosted reopen reconciles the stable request/client-message identity against App Server history before any retry; persisted turns are read or recovered in place, and only a provider-proved Missing state with unchanged frozen context permits same-thread redispatch. Missing usage is never inferred as zero. Local load/run/unload fail closed on artifact/device/isolation digest drift or resource-grant mismatch. A source fixture still cannot stand in for target-host hardware or deployed sandbox qualification.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -145,7 +145,7 @@ Owned threat entries:
 
 None.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware. A serialized local `ResourceGrant` is policy data, not authority: every field that can change lifetime or capacity is bound into the existing kernel `FinalUseAuthority`, the signed grant is consumed once, and only the resulting non-serializable `VerifiedResourceGrant` can construct the local worker. Future IPC adapters must preserve that verifier boundary rather than exposing a deserializable capability constructor.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
@@ -157,7 +157,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Build hepta-infer-worker and explicitly select --profile native-app-server. Supply the owning Agentd socket, Agent ID/generation, exact configured model, private journal and stable request ID as documented. Hosted execution uses the owning App Server; it does not establish local model weights, device grants or GPU isolation.
+Build `hepta-infer-worker` and select an explicit profile. `--profile native-app-server` requires the owning Agentd socket, Agent ID/generation, exact configured model, private journal and stable request ID. `--profile local-process` requires the request/lease/reservation envelope, kernel-signed resource grant plus pinned verifier/revocation state, exact manifest and absolute weights/tokenizer/preprocessor/quantization/runtime/device/isolation paths, and a private Unix runtime socket. Hosted execution relies on App Server's durable thread/reconcile/recover primitives. Local execution proves the supplied isolation receipt and device descriptor match the manifest; it does not self-certify that the host actually installed cgroups, namespaces, seccomp or device ACLs.
 
 Current operating and state-format references:
 
@@ -171,6 +171,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-infer-worker-host/src/lib_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/lib_tests.rs); named case: `terminal_success_requires_exact_authority_binding`.
 - [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs); named case: `loads_runs_and_unloads_exact_model_tuple`.
+- [codex-rs/hepta-infer-worker-host/src/local_process_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/local_process_tests.rs); verifies exact artifact hashing and a real Unix-socket load/infer/unload protocol fixture.
+- [codex-rs/hepta-infer-worker-host/tests/local_product.rs](../../../codex-rs/hepta-infer-worker-host/tests/local_product.rs); signs a real kernel final-use grant and proves request/lease/reservation -> verified grant -> local runtime composition.
 
 In `codex-rs`, run `just test -p codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
 
@@ -317,3 +319,41 @@ The bootstrap source-location obligation for `inference.worker` is implemented b
 - `codex-rs/hepta-infer-worker-host`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. Production readiness and runbook
+
+This section is the single operator-facing closure view for this module; it intentionally consolidates the previously scattered readiness facts instead of creating a second competing implementation guide.
+
+### 18.1 Guarantees and non-guarantees
+
+Repository source guarantees bounded/typed ingress, exact model/payload binding, signed single-use local resource admission, generation fencing, durable hosted dispatch identity, provider reconciliation before retry, monotonic usage observation, bounded local Unix transport, exact artifact/device/isolation-receipt hashing, and cleanup after authority expiry. The word **isolated** at source level means authority/execution ownership is isolated and the selected host isolation receipt is cryptographically bound to the manifest.
+
+Repository source alone does **not** prove an OS sandbox is active. A deployment may claim process/device isolation only when independent target-host evidence identifies the exact worker binary, runtime binary, cgroup or equivalent memory/CPU controls, namespace/container boundary, seccomp or equivalent syscall policy where applicable, GPU/device ACL, private socket ownership/mode, and the digest of the isolation receipt consumed by the worker.
+
+### 18.2 Admission checklist
+
+Before hosted dispatch, verify exact Agent identity/generation, private journal ownership, stable request ID, configured model, deadline and in-flight bound. Before local dispatch, additionally verify the request/lease/reservation envelope, current authority epoch/revocation head, one-use signed resource grant, manifest digest tuple, absolute non-symlink artifact files, device descriptor, isolation receipt, private direct Unix socket, and runtime timeout. Any mismatch is a hard reject; no fallback model/runtime/device is allowed.
+
+### 18.3 Recovery decision table
+
+- **No durable dispatch:** fail/retry is safe only through normal admission because provider execution is proven not to have started.
+- **Durable thread, provider says Missing:** retry only on the same thread with the same stable client message ID and only when the frozen context digest matches.
+- **Provider says Persisted/InProgress:** continue observing or recover the same logical turn; never start a fresh turn for that request identity.
+- **Provider says Persisted/terminal:** reconstruct the persisted output/status and reconcile token usage. Missing usage stays unknown and the run is not authorized success.
+- **Provider history contradicts a previously bound turn/model/provider:** quarantine/error; do not repair by replay.
+- **Local runtime disconnect after physical dispatch:** report indeterminate unless the runtime protocol supplies a trustworthy terminal observation; never fabricate success or zero usage.
+
+### 18.4 Required target-host qualification before activation
+
+Run the exact release candidate with identified real weights/tokenizer/preprocessor/quantization/runtime/device. Record cold/warm load and unload, peak resident and device memory, token throughput, p95/p99 latency, concurrency at the selected grant ceiling, repeated cancellation, OOM before and during generation, runtime process kill, worker kill at each load/dispatch/settlement boundary, device reset, socket disconnect, cancellation during unload, and repeated restart/reconciliation. Verify no leaked model/device handles and no duplicate provider turn for one stable request identity.
+
+The hardware/sandbox evidence must bind the exact candidate commit/tree, worker and runtime binaries, model/artifact digests, device identity, isolation receipt, authority epoch/revocation revision and test configuration. A later source or deployment change invalidates that receipt.
+
+### 18.5 Rollback and stop conditions
+
+Rollback first stops new admission, then drains or cancels admitted runs, reconciles every hosted durable request, unloads local handles, and only then replaces the binary/runtime/model generation. Never delete the durable journal to clear an indeterminate run and never reuse an old signed resource grant with a new generation. Stop activation on authority drift, provider identity drift, unreconciled terminal usage, artifact/device/isolation digest mismatch, memory overrun, leaked handles, duplicate turn evidence, or any sandbox control missing from the claimed isolation receipt.
+
+### 18.6 Activation boundary
+
+Passing repository CI closes source-boundary work; it does not by itself set `productionImplementation`, `deploymentQualificationComplete`, independent acceptance, activation, promotion or release. Those claims require fresh exact-candidate target-host receipts and the designated external decisions. The implementation map therefore keeps deployment/activation/release false until those gates are actually evidenced.

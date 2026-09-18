@@ -2,14 +2,19 @@
 //!
 //! The legacy boundary validates a pre-existing request, lease and reservation.
 //! The native App Server profile invokes the owning Agent's configured provider
-//! and observes its turn events. Neither profile issues grants, mutates fleet
-//! state, infers success from queue acceptance, promotes or releases artifacts.
+//! with durable reconciliation. On Unix, `local_process` verifies exact model,
+//! device and isolation evidence before delegating physical inference to a
+//! private local runtime. No profile issues grants or mutates fleet state.
 
 #![forbid(unsafe_code)]
 
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+#[cfg(unix)]
+pub mod local_process;
+#[cfg(unix)]
+pub mod local_product;
 pub mod native_app_server;
 
 use std::error::Error as StdError;

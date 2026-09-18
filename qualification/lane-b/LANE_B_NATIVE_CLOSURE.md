@@ -116,9 +116,9 @@ External evidence gates:
 
 ## 7. `inference.worker`
 
-Owns live provider client handles; persistent request/slot/observation facts remain in the inference.control journal. App Server owns ephemeral thread execution; artifact/cache owners retain model bytes.
+Owns live provider/local-runtime client handles; persistent hosted request/slot/observation facts remain in the inference.control journal. App Server owns durable private thread/turn history used for reconciliation; artifact/cache owners retain model bytes and the local runtime owns only physical model/device handles for the admitted process generation.
 
-The hosted native-app-server profile observes real matching turn events; the local manifest driver remains injected and does not prove physical weights/device behavior.
+The hosted native-app-server profile reconciles a stable client_user_message_id against durable App Server history and requires matching terminal, final owner-authority and real token-usage observations for success. The local-process profile verifies exact artifact/device/isolation digests before a private Unix runtime load and locally hashes returned output.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -126,16 +126,12 @@ The hosted native-app-server profile observes real matching turn events; the loc
 | `run` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/native_run_control.rs` — `pub async fn run(` |
 | `unload` | `owner_native` | `codex-rs/hepta-infer-worker-host/src/model_worker.rs` — `pub fn unload_model(` |
 
-Remaining repository implementation gaps:
-
-- Implement a local model driver that acquires and proves actual weights, device and memory grants before claiming isolated local inference.
-- Implement trusted provider reconciliation for dispatch-unknown/reopened runs and later missing token usage; do not infer zero usage or safe replay from transport loss.
-
 External evidence gates:
 
-- identified real weights/tokenizer/runtime/device
-- isolated deployed worker process and authenticated control channel
-- OOM/device-reset/load-kill target qualification
+- identified real weights/tokenizer/runtime/device qualification on the selected model and host
+- isolated deployed worker process with authenticated private control channel and independently verified cgroup/namespace/seccomp/device policy where claimed
+- OOM/device-reset/load-kill/cancellation-during-unload qualification on target CPU/GPU hardware
+- exact-candidate independent acceptance, deployment activation, canary, promotion and release
 
 ## 8. `automation.taskflow`
 
