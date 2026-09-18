@@ -21,7 +21,11 @@ impl HeptaEvidenceStore {
         if generation == 0 || checkpoint_digest.is_zero() {
             return Err(AuthBusControlError::Invalid("invalid restore checkpoint"));
         }
-        let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(classify_sqlx_error)?;
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
         let row = sqlx::query(
             "SELECT generation, checkpoint_digest FROM authbus_restore_checkpoint WHERE singleton=1",
         )
@@ -29,8 +33,12 @@ impl HeptaEvidenceStore {
         .await
         .map_err(classify_sqlx_error)?;
         if let Some(row) = row {
-            let stored_generation = decode_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?;
-            let stored_digest = digest(row.try_get("checkpoint_digest").map_err(classify_sqlx_error)?)?;
+            let stored_generation =
+                decode_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?;
+            let stored_digest = digest(
+                row.try_get("checkpoint_digest")
+                    .map_err(classify_sqlx_error)?,
+            )?;
             if stored_generation != generation || stored_digest != checkpoint_digest {
                 return Err(AuthBusControlError::RollbackDetected);
             }
@@ -59,15 +67,20 @@ impl HeptaEvidenceStore {
         if next_generation <= expected_generation || next_digest.is_zero() {
             return Err(AuthBusControlError::Invalid("checkpoint must advance"));
         }
-        let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(classify_sqlx_error)?;
-        let row = sqlx::query(
-            "SELECT generation FROM authbus_restore_checkpoint WHERE singleton=1",
-        )
-        .fetch_optional(&mut *tx)
-        .await
-        .map_err(classify_sqlx_error)?
-        .ok_or(AuthBusControlError::RollbackDetected)?;
-        if decode_u64(row.try_get("generation").map_err(classify_sqlx_error)?)? != expected_generation {
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
+        let row =
+            sqlx::query("SELECT generation FROM authbus_restore_checkpoint WHERE singleton=1")
+                .fetch_optional(&mut *tx)
+                .await
+                .map_err(classify_sqlx_error)?
+                .ok_or(AuthBusControlError::RollbackDetected)?;
+        if decode_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?
+            != expected_generation
+        {
             return Err(AuthBusControlError::RollbackDetected);
         }
         sqlx::query(
@@ -96,8 +109,12 @@ impl HeptaEvidenceStore {
         .await
         .map_err(classify_sqlx_error)?
         .ok_or(AuthBusControlError::RollbackDetected)?;
-        let stored_generation = decode_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?;
-        let stored_digest = digest(row.try_get("checkpoint_digest").map_err(classify_sqlx_error)?)?;
+        let stored_generation =
+            decode_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?;
+        let stored_digest = digest(
+            row.try_get("checkpoint_digest")
+                .map_err(classify_sqlx_error)?,
+        )?;
         if stored_generation != generation || stored_digest != checkpoint_digest {
             return Err(AuthBusControlError::RollbackDetected);
         }
@@ -114,8 +131,13 @@ impl HeptaEvidenceStore {
         checkpoint_generation: u64,
         checkpoint_digest: Digest32,
     ) -> Result<u64, AuthBusControlError> {
-        self.verify_authbus_restore_checkpoint(checkpoint_generation, checkpoint_digest).await?;
-        let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(classify_sqlx_error)?;
+        self.verify_authbus_restore_checkpoint(checkpoint_generation, checkpoint_digest)
+            .await?;
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
         let active: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM authbus_outbox
              WHERE issuer_id=? AND key_epoch=? AND state IN ('queued','leased')",
@@ -142,15 +164,14 @@ impl HeptaEvidenceStore {
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
-        let removed = sqlx::query(
-            "DELETE FROM authbus_replay_sequences WHERE issuer_id=? AND key_epoch=?",
-        )
-        .bind(issuer_id.as_str())
-        .bind(key_epoch.get().to_be_bytes().as_slice())
-        .execute(&mut *tx)
-        .await
-        .map_err(classify_sqlx_error)?
-        .rows_affected();
+        let removed =
+            sqlx::query("DELETE FROM authbus_replay_sequences WHERE issuer_id=? AND key_epoch=?")
+                .bind(issuer_id.as_str())
+                .bind(key_epoch.get().to_be_bytes().as_slice())
+                .execute(&mut *tx)
+                .await
+                .map_err(classify_sqlx_error)?
+                .rows_affected();
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(removed)
     }
