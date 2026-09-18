@@ -29,7 +29,11 @@ concurrency:
 jobs:
   real-synapse:
     name: Qualify exact Matrix candidate against pinned Synapse
-    runs-on: ubuntu-24.04
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association))
+    runs-on: [self-hosted, macOS, ARM64, macbook]
     timeout-minutes: 120
     steps:
       - name: Check out exact candidate
@@ -39,19 +43,20 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Bind exact hosted tools
+      - name: Verify exact qualification runner
         shell: bash
         run: |
           set -euo pipefail
           expected="${{ github.event.pull_request.head.sha || github.sha }}"
           test "$(git rev-parse HEAD)" = "$expected"
-          {
-            echo "HEPTA_R4_BOOTSTRAP_PYTHON=$(readlink -f "$(command -v python3)")"
-            echo "HEPTA_R4_QUALIFICATION_BASH=$(readlink -f "$(command -v bash)")"
-            echo "HEPTA_R4_RUSTUP_BIN=$(readlink -f "$(command -v rustup)")"
-          } >> "$GITHUB_ENV"
+          test "$RUNNER_NAME" = macbook-pro
+          test "$RUNNER_OS" = macOS
+          test "$RUNNER_ARCH" = ARM64
+          test -x /opt/homebrew/bin/python3
+          test -x /opt/homebrew/bin/bash
+          test -x /opt/homebrew/opt/rustup/bin/rustup
           docker version
-          rustup show active-toolchain
+          /opt/homebrew/opt/rustup/bin/rustup show active-toolchain
 
       - name: Run hermetic real-Synapse qualification
         id: qualification
