@@ -330,7 +330,10 @@ fn exact_retry_is_idempotent_and_run_id_drift_conflicts() {
         bindings("run-start-record-1", "run-1", Digest32::ZERO),
     )
     .expect("first");
-    assert!(matches!(first, ProductionObjectiveDispositionV1::Published(_)));
+    assert!(matches!(
+        first,
+        ProductionObjectiveDispositionV1::Published(_)
+    ));
 
     let replay = prepare_intelligence_run_v1(
         &mut ledger,
