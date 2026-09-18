@@ -227,9 +227,7 @@ pub struct DatasetWithdrawalRegistry {
 }
 
 impl DatasetWithdrawalRegistry {
-    pub fn new(
-        binding: DatasetWithdrawalRegistryBindingV1,
-    ) -> Result<Self, ArtifactClosureError> {
+    pub fn new(binding: DatasetWithdrawalRegistryBindingV1) -> Result<Self, ArtifactClosureError> {
         binding.validate()?;
         Ok(Self {
             binding,
