@@ -88,7 +88,7 @@ The bounded components are:
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. `hepta-inferd::schedule` is the authority-free deterministic feasible-ranking helper for a bounded eligible-worker snapshot; its plan cannot dispatch a provider by itself. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
@@ -187,10 +187,11 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-infer-core/src/durable_control_tests.rs](../../../codex-rs/hepta-infer-core/src/durable_control_tests.rs); named case: `reopens_exact_committed_state`.
 - [codex-rs/hepta-infer-core/src/lib_tests.rs](../../../codex-rs/hepta-infer-core/src/lib_tests.rs); named case: `request_lifecycle_is_fenced_and_authority_free`.
 - [codex-rs/hepta-infer-core/src/native_control_tests.rs](../../../codex-rs/hepta-infer-core/src/native_control_tests.rs); quota/token/concurrency/economic holds, final-use witness fencing, recovery and compaction.
+- [codex-rs/hepta-inferd/src/lib_tests.rs](../../../codex-rs/hepta-inferd/src/lib_tests.rs); deterministic feasible multi-worker ranking, snapshot binding and authority-free selection.
 - [codex-rs/hepta-infer-worker-host/src/native_policy_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_policy_tests.rs); quota/resource cross-binding and budget rejection.
 - [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs); no-replay/reopen behavior around the real App Server adapter.
 
-In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd`. The scheduling tests additionally require candidate input-order invariance, duplicate rejection, capacity/model infeasibility and eligible-snapshot/lease digest drift coverage. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.control.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
