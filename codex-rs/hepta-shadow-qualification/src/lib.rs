@@ -22,6 +22,8 @@ mod loopback_tests;
 mod observer;
 #[cfg(test)]
 mod observer_tests;
+#[cfg(test)]
+mod ndu_adaptive_integration_tests;
 mod oracle;
 #[cfg(test)]
 mod oracle_tests;
