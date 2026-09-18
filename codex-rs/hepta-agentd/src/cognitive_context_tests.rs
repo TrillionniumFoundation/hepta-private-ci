@@ -2,6 +2,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
+use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::ForgetMemoryDraft;
 use codex_hepta_memory::LedgerSourceKind;
 use codex_hepta_memory::MemoryDraft;
