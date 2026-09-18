@@ -125,6 +125,47 @@ pub struct RegistryHeadWitnessReceipt {
     pub encoded_bytes: usize,
 }
 
+pub struct PreparedRegistrySnapshotV1 {
+    bytes: Vec<u8>,
+    receipt: RegistrySnapshotReceipt,
+}
+
+impl PreparedRegistrySnapshotV1 {
+    #[must_use]
+    pub const fn receipt(&self) -> RegistrySnapshotReceipt {
+        self.receipt
+    }
+}
+
+pub struct PreparedRegistryHeadWitnessV1 {
+    bytes: Vec<u8>,
+    receipt: RegistryHeadWitnessReceipt,
+}
+
+impl PreparedRegistryHeadWitnessV1 {
+    #[must_use]
+    pub const fn receipt(&self) -> RegistryHeadWitnessReceipt {
+        self.receipt
+    }
+}
+
+pub struct PreparedCandidatePayloadV1 {
+    bytes: Vec<u8>,
+    content_digest: Digest32,
+}
+
+impl PreparedCandidatePayloadV1 {
+    #[must_use]
+    pub const fn content_digest(&self) -> Digest32 {
+        self.content_digest
+    }
+
+    #[must_use]
+    pub fn encoded_bytes(&self) -> usize {
+        self.bytes.len()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactStorageError {
     InvalidBinding,
@@ -157,13 +198,13 @@ impl From<io::Error> for ArtifactStorageError {
     }
 }
 
-/// Write a new immutable snapshot; an existing file is never overwritten.
-/// Directory durability, witness publication, retention and selection are host work.
-pub fn write_registry_snapshot(
-    file: CreateOnlyArtifactFile,
+/// Validate and encode a registry snapshot before the host creates its final
+/// create-only path. This avoids predictable zero-length orphans on semantic
+/// rejection; I/O failures after creation remain indeterminate host work.
+pub fn prepare_registry_snapshot_v1(
     registry: &ArtifactRegistry,
     binding: Digest32,
-) -> Result<RegistrySnapshotReceipt, ArtifactStorageError> {
+) -> Result<PreparedRegistrySnapshotV1, ArtifactStorageError> {
     if binding.is_zero() {
         return Err(ArtifactStorageError::InvalidBinding);
     }
@@ -175,19 +216,32 @@ pub fn write_registry_snapshot(
         records: registry.records().len(),
         encoded_bytes: bytes.len(),
     };
-    write_new(file, &bytes)?;
-    Ok(receipt)
+    Ok(PreparedRegistrySnapshotV1 { bytes, receipt })
 }
 
-/// Publish one validated current-head witness through a create-only file.
-/// Validation happens before bytes are written; a stale or malformed witness
-/// therefore cannot become a current-head distribution record by accident.
-pub fn write_registry_head_witness(
+pub fn write_prepared_registry_snapshot_v1(
     file: CreateOnlyArtifactFile,
+    prepared: PreparedRegistrySnapshotV1,
+) -> Result<RegistrySnapshotReceipt, ArtifactStorageError> {
+    write_new(file, &prepared.bytes)?;
+    Ok(prepared.receipt)
+}
+
+/// Backward-compatible one-shot writer. New hosts should call
+/// prepare_registry_snapshot_v1 before creating the final path.
+pub fn write_registry_snapshot(
+    file: CreateOnlyArtifactFile,
+    registry: &ArtifactRegistry,
+    binding: Digest32,
+) -> Result<RegistrySnapshotReceipt, ArtifactStorageError> {
+    write_prepared_registry_snapshot_v1(file, prepare_registry_snapshot_v1(registry, binding)?)
+}
+
+pub fn prepare_registry_head_witness_v1(
     witness: &RegistryHeadWitnessV1,
     requirement: &RegistryHeadRequirementV1,
     binding: Digest32,
-) -> Result<RegistryHeadWitnessReceipt, ArtifactStorageError> {
+) -> Result<PreparedRegistryHeadWitnessV1, ArtifactStorageError> {
     if binding.is_zero() {
         return Err(ArtifactStorageError::InvalidBinding);
     }
@@ -200,8 +254,29 @@ pub fn write_registry_head_witness(
         file_digest: Digest32::of_bytes(&bytes),
         encoded_bytes: bytes.len(),
     };
-    write_new(file, &bytes)?;
-    Ok(receipt)
+    Ok(PreparedRegistryHeadWitnessV1 { bytes, receipt })
+}
+
+pub fn write_prepared_registry_head_witness_v1(
+    file: CreateOnlyArtifactFile,
+    prepared: PreparedRegistryHeadWitnessV1,
+) -> Result<RegistryHeadWitnessReceipt, ArtifactStorageError> {
+    write_new(file, &prepared.bytes)?;
+    Ok(prepared.receipt)
+}
+
+/// Backward-compatible one-shot witness writer. New hosts should prepare before
+/// creating the final path.
+pub fn write_registry_head_witness(
+    file: CreateOnlyArtifactFile,
+    witness: &RegistryHeadWitnessV1,
+    requirement: &RegistryHeadRequirementV1,
+    binding: Digest32,
+) -> Result<RegistryHeadWitnessReceipt, ArtifactStorageError> {
+    write_prepared_registry_head_witness_v1(
+        file,
+        prepare_registry_head_witness_v1(witness, requirement, binding)?,
+    )
 }
 
 /// Read and revalidate a distributed current-head witness.  The caller must
@@ -294,17 +369,39 @@ pub fn read_registry_snapshot(
     Ok(registry)
 }
 
-/// Persist exactly the bytes of a currently eligible candidate, never select it.
+pub fn prepare_candidate_payload_v1(
+    registry: &ArtifactRegistry,
+    artifact: &StableId,
+    bytes: &[u8],
+) -> Result<PreparedCandidatePayloadV1, ArtifactStorageError> {
+    let manifest = eligible_manifest(registry, artifact)?;
+    validate_payload(manifest, bytes)?;
+    Ok(PreparedCandidatePayloadV1 {
+        bytes: bytes.to_vec(),
+        content_digest: manifest.content_digest,
+    })
+}
+
+pub fn write_prepared_candidate_payload_v1(
+    file: CreateOnlyArtifactFile,
+    prepared: PreparedCandidatePayloadV1,
+) -> Result<Digest32, ArtifactStorageError> {
+    write_new(file, &prepared.bytes)?;
+    Ok(prepared.content_digest)
+}
+
+/// Backward-compatible one-shot payload writer. New hosts should prepare before
+/// creating the final path so predictable validation failures create no orphan.
 pub fn write_candidate_payload(
     file: CreateOnlyArtifactFile,
     registry: &ArtifactRegistry,
     artifact: &StableId,
     bytes: &[u8],
 ) -> Result<Digest32, ArtifactStorageError> {
-    let manifest = eligible_manifest(registry, artifact)?;
-    validate_payload(manifest, bytes)?;
-    write_new(file, bytes)?;
-    Ok(manifest.content_digest)
+    write_prepared_candidate_payload_v1(
+        file,
+        prepare_candidate_payload_v1(registry, artifact, bytes)?,
+    )
 }
 
 /// Load candidate bytes using a CURRENT host-authenticated registry snapshot.
