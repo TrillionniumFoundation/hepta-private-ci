@@ -193,18 +193,62 @@ fn exercise_accepts_exact_snapshot_then_rejects_after_revocation() {
 }
 
 #[test]
-fn pricing_subtracts_all_non_token_cost_dimensions() {
+fn pricing_preserves_and_subtracts_all_utility_cost_dimensions() {
     let (registry, model, generation, snapshot) = fixture_registry();
     let candidates = candidate_receipt(&registry, &model, generation, &snapshot);
-    let mut row = evidence(candidates.candidates[0].candidate_id.clone(), 20);
+    let mut row = evidence(candidates.candidates[0].candidate_id.clone(), 30);
+    row.token_shadow_cost = FixedQ32::from_raw(5);
     row.latency_cost = FixedQ32::from_raw(1);
     row.crowding_cost = FixedQ32::from_raw(2);
     row.interference_cost = FixedQ32::from_raw(3);
     row.privacy_cost = FixedQ32::from_raw(4);
     row.instability_cost = FixedQ32::from_raw(1);
     row.future_option_cost = FixedQ32::from_raw(2);
+    row.resource_cost = FixedQ32::from_raw(2);
     let other = evidence(candidates.candidates[1].candidate_id.clone(), 1);
     let pricing = must(price_factors(&candidates, vec![row, other]));
-    assert_eq!(pricing.prices[0].total_utility_cost, FixedQ32::from_raw(13));
-    assert_eq!(pricing.prices[0].net_utility, FixedQ32::from_raw(7));
+    assert_eq!(pricing.prices[0].token_shadow_cost, FixedQ32::from_raw(5));
+    assert_eq!(pricing.prices[0].resource_cost, FixedQ32::from_raw(2));
+    assert_eq!(pricing.prices[0].total_utility_cost, FixedQ32::from_raw(20));
+    assert_eq!(pricing.prices[0].net_utility, FixedQ32::from_raw(10));
+}
+
+#[test]
+fn portfolio_never_selects_two_realizations_of_one_factor() {
+    let (mut registry, model, generation, _) = fixture_registry();
+    must(registry.register_realization_v2(PromptRealizationBindingV2 {
+        realization_id: id("realization:0:alternate"),
+        factor_id: id("factor:0"),
+        model_digest: model.model_digest,
+        tokenizer_digest: model.tokenizer_digest,
+        template_digest: model.template_digest,
+        tool_schema_digest: model.tool_schema_digest,
+        locale_id: model.locale_id.clone(),
+        role: PromptRoleV2::DeveloperInstruction,
+        payload_digest: digest(b"payload:0:alternate"),
+        token_cost: 1,
+        expires_unix_ms: None,
+    }));
+    let snapshot = must(registry.snapshot_v2(generation, &model));
+    let candidates = candidate_receipt(&registry, &model, generation, &snapshot);
+    let evidence = candidates
+        .candidates
+        .iter()
+        .map(|candidate| evidence(candidate.candidate_id.clone(), 10))
+        .collect();
+    let pricing = must(price_factors(&candidates, evidence));
+    let portfolio = must(select_portfolio(
+        &pricing,
+        Vec::new(),
+        PortfolioBudgetV1 {
+            token_budget: 3,
+            maximum_selected: 3,
+        },
+    ));
+    let unique_factors = portfolio
+        .selected_factor_ids
+        .iter()
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(portfolio.selected_factor_ids.len(), 2);
+    assert_eq!(unique_factors.len(), 2);
 }
