@@ -48,6 +48,7 @@ fn edge(
     KnowledgeEdgeV2 {
         identity: KnowledgeEdgeIdentityV2 {
             source_node_id: id(&format!("node:{source}")),
+            relation_id: id(&format!("relation:{support_label}")),
             relation,
             target_node_id: id(&format!("node:{target}")),
         },
@@ -201,6 +202,26 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
         Err(KnowledgeGenerationErrorV2::DigestMismatch(
             "query_generation"
         ))
+    );
+}
+
+#[test]
+fn domain_relations_with_same_endpoints_remain_distinct_by_relation_id() {
+    let generation = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b")],
+            vec![
+                edge("a", "b", KnowledgeRelationKindV2::Domain, "domain-edge-1"),
+                edge("a", "b", KnowledgeRelationKindV2::Domain, "domain-edge-2"),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid domain graph: {error}"));
+    assert_eq!(generation.edges.len(), 2);
+    assert_ne!(
+        generation.edges[0].identity.relation_id,
+        generation.edges[1].identity.relation_id
     );
 }
 
