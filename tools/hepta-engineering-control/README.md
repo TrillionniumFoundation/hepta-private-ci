@@ -1,8 +1,16 @@
 # Hepta engineering control
 
-This source root provides deterministic, bounded work-envelope scheduling and
-integration eligibility. It deliberately has no merge, deployment, runtime,
-promotion or release capability.
+The canonical implementation is `control_engineering_v2`. It provides exact-source
+envelope admission, durable SQLite v5 work coordination, resource-aware orchestration,
+atomic candidate change sets, strong sandbox qualification, mutation testing, sealed
+integration evidence and fail-closed external production-control contracts. The legacy
+`hepta_engineering_control.py` module is compatibility-only for historical fixtures
+and must not be used by new product callers.
+
+The named repository product caller is
+`control_engineering_v2.product_gate`, invoked by the
+`engineering-product-gate` job after source qualification. That caller emits evidence
+only; it has no merge, deployment, runtime, promotion or release capability.
 
 ## Disposable single-service process slice
 
