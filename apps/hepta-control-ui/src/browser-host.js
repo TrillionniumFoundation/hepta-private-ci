@@ -1,4 +1,4 @@
-import { ERROR_CODES, fail, requireRecord, stableId, utf8Bytes } from "./protocol.js";
+import { ERROR_CODES, UiControlError, fail, requireRecord, stableId, utf8Bytes } from "./protocol.js";
 
 const MAX_BOOTSTRAP_BYTES = 16 * 1024;
 const UTF8_DECODER = new TextDecoder("utf-8", { fatal: true });
@@ -27,7 +27,7 @@ async function boundedBootstrapText(response) {
         chunks.push(value);
       }
     } catch (error) {
-      if (error?.code) throw error;
+      if (error instanceof UiControlError) throw error;
       fail(ERROR_CODES.BACKEND_UNAVAILABLE, "control bootstrap response body failed");
     }
     const bytes = new Uint8Array(total);
