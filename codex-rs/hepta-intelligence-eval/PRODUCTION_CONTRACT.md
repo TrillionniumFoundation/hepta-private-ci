@@ -10,7 +10,7 @@ release, deployment, or model-mutation authority.
 | Surface | Status | Allowed use |
 |---|---|---|
 | `evaluate_legacy_inprocess_v1` | **Trusted-only / legacy** | Compatibility tests or explicitly trusted in-process callers only. It is absent from the default production API and is exposed only by the `legacy-inprocess-eval` Cargo feature. |
-| feature alias `evaluate` | **Deprecated / trusted-only** | Available only when `legacy-inprocess-eval` is explicitly enabled. New code must not use it. |
+| feature wrapper `evaluate` | **Deprecated / trusted-only** | Available only when `legacy-inprocess-eval` is explicitly enabled. New code must not use it. |
 | `decide_independently` | **Trusted-only structural evaluator** | Qualification fixtures and already-authenticated in-process composition. It does not authenticate an external evaluator. |
 | `decide_independently_v2` | **Trusted-only structural evaluator** | Same boundary as above, with preregistered metric roles. It is not an external production ingress. |
 | `decide_with_signed_evidence_v1` | **Signed compatibility** | Historical non-longitudinal signed evidence only. New production integrations should use V2. |
