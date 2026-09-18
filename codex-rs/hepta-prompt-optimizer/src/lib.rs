@@ -16,6 +16,21 @@ use codex_hepta_types::StableId;
 
 pub mod local_shadow;
 
+mod canonical_v1;
+
+pub use canonical_v1::CANONICAL_NO_INTERVENTION_ID_V1;
+pub use canonical_v1::CanonicalPromptErrorV1;
+pub use canonical_v1::MAX_CANONICAL_PROMPT_CANDIDATES_V1;
+pub use canonical_v1::PromptAuthenticationErrorV1;
+pub use canonical_v1::PromptCandidateBindingV1;
+pub use canonical_v1::PromptCandidateEnumerationRequestV1;
+pub use canonical_v1::PromptCandidateSetReceiptV1;
+pub use canonical_v1::PromptCandidateSourceAuthenticatorV1;
+pub use canonical_v1::PromptCandidateSourceV1;
+pub use canonical_v1::PromptModelProfileV1;
+pub use canonical_v1::enumerate_factors_v1;
+
+
 const MAX_CANDIDATES: usize = 4_096;
 const MAX_SELECTED: usize = 128;
 const MAX_BUDGET: u64 = 1_000_000;
