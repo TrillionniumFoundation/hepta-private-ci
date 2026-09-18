@@ -8,8 +8,8 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-hardening-final",
     "baseCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
-    "candidateHead": "7243f40453271efc2e158b888a46c5fbe400e09e",
-    "headMeaning": "implementation_test_and_design_head_before_this_attestation_metadata_commit",
+    "candidateHead": "c5ca8365001847c0ab8700354af12ea5e5aebde5",
+    "headMeaning": "frozen implementation_test_and_design_documentation_head_before_this_attestation_metadata_commit",
     "status": "pending_exact_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -19,23 +19,34 @@
       "post_io_authority_revalidation",
       "interruptible_single_attempt_transport",
       "lease_bounded_inflight_io",
+      "exact_consumer_workspace_enrollment",
+      "explicit_discovery_failure_coverage",
+      "revoked_or_stale_attempt_failed_coverage",
+      "combined_payload_coverage_preservation",
+      "bounded_final_model_input_revalidation",
       "agentd_product_runtime_composition",
       "legacy_product_path_retirement_boundary",
+      "frontier_semantics_non_overclaim",
       "adversarial_race_integrity_and_product_composition_tests"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
       "codex-rs/hepta-memory/src/cognitive_runtime.rs",
-      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      "codex-rs/ext/hepta-memory/src/extension.rs",
+      "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "codex-rs/app-server/src/lib.rs"
     ],
     "evidencePaths": [
+      "codex-rs/hepta-memory-federation/src/v2.rs",
       "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_runtime.rs",
       "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
       "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
       "docs/modules/memory.federation/V2_HARDENING.md",
-      "qualification/module-execution-dossiers/detail/memory.federation.md"
+      "qualification/module-execution-dossiers/detail/memory.federation.md",
+      ".github/workflows/memory-federation-v2-final-verify.yml"
     ],
-    "note": "sourceBase remains the shared historical identity required across all module maps. candidateHead attests the frozen implementation/test/design content immediately before this metadata-only map commit, avoiding a self-referential HEAD digest. Exact-candidate workflow evidence must target the resulting PR head before productExecutionProved changes."
+    "note": "sourceBase remains the shared historical identity required across all module maps. candidateHead attests the frozen implementation/test/design/documentation content immediately before this metadata-only map commit, avoiding a self-referential HEAD digest. Exact-current-head and merge-candidate workflow evidence must pass before productExecutionProved, activation, or release changes."
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -84,8 +95,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run the exact current PR-head package, product-composition, all-target and deterministic merge-candidate checks; fix any defect before changing productExecutionProved.",
-    "Record current-head qualification evidence for the Agentd/extension product composition and keep the legacy FederatedRecallSet path compatibility-only."
+    "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved.",
+    "Keep the legacy FederatedRecallSet/AvailableFederated surface compatibility-only and preserve explicit V2 coverage/failure semantics on the Agentd product path."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
