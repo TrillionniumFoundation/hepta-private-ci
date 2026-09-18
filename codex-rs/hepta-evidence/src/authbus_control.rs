@@ -69,7 +69,7 @@ impl HeptaEvidenceStore {
             .bind(rule.principal_id.as_str())
             .bind(rule.action_id.as_str())
             .bind(rule.scope_digest.as_array().as_slice())
-            .bind(i64::from(rule.allow))
+            .bind(if rule.allow { 1_i64 } else { 0_i64 })
             .execute(&mut *tx)
             .await
             .map_err(classify_sqlx_error)?;
@@ -82,7 +82,7 @@ impl HeptaEvidenceStore {
         )
         .bind(policy.policy_id.as_str())
         .bind(policy.revision.to_be_bytes().as_slice())
-        .bind(i64::from(revoked))
+        .bind(if revoked { 1_i64 } else { 0_i64 })
         .bind(now_millis()?)
         .execute(&mut *tx)
         .await
@@ -100,7 +100,7 @@ impl HeptaEvidenceStore {
         let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(classify_sqlx_error)?;
         require_policy_head(&mut tx, policy_id, revision, None).await?;
         sqlx::query("UPDATE authbus_policy_heads SET revoked = ?, updated_at_ms = ? WHERE policy_id = ?")
-            .bind(i64::from(revoked))
+            .bind(if revoked { 1_i64 } else { 0_i64 })
             .bind(now_millis()?)
             .bind(policy_id.as_str())
             .execute(&mut *tx)
@@ -262,6 +262,27 @@ impl HeptaEvidenceStore {
                 state: ReservationState::Active,
             },
         ))
+    }
+
+    pub async fn validate_authbus_reservation_for_effect(
+        &self,
+        reservation_id: &StableId,
+        now_ms: u64,
+    ) -> Result<Reservation, AuthBusControlError> {
+        let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(classify_sqlx_error)?;
+        let reservation = load_reservation(&mut tx, reservation_id).await?;
+        if reservation.state != ReservationState::Active || now_ms >= reservation.expires_at_ms {
+            return Err(AuthBusControlError::InvalidTransition);
+        }
+        require_policy_head(
+            &mut tx,
+            &reservation.policy_id,
+            reservation.policy_revision,
+            Some(false),
+        )
+        .await?;
+        tx.commit().await.map_err(classify_sqlx_error)?;
+        Ok(reservation)
     }
 
     pub async fn settle_authbus_reservation(
@@ -496,7 +517,7 @@ async fn require_policy_head(
         return Err(AuthBusControlError::StaleRevision);
     }
     let current_revoked: i64 = row.try_get("revoked").map_err(classify_sqlx_error)?;
-    if revoked.is_some_and(|expected| current_revoked != i64::from(expected)) || current_revoked != 0 {
+    if revoked.is_some_and(|expected| current_revoked != if expected { 1_i64 } else { 0_i64 }) || current_revoked != 0 {
         return Err(AuthBusControlError::Denied);
     }
     Ok(())
