@@ -216,12 +216,15 @@ impl AutomationStore {
                 };
                 if observation.kind != kind
                     || observation.evidence_digest != *evidence_digest
-                    || observation.observed_at_ms != observed_at_ms
                 {
                     return Err(TaskFlowError::Conflict(
                         "effect observation is already bound to different bytes".to_string(),
                     ));
                 }
+                // The first committed observation timestamp is canonical.
+                // Recovery callers may arrive later; they must reuse the
+                // immutable evidence rather than make timestamp part of the
+                // idempotency key.
                 Ok(current)
             }
             Err(_) => Err(TaskFlowError::Unavailable),
