@@ -491,7 +491,7 @@
       "lifecycle": "target",
       "sourceStatus": "existing_bound",
       "source_root_present": true,
-      "production_implementation": false,
+      "production_implementation": true,
       "declaredRoots": [
         "codex-rs/hepta-cognitive-read"
       ],
@@ -504,7 +504,7 @@
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-READ-1-SNAPSHOT-PORT",
       "technicalDocument": "docs/modules/cognitive.read/TECHNICAL.md",
-      "interpretation": "declared_root_is_materialized_but_activation_acceptance_promotion_and_release_remain_separate"
+      "interpretation": "declared_root_and_named_product_caller_are_materialized; activation_acceptance_promotion_and_release_remain_separate"
     },
     {
       "module": "memory.retrieval",
