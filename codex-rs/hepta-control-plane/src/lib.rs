@@ -11,6 +11,7 @@
 mod cart;
 #[path = "embodiment/io.rs"]
 mod io;
+mod module_lifecycle;
 mod organ_graph;
 mod organ_hierarchy;
 mod organ_registry;
@@ -20,6 +21,7 @@ mod planner;
 mod planner_context;
 mod planner_journal;
 mod planner_ndu;
+mod self_evolution;
 #[path = "embodiment/timing.rs"]
 mod timing;
 
@@ -38,6 +40,12 @@ pub use io::SyntheticActuatorReceiptV1;
 pub use io::SyntheticCartIoV1;
 pub use io::TypedActuatorDispatchV1;
 pub use io::TypedSensorReadingV1;
+pub use module_lifecycle::ModuleLifecycleBarrierV1;
+pub use module_lifecycle::ModuleLifecycleError;
+pub use module_lifecycle::ModuleLifecycleKindV1;
+pub use module_lifecycle::ModuleLifecyclePhaseV1;
+pub use module_lifecycle::RetirementObservationV1;
+pub use module_lifecycle::WriterHandoffReceiptV1;
 pub use organ_graph::DataflowTiming;
 pub use organ_graph::FailureDomainV1;
 pub use organ_graph::FallbackTerminal;
@@ -126,6 +134,10 @@ pub use planner_ndu::NduPlanningError;
 pub use planner_ndu::NduPlanningInputV1;
 pub use planner_ndu::canonical_ndu_planning_policy_digest;
 pub use planner_ndu::evaluate_prepared_plan_with_ndu;
+pub use self_evolution::SelfEvolutionAdoptionReceiptV1;
+pub use self_evolution::SelfEvolutionRollbackReceiptV1;
+pub use self_evolution::SelfEvolutionRuntimeError;
+pub use self_evolution::SelfEvolutionRuntimeV1;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;
