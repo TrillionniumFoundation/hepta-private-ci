@@ -47,9 +47,9 @@ None.
 
 ### Native source and scope
 
-The authoritative product-facing implementation is [codex-rs/hepta-cognitive-read/src/authoritative.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative.rs), including `AuthoritativeCognitiveSnapshotProvider`, `AuthoritativeReadRequestV1`, `AuthoritativeReadGuardV1` and `read_authoritative`. The bounded caller-supplied projection primitive remains [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs), including `ReadRequestV2`, `ReadResultV2` and `read_v2`.
+The authoritative product-facing implementation is [codex-rs/hepta-cognitive-read/src/authoritative.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative.rs), including `AuthoritativeCognitiveSnapshotProvider`, `AuthoritativeReadRequestV1`, `AuthoritativeReadGuardV1` and `read_authoritative`. Caller-supplied compatibility projections remain in [codex-rs/hepta-cognitive-read/src/lib.rs](../../../codex-rs/hepta-cognitive-read/src/lib.rs) as legacy V1 `read` and in [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs) as typed `read_v2`.
 
-`read_v2` is intentionally a lower-level primitive: it validates a supplied immutable snapshot but cannot establish that the bytes still represent the current authoritative retained generation. Product code must use the authoritative acquisition/read/revalidation path. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) for exact composition status and remaining external evidence gates.
+Legacy `read` and `read_v2` are intentionally lower-level primitives: they validate supplied immutable snapshot bytes but cannot establish that those bytes still represent the current authoritative retained generation. Product code must use the authoritative acquisition/read/revalidation path. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) for exact composition status and remaining external evidence gates.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -154,7 +154,7 @@ Any concurrent change that crosses these fences fails closed. A write after the 
 
 Freshness failures including deadline/lease expiry, scope/purpose/authority-epoch drift, owner-frontier drift, provider change, revoked/gone generation, changed vector or changed snapshot fail closed before context delivery. Invalid contract/digest/integrity state maps to corruption/invalid-input handling rather than fallback to an older view. Provider unavailability or indeterminate currentness returns unavailable; there is no stale-success fallback.
 
-Rollback is source-compatible: the lower-level V2 primitive remains available, but the product caller must not silently fall back from authoritative acquisition to `read_v2`. A rollback that removes the authoritative product path must be an explicit source rollback, not runtime degradation.
+Rollback is source-compatible: legacy `read` and the lower-level V2 primitive remain available, but the product caller must not silently fall back from authoritative acquisition to either caller-supplied projection. A rollback that removes the authoritative product path must be an explicit source rollback, not runtime degradation.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
