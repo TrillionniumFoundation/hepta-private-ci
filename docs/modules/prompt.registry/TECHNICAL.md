@@ -172,7 +172,7 @@ Current operating and state-format references:
 - [codex-rs/hepta-prompt-registry/src/delivery.rs](../../../codex-rs/hepta-prompt-registry/src/delivery.rs) — payload-backed realization registration, supersession and dereference.
 - [codex-rs/hepta-prompt-registry/src/protocol.rs](../../../codex-rs/hepta-prompt-registry/src/protocol.rs) — native canonical JSON codecs for `PromptFactorV1` and `PromptRealizationV1`.
 - [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs) — context-profile-bound exact compatibility snapshots.
-- [codex-rs/hepta-intelligence/src/prompt_delivery.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery.rs) — source-level consumer that dereferences actual bytes before creating trusted `context.compiler` candidates.
+- [codex-rs/hepta-intelligence/src/prompt_delivery.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery.rs) — source-level consumer that dereferences actual bytes, compiles trusted candidates, deterministically serializes selected bytes and binds the payload digest into `ContextSerializationReceiptV2` and `ContextAttachmentV2`.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
