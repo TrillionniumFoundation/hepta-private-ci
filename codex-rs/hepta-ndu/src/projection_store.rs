@@ -154,10 +154,12 @@ fn open_store(path: &Path) -> Result<NduProjectionFileStoreV1, NduProjectionStor
     use std::os::unix::fs::OpenOptionsExt;
     use std::os::unix::fs::PermissionsExt;
 
-    let parent = path.parent().filter(|value| !value.as_os_str().is_empty()).ok_or(
-        NduProjectionStoreError::InvalidPath,
-    )?;
-    let parent_metadata = std::fs::symlink_metadata(parent).map_err(|_| NduProjectionStoreError::Io)?;
+    let parent = path
+        .parent()
+        .filter(|value| !value.as_os_str().is_empty())
+        .ok_or(NduProjectionStoreError::InvalidPath)?;
+    let parent_metadata =
+        std::fs::symlink_metadata(parent).map_err(|_| NduProjectionStoreError::Io)?;
     if parent_metadata.file_type().is_symlink() || !parent_metadata.is_dir() {
         return Err(NduProjectionStoreError::InvalidPath);
     }
@@ -179,7 +181,12 @@ fn open_store(path: &Path) -> Result<NduProjectionFileStoreV1, NduProjectionStor
     let lock_file = lock_options
         .open(&lock_path)
         .map_err(|_| NduProjectionStoreError::Io)?;
-    if lock_file.metadata().map_err(|_| NduProjectionStoreError::Io)?.permissions().mode() & 0o077
+    if lock_file
+        .metadata()
+        .map_err(|_| NduProjectionStoreError::Io)?
+        .permissions()
+        .mode()
+        & 0o077
         != 0
     {
         return Err(NduProjectionStoreError::InsecurePermissions);
@@ -231,9 +238,7 @@ fn open_store(path: &Path) -> Result<NduProjectionFileStoreV1, NduProjectionStor
             }
             NduProjectionJournalV1::reopen(&bytes)?
         }
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            NduProjectionJournalV1::new()
-        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => NduProjectionJournalV1::new(),
         Err(_) => return Err(NduProjectionStoreError::Io),
     };
 
@@ -251,10 +256,7 @@ fn open_store(_path: &Path) -> Result<NduProjectionFileStoreV1, NduProjectionSto
 }
 
 #[cfg(unix)]
-fn persist(
-    path: &Path,
-    journal: &NduProjectionJournalV1,
-) -> Result<(), NduProjectionStoreError> {
+fn persist(path: &Path, journal: &NduProjectionJournalV1) -> Result<(), NduProjectionStoreError> {
     use std::os::unix::fs::OpenOptionsExt;
 
     let bytes = journal.export_bytes();
@@ -297,10 +299,7 @@ fn persist(
 }
 
 #[cfg(not(unix))]
-fn persist(
-    _path: &Path,
-    _journal: &NduProjectionJournalV1,
-) -> Result<(), NduProjectionStoreError> {
+fn persist(_path: &Path, _journal: &NduProjectionJournalV1) -> Result<(), NduProjectionStoreError> {
     Err(NduProjectionStoreError::UnsupportedPlatform)
 }
 

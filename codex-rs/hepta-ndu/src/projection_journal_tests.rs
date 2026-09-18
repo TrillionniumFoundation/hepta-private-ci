@@ -157,24 +157,9 @@ fn revocation_is_scoped_by_objective_and_subject() {
         subject_b,
         projection,
     ));
-    must(journal.select_projection(
-        digest("selection-a"),
-        objective_a,
-        subject_a,
-        projection,
-    ));
-    must(journal.select_projection(
-        digest("selection-b"),
-        objective_b,
-        subject_b,
-        projection,
-    ));
-    must(journal.revoke_projection(
-        digest("revocation-a"),
-        objective_a,
-        subject_a,
-        projection,
-    ));
+    must(journal.select_projection(digest("selection-a"), objective_a, subject_a, projection));
+    must(journal.select_projection(digest("selection-b"), objective_b, subject_b, projection));
+    must(journal.revoke_projection(digest("revocation-a"), objective_a, subject_a, projection));
 
     assert_eq!(
         journal.selected_projection_digest(objective_a, subject_a),
@@ -184,10 +169,5 @@ fn revocation_is_scoped_by_objective_and_subject() {
         journal.selected_projection_digest(objective_b, subject_b),
         Some(projection)
     );
-    must(journal.select_projection(
-        digest("selection-b-2"),
-        objective_b,
-        subject_b,
-        projection,
-    ));
+    must(journal.select_projection(digest("selection-b-2"), objective_b, subject_b, projection));
 }

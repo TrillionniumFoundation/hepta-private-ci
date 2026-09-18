@@ -190,7 +190,11 @@ fn validate_parent_shape(update: &UpdateGeneration) -> Result<(), NduError> {
         SubjectClass::Agent => Some(SubjectClass::Domain),
         SubjectClass::Episode => Some(SubjectClass::Agent),
     };
-    match (expected, &update.parent_subject_id, update.parent_subject_class) {
+    match (
+        expected,
+        &update.parent_subject_id,
+        update.parent_subject_class,
+    ) {
         (None, None, None) => Ok(()),
         (Some(expected_class), Some(parent_id), Some(parent_class))
             if expected_class == parent_class && parent_id != &update.subject_id =>
@@ -447,9 +451,7 @@ fn normalize_and_validate_values(values: &mut [AxisValue]) -> Result<(), NduErro
     let minimum = FixedQ32::from_raw(-FixedQ32::ONE.raw());
     for value in values.iter() {
         if value.value < minimum || value.value > FixedQ32::ONE {
-            return Err(NduError::PreferenceValueOutOfRange(
-                value.axis.to_string(),
-            ));
+            return Err(NduError::PreferenceValueOutOfRange(value.axis.to_string()));
         }
     }
     for window in values.windows(2) {

@@ -126,11 +126,8 @@ fn receipt_cannot_be_rebound_to_another_context() {
         FixedQ32::from_raw(1_i64 << 30),
     ));
     assert_eq!(
-        bind_solver_iteration_receipt_v1(
-            &second,
-            receipts.first().expect("first solver receipt"),
-        )
-        .expect_err("cross-context rebind must fail"),
+        bind_solver_iteration_receipt_v1(&second, receipts.first().expect("first solver receipt"),)
+            .expect_err("cross-context rebind must fail"),
         NduError::SolverContextMismatch
     );
 }
