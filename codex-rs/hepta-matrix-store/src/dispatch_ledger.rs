@@ -145,6 +145,9 @@ impl MatrixDurableStore {
             .map_err(store_error)?;
         if let Some(mut current) = load_record_tx(&mut transaction, &intent.operation_id).await? {
             if current.intent == *intent {
+                if !current.receipt.state.is_terminal() {
+                    validate_intent_live(now_ms, intent)?;
+                }
                 current.receipt.idempotent = true;
                 transaction.commit().await.map_err(store_error)?;
                 return Ok(current.receipt);
