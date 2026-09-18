@@ -131,7 +131,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         return Err("model outcome is indeterminate; this request was not replayed".into());
     }
     if !output.succeeded() {
-        return Err("model run lacks successful completion with verified owner authority".into());
+        return Err("model run lacks successful completion with final-use admission and verified owner authority".into());
     }
     Ok(())
 }
