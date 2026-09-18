@@ -137,6 +137,7 @@ fn reopened_codex_boundary(
         ) => Ok(Some(NativeCodexBoundaryReceipt {
             request_digest: request_digest.clone(),
             response_digest: None,
+            observation_source: None,
             context_digest: dispatch.context_digest.clone(),
             connection_digest: connection_digest.clone(),
             session_generation,
