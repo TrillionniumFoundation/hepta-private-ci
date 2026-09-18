@@ -12,6 +12,7 @@ use std::fmt;
 
 use codex_hepta_prompt_registry::{
     CompatibleRealizationSetV2, PromptModelTupleV2, PromptRegistry, PromptRegistrySnapshotV2,
+    PromptRoleV2,
 };
 use codex_hepta_types::{AuthorityPosture, Digest32, FixedQ32, StableId};
 
@@ -27,6 +28,7 @@ pub struct PromptCandidateV1 {
     pub realization_id: StableId,
     pub payload_digest: Digest32,
     pub token_cost: u64,
+    pub role: PromptRoleV2,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -219,6 +221,7 @@ pub fn enumerate_factors(
             realization_id: binding.realization_id.clone(),
             payload_digest: binding.payload_digest,
             token_cost: u64::from(binding.token_cost),
+            role: binding.role,
         });
     }
     candidates.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
@@ -724,6 +727,7 @@ fn digest_candidate_set(value: &PromptCandidateSetReceiptV1) -> Digest32 {
         push_id(&mut bytes, &candidate.realization_id);
         push_digest(&mut bytes, candidate.payload_digest);
         push_u64(&mut bytes, candidate.token_cost);
+        bytes.push(prompt_role_code(candidate.role));
     }
     push_u64(&mut bytes, u64::from(value.omitted_count));
     Digest32::of_bytes(&bytes)
@@ -739,6 +743,7 @@ fn digest_pricing(value: &PromptPricingReceiptV1) -> Digest32 {
         push_id(&mut bytes, &price.candidate.realization_id);
         push_digest(&mut bytes, price.candidate.payload_digest);
         push_u64(&mut bytes, price.candidate.token_cost);
+        bytes.push(prompt_role_code(price.candidate.role));
         push_i64(&mut bytes, price.causal_utility.raw());
         push_i64(&mut bytes, price.non_token_cost.raw());
         push_i64(&mut bytes, price.net_utility.raw());
@@ -782,6 +787,15 @@ fn digest_exercise(value: &PromptExerciseDecisionV1) -> Digest32 {
         ExerciseDispositionV1::RejectStale => 1,
     });
     Digest32::of_bytes(&bytes)
+}
+
+fn prompt_role_code(value: PromptRoleV2) -> u8 {
+    match value {
+        PromptRoleV2::SystemInstruction => 0,
+        PromptRoleV2::DeveloperInstruction => 1,
+        PromptRoleV2::UserTemplate => 2,
+        PromptRoleV2::ToolSchemaFragment => 3,
+    }
 }
 
 fn boundary_code(value: ExerciseBoundaryV1) -> u8 {
