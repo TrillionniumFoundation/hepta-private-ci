@@ -243,12 +243,20 @@ impl BaoClient {
         request: &BaoDynamicLeaseRequest,
     ) -> Result<BaoLeaseReceipt, BaoClientError> {
         let binding = self.issue_binding(request)?;
-        require_dispatch(leases.store.prepare(
-            &request.operation_id,
-            binding.request_sha256,
-            BaoLeaseOperationKind::Issue,
-            None,
-        )?)?;
+        if !self.consumers.contains(&request.consumer_id) {
+            return Err(BaoClientError::UnknownConsumer);
+        }
+        require_dispatch(
+            leases
+                .store
+                .prepare(
+                    &request.operation_id,
+                    binding.request_sha256,
+                    BaoLeaseOperationKind::Issue,
+                    None,
+                )
+                .map_err(store_error)?,
+        )?;
         let verified = authority
             .claim(grant, &binding)
             .map_err(BaoClientError::Authority)?;
@@ -372,12 +380,17 @@ impl BaoClient {
             return Err(BaoClientError::InvalidRequest);
         }
         let binding = self.renew_binding(request)?;
-        require_dispatch(leases.store.prepare(
-            &request.operation_id,
-            binding.request_sha256,
-            BaoLeaseOperationKind::Renew,
-            Some(&request.lease_id),
-        )?)?;
+        require_dispatch(
+            leases
+                .store
+                .prepare(
+                    &request.operation_id,
+                    binding.request_sha256,
+                    BaoLeaseOperationKind::Renew,
+                    Some(&request.lease_id),
+                )
+                .map_err(store_error)?,
+        )?;
         let _verified = authority
             .claim(grant, &binding)
             .map_err(BaoClientError::Authority)?;
@@ -460,12 +473,17 @@ impl BaoClient {
             return Err(BaoClientError::LeaseOperationAlreadyCompleted);
         }
         let binding = self.revoke_binding(request)?;
-        require_dispatch(leases.store.prepare(
-            &request.operation_id,
-            binding.request_sha256,
-            BaoLeaseOperationKind::Revoke,
-            Some(&request.lease_id),
-        )?)?;
+        require_dispatch(
+            leases
+                .store
+                .prepare(
+                    &request.operation_id,
+                    binding.request_sha256,
+                    BaoLeaseOperationKind::Revoke,
+                    Some(&request.lease_id),
+                )
+                .map_err(store_error)?,
+        )?;
         let _verified = authority
             .claim(grant, &binding)
             .map_err(BaoClientError::Authority)?;
