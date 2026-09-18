@@ -8,7 +8,7 @@ promotion or release authority.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from collections.abc import Iterable, Mapping
 import time
@@ -19,10 +19,12 @@ from .control_plane import (
     WorkEnvelope,
     WorkPackage,
     bounded_tuple,
+    canonical_json,
     canonical_paths,
     checked_id,
     path_is_within,
     path_sets_overlap,
+    semantic_digest,
 )
 from .evidence import (
     CanonicalSourceReceipt,
@@ -369,6 +371,55 @@ def plan_engineering_work(
     )
 
 
+def _plan_payload(plan: OrchestrationPlan) -> dict[str, object]:
+    return {
+        "generationId": plan.generation_id,
+        "sourceCommit": plan.source_commit,
+        "sourceTree": plan.source_tree,
+        "assignments": [asdict(item) for item in plan.assignments],
+        "blocked": plan.blocked,
+        "integrationOrder": plan.integration_order,
+        "mergeQueue": [asdict(item) for item in plan.merge_queue],
+        "authority": {
+            "runtime": plan.runtime_authority,
+            "workerWrite": plan.worker_write_authority,
+            "merge": plan.merge_authority,
+            "activation": plan.activation_authority,
+            "promotion": plan.promotion_authority,
+            "release": plan.release_authority,
+        },
+    }
+
+
+def orchestration_generation(
+    store: EngineeringStore,
+    generation_id: str,
+) -> dict[str, object]:
+    """Read the immutable rich work-assignment projection for one generation."""
+    checked_id(generation_id, "generation_id")
+    row = store.connection.execute(
+        "SELECT semantic_digest,plan_json,created_unix_ns "
+        "FROM orchestration_generations WHERE generation_id=?",
+        (generation_id,),
+    ).fetchone()
+    if row is None:
+        raise EngineeringError("unknown_orchestration_generation")
+    import json
+
+    try:
+        payload = json.loads(bytes(row["plan_json"]).decode("utf-8"))
+    except (UnicodeDecodeError, ValueError, TypeError):
+        raise EngineeringError("orchestration_generation_corrupt") from None
+    if semantic_digest(payload) != str(row["semantic_digest"]):
+        raise EngineeringError("orchestration_generation_corrupt")
+    return {
+        "generationId": generation_id,
+        "semanticDigest": str(row["semantic_digest"]),
+        "plan": payload,
+        "createdUnixNs": int(row["created_unix_ns"]),
+    }
+
+
 def persist_orchestration_generation(
     store: EngineeringStore,
     envelope: WorkEnvelope,
@@ -379,32 +430,86 @@ def persist_orchestration_generation(
     *,
     now_ns: int | None = None,
 ):
-    """Persist the exact package-id projection through the existing SQLite owner."""
+    """Atomically persist the package projection and the complete orchestration plan."""
+    now = store._now(now_ns)
+    if not isinstance(plan, OrchestrationPlan):
+        raise EngineeringError("invalid_orchestration_plan")
+    if (
+        plan.source_commit != envelope.source_commit
+        or plan.source_tree != envelope.source_tree
+    ):
+        raise EngineeringError("orchestration_source_mismatch")
+    if any(
+        (
+            plan.runtime_authority,
+            plan.worker_write_authority,
+            plan.merge_authority,
+            plan.activation_authority,
+            plan.promotion_authority,
+            plan.release_authority,
+        )
+    ):
+        raise EngineeringError("orchestration_authority_delta")
+
     completed = verify_work_completion_receipts(
         list(completion_receipts),
         trust_store,
         generation_id=None,
         source_commit=envelope.source_commit,
         source_tree=envelope.source_tree,
-        now_ns=now_ns,
+        now_ns=now,
     )
     by_id = {item.package_id: _package(item) for item in packages}
-    selected = tuple(
-        WorkPackage(
-            by_id[assignment.package_id].priority,
-            assignment.package_id,
-            by_id[assignment.package_id].predecessors,
-            assignment.write_paths,
+    if len(by_id) > 4096:
+        raise EngineeringError("package_limit_exceeded")
+    try:
+        selected = tuple(
+            WorkPackage(
+                by_id[assignment.package_id].priority,
+                assignment.package_id,
+                by_id[assignment.package_id].predecessors,
+                assignment.write_paths,
+            )
+            for assignment in plan.assignments
         )
-        for assignment in plan.assignments
-    )
-    receipt = store.schedule_ready_packages(
-        envelope.envelope_id,
-        selected,
-        completed,
-        generation_id=plan.generation_id,
-        now_ns=now_ns,
-    )
-    if receipt.assigned != plan.integration_order:
-        raise EngineeringError("orchestration_persistence_mismatch")
+    except KeyError:
+        raise EngineeringError("orchestration_package_missing") from None
+
+    payload = _plan_payload(plan)
+    digest = semantic_digest(payload)
+    with store._transaction():
+        receipt = store.schedule_ready_packages(
+            envelope.envelope_id,
+            selected,
+            completed,
+            generation_id=plan.generation_id,
+            now_ns=now,
+        )
+        if receipt.assigned != plan.integration_order:
+            raise EngineeringError("orchestration_persistence_mismatch")
+        existing = store.connection.execute(
+            "SELECT semantic_digest FROM orchestration_generations WHERE generation_id=?",
+            (plan.generation_id,),
+        ).fetchone()
+        if existing is not None:
+            if str(existing["semantic_digest"]) != digest:
+                raise EngineeringError("orchestration_generation_conflict")
+            return receipt
+        store.connection.execute(
+            "INSERT INTO orchestration_generations("
+            "generation_id,semantic_digest,plan_json,created_unix_ns"
+            ") VALUES(?,?,?,?)",
+            (plan.generation_id, digest, canonical_json(payload), now),
+        )
+        store._append_audit(
+            "orchestration_generation_published",
+            {
+                "generationId": plan.generation_id,
+                "semanticDigest": digest,
+                "assignmentCount": len(plan.assignments),
+                "mergeQueueCount": len(plan.merge_queue),
+            },
+            now,
+        )
     return receipt
+
