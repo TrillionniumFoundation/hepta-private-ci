@@ -159,6 +159,7 @@ struct AggregatedRank {
 struct EntitySeed {
     projection_scope: String,
     generation: i64,
+    generation_sha256: String,
     canonical_entity_id: String,
     memory: MemoryKey,
 }
@@ -559,11 +560,14 @@ impl CognitiveStore {
             })
             .map(|scope| scope.projection_key());
         let rows = sqlx::query(
-            "SELECT f.projection_scope, f.generation, f.node_id,
+            "SELECT f.projection_scope, f.generation, k.generation_sha256, f.node_id,
                     i.canonical_entity_id, n.memory_id, n.memory_revision
              FROM kg_entity_fts f
              JOIN kg_projection p ON p.projection_scope = f.projection_scope
                                   AND p.generation = f.generation
+             JOIN kg_projection_kernel_receipts k
+               ON k.projection_scope = p.projection_scope
+              AND k.generation = p.generation
              JOIN kg_nodes n ON n.projection_scope = f.projection_scope
                             AND n.generation = f.generation AND n.node_id = f.node_id
              JOIN kg_projection_node_entities i
@@ -607,11 +611,14 @@ impl CognitiveStore {
                     let projection_scope: String =
                         row.try_get("projection_scope").map_err(unavailable)?;
                     let generation: i64 = row.try_get("generation").map_err(unavailable)?;
+                    let generation_sha256: String =
+                        row.try_get("generation_sha256").map_err(unavailable)?;
                     let canonical_entity_id: String =
                         row.try_get("canonical_entity_id").map_err(unavailable)?;
                     if !seen.insert((
                         projection_scope.clone(),
                         generation,
+                        generation_sha256.clone(),
                         canonical_entity_id.clone(),
                         memory.clone(),
                     )) {
@@ -620,6 +627,7 @@ impl CognitiveStore {
                     Ok(Some(EntitySeed {
                         projection_scope,
                         generation,
+                        generation_sha256,
                         canonical_entity_id,
                         memory,
                     }))
@@ -668,6 +676,10 @@ impl CognitiveStore {
                  JOIN kg_edges e
                    ON e.projection_scope = ? AND e.generation = ?
                   AND (e.from_node_id = s.node_id OR e.to_node_id = s.node_id)
+                 JOIN kg_projection_kernel_receipts k
+                   ON k.projection_scope = e.projection_scope
+                  AND k.generation = e.generation
+                  AND k.generation_sha256 = ?
                  JOIN kg_nodes n
                    ON n.projection_scope = e.projection_scope AND n.generation = e.generation
                   AND n.node_id = CASE WHEN e.from_node_id = s.node_id
@@ -698,6 +710,7 @@ impl CognitiveStore {
             .bind(&seed.canonical_entity_id)
             .bind(&seed.projection_scope)
             .bind(seed.generation)
+            .bind(&seed.generation_sha256)
             .bind(now)
             .bind(now)
             .bind(now)
@@ -747,24 +760,35 @@ impl CognitiveStore {
         )],
         now: i64,
     ) -> Result<Vec<MemoryRevisionId>, CognitiveStoreError> {
-        let seeds = seeds
-            .iter()
-            .map(
-                |(scope, generation, canonical_entity_id, memory)| -> Result<_, CognitiveStoreError> {
-                    Ok(EntitySeed {
-                        projection_scope: scope.projection_key(),
-                        generation: to_i64(generation.get(), "projection generation")?,
-                        canonical_entity_id: canonical_entity_id.clone(),
-                        memory: MemoryKey {
-                            memory_id: memory.memory_id.as_str().to_string(),
-                            revision: memory.revision,
-                        },
-                    })
-                },
-            )
-            .collect::<Result<Vec<_>, _>>()?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-        let keys = self.graph_channel_tx(&mut transaction, &seeds, now).await?;
+        let mut bound_seeds = Vec::with_capacity(seeds.len());
+        for (scope, generation, canonical_entity_id, memory) in seeds {
+            let projection_scope = scope.projection_key();
+            let generation = to_i64(generation.get(), "projection generation")?;
+            let generation_sha256 = sqlx::query_scalar::<_, String>(
+                "SELECT generation_sha256
+                 FROM kg_projection_kernel_receipts
+                 WHERE projection_scope = ? AND generation = ?",
+            )
+            .bind(&projection_scope)
+            .bind(generation)
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            bound_seeds.push(EntitySeed {
+                projection_scope,
+                generation,
+                generation_sha256,
+                canonical_entity_id: canonical_entity_id.clone(),
+                memory: MemoryKey {
+                    memory_id: memory.memory_id.as_str().to_string(),
+                    revision: memory.revision,
+                },
+            });
+        }
+        let keys = self
+            .graph_channel_tx(&mut transaction, &bound_seeds, now)
+            .await?;
         transaction.commit().await.map_err(unavailable)?;
         keys.values
             .into_iter()
