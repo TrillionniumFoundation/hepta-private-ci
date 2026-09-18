@@ -394,6 +394,67 @@ async fn terminal_gc_writes_tombstone_and_prevents_resurrection() {
 }
 
 #[tokio::test]
+async fn retirement_never_discards_an_unreconciled_external_effect() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("operations.sqlite3");
+    let operation = intent(b"retirement-payload");
+    let store = DurableOperationStore::open(&path).await.expect("open");
+    store.prepare_intent(&operation).await.expect("prepare");
+    let claim = store
+        .claim_next(
+            &operation.destination,
+            &stable_id("worker:retirement"),
+            generation(1),
+            Duration::from_secs(1),
+        )
+        .await
+        .expect("claim")
+        .expect("row");
+
+    sqlx::query(
+        "UPDATE operation_ledger SET state = 'indeterminate', indeterminate_digest = ?,
+         revision = revision + 1 WHERE scope_id = ? AND operation_id = ?",
+    )
+    .bind(Digest32::of_bytes(b"effect-may-have-crossed").as_array().as_slice())
+    .bind(operation.scope_id.as_str())
+    .bind(operation.operation_id.as_str())
+    .execute(&store.pool)
+    .await
+    .expect("fixture indeterminate");
+
+    assert_eq!(
+        store.prune_terminal(u64::MAX, 10).await.expect("prune"),
+        0,
+        "retirement/GC must not erase an unresolved external effect",
+    );
+    let still_open = store
+        .operation(&operation.scope_id, &operation.operation_id)
+        .await
+        .expect("lookup")
+        .expect("operation remains");
+    assert_eq!(still_open.state, DurableOperationState::Indeterminate);
+
+    store
+        .observe_terminal(
+            &operation.scope_id,
+            &operation.operation_id,
+            &ReconciliationReceiptV1 {
+                outcome: ReconciliationOutcome::Applied,
+                evidence_digest: Digest32::of_bytes(b"terminal-retirement-observation"),
+                observer_id: stable_id("observer:retirement"),
+                observer_generation: claim.owner_generation,
+            },
+        )
+        .await
+        .expect("reconcile before retirement");
+    assert_eq!(store.prune_terminal(u64::MAX, 10).await.expect("prune"), 1);
+    assert!(matches!(
+        store.prepare_intent(&operation).await,
+        Err(DurableOperationError::Retired(_))
+    ));
+}
+
+#[tokio::test]
 async fn migration_checksum_tamper_fails_reopen() {
     let directory = tempfile::tempdir().expect("tempdir");
     let path = directory.path().join("operations.sqlite3");
