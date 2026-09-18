@@ -9,6 +9,9 @@
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
+use std::future::Future;
+use std::pin::Pin;
+use std::time::Duration;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -17,6 +20,7 @@ use codex_hepta_types::StableId;
 
 pub const MAX_FEDERATED_RESULTS_V2: usize = 512;
 const QUERY_DOMAIN: &[u8] = b"hepta.memory-federation.query.v2";
+const RESPONSE_DOMAIN: &[u8] = b"hepta.memory-federation.response.v2";
 const RESULT_DOMAIN: &[u8] = b"hepta.memory-federation.result.v2";
 const CANCELLATION_DOMAIN: &[u8] = b"hepta.memory-federation.cancellation.v2";
 
@@ -185,6 +189,7 @@ pub enum FederatedValidityV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RemoteFederatedResponseV2 {
     pub peer_id: StableId,
+    pub query_binding_digest: Digest32,
     pub scope_digest: Digest32,
     pub purpose_digest: Digest32,
     pub generation_vector_digest: Digest32,
@@ -197,6 +202,38 @@ pub struct RemoteFederatedResponseV2 {
 }
 
 impl RemoteFederatedResponseV2 {
+    #[must_use]
+    pub fn compute_response_digest(&self) -> Digest32 {
+        let mut items = self.items.iter().collect::<Vec<_>>();
+        items.sort_by(|left, right| {
+            left.source_owner_id
+                .cmp(&right.source_owner_id)
+                .then_with(|| left.record_id.cmp(&right.record_id))
+                .then_with(|| left.record_revision.cmp(&right.record_revision))
+        });
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(RESPONSE_DOMAIN);
+        push_id(&mut bytes, &self.peer_id);
+        push_digest(&mut bytes, self.query_binding_digest);
+        push_digest(&mut bytes, self.scope_digest);
+        push_digest(&mut bytes, self.purpose_digest);
+        push_digest(&mut bytes, self.generation_vector_digest);
+        push_u64(&mut bytes, self.observed_frontier);
+        push_u64(&mut bytes, self.expires_unix_ms);
+        push_len(&mut bytes, items.len());
+        for item in items {
+            push_id(&mut bytes, &item.source_owner_id);
+            push_id(&mut bytes, &item.record_id);
+            push_u64(&mut bytes, item.record_revision.get());
+            push_digest(&mut bytes, item.record_digest);
+            push_digest(&mut bytes, item.support_digest);
+            push_digest(&mut bytes, item.validity_digest);
+        }
+        bytes.push(completeness_code(self.completeness));
+        bytes.push(u8::from(self.terminal_observed));
+        Digest32::of_bytes(&bytes)
+    }
+
     fn validate_shape(&self) -> Result<(), FederationV2Error> {
         if !self.terminal_observed {
             return Err(FederationV2Error::MissingTerminalObservation);
@@ -208,6 +245,7 @@ impl RemoteFederatedResponseV2 {
             return Err(FederationV2Error::ZeroValue("response_expiry"));
         }
         for (name, digest) in [
+            ("response_query_binding", self.query_binding_digest),
             ("response_scope", self.scope_digest),
             ("response_purpose", self.purpose_digest),
             ("response_generation_vector", self.generation_vector_digest),
@@ -241,12 +279,38 @@ impl RemoteFederatedResponseV2 {
         }
         Ok(())
     }
+
+    fn validate_for_query(&self, query: &FederatedQueryV2) -> Result<(), FederationV2Error> {
+        self.validate_shape()?;
+        if self.peer_id != query.peer_id {
+            return Err(FederationV2Error::IdentityMismatch("response_peer"));
+        }
+        for (name, left, right) in [
+            (
+                "response_query_binding",
+                self.query_binding_digest,
+                query.binding_digest(),
+            ),
+            ("response_scope", self.scope_digest, query.scope_digest),
+            ("response_purpose", self.purpose_digest, query.purpose_digest),
+        ] {
+            if left != right {
+                return Err(FederationV2Error::DigestMismatch(name));
+            }
+        }
+        if self.response_digest != self.compute_response_digest() {
+            return Err(FederationV2Error::DigestMismatch("response"));
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum FederationTransportOutcomeV2#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FederationTransportOutcomeV2 {
     Unavailable,
     TimedOut,
+    Cancelled,
     NoTerminalObservation,
 }
 
@@ -260,14 +324,76 @@ pub enum FederationTransportResultV2 {
 ///
 /// `execute_once` invokes this method exactly once. Any retry policy belongs to
 /// a separately authorized caller and must allocate a new nonce and attempt ID.
-pub trait FederationTransportV2 {
-    fn send_once(
-        &self,
-        query: &FederatedQueryV2,
-    ) -> Result<FederationTransportResultV2, FederationV2Error>;
+/// The returned future is cancellation-safe: dropping it must not dispatch a
+/// second request or detach untracked I/O.
+pub type FederationTransportFutureV2<'a> = Pin<
+    Box<
+        dyn Future<Output = Result<FederationTransportResultV2, FederationV2Error>>
+            + Send
+            + 'a,
+    >,
+>;
+
+pub trait FederationTransportV2: Send + Sync {
+    fn send_once<'a>(&'a self, query: &'a FederatedQueryV2) -> FederationTransportFutureV2<'a>;
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FederationAuthorityObservationV2 {
+    pub lease_id: StableId,
+    pub query_binding_digest: Digest32,
+    pub generation_vector_digest: Digest32,
+    pub lease_epoch: u64,
+    pub expires_unix_ms: u64,
+    pub revoked: bool,
+}
+
+pub type FederationAuthorityFutureV2<'a> = Pin<
+    Box<
+        dyn Future<Output = Result<FederationAuthorityObservationV2, FederationV2Error>>
+            + Send
+            + 'a,
+    >,
+>;
+
+/// Live capability observation supplied by the authority owner.
+///
+/// The engine observes authority before dispatch and again after terminal I/O.
+/// A cached lease alone is never sufficient to admit remote evidence.
+pub trait FederationAuthorityV2: Send + Sync {
+    fn observe<'a>(
+        &'a self,
+        query: &'a FederatedQueryV2,
+        lease: &'a FederatedLeaseV2,
+    ) -> FederationAuthorityFutureV2<'a>;
+}
+
+pub type FederationCancellationFutureV2<'a> =
+    Pin<Box<dyn Future<Output = ()> + Send + 'a>>;
+
+/// Cancellation source owned by the product caller.
+///
+/// The engine races this signal against transport and deadline, so cancellation
+/// does not depend on a blocking transport returning first.
+pub trait FederationCancellationV2: Send + Sync {
+    fn is_cancelled(&self) -> bool;
+    fn cancelled<'a>(&'a self) -> FederationCancellationFutureV2<'a>;
+}
+
+/// Injectable clock used for deterministic authority/deadline checks.
+pub trait FederationClockV2: Send + Sync {
+    fn now_unix_ms(&self) -> u64;
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum AuthorityDispositionV2 {
+    Current,
+    StaleGeneration,
+    Revoked,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FederatedCoverageV2#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederatedCoverageV2 {
     pub requested_peers: u32,
     pub completed_peers: u32,
@@ -318,7 +444,11 @@ impl FederatedResultV2 {
         {
             return Err(FederationV2Error::InvalidCompleteness);
         }
-        if matches!(self.validity, FederatedValidityV2::StaleGeneration) && !self.items.is_empty() {
+        if matches!(
+            self.validity,
+            FederatedValidityV2::StaleGeneration | FederatedValidityV2::Revoked
+        ) && !self.items.is_empty()
+        {
             return Err(FederationV2Error::StaleEvidenceExposed);
         }
         let mut identities = BTreeSet::new();
@@ -385,64 +515,184 @@ impl FederatedResultV2 {
     }
 }
 
-pub fn execute_once<T: FederationTransportV2>(
-    transport: &T,
+fn validate_authority_observation(
+    observation: &FederationAuthorityObservationV2,
     now_unix_ms: u64,
+    query: &FederatedQueryV2,
+    lease: &FederatedLeaseV2,
+) -> Result<AuthorityDispositionV2, FederationV2Error> {
+    ensure_digest(
+        "authority_query_binding",
+        observation.query_binding_digest,
+    )?;
+    ensure_digest(
+        "authority_generation_vector",
+        observation.generation_vector_digest,
+    )?;
+    if observation.lease_id != lease.lease_id {
+        return Err(FederationV2Error::IdentityMismatch("authority_lease"));
+    }
+    if observation.query_binding_digest != query.binding_digest() {
+        return Err(FederationV2Error::DigestMismatch(
+            "authority_query_binding",
+        ));
+    }
+    if observation.lease_epoch == 0 || observation.lease_epoch != query.lease_epoch {
+        return Err(FederationV2Error::LeaseEpochMismatch);
+    }
+    if observation.expires_unix_ms == 0 {
+        return Err(FederationV2Error::ZeroValue("authority_expiry"));
+    }
+    if now_unix_ms >= observation.expires_unix_ms {
+        return Err(FederationV2Error::LeaseExpired);
+    }
+    if observation.revoked {
+        return Ok(AuthorityDispositionV2::Revoked);
+    }
+    if observation.generation_vector_digest != query.generation_vector_digest {
+        return Ok(AuthorityDispositionV2::StaleGeneration);
+    }
+    Ok(AuthorityDispositionV2::Current)
+}
+
+fn indeterminate_result(
+    query: FederatedQueryV2,
+    query_binding_digest: Digest32,
+    expires_unix_ms: u64,
+) -> FederatedResultV2 {
+    FederatedResultV2 {
+        query_id: query.query_id,
+        peer_id: query.peer_id,
+        query_binding_digest,
+        generation_vector_digest: query.generation_vector_digest,
+        observed_frontier: None,
+        expires_unix_ms,
+        items: Vec::new(),
+        coverage: FederatedCoverageV2 {
+            requested_peers: 1,
+            completed_peers: 0,
+            failed_peers: 1,
+            truncated_items: 0,
+        },
+        completeness: FederatedCompletenessV2::Indeterminate,
+        validity: FederatedValidityV2::Indeterminate,
+        remote_response_digest: None,
+        result_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    }
+}
+
+pub async fn execute_once<T, A, C, X>(
+    transport: &T,
+    authority: &A,
+    clock: &C,
+    cancellation: &X,
     query: FederatedQueryV2,
     lease: &FederatedLeaseV2,
-) -> Result<FederatedResultV2, FederationV2Error> {
-    query.validate(now_unix_ms)?;
-    lease.validate_for_query(now_unix_ms, &query)?;
+) -> Result<FederatedResultV2, FederationV2Error>
+where
+    T: FederationTransportV2,
+    A: FederationAuthorityV2,
+    C: FederationClockV2,
+    X: FederationCancellationV2,
+{
+    let preflight_now = clock.now_unix_ms();
+    query.validate(preflight_now)?;
+    lease.validate_for_query(preflight_now, &query)?;
     let query_binding_digest = query.binding_digest();
-    let transport_result = transport.send_once(&query)?;
+
+    let preflight_authority = authority.observe(&query, lease).await?;
+    match validate_authority_observation(&preflight_authority, preflight_now, &query, lease)? {
+        AuthorityDispositionV2::Current => {}
+        AuthorityDispositionV2::Revoked => return Err(FederationV2Error::LeaseRevoked),
+        AuthorityDispositionV2::StaleGeneration => {
+            return Err(FederationV2Error::AuthorityGenerationMismatch);
+        }
+    }
+
+    let base_expiry = query
+        .deadline_unix_ms
+        .min(lease.expires_unix_ms)
+        .min(preflight_authority.expires_unix_ms);
+
+    if cancellation.is_cancelled() {
+        let mut result =
+            indeterminate_result(query, query_binding_digest, base_expiry);
+        result.result_digest = result.compute_result_digest();
+        result.validate()?;
+        return Ok(result);
+    }
+
+    let remaining_ms = query.deadline_unix_ms.saturating_sub(preflight_now);
+    let transport_result = tokio::select! {
+        _ = cancellation.cancelled() => {
+            FederationTransportResultV2::NonTerminal(
+                FederationTransportOutcomeV2::Cancelled,
+            )
+        }
+        timed = tokio::time::timeout(
+            Duration::from_millis(remaining_ms),
+            transport.send_once(&query),
+        ) => {
+            match timed {
+                Ok(result) => result?,
+                Err(_) => FederationTransportResultV2::NonTerminal(
+                    FederationTransportOutcomeV2::TimedOut,
+                ),
+            }
+        }
+    };
+
+    let postflight_now = clock.now_unix_ms();
+    let transport_result = if postflight_now >= query.deadline_unix_ms {
+        FederationTransportResultV2::NonTerminal(FederationTransportOutcomeV2::TimedOut)
+    } else {
+        transport_result
+    };
+
     let mut result = match transport_result {
-        FederationTransportResultV2::NonTerminal(_) => FederatedResultV2 {
-            query_id: query.query_id,
-            peer_id: query.peer_id,
-            query_binding_digest,
-            generation_vector_digest: query.generation_vector_digest,
-            observed_frontier: None,
-            expires_unix_ms: query.deadline_unix_ms,
-            items: Vec::new(),
-            coverage: FederatedCoverageV2 {
-                requested_peers: 1,
-                completed_peers: 0,
-                failed_peers: 1,
-                truncated_items: 0,
-            },
-            completeness: FederatedCompletenessV2::Indeterminate,
-            validity: FederatedValidityV2::Indeterminate,
-            remote_response_digest: None,
-            result_digest: Digest32::ZERO,
-            authority: AuthorityPosture::DENY_ALL,
-        },
+        FederationTransportResultV2::NonTerminal(_) => {
+            indeterminate_result(query, query_binding_digest, base_expiry)
+        }
         FederationTransportResultV2::Terminal(response) => {
-            response.validate_shape()?;
-            if response.peer_id != query.peer_id {
-                return Err(FederationV2Error::IdentityMismatch("response_peer"));
-            }
-            if response.scope_digest != query.scope_digest {
-                return Err(FederationV2Error::DigestMismatch("response_scope"));
-            }
-            if response.purpose_digest != query.purpose_digest {
-                return Err(FederationV2Error::DigestMismatch("response_purpose"));
-            }
-            if now_unix_ms >= response.expires_unix_ms {
+            response.validate_for_query(&query)?;
+            if postflight_now >= response.expires_unix_ms {
                 return Err(FederationV2Error::ResponseExpired);
             }
-            let stale_generation =
-                response.generation_vector_digest != query.generation_vector_digest;
+
+            let postflight_authority = authority.observe(&query, lease).await?;
+            let authority_disposition = validate_authority_observation(
+                &postflight_authority,
+                postflight_now,
+                &query,
+                lease,
+            )?;
+            let effective_expiry = response
+                .expires_unix_ms
+                .min(base_expiry)
+                .min(postflight_authority.expires_unix_ms);
+            let remote_response_digest = response.response_digest;
+            let stale_generation = response.generation_vector_digest
+                != query.generation_vector_digest
+                || matches!(
+                    authority_disposition,
+                    AuthorityDispositionV2::StaleGeneration
+                );
+            let revoked = matches!(
+                authority_disposition,
+                AuthorityDispositionV2::Revoked
+            );
             let maximum_results =
                 usize::try_from(query.maximum_results).unwrap_or(MAX_FEDERATED_RESULTS_V2);
             let remote_item_count = response.items.len();
-            let mut items = if stale_generation {
+            let mut items = if stale_generation || revoked {
                 Vec::new()
             } else {
                 response.items
             };
             items.truncate(maximum_results);
             let truncated_items = remote_item_count.saturating_sub(items.len());
-            let completeness = if stale_generation {
+            let completeness = if stale_generation || revoked {
                 FederatedCompletenessV2::Partial
             } else if items.is_empty() {
                 FederatedCompletenessV2::Empty
@@ -459,7 +709,7 @@ pub fn execute_once<T: FederationTransportV2>(
                 query_binding_digest,
                 generation_vector_digest: query.generation_vector_digest,
                 observed_frontier: Some(response.observed_frontier),
-                expires_unix_ms: response.expires_unix_ms,
+                expires_unix_ms: effective_expiry,
                 items,
                 coverage: FederatedCoverageV2 {
                     requested_peers: 1,
@@ -468,12 +718,14 @@ pub fn execute_once<T: FederationTransportV2>(
                     truncated_items: u32::try_from(truncated_items).unwrap_or(u32::MAX),
                 },
                 completeness,
-                validity: if stale_generation {
+                validity: if revoked {
+                    FederatedValidityV2::Revoked
+                } else if stale_generation {
                     FederatedValidityV2::StaleGeneration
                 } else {
                     FederatedValidityV2::Valid
                 },
-                remote_response_digest: Some(response.response_digest),
+                remote_response_digest: Some(remote_response_digest),
                 result_digest: Digest32::ZERO,
                 authority: AuthorityPosture::DENY_ALL,
             }
@@ -485,6 +737,7 @@ pub fn execute_once<T: FederationTransportV2>(
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FederationCancellationRequestV2#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FederationCancellationRequestV2 {
     pub cancellation_id: StableId,
     pub query_id: StableId,
@@ -539,6 +792,7 @@ pub enum FederationV2Error {
     LeaseExpired,
     LeaseRevoked,
     LeaseEpochMismatch,
+    AuthorityGenerationMismatch,
     IdentityMismatch(&'static str),
     DigestMismatch(&'static str),
     MissingTerminalObservation,
