@@ -1,5 +1,10 @@
 # Learning evaluation admission after consolidation
 
+Normative production API status and host obligations are defined in
+[`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md). This document explains the
+admission mechanics; where compatibility wording is broader, the production
+contract is controlling.
+
 The restored Lane E source includes strict learned-operator fitting, immutable
 dataset/admission receipts, and replayable final-holdout/lifecycle journals. The
 journals implement semantic replay and expected-head checks; the host still owns
@@ -8,10 +13,11 @@ existence is not evidence of a running long-term learner.
 
 ## Authenticated evidence boundary
 
-`AuthenticatedPrincipalV1::validate`, the legacy evaluator and the V1/V2 dataset
-receipt APIs validate supplied structure and digests. They do not authenticate an
-external caller or prove that an estimate was produced by an independent actor.
-They remain available for trusted in-process composition and compatibility.
+`AuthenticatedPrincipalV1::validate`, the structural `decide_independently*`
+functions, the feature-gated legacy evaluator and the V1/V2 dataset receipt APIs
+validate supplied structure and digests. They do not authenticate an external
+caller or prove that an estimate was produced by an independent actor. They are
+trusted in-process / qualification-only surfaces, not production ingress.
 
 Qualification-scoped external evaluation uses `decide_with_signed_evidence_v1`
 or `decide_with_signed_evidence_v2`. A `SystemLongitudinal` request now requires
@@ -115,6 +121,15 @@ scheduler. Locks exclude cooperating writers, not hostile filesystem mutation.
 Tests in `src/durable_holdout_tests.rs` cover a different loading process,
 idempotent retries, acknowledged-history truncation, corruption, writer collision
 and write uncertainty. They are not production-caller or future-window receipts.
+
+`FencedFinalHoldoutJournalV2` is the production-facing local owner wrapper. It
+binds the journal namespace to a nonzero host-issued writer fence and requires
+the caller to present the current `HoldoutOwnerContextV2` on every consume.
+A stale owner therefore fails before mutation after the host rotates the fence.
+The fence/current-anchor authority must live outside the journal. Multi-host
+deployments require transactional CAS/fencing for that authority (or a dedicated
+holdout service); a local file lock is not a distributed lease and cannot defend
+against a hostile filesystem writer or a leaked raw file handle.
 
 ## Observed-time longitudinal admission
 
