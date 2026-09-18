@@ -263,8 +263,10 @@ fn read_slot(
     }
     match decode(expected_context, &bytes) {
         Ok(anchor) => Ok(Some((anchor, slot))),
-        Err(WitnessError::Corrupt) => Ok(None),
-        Err(error) => Err(error),
+        // One slot may be torn at any byte boundary, including the context.
+        // Never accept the bad slot; let the independently checksummed peer
+        // slot carry recovery. If both are invalid, select_latest fails closed.
+        Err(_) => Ok(None),
     }
 }
 
