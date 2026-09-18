@@ -64,6 +64,23 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve Cargo lockfile exactly or expose resolver drift
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          cargo metadata --locked --format-version=1 >/dev/null
+          locked_status=$?
+          set -e
+          if [ "$locked_status" -eq 0 ]; then
+            exit 0
+          fi
+          echo "::error::Cargo.lock differs from the exact candidate manifests"
+          cargo metadata --offline --format-version=1 >/dev/null
+          git diff -- Cargo.lock
+          git checkout -- Cargo.lock
+          exit "$locked_status"
       - name: Original and added component regressions
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu
