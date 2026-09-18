@@ -1,9 +1,11 @@
 #![forbid(unsafe_code)]
 
+mod authbus_control_store;
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
 mod authbus_store;
+mod authbus_trust_store;
 mod canonical;
 mod governance_store;
 mod governance_validation;
@@ -17,6 +19,7 @@ mod schema_validation;
 mod store;
 mod summary;
 
+pub use authbus_control_store::AuthBusControlError;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
