@@ -19,6 +19,7 @@ from .candidate import (
     Mutation,
     SandboxReceipt,
     generate_candidates,
+    is_immutable_oracle_path,
     sandbox_candidate,
 )
 from .control_plane import (
@@ -45,7 +46,10 @@ from .evidence import (
     EvaluatorIndependenceReceipt,
     ExecutionReceipt,
     HmacTrustStore,
+    WorkCompletionReceipt,
+    verify_canonical_source_receipt,
     verify_integration_evidence,
+    verify_work_completion_receipts,
 )
 from .facade import (
     ReviewRequest,
@@ -54,6 +58,39 @@ from .facade import (
     issue_work_envelope,
     publish_audit_projection,
     schedule_ready_packages,
+)
+from .candidate_bundle import (
+    CandidateBundle,
+    PatchOperation,
+    generate_candidate_bundle,
+    sandbox_candidate_bundle,
+)
+from .orchestration import (
+    EngineeringAssignment,
+    EngineeringWorkPackage,
+    MergeQueueProposal,
+    OrchestrationPlan,
+    ReviewCapacity,
+    WorkerCapacity,
+    issue_verified_work_envelope,
+    persist_orchestration_generation,
+    plan_engineering_work,
+)
+from .execution_control import (
+    HostSandboxLimiter,
+    MutationProbeResult,
+    MutationTestReceipt,
+    evaluate_mutation_probes,
+    execute_with_infrastructure_retries,
+)
+from .external_control import (
+    AuditAnchorReceipt,
+    DistributedWriteGrant,
+    KeyCustodyReceipt,
+    export_audit_anchor,
+    verify_audit_anchor_receipt,
+    verify_distributed_write_grant,
+    verify_key_custody_receipt,
 )
 from .production import (
     ProductionReadinessDecision,
@@ -90,6 +127,35 @@ hardened_record_integration_decision = record_integration_decision
 hardened_request_independent_review = request_independent_review
 
 __all__ = [
+    "AuditAnchorReceipt",
+    "CandidateBundle",
+    "DistributedWriteGrant",
+    "EngineeringAssignment",
+    "EngineeringWorkPackage",
+    "HostSandboxLimiter",
+    "KeyCustodyReceipt",
+    "MergeQueueProposal",
+    "MutationProbeResult",
+    "MutationTestReceipt",
+    "OrchestrationPlan",
+    "PatchOperation",
+    "ReviewCapacity",
+    "WorkerCapacity",
+    "WorkCompletionReceipt",
+    "evaluate_mutation_probes",
+    "execute_with_infrastructure_retries",
+    "export_audit_anchor",
+    "generate_candidate_bundle",
+    "is_immutable_oracle_path",
+    "issue_verified_work_envelope",
+    "persist_orchestration_generation",
+    "plan_engineering_work",
+    "sandbox_candidate_bundle",
+    "verify_audit_anchor_receipt",
+    "verify_canonical_source_receipt",
+    "verify_distributed_write_grant",
+    "verify_key_custody_receipt",
+    "verify_work_completion_receipts",
     "AssimilationProposal",
     "DebianSandboxAdapter",
     "AttestedSandboxParity",
