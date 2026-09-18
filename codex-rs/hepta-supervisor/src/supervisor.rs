@@ -354,7 +354,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "agent {agent_id} has no explicit active release identity"
             ))
         })?;
-        if current.identity() == target.identity() || current.command() == target.command() {
+        if current.identity() == target.identity()
+            || (current.command() == target.command()
+                && current.matrixd_command() == target.matrixd_command())
+        {
             return Err(SupervisorError::TargetReleaseUnchanged(agent_id.clone()));
         }
         if record.lifecycle.lifecycle != AgentLifecycle::Running {
@@ -383,11 +386,19 @@ impl<D: ProcessDriver> Supervisor<D> {
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
-        let target = slot
+        let previous_release_id = slot
             .previous_release
             .as_ref()
-            .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
-        self.preflight_upgrade(agent_id, target)
+            .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?
+            .release_id()
+            .clone();
+        // Re-resolve the predecessor on every rollback admission. The cached
+        // AgentRelease is historical state; it must not bypass a removed or
+        // changed Fleet allowance/manifest.
+        let target = AgentRelease::try_from(
+            self.registry.resolve_release(agent_id, &previous_release_id)?,
+        )?;
+        self.preflight_upgrade(agent_id, &target)
     }
 
     pub fn agent_ids(&self) -> Vec<AgentId> {
@@ -455,10 +466,20 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
-            let target = slot
+            let previous_release_id = slot
                 .previous_release
-                .clone()
-                .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
+                .as_ref()
+                .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?
+                .release_id()
+                .clone();
+            // Historical predecessor state is not rollback authority. Resolve
+            // the predecessor through the current Fleet allowance and exact
+            // immutable manifest before starting a replacement generation.
+            let target = AgentRelease::try_from(
+                supervisor
+                    .registry
+                    .resolve_release(agent_id, &previous_release_id)?,
+            )?;
             supervisor.upgrade_slot(agent_id, slot, target, now, /*explicit_rollback*/ true)
         })
     }
