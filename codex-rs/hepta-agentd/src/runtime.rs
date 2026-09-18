@@ -43,6 +43,14 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    let objective_profile_file = config
+        .objective_profile_file()
+        .map(std::path::Path::to_path_buf);
+    if objective_profile_file.is_some() && trust_file.is_none() {
+        return Err(AgentdError::Invalid(
+            "objective profile requires explicit AuthBus trust configuration".to_string(),
+        ));
+    }
     let ranker = config.cognitive_ranker();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -72,6 +80,19 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .authbus
             .set(Arc::new(host))
             .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+    }
+    if let Some(path) = objective_profile_file {
+        state.refresh_generation()?;
+        let host = crate::objective_runtime::ObjectiveRuntimeHost::open(
+            &identity,
+            &path,
+            crate::authbus_ingress::now_ms()?,
+        )?;
+        state.refresh_generation()?;
+        state
+            .objective_runtime
+            .set(Arc::new(host))
+            .map_err(|_| AgentdError::Protocol("objective runtime already attached".to_string()))?;
     }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {

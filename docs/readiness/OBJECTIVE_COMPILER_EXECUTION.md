@@ -9,7 +9,7 @@
 
 `objective.compiler` converts one bounded, authenticated request into an immutable objective revision. It does not infer authority from prose, relax a hard constraint, rewrite an objective during a run, select an action or execute an effect. Output remains advisory until the existing authority owner independently authorizes a concrete operation.
 
-The complete native admission path is:
+The complete Source V1 admission path is:
 
 ```text
 bounded JSON bytes
@@ -17,14 +17,17 @@ bounded JSON bytes
 -> ObjectiveSourceEnvelopeV1::validate_structure
 -> authenticate source and principal scope
 -> bind exact ObjectiveAdmissionProfileV1 digest
--> normalize and map every represented semantic field
--> check_feasibility_v1
--> compile
+-> normalize/map supported represented semantics
+-> adapt_source
+-> compiler::compile(AdmittedObjectiveSource)
+   -> scalar_conflict
+      -> check_feasibility_v1 (legacy scalar compatibility grammar)
+   -> legal-action construction and canonical objective digests
 -> ObjectiveAdmissionReceiptV1
 -> ObjectiveCompileReceiptV1 | ObjectiveConflictReceiptV1
 ```
 
-No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
+The separately public `check_feasibility_v1` API is a generic bounded feasibility engine; generic enum/action/identity atom support does not imply that Source V1 can express every such atom. [The semantic support matrix](../modules/objective.compiler/SEMANTIC_SUPPORT.md) is authoritative for current source-to-native reachability. No stage silently drops a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field: supported semantics are mapped, while unsupported/unrepresentable syntax is deterministically rejected. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
 
 ## 2. Input grammar and canonical IR
 
@@ -44,6 +47,10 @@ provenance: exact source and normalization-profile digests
 Free text is evidence for intent extraction, never the final authority representation. Every predicate has an identifier, unit, comparator, bound, evidence source and terminality. Arrays are stable-sorted by semantic identifier. Unicode uses the selected normalization profile; timestamps are UTC; durations are integer microseconds; numeric values use registered fixed-point profiles. Duplicate semantic keys are rejected.
 
 The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Every payload and collection has both count and encoded-byte bounds. Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and 256 KiB of encoded profile semantics; risk and rollback levels must be monotone.
+
+### 2.1 Implemented Source V1 support boundary
+
+The V1 decoder preserves registered comparator spellings, including `ne`, strict inequalities, `in` and `not_in`, but the current Source V1 constraint payload carries only one scalar `boundQ32`. Therefore `eq`, `lte` and `gte` are admitted through the scalar compatibility IR; `ne`, `lt`, `gt`, `in` and `not_in` fail closed with `OBJ-E002`. In particular, generic feasibility `Enumeration(Include/Exclude)` support is not reachable from a Source V1 set constraint because V1 has no set-valued operand. No unsupported comparator is approximated. See [SEMANTIC_SUPPORT.md](../modules/objective.compiler/SEMANTIC_SUPPORT.md).
 
 ## 3. Constraint precedence and conflict resolution
 
@@ -97,25 +104,27 @@ compute hard-constraint and objective semantic digests
 emit deny-all admission receipt and compile/conflict outcome
 ```
 
-Compilation is a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. Retry with identical inputs yields identical semantic bytes. Reuse of a durable request/revision identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
+The semantic compiler is a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. Retry with identical admitted inputs yields identical semantic bytes. The explicit `check_feasibility_v1` availability wrapper additionally accepts a wall-clock budget and records observed elapsed time; near that deadline its `Exhausted` availability outcome may depend on host scheduling even though each solver step and call-budget decision is deterministic. The legacy scalar compiler uses `Duration::MAX` so host timing cannot alter objective semantics. Reuse of a durable request/revision identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
 
 ## 5. State machine and persistence
 
-The compiler owns no domain-fact store. The owning caller persists the immutable `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts. Publication occurs only after source, intent, profile, constraint and objective digests agree.
+The compiler owns no domain-fact store. The current owning product-caller candidate is Agentd's signed `objective.start` capability. Agentd loads one immutable owner-controlled admission profile for the process generation, authenticates a registered AuthBus issuer, derives generation/fence locally, materializes `ObjectiveRunPublicationV1` containing the admission receipt, complete compiled objective and `RunStartSnapshotV1`, then fsyncs a private temporary file, atomically renames it, fsyncs the publication directory and only afterward admits the immutable snapshot to `AgentRunCoordinator`. Exact replay returns the existing publication; reuse of the run identity with different semantics conflicts; the signed sequence frontier is reconstructed after restart. This composition grants no effect authority.
 
 ```text
 received
 -> decoded
 -> structurally_validated
--> authenticated
--> profile_bound
+-> signed_source_authenticated
+-> owner_profile_bound
 -> normalized
 -> feasibility_resolved
 -> compiled | conflict | rejected | unavailable
--> published by owning caller
+-> publication_built
+-> publication_fsynced_and_atomically_renamed
+-> runtime_snapshot_admitted
 ```
 
-A crash before caller publication leaves no selected objective. A crash after durable publication is reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
+A crash before atomic rename leaves no selected runtime objective; stale temporary files are discarded on store recovery. A crash after durable rename but before runtime handoff recovers the publication and re-admits an unexpired immutable snapshot. Exact signed replay is idempotent; a reused run identity with different publication semantics conflicts, and a consumed issuer/key-epoch sequence cannot authorize another run after restart. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
 
 ## 6. Error taxonomy and fallback
 
@@ -157,7 +166,7 @@ The following paths are measured separately:
 
 Pilot ceilings are `<=256` constraints, `<=128` success predicates, `<=127` caller actions when abstain is implicit, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. CPU and wall-clock budgets are frozen before evaluation. Exceeding a bound rejects or returns unavailable; input is never truncated after semantic analysis.
 
-The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
+The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. `FeasibilityReceiptV1.elapsed` is observational telemetry, not canonical semantic bytes. Wall-clock exhaustion is an availability bound, not a claim that two differently loaded hosts must exhaust at the same instruction boundary. No network or synchronous central RPC is permitted on the deterministic compiler path.
 
 ## 9. Golden fixtures and tests
 
@@ -172,7 +181,7 @@ The p95/p99 targets apply only to a named path, fixture and host. A normal-path 
 - `OBJ-GV-009`: source, intent, schema, normalization and selected-profile digest mismatches all fail before native compile.
 - `OBJ-GV-010`: unsupported or exhausted feasibility never weakens the original legal set.
 
-Tests cover structural round trips, canonical ordering, unit conversion, conflict minimization, idempotent retry, stale/future time, deadline handling, source authentication, resource overflow, action-slot reservation, redaction and property-based permutation invariance.
+Tests cover structural round trips, canonical ordering, unit conversion, conflict minimization, idempotent retry, stale/future time, deadline handling, source authentication, resource overflow, action-slot reservation, redaction and property-based permutation invariance. Product-caller fixtures additionally cover strict owner-profile JSON, immutable publication binding, exact durable replay, run-identity semantic conflict, replay-frontier recovery and corrupted publication rejection.
 
 ## 10. Implementation sequence
 

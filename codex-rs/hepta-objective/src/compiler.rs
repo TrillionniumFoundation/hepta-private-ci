@@ -25,15 +25,31 @@ const OBJECTIVE_DIGEST_DOMAIN: &[u8] = b"hepta.objective.v1";
 const CONFLICT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.conflict.v1";
 const CONSTRAINT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.constraints.v1";
 
-/// Compiles a typed source envelope into an immutable objective or an explicit
-/// inclusion-minimal conflict receipt.
+/// Private proof-carrying boundary between authenticated admission and the
+/// deterministic compiler. Raw native envelopes cannot construct this type.
+pub(crate) struct AdmittedObjectiveSource(ObjectiveSourceEnvelope);
+
+impl AdmittedObjectiveSource {
+    pub(crate) fn from_authenticated_admission(source: ObjectiveSourceEnvelope) -> Self {
+        Self(source)
+    }
+
+    #[cfg(any(test, feature = "qualification-legacy-objective-compile"))]
+    pub(crate) fn from_prevalidated_legacy(source: ObjectiveSourceEnvelope) -> Self {
+        Self(source)
+    }
+}
+
+/// Compiles an authenticated/admitted source into an immutable objective or an
+/// explicit inclusion-minimal conflict receipt.
 ///
 /// `abstain` is an intrinsic, confirmation-free safety action. Callers may
 /// include it explicitly, but cannot forbid it or consume its reserved slot
 /// with another action.
-pub fn compile(
-    mut source: ObjectiveSourceEnvelope,
+pub(crate) fn compile(
+    admitted: AdmittedObjectiveSource,
 ) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
+    let mut source = admitted.0;
     validate_source(&source)?;
 
     source.constraints.sort_by(constraint_order);

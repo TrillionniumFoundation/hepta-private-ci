@@ -22,6 +22,7 @@ REQUIRED_DOCS = (
     "docs/readiness/LANE_D_MATURITY.json",
     "docs/readiness/LANE_D_PROTOCOLS.json",
     "docs/readiness/LANE_D_GAP_CLOSURE.json",
+    "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md",
     "docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json",
     "docs/governance/MODULE_IMPLEMENTATION_BASELINE.md",
     "qualification/module-execution-dossiers/detail/objective.compiler.md",
@@ -270,11 +271,22 @@ def verify() -> int:
         {row["module"] for row in maturity["modules"]} == set(MODULES),
         "maturity module closure",
     )
+    expected_product_callers = {
+        "objective.compiler": "candidate_composed",
+        "utility.ndu": "not_established",
+        "control.runtime": "not_established",
+    }
     for row in maturity["modules"]:
-        for key in ["productCaller", "independentAcceptance", "activation", "release"]:
+        module = row["module"]
+        need(
+            row["dimensions"]["productCaller"]["state"]
+            == expected_product_callers[module],
+            f"truth boundary {module} productCaller",
+        )
+        for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
-                f"truth boundary {row['module']} {key}",
+                f"truth boundary {module} {key}",
             )
 
     print(

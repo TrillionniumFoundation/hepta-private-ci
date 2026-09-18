@@ -6,12 +6,14 @@
 
 #![forbid(unsafe_code)]
 
+mod admission_profile_json;
 mod compiler;
 mod error;
 mod feasibility;
 mod feasibility_model;
 mod model;
 mod objective_admission;
+mod publication;
 mod scalar_adapter;
 mod source_envelope_json;
 mod source_envelope_json_dto;
@@ -19,7 +21,9 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
-pub use compiler::compile;
+pub use admission_profile_json::MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES;
+pub use admission_profile_json::ObjectiveAdmissionProfileJsonError;
+pub use admission_profile_json::decode_admission_profile_json_v1;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
 pub use feasibility_model::AtomPrecedenceV1;
@@ -48,6 +52,21 @@ pub use model::SoftDirection;
 pub use model::SoftPreference;
 pub use model::SourceTrust;
 pub use model::SuccessPredicate;
+
+/// Qualification-only compatibility entrypoint for already validated legacy native envelopes.
+///
+/// Normal/product callers must enter through `admit_and_compile_objective_v1`, which binds
+/// authenticated source context, principal scope, profile, freshness and semantic digests.
+/// This function intentionally requires an explicit non-default Cargo feature so downstream
+/// code cannot accidentally bypass admission.
+#[cfg(feature = "qualification-legacy-objective-compile")]
+pub fn compile_prevalidated_legacy_objective(
+    source: ObjectiveSourceEnvelope,
+) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
+    compiler::compile(compiler::AdmittedObjectiveSource::from_prevalidated_legacy(
+        source,
+    ))
+}
 pub use objective_admission::ObjectiveAbstentionRuleProfileV1;
 pub use objective_admission::ObjectiveActionProfileV1;
 pub use objective_admission::ObjectiveAdmissionContextV1;
@@ -65,6 +84,11 @@ pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
 pub use objective_admission::admit_and_compile_objective_v1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
+pub use publication::ObjectiveRunPublicationError;
+pub use publication::ObjectiveRunPublicationV1;
+pub use publication::RunStartBindingsV1;
+pub use publication::RunStartSnapshotV1;
+pub use publication::objective_run_publication_digest_v1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
 pub use source_envelope_json::decode_source_envelope_json_v1;

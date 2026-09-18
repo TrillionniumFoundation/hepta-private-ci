@@ -37,6 +37,7 @@ pub struct AgentdConfig {
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
+    objective_profile_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
 }
 
@@ -142,6 +143,7 @@ impl AgentdConfig {
             registry,
             _writer_lock: writer_lock,
             authbus_trust_file: None,
+            objective_profile_file: None,
             cognitive_ranker: None,
         })
     }
@@ -155,6 +157,17 @@ impl AgentdConfig {
 
     pub(crate) fn authbus_trust_file(&self) -> Option<&Path> {
         self.authbus_trust_file.as_deref()
+    }
+
+    /// Explicit owner-managed objective admission profile. A request cannot
+    /// select or replace this file; changing it requires a new process generation.
+    pub fn with_objective_profile_file(mut self, path: PathBuf) -> Self {
+        self.objective_profile_file = Some(path);
+        self
+    }
+
+    pub(crate) fn objective_profile_file(&self) -> Option<&Path> {
+        self.objective_profile_file.as_deref()
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must

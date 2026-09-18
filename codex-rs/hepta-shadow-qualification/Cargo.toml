@@ -35,7 +35,7 @@ codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-ndu = { path = "../hepta-ndu" }
-codex-hepta-objective = { path = "../hepta-objective" }
+codex-hepta-objective = { path = "../hepta-objective", features = ["qualification-legacy-objective-compile"] }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
 pretty_assertions = { workspace = true }

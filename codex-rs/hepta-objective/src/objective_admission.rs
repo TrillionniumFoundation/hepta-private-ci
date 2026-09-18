@@ -499,7 +499,8 @@ pub fn admit_and_compile_objective_v1(
     let admitted_source_digest =
         admitted_source_digest(envelope, profile_digest, &context.source_authentication);
     let source = adapt_source(envelope, profile, context, admitted_source_digest)?;
-    let compile_result = crate::compile(source)?;
+    let admitted = crate::compiler::AdmittedObjectiveSource::from_authenticated_admission(source);
+    let compile_result = crate::compiler::compile(admitted)?;
     Ok(ObjectiveAdmissionOutcomeV1 {
         receipt: ObjectiveAdmissionReceiptV1 {
             profile_id: profile.profile_id.clone(),

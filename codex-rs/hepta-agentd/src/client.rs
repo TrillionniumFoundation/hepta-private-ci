@@ -20,6 +20,7 @@ use crate::AgentdError;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
 use crate::AgentdResponse;
+use crate::AuthBusObjectiveIngress;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
@@ -27,6 +28,7 @@ use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
+use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
 
 pub struct AgentdClient {
@@ -110,6 +112,31 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::SessionIngress(ingress) => Ok(ingress),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn objective_start(
+        &self,
+        request: AuthBusObjectiveIngress,
+    ) -> Result<ObjectiveStartOutcome, AgentdError> {
+        match self
+            .send(AgentdRequest::objective_start(
+                self.request_id(),
+                self.spawn_generation,
+                request,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::ObjectiveRun(receipt) => Ok(ObjectiveStartOutcome::Admitted { receipt }),
+            AgentdPayload::ObjectiveConflict {
+                run_id,
+                conflict_digest,
+            } => Ok(ObjectiveStartOutcome::Conflict {
+                run_id,
+                conflict_digest,
+            }),
             payload => unexpected(payload),
         }
     }

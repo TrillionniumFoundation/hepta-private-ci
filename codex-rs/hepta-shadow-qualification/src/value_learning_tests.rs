@@ -34,7 +34,7 @@ use codex_hepta_objective::SoftDirection;
 use codex_hepta_objective::SoftPreference;
 use codex_hepta_objective::SourceTrust;
 use codex_hepta_objective::SuccessPredicate;
-use codex_hepta_objective::compile;
+use codex_hepta_objective::compile_prevalidated_legacy_objective;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -103,25 +103,6 @@ fn contribution(
 
 #[test]
 fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable() {
-    let compiled = must(must(compile(ObjectiveSourceEnvelope {
-        request_id: id("request-value-learning-1"),
-        principal_scope: id("principal:alpha"),
-        revision: must(Revision::new(1)),
-        source_trust: SourceTrust::PrincipalStructured,
-        source_digest: Digest32::of_bytes(b"structured-request"),
-        schema_digest: Digest32::of_bytes(b"objective-schema-v1"),
-        constraints: vec![Constraint {
-            id: id("privacy-ceiling"),
-            class: ConstraintClass::Constitutional,
-            axis: id("privacy-risk"),
-            relation: ConstraintRelation::AtMost,
-            bound: FixedQ32::ZERO,
-            evidence_source: id("constitution-v1"),
-        }],
-        success_predicates: vec![SuccessPredicate {
-            id: id("terminal-success"),
-            axis: id("success"),
-            relation: ConstraintRelation::AtLeast,
             bound: FixedQ32::ONE,
             evidence_source: id("independent-observer"),
             terminality: PredicateTerminality::Terminal,

@@ -11,7 +11,7 @@
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "candidate_composed_agentd_signed_ingress",
   "productionWriterState": "not_applicable_stateless",
   "operations": [
     {
@@ -153,16 +153,16 @@
     },
     {
       "operation": "compile",
-      "nativeSymbol": "codex_hepta_objective::compile",
+      "nativeSymbol": "codex_hepta_objective::compiler::compile",
       "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
       "inputs": [
-        "ObjectiveSourceEnvelope"
+        "AdmittedObjectiveSource"
       ],
       "outputs": [
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_private_admitted_core",
       "authority": "none",
       "tests": [
         {
@@ -179,7 +179,39 @@
         }
       ],
       "designOperation": "compile",
-      "mappingClass": "owner_native",
+      "mappingClass": "owner_private_admitted_core",
+      "delegatedCallees": [
+        "check_feasibility_v1"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "materialize_run_publication_v1",
+      "nativeSymbol": "codex_hepta_objective::ObjectiveRunPublicationV1::new",
+      "sourcePath": "codex-rs/hepta-objective/src/publication.rs",
+      "inputs": [
+        "ObjectiveAdmissionReceiptV1",
+        "ObjectiveCompileReceipt",
+        "RunStartBindingsV1"
+      ],
+      "outputs": [
+        "ObjectiveRunPublicationV1",
+        "RunStartSnapshotV1"
+      ],
+      "state": "source_implemented_product_composed_candidate",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/publication_tests.rs",
+          "symbol": "publication_binds_compiled_objective_and_run_snapshot"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+          "symbol": "restart_recovery_restores_replay_frontier_and_active_snapshot"
+        }
+      ],
+      "designOperation": "materialize_run_publication_v1",
+      "mappingClass": "owner_native_with_product_caller",
       "delegatedCallees": [],
       "sourcePathExists": true
     }
@@ -193,8 +225,8 @@
   "completion": {
     "specification": "complete",
     "source": "candidate_implemented",
-    "exactHeadQualification": "required",
-    "productComposition": "not_established",
+    "exactHeadQualification": "required_current_candidate_workflows",
+    "productComposition": "candidate_composed_agentd_signed_ingress",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -215,19 +247,33 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "productCallerCandidateComposed": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge qualification for the final candidate.",
+    "Execute named-target-host normal-path and conflict-extraction characterization before activation."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "productCallerEvidence": [
+    "codex-rs/hepta-agent-protocol/src/authbus.rs",
+    "codex-rs/hepta-agentd/src/objective_runtime.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/src/objective_runtime_tests.rs"
+  ],
+  "legacyCompatibilitySurface": {
+    "feature": "qualification-legacy-objective-compile",
+    "nativeSymbol": "codex_hepta_objective::compile_prevalidated_legacy_objective",
+    "defaultEnabled": false,
+    "purpose": "controlled qualification fixtures only",
+    "productUse": "forbidden"
+  }
 }
