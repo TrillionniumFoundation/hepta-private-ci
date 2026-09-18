@@ -1,13 +1,16 @@
 //! Exact-bound Codex app-server request adapter.
 //!
-//! The adapter translates an already-authorized intent and observes a correlated
-//! terminal app-server outcome. It does not mint model/provider authority.
+//! The adapter translates an already-authorized intent and consumes only
+//! terminal witnesses minted by a real App Server client connection. It does
+//! not mint model/provider authority.
 
 #![forbid(unsafe_code)]
 
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_app_server_client::TerminalTurnWitness;
+pub use codex_app_server_client::TerminalTurnOutcome as TerminalOutcome;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -23,21 +26,6 @@ pub struct CodexOperationIntent {
     pub session_generation: u64,
     pub protocol_version: u32,
     pub deadline_ms: u64,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum TerminalOutcome {
-    Completed,
-    Failed,
-    Interrupted,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct AppServerObservation {
-    pub thread_id: StableId,
-    pub turn_id: StableId,
-    pub outcome: TerminalOutcome,
-    pub response_digest: Digest32,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -67,6 +55,7 @@ pub enum Error {
     InvalidProtocolVersion,
     DeadlineExpired,
     ObservationCorrelationMismatch,
+    ObservationProtocolMismatch,
     MissingTerminalResponse,
 }
 
@@ -78,10 +67,40 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct TerminalObservation {
+    thread_id: String,
+    turn_id: String,
+    outcome: TerminalOutcome,
+    protocol_version: u32,
+    response_digest: Digest32,
+}
+
+/// Adapt a pre-authorized Codex operation using an optional terminal witness.
+///
+/// A witness can only be minted by `codex-app-server-client` while reading a
+/// real `turn/completed` notification from its App Server connection. Absence
+/// of such a witness remains indeterminate; it never implies failure or safe
+/// retry.
 pub fn adapt(
     now_ms: u64,
     intent: CodexOperationIntent,
-    observation: Option<AppServerObservation>,
+    witness: Option<&TerminalTurnWitness>,
+) -> Result<CodexAdapterReceipt, Error> {
+    let observation = witness.map(|value| TerminalObservation {
+        thread_id: value.thread_id().to_string(),
+        turn_id: value.turn_id().to_string(),
+        outcome: value.outcome(),
+        protocol_version: value.protocol_version(),
+        response_digest: Digest32::of_bytes(value.observation_bytes()),
+    });
+    adapt_observation(now_ms, intent, observation)
+}
+
+fn adapt_observation(
+    now_ms: u64,
+    intent: CodexOperationIntent,
+    observation: Option<TerminalObservation>,
 ) -> Result<CodexAdapterReceipt, Error> {
     if intent.payload_digest.is_zero() || intent.lease_payload_digest.is_zero() {
         return Err(Error::EmptyDigest("payload"));
@@ -114,8 +133,13 @@ pub fn adapt(
     let (status, response_digest) = match observation {
         None => (AdapterStatus::Indeterminate, None),
         Some(value) => {
-            if value.thread_id != intent.thread_id || value.turn_id != intent.turn_id {
+            if value.thread_id != intent.thread_id.as_str()
+                || value.turn_id != intent.turn_id.as_str()
+            {
                 return Err(Error::ObservationCorrelationMismatch);
+            }
+            if value.protocol_version != intent.protocol_version {
+                return Err(Error::ObservationProtocolMismatch);
             }
             if value.response_digest.is_zero() {
                 return Err(Error::MissingTerminalResponse);
