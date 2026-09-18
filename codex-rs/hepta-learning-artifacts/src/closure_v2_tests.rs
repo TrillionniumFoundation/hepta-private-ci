@@ -130,7 +130,6 @@ fn art_02_withdrawal_binding_rejects_wrong_authority_and_cross_scope_replay() {
     ));
 }
 
-
 #[test]
 fn art_03_registry_head_witness_rejects_rollback() {
     let witness = RegistryHeadWitnessV1 {
