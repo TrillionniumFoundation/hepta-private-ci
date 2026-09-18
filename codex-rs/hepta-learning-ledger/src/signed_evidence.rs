@@ -116,6 +116,10 @@ impl VerifiedLearningEvidenceV1 {
         self.role
     }
     #[must_use]
+    pub fn controller_id(&self) -> &StableId {
+        &self.controller_id
+    }
+    #[must_use]
     pub fn payload_digest(&self) -> Digest32 {
         self.payload_digest
     }
