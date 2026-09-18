@@ -12,6 +12,48 @@ An empty namespace denotes root and omits the namespace header.
 The supported consumer contract is one string field from one exact KV v2
 version. Other field types and other secrets engines are not silently coerced.
 
+
+## Dynamic SecretLease lifecycle
+
+The adapter now also contains the source-implemented dynamic lease surface:
+`lease_issue_binding` / `request_secret_lease`,
+`lease_renew_binding` / `renew_secret_lease`,
+`lease_revoke_binding` / `revoke_secret_lease`,
+`lookup_secret_lease`, and `pending_secret_lease_operation`. These methods are
+paired with the durable dynamic-secret runtime in
+`TrillionniumFoundation/HeptaBao#110`; they must not be activated against the
+older pinned service candidate until that provider change has an exact accepted
+source pin.
+
+Issue, renew and revoke are mutations and use stricter uncertainty semantics
+than the KV read path. The adapter serializes the exact provider mutation body,
+binds its SHA-256 into the final-use grant, claims the single-use grant before
+dispatch, and performs no automatic retry. Transport loss, an unreadable or
+malformed success response, or post-dispatch authority loss returns an unknown
+or reconciliation-required result. The caller must use the repeatable lease
+lookup and pending-operation projections before obtaining fresh mutation
+authority. A provider response that explicitly proves failure before plugin
+entry is surfaced separately as `ProviderBeforeEntry`; the library still does
+not retry it automatically.
+
+For issuance, the provider-generated credential does not exist before dispatch.
+Therefore `FinalUseBinding.payload_sha256` binds the exact serialized issuance
+request, not a guessed future secret digest. The returned generated credential
+is decoded into an application-owned zeroizing buffer and is delivered only
+inside `FinalUseAuthority::with_verified_use` to the trusted synchronous
+consumer. `BaoLeaseIssueReceipt` returns only request/response/secret digests,
+byte count and lease metadata. Renew and revoke similarly release only metadata
+after the post-network authority fence.
+
+The paired HeptaBao runtime persists the plugin mutation intent before provider
+entry. Its durable broker fences restart and post-entry uncertainty with a
+single pending invocation and a `ReconciliationRequired` lease state. Explicit
+reconciliation is root-only and is expected to be based on authoritative
+provider readback; ordinary adapter callers can read the pending/lease
+projections but cannot clear that fence. The current paired provider store is
+single-active. Enabling dynamic secrets together with HeptaBao HA is rejected
+until a shared strongly consistent lease/replay backend exists.
+
 The adapter uses the approved `codex-http-client` owner through
 `HttpClientBuilder::build_pinned_https_direct`; it has no direct `reqwest`
 dependency. This narrow host-enrolled transport trusts only the supplied CA,
@@ -103,8 +145,9 @@ Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
 malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+The KV reader remains non-mutating. Dynamic lease mutations use the separate
+durable provider intent/reconciliation path above and never reuse read retry
+rules.
 
 ## Verification
 
