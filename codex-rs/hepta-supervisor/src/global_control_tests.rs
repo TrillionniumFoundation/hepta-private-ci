@@ -476,16 +476,14 @@ async fn named_host_profile_emits_exact_runner_measurements() {
     .expect("profile host");
 
     let mut plan_micros = Vec::with_capacity(PLAN_ITERATIONS as usize);
-    let mut last_message = None;
     for sequence in 1..=PLAN_ITERATIONS {
         let (message, _) = sign_owner_sequence(&summary, sequence);
-        let request = plan_request(summary.clone(), message.clone());
+        let request = plan_request(summary.clone(), message);
         let started = Instant::now();
         host.plan(&fleet_ledger(), request)
             .await
             .expect("profile plan");
         plan_micros.push(elapsed_micros(started));
-        last_message = Some(message);
     }
     drop(host);
 
@@ -508,7 +506,7 @@ async fn named_host_profile_emits_exact_runner_measurements() {
         drop(reopened);
     }
 
-    let (_, issuer) = sign_owner_sequence(&summary, PLAN_ITERATIONS + 1);
+    let (replayed_message, issuer) = sign_owner_sequence(&summary, PLAN_ITERATIONS);
     let mut reopened = GlobalControlHostV1::open(
         evidence_store(&evidence_path).await,
         &planner_path,
@@ -524,7 +522,7 @@ async fn named_host_profile_emits_exact_runner_measurements() {
         reopened
             .plan(
                 &fleet_ledger(),
-                plan_request(summary, last_message.expect("profile emitted message")),
+                plan_request(summary, replayed_message),
             )
             .await,
         Err(GlobalControlHostError::Evidence(_))
