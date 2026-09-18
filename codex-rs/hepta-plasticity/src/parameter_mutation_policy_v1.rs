@@ -131,7 +131,7 @@ pub fn authorize_parameter_mutation_v1(
     if &policy.window != window {
         return Err(ParameterMutationPolicyErrorV1::WindowMismatch);
     }
-    let rule = manifest
+    let rule = policy
         .rules
         .binary_search_by(|rule| rule.parameter_id.cmp(parameter_id))
         .ok()
@@ -231,7 +231,7 @@ mod tests {
     }
     fn window() -> ProposalWindowV2 {
         ProposalWindowV2 {
-            window_id: id("window:grammar"),
+            window_id: id("window:policy"),
             window_digest: digest(b"window"),
         }
     }
