@@ -878,7 +878,7 @@ impl fmt::Display for BaoLeaseClientError {
 impl std::error::Error for BaoLeaseClientError {}
 
 #[cfg(test)]
-mod tests {
+mod unit_tests {
     use super::*;
     use crate::{BaoToken, BaoClient};
     use std::time::Duration;
@@ -947,3 +947,8 @@ mod tests {
         ).is_err());
     }
 }
+
+
+#[cfg(all(test, unix))]
+#[path = "lease_client_tests.rs"]
+mod tls_tests;
