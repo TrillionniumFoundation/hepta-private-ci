@@ -307,6 +307,79 @@ impl AutomationStore {
         self.task(task_id).await?.ok_or(AutomationError::Corrupt)
     }
 
+    /// Replaces an enabled schedule under a new immutable schedule revision.
+    ///
+    /// Revision is refused while an occurrence is non-terminal so one execution
+    /// can never straddle two schedule contracts. Occurrence sequence numbers
+    /// remain monotonic across revisions; deterministic occurrence identity
+    /// additionally binds the new revision and scheduled instant.
+    pub async fn revise_schedule(
+        &self,
+        task_id: AutomationTaskId,
+        schedule: AutomationSchedule,
+        first_run_at_ms: u64,
+        missed_run_policy: AutomationMissedRunPolicy,
+        overlap_policy: AutomationOverlapPolicy,
+        now_ms: u64,
+    ) -> Result<AutomationTask, AutomationError> {
+        schedule.validate()?;
+        missed_run_policy.validate()?;
+        let (schedule_kind, interval_ms) = schedule_columns(schedule)?;
+        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let current_row = sqlx::query(TASK_SELECT_BY_ID)
+            .bind(task_id.to_string())
+            .fetch_optional(&mut *transaction)
+            .await
+            .map_err(unavailable)?
+            .ok_or(AutomationError::Conflict)?;
+        let current = task_from_row(&current_row, &self.owner_agent_id)?;
+        if current.state != AutomationTaskState::Enabled {
+            return Err(AutomationError::Conflict);
+        }
+        let nonterminal: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM automation_runs
+             WHERE task_id = ? AND execution_state NOT IN ('succeeded', 'failed', 'cancelled')",
+        )
+        .bind(task_id.to_string())
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if nonterminal != 0 {
+            return Err(AutomationError::Conflict);
+        }
+        let next_revision = current
+            .schedule_revision
+            .checked_add(1)
+            .ok_or(AutomationError::Invalid)?;
+        let changed = sqlx::query(
+            "UPDATE automation_tasks
+             SET schedule_kind = ?, interval_ms = ?, schedule_revision = ?,
+                 missed_run_policy = ?, max_catch_up_occurrences = ?, overlap_policy = ?,
+                 next_run_at_ms = ?, updated_at_ms = ?
+             WHERE task_id = ? AND owner_agent_id = ? AND state = 'enabled'
+               AND schedule_revision = ?",
+        )
+        .bind(schedule_kind)
+        .bind(interval_ms.map(to_i64).transpose()?)
+        .bind(to_i64(next_revision)?)
+        .bind(missed_run_policy.as_str())
+        .bind(to_i64(missed_run_policy.retained_due_occurrences())?)
+        .bind(overlap_policy.as_str())
+        .bind(to_i64(first_run_at_ms)?)
+        .bind(to_i64(now_ms)?)
+        .bind(task_id.to_string())
+        .bind(self.owner_agent_id.as_str())
+        .bind(to_i64(current.schedule_revision)?)
+        .execute(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if changed.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
+        transaction.commit().await.map_err(unavailable)?;
+        self.task(task_id).await?.ok_or(AutomationError::Corrupt)
+    }
+
     /// Releases work held by an older process generation. The caller must own
     /// the per-Agent writer lock before invoking this immediate recovery path.
     pub async fn recover_stale_generation(
@@ -1113,6 +1186,57 @@ fn task_from_row(
         created_at_ms: to_u64(row.try_get("created_at_ms").map_err(unavailable)?)?,
         updated_at_ms: to_u64(row.try_get("updated_at_ms").map_err(unavailable)?)?,
     })
+}
+
+fn materialization_plan(
+    task: &AutomationTask,
+    base_occurrence: u64,
+    base_scheduled_for_ms: u64,
+    now_ms: u64,
+) -> Result<(u64, u64, u64, Option<u64>), AutomationError> {
+    if base_occurrence == 0 || base_scheduled_for_ms > now_ms {
+        return Err(AutomationError::Corrupt);
+    }
+    match task.schedule {
+        AutomationSchedule::Once => {
+            let next_occurrence = base_occurrence
+                .checked_add(1)
+                .ok_or(AutomationError::Invalid)?;
+            Ok((base_occurrence, base_scheduled_for_ms, next_occurrence, None))
+        }
+        AutomationSchedule::FixedInterval { interval_ms } => {
+            let elapsed = now_ms
+                .checked_sub(base_scheduled_for_ms)
+                .ok_or(AutomationError::Corrupt)?;
+            let due_occurrences = elapsed
+                .checked_div(interval_ms)
+                .and_then(|slots| slots.checked_add(1))
+                .ok_or(AutomationError::Invalid)?;
+            let retained = task.missed_run_policy.retained_due_occurrences();
+            let skipped = due_occurrences.saturating_sub(retained);
+            let occurrence = base_occurrence
+                .checked_add(skipped)
+                .ok_or(AutomationError::Invalid)?;
+            let skipped_ms = interval_ms
+                .checked_mul(skipped)
+                .ok_or(AutomationError::Invalid)?;
+            let scheduled_for_ms = base_scheduled_for_ms
+                .checked_add(skipped_ms)
+                .ok_or(AutomationError::Invalid)?;
+            let next_occurrence = occurrence
+                .checked_add(1)
+                .ok_or(AutomationError::Invalid)?;
+            let next_run_at_ms = scheduled_for_ms
+                .checked_add(interval_ms)
+                .ok_or(AutomationError::Invalid)?;
+            Ok((
+                occurrence,
+                scheduled_for_ms,
+                next_occurrence,
+                Some(next_run_at_ms),
+            ))
+        }
+    }
 }
 
 fn schedule_columns(
