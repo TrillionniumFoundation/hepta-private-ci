@@ -43,18 +43,47 @@ def lane_by_module():
     }
 
 
+def _normalize_doc_link(source: str) -> str:
+    source = source.split(")", 1)[0]
+    if source.startswith("../../../"):
+        source = source[9:]
+    return source
+
+
+def _source_tests(text: str) -> list[str]:
+    match = re.search(r"\*\*Source tests:\*\*\s*(.*)", text)
+    if not match:
+        return []
+    tests = []
+    for source in re.findall(r"\[([^]]+)\]\([^)]+\)", match.group(1)):
+        source = _normalize_doc_link(source)
+        if (ROOT / source).is_file():
+            tests.append(source)
+    return tests
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
     match = re.search(r"\*\*Implemented entrypoints:\*\*\s*(.*)", text)
     if not match:
         return []
+    documented_tests = _source_tests(text)
     entries = []
     for name, source in re.findall(r"`([^`]+)`\s+in\s+\[([^]]+)\]", match.group(1)):
-        source = source.split(")", 1)[0]
-        if source.startswith("../../../"):
-            source = source[9:]
+        source = _normalize_doc_link(source)
         source_path = ROOT / source
+        sibling_test = (
+            str(Path(source).with_name(f"{Path(source).stem}_tests.rs"))
+            if source.endswith(".rs")
+            else ""
+        )
+        operation_tests = []
+        if sibling_test and (ROOT / sibling_test).is_file():
+            operation_tests.append(sibling_test)
+        for test in documented_tests:
+            if test not in operation_tests and Path(test).parent == Path(source).parent:
+                operation_tests.append(test)
         entries.append(
             {
                 "operation": re.sub(r"[^a-zA-Z0-9]+", "_", name).strip("_").lower(),
@@ -62,7 +91,7 @@ def parse_entrypoints(module: str):
                 "sourcePath": source,
                 "state": "source_implemented_not_product_composed",
                 "authority": "none",
-                "tests": [],
+                "tests": operation_tests,
                 "sourcePathExists": source_path.is_file(),
             }
         )
@@ -181,7 +210,10 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            # A migrate/refresh operation is an explicit rebinding to the
+            # current exact source snapshot. Preserving an old sourceBase makes
+            # otherwise-current maps silently stale.
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
