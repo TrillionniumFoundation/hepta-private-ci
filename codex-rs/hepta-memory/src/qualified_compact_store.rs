@@ -207,10 +207,7 @@ impl CheckpointImageV1 {
                 .as_deref()
                 .map(|value| parse_digest(value, "predecessor digest"))
                 .transpose()?,
-            compatibility_digest: parse_digest(
-                &self.compatibility_digest,
-                "compatibility digest",
-            )?,
+            compatibility_digest: parse_digest(&self.compatibility_digest, "compatibility digest")?,
             checkpoint_digest: parse_digest(&self.checkpoint_digest, "checkpoint digest")?,
             authority: AuthorityPosture::DENY_ALL,
         };
@@ -363,12 +360,13 @@ impl CognitiveStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(unavailable)?;
-        let current = lease.verify_current_in_transaction(&mut transaction).await?;
+        let current = lease
+            .verify_current_in_transaction(&mut transaction)
+            .await?;
         if current.lease_id != lease.lease_id()
             || current.authority_epoch != Some(binding.authority_epoch)
             || current.owner_epoch != Some(binding.owner_epoch)
-            || current.lease_expires_at_unix_seconds
-                != Some(binding.lease_expires_at_unix_seconds)
+            || current.lease_expires_at_unix_seconds != Some(binding.lease_expires_at_unix_seconds)
         {
             return Err(QualifiedCompactStoreError::Conflict(
                 "lease head changed before checkpoint publication".to_string(),
@@ -414,13 +412,7 @@ impl CognitiveStore {
                     "checkpoint generation was reused with different content".to_string(),
                 ));
             }
-            if latest_publication
-                .checkpoint
-                .generation
-                .next()
-                .ok()
-                != Some(checkpoint.generation)
-            {
+            if latest_publication.checkpoint.generation.next().ok() != Some(checkpoint.generation) {
                 return Err(QualifiedCompactStoreError::Conflict(
                     "checkpoint generation is not the durable successor".to_string(),
                 ));
@@ -445,7 +437,9 @@ impl CognitiveStore {
         let proof_json = serde_json::to_string(&proof_image)
             .map_err(|error| invalid(format!("proof serialization failed: {error}")))?;
         if checkpoint_json.len() > 32_768 || proof_json.len() > 32_768 {
-            return Err(invalid("qualified checkpoint persistence image is oversized"));
+            return Err(invalid(
+                "qualified checkpoint persistence image is oversized",
+            ));
         }
         let publication_digest = publication_digest(checkpoint, proof);
         let published_at = now_unix_seconds()?;
@@ -461,15 +455,22 @@ impl CognitiveStore {
         .bind(self.owner_agent_id.as_str())
         .bind(scope_id)
         .bind(purpose_id)
-        .bind(i64::try_from(checkpoint.generation.get()).map_err(|_| {
-            invalid("checkpoint generation overflows SQLite")
-        })?)
+        .bind(
+            i64::try_from(checkpoint.generation.get())
+                .map_err(|_| invalid("checkpoint generation overflows SQLite"))?,
+        )
         .bind(checkpoint.checkpoint_digest.to_string())
         .bind(checkpoint.predecessor_digest.map(|value| value.to_string()))
         .bind(proof.candidate_digest.to_string())
         .bind(proof.proof_digest.to_string())
         .bind(checkpoint.source_snapshot.vector_digest.to_string())
-        .bind(checkpoint.source_snapshot.vector.tokenizer_digest.to_string())
+        .bind(
+            checkpoint
+                .source_snapshot
+                .vector
+                .tokenizer_digest
+                .to_string(),
+        )
         .bind(publication_digest.to_string())
         .bind(checkpoint_json)
         .bind(proof_json)
@@ -525,8 +526,14 @@ pub(crate) async fn verify_qualified_compact_store(
 ) -> Result<(), CognitiveStoreError> {
     let expected_objects = [
         ("cognitive_qualified_compact_checkpoints", "table"),
-        ("cognitive_qualified_compact_checkpoints_no_update", "trigger"),
-        ("cognitive_qualified_compact_checkpoints_no_delete", "trigger"),
+        (
+            "cognitive_qualified_compact_checkpoints_no_update",
+            "trigger",
+        ),
+        (
+            "cognitive_qualified_compact_checkpoints_no_delete",
+            "trigger",
+        ),
         ("cognitive_qualified_compact_checkpoints_latest", "index"),
     ];
     for (name, expected_type) in expected_objects {
@@ -600,15 +607,25 @@ fn decode_lineage(
     let mut previous: Option<&QualifiedCompactCheckpointPublication> = None;
     for row in rows {
         let publication = decode_row(row)?;
-        if publication.checkpoint.source_snapshot.vector.scope_id.as_str() != expected_scope_id
-            || publication.checkpoint.source_snapshot.vector.purpose_id.as_str()
+        if publication
+            .checkpoint
+            .source_snapshot
+            .vector
+            .scope_id
+            .as_str()
+            != expected_scope_id
+            || publication
+                .checkpoint
+                .source_snapshot
+                .vector
+                .purpose_id
+                .as_str()
                 != expected_purpose_id
         {
             return Err(corrupt("qualified checkpoint row scope/purpose mismatch"));
         }
         if let Some(previous) = previous {
-            if previous.checkpoint.generation.next().ok()
-                != Some(publication.checkpoint.generation)
+            if previous.checkpoint.generation.next().ok() != Some(publication.checkpoint.generation)
                 || publication.checkpoint.predecessor_digest
                     != Some(previous.checkpoint.checkpoint_digest)
             {
@@ -625,8 +642,7 @@ fn decode_row(
     row: &sqlx::sqlite::SqliteRow,
 ) -> Result<QualifiedCompactCheckpointPublication, QualifiedCompactStoreError> {
     let generation: i64 = row.try_get("generation").map_err(unavailable)?;
-    let checkpoint_digest_text: String =
-        row.try_get("checkpoint_digest").map_err(unavailable)?;
+    let checkpoint_digest_text: String = row.try_get("checkpoint_digest").map_err(unavailable)?;
     let predecessor_digest_text: Option<String> =
         row.try_get("predecessor_digest").map_err(unavailable)?;
     let candidate_digest_text: String = row.try_get("candidate_digest").map_err(unavailable)?;
@@ -634,8 +650,7 @@ fn decode_row(
     let source_snapshot_digest_text: String =
         row.try_get("source_snapshot_digest").map_err(unavailable)?;
     let tokenizer_digest_text: String = row.try_get("tokenizer_digest").map_err(unavailable)?;
-    let publication_digest_text: String =
-        row.try_get("publication_digest").map_err(unavailable)?;
+    let publication_digest_text: String = row.try_get("publication_digest").map_err(unavailable)?;
     let checkpoint_json: String = row.try_get("checkpoint_json").map_err(unavailable)?;
     let proof_json: String = row.try_get("proof_json").map_err(unavailable)?;
 
@@ -649,13 +664,16 @@ fn decode_row(
 
     if generation != i64::try_from(checkpoint.generation.get()).unwrap_or(i64::MAX)
         || checkpoint_digest_text != checkpoint.checkpoint_digest.to_string()
-        || predecessor_digest_text
-            != checkpoint.predecessor_digest.map(|value| value.to_string())
+        || predecessor_digest_text != checkpoint.predecessor_digest.map(|value| value.to_string())
         || candidate_digest_text != proof.candidate_digest.to_string()
         || proof_digest_text != proof.proof_digest.to_string()
         || source_snapshot_digest_text != checkpoint.source_snapshot.vector_digest.to_string()
         || tokenizer_digest_text
-            != checkpoint.source_snapshot.vector.tokenizer_digest.to_string()
+            != checkpoint
+                .source_snapshot
+                .vector
+                .tokenizer_digest
+                .to_string()
     {
         return Err(corrupt(
             "qualified checkpoint row metadata does not match its canonical payload",
@@ -703,11 +721,21 @@ fn publication_digest(checkpoint: &CompactCheckpointV1, proof: &CompactionProofV
     frame_part(&mut hasher, &checkpoint.generation.get().to_be_bytes());
     frame_part(
         &mut hasher,
-        checkpoint.source_snapshot.vector.scope_id.as_str().as_bytes(),
+        checkpoint
+            .source_snapshot
+            .vector
+            .scope_id
+            .as_str()
+            .as_bytes(),
     );
     frame_part(
         &mut hasher,
-        checkpoint.source_snapshot.vector.purpose_id.as_str().as_bytes(),
+        checkpoint
+            .source_snapshot
+            .vector
+            .purpose_id
+            .as_str()
+            .as_bytes(),
     );
     frame_part(&mut hasher, checkpoint.checkpoint_digest.as_array());
     frame_part(&mut hasher, proof.candidate_digest.as_array());
@@ -728,10 +756,7 @@ fn parse_id(value: &str, label: &str) -> Result<StableId, QualifiedCompactStoreE
     StableId::new(value.to_string()).map_err(|error| corrupt(format!("invalid {label}: {error}")))
 }
 
-fn parse_generation(
-    value: u64,
-    label: &str,
-) -> Result<Generation, QualifiedCompactStoreError> {
+fn parse_generation(value: u64, label: &str) -> Result<Generation, QualifiedCompactStoreError> {
     Generation::new(value).map_err(|error| corrupt(format!("invalid {label}: {error}")))
 }
 
