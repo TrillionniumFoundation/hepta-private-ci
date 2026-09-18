@@ -61,9 +61,10 @@ Current native components:
 
 - `registry.rs`: V1 append-only `ArtifactRegistry`, lineage eligibility and idempotent event identity.
 - `storage.rs`: create-only payload/snapshot/head-witness I/O, prepare-before-create APIs, bounded reload and rooted path containment.
+- `storage_hygiene.rs`: enrolled-root inspection and conservative zero-length orphan cleanup; no recursive or non-empty deletion.
 - `pinned.rs`: exact candidate loading from an independently retained registry receipt.
 - `closure_v2.rs`: `LearningArtifactManifestV2`, persistent dataset-withdrawal frontier, anti-rollback head witness and lifecycle transition primitives.
-- `admission_v3.rs`: admission bound to the exact withdrawal head and explicit `registry_id + scope_digest + authority_id` domain identity.
+- `admission_v3.rs`: admission bound to the exact withdrawal head and explicit `registry_id + scope_digest + authority_id + authority_epoch` domain identity.
 - `lifecycle_journal.rs`: predecessor-bound lifecycle journal with actor/role evidence and historical-recovery semantics.
 - `control_storage.rs`: canonical create-only persistence/reopen for withdrawal and lifecycle snapshots.
 - `publication.rs`: hard host publication contract binding V2 admission to a durable V1 successor registry and authenticated head witness, plus deterministic crash classification.
@@ -130,11 +131,11 @@ The V2/V3 surfaces are additive rather than an in-place reinterpretation of V1 h
 
 - `LearningArtifactManifestV2` binds complete dataset/provenance, predecessor, payload, training/runtime/device/objective/schema/normalization/compatibility and time facts.
 - `DatasetWithdrawalRegistry` persists the dataset tombstone frontier and denies future dataset-derived admission.
-- V3 admission domain-separates that frontier with `registry_id`, `scope_digest` and `authority_id`; equal raw heads in different scopes are not interchangeable.
+- V3 admission domain-separates that frontier with `registry_id`, `scope_digest`, `authority_id` and nonzero `authority_epoch`; equal raw heads across scopes or authority epochs are not interchangeable.
 - `ArtifactLifecycleJournalV2` persists predecessor-bound lifecycle evidence.
 - `ArtifactPublicationTransactionV1` binds V2 admission/withdrawal state to the exact V1 predecessor registry, candidate registry and authenticated head witness. The V1 register event is the compatibility bridge and must match common artifact identity/content fields.
 
-`control_storage.rs` adds canonical `HEPTAW01` withdrawal and `HEPTAL02` lifecycle snapshots with independent receipts and byte-for-byte reopen verification. This proves durable replay of the state models; newest-generation discovery and external witness publication remain host responsibilities.
+`control_storage.rs` adds canonical `HEPTAW01` withdrawal and `HEPTAL02` lifecycle snapshots with independent receipts and byte-for-byte reopen verification. Domain-aware withdrawal helpers derive the snapshot binding from the exact `WithdrawalAuthorityDomainV1`, so a snapshot cannot be reopened under a different scope, authority or authority epoch. This proves durable replay of the state models; newest-generation discovery and external witness publication remain host responsibilities.
 
 All owner-side append paths share `MAX_DURABLE_ARTIFACT_RECORDS = 4096`; memory owners may not accept state that canonical durable formats cannot persist. The artifact/control snapshot byte ceiling is `8 MiB`. Stable V1 encodings remain readable; additive formats have distinct magic/domain tags. Future format migrations must be deterministic, checksum-bound and leave a recoverable predecessor.
 
@@ -168,7 +169,7 @@ After an interrupted publication, authenticate the current head and call `classi
 
 The module never guesses commit state from payload/snapshot files and never rolls back automatically. An old registry/head pair cannot resurrect a withdrawn dataset, revoked ancestor or superseded generation.
 
-Prefer `prepare_registry_snapshot_v1`, `prepare_registry_head_witness_v1` and `prepare_candidate_payload_v1` before final path creation. Predictable semantic rejection then creates no zero-length final-path orphan. Failures after create/write/sync begins remain `Indeterminate`; the host reconciles the exact target/digest and may delete only a proven orphan under a separately authorized retention policy.
+Prefer `prepare_registry_snapshot_v1`, `prepare_registry_head_witness_v1` and `prepare_candidate_payload_v1` before final path creation. Predictable semantic rejection then creates no zero-length final-path orphan. Failures after create/write/sync begins remain `Indeterminate`; the host reconciles the exact target/digest. `ArtifactStorageAdminV1` may remove only a proven zero-length regular-file orphan below its enrolled canonical root; non-empty files, directories, symlinks and special files are fail-closed.
 
 Newest-head discovery, directory fsync, product-store reconciliation, backup non-resurrection and external acknowledgement remain host obligations. [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -176,7 +177,7 @@ Newest-head discovery, directory fsync, product-store reconciliation, backup non
 
 Owned threats: `artifact_lineage_break`, `current_run_artifact_swap`, and `operator_sensor_clustering`.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Withdrawal admission is namespace-bound: `registry_id`, `scope_digest`, `authority_id` and the raw withdrawal chain head are domain-separated before admission is minted. A head from another scope cannot satisfy the receipt even when both raw chains are empty or byte-identical.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Withdrawal admission is namespace/epoch-bound: `registry_id`, `scope_digest`, `authority_id`, nonzero `authority_epoch` and the raw withdrawal chain head are domain-separated before admission is minted. A head from another scope cannot satisfy the receipt even when both raw chains are empty or byte-identical.
 
 `CreateOnlyArtifactFile::create_in` rejects absolute paths, parent traversal and symlinked ancestor escapes after canonicalizing the host-selected root and parent. This is cooperative safe-Rust containment, not proof against a hostile process racing ancestor rename/replacement; target-host openat-style or equivalent guarantees remain a qualification obligation.
 
@@ -201,7 +202,7 @@ Snapshot creation/replay is O(history) within the pilot cap and is not a high-fr
 
 ## 11. Observability and operations
 
-Operate create-only storage under one owner fence with a current scoped withdrawal frontier and authenticated registry-head witness. Prefer prepare-before-create so deterministic validation fails before a final path exists. For host-selected rooted placement, use `CreateOnlyArtifactFile::create_in`; directory durability and hostile-filesystem races still require target qualification.
+Operate create-only storage under one owner fence with a current scoped withdrawal frontier and authenticated registry-head witness. Prefer prepare-before-create so deterministic validation fails before a final path exists. For host-selected rooted placement, use `CreateOnlyArtifactFile::create_in`. For explicit orphan reconciliation, enroll the same canonical root with `ArtifactStorageAdminV1`; cleanup is limited to zero-length regular files and syncs the containing directory after removal. Directory durability and hostile-filesystem races still require target qualification.
 
 Durable state formats are:
 
@@ -229,9 +230,10 @@ Focused source tests include:
 - `registry_tests.rs`: event identity, lineage, eligibility and durable-capacity semantics.
 - `storage_tests.rs`, `storage_lock_tests.rs`, `storage_budget_tests.rs`: create-only behavior, bounded reopen, prepared writes, rooted containment, locking and budgets.
 - `closure_v2_tests.rs`: V2 manifest, withdrawal and head-witness contracts.
-- inline `admission_v3.rs` tests: exact scoped withdrawal head and cross-domain rejection.
+- inline `admission_v3.rs` tests: exact scoped withdrawal head, cross-domain rejection and authority-epoch rotation rejection.
 - inline `lifecycle_journal.rs` tests: predecessor/state/role checks and historical replay after credential expiry.
-- inline `control_storage.rs` tests: real-file withdrawal/lifecycle persistence and post-expiry reopen.
+- inline `control_storage.rs` tests: real-file withdrawal/lifecycle persistence, domain/authority-epoch binding and post-expiry reopen.
+- inline `storage_hygiene.rs` tests: parent-escape rejection plus zero-length-only orphan cleanup.
 - inline `publication.rs` tests: V2-to-V1 publication tuple and crash-before/crash-after current-head classification.
 - `dataset_revocation_tests.rs`: direct/descendant invalidation and persistence.
 - inline `iteration.rs` / `iteration_ledger.rs` tests: bounded transitions, independent evidence and exact replay.
