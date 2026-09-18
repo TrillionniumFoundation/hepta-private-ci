@@ -834,6 +834,7 @@ mod tests {
                 requested_sources: 0,
                 completed_sources: 0,
                 failed_sources: 0,
+                partial_sources: 0,
                 discovery_failures: 0,
             },
         };
