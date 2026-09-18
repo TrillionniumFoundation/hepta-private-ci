@@ -104,6 +104,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_module_registry.py --strict
+          python3 scripts/hepta-module-docs.py refresh-derived --check
           python3 scripts/hepta-docs.py verify
           python3 scripts/hepta-module-docs.py verify
           git diff --check
