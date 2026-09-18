@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 import unittest
 
+import control_engineering_v2
 from control_engineering_v2 import (
     EngineeringStore,
     HmacTrustStore,
@@ -84,6 +85,20 @@ class OrchestrationTests(unittest.TestCase):
             value,
             signature=self.trust.sign(value, value.issuer, value.signing_identity),
         )
+
+    def test_package_root_does_not_export_unauthenticated_scheduler_aliases(self):
+        self.assertFalse(hasattr(control_engineering_v2, "issue_work_envelope"))
+        self.assertFalse(hasattr(control_engineering_v2, "schedule_ready_packages"))
+        self.assertTrue(
+            callable(control_engineering_v2.issue_repository_work_envelope)
+        )
+        self.assertTrue(callable(control_engineering_v2.issue_signed_work_envelope))
+        self.assertTrue(callable(control_engineering_v2.plan_engineering_work))
+
+        from control_engineering_v2 import facade
+
+        self.assertTrue(callable(facade.issue_work_envelope))
+        self.assertTrue(callable(facade.schedule_ready_packages))
 
     def test_authenticated_completion_and_multidimensional_capacity(self):
         with tempfile.TemporaryDirectory() as temp:
