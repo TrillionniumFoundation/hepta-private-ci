@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "30370ef7e15b8cf60934eaa6768b4ba8657253ce",
-    "tree": "db8c0c158c4d37e805be4c4e20af7a976bb9c24c"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -64,6 +64,20 @@
       "delegatedCallees": []
     },
     {
+      "operation": "build_candidate_union",
+      "nativeSymbol": "build_candidate_union",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "state": "source_implemented_core_compatibility",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retrieve",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "expand_candidate_engram",
       "nativeSymbol": "expand_candidate_engram",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram_expansion.rs",
@@ -85,6 +99,20 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-memory-retrieval/src/hnmf_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recall",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "recall",
+      "nativeSymbol": "recall",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "state": "source_implemented_core_compatibility",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "recall",
