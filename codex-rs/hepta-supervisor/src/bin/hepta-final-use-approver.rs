@@ -28,9 +28,6 @@ fn main() -> ExitCode {
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    if args.len() != 5
-        || args[0] != "approve"
-        || args[1] != "--approver-id"
         || args[3] != "--key"
     {
         return Err(
@@ -55,7 +52,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .to_vec();
     serde_json::to_writer(
         std::io::stdout(),
-        &SignedFinalUseApproval { approval, signature },
+        &SignedFinalUseApproval {
+            approval,
+            signature,
+        },
     )?;
     println!();
     Ok(())
@@ -90,5 +90,8 @@ fn load_private_seed(path: &str) -> Result<SigningKey, Box<dyn std::error::Error
 
 #[cfg(not(unix))]
 fn load_private_seed(_path: &str) -> Result<SigningKey, Box<dyn std::error::Error>> {
-    Err("final-use approval signing requires an approved platform-specific key-custody backend".into())
+    Err(
+        "final-use approval signing requires an approved platform-specific key-custody backend"
+            .into(),
+    )
 }

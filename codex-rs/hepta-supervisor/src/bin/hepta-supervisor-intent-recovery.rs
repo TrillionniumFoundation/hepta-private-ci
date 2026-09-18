@@ -43,12 +43,13 @@ fn main() -> Result<()> {
                     | SignedIntentStatus::Queued
                     | SignedIntentStatus::RecoveryRequired
             ) {
-                bail!("signed supervisor intent is already terminal: {:?}", intent.status);
+                bail!(
+                    "signed supervisor intent is already terminal: {:?}",
+                    intent.status
+                );
             }
             if intent.intent_sha256.as_str() != expected_digest {
-                bail!(
-                    "intent digest changed; inspect again before issuing an abort directive"
-                );
+                bail!("intent digest changed; inspect again before issuing an abort directive");
             }
             let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())?;
             write_signed_intent_recovery_directive(&run_root, &directive)?;

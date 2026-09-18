@@ -50,12 +50,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let head: FinalUseRevocations = serde_json::from_slice(&bytes)?;
     let issued_at_unix_ms: u64 = args[6].parse()?;
     let expires_at_unix_ms: u64 = args[8].parse()?;
-    let update = FinalUseRevocationUpdate::new(
-        args[2].clone(),
-        head,
-        issued_at_unix_ms,
-        expires_at_unix_ms,
-    );
+    let update =
+        FinalUseRevocationUpdate::new(args[2].clone(), head, issued_at_unix_ms, expires_at_unix_ms);
     let signing_key = load_private_seed(&args[4])?;
     let signature = signing_key
         .sign(&update.signing_bytes()?)
