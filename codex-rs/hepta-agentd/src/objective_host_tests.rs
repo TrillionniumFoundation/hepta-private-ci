@@ -349,3 +349,95 @@ fn durable_publication_is_required_before_agentd_run_admission() {
     );
     assert_eq!(ledger.records().expect("records").len(), 1);
 }
+
+
+#[test]
+fn product_objective_agentd_end_to_end_named_host_measurement_receipt() {
+    if std::env::var_os("HEPTA_OBJECTIVE_AGENTD_MEASURE").is_none() {
+        return;
+    }
+
+    let directory = tempdir().expect("tempdir");
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(directory.path().join("objective-measurement.ledger"))
+        .expect("ledger file");
+    let mut ledger =
+        DurableLedger::create(file, digest("agentd-measurement-binding"), 64).expect("ledger");
+    let profile = profile();
+    let source = source();
+    let context = ObjectiveAdmissionContextV1 {
+        revision: Revision::new(7).expect("revision"),
+        now_unix_micros: NOW_MICROS,
+        selected_profile_digest: profile.digest().expect("profile digest"),
+        source_authentication: ObjectiveSourceAuthenticationV1::Principal {
+            principal_scope_digest: source.principal_scope_digest,
+            source_digest: source.structured_intent.provenance.source_digest,
+        },
+    };
+    let mut coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
+        agent_id: "agent.measurement".to_string(),
+        supervisor_generation: 2,
+        agentd_generation: 3,
+        authority_epoch: 11,
+        configuration_digest: digest("configuration").to_string(),
+        ports_digest: digest("ports").to_string(),
+        fence_digest: digest("runtime-fence").to_string(),
+    })
+    .expect("runtime composition");
+
+    let mut predecessor = Digest32::ZERO;
+    let mut micros = Vec::new();
+    for index in 0..32 {
+        let started = std::time::Instant::now();
+        let result = prepare_and_start_intelligence_run_v1(
+            &mut coordinator,
+            ObjectiveProductRunRequestV1 {
+                now_ms: NOW_MICROS / 1_000,
+                body_digest: digest("body"),
+                journal: &mut ledger,
+                source: &source,
+                profile: &profile,
+                context: &context,
+                bindings: ProductionRunBindingsV1 {
+                    record_id: id(&format!("agentd-measure-record-{index:03}")),
+                    run_id: id(&format!("agentd-measure-run-{index:03}")),
+                    preference_state_digest: digest("preference"),
+                    model_tuple_digest: digest("model"),
+                    prompt_registry_digest: digest("prompt"),
+                    artifact_set_digest: digest("artifacts"),
+                    authority_epoch: 11,
+                    generation: 3,
+                    fence_digest: digest("runtime-fence"),
+                    expected_ledger_predecessor: predecessor,
+                },
+            },
+        )
+        .expect("end-to-end measurement");
+        let ObjectiveProductRunDispositionV1::Started {
+            publication,
+            runtime,
+        } = result
+        else {
+            panic!("measurement must start a product run");
+        };
+        assert_eq!(runtime.phase, RunPhase::Admitted);
+        predecessor = publication.durable_append().chain_digest;
+        micros.push(started.elapsed().as_micros());
+    }
+
+    micros.sort_unstable();
+    let percentile = |numerator: usize| {
+        let index = ((micros.len() - 1) * numerator + 99) / 100;
+        micros[index]
+    };
+    println!(
+        "{{\"schema\":\"hepta.objective-agentd-product-measurement.v1\",\"samples\":{},\"p50Micros\":{},\"p95Micros\":{},\"p99Micros\":{},\"path\":\"authenticated-admission+compile+durable-fsync+agentd-runtime-admission\"}}",
+        micros.len(),
+        percentile(50),
+        percentile(95),
+        percentile(99)
+    );
+}
