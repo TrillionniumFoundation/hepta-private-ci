@@ -99,6 +99,7 @@ pub use robrix_protocol::RobrixSupervisordMethod;
 pub use robrix_protocol::RobrixSupervisordPayload;
 pub use robrix_protocol::RobrixSupervisordRequest;
 pub use robrix_protocol::RobrixSupervisordResponse;
+pub use release_selection::RELEASE_SELECTION_SCHEMA_VERSION;
 pub use release_selection::ReleaseSelectionSnapshot;
 pub use release_selection::ReleaseSelectionStatus;
 pub use signed_authority::H7H89ProductionGrant;
