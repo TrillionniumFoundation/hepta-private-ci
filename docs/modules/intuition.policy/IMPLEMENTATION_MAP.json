@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-intuition/src/calibrated.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intuition/src/calibrated_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "decide_calibrated",
       "mappingClass": "owner_native",
@@ -61,16 +63,47 @@
       "designOperation": "decide_calibrated",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "runtime_commitment_v1",
+      "nativeSymbol": "canonical_runtime_commitment_payload_v1",
+      "sourcePath": "codex-rs/hepta-intuition/src/runtime_commitment.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intuition/src/runtime_commitment.rs::tests::runtime_commitment_binds_scores_and_rng_owner_counter_draw",
+        "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "consume_upstream_learned_scores_and_assignment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_authenticated_intuition_v2",
+      "nativeSymbol": "decide_authenticated_intuition_v2",
+      "sourcePath": "codex-rs/hepta-intelligence/src/intuition_qualification.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "host_trust_snapshot_required",
+      "tests": [
+        "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs",
+        "codex-rs/hepta-intelligence/examples/intuition_authenticated_fast_gate.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticate_qualified_fast_decision",
+      "mappingClass": "consumer_native",
+      "delegatedCallees": [
+        "decide_calibrated_v3"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind CounterBased assignment to the eventual owner-supplied authenticated random-stream draw.",
-    "Compose stricter V3 risk profiles through a native V3 host port instead of the HighOnlySlowPath compatibility wrapper.",
-    "Run exact-head and deterministic synthetic-merge qualification before changing the claim boundary."
+    "Compose the authenticated V2 admission through a named production caller/native V3 host port without weakening stricter risk profiles.",
+    "Run exact-head and deterministic synthetic-merge qualification with both kernel and authenticated end-to-end performance gates before changing the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "production-selected model calibration and target-host qualification",
+    "production-selected model, real RNG owner and target-host qualification",
     "product execution, operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
