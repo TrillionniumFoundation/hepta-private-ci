@@ -161,3 +161,15 @@ fn op_05_tabular_prediction_is_synthetic_and_domain_bounded() {
         Err(LearnedOperatorError::UnsupportedCell)
     );
 }
+
+#[test]
+fn tabular_operator_requires_reference_action_domain() {
+    let mut single_action = plan(vec![sample("s1", "sensor-a", "action-a", 10)]);
+    single_action.sensor_ids = vec![id("sensor-a")];
+    single_action.action_ids = vec![id("action-a")];
+    single_action.minimum_samples_per_cell = 1;
+    assert_eq!(
+        fit_tabular_operator(single_action),
+        Err(LearnedOperatorError::InvalidGrid)
+    );
+}

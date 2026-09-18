@@ -54,17 +54,17 @@ fn request() -> TrainingRequest {
 
 #[test]
 fn deterministic_and_canonical() {
-    let first = must(train(request()));
+    let first = must(build_targets(request()));
     let mut reordered = request();
     reordered.dataset.transitions.reverse();
-    let second = must(train(reordered));
+    let second = must(build_targets(reordered));
     assert_eq!(first, second);
     assert_eq!(first.targets[0].sample_id, id("a"));
 }
 
 #[test]
 fn terminal_transition_has_no_bootstrap() {
-    let artifact = must(train(request()));
+    let artifact = must(build_targets(request()));
     assert_eq!(artifact.targets[0].target, FixedQ32::ZERO);
 }
 
@@ -72,7 +72,7 @@ fn terminal_transition_has_no_bootstrap() {
 fn invalid_gamma_fails_closed() {
     let mut value = request();
     value.gamma = FixedQ32::from_raw(FixedQ32::ONE.raw() + 1);
-    assert_eq!(train(value), Err(Error::InvalidGamma));
+    assert_eq!(build_targets(value), Err(Error::InvalidGamma));
 }
 
 #[test]
@@ -82,5 +82,12 @@ fn duplicate_sample_fails() {
         .dataset
         .transitions
         .push(value.dataset.transitions[0].clone());
-    assert!(matches!(train(value), Err(Error::DuplicateSample(_))));
+    assert!(matches!(build_targets(value), Err(Error::DuplicateSample(_))));
+}
+
+#[test]
+fn relabelled_duplicate_support_evidence_fails() {
+    let mut value = request();
+    value.dataset.transitions[1].support_digest = value.dataset.transitions[0].support_digest;
+    assert_eq!(build_targets(value), Err(Error::DuplicateEvidence));
 }

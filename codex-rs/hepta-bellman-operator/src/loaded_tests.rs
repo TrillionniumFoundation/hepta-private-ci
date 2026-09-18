@@ -26,21 +26,35 @@ fn fitted(generation: u64, target: i64) -> TabularOperatorArtifactV1 {
         training_profile_digest: hash("tabular"),
         minimum_samples_per_cell: 2,
         sensor_ids: vec![id("state")],
-        action_ids: vec![id("read")],
+        action_ids: vec![id("read"), id("abstain")],
         samples: vec![
             TabularOperatorSampleV1 {
-                sample_id: id("observation-a"),
+                sample_id: id("read-observation-a"),
                 sensor_id: id("state"),
                 action_id: id("read"),
                 target: FixedQ32::from_raw(target - 2),
-                evidence_digest: hash("independent-a"),
+                evidence_digest: hash("read-independent-a"),
             },
             TabularOperatorSampleV1 {
-                sample_id: id("observation-b"),
+                sample_id: id("read-observation-b"),
                 sensor_id: id("state"),
                 action_id: id("read"),
                 target: FixedQ32::from_raw(target + 2),
-                evidence_digest: hash("independent-b"),
+                evidence_digest: hash("read-independent-b"),
+            },
+            TabularOperatorSampleV1 {
+                sample_id: id("abstain-observation-a"),
+                sensor_id: id("state"),
+                action_id: id("abstain"),
+                target: FixedQ32::ZERO,
+                evidence_digest: hash("abstain-independent-a"),
+            },
+            TabularOperatorSampleV1 {
+                sample_id: id("abstain-observation-b"),
+                sensor_id: id("state"),
+                action_id: id("abstain"),
+                target: FixedQ32::ZERO,
+                evidence_digest: hash("abstain-independent-b"),
             },
         ],
     })
@@ -122,6 +136,16 @@ fn invalid_statistics_grid_and_authority_cannot_be_encoded() {
     assert_eq!(
         encode_tabular_payload_v1(&empty),
         Err(TabularPayloadError::Bounds)
+    );
+}
+
+#[test]
+fn loaded_grid_rejects_single_action_even_if_artifact_was_hand_built() {
+    let mut artifact = fitted(2, 7);
+    artifact.cells.retain(|cell| cell.action_id == id("read"));
+    assert_eq!(
+        encode_tabular_payload_v1(&artifact),
+        Err(TabularPayloadError::Grid)
     );
 }
 

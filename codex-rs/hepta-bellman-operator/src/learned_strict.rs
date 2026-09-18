@@ -8,11 +8,13 @@
 use std::error::Error as StdError;
 use std::fmt;
 
+#[cfg(test)]
 use codex_hepta_types::StableId;
 
 use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
+#[cfg(test)]
 use crate::TabularOperatorPredictionV1;
 use crate::fit_tabular_operator;
 

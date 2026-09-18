@@ -7,10 +7,11 @@ policy, artifact selector or production writer.
 
 ## Compatibility and naming
 
-The original public `train(TrainingRequest)` function is retained for source
-compatibility, but it delegates to `build_targets`. Its actual behavior is a
-bounded deterministic Bellman-target builder over caller-supplied continuation
-values. It does not fit a neural network or prove a complete Bellman operator.
+The original public `train(TrainingRequest)` function is deprecated and retained
+only for source compatibility; it delegates to `build_targets`. Its actual
+behavior is a bounded deterministic Bellman-target builder over caller-supplied
+continuation values. New callers use `build_targets`; this alias does not fit a
+neural network or prove a complete Bellman operator.
 
 The complete regularity gate uses `OperatorRegularityAssessmentV1`; the legacy
 `RegularityProfile` contains only target-builder diagnostics and must not be
@@ -22,7 +23,7 @@ interpreted as the Hölder/operator qualification profile.
 |---|---|---|---|
 | build deterministic Bellman targets | `build_targets` (`train` compatibility alias) | `src/lib.rs` | implemented |
 | admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
-| build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
+| build work-bounded fixed sensor core | `build_sensor_core` | `src/sensor_bounded.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
 | fit complete simplest-sufficient operator | `fit_tabular_operator` / `fit_tabular_operator_strict_v2` | `src/learned.rs`, `src/learned_strict.rs` | implemented |
 | admit host-pinned tabular candidate | `LoadedTabularOperatorV1::from_pinned_payload` | `src/loaded.rs` | implemented |
@@ -32,6 +33,7 @@ interpreted as the Hölder/operator qualification profile.
 | bind complete world-model semantic payload | `world_model_payload_digest_v1` | `src/world_model.rs` | implemented |
 | admit host-pinned world model | `LoadedTabularWorldModelV1::from_pinned_model` | `src/world_model.rs` | implemented |
 | predict supported transition distribution | `LoadedTabularWorldModelV1::predict` | `src/world_model.rs` | implemented |
+| admit frozen world-model qualification evidence | `admit_world_model_qualification` | `src/world_model_qualification.rs` | implemented |
 
 ## Applicability and sensor core
 
@@ -41,12 +43,13 @@ independent evaluator credential, fallback, expiry and decision. Non-positive
 ellipticity, expired certificates and unsupported control intervals fail before
 operator evaluation.
 
-`build_sensor_core` uses deterministic farthest-point insertion over a bounded,
-canonical candidate design. It rejects duplicate identities, duplicate
-coordinates, mixed dimensions and coordinates outside normalized `[0,1]`.
-The manifest records selected points, fill distance, separation radius, mesh
-ratio and a hull digest. A zero separation radius or mesh ratio above the pilot
-bound fails.
+`build_sensor_core` wraps the exact deterministic farthest-point reference with
+an explicit conservative coordinate-work budget before any quadratic geometry
+runs. The reference rejects duplicate identities, duplicate coordinates, mixed
+dimensions and coordinates outside normalized `[0,1]`. The manifest records
+selected points, fill distance, separation radius, mesh ratio and a hull digest.
+A zero separation radius, mesh ratio above the pilot bound, or estimated exact
+coordinate work above the source budget fails closed.
 
 ## Bellman reference, learned baseline and regularity
 
@@ -56,8 +59,9 @@ computes Q32 targets, deterministic greedy actions and action gaps; ties break b
 canonical action ID. This reference is the oracle for any later learned model.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile.
-It canonicalizes a frozen sensor-by-action grid, validates every sample and
-requires a configurable positive minimum sample count for every grid cell. The
+It canonicalizes a frozen sensor-by-action grid, requires the same minimum of
+two actions as the deterministic reference, validates every sample and requires
+a configurable positive minimum sample count for every grid cell. The
 base V1 fitter now rejects a duplicate `evidence_digest` globally even when a
 caller relabels that evidence with a different `sample_id`; the strict V2
 surface retains the same fail-closed rule as an additive admission layer. The
@@ -109,6 +113,13 @@ pin before retaining private immutable state.
 extrapolating and marks every prediction synthetic with deny-all authority.
 Synthetic predictions cannot become independent factual outcomes.
 
+`admit_world_model_qualification` consumes already frozen statistical evidence
+under a digest-bound profile. It requires minimum effective/held-out support,
+independent snapshots, future windows and bounded held-out MAE, temporal
+calibration error, drift score and confidence half-width. The admission record
+remains synthetic/qualification-only with `DENY_ALL`; this source gate does not
+manufacture future-time, live-world or independent acceptance evidence.
+
 ## Host and external obligations
 
 A production integration must still provide:
@@ -133,7 +144,9 @@ Focused tests live in:
 - `src/reference_tests.rs`;
 - `src/learned_tests.rs`;
 - `src/loaded_tests.rs`;
-- `src/world_model_tests.rs`.
+- `src/world_model_tests.rs`;
+- inline work-budget tests in `src/sensor_bounded.rs`;
+- inline statistical-admission tests in `src/world_model_qualification.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,

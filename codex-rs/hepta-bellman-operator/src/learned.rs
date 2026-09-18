@@ -128,7 +128,7 @@ pub fn fit_tabular_operator(
     }
     if plan.sensor_ids.is_empty()
         || plan.sensor_ids.len() > MAX_SENSORS
-        || plan.action_ids.is_empty()
+        || plan.action_ids.len() < 2
         || plan.action_ids.len() > MAX_ACTIONS
         || plan.minimum_samples_per_cell == 0
         || plan.minimum_samples_per_cell > MAX_SAMPLES
