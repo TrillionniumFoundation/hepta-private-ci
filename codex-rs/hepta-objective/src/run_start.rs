@@ -40,12 +40,18 @@ pub enum RunStartSnapshotError {
 impl fmt::Display for RunStartSnapshotError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::InvalidObjective(error) => write!(formatter, "invalid compiled objective: {error}"),
-            Self::ObjectiveDigestMismatch => formatter.write_str("run snapshot objective digest mismatch"),
+            Self::InvalidObjective(error) => {
+                write!(formatter, "invalid compiled objective: {error}")
+            }
+            Self::ObjectiveDigestMismatch => {
+                formatter.write_str("run snapshot objective digest mismatch")
+            }
             Self::HardConstraintDigestMismatch => {
                 formatter.write_str("run snapshot hard-constraint digest mismatch")
             }
-            Self::EmptyDigest(field) => write!(formatter, "run snapshot {field} digest must not be zero"),
+            Self::EmptyDigest(field) => {
+                write!(formatter, "run snapshot {field} digest must not be zero")
+            }
             Self::ZeroIdentity(field) => write!(formatter, "run snapshot {field} must be non-zero"),
         }
     }
