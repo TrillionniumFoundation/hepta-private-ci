@@ -96,6 +96,18 @@ REQUIRED_FILES = [
     "qualification/hnmf-reference/Cargo.lock",
     "qualification/hnmf-reference/README.md",
     "qualification/hnmf-reference/src/lib.rs",
+    "codex-rs/hepta-cognitive-types/Cargo.toml",
+    "codex-rs/hepta-cognitive-types/src/hnmf/mod.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/wire.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/span.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/event.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/engram.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/recall.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/replay.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/plasticity.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf/forget.rs",
+    "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs",
+    "codex-rs/hepta-cognitive-types/tests/data/hnmf_conformance_v1.json",
     ".github/workflows/hnmf-qualification.yml",
 ]
 
@@ -315,6 +327,35 @@ def verify() -> int:
         "unsafe" not in rust.replace("#![forbid(unsafe_code)]", ""), "unsafe code token"
     )
 
+
+    production_root = ROOT / "codex-rs/hepta-cognitive-types/src/hnmf"
+    production_source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted(production_root.glob("*.rs"))
+        if path.name != "tests.rs"
+    )
+    for protocol in PROTOCOLS:
+        need(protocol in production_source, f"production protocol {protocol}")
+    for token in [
+        "pub trait CanonicalJsonV1",
+        "deny_unknown_fields",
+        "pub fn try_new",
+        "MemoryVerificationStateV1",
+        "RetentionPolicyV1",
+        "current_snapshot_immutable",
+        "production_activation_allowed",
+    ]:
+        need(token in production_source, f"production HNMF token {token}")
+    conformance = (
+        ROOT / "codex-rs/hepta-cognitive-types/tests/hnmf_reference_conformance.rs"
+    ).read_text(encoding="utf-8")
+    for token in [
+        "canonical_event_fixture_is_valid_in_reference_and_production",
+        "modality_range_mismatch_fails_closed_in_reference_and_production",
+        "modality_closed_world_matches_reference",
+    ]:
+        need(token in conformance, f"production/reference conformance {token}")
+
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
     )
@@ -323,6 +364,9 @@ def verify() -> int:
         "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
         "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
         "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
+        "cargo check --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types --all-targets --locked",
+        "cargo clippy --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types --all-targets --locked -- -D warnings",
+        "cargo test --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types --locked",
     ]:
         need(command in workflow, f"workflow command {command}")
 
