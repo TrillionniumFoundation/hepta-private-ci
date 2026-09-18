@@ -95,10 +95,13 @@ pub use plasticity_host::AgentdPlasticityHostErrorV1;
 pub use plasticity_host::AgentdPlasticityHostV1;
 pub use plasticity_host::PlasticityOwnerEvidenceErrorV1;
 pub use plasticity_host::PlasticityOwnerEvidenceKindV1;
+pub use plasticity_host::PlasticityOwnerEvidencePolicyErrorV1;
+pub use plasticity_host::PlasticityOwnerEvidencePolicyV1;
 pub use plasticity_host::PlasticityOwnerEvidenceQueryV1;
 pub use plasticity_host::PlasticityOwnerEvidenceReceiptV1;
 pub use plasticity_host::PlasticityOwnerEvidenceResolverV1;
 pub use plasticity_host::artifact_frontier_binding_v1;
+pub use plasticity_host::plasticity_owner_evidence_query_digest_v1;
 pub use production_writer_host::AgentdProductionWriterHost;
 pub use runtime::run;
 
