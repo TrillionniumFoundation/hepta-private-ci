@@ -35,9 +35,11 @@ pub use learned::TabularOperatorPlanV1;
 pub use learned::TabularOperatorPredictionV1;
 pub use learned::TabularOperatorSampleV1;
 pub use learned::fit_tabular_operator;
+#[allow(deprecated)]
 pub use learned::predict_tabular_operator;
 pub use learned_strict::StrictLearnedOperatorError;
 pub use learned_strict::fit_tabular_operator_strict_v2;
+#[allow(deprecated)]
 pub use learned_strict::predict_tabular_operator_indexed_v2;
 pub use reference::ApplicabilityDecisionV1;
 pub use reference::BellmanReferenceCellV1;
@@ -64,6 +66,7 @@ pub use world_model::WorldModelError;
 pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
 pub use world_model::fit_transition_model;
+#[allow(deprecated)]
 pub use world_model::predict_transition;
 pub use world_model_loaded::LoadedTabularWorldModelV1;
 pub use world_model_loaded::TabularWorldModelPinV1;
