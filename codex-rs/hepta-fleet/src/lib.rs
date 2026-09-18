@@ -5,6 +5,7 @@
 #![forbid(unsafe_code)]
 
 /// Reusable state machine; does not install a second runtime owner.
+pub mod authority_port;
 pub mod lease_ledger;
 pub mod revocation_control;
 
@@ -18,6 +19,8 @@ mod registry;
 mod release;
 
 pub use allocation::calculate_local_allocation_v1;
+pub use authority_port::FleetAuthorityError;
+pub use authority_port::FleetAuthorityPort;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;
 pub use allocation_model::LocalAllocationCalculationV1;
 pub use allocation_model::LocalAllocationCandidateV1;
