@@ -119,6 +119,7 @@ pub struct NativeRunRecord {
     /// Exact Core reconciliation can prove that a durably journaled dispatch
     /// intent never became a persisted user-message admission. This also
     /// releases the local slot without inventing provider terminality/usage.
+    #[serde(default)]
     pub reconciled_no_admission: Option<String>,
     pub observation: Option<NativeRunOutput>,
 }
