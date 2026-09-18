@@ -27,6 +27,7 @@ pub use schema::SchemaAdmissionError;
 pub use schema::SchemaRegistry;
 pub use schema::SchemaRule;
 pub use schema::SchemaValidationError;
+pub use schema::SchemaValidator;
 pub use schema::TypedCodecError;
 pub use schema::TypedPayload;
 pub use schema::decode_typed_v1;
