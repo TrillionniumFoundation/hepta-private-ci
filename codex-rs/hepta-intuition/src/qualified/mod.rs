@@ -2,15 +2,16 @@
 //!
 //! The legacy calibrated API validates structure and binding only. This module
 //! adds a cryptographic HMAC-SHA256 trust boundary for the canonical policy
-//! profile, calibration/OOD/completeness artifacts and external learned-scorer
-//! output. MAC keys must come from trusted host configuration, never from the
-//! request being admitted.
+//! profile, calibration/OOD/completeness artifacts, external learned-scorer
+//! output, and the exact assignment/randomness plan. MAC keys must come from
+//! trusted host configuration, never from the request being admitted.
 
 mod auth;
 mod decision;
 mod digest;
 mod types;
 
+pub use auth::assignment_scope_digest_v1;
 pub use auth::calibration_scope_digest_v1;
 pub use auth::completeness_scope_digest_v1;
 pub use auth::issue_qualification_mac_v1;
@@ -20,6 +21,7 @@ pub use auth::scorer_output_scope_digest_v1;
 #[cfg(test)]
 pub(crate) use auth::hmac_sha256;
 pub use decision::decide_qualified_v1;
+pub use digest::canonical_assignment_digest_v1;
 pub use digest::canonical_calibration_artifact_digest_v1;
 pub use digest::canonical_completeness_receipt_digest_v1;
 pub use digest::canonical_ood_artifact_digest_v1;

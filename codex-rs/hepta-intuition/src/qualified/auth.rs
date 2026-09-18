@@ -12,6 +12,7 @@ const CALIBRATION_SCOPE: &[u8] = b"hepta.intuition.qualification.calibration.v1"
 const OOD_SCOPE: &[u8] = b"hepta.intuition.qualification.ood.v1";
 const COMPLETENESS_SCOPE: &[u8] = b"hepta.intuition.qualification.completeness.v1";
 const SCORER_SCOPE: &[u8] = b"hepta.intuition.qualification.scorer-output.v1";
+const ASSIGNMENT_SCOPE: &[u8] = b"hepta.intuition.qualification.policy-assignment.v1";
 
 /// Issue an HMAC-SHA256 qualification envelope for a canonical payload digest.
 /// The key must be obtained from the trusted qualification/scorer key store.
@@ -49,6 +50,11 @@ pub fn issue_qualification_mac_v1(
     };
     envelope.tag = hmac_sha256(&key.secret, &qualification_mac_preimage(&envelope)?);
     Ok(envelope)
+}
+
+#[must_use]
+pub fn assignment_scope_digest_v1() -> Digest32 {
+    Digest32::of_bytes(ASSIGNMENT_SCOPE)
 }
 
 #[must_use]

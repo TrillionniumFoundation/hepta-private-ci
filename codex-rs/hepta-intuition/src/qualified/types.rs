@@ -124,11 +124,13 @@ pub struct QualifiedArtifactsV1<'a> {
     pub ood: &'a QualificationMacV1,
     pub completeness: &'a QualificationMacV1,
     pub scorer_output: &'a QualificationMacV1,
+    pub assignment: &'a QualificationMacV1,
 }
 
 pub struct QualificationTrustV1<'a> {
     pub artifact_key: &'a QualificationMacKeyV1,
     pub scorer_key: &'a QualificationMacKeyV1,
+    pub assignment_key: &'a QualificationMacKeyV1,
     pub subject_id: &'a StableId,
     pub expected_generation: u64,
 }
@@ -147,11 +149,13 @@ pub struct QualifiedIntuitionReceiptV1 {
     pub policy_profile_digest: Digest32,
     pub scorer_contract_digest: Digest32,
     pub scorer_output_digest: Digest32,
+    pub assignment_digest: Digest32,
     pub profile_authentication_digest: Digest32,
     pub calibration_authentication_digest: Digest32,
     pub ood_authentication_digest: Digest32,
     pub completeness_authentication_digest: Digest32,
     pub scorer_authentication_digest: Digest32,
+    pub assignment_authentication_digest: Digest32,
     pub receipt_digest: Digest32,
     pub authority: AuthorityPosture,
 }
@@ -173,6 +177,7 @@ pub enum QualifiedError {
     ScoreEvidenceMismatch(String),
     ArtifactDigestMismatch(&'static str),
     AuthenticationKeyMismatch,
+    AuthenticationKeyRoleConflict,
     AuthenticationKeyRevoked,
     AuthenticationSubjectMismatch,
     AuthenticationScopeMismatch,
