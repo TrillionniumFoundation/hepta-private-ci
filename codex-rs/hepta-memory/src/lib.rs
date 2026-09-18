@@ -104,6 +104,7 @@ pub use cognitive_retrieval::RetrievalBatch;
 pub use cognitive_retrieval::RetrievalCandidate;
 pub use cognitive_retrieval::RetrievalChannel;
 pub use cognitive_retrieval::RetrievalChannelObservation;
+pub use cognitive_retrieval::RetrievalChannelRankObservation;
 pub use cognitive_retrieval::RetrievalLimitObservation;
 pub use cognitive_retrieval::RetrievalObservation;
 pub use cognitive_retrieval::RetrievalRequest;
