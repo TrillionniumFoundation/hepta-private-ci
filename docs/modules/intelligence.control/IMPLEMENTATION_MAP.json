@@ -44,10 +44,31 @@
       "designOperation": "run_evaluated_shadow_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "compile_prompt_registry_v2",
+      "nativeSymbol": "compile_prompt_registry_v2",
+      "sourcePath": "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compose_request",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "prompt.registry::read_compatible_v2",
+        "prompt.registry::dereference_realization_v2",
+        "context.compiler::compile_v2",
+        "context.compiler::record_serialization",
+        "context.compiler::build_attachment"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind compile_prompt_registry_v2 and the other facade operations into the named Agentd/Codex runtime composition path.",
+    "Submit its ContextAttachmentV2 through the real Codex/provider spine and retain terminal delivery observation.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
