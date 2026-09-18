@@ -92,18 +92,11 @@ The second gate includes Ed25519 trust verification, role/controller independenc
 
 ## 8. Current native implementation and remaining work
 
-Implemented:
+- **Implemented entrypoints:** `decide_calibrated` in [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs); `decide_calibrated_v2` in [codex-rs/hepta-intuition/src/calibrated_binding.rs](../../../codex-rs/hepta-intuition/src/calibrated_binding.rs); `decide_calibrated_v3` and `scoring_commitment_for_request_v1` in [codex-rs/hepta-intuition/src/qualified.rs](../../../codex-rs/hepta-intuition/src/qualified.rs); `decide_authenticated_intuition_v1` in [codex-rs/hepta-intelligence/src/intuition_qualification.rs](../../../codex-rs/hepta-intelligence/src/intuition_qualification.rs).
+- **Trust extension:** `LearningEvidenceRoleV1::{Scorer, RandomSource}` and pairwise verified independence live in [codex-rs/hepta-learning-ledger/src/signed_evidence.rs](../../../codex-rs/hepta-learning-ledger/src/signed_evidence.rs).
+- **Source tests:** [qualified policy tests](../../../codex-rs/hepta-intuition/src/qualified_tests.rs), [frozen four-role qualification](../../../codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs), [authenticated end-to-end fast gate](../../../codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs), and [kernel fast gate](../../../codex-rs/hepta-intuition/examples/fast_gate.rs).
 
-- `codex-rs/hepta-intuition/src/calibrated.rs`
-- `codex-rs/hepta-intuition/src/calibrated_binding.rs`
-- `codex-rs/hepta-intuition/src/qualified.rs`
-- `codex-rs/hepta-intelligence/src/intuition_qualification.rs`
-- `codex-rs/hepta-learning-ledger/src/signed_evidence.rs`
-- `codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs`
-- `codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs`
-- `codex-rs/hepta-intuition/examples/fast_gate.rs`
-
-Remaining repository/product work:
+- **Remaining work:**
 
 - compose a named product caller instead of shadow/qualification-only composition;
 - add a native V3 host port for stricter risk routing;
