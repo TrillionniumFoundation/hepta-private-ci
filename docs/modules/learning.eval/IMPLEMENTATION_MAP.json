@@ -32,14 +32,44 @@
       "designOperation": "evaluate_temporal_holdout",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "admit_ndu_convergence_certificate_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::admit_ndu_convergence_certificate_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+      "state": "source_implemented_independent_certificate_admission_not_evidence_issuance",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+          "symbol": "accepted_certificate_binds_independent_evidence"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+          "symbol": "self_evaluation_and_binding_drift_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+          "symbol": "accepted_decision_must_pass_every_convergence_gate"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+          "symbol": "rejected_or_unavailable_certificate_is_recordable_without_becoming_accepted"
+        }
+      ],
+      "nonClaim": "source admission validates an independently issued certificate; it does not manufacture independent evidence or activate NDU",
+      "sourcePathExists": true,
+      "designOperation": "admit_ndu_convergence_certificate_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind NDU convergence certificate admission to a named independent evaluation producer/consumer path without allowing utility.ndu self-issuance.",
+    "Run exact-head and deterministic synthetic-merge tests before changing product or independent-acceptance claim boundaries."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "independent convergence evidence produced on a preregistered evaluation plan",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
