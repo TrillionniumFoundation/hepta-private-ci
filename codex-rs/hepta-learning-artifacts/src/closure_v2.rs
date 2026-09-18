@@ -69,6 +69,31 @@ pub struct ValidatedArtifactManifestV2 {
     pub authority: AuthorityPosture,
 }
 
+/// Cryptographic namespace for the persistent dataset-withdrawal authority.
+///
+/// The withdrawal chain alone is not a namespace: two independent registries
+/// can otherwise have the same empty head or the same event history. Production
+/// admission therefore binds registry identity, host-authenticated scope and
+/// authority domain into a single domain digest.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DatasetWithdrawalDomainV1 {
+    pub registry_id: StableId,
+    pub scope_digest: Digest32,
+    pub authority_domain_digest: Digest32,
+}
+
+impl DatasetWithdrawalDomainV1 {
+    pub fn binding_digest(&self) -> Result<Digest32, ArtifactClosureError> {
+        require_digest(self.scope_digest, "withdrawal scope")?;
+        require_digest(self.authority_domain_digest, "withdrawal authority domain")?;
+        let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal-domain.v1".to_vec();
+        push_id(&mut bytes, &self.registry_id);
+        bytes.extend_from_slice(self.scope_digest.as_array());
+        bytes.extend_from_slice(self.authority_domain_digest.as_array());
+        Ok(Digest32::of_bytes(&bytes))
+    }
+}
+
 pub fn validate_artifact_manifest_v2(
     mut manifest: LearningArtifactManifestV2,
     now: u64,
@@ -185,6 +210,7 @@ pub struct DatasetWithdrawalReceiptV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DatasetWithdrawalRegistrySnapshotV1 {
     records: Vec<DatasetWithdrawalRecordV1>,
+    domain: Option<DatasetWithdrawalDomainV1>,
     pub head_digest: Digest32,
 }
 
@@ -193,10 +219,16 @@ impl DatasetWithdrawalRegistrySnapshotV1 {
     pub fn records(&self) -> &[DatasetWithdrawalRecordV1] {
         &self.records
     }
+
+    #[must_use]
+    pub fn domain(&self) -> Option<&DatasetWithdrawalDomainV1> {
+        self.domain.as_ref()
+    }
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct DatasetWithdrawalRegistry {
+    domain: Option<DatasetWithdrawalDomainV1>,
     records: Vec<DatasetWithdrawalRecordV1>,
     notice_digests: BTreeMap<StableId, Digest32>,
     withdrawn_datasets: BTreeMap<Digest32, u64>,
@@ -206,6 +238,28 @@ impl DatasetWithdrawalRegistry {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn new_scoped(
+        domain: DatasetWithdrawalDomainV1,
+    ) -> Result<Self, ArtifactClosureError> {
+        let _ = domain.binding_digest()?;
+        Ok(Self {
+            domain: Some(domain),
+            ..Self::default()
+        })
+    }
+
+    #[must_use]
+    pub fn domain(&self) -> Option<&DatasetWithdrawalDomainV1> {
+        self.domain.as_ref()
+    }
+
+    pub fn domain_binding_digest(&self) -> Result<Option<Digest32>, ArtifactClosureError> {
+        self.domain
+            .as_ref()
+            .map(DatasetWithdrawalDomainV1::binding_digest)
+            .transpose()
     }
 
     pub fn append(
@@ -243,8 +297,15 @@ impl DatasetWithdrawalRegistry {
             .records
             .last()
             .map_or(Digest32::ZERO, |record| record.chain_digest);
-        let chain_digest =
-            digest_withdrawal_chain(predecessor_chain_digest, sequence, event_digest);
+        let chain_digest = match self.domain_binding_digest()? {
+            Some(domain_digest) => digest_scoped_withdrawal_chain(
+                domain_digest,
+                predecessor_chain_digest,
+                sequence,
+                event_digest,
+            ),
+            None => digest_withdrawal_chain(predecessor_chain_digest, sequence, event_digest),
+        };
         let record = DatasetWithdrawalRecordV1 {
             sequence,
             predecessor_chain_digest,
@@ -289,6 +350,7 @@ impl DatasetWithdrawalRegistry {
     pub fn snapshot(&self) -> DatasetWithdrawalRegistrySnapshotV1 {
         DatasetWithdrawalRegistrySnapshotV1 {
             records: self.records.clone(),
+            domain: self.domain.clone(),
             head_digest: self
                 .records
                 .last()
@@ -300,7 +362,10 @@ impl DatasetWithdrawalRegistry {
         snapshot: DatasetWithdrawalRegistrySnapshotV1,
     ) -> Result<Self, ArtifactClosureError> {
         let expected_head = snapshot.head_digest;
-        let mut registry = Self::new();
+        let mut registry = match snapshot.domain {
+            Some(domain) => Self::new_scoped(domain)?,
+            None => Self::new(),
+        };
         for expected in snapshot.records {
             let receipt = registry.append(expected.notice.clone())?;
             let actual = registry
@@ -640,6 +705,20 @@ fn digest_withdrawal_chain(
     event_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal-chain.v1".to_vec();
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(&sequence.get().to_be_bytes());
+    bytes.extend_from_slice(event_digest.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+fn digest_scoped_withdrawal_chain(
+    domain_digest: Digest32,
+    predecessor: Digest32,
+    sequence: LogicalSequence,
+    event_digest: Digest32,
+) -> Digest32 {
+    let mut bytes = b"hepta.learning-artifacts.dataset-withdrawal-chain.v2".to_vec();
+    bytes.extend_from_slice(domain_digest.as_array());
     bytes.extend_from_slice(predecessor.as_array());
     bytes.extend_from_slice(&sequence.get().to_be_bytes());
     bytes.extend_from_slice(event_digest.as_array());
