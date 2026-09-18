@@ -379,7 +379,13 @@ async fn learned_ranker_can_promote_a_candidate_beyond_legacy_top_four() {
         .clone();
     let scores = items
         .iter()
-        .map(|item| if item.memory_id == winner.memory_id { 100 } else { 0 })
+        .map(|item| {
+            if item.memory_id == winner.memory_id {
+                100
+            } else {
+                0
+            }
+        })
         .collect::<Vec<_>>();
     let fixture = fitted_ranker(owner.clone(), &items, &scores);
 
