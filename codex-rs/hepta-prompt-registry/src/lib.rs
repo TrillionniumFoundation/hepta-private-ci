@@ -383,6 +383,8 @@ impl PromptRegistry {
         if factor.lifecycle != Lifecycle::Admitted {
             return Err(Error::InvalidTransition);
         }
+        let actor_id = factor.proposer_id.clone();
+        let evidence_digest = factor.content_digest;
         let next_revision = self.next_revision()?;
         let Some(factor) = self.factors.get_mut(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
@@ -395,9 +397,9 @@ impl PromptRegistry {
             LifecycleEventKind::Retired,
             Some(Lifecycle::Admitted),
             Lifecycle::Retired,
-            factor.proposer_id.clone(),
+            actor_id,
             None,
-            factor.content_digest,
+            evidence_digest,
             None,
             None,
             None,
@@ -414,11 +416,13 @@ impl PromptRegistry {
         if factor.lifecycle == Lifecycle::Revoked {
             return Err(Error::InvalidTransition);
         }
+        let from = factor.lifecycle;
+        let actor_id = factor.proposer_id.clone();
+        let evidence_digest = factor.content_digest;
         let next_revision = self.next_revision()?;
         let Some(factor) = self.factors.get_mut(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
         };
-        let from = factor.lifecycle;
         factor.lifecycle = Lifecycle::Revoked;
         self.disable_realizations(factor_id);
         let event = lifecycle_event(
@@ -427,9 +431,9 @@ impl PromptRegistry {
             LifecycleEventKind::Revoked,
             Some(from),
             Lifecycle::Revoked,
-            factor.proposer_id.clone(),
+            actor_id,
             None,
-            factor.content_digest,
+            evidence_digest,
             None,
             None,
             None,
