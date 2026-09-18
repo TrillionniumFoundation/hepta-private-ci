@@ -8,6 +8,7 @@ production worker must present before those claims are accepted.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import json
 import time
 
 from .control_plane import (
@@ -95,17 +96,46 @@ def verify_distributed_fence(
     receipt: DistributedFenceReceipt,
     trust_store: SignatureTrustStore,
     *,
+    store: EngineeringStore,
     now_ns: int | None = None,
 ) -> str:
     now = time.time_ns() if now_ns is None else now_ns
     if type(now) is not int or now < 0:
         raise EngineeringError("invalid_time")
+    if not isinstance(store, EngineeringStore):
+        raise EngineeringError("distributed_fence_store_required")
     if lease.state != "active":
         raise EngineeringError("distributed_fence_local_lease_inactive")
     if lease.envelope_id != envelope.envelope_id:
         raise EngineeringError("distributed_fence_envelope_mismatch")
     if lease.expires_unix_ns <= now or envelope.expires_unix_ns <= now:
         raise EngineeringError("distributed_fence_owner_state_stale")
+    current = store.connection.execute(
+        "SELECT envelope_id,holder,paths_json,state,authority_epoch,"
+        "fencing_token,revision,expires_unix_ns "
+        "FROM path_leases WHERE lease_id=?",
+        (lease.lease_id,),
+    ).fetchone()
+    if current is None:
+        raise EngineeringError("distributed_fence_local_lease_unknown")
+    try:
+        current_paths = tuple(
+            json.loads(bytes(current["paths_json"]).decode("utf-8"))
+        )
+    except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+        raise EngineeringError("distributed_fence_local_lease_invalid") from None
+    if (
+        str(current["envelope_id"]) != lease.envelope_id
+        or str(current["holder"]) != lease.holder
+        or str(current["state"]) != "active"
+        or int(current["authority_epoch"]) != lease.epoch
+        or int(current["fencing_token"]) != lease.fencing_token
+        or int(current["revision"]) != lease.revision
+        or int(current["expires_unix_ns"]) != lease.expires_unix_ns
+        or current_paths != lease.paths
+        or int(current["expires_unix_ns"]) <= now
+    ):
+        raise EngineeringError("distributed_fence_local_lease_stale")
     for value, label in (
         (receipt.cluster_id, "cluster_id"),
         (receipt.leader_id, "leader_id"),
@@ -231,7 +261,12 @@ def verify_production_controls(
     now_ns: int | None = None,
 ) -> ProductionControlDecision:
     distributed_digest = verify_distributed_fence(
-        lease, envelope, distributed, trust_store, now_ns=now_ns
+        lease,
+        envelope,
+        distributed,
+        trust_store,
+        store=store,
+        now_ns=now_ns,
     )
     audit_digest = verify_external_audit_anchor(
         store, envelope, audit, trust_store, now_ns=now_ns
