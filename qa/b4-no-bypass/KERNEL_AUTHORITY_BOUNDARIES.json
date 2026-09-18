@@ -144,6 +144,7 @@
         "\\bclaim_final_use\\s*\\("
       ],
       "allowedCallers": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs",
         "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
       ]
     },
@@ -185,7 +186,9 @@
       "callPatterns": [
         "\\bdispatch_final_use\\s*\\("
       ],
-      "allowedCallers": []
+      "allowedCallers": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs"
+      ]
     },
     {
       "id": "final_use_dispatch_raw",
