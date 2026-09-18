@@ -17,6 +17,7 @@ use sqlx::SqlitePool;
 use sqlx::Transaction;
 
 use crate::EvidenceError;
+use crate::authbus_control::verify_authbus_control_invariants;
 use crate::canonical::canonical_json;
 use crate::governance_store::decode_decision_row;
 use crate::governance_store::decode_receipt_row;
@@ -340,6 +341,7 @@ async fn verify_existing_store(pool: &SqlitePool) -> Result<(), EvidenceError> {
     verify_provider_host_bindings(pool).await?;
     verify_provider_ephemeral_input_projection(pool).await?;
     verify_provider_effect_rows(pool).await?;
+    verify_authbus_control_invariants(pool).await?;
     verify_foreign_keys(pool).await
 }
 
