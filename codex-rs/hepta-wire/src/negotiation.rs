@@ -55,6 +55,17 @@ impl NegotiatedWire {
     pub const fn capabilities(self) -> &'static [WireCapability] {
         self.version.capabilities()
     }
+
+    pub fn ensure_version(self, observed: u16) -> Result<(), NegotiationError> {
+        if observed == self.version.as_u16() {
+            Ok(())
+        } else {
+            Err(NegotiationError::VersionMismatch {
+                expected: self.version,
+                observed,
+            })
+        }
+    }
 }
 
 /// Select the highest explicitly common version satisfying every required
@@ -90,6 +101,10 @@ pub enum NegotiationError {
     UnknownVersion(u16),
     NoCommonVersion,
     RequiredCapabilitiesUnavailable,
+    VersionMismatch {
+        expected: WireVersion,
+        observed: u16,
+    },
 }
 
 impl fmt::Display for NegotiationError {
@@ -99,6 +114,13 @@ impl fmt::Display for NegotiationError {
             Self::NoCommonVersion => formatter.write_str("no common wire version"),
             Self::RequiredCapabilitiesUnavailable => {
                 formatter.write_str("no common wire version satisfies required capabilities")
+            }
+            Self::VersionMismatch { expected, observed } => {
+                write!(
+                    formatter,
+                    "negotiated wire version {} but observed {observed}",
+                    expected.as_u16()
+                )
             }
         }
     }
@@ -138,6 +160,23 @@ mod tests {
         assert_eq!(
             negotiate(&[WireVersion::V2], &[WireVersion::V1], &[]),
             Err(NegotiationError::NoCommonVersion)
+        );
+    }
+
+    #[test]
+    fn negotiated_version_rejects_session_downgrade() {
+        let negotiated = negotiate(
+            &[WireVersion::V1, WireVersion::V2],
+            &[WireVersion::V1, WireVersion::V2],
+            &[WireCapability::FullFrameIntegrity],
+        )
+        .expect("negotiate");
+        assert_eq!(
+            negotiated.ensure_version(WireVersion::V1.as_u16()),
+            Err(NegotiationError::VersionMismatch {
+                expected: WireVersion::V2,
+                observed: 1,
+            })
         );
     }
 }
