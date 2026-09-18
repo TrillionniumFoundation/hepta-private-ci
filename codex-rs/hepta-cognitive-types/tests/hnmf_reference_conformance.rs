@@ -12,6 +12,10 @@ struct FixtureV1 {
     event_id: u64,
     episode_id: u64,
     span_id: u64,
+    second_span_id: u64,
+    binding_id: u64,
+    image_width: u32,
+    image_height: u32,
     agent_id: String,
     source_id: String,
     source_revision: u64,
@@ -56,6 +60,31 @@ fn production_event(
         production::PrivacyClassV1::AgentPrivate,
         None,
     )?;
+    let image_span = production::ModalitySpanRefV1::try_new(
+        fixture.second_span_id,
+        production::ModalityKindV1::Image,
+        digest(&fixture.asset_sha256),
+        production::SpanRangeV1::pixel_rect(
+            0,
+            0,
+            fixture.image_width,
+            fixture.image_height,
+        )?,
+        digest(&fixture.preprocessor_sha256),
+        None,
+        None,
+        25_000,
+        production::PrivacyClassV1::AgentPrivate,
+        None,
+    )?;
+    let binding = production::CrossModalBindingV1::try_new(
+        fixture.binding_id,
+        fixture.event_id,
+        std::collections::BTreeSet::from([fixture.span_id, fixture.second_span_id]),
+        production::AlignmentKindV1::SameObservation,
+        900_000,
+        digest(&fixture.preprocessor_sha256),
+    )?;
     let scope = production::MemoryScopeV1::agent_private(fixture.agent_id)?;
     let interval = production::TimeIntervalV1::try_new(fixture.observed_at_unix_ms, None)?;
     let provenance = production::ProvenanceRefV1::try_new(
@@ -71,8 +100,8 @@ fn production_event(
         fixture.episode_id,
         scope,
         interval,
-        vec![span],
-        Vec::new(),
+        vec![span, image_span],
+        vec![binding],
         fixture.semantic_keys.into_iter().collect(),
         vec![provenance],
         production::MemoryVerificationStateV1::Verified,
@@ -112,4 +141,12 @@ fn shared_fixture_rejects_modality_range_mismatch_in_production() {
 #[test]
 fn shared_fixture_modality_closed_world_in_production() {
     assert_eq!(production::ModalityKindV1::ALL.len(), 9);
+}
+
+
+#[test]
+fn shared_fixture_cross_modal_binding_is_valid_in_production() {
+    let event = production_event(fixture())
+        .unwrap_or_else(|error| panic!("shared cross-modal fixture must be valid: {error}"));
+    assert_eq!(event.modality_spans().len(), 2);
 }
