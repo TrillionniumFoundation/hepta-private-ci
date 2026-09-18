@@ -186,24 +186,29 @@ impl CanonicalJsonV1 for PlasticityBatchV1 {
     deny_unknown_fields
 )]
 pub enum TopologyOperationV1 {
+    #[non_exhaustive]
     AddNode {
         label: String,
         population: EngramPopulationV1,
     },
+    #[non_exhaustive]
     SplitNode {
         node_id: NodeIdV1,
         left_label: String,
         right_label: String,
     },
+    #[non_exhaustive]
     MergeNodes {
         left_node_id: NodeIdV1,
         right_node_id: NodeIdV1,
         label: String,
     },
+    #[non_exhaustive]
     RetireNode {
         node_id: NodeIdV1,
         reason: String,
     },
+    #[non_exhaustive]
     Rewire {
         source_node_id: NodeIdV1,
         old_target_node_id: NodeIdV1,
@@ -213,6 +218,74 @@ pub enum TopologyOperationV1 {
 }
 
 impl TopologyOperationV1 {
+    pub fn add_node(
+        label: impl Into<String>,
+        population: EngramPopulationV1,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::AddNode {
+            label: label.into(),
+            population,
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn split_node(
+        node_id: NodeIdV1,
+        left_label: impl Into<String>,
+        right_label: impl Into<String>,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::SplitNode {
+            node_id,
+            left_label: left_label.into(),
+            right_label: right_label.into(),
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn merge_nodes(
+        left_node_id: NodeIdV1,
+        right_node_id: NodeIdV1,
+        label: impl Into<String>,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::MergeNodes {
+            left_node_id,
+            right_node_id,
+            label: label.into(),
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn retire_node(
+        node_id: NodeIdV1,
+        reason: impl Into<String>,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::RetireNode {
+            node_id,
+            reason: reason.into(),
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
+    pub fn rewire(
+        source_node_id: NodeIdV1,
+        old_target_node_id: NodeIdV1,
+        new_target_node_id: NodeIdV1,
+        relation: SynapseRelationV1,
+    ) -> Result<Self, HnmfContractError> {
+        let value = Self::Rewire {
+            source_node_id,
+            old_target_node_id,
+            new_target_node_id,
+            relation,
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
     fn validate(&self) -> Result<(), HnmfContractError> {
         match self {
             Self::AddNode { label, .. } => validate_text(label, 128, "topology label"),
