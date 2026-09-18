@@ -55,6 +55,9 @@ CREATE TABLE matrix_dispatch_ledger (
     )
 ) STRICT;
 
+CREATE UNIQUE INDEX matrix_dispatch_operation
+ON matrix_dispatch_ledger(operation_id);
+
 CREATE INDEX matrix_dispatch_unresolved
 ON matrix_dispatch_ledger(state, updated_at_ms, stable_txn_id);
 
