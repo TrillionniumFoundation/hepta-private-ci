@@ -315,6 +315,10 @@ def verify() -> int:
         "native non-canonical bytes",
     )
     need(
+        native_binding.get("optionalFieldPolicy") == "omit_when_none",
+        "native optional-field policy",
+    )
+    need(
         native_binding.get("goldenVector")
         == "codex-rs/hepta-cognitive-types/tests/data/modality_span_v1.canonical.json",
         "native wire golden vector",
