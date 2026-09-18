@@ -350,6 +350,18 @@
         "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
         "codex-rs/hepta-objective/src/scalar_adapter.rs"
       ]
+    },
+    {
+      "id": "LANE-D-OBJ-MEASURE-035",
+      "severity": "P2",
+      "title": "Objective target-host measurement had no exact-source executable harness or structured evidence format",
+      "state": "closed",
+      "closure": [
+        "scripts/hepta-objective-target-measure.py",
+        "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+        "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+        "codex-rs/hepta-objective/src/feasibility_tests.rs"
+      ]
     }
   ],
   "externalGates": [
