@@ -1,3 +1,6 @@
+use std::sync::Arc;
+use std::sync::Barrier;
+
 use codex_hepta_objective::ConstraintClass;
 use codex_hepta_objective::ObjectiveAbstentionRuleProfileV1;
 use codex_hepta_objective::ObjectiveActionProfileV1;
@@ -27,6 +30,7 @@ use codex_hepta_objective::ObjectiveSourcePredicateV1;
 use codex_hepta_objective::ObjectiveSourceTrustV1;
 use codex_hepta_objective::ObjectiveStructuredIntentV1;
 use codex_hepta_objective::canonical_objective_intent_digest_v1;
+use codex_hepta_objective::admit_and_compile_objective_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
@@ -257,6 +261,21 @@ fn bindings(run_id: &str) -> ObjectiveRunBindingsV1 {
     }
 }
 
+fn stored_publication_fixture(
+    run_id: &str,
+    model_label: &str,
+) -> super::StoredObjectiveRunPublicationV1 {
+    let profile = profile();
+    let envelope = envelope();
+    let context = context(&profile, &envelope);
+    let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
+        .expect("admission fixture");
+    let objective = outcome.compile_result.expect("compiled fixture");
+    let mut bindings = bindings(run_id);
+    bindings.model_tuple_digest = digest(model_label);
+    super::stored_publication(&outcome.receipt, &objective, &bindings)
+}
+
 fn coordinator() -> AgentRunCoordinator {
     AgentRunCoordinator::compose_runtime(RuntimeComposition {
         agent_id: "agent.alpha".to_string(),
@@ -396,4 +415,46 @@ fn explicit_abstain_is_published_without_runtime_dispatch_state() {
             .admission
             .authority_denied
     );
+}
+
+
+#[test]
+fn concurrent_semantic_drift_cannot_replace_an_existing_run_publication() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let store = ObjectiveRunFileStore::open(directory.path()).expect("store");
+    let first = stored_publication_fixture("run.objective.race", "model.first");
+    let second = stored_publication_fixture("run.objective.race", "model.second");
+    let barrier = Arc::new(Barrier::new(3));
+
+    let first_store = store.clone();
+    let first_barrier = Arc::clone(&barrier);
+    let first_publication = first.clone();
+    let left = std::thread::spawn(move || {
+        first_barrier.wait();
+        first_store.publish(&first_publication)
+    });
+
+    let second_store = store.clone();
+    let second_barrier = Arc::clone(&barrier);
+    let second_publication = second.clone();
+    let right = std::thread::spawn(move || {
+        second_barrier.wait();
+        second_store.publish(&second_publication)
+    });
+
+    barrier.wait();
+    let left = left.join().expect("left publisher");
+    let right = right.join().expect("right publisher");
+
+    let successes = usize::from(left.is_ok()) + usize::from(right.is_ok());
+    let conflicts = usize::from(matches!(left, Err(ObjectivePublicationError::Conflict)))
+        + usize::from(matches!(right, Err(ObjectivePublicationError::Conflict)));
+    assert_eq!(successes, 1);
+    assert_eq!(conflicts, 1);
+
+    let (stored, _) = store
+        .load(&id("run.objective.race"))
+        .expect("load")
+        .expect("winner");
+    assert!(stored == first || stored == second);
 }
