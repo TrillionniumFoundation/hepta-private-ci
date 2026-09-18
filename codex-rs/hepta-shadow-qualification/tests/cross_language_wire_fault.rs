@@ -84,8 +84,7 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
     let output = run_python(&frame);
     assert!(
         output.status.success(),
-        "python parser failed: {:?}",
-        output
+        "python parser failed: {output:?}"
     );
     let report: Value = serde_json::from_slice(&output.stdout).expect("python JSON receipt");
     assert_eq!(report["schema"], schema.as_str());
@@ -99,7 +98,7 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
 
     // Mutating the payload without changing the signed digest must be rejected
     // by both language boundaries.
-    let mut tampered = frame.clone();
+    let mut tampered = frame;
     *tampered.last_mut().expect("non-empty payload") ^= 0x01;
     let python_fault = run_python(&tampered);
     assert!(!python_fault.status.success());
