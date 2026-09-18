@@ -33,6 +33,7 @@ use crate::StateChange;
 const MAX_SNAPSHOT: usize = 8 * 1024 * 1024;
 const MAX_PAYLOAD: usize = 64 * 1024 * 1024;
 const MAX_HEAD: usize = 4096;
+const MAX_ORPHAN_REFERENCES: usize = 65_536;
 const MAGIC: &str = "HEPTAR01";
 const HEAD_MAGIC: &str = "HEPTAH01";
 
@@ -109,6 +110,19 @@ pub struct RegistryHeadWitnessReceipt {
     pub encoded_bytes: usize,
 }
 
+/// Read-only reconciliation evidence for a host-fenced orphan candidate.
+///
+/// This value never authorizes deletion. The caller must separately prove the
+/// path/identity is outside every current and retained historical receipt before
+/// removing anything from the filesystem.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct OrphanInspection {
+    pub file_digest: Digest32,
+    pub encoded_bytes: usize,
+    pub empty: bool,
+    pub referenced: bool,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactStorageError {
     InvalidBinding,
@@ -138,6 +152,39 @@ impl From<io::Error> for ArtifactStorageError {
     fn from(value: io::Error) -> Self {
         Self::Io(value.kind())
     }
+}
+
+/// Inspect a suspected orphan without mutating or deleting it.
+///
+/// `retained_digests` must come from independently authenticated current and
+/// retained historical receipts/manifests. A false `referenced` result is only
+/// one input to host reconciliation; it is not deletion authority.
+pub fn inspect_orphan_candidate(
+    file: File,
+    retained_digests: &[Digest32],
+) -> Result<OrphanInspection, ArtifactStorageError> {
+    if retained_digests.len() > MAX_ORPHAN_REFERENCES {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    let observed_bytes = file.metadata()?.len();
+    if observed_bytes > MAX_PAYLOAD as u64 {
+        return Err(ArtifactStorageError::Capacity);
+    }
+    let bytes = read_bounded(
+        file,
+        MAX_PAYLOAD,
+        observed_bytes,
+        ArtifactStorageError::Corrupt,
+    )?;
+    let file_digest = Digest32::of_bytes(&bytes);
+    let empty = bytes.is_empty();
+    let referenced = !empty && retained_digests.contains(&file_digest);
+    Ok(OrphanInspection {
+        file_digest,
+        encoded_bytes: bytes.len(),
+        empty,
+        referenced,
+    })
 }
 
 /// Write a new immutable snapshot; an existing file is never overwritten.
