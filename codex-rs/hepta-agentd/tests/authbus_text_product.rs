@@ -73,7 +73,8 @@ async fn signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_i
         &[],
         /*revoked*/ false,
     )?;
-    fleet.start_with_authbus_trust_file(&agent, &trust_file)?;
+    let restore_checkpoint = format!("1:{}", "11".repeat(32));
+    fleet.start_with_authbus_trust_file(&agent, &trust_file, &restore_checkpoint)?;
     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     let ingress = control.session_ingress().await?;
     let client = connect_app_server_with_experimental(
