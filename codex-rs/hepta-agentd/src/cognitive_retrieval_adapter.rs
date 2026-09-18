@@ -27,6 +27,11 @@ fn owner_channel(channel: RetrievalChannel) -> OwnerRetrievalChannelV1 {
     }
 }
 
+/// Convert one real SQLite-owner observation into canonical retrieval batches.
+///
+/// `generation_vector_digest` must come from the host-frozen Lane-C context.
+/// This adapter verifies the owner read cut and never fabricates missing
+/// Vector/Causal/Procedural/Contradiction producers.
 pub fn adapt_sqlite_owner_observation(
     records: &[MemoryRecord],
     observation: &RetrievalObservation,
