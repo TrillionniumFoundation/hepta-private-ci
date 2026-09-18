@@ -165,7 +165,7 @@ where
         scope: RuntimeScopeBindingV1,
         max_records: usize,
         executor: E,
-        witness: W,
+        mut witness: W,
         mut lineage: L,
         calibration_policy: CalibrationPolicyV1,
         calibration_artifact: Option<NeuronCalibrationArtifactV1>,
@@ -211,6 +211,10 @@ where
                 }
                 journal
             }
+        };
+        let witness_anchor = match witness_anchor {
+            Some(anchor) => Some(reconcile_recovered_suffix(&mut witness, &journal, anchor)?),
+            None => None,
         };
         Ok(Self {
             config,
@@ -278,6 +282,7 @@ where
             witness_anchor,
             genesis,
         )?;
+        let witness_anchor = reconcile_recovered_suffix(&mut witness, &journal, witness_anchor)?;
         Ok(Self {
             config,
             native,
@@ -560,6 +565,18 @@ pub fn open_file_witness(
         file,
         witness_context_digest(config_digest, scope),
     )?)
+}
+
+fn reconcile_recovered_suffix<W: RecoveryWitnessStore>(
+    witness: &mut W,
+    journal: &SparseJournal,
+    mut anchor: JournalAnchor,
+) -> Result<JournalAnchor, RuntimeError> {
+    for next in journal.anchors_after(anchor.sequence)? {
+        witness.compare_and_store(Some(anchor), next)?;
+        anchor = next;
+    }
+    Ok(anchor)
 }
 
 fn require_calibration_lineage<L: LineagePolicy>(
