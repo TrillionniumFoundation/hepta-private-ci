@@ -17,7 +17,8 @@ mod control;
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
-    pub(crate) objective_runtime: std::sync::OnceLock<Arc<crate::objective_runtime::ObjectiveRuntimeHost>>,
+    pub(crate) objective_runtime:
+        std::sync::OnceLock<Arc<crate::objective_runtime::ObjectiveRuntimeHost>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
