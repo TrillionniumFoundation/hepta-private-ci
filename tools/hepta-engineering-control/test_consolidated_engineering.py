@@ -400,6 +400,13 @@ class EngineeringCliTests(unittest.TestCase):
             deployment_receipt_digest="9" * 64,
             rollback_rehearsed=True,
             rollback_receipt_digest="a" * 64,
+            source_receipt_verified=True,
+            completion_receipts_verified=True,
+            multidimensional_orchestration_verified=True,
+            external_audit_anchor_observed=True,
+            audit_anchor_receipt_digest="b" * 64,
+            multi_host_execution=True,
+            distributed_coordination_bound=True,
         )
 
     def test_production_readiness_cli_is_a_real_exit_gate(self):
