@@ -117,7 +117,7 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             authority_id: reader.id()?,
             reason_digest: reader.digest()?,
         }),
-        4 => LedgerEvent::RunStart(decode_run_start(&mut reader)?),
+        4 => LedgerEvent::RunStart(Box::new(decode_run_start(&mut reader)?)),
         _ => return Err(DurableLedgerError::Corrupt),
     };
     if !reader.0.is_empty() {
