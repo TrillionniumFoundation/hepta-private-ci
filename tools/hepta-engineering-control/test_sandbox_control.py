@@ -75,6 +75,20 @@ class SandboxCoordinatorTests(unittest.TestCase):
                 )
         self.assertEqual(runner.call_count, 1)
 
+    def test_saturated_admission_fails_without_unbounded_wait(self):
+        coordinator = SandboxCoordinator(SandboxExecutionPolicy(1, 0))
+        self.assertTrue(coordinator._semaphore.acquire(blocking=False))
+        try:
+            with self.assertRaisesRegex(EngineeringError, "sandbox_capacity_exhausted"):
+                coordinator.execute(
+                    "/repo",
+                    CandidateEnvelope("env", "a" * 40, ("src",)),
+                    self.candidate(),
+                    (("true",),),
+                )
+        finally:
+            coordinator._semaphore.release()
+
     def test_policy_cannot_exceed_dossier_ceiling(self):
         with self.assertRaisesRegex(EngineeringError, "invalid_sandbox_execution_policy"):
             SandboxCoordinator(SandboxExecutionPolicy(9, 2))
