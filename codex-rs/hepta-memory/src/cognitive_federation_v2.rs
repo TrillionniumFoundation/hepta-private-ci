@@ -274,6 +274,15 @@ impl FederatedMemoryReader {
         })
     }
 
+    #[cfg(test)]
+    pub(super) fn product_attempt_binding_for_test(
+        &self,
+        request: &RetrievalRequest,
+    ) -> Result<(Digest32, Digest32), CognitiveStoreError> {
+        let (query, _lease, _logical_now_unix_ms) = self.product_query_and_lease(request)?;
+        Ok((query.binding_digest(), query.nonce_digest))
+    }
+
     fn product_query_and_lease(
         &self,
         request: &RetrievalRequest,
