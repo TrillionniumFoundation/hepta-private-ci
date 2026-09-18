@@ -402,3 +402,7 @@ fn source_trust_name(value: SourceTrust) -> &'static str {
         SourceTrust::UntrustedEvidence => "untrusted_evidence",
     }
 }
+
+#[cfg(test)]
+#[path = "publication_tests.rs"]
+mod tests;
