@@ -100,9 +100,15 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
             "durability",
         ): "sqlite_admission_outbox_and_process_local_legacy",
         ("platform.wire", "implementation"): "fixed_v1_codec",
-        ("kernel.authority", "implementation"): "final_use_boundary",
+        (
+            "kernel.authority",
+            "implementation",
+        ): "final_use_and_authority_lease_owner",
         ("kernel.evidence", "durability"): "sqlite_migrations_0001_0010",
-        ("secrets.heptabao", "implementation"): "bounded_kv_v2_reader",
+        (
+            "secrets.heptabao",
+            "implementation",
+        ): "bounded_kv_v2_reader_with_registered_final_use_host",
     }
     for (module, axis), value in exact.items():
         if by_name[module]["states"][axis] != value:
