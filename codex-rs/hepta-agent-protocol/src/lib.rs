@@ -4,6 +4,10 @@
 
 mod authbus;
 mod capabilities;
+pub use authbus::AuthBusObjectiveBody;
+pub use authbus::AuthBusObjectiveIngress;
+pub use authbus::AuthBusObjectiveState;
+pub use authbus::AuthBusObjectiveStatus;
 pub use authbus::AuthBusTextBody;
 pub use authbus::AuthBusTextIngress;
 pub use authbus::AuthBusTextState;
@@ -135,6 +139,32 @@ impl AgentdRequest {
             request_id,
             spawn_generation,
             method: AgentdMethod::SessionIngress,
+        }
+    }
+
+    pub fn objective_start(
+        request_id: u64,
+        spawn_generation: u64,
+        request: AuthBusObjectiveIngress,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::ObjectiveStart { request },
+        }
+    }
+
+    pub fn objective_status(
+        request_id: u64,
+        spawn_generation: u64,
+        delivery_id: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::ObjectiveStatus { delivery_id },
         }
     }
 
@@ -283,6 +313,12 @@ pub enum AgentdMethod {
     Health,
     Lifecycle,
     SessionIngress,
+    ObjectiveStart {
+        request: AuthBusObjectiveIngress,
+    },
+    ObjectiveStatus {
+        delivery_id: String,
+    },
     AuthBusText {
         request: AuthBusTextIngress,
     },
@@ -349,6 +385,7 @@ pub enum AgentdPayload {
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
+    AuthBusObjectiveStatus(AuthBusObjectiveStatus),
     CognitiveContext(CognitiveContextSnapshot),
     CognitiveContextFinalized {
         snapshot_digest: String,
