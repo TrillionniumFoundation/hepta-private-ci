@@ -125,7 +125,8 @@ impl ObjectiveRuntimeHost {
         authbus_ingress::require_ready(agentd)?;
         let now_ms = authbus_ingress::now_ms()?;
         let payload = objective_payload(agentd.identity(), &request.body, current_generation)?;
-        if request.expires_at_ms <= now_ms || request.expires_at_ms.saturating_sub(now_ms) > 300_000 {
+        if request.expires_at_ms <= now_ms || request.expires_at_ms.saturating_sub(now_ms) > 300_000
+        {
             return Err(invalid("objective expiry must be within five minutes"));
         }
         let authbus = authbus_ingress::attached(agentd)?;
@@ -189,7 +190,10 @@ impl ObjectiveRuntimeHost {
                     &request.body.prompt_registry_digest,
                     "prompt registry",
                 )?,
-                artifact_set_digest: parse_digest(&request.body.artifact_set_digest, "artifact set")?,
+                artifact_set_digest: parse_digest(
+                    &request.body.artifact_set_digest,
+                    "artifact set",
+                )?,
                 authority_epoch: request.body.authority_epoch,
                 generation: current_generation,
                 fence_digest: objective_fence(agentd.identity(), current_generation),
@@ -238,10 +242,9 @@ impl ObjectiveRuntimeHost {
                 .map_err(|_| invalid("objective publication is not UTF-8"))?,
         };
 
-        let mut state = self
-            .state
-            .lock()
-            .map_err(|_| AgentdError::Protocol("objective runtime mutex is poisoned".to_string()))?;
+        let mut state = self.state.lock().map_err(|_| {
+            AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
+        })?;
         let result = commit_or_replay(&self.root, &stored, &mut state, now_ms)?;
         authbus_ingress::require_ready(agentd)?;
         Ok(ObjectiveStartResult::Admitted(result))
@@ -260,7 +263,9 @@ fn objective_payload(
         || body.source_envelope_json.is_empty()
         || body.source_envelope_json.len() > PRODUCT_SOURCE_JSON_BYTES
     {
-        return Err(invalid("objective generation, revision, authority or source bound is invalid"));
+        return Err(invalid(
+            "objective generation, revision, authority or source bound is invalid",
+        ));
     }
     StableId::new(&body.run_id).map_err(|error| invalid(&format!("objective run id: {error}")))?;
     for (digest, field) in [
@@ -315,8 +320,8 @@ fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest
 }
 
 fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, AgentdError> {
-    let digest = Digest32::from_str(value)
-        .map_err(|_| invalid(&format!("invalid {field} digest")))?;
+    let digest =
+        Digest32::from_str(value).map_err(|_| invalid(&format!("invalid {field} digest")))?;
     if digest.is_zero() {
         return Err(invalid(&format!("empty {field} digest")));
     }
@@ -404,7 +409,9 @@ fn commit_or_replay(
             ensure_runtime_snapshot(&existing, state, now_ms)?;
             return Ok(existing.admission(true));
         }
-        return Err(invalid("objective run identity was reused with different semantics"));
+        return Err(invalid(
+            "objective run identity was reused with different semantics",
+        ));
     }
     let replay_key = (record.issuer_id.clone(), record.key_epoch);
     if state
@@ -435,7 +442,11 @@ fn ensure_runtime_snapshot(
         .map_err(runtime_error)
 }
 
-fn recover_store(root: &Path, now_ms: u64, state: &mut ObjectiveHostState) -> Result<(), AgentdError> {
+fn recover_store(
+    root: &Path,
+    now_ms: u64,
+    state: &mut ObjectiveHostState,
+) -> Result<(), AgentdError> {
     let mut paths = std::fs::read_dir(root)?
         .collect::<Result<Vec<_>, _>>()?
         .into_iter()
@@ -444,18 +455,28 @@ fn recover_store(root: &Path, now_ms: u64, state: &mut ObjectiveHostState) -> Re
     paths.sort();
     let records = paths
         .iter()
-        .filter(|path| path.extension().is_some_and(|extension| extension == "json"))
+        .filter(|path| {
+            path.extension()
+                .is_some_and(|extension| extension == "json")
+        })
         .count();
     if records > MAX_STORED_RUNS {
-        return Err(invalid("objective publication store exceeds retained-run bound"));
+        return Err(invalid(
+            "objective publication store exceeds retained-run bound",
+        ));
     }
     for path in paths {
         if path.extension().is_some_and(|extension| extension == "tmp") {
             let _ = std::fs::remove_file(path);
             continue;
         }
-        if !path.extension().is_some_and(|extension| extension == "json") {
-            return Err(invalid("objective publication store contains an unknown file"));
+        if !path
+            .extension()
+            .is_some_and(|extension| extension == "json")
+        {
+            return Err(invalid(
+                "objective publication store contains an unknown file",
+            ));
         }
         let record = read_record(&path)?;
         validate_record(&record)?;
@@ -482,7 +503,8 @@ fn validate_record(record: &StoredObjectiveRun) -> Result<(), AgentdError> {
     }
     StableId::new(&record.run_id).map_err(|_| invalid("invalid durable objective run id"))?;
     StableId::new(&record.issuer_id).map_err(|_| invalid("invalid durable objective issuer"))?;
-    StableId::new(&record.message_id).map_err(|_| invalid("invalid durable objective message id"))?;
+    StableId::new(&record.message_id)
+        .map_err(|_| invalid("invalid durable objective message id"))?;
     for (value, field) in [
         (&record.signed_body_digest, "signed body"),
         (&record.admitted_source_digest, "admitted source"),
@@ -499,7 +521,8 @@ fn validate_record(record: &StoredObjectiveRun) -> Result<(), AgentdError> {
     ] {
         parse_digest(value, field)?;
     }
-    let actual_publication = objective_run_publication_digest_v1(record.publication_json.as_bytes());
+    let actual_publication =
+        objective_run_publication_digest_v1(record.publication_json.as_bytes());
     if actual_publication.to_string() != record.publication_digest {
         return Err(invalid("durable objective publication digest mismatch"));
     }
@@ -581,7 +604,9 @@ fn prepare_store(root: &Path) -> Result<(), AgentdError> {
     }
     let metadata = std::fs::symlink_metadata(root)?;
     if !metadata.is_dir() || metadata.file_type().is_symlink() {
-        return Err(invalid("objective publication root must be a real directory"));
+        return Err(invalid(
+            "objective publication root must be a real directory",
+        ));
     }
     Ok(())
 }
