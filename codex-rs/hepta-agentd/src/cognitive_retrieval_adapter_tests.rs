@@ -18,7 +18,6 @@ use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_memory::SourceDraft;
 use codex_hepta_memory_retrieval::RetrievalChannelV1;
 use codex_hepta_paths::HeptaFleetRoot;
-use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn owner_observation_adapts_to_engine_channels_without_free_scores() {
