@@ -103,11 +103,13 @@ shape. Hosts retaining a lower limit reopen through
 
 `DurableFinalHoldoutJournalV1` wraps the existing semantic journal, not another
 holdout authority. `consume_proven` returns `DurableHoldoutUseV1`, whose fields are
-private outside the crate and whose digest binds the durable storage namespace,
-current anchor and semantic holdout-use receipt. Production signed admission
-requires this proof, so an in-memory `FinalHoldoutRegistry` receipt cannot be
-presented as durable qualification evidence. This type-level proof still does not
-make a local filesystem a distributed consensus service.
+private outside the crate and whose digest binds the supplied durable storage
+namespace, immutable consumption record and semantic holdout-use receipt.
+Production signed admission requires this adapter-origin proof, so an in-memory
+`FinalHoldoutRegistry` receipt cannot be presented directly as durable
+qualification evidence. The proof does not authenticate that the supplied file
+is the deployment's authoritative store and does not make a local filesystem a
+distributed consensus service; those are host/storage responsibilities.
 
 Its actual caller supplies an authorized regular `File`, a
 nonzero scope binding and an independently retained `HoldoutAnchorV1`. `create`
