@@ -1,6 +1,7 @@
 use super::*;
 use crate::PromptAuthenticationErrorV1;
 use crate::PromptCandidateBindingV1;
+use crate::PromptCandidateRoleV1;
 use crate::PromptCandidateEnumerationRequestV1;
 use crate::PromptCandidateSourceAuthenticatorV1;
 use crate::PromptCostBreakdownV1;
@@ -72,6 +73,7 @@ fn fixture() -> Fixture {
         candidate_id: id("candidate:001"),
         factor_id: id("factor:001"),
         realization_id: id("realization:001"),
+        role: PromptCandidateRoleV1::DeveloperInstruction,
         payload_digest: digest("payload"),
         admission_digest: digest("admission"),
         support_digest: digest("registry-support"),
