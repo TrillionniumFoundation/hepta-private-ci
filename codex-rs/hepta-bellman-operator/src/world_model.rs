@@ -299,7 +299,9 @@ pub(crate) fn predict_transition(
 fn validate_world_model(model: &TabularWorldModelV1) -> Result<(), WorldModelError> {
     require_digest(model.dataset_digest, "world-model dataset")?;
     require_digest(model.model_digest, "world-model digest")?;
-    if model.model_digest != digest_world_model(&model.model_id, model.dataset_digest, &model.estimates)? {
+    if model.model_digest
+        != digest_world_model(&model.model_id, model.dataset_digest, &model.estimates)?
+    {
         return Err(WorldModelError::InvalidModel);
     }
     if model.authority.grants_any()
