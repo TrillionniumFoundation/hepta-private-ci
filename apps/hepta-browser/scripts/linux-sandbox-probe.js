@@ -220,6 +220,7 @@ try {
     privateProfileWritable: true,
     parentDeathCleanupObserved: true,
     posture: launcher.posture,
+    resourceLimits: launcher.resourceLimits,
   }) + "\n");
 } finally {
   await rm(hostSecret, { force: true });
