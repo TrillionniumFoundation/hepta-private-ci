@@ -3483,6 +3483,7 @@ dependencies = [
  "codex-hepta-learning-artifacts",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
+ "codex-hepta-operations",
  "codex-hepta-paths",
  "codex-hepta-supervisor",
  "codex-hepta-types",
@@ -3968,7 +3969,15 @@ dependencies = [
 name = "codex-hepta-operations"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-state",
+ "codex-utils-absolute-path",
+ "ed25519-dalek",
+ "sqlx",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
 ]
 
 [[package]]
