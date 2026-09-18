@@ -10,9 +10,14 @@ The host must authenticate the dataset withdrawal notice and establish that the
 artifact manifest's `support_digest` is bound to that exact dataset snapshot.
 The API does not assume that every support digest represents a dataset, infer
 membership from prose, or reconstruct row-to-dataset dependencies. Those mappings
-and their completeness remain owned by source/dataset services. A multi-dataset
-training run must withdraw its aggregate snapshot before using this operation;
-a component dataset digest must not be substituted for the aggregate digest.
+and their completeness remain owned by source/dataset services. The stable V1
+artifact registry has only one `support_digest`. The V3-to-V1 publication bridge
+therefore preserves an exact source dataset digest only for a dataset-derived
+manifest with exactly one source dataset; multi-source V2 manifests fail closed
+at that bridge rather than losing later revocation reachability. A future
+multi-dataset publication path must first define one explicit aggregate dataset
+identity or a richer durable registry representation; a component dataset digest
+must not be substituted for that aggregate identity.
 
 `prepare_dataset_revocation` takes the current artifact registry, its expected
 chain head and an operation/dataset/source-notice/evaluator request. It finds
