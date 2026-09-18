@@ -11,10 +11,14 @@ use codex_hepta_types::StableId;
 
 mod closure;
 mod durable_holdout;
+mod fenced_holdout;
 mod holdout_journal;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
 pub use durable_holdout::HoldoutAnchorV1;
+pub use fenced_holdout::FencedFinalHoldoutOwnerV1;
+pub use fenced_holdout::HoldoutFenceStateV1;
+pub use fenced_holdout::HoldoutFenceStoreV1;
 mod ope;
 mod sequential;
 mod signed_evaluation;
