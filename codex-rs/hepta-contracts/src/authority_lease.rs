@@ -29,6 +29,7 @@ pub const MAX_AUTHORITY_LEASES: usize = 16_384;
 pub const MAX_CAPABILITY_REVOCATIONS: usize = 16_384;
 pub const MAX_AUTHORITY_LEASE_LIFETIME_MS: u64 = 86_400_000;
 pub const MAX_AUTHORITY_PRUNE_BATCH: usize = 1_024;
+pub const MAX_AUTHORITY_STORE_BYTES: usize = 64 * 1024 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -775,10 +776,10 @@ impl Store {
         let state = if has_state {
             let mut bytes = Vec::new();
             open_private(&store.root, "authority-leases.json", Access::Read)?
-                .take(16 * 1024 * 1024 + 1)
+                .take((MAX_AUTHORITY_STORE_BYTES + 1) as u64)
                 .read_to_end(&mut bytes)
                 .map_err(|_| AuthorityLeaseError::Unavailable)?;
-            if bytes.len() > 16 * 1024 * 1024 {
+            if bytes.len() > MAX_AUTHORITY_STORE_BYTES {
                 return Err(AuthorityLeaseError::InvalidTrust);
             }
             let stored: Stored = serde_json::from_slice(&bytes)
@@ -1249,6 +1250,69 @@ mod tests {
             .unwrap()
             .is_none());
         assert_eq!(registry.capacity().unwrap().leases, 0);
+    }
+
+    #[test]
+    fn maximum_declared_state_shape_fits_restart_read_envelope() {
+        let max_id = |prefix: &str, index: usize| {
+            let base = format!("{prefix}{index:05}");
+            format!("{base}{}", "x".repeat(128 - base.len()))
+        };
+        let mut state = State {
+            authority_epoch: 7,
+            store_revision: (MAX_AUTHORITY_LEASES + MAX_CAPABILITY_REVOCATIONS + 1) as u64,
+            leases: BTreeMap::new(),
+            revocations: BTreeMap::new(),
+            failed: false,
+        };
+        for index in 0..MAX_AUTHORITY_LEASES {
+            let lease_id = max_id("l", index);
+            state.leases.insert(
+                lease_id.clone(),
+                AuthorityLease {
+                    schema_version: LEASE_SCHEMA_VERSION,
+                    lease_id,
+                    authority_epoch: 7,
+                    revision: 1,
+                    binding: AuthorityLeaseBinding {
+                        principal_id: max_id("p", index),
+                        operation_class: max_id("o", index),
+                        destination_id: max_id("d", index),
+                        scope_sha256: [255; 32],
+                        payload_sha256: [255; 32],
+                    },
+                    issued_at_unix_ms: 1,
+                    expires_at_unix_ms: MAX_AUTHORITY_LEASE_LIFETIME_MS + 1,
+                },
+            );
+        }
+        for index in 0..MAX_CAPABILITY_REVOCATIONS {
+            let lease_id = max_id("r", index);
+            state.revocations.insert(
+                lease_id.clone(),
+                CapabilityRevocation {
+                    schema_version: LEASE_SCHEMA_VERSION,
+                    lease_id,
+                    authority_epoch: 7,
+                    lease_revision: 2,
+                    store_revision: state.store_revision,
+                    reason_sha256: [255; 32],
+                    revoked_at_unix_ms: 1,
+                },
+            );
+        }
+        let stored = Stored {
+            schema_version: STORE_SCHEMA_VERSION,
+            owner_id: "security-authority".into(),
+            state,
+        };
+        let bytes = serde_json::to_vec(&stored).unwrap();
+        assert!(
+            bytes.len() <= MAX_AUTHORITY_STORE_BYTES,
+            "declared maximum state serialized to {} bytes, above {} byte restart ceiling",
+            bytes.len(),
+            MAX_AUTHORITY_STORE_BYTES
+        );
     }
 
     #[test]
