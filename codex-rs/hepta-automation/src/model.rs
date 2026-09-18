@@ -361,6 +361,19 @@ pub(crate) fn client_message_id(
     format!("hepta.automation.v1:{agent_id}:{task_id}:{occurrence}")
 }
 
+pub fn automation_occurrence_id(
+    task_id: AutomationTaskId,
+    schedule_revision: u64,
+    scheduled_for_ms: u64,
+) -> Result<String, AutomationError> {
+    if schedule_revision == 0 {
+        return Err(AutomationError::Invalid);
+    }
+    Ok(format!(
+        "hepta.automation.occurrence.v1:{task_id}:{schedule_revision}:{scheduled_for_ms}"
+    ))
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum AutomationError {
     #[error("invalid automation request")]
