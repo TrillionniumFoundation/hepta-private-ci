@@ -219,6 +219,18 @@ pub struct ReservationRecord {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AuthBusRollbackCheckpoint {
+    pub generation: u64,
+    pub chain_digest: Digest32,
+}
+
+impl AuthBusRollbackCheckpoint {
+    pub fn validate(&self) -> bool {
+        !self.chain_digest.is_zero()
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ReservationResolution {
     NoEffect { evidence: Digest32 },
     Consumed { observed_cost: u64, evidence: Digest32 },
