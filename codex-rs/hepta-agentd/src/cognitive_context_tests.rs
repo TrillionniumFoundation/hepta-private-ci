@@ -2,6 +2,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
+use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::ForgetMemoryDraft;
 use codex_hepta_memory::LedgerSourceKind;
 use codex_hepta_memory::MemoryDraft;
@@ -140,7 +141,7 @@ async fn authoritative_context_fails_closed_when_owner_changes_before_final_use(
         || {
             let scope = scope.clone();
             let citation = citation.clone();
-            async {
+            async move {
                 store
                     .forget_memory(
                         &access,
