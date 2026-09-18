@@ -689,7 +689,7 @@ async fn renew_uses_sys_lease_endpoint_and_persists_new_expiry() {
     assert_eq!(recovered.state, crate::RegisteredSecretLeaseState::Active);
     assert_eq!(recovered.expires_at_unix_ms, renewal.expires_at_unix_ms);
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
-    assert!(observed.starts_with("put /v1/sys/leases/renew http/1.1\r\n"));
+    assert!(observed.starts_with("post /v1/sys/leases/renew http/1.1\r\n"));
     assert!(observed.contains("x-vault-namespace: team/one\r\n"));
 }
 
@@ -732,5 +732,5 @@ async fn revoke_uses_sys_lease_endpoint_and_persists_revoked_state() {
         .unwrap();
     assert_eq!(recovered.state, crate::RegisteredSecretLeaseState::Revoked);
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
-    assert!(observed.starts_with("put /v1/sys/leases/revoke http/1.1\r\n"));
+    assert!(observed.starts_with("post /v1/sys/leases/revoke http/1.1\r\n"));
 }
