@@ -12,6 +12,23 @@ SCRIPT = ROOT / "scripts/hepta-implementation-maps.py"
 
 
 class ExactHeadImplementationEvidenceTests(unittest.TestCase):
+    def test_compact_dossier_parser_keeps_shared_source_entrypoints(self):
+        sys.path.insert(0, str(ROOT / "scripts"))
+        try:
+            import runpy
+
+            namespace = runpy.run_path(str(SCRIPT))
+        finally:
+            sys.path.pop(0)
+
+        entries = namespace["parse_entrypoints"]("compact.engine")
+        symbols = {entry["nativeSymbol"] for entry in entries}
+        self.assertEqual(symbols, {"build_qualified_candidate", "prove_compaction"})
+        self.assertEqual(
+            {entry["sourcePath"] for entry in entries},
+            {"codex-rs/hepta-compact-engine/src/qualified.rs"},
+        )
+
     def test_evidence_binds_current_head_and_discovers_compact_tests(self):
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "implementation-evidence.json"
