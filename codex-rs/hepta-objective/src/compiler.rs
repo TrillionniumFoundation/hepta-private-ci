@@ -235,9 +235,7 @@ fn validate_soft_preferences(source: &ObjectiveSourceEnvelope) -> Result<(), Obj
 /// The native compiler is stateless, so callers that persist an objective can
 /// independently reject manually constructed, reordered, or digest-drifted
 /// values instead of trusting type construction alone.
-pub fn validate_compiled_objective_v1(
-    objective: &ObjectiveFunction,
-) -> Result<(), ObjectiveError> {
+pub fn validate_compiled_objective_v1(objective: &ObjectiveFunction) -> Result<(), ObjectiveError> {
     let abstain = abstain_id()?;
     let caller_actions = objective
         .legal_actions
