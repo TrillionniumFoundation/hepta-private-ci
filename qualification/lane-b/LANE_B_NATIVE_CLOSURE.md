@@ -102,12 +102,9 @@ The actual Agent-fenced App Server client supplies matching turn observations th
 | `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn cancel_native(` |
 | `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn settle_native(` |
 
-Remaining repository implementation gaps:
-
-- Compose a named non-CLI production caller that obtains current quota/resource evidence and signed final-use grants from their owners; the explicit native worker CLI is a source/qualification host and does not activate the product.
-
 External evidence gates:
 
+- activate the named hepta-infer-worker native-app-server entrypoint under the deployed Supervisor/Agentd composition with owner-issued current quota/resource evidence and signed final-use grants
 - real provider deployment, crash/cancellation/reconciliation acceptance and provider-side retention behavior
 - real economic billing reconciliation and measured device-capacity authority/qualification; source budget units and ResourceAdvertisement bindings do not prove provider charges or hardware availability
 - independently operated final-use signer/revocation service and product activation
