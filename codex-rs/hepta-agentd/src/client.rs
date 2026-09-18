@@ -169,6 +169,7 @@ impl AgentdClient {
         &self,
         run_id: String,
         expected_revision: u64,
+        binding: crate::RunDispatchBinding,
     ) -> Result<RunReceipt, AgentdError> {
         match self
             .send(AgentdRequest::run_mark_dispatched(
@@ -176,6 +177,7 @@ impl AgentdClient {
                 self.spawn_generation,
                 run_id,
                 expected_revision,
+                binding,
             ))
             .await?
             .payload
@@ -215,7 +217,7 @@ impl AgentdClient {
         run_id: String,
         expected_revision: u64,
         phase: RunPhase,
-        terminal_observed: bool,
+        observation: Option<crate::RunTerminalObservation>,
     ) -> Result<RunReceipt, AgentdError> {
         match self
             .send(AgentdRequest::run_observe_terminal(
@@ -224,7 +226,7 @@ impl AgentdClient {
                 run_id,
                 expected_revision,
                 phase,
-                terminal_observed,
+                observation,
             ))
             .await?
             .payload

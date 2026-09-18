@@ -12,9 +12,11 @@ use crate::AgentdIdentity;
 use crate::CancellationDisposition;
 use crate::ContextAttachment;
 use crate::EventBuffer;
+use crate::RunDispatchBinding;
 use crate::RunPhase;
 use crate::RunReceipt;
 use crate::RunSnapshot;
+use crate::RunTerminalObservation;
 use crate::run_ledger::RunLedger;
 
 #[path = "state_control.rs"]
@@ -300,13 +302,14 @@ impl AgentdState {
         now_ms: u64,
         run_id: &str,
         expected_revision: u64,
+        binding: RunDispatchBinding,
     ) -> Result<RunReceipt, AgentdError> {
         let _runtime = self.run_execution_guard()?;
         self.runs
             .lock()
             .map_err(poisoned_state)?
             .transact(|coordinator| {
-                coordinator.mark_dispatched(now_ms, run_id, expected_revision)
+                coordinator.mark_dispatched(now_ms, run_id, expected_revision, binding)
             })
     }
 
@@ -331,19 +334,14 @@ impl AgentdState {
         run_id: &str,
         expected_revision: u64,
         phase: RunPhase,
-        terminal_observed: bool,
+        observation: Option<RunTerminalObservation>,
     ) -> Result<RunReceipt, AgentdError> {
         self.require_run_reconciliation_ready()?;
         self.runs
             .lock()
             .map_err(poisoned_state)?
             .transact(|coordinator| {
-                coordinator.observe_terminal(
-                    run_id,
-                    expected_revision,
-                    phase,
-                    terminal_observed,
-                )
+                coordinator.observe_terminal(run_id, expected_revision, phase, observation)
             })
     }
 

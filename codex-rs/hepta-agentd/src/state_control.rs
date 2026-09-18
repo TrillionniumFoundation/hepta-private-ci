@@ -1,8 +1,17 @@
 //! Domain control dispatch kept separate from process lifecycle state.
 
+use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_app_server_client::RemoteAppServerClient;
+use codex_app_server_client::RemoteAppServerConnectArgs;
+use codex_app_server_client::RemoteAppServerEndpoint;
+use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::ThreadReadParams;
+use codex_app_server_protocol::ThreadReadResponse;
+use codex_app_server_protocol::TurnStatus;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_memory::CognitiveAccess;
@@ -21,9 +30,13 @@ use crate::AgentdPayload;
 use crate::AgentdResponse;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
+use crate::RunPhase;
+use crate::RunTerminalObservation;
 use crate::SessionIngress;
 use crate::SessionTransport;
 use crate::cognitive_context::CognitiveContextError;
+use codex_utils_absolute_path::AbsolutePathBuf;
+use tokio::time::timeout;
 
 use super::AgentdState;
 use super::poisoned_state;
@@ -126,10 +139,12 @@ impl AgentdState {
             crate::AgentdMethod::RunMarkDispatched {
                 run_id,
                 expected_revision,
+                binding,
             } => AgentdPayload::RunReceipt(self.run_mark_dispatched(
                 now_ms()?,
                 &run_id,
                 expected_revision,
+                binding,
             )?),
             crate::AgentdMethod::RunCancel {
                 run_id,
@@ -147,13 +162,18 @@ impl AgentdState {
                 run_id,
                 expected_revision,
                 phase,
-                terminal_observed,
-            } => AgentdPayload::RunReceipt(self.run_observe_terminal(
-                &run_id,
-                expected_revision,
-                phase,
-                terminal_observed,
-            )?),
+                observation,
+            } => {
+                if let Some(observation) = observation.as_ref() {
+                    self.verify_codex_terminal_observation(observation).await?;
+                }
+                AgentdPayload::RunReceipt(self.run_observe_terminal(
+                    &run_id,
+                    expected_revision,
+                    phase,
+                    observation,
+                )?)
+            }
             crate::AgentdMethod::RunStatus { run_id } => AgentdPayload::RunStatus {
                 receipt: self.run_status(&run_id)?,
             },
@@ -519,6 +539,88 @@ impl AgentdState {
             }
             Err(error) => Err(error.into()),
         }
+    }
+
+    async fn verify_codex_terminal_observation(
+        &self,
+        observation: &RunTerminalObservation,
+    ) -> Result<(), AgentdError> {
+        observation.validate().map_err(AgentdError::Protocol)?;
+        let socket_path =
+            AbsolutePathBuf::from_absolute_path(&self.identity.app_server_socket)?;
+        let client = timeout(
+            Duration::from_secs(1),
+            RemoteAppServerClient::connect(RemoteAppServerConnectArgs {
+                endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+                client_name: "hepta-agentd-terminal-verifier".to_string(),
+                client_version: env!("CARGO_PKG_VERSION").to_string(),
+                experimental_api: true,
+                mcp_server_openai_form_elicitation: false,
+                opt_out_notification_methods: Vec::new(),
+                channel_capacity: 8,
+            }),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("Codex terminal verification connect timed out".to_string())
+        })??;
+        let expected_home = self.identity.home_root.to_string_lossy();
+        if client.codex_home() != Some(expected_home.as_ref()) {
+            let _ = client.shutdown().await;
+            return Err(AgentdError::GenerationFenced(
+                "Codex terminal verifier reached a different Agent home".to_string(),
+            ));
+        }
+        let response = timeout(
+            Duration::from_secs(1),
+            client.request_typed::<ThreadReadResponse>(ClientRequest::ThreadRead {
+                request_id: RequestId::String(format!(
+                    "agentd-terminal-{}",
+                    observation.observation_digest
+                )),
+                params: ThreadReadParams {
+                    thread_id: observation.thread_id.clone(),
+                    include_turns: true,
+                },
+            }),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("Codex terminal verification read timed out".to_string())
+        })??;
+        let _ = client.shutdown().await;
+        if response.thread.id != observation.thread_id {
+            return Err(AgentdError::Protocol(
+                "Codex terminal verification returned a different thread".to_string(),
+            ));
+        }
+        let turn = response
+            .thread
+            .turns
+            .iter()
+            .find(|turn| turn.id == observation.turn_id)
+            .ok_or_else(|| {
+                AgentdError::Protocol(
+                    "Codex terminal verification could not find the observed turn".to_string(),
+                )
+            })?;
+        let observed_phase = match turn.status {
+            TurnStatus::Completed => RunPhase::Succeeded,
+            TurnStatus::Interrupted => RunPhase::Cancelled,
+            TurnStatus::Failed => RunPhase::Failed,
+            TurnStatus::InProgress => {
+                return Err(AgentdError::Protocol(
+                    "Codex turn is still in progress and is not terminal".to_string(),
+                ));
+            }
+        };
+        if observed_phase != observation.phase {
+            return Err(AgentdError::Protocol(format!(
+                "Codex terminal status does not match lifecycle observation: {:?} != {:?}",
+                observed_phase, observation.phase
+            )));
+        }
+        Ok(())
     }
 
     fn response_with_payload(
