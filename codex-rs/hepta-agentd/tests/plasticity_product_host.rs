@@ -436,6 +436,7 @@ fn agentd_host_resolves_owner_state_and_persists_governed_proposal() {
         .expect("governed Agentd proposal");
 
     assert!(!receipt.proposal.authority.grants_any());
+    assert!(!receipt.host_evidence_verification_digest.is_zero());
     assert_eq!(writer.record_count(), Ok(1));
     assert_eq!(anchor_store.state().writer_fence, fence);
     assert_eq!(
