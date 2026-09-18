@@ -3650,7 +3650,19 @@ async fn verify_store(
             ('outbox_messages_by_room_active', 'index'),
             ('matrix_visible_inbox_events_v2', 'view'),
             ('matrix_actionable_inbox_dispatches_v2', 'view'),
-            ('matrix_sendable_outbox_v2', 'view')
+            ('matrix_sendable_outbox_v2', 'view'),
+            ('matrix_dispatch_ledger', 'table'),
+            ('matrix_dispatch_unresolved', 'index'),
+            ('matrix_dispatch_accepted_event', 'index'),
+            ('matrix_dispatch_ledger_identity_immutable', 'trigger'),
+            ('matrix_dispatch_observations', 'table'),
+            ('matrix_dispatch_observations_by_txn', 'index'),
+            ('matrix_dispatch_observations_no_update', 'trigger'),
+            ('matrix_dispatch_observations_no_delete', 'trigger'),
+            ('matrix_dispatch_archive', 'table'),
+            ('matrix_dispatch_archive_event', 'index'),
+            ('matrix_dispatch_archive_identity_immutable', 'trigger'),
+            ('matrix_dispatch_archive_redaction_transition', 'trigger')
          )
          SELECT COUNT(*) FROM required
          JOIN sqlite_schema USING (name) WHERE sqlite_schema.type = required.type",
@@ -3658,7 +3670,7 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 31 {
+    if required_objects != 43 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
@@ -3688,6 +3700,67 @@ async fn verify_store(
     .await
     .map_err(unavailable)?;
     if invalid_logical_streams != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_active_dispatches: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_ledger AS dispatch
+         LEFT JOIN outbox_messages AS message
+           ON message.stable_txn_id = dispatch.stable_txn_id
+         WHERE message.stable_txn_id IS NULL
+            OR dispatch.room_id != message.room_id
+            OR dispatch.payload_sha256 != message.payload_sha256
+            OR dispatch.binding_revision != message.binding_revision
+            OR dispatch.session_generation != message.generation
+            OR message.state IN ('sent', 'permanent_failure')",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_active_dispatches != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_archived_dispatches: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_archive AS dispatch
+         LEFT JOIN outbox_messages AS message
+           ON message.stable_txn_id = dispatch.stable_txn_id
+         WHERE message.stable_txn_id IS NULL
+            OR dispatch.room_id != message.room_id
+            OR dispatch.payload_sha256 != message.payload_sha256
+            OR dispatch.binding_revision != message.binding_revision
+            OR dispatch.session_generation != message.generation
+            OR (
+                dispatch.state IN ('observed_succeeded', 'redacted')
+                AND (
+                    message.state != 'sent'
+                    OR message.sent_event_id IS NULL
+                    OR message.sent_event_id != dispatch.observed_event_id
+                )
+            )
+            OR (dispatch.state = 'rejected' AND message.state != 'permanent_failure')",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_archived_dispatches != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let orphan_dispatch_observations: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_observations AS observation
+         LEFT JOIN matrix_dispatch_ledger AS active
+           ON active.operation_id = observation.operation_id
+          AND active.stable_txn_id = observation.stable_txn_id
+         LEFT JOIN matrix_dispatch_archive AS archived
+           ON archived.operation_id = observation.operation_id
+          AND archived.stable_txn_id = observation.stable_txn_id
+         WHERE active.operation_id IS NULL AND archived.operation_id IS NULL",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if orphan_dispatch_observations != 0 {
         return Err(MatrixDurableError::Corrupt);
     }
     let foreign_checkpoint: i64 =
