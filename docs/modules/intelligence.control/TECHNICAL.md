@@ -59,6 +59,7 @@ Direct dependencies:
 - `prompt.optimizer`
 - `context.compiler`
 - `learning.eval`
+- `learning.ledger`
 
 Authoritative write domains:
 
@@ -141,7 +142,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intelligence.control.md).
+`prepare_intelligence_run_v1` is the bounded product-caller candidate for objective admission. It owns no store: it invokes the sealed `learning.ledger` durable owner port to append one atomic `RunStartPublicationV1`, then emits a deny-all `IntelligenceHostEnvelopeV1` for Agentd. Conflict and explicit-abstain outcomes publish no runnable snapshot. The remaining state owner and transaction boundaries are described by the [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -169,7 +170,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Composition library over injected owner ports. The read-only vertical and evaluated shadow entrypoints have distinct scopes; they do not install model weights or self-issue observations. Connect actual owner stages before naming a production closed loop, and retain unavailable/abstain outcomes instead of fabricating stage receipts.
+Composition library over injected owner ports. The read-only vertical, evaluated shadow and product-objective entrypoints have distinct scopes. The product-objective path authenticates/compiles and commits the objective/run-start pair through `learning.ledger`, but still grants no runtime/effect authority. Exact-head qualification, downstream effect authorization and operator activation remain separate from source composition.
 
 Current operating and state-format references:
 
@@ -184,6 +185,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs); named case: `durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes`.
 - [codex-rs/hepta-intelligence/src/lib_tests.rs](../../../codex-rs/hepta-intelligence/src/lib_tests.rs); named case: `highest_eligible_candidate_is_selected_without_effect_authority`.
+- [codex-rs/hepta-intelligence/src/production_objective_tests.rs](../../../codex-rs/hepta-intelligence/src/production_objective_tests.rs); named case: `product_objective_is_one_durable_replayable_run_start`.
 
 In `codex-rs`, run `just test -p codex-hepta-intelligence`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intelligence.control.md) separately labels target acceptance designs.
 
