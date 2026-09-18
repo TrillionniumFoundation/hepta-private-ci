@@ -23,7 +23,7 @@
   "implementationReceipt": {
     "branch": "fix/learning-artifacts-qualification-closure",
     "pullRequest": 690,
-    "codeCommit": "c4df2f0709e94de6fcb62d97f51677624a1c8b6c",
+    "codeCommit": "2e468f8e37dc3ea760d89892138b6fb4ac733936",
     "status": "source_candidate_pending_exact_head_and_merge_qualification"
   },
   "operations": [
@@ -277,6 +277,20 @@
       ],
       "sourcePathExists": true,
       "designOperation": "record_iteration_evidence",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "inspect_owner_service_status",
+      "nativeSymbol": "inspect_artifact_owner_status_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/service.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "service.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "inspect_owner_service_status",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
