@@ -18,6 +18,9 @@ use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+use crate::restart_budget::RestartBudgetRecord;
+use crate::restart_budget::unix_millis_now;
+use crate::restart_budget::write_restart_budget;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn tick_slot(
@@ -36,20 +39,22 @@ impl<D: ProcessDriver> Supervisor<D> {
             };
             if keep {
                 slot.runtime = Some(runtime);
-            } else if !self.continue_release_change_after_exit(agent_id, slot, now)?
-                && slot.restart_pending
-            {
-                slot.restart_pending = false;
-                let release = slot.active_release.clone().or_else(|| {
-                    slot.last_command
-                        .clone()
-                        .and_then(|command| crate::AgentRelease::unversioned(command).ok())
-                });
-                let release =
-                    release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
-                self.start_release_slot(agent_id, slot, release, now)?;
+            } else {
+                let release_change_continued =
+                    self.continue_release_change_after_exit(agent_id, slot, now)?;
+                if !release_change_continued
+                    && !slot.restart_pending
+                    && slot.release_change.is_none()
+                    && matches!(
+                        runtime.phase,
+                        RuntimePhase::AwaitingHealth { .. } | RuntimePhase::Running
+                    )
+                {
+                    self.schedule_automatic_restart(agent_id, slot, now)?;
+                }
             }
         }
+        self.start_pending_restart_if_due(agent_id, slot, now)?;
         self.tick_matrix_companion(agent_id, slot, now)
     }
 
@@ -128,6 +133,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     SupervisorEventKind::Lifecycle(AgentLifecycle::Failed),
                 );
                 slot.event(next.generation, SupervisorEventKind::StopRequested);
+                if slot.release_change.is_none() && !slot.restart_pending {
+                    self.schedule_automatic_restart(agent_id, slot, now)?;
+                }
             }
             RuntimePhase::Draining { deadline: limit } if drained || now >= limit => {
                 runtime.phase = RuntimePhase::Stopping {
@@ -205,6 +213,119 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         slot.event(generation, SupervisorEventKind::Exited(exit));
         Ok(())
+    }
+
+    fn schedule_automatic_restart(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        if slot.active_release.is_none() && slot.last_command.is_none() {
+            return Ok(());
+        }
+        let reset_window = slot
+            .restart_window_started_at
+            .is_none_or(|started| now.duration_since(started) >= self.config.restart_window);
+        if reset_window {
+            slot.restart_window_started_at = Some(now);
+            slot.restart_attempts = 0;
+        }
+        if slot.restart_attempts >= self.config.max_restart_attempts {
+            let generation = self.record(agent_id)?.lifecycle.generation;
+            slot.restart_pending = false;
+            slot.automatic_restart = false;
+            slot.restart_not_before = None;
+            slot.event(
+                generation,
+                SupervisorEventKind::RestartBudgetExhausted {
+                    attempts: slot.restart_attempts,
+                },
+            );
+            return Ok(());
+        }
+
+        slot.restart_attempts = slot
+            .restart_attempts
+            .checked_add(1)
+            .ok_or_else(|| SupervisorError::Invalid("restart attempt overflow".to_string()))?;
+        let shift = u32::from(slot.restart_attempts.saturating_sub(1)).min(8);
+        let multiplier = 1_u32 << shift;
+        let delay = self
+            .config
+            .restart_backoff_base
+            .checked_mul(multiplier)
+            .unwrap_or(self.config.restart_window)
+            .min(self.config.restart_window);
+        let not_before = deadline(now, delay)?;
+        slot.restart_pending = true;
+        slot.automatic_restart = true;
+        slot.restart_not_before = Some(not_before);
+
+        let wall_now = unix_millis_now()?;
+        let elapsed_ms = slot
+            .restart_window_started_at
+            .map(|started| now.duration_since(started).as_millis())
+            .unwrap_or(0);
+        let elapsed_ms = u64::try_from(elapsed_ms).unwrap_or(u64::MAX);
+        let window_started_unix_ms = wall_now.saturating_sub(elapsed_ms);
+        let delay_ms = u64::try_from(delay.as_millis()).unwrap_or(u64::MAX);
+        let not_before_unix_ms = wall_now
+            .checked_add(delay_ms)
+            .ok_or_else(|| SupervisorError::Invalid("restart deadline overflow".to_string()))?;
+        let record = self.record(agent_id)?;
+        write_restart_budget(
+            record.layout.run_root(),
+            &RestartBudgetRecord {
+                schema_version: crate::restart_budget::RESTART_BUDGET_SCHEMA_VERSION,
+                agent_id: agent_id.clone(),
+                window_started_unix_ms,
+                attempts: slot.restart_attempts,
+                not_before_unix_ms,
+            },
+        )?;
+        slot.event(
+            record.lifecycle.generation,
+            SupervisorEventKind::AutomaticRestartScheduled {
+                attempt: slot.restart_attempts,
+                delay_ms,
+            },
+        );
+        Ok(())
+    }
+
+    fn start_pending_restart_if_due(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        if slot.runtime.is_some()
+            || slot.release_change.is_some()
+            || !slot.restart_pending
+            || slot.restart_not_before.is_some_and(|deadline| now < deadline)
+        {
+            return Ok(());
+        }
+        let release = slot.active_release.clone().or_else(|| {
+            slot.last_command
+                .clone()
+                .and_then(|command| crate::AgentRelease::unversioned(command).ok())
+        });
+        let release =
+            release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
+        let automatic = slot.automatic_restart;
+        slot.restart_pending = false;
+        slot.automatic_restart = false;
+        slot.restart_not_before = None;
+        match self.start_release_slot(agent_id, slot, release, now) {
+            Ok(()) => Ok(()),
+            Err(error) if automatic => {
+                self.schedule_automatic_restart(agent_id, slot, now)?;
+                Err(error)
+            }
+            Err(error) => Err(error),
+        }
     }
 
     fn push_logs(&self, slot: &mut AgentSlot<D::Process>, logs: Vec<ProcessLog>) {
