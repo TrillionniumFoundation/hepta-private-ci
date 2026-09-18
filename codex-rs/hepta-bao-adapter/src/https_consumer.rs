@@ -196,7 +196,7 @@ impl BaoClient {
     }
 
     /// Claim a kernel permit, fetch exactly one version, then deliver only to
-    /// the supplied trusted in-process consumer under a live revocation fence.
+    /// the host-registered trusted consumer under a live revocation fence.
     /// No automatic retry occurs. The consumer must not reenter the authority.
     pub async fn consume_kv_v2(
         &self,
@@ -205,6 +205,9 @@ impl BaoClient {
         request: &BaoReadRequest,
     ) -> Result<BaoSecretReceipt, BaoClientError> {
         let binding = self.binding(request)?;
+        if !self.consumers.contains(&request.consumer_id) {
+            return Err(BaoClientError::UnknownConsumer);
+        }
         let mut url = self.origin.clone();
         {
             let mut parts = url
