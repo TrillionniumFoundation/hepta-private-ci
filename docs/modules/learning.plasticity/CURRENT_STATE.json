@@ -85,6 +85,16 @@
       ]
     },
     {
+      "id": "topology_protected_surface_policy",
+      "status": "source_implemented",
+      "surface": "TopologyMutationPolicyV1",
+      "source": "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs"
+      ]
+    },
+    {
       "id": "topology_writer_handoff",
       "status": "source_implemented_validation_only",
       "surface": "TopologyWriterHandoffV1",
