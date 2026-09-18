@@ -208,6 +208,7 @@ pub fn decide_authenticated_intuition_v2(
     verify_signed_role_separation(&generator, &evaluator, now)?;
     verify_signed_role_separation(&generator, &decision_context, now)?;
     verify_signed_role_separation(&generator, &scorer, now)?;
+    verify_distinct_verified_roles(&evaluator, &scorer, now)?;
     verify_distinct_verified_roles(&decision_context, &scorer, now)?;
 
     let assignment_payload_and_evidence = match (&request.assignment, evidence.assignment) {
@@ -227,6 +228,7 @@ pub fn decide_authenticated_intuition_v2(
                 now,
             )?;
             verify_signed_role_separation(&generator, &randomizer, now)?;
+            verify_distinct_verified_roles(&evaluator, &randomizer, now)?;
             verify_distinct_verified_roles(&decision_context, &randomizer, now)?;
             verify_distinct_verified_roles(&scorer, &randomizer, now)?;
             Some((payload, assignment_evidence))
