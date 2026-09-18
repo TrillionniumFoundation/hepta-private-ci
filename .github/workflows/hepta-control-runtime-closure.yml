@@ -1,0 +1,148 @@
+name: Hepta control.runtime final closure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-contracts/**"
+      - "docs/modules/control.runtime/**"
+      - "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+      - "docs/readiness/LANE_D_MATURITY.json"
+      - "qualification/module-execution-dossiers/detail/control.runtime.md"
+      - "scripts/hepta-lane-d-semantic-conformance.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/workflows/hepta-control-runtime-closure.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  pull_request:
+    paths:
+      - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-contracts/**"
+      - "docs/modules/control.runtime/**"
+      - "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+      - "docs/readiness/LANE_D_MATURITY.json"
+      - "qualification/module-execution-dossiers/detail/control.runtime.md"
+      - "scripts/hepta-lane-d-semantic-conformance.py"
+      - "scripts/hepta-implementation-maps.py"
+      - ".github/workflows/hepta-control-runtime-closure.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-control-runtime-closure-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  closure:
+    name: Control runtime closure (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct deterministic synthetic merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number || 'source-probe' }}
+          author-name: Hepta Control Runtime CI
+          author-email: hepta-control-runtime-ci@users.noreply.github.com
+          message: Control runtime synthetic merge
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Record exact tested host and source
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/control-runtime-evidence"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          {
+            echo "tested_sha=$TESTED_SHA"
+            echo "tested_tree=$(git rev-parse HEAD^{tree})"
+            echo "runner_os=$RUNNER_OS"
+            echo "runner_arch=$RUNNER_ARCH"
+            uname -a
+            rustc -vV
+            cargo -vV
+            lscpu
+          } > "$RUNNER_TEMP/control-runtime-evidence/host.txt"
+
+      - name: Verify documentation and semantic maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-lane-d-semantic-conformance.py
+
+      - name: Compile focused owners
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          cargo check --locked             -p codex-hepta-control-plane             -p codex-hepta-agentd             -p codex-hepta-contracts             -p codex-hepta-ndu             --all-targets
+
+      - name: Execute focused tests
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        run: |
+          just test --locked             -p codex-hepta-control-plane             -p codex-hepta-agentd             -p codex-hepta-contracts             -p codex-hepta-ndu             --run-ignored all
+
+      - name: Strict lint and formatting
+        working-directory: codex-rs
+        run: |
+          cargo clippy --locked             -p codex-hepta-control-plane             -p codex-hepta-agentd             -p codex-hepta-contracts             -p codex-hepta-ndu             --all-targets -- -D warnings
+          cargo fmt             --package codex-hepta-control-plane             --package codex-hepta-agentd             --package codex-hepta-contracts             --package codex-hepta-ndu             -- --check
+
+      - name: Measure full-ceiling global planner
+        if: matrix.lane == 'source-head'
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo run --locked --release             -p codex-hepta-control-plane             --example control_runtime_probe -- 25             | tee "$RUNNER_TEMP/control-runtime-evidence/performance.json"
+
+      - name: Verify clean tracked state
+        run: |
+          git diff --check
+          git diff --quiet
+          git diff --cached --quiet
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: control-runtime-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/control-runtime-evidence
+          if-no-files-found: error
+          retention-days: 30
