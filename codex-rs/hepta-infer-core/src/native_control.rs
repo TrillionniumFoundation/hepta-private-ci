@@ -765,7 +765,10 @@ fn held_budget_units(record: &NativeRunRecord) -> u64 {
     }
 }
 
-fn enforce_quota(records: &BTreeMap<String, NativeRunRecord>, request: &NativeRequest) -> Result<(), Error> {
+fn enforce_quota(
+    records: &BTreeMap<String, NativeRunRecord>,
+    request: &NativeRequest,
+) -> Result<(), Error> {
     let Some(binding) = &request.admission else {
         return Ok(());
     };
@@ -818,7 +821,10 @@ fn validate_final_use_witness(witness: &NativeFinalUseWitness) -> Result<(), Err
     Ok(())
 }
 
-fn validate_dispatch_authority(record: &NativeRunRecord, dispatch: &NativeDispatch) -> Result<(), Error> {
+fn validate_dispatch_authority(
+    record: &NativeRunRecord,
+    dispatch: &NativeDispatch,
+) -> Result<(), Error> {
     match &record.request.admission {
         None => {
             if dispatch.final_use.is_some() {
@@ -853,7 +859,10 @@ fn final_use_identity(authority: &NativeFinalUseAuthority) -> Option<(&str, u64)
     }
 }
 
-fn validate_final_use_observation(record: &NativeRunRecord, output: &NativeRunOutput) -> Result<(), Error> {
+fn validate_final_use_observation(
+    record: &NativeRunRecord,
+    output: &NativeRunOutput,
+) -> Result<(), Error> {
     if let NativeFinalUseAuthority::Lost { reason } = &output.final_use_authority
         && (reason.is_empty() || reason.len() > 4096)
     {
@@ -868,8 +877,8 @@ fn validate_final_use_observation(record: &NativeRunRecord, output: &NativeRunOu
         match &output.final_use_authority {
             NativeFinalUseAuthority::Claimed { .. }
             | NativeFinalUseAuthority::VerifiedAtTerminal { .. } => {
-                let (grant_id, authority_epoch) =
-                    final_use_identity(&output.final_use_authority).ok_or(Error::AssignmentMismatch)?;
+                let (grant_id, authority_epoch) = final_use_identity(&output.final_use_authority)
+                    .ok_or(Error::AssignmentMismatch)?;
                 if grant_id != witness.grant_id
                     || authority_epoch != witness.authority_epoch
                     || authority_epoch != admission.quota.authority_epoch
