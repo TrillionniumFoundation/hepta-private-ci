@@ -27,10 +27,13 @@ all complete frames and reconstructs their checkpoint/receipt chain. The exact
 checkpoint at the anchor sequence must match the external witness.
 
 Only after that comparison may a later incomplete frame be truncated and synced.
-A valid later complete frame is preserved and synced before exposure, allowing
-reconciliation of a write whose acknowledgement was lost. An earlier anchor is
-a minimum retained-history requirement, not an instruction to roll back later
-valid commits. Corruption after the anchor still rejects the entire open.
+A valid later complete frame is preserved and synced before exposure. The owner
+host enumerates that bounded complete suffix and advances the independent witness
+one sequence at a time before it accepts a new tick. Failure to reconcile the
+witness fails open; it cannot create another journal commit on top of a stale
+anchor. An earlier anchor is a minimum retained-history requirement, not an
+instruction to roll back later valid commits. Corruption after the anchor still
+rejects the entire open.
 
 `InvalidAnchor`, `AcknowledgedHistoryMissing`, and `AnchorMismatch` are separate
 errors. These errors do not initialize, truncate, rewrite, or silently choose a
@@ -42,15 +45,17 @@ configuration, replay, quota, and cooperating-writer fencing checks remain intac
 The legacy `open` method remains available for bootstrap and explicitly
 unanchored qualification use. It is not an anti-rollback API. A host that has
 acknowledged history must call the anchored method and must never retry a failed
-anchored open through the unanchored method. This patch does not install such a
-host, authenticate the witness, or create an external witness store.
+anchored open through the unanchored method. `NeuronRuntimeHost` and the bounded
+`FileRecoveryWitness` implement this local owner ordering, but the caller still
+owns authentication, directory protection, freshness policy and external scope.
 
 The host transaction order is: durably commit the journal, durably retain its
 acknowledgement witness, then acknowledge externally. If witness publication is
 uncertain, reconcile the already committed tick before retrying. An anchor cannot
-protect acknowledgements that the host failed to retain. Concurrent witness
-updates, segment rotation, deletion/unlearning, backup erasure, physical power
-loss, and target latency require separate implementation and qualification.
+protect acknowledgements that the host failed to retain. Continuation rotation
+and live-lineage rebuild are implemented source mechanisms; backup erasure,
+physical power loss, target latency, multi-host witness coordination and empirical
+unlearning qualification remain separate evidence or integration work.
 
 ## Regression coverage
 
