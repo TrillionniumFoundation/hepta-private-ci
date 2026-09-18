@@ -21,6 +21,7 @@ const STATE_PREFIX: &str = "allocation-state-";
 const STATE_SUFFIX: &str = ".json";
 const MAX_STATE_BYTES: u64 = 8 * 1024 * 1024;
 const RETAIN_STATE_GENERATIONS: usize = 32;
+const MAX_STATE_FILES_ON_OPEN: usize = RETAIN_STATE_GENERATIONS + 1;
 static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -75,6 +76,8 @@ impl FleetAllocationStateV1 {
             || self.revision == 0
             || self.writer_epoch == 0
             || self.predecessor_revision.is_some_and(|value| value >= self.revision)
+            || (self.revision > 1
+                && self.predecessor_revision != Some(self.revision - 1))
             || (self.revision == 1
                 && (self.predecessor_revision.is_some()
                     || self.predecessor_state_digest.is_some()))
@@ -127,6 +130,10 @@ impl FleetAllocationStore {
         }
         validate_directory(&root)?;
         if let Some(current) = load_latest(&root)? {
+            // A previous commit may have succeeded while post-commit retention
+            // maintenance failed. Reopen repairs that bounded maintenance
+            // before admitting another writer generation.
+            prune_history(&root)?;
             return Ok(Self { root, current });
         }
 
@@ -153,6 +160,11 @@ impl FleetAllocationStore {
         now_ms: u64,
         ledger: LeaseLedger,
     ) -> Result<&FleetAllocationStateV1, FleetAllocationStoreError> {
+        // A post-publication cleanup error from the previous mutation was
+        // deliberately non-ambiguous. Repair it before publishing another
+        // generation so repeated cleanup failure cannot grow state without
+        // bound.
+        prune_history(&self.root)?;
         if self.current.revision != expected_revision {
             return Err(FleetAllocationStoreError::StaleRevision {
                 expected: expected_revision,
@@ -249,6 +261,11 @@ fn load_latest(root: &Path) -> Result<Option<FleetAllocationStateV1>, FleetAlloc
             )));
         };
         revisions.push((revision, entry.path()));
+        if revisions.len() > MAX_STATE_FILES_ON_OPEN {
+            return Err(FleetAllocationStoreError::InvalidState(
+                "allocation state file count exceeds recovery bound".to_string(),
+            ));
+        }
     }
     revisions.sort_by_key(|(revision, _)| *revision);
     if revisions.is_empty() {

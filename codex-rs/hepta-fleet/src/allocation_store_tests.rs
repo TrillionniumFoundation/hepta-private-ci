@@ -90,3 +90,21 @@ fn tampered_latest_generation_fails_reopen() {
     std::fs::write(path, bytes).expect("tamper");
     assert!(FleetAllocationStore::open_or_initialize(&state_root, 9, 300).is_err());
 }
+#[test]
+fn state_generation_retention_is_bounded() {
+    let temp = tempfile::tempdir().expect("temp");
+    let state_root = temp.path().join("state");
+    std::fs::create_dir(&state_root).expect("state root");
+    let mut store =
+        FleetAllocationStore::open_or_initialize(&state_root, 7, 100).expect("store");
+    for step in 0..64_u64 {
+        let revision = store.current().revision;
+        store
+            .commit(revision, 7, 200 + step, LeaseLedger::new())
+            .expect("commit");
+    }
+    let state_dir = state_root.join(STATE_DIRECTORY);
+    let count = std::fs::read_dir(state_dir).expect("read state dir").count();
+    assert_eq!(count, RETAIN_STATE_GENERATIONS);
+}
+
