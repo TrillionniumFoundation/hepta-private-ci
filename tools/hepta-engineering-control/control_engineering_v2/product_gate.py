@@ -57,6 +57,26 @@ def _git(root: Path, *args: str) -> str:
     return result.stdout.strip()
 
 
+def _git_bytes(root: Path, *args: str) -> bytes:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), *args],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=30,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        raise ValueError("git_read_failed") from None
+    if (
+        result.returncode != 0
+        or len(result.stdout) > MAX_CANONICAL_REGISTRY_BYTES
+        or len(result.stderr) > 1_048_576
+    ):
+        raise ValueError("git_read_failed")
+    return result.stdout
+
+
 def _sha(value: str, label: str) -> str:
     if not isinstance(value, str) or _SHA1.fullmatch(value) is None or value == "0" * 40:
         raise ValueError("invalid_" + label)
@@ -67,11 +87,11 @@ def _canonical_engineering_package(root: Path) -> dict[str, object]:
     """Bind the product caller to the exact HEAD blob for canonical ECP-1."""
     relative = CANONICAL_WORK_PACKAGE_PATH.as_posix()
     try:
-        raw = _git(root, "show", f"HEAD:{relative}").encode("utf-8")
         blob_oid = _sha(
             _git(root, "rev-parse", f"HEAD:{relative}"),
             "canonical_work_package_blob",
         )
+        raw = _git_bytes(root, "cat-file", "blob", blob_oid)
     except ValueError:
         raise ValueError("canonical_work_package_registry_unavailable") from None
     if not raw or len(raw) > MAX_CANONICAL_REGISTRY_BYTES:
