@@ -73,15 +73,6 @@ impl AutomationSchedule {
         }
     }
 
-    pub(crate) fn next_after(self, scheduled_for_ms: u64) -> Result<Option<u64>, AutomationError> {
-        match self {
-            Self::Once => Ok(None),
-            Self::FixedInterval { interval_ms } => scheduled_for_ms
-                .checked_add(interval_ms)
-                .map(Some)
-                .ok_or(AutomationError::Invalid),
-        }
-    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
