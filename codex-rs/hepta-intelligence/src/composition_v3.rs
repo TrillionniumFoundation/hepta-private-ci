@@ -908,7 +908,7 @@ fn guard_stage<C: CompositionControlV3>(
 fn run_required_stage<F, C: CompositionControlV3>(
     request: &CompositionRunRequestV3,
     control: &C,
-    snapshot_digest: Digest32,
+    _snapshot_digest: Digest32,
     predecessor: Digest32,
     stage: CompositionStageV3,
     producer: &str,
