@@ -115,7 +115,7 @@ impl LedgerWitnessStore {
         let mut latest = None;
         let mut last_entry_digest = Digest32::ZERO;
         let mut entries = 0_usize;
-        while HEADER as u64 + entries as u64 * ENTRY as u64 < length {
+        while HEADER as u64 + entries as u64 * (ENTRY as u64) < length {
             if entries >= MAX_WITNESSES {
                 return Err(WitnessStoreError::Capacity);
             }
