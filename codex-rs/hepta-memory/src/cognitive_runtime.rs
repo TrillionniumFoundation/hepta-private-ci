@@ -678,9 +678,14 @@ struct ProductAttemptControl {
 }
 
 impl FederationAttemptControlV2 for ProductAttemptControl {
-    fn wait_for_stop<'a>(&'a self, query: &'a FederatedQueryV2) -> FederationStopFuture<'a> {
+    fn wait_for_stop<'a>(
+        &'a self,
+        query: &'a FederatedQueryV2,
+        lease: &'a FederatedLeaseV2,
+    ) -> FederationStopFuture<'a> {
         let current = elapsed_logical_ms(self.logical_start_ms, self.started_at);
-        let remaining = query.deadline_unix_ms.saturating_sub(current);
+        let authority_deadline = query.deadline_unix_ms.min(lease.expires_unix_ms);
+        let remaining = authority_deadline.saturating_sub(current);
         Box::pin(async move {
             if remaining > 0 {
                 tokio::time::sleep(Duration::from_millis(remaining)).await;
