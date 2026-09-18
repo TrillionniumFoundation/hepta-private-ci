@@ -65,9 +65,7 @@ from .facade import (
     ReviewRequest,
     execute_candidate_sandbox,
     generate_candidate,
-    issue_work_envelope,
     publish_audit_projection,
-    schedule_ready_packages,
 )
 from .mutation_testing import (
     MutationTestingReceipt,
@@ -198,7 +196,6 @@ __all__ = [
     "hardened_sandbox_candidate",
     "issue_repository_work_envelope",
     "issue_signed_work_envelope",
-    "issue_work_envelope",
     "plan_engineering_work",
     "path_is_within",
     "path_sets_overlap",
@@ -210,7 +207,6 @@ __all__ = [
     "run_mutation_testing",
     "request_independent_review",
     "sandbox_candidate",
-    "schedule_ready_packages",
     "semantic_digest",
     "synthesize_read_only_contracts",
     "validate_consent",
