@@ -66,6 +66,38 @@
       ]
     },
     {
+      "operation": "revoke_factor_final_use",
+      "nativeSymbol": "DurablePromptRegistry::revoke_factor_final_use",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_runtime_activated",
+      "authority": "consumes_kernel_final_use_authority_and_fences_durable_commit",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke_factor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "kernel.authority::FinalUseAuthority"
+      ]
+    },
+    {
+      "operation": "retire_factor_final_use",
+      "nativeSymbol": "DurablePromptRegistry::retire_factor_final_use",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
+      "state": "source_implemented_not_runtime_activated",
+      "authority": "consumes_kernel_final_use_authority_and_fences_durable_commit",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/durable.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retire_factor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "kernel.authority::FinalUseAuthority"
+      ]
+    },
+    {
       "operation": "durable_owner",
       "nativeSymbol": "DurablePromptRegistry",
       "sourcePath": "codex-rs/hepta-prompt-registry/src/durable.rs",
