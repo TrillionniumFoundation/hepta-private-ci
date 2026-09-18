@@ -48,6 +48,18 @@ impl DurableOperationStore {
             }
             return Err(DurableOperationError::Conflict(operation_id.clone()));
         }
+        if let Some(existing) =
+            load_destination_tombstone_tx(&mut tx, destination, operation_id).await?
+        {
+            if existing.semantic_digest == semantic_digest
+                && existing.outcome == outcome
+                && existing.evidence_digest == evidence_digest
+            {
+                tx.commit().await.map_err(unavailable)?;
+                return Ok(existing);
+            }
+            return Err(DurableOperationError::Conflict(operation_id.clone()));
+        }
         sqlx::query(
             "INSERT INTO destination_operation_dedup
              (destination, operation_id, semantic_digest, outcome, evidence_digest, recorded_at_ms)
@@ -74,14 +86,30 @@ impl DurableOperationStore {
         destination: &StableId,
         operation_id: &StableId,
     ) -> Result<Option<DestinationReceipt>, DurableOperationError> {
-        sqlx::query(DESTINATION_SELECT)
+        if let Some(receipt) = sqlx::query(DESTINATION_SELECT)
             .bind(destination.as_str())
             .bind(operation_id.as_str())
             .fetch_optional(&self.pool)
             .await
             .map_err(unavailable)?
             .map(decode_destination)
-            .transpose()
+            .transpose()?
+        {
+            return Ok(Some(receipt));
+        }
+        sqlx::query(
+            "SELECT destination, operation_id, semantic_digest, outcome, evidence_digest,
+                    recorded_at_ms
+             FROM destination_operation_tombstones
+             WHERE destination = ? AND operation_id = ?",
+        )
+        .bind(destination.as_str())
+        .bind(operation_id.as_str())
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(unavailable)?
+        .map(decode_destination)
+        .transpose()
     }
 
     pub async fn reconcile_from_destination(
@@ -193,4 +221,24 @@ async fn load_destination_tx(
         .map_err(unavailable)?
         .map(decode_destination)
         .transpose()
+}
+
+async fn load_destination_tombstone_tx(
+    tx: &mut Transaction<'_, Sqlite>,
+    destination: &StableId,
+    operation_id: &StableId,
+) -> Result<Option<DestinationReceipt>, DurableOperationError> {
+    sqlx::query(
+        "SELECT destination, operation_id, semantic_digest, outcome, evidence_digest,
+                recorded_at_ms
+         FROM destination_operation_tombstones
+         WHERE destination = ? AND operation_id = ?",
+    )
+    .bind(destination.as_str())
+    .bind(operation_id.as_str())
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(unavailable)?
+    .map(decode_destination)
+    .transpose()
 }
